@@ -84,7 +84,7 @@ fun WooPosPaymentSuccessScreen(
                 Text(
                     text = stringResource(R.string.woopos_payment_successful_label),
                     style = MaterialTheme.typography.h4.copy(
-                        fontSize = 24.sp,
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF004D40)
                     ),
@@ -100,7 +100,7 @@ fun WooPosPaymentSuccessScreen(
                     border = BorderStroke(1.dp, Color(0xFFBDBDBD))
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(21.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Row(
@@ -110,7 +110,7 @@ fun WooPosPaymentSuccessScreen(
                             Text(
                                 text = stringResource(R.string.woopos_payment_subtotal_label),
                                 style = MaterialTheme.typography.body1.copy(
-                                    fontSize = 16.sp,
+                                    fontSize = 21.sp,
                                     fontWeight = FontWeight.Normal,
                                     color = MaterialTheme.colors.onSurface
                                 )
@@ -118,7 +118,7 @@ fun WooPosPaymentSuccessScreen(
                             Text(
                                 text = state.orderSubtotalText,
                                 style = MaterialTheme.typography.body1.copy(
-                                    fontSize = 16.sp,
+                                    fontSize = 21.sp,
                                     fontWeight = FontWeight.Normal,
                                     color = MaterialTheme.colors.onSurface
                                 )
@@ -131,7 +131,7 @@ fun WooPosPaymentSuccessScreen(
                             Text(
                                 text = stringResource(R.string.woopos_payment_tax_label),
                                 style = MaterialTheme.typography.body1.copy(
-                                    fontSize = 16.sp,
+                                    fontSize = 21.sp,
                                     fontWeight = FontWeight.Normal,
                                     color = MaterialTheme.colors.onSurface
                                 )
@@ -139,7 +139,7 @@ fun WooPosPaymentSuccessScreen(
                             Text(
                                 text = state.orderTaxText,
                                 style = MaterialTheme.typography.body1.copy(
-                                    fontSize = 16.sp,
+                                    fontSize = 21.sp,
                                     fontWeight = FontWeight.Normal,
                                     color = MaterialTheme.colors.onSurface
                                 )
@@ -152,7 +152,7 @@ fun WooPosPaymentSuccessScreen(
                             Text(
                                 text = stringResource(R.string.woopos_payment_total_label),
                                 style = MaterialTheme.typography.body1.copy(
-                                    fontSize = 18.sp,
+                                    fontSize = 24.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colors.onSurface
                                 )
@@ -160,7 +160,7 @@ fun WooPosPaymentSuccessScreen(
                             Text(
                                 text = state.orderTotalText,
                                 style = MaterialTheme.typography.body1.copy(
-                                    fontSize = 28.sp,
+                                    fontSize = 36.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF512DA8)
                                 )
