@@ -27,6 +27,8 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
         // Adding this retry to wait for the settings icon to be displayed, retrying up to a max time
         val maxAttempts = 25
         var currentAttempt = 0
+        var lastError: AssertionError? = null
+
         while (currentAttempt < maxAttempts) {
             try {
                 composeTestRule.onNodeWithContentDescription(getTranslatedString(R.string.settings))
@@ -34,13 +36,14 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
                     .assertHasClickAction()
                 break // Exit loop if node is displayed and clickable
             } catch (e: AssertionError) {
+                lastError = e // Capture the last AssertionError
                 Thread.sleep(100) // Wait 100ms before retrying
                 currentAttempt++
             }
         }
 
-        if (currentAttempt == maxAttempts) {
-            throw Exception("Settings icon not found or not clickable after waiting.")
+        if (currentAttempt == maxAttempts && lastError != null) {
+            throw IllegalStateException("Failed to open settings due to: ${lastError.message}", lastError)
         }
 
         composeTestRule.onNodeWithContentDescription(
