@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.totals.payment.success
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,11 +30,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsState
-import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
 fun WooPosPaymentSuccessScreen(
@@ -81,26 +83,91 @@ fun WooPosPaymentSuccessScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.woopos_payment_successful_label),
-                    style = MaterialTheme.typography.h3,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colors.secondary,
+                    style = MaterialTheme.typography.h4.copy(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF004D40)
+                    ),
+                    textAlign = TextAlign.Center,
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "${stringResource(R.string.woopos_payment_subtotal_label)} ${state.orderSubtotalText}",
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.onSurface,
-                )
-                Text(
-                    text = "${stringResource(R.string.woopos_payment_tax_label)} ${state.orderTaxText}",
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.onSurface,
-                )
-                Text(
-                    text = "${stringResource(R.string.woopos_payment_total_label)} ${state.orderTotalText}",
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.onSurface,
-                )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Surface(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, Color(0xFFBDBDBD))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.woopos_payment_subtotal_label),
+                                style = MaterialTheme.typography.body1.copy(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = MaterialTheme.colors.onSurface
+                                )
+                            )
+                            Text(
+                                text = state.orderSubtotalText,
+                                style = MaterialTheme.typography.body1.copy(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = MaterialTheme.colors.onSurface
+                                )
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.woopos_payment_tax_label),
+                                style = MaterialTheme.typography.body1.copy(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = MaterialTheme.colors.onSurface
+                                )
+                            )
+                            Text(
+                                text = state.orderTaxText,
+                                style = MaterialTheme.typography.body1.copy(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = MaterialTheme.colors.onSurface
+                                )
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.woopos_payment_total_label),
+                                style = MaterialTheme.typography.body1.copy(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colors.onSurface
+                                )
+                            )
+                            Text(
+                                text = state.orderTotalText,
+                                style = MaterialTheme.typography.body1.copy(
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF512DA8)
+                                )
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -142,9 +209,9 @@ fun WooPosPaymentSuccessScreenPreview() {
     WooPosTheme {
         WooPosPaymentSuccessScreen(
             state = WooPosTotalsState.PaymentSuccess(
-                orderSubtotalText = "$420.00",
-                orderTotalText = "$462.00",
-                orderTaxText = "$42.00"
+                orderSubtotalText = "$11.98",
+                orderTotalText = "$13.18",
+                orderTaxText = "$1.20"
             ),
             onNewTransactionClicked = {}
         )
