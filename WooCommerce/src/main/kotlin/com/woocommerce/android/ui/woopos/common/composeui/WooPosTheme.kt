@@ -13,7 +13,10 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.ui.compose.theme.WooTypography
 
-data class CustomColors(val loadingSkeleton: Color)
+data class CustomColors(
+    val loadingSkeleton: Color,
+    val readerDisconnectedText: Color,
+)
 
 private val DarkColorPalette = darkColors(
     primary = Color(0xFF9C70D3),
@@ -40,11 +43,13 @@ private val LightColorPalette = lightColors(
 )
 
 private val DarkCustomColors = CustomColors(
-    loadingSkeleton = Color(0xFF616161)
+    loadingSkeleton = Color(0xFF616161),
+    readerDisconnectedText = Color(0xFF7B0700)
 )
 
 private val LightCustomColors = CustomColors(
-    loadingSkeleton = Color(0xFFE1E1E1)
+    loadingSkeleton = Color(0xFFE1E1E1),
+    readerDisconnectedText = Color(0xFF7B0700)
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {

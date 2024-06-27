@@ -4146,5 +4146,5 @@
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Tax</string>
     <string name="woopos_payment_total_label">Total</string>
-
+    <string name="woopos_reader_connect_now">Connect now</string>
 </resources>

@@ -99,16 +99,20 @@ private fun CardReaderStatus(
 
             else -> Unit
         }
+        val textColor = when (state.value.cardReaderStatus) {
+            WooPosCardReaderStatus.NotConnected -> WooPosTheme.colors.readerDisconnectedText
+            else -> MaterialTheme.colors.secondary
+        }
         Text(
             modifier = Modifier.padding(8.dp),
             text = stringResource(id = state.value.cardReaderStatus.title),
-            color = MaterialTheme.colors.secondary,
+            color = textColor,
             style = MaterialTheme.typography.button
         )
         when (state.value.cardReaderStatus) {
             WooPosCardReaderStatus.NotConnected -> {
                 TextButton(onClick = onConnectToReaderClick) {
-                    Text(text = "Connect now")
+                    Text(text = stringResource(R.string.woopos_reader_connect_now))
                 }
             }
             else -> Unit
