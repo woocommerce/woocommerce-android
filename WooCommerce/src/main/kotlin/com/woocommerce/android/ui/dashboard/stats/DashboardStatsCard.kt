@@ -197,10 +197,6 @@ private fun StatsChart(
     // is applying all properties on each composition (even the unchanged ones) which creates issues with the legacy
     // view.
 
-    LaunchedEffect(lastUpdateState) {
-        statsView.showLastUpdate(lastUpdateState)
-    }
-
     LaunchedEffect(revenueStatsState) {
         when (revenueStatsState) {
             is DashboardStatsViewModel.RevenueStatsViewState.Content -> {
@@ -230,8 +226,15 @@ private fun StatsChart(
 
     LaunchedEffect(visitorsStatsState) {
         visitorsStatsState?.let {
-            statsView.showVisitorStats(it)
+            statsView.showVisitorStats(
+                it,
+                dateRange?.rangeSelection
+            )
         }
+    }
+
+    LaunchedEffect(lastUpdateState) {
+        statsView.showLastUpdate(lastUpdateState)
     }
 }
 
