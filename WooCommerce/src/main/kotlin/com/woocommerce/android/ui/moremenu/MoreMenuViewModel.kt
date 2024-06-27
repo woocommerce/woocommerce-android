@@ -23,7 +23,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.google.IsGoogleListingsAdsEnabled
+import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
@@ -60,7 +60,7 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled,
+    private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val isWooPosEnabled: IsWooPosEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
@@ -132,7 +132,7 @@ class MoreMenuViewModel @Inject constructor(
                 description = R.string.more_menu_button_google_description,
                 icon = R.drawable.google_logo,
                 onClick = ::onPromoteProductsWithGoogle,
-                isVisible = isGoogleListingsAdsEnabled()
+                isVisible = isGoogleForWooEnabled()
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_blaze,
