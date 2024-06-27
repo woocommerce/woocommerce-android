@@ -70,5 +70,4 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
             fromChildToParentEventSender,
             priceFormat
         )
-
 }

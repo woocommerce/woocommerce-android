@@ -52,6 +52,7 @@ class WooPosProductsViewModel @Inject constructor(
                 onEndOfProductsGridReached()
             }
 
+
             is WooPosProductsUIEvent.ItemClicked -> {
                 onItemClicked(event.item)
             }
