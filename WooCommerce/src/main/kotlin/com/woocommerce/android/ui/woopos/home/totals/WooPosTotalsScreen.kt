@@ -160,8 +160,7 @@ private fun Totals(
                     Column(
                         modifier = modifier
                             .wrapContentWidth()
-                            .heightIn(max = 80.dp)
-                            .padding(12.dp),
+                            .heightIn(max = 80.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
@@ -170,7 +169,7 @@ private fun Totals(
                             style = MaterialTheme.typography.h6,
                             color = MaterialTheme.colors.primary
                         )
-                        Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = state.orderTotalText,
                             style = MaterialTheme.typography.h4,
