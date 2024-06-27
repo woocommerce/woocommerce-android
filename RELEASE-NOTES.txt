@@ -8,6 +8,7 @@
 - [*] Fix the visibility issue of the Blaze button on product detail screen [https://github.com/woocommerce/woocommerce-android/pull/11837]
 - [Internal] Workaround for the crash on the product's list screen. [https://github.com/woocommerce/woocommerce-android/pull/11803]
 
+- [*] Fix the visibility issue of the Blaze button on product detail screen [https://github.com/woocommerce/woocommerce-android/pull/11837]
 
 19.2
 -----
