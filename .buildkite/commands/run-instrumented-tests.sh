@@ -1,5 +1,8 @@
 #!/bin/bash -eu
 
+DEVICE=$1
+VERSION=$2
+
 echo "--- :rubygems: Setting up Gems"
 install_gems
 
@@ -8,7 +11,7 @@ bundle exec fastlane run configure_apply
 
 echo "--- 🧪 Testing"
 set +e
-bundle exec fastlane build_and_instrumented_test
+bundle exec fastlane build_and_instrumented_test device:"$DEVICE" version:"$VERSION"
 TESTS_EXIT_STATUS=$?
 set -e
 
