@@ -79,7 +79,7 @@ fun WooPosPaymentSuccessScreen(
                     text = stringResource(R.string.woopos_payment_successful_label),
                     style = MaterialTheme.typography.h3,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colors.onSurface,
+                    color = MaterialTheme.colors.secondary,
                 )
             }
 
