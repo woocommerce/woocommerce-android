@@ -108,7 +108,7 @@ steps:
           - "**/build/instrumented-tests-phone/**/*"
 
       - label: "Instrumented tests - Tablet"
-        command: .buildkite/commands/run-instrumented-tests.sh "Medium Tablet, 10in/25cm (Arm)" "34"
+        command: .buildkite/commands/run-instrumented-tests.sh "MediumTablet.arm" "34"
         plugins:
           - *ci_toolkit
 #          - *test_collector :
