@@ -11,7 +11,9 @@ fun NavController.navigateToHomeScreen() {
     navigate(HOME_ROUTE)
 }
 
-fun NavGraphBuilder.homeScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
+fun NavGraphBuilder.homeScreen(
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+) {
     composable(HOME_ROUTE) {
         WooPosHomeScreen(onNavigationEvent)
     }

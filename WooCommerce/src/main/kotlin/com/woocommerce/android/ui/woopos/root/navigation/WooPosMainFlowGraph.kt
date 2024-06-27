@@ -7,7 +7,9 @@ import com.woocommerce.android.ui.woopos.home.homeScreen
 
 const val MAIN_GRAPH_ROUTE = "main-graph"
 
-fun NavGraphBuilder.mainGraph(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
+fun NavGraphBuilder.mainGraph(
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+) {
     navigation(
         startDestination = HOME_ROUTE,
         route = MAIN_GRAPH_ROUTE,

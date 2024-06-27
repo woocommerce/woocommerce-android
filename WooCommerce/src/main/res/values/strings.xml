@@ -4139,4 +4139,6 @@
     <string name="woopos_products_screen_title">Products</string>
     <string name="woo_pos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
+    <string name="woopos_payment_successful_label">Payment successful</string>
+    <string name="woo_pos_new_transaction_button">New transaction</string>
 </resources>
