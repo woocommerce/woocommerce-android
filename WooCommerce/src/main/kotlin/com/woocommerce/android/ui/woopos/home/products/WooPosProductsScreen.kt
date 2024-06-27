@@ -54,7 +54,7 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun WooPosProductsScreen() {
-    val viewModel: WooPosProductsViewModel = hiltViewModel()
+    val productsViewModel: WooPosProductsViewModel = hiltViewModel()
     WooPosProductsScreen(
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
