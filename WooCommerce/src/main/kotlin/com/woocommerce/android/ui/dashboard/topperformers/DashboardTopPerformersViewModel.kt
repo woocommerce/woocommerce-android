@@ -295,7 +295,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         )
     }
 
-
     data class TopPerformersDateRange(
         val rangeSelection: StatsTimeRangeSelection,
         val customRange: StatsTimeRange?,
