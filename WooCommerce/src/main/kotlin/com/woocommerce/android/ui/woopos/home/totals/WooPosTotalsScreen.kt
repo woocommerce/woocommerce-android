@@ -214,7 +214,6 @@ private fun Totals(
     }
 }
 
-
 @Composable
 @WooPosPreview
 fun WooPosTotalsScreenPreview() {
