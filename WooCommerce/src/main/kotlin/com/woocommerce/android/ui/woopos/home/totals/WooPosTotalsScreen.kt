@@ -97,10 +97,7 @@ private fun Totals(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-
             Spacer(modifier = Modifier.weight(1f))
-
-
             Surface(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -182,10 +179,7 @@ private fun Totals(
                     }
                 }
             }
-
             Spacer(modifier = Modifier.weight(1f))
-
-
             Button(
                 modifier = modifier
                     .fillMaxWidth()
