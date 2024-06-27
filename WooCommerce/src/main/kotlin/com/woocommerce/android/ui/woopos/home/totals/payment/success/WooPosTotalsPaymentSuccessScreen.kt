@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
 fun WooPosPaymentSuccessScreen(
@@ -119,5 +120,7 @@ fun WooPosPaymentSuccessScreen(
 @WooPosPreview
 @Composable
 fun WooPosPaymentSuccessScreenPreview() {
-    WooPosPaymentSuccessScreen {}
+    WooPosTheme {
+        WooPosPaymentSuccessScreen {}
+    }
 }
