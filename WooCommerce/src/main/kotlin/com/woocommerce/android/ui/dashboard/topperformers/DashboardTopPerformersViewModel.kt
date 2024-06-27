@@ -189,12 +189,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     }
 
     fun onRefresh() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier
-            )
-        )
+        trackEventForTopPerformersCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
@@ -213,6 +208,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             }
 
             _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, error = null)
+            trackEventForTopPerformersCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
             val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
             result.fold(
                 onFailure = {
@@ -229,6 +225,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                         DASHBOARD_TOP_PERFORMERS_LOADED,
                         mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
                     )
+                    trackEventForTopPerformersCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                 }
             )
             _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
@@ -290,6 +287,14 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             triggerEvent(OpenAnalytics(it.rangeSelection))
         }
     }
+
+    private fun trackEventForTopPerformersCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
+        )
+    }
+
 
     data class TopPerformersDateRange(
         val rangeSelection: StatsTimeRangeSelection,
