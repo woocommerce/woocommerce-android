@@ -185,7 +185,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         selectedChartDate.value = date
     }
 
-    fun onRefresh() {
+    fun onRetry() {
         trackEventForStatsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
