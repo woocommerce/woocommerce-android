@@ -14,12 +14,9 @@ import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
 class ProductPropertyExtTest : BaseUnitTest() {
-    private val resourceProvider: ResourceProvider = mock {
-        on { getString(any()) } doAnswer { it.getArgument<Any?>(0).toString() }
-    }
-
     @Test
     fun `given all quantity rules null, then generateQuantityRulesProductProperty returns null`() = testBlocking {
+        val resourceProvider: ResourceProvider = mock {}
         val result = generateQuantityRulesProductProperty(QuantityRules(), resourceProvider) {}
 
         assertNull(result)
