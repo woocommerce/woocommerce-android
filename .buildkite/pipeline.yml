@@ -98,7 +98,7 @@ steps:
         plugins: [*ci_toolkit]
 
       - label: "Instrumented tests - Phone"
-        command: .buildkite/commands/run-instrumented-tests.sh "Pixel2.arm" "30"
+        command: .buildkite/commands/run-instrumented-tests.sh "Pixel2.arm" "30" "portrait"
         plugins:
           - *ci_toolkit
           - *test_collector :
@@ -108,7 +108,7 @@ steps:
           - "**/build/instrumented-tests-phone/**/*"
 
       - label: "Instrumented tests - Tablet"
-        command: .buildkite/commands/run-instrumented-tests.sh "MediumTablet.arm" "34"
+        command: .buildkite/commands/run-instrumented-tests.sh "MediumTablet.arm" "34" "landscape"
         plugins:
           - *ci_toolkit
 #          - *test_collector :
