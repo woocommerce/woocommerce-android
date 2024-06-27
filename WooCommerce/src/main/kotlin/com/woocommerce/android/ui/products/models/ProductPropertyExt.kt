@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.models
 
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.ResourceProvider
+
 fun generateQuantityRulesProductProperty(
     quantityRules: QuantityRules,
     resources: ResourceProvider,
@@ -45,3 +46,9 @@ private fun MutableMap<String, String>.putIfNotNullOrZero(vararg pairs: Pair<Str
         pair.second?.takeIf { it != "0" }?.let { put(pair.first, it) }
     }
 }
+
+private val QuantityRules.hasAtLeastOneValidRule: Boolean
+    get() = (min ?: 0) > 0 || (max ?: 0) > 0 || (groupOf ?: 0) > 0
+
+private val QuantityRules.allRulesAreNull: Boolean
+    get() = min == null && max == null && groupOf == null
