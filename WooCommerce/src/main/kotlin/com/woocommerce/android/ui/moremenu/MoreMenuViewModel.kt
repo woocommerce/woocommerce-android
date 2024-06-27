@@ -113,6 +113,7 @@ class MoreMenuViewModel @Inject constructor(
             )
         )
 
+    @Suppress("LongMethod")
     private suspend fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
