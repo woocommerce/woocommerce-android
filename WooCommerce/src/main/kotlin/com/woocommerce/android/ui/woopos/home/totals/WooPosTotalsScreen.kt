@@ -159,8 +159,6 @@ private fun Totals(
                                 color = MaterialTheme.colors.primary
                             )
                         } else {
-
-
                             WooPosShimmerBox(
                                 modifier = Modifier
                                     .height(30.dp)
@@ -194,8 +192,6 @@ private fun Totals(
                                 color = MaterialTheme.colors.primary
                             )
                         } else {
-
-
                             WooPosShimmerBox(
                                 modifier = Modifier
                                     .height(30.dp)
