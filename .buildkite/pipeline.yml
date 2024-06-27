@@ -97,7 +97,7 @@ steps:
           ./gradlew assembleJalapenoDebugAndroidTest
         plugins: [*ci_toolkit]
 
-      - label: "Instrumented tests"
+      - label: "Instrumented tests - Phone"
         command: .buildkite/commands/run-instrumented-tests.sh "Pixel2.arm" "30"
         plugins:
           - *ci_toolkit
@@ -105,4 +105,14 @@ steps:
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
         artifact_paths:
-          - "**/build/instrumented-tests/**/*"
+          - "**/build/instrumented-tests-phone/**/*"
+
+      - label: "Instrumented tests - Tablet"
+        command: .buildkite/commands/run-instrumented-tests.sh "Medium Tablet, 10in/25cm (Arm)" "34"
+        plugins:
+          - *ci_toolkit
+#          - *test_collector :
+#              <<: *test_collector_common_params
+#              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
+        artifact_paths:
+          - "**/build/instrumented-tests-tablet/**/*"
