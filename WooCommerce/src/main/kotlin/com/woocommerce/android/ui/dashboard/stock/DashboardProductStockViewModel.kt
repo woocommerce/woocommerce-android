@@ -61,11 +61,13 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         }
         .transformLatest { (refresh, status) ->
             emit(Loading(status))
+            trackEventForStockCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
             productStockRepository.fetchProductStockReport(status, refresh.isForced)
                 .fold(
                     onSuccess = {
                         val sortedProductStockItems = it.sortedBy { item -> item.stockQuantity }
                         emit(ViewState.Success(sortedProductStockItems, status))
+                        trackEventForStockCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                     },
                     onFailure = {
                         when ((it as? WooException)?.error?.type) {
@@ -82,12 +84,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
     }
 
     fun onRetryClicked() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STOCK.trackingIdentifier
-            )
-        )
+        trackEventForStockCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
 
@@ -98,6 +95,13 @@ class DashboardProductStockViewModel @AssistedInject constructor(
             else -> product.productId
         }
         triggerEvent(OpenProductDetail(id))
+    }
+
+    private fun trackEventForStockCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STOCK.trackingIdentifier)
+        )
     }
 
     sealed interface ViewState {
