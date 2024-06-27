@@ -61,6 +61,7 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
                 )
                 WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
             }
+
             is WooPosTotalsState.PaymentSuccess -> {
                 WooPosPaymentSuccessScreen { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
@@ -95,7 +96,6 @@ private fun Totals(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-
             Surface(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -105,7 +105,6 @@ private fun Totals(
                 shape = RoundedCornerShape(8.dp),
                 border = BorderStroke(1.dp, Color(0xFFBDBDBD))
             ) {
-
                 Column(
                     modifier = modifier
                         .widthIn(max = 420.dp)
@@ -177,7 +176,6 @@ private fun Totals(
                         )
                     }
                 }
-
             }
 
             Button(
