@@ -38,13 +38,7 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
                     productName = "Product 2",
                     amount = "20.0",
                     productType = "simple"
-                ).copy(firstImageUrl = "https://test.com"),
-                ProductTestUtils.generateProduct(
-                    productId = 3,
-                    productName = "Product 3",
-                    amount = "30.0",
-                    productType = "composite"
-                )
+                ).copy(firstImageUrl = "https://test.com")
             )
 
             whenever(productsDataSource.products).thenReturn(flowOf(products))
