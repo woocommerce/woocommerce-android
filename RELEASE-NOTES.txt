@@ -1,6 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+
+19.3
+-----
+- [*] Fix a crash on the Receipt Preview screen. [https://github.com/woocommerce/woocommerce-android/pull/11804]
+- [*] Shows meaningful errors from the backend when editing Min/Max Quantities in products and variations. [https://github.com/woocommerce/woocommerce-android/pull/11801]
+
 19.2
 -----
+- [***] Introduces the WearOS app with Store stats, Orders list and details. [https://github.com/woocommerce/woocommerce-android/pull/11557]
+- [***] Add support for the app to support and sync with the WearOS app. [https://github.com/woocommerce/woocommerce-android/pull/11557]
 - [**] Adds edit support for the Min/Max Quantities extension in product details. [https://github.com/woocommerce/woocommerce-android/pull/11753]
 
 

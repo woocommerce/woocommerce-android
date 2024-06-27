@@ -60,7 +60,7 @@ class ProductDetailRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val gson: Gson
 ) {
-    private var continuationUpdateProduct: Continuation<Boolean>? = null
+    private var continuationUpdateProduct: Continuation<Pair<Boolean, WCProductStore.ProductError?>>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
     private var continuationUpdateProductPassword = ContinuationWrapper<Boolean>(PRODUCTS)
     private var continuationFetchProductShippingClass = ContinuationWrapper<Boolean>(PRODUCTS)
@@ -109,19 +109,19 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun updateProduct(updatedProduct: Product): Boolean {
+    suspend fun updateProduct(updatedProduct: Product): Pair<Boolean, WCProductStore.ProductError?> {
         return try {
-            suspendCoroutineWithTimeout<Boolean>(AppConstants.REQUEST_TIMEOUT) {
+            suspendCoroutineWithTimeout<Pair<Boolean, WCProductStore.ProductError?>>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateProduct = it
 
                 val cachedProduct = getCachedWCProductModel(updatedProduct.remoteId)
                 val product = updatedProduct.toDataModel(cachedProduct)
                 val payload = WCProductStore.UpdateProductPayload(selectedSite.get(), product)
                 dispatcher.dispatch(WCProductActionBuilder.newUpdateProductAction(payload))
-            } ?: false // request timed out
+            } ?: Pair(false, null) // request timed out
         } catch (e: CancellationException) {
             WooLog.e(PRODUCTS, "Exception encountered while updating product", e)
-            false
+            Pair(false, null)
         }
     }
 
@@ -342,10 +342,13 @@ class ProductDetailRepository @Inject constructor(
                         AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
                     )
                 )
-                continuationUpdateProduct?.resume(false)
+
+                val pair = Pair(false, event.error)
+                continuationUpdateProduct?.resume(pair)
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_SUCCESS)
-                continuationUpdateProduct?.resume(true)
+                val pair = Pair(true, null)
+                continuationUpdateProduct?.resume(pair)
             }
             continuationUpdateProduct = null
         }

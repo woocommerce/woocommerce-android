@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
+import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbarState
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.util.CurrencyFormatter
@@ -28,7 +30,6 @@ class WooPosTotalsViewModel @Inject constructor(
     private val _state = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = WooPosTotalsState(
-            orderId = null,
             isCollectPaymentButtonEnabled = false,
             orderSubtotalText = "",
             orderTaxText = "",
@@ -50,9 +51,24 @@ class WooPosTotalsViewModel @Inject constructor(
                 viewModelScope.launch {
                     val orderId = state.value.orderId!!
                     val result = cardReaderFacade.collectPayment(orderId)
-                    Log.d("WooPosTotalsViewModel", "Payment result: $result")
+                    when (result) {
+                        is WooPosCardReaderPaymentResult.Success -> {
+                            // navigate to success screen
+                        }
+                        is WooPosCardReaderPaymentResult.Failure -> {
+                            _state.value = state.value.copy(
+                                snackbar = WooPosSnackbarState.Triggered(
+                                    R.string.woopos_payment_failed_please_try_again
+                                )
+                            )
+                        }
+                    }
                 }
             }
+
+            WooPosTotalsUIEvent.SnackbarDismissed ->
+                _state.value =
+                    state.value.copy(snackbar = WooPosSnackbarState.Hidden)
         }
     }
 

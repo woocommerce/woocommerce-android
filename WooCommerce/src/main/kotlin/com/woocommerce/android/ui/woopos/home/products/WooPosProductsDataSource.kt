@@ -22,7 +22,7 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
             }
         }
 
-    suspend fun loadProducts() {
+    suspend fun loadSimpleProducts() {
         handler.loadFromCacheAndFetch(searchType = ProductListHandler.SearchType.DEFAULT)
     }
 

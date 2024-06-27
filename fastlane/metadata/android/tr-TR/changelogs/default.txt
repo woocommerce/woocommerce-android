@@ -1,2 +1,0 @@
-19.0:
-WooCommerce mobil uygulamamızda en son iyileştirmeleri keşfedin! Büyük ekranlarda daha iyi bir deneyim için ödeme kalıcı pencerelerini iyileştirdik, anlık bildirimlerle ilgili sorunları çözdük ve hata mesajlarının gösterilmesini önleyen bir oturum açma sorununu çözdük. Ayrıca yeni pano kartlarımız satıcılara mağazalarıyla ilgili daha kapsamlı içgörüler sağlıyor. Daha sorunsuz ve bilgilendirici bir deneyim için güncelleyin!

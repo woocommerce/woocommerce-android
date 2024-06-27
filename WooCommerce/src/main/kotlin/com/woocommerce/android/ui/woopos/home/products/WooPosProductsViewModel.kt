@@ -36,7 +36,7 @@ class WooPosProductsViewModel @Inject constructor(
                 .collect { _viewState.value = it }
         }
         viewModelScope.launch {
-            productsDataSource.loadProducts()
+            productsDataSource.loadSimpleProducts()
         }
     }
 

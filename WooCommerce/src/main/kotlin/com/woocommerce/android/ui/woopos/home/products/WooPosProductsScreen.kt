@@ -126,8 +126,8 @@ private fun ProductsList(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
-    InfiniteGridHandler(listState) {
-        onEndOfProductsGridReached()
+    InfiniteListHandler(listState) {
+        onEndOfProductsListReached()
     }
 }
 
@@ -241,7 +241,7 @@ private fun ProductItem(
 }
 
 @Composable
-private fun InfiniteGridHandler(
+private fun InfiniteListHandler(
     listState: LazyListState,
     onEndOfProductsGridReached: () -> Unit
 ) {

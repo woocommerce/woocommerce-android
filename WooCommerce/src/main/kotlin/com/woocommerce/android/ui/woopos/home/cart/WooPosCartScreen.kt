@@ -146,7 +146,7 @@ private fun ScrollToBottomHandler(
 
 @Composable
 private fun CartToolbar(
-    toolbar: WooPosToolbar,
+    toolbar: WooPosCartToolbar,
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
 ) {
@@ -157,7 +157,7 @@ private fun CartToolbar(
         IconButton(onClick = { onBackClicked() }) {
             Icon(
                 imageVector = ImageVector.vectorResource(toolbar.icon),
-                contentDescription = "cart icon",
+                contentDescription = stringResource(R.string.woo_pos_cart_back_content_description),
                 tint = MaterialTheme.colors.onBackground,
                 modifier = Modifier.size(28.dp)
             )
@@ -265,7 +265,7 @@ fun WooPosCartScreenPreview() {
     WooPosTheme {
         WooPosCartScreen(
             state = WooPosCartState(
-                toolbar = WooPosToolbar(
+                toolbar = WooPosCartToolbar(
                     icon = R.drawable.ic_shopping_cart,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
