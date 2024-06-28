@@ -112,4 +112,30 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
 
         Assert.assertFalse("Expected no Product card with Attributes configured", foundAttributesCard)
     }
+
+    @Test
+    fun `given a product with at least one quantity rule, then create Quantity Rules card`() = testBlocking {
+        val productMinAllowedQuantity = 8529
+        productStub = ProductTestUtils.generateProduct()
+            .copy(
+                minAllowedQuantity = productMinAllowedQuantity
+            )
+
+        var foundQuantityRulesCard = false
+        val cards = sut.buildPropertyCards(productStub, "")
+        Assertions.assertThat(cards).isNotEmpty
+
+        cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
+            ?.properties?.mapNotNull { it as? ProductProperty.PropertyGroup }
+            ?.find { propertyGroup ->
+                propertyGroup.properties.toList()
+                    .find {
+                        it.second == productMinAllowedQuantity.toString()
+                    } != null
+            }?.properties?.toList()?.let {
+                foundQuantityRulesCard = true
+            }
+
+        Assert.assertTrue("Expected a Product card with Quantity Rules", foundQuantityRulesCard)
+    }
 }
