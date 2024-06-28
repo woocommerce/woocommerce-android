@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 19.3
+We're thrilled to bring you an enhanced experience with our latest update! We've resolved a crash on the Receipt Preview screen and improved error messages when editing Min/Max Quantities. Plus, the Blaze button visibility issue on the product detail screen has been fixed, ensuring smoother navigation. Update now for a seamless WooCommerce mobile app experience!
+
 ## 19.2
 Now, seamlessly sync with our new WearOS app for instant updates on store data and orders. Plus, enjoy added flexibility with edit support for Min/Max Quantities directly from product details. Update your WooCommerce app now for a seamless and enhanced experience!
 

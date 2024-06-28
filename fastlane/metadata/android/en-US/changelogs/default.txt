@@ -1,5 +1,1 @@
-- [Internal] Workaround for the crash on the product's list screen. [https://github.com/woocommerce/woocommerce-android/pull/11803]
-- [*] Fix a crash on the Receipt Preview screen. [https://github.com/woocommerce/woocommerce-android/pull/11804]
-- [*] Shows meaningful errors from the backend when editing Min/Max Quantities in products and variations. [https://github.com/woocommerce/woocommerce-android/pull/11801]
-- [*] Fix the visibility issue of the Blaze button on product detail screen [https://github.com/woocommerce/woocommerce-android/pull/11837]
-
+We're thrilled to bring you an enhanced experience with our latest update! We've resolved a crash on the Receipt Preview screen and improved error messages when editing Min/Max Quantities. Plus, the Blaze button visibility issue on the product detail screen has been fixed, ensuring smoother navigation. Update now for a seamless WooCommerce mobile app experience!
