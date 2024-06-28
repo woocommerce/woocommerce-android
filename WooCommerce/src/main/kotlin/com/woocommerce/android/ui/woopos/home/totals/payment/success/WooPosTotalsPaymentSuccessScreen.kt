@@ -85,7 +85,7 @@ fun WooPosPaymentSuccessScreen(
                     tint = Color.Unspecified,
                     contentDescription = null,
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(32.dp))
                 Text(
                     text = stringResource(R.string.woopos_payment_successful_label),
                     style = MaterialTheme.typography.h4.copy(
@@ -96,7 +96,7 @@ fun WooPosPaymentSuccessScreen(
                     textAlign = TextAlign.Center,
                 )
 
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 TotalsSummary(state)
 
