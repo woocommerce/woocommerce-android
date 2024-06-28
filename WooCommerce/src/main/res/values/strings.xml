@@ -3658,6 +3658,7 @@
     <string name="min_quantity">Minimum quantity</string>
     <string name="max_quantity">Maximum quantity</string>
     <string name="group_of">Group of</string>
+    <string name="no_quantity_rules">No Quantity Rules</string>
 
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
@@ -3687,6 +3688,9 @@
 
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Join the mobile payments</string>
+
+    <string name="more_menu_button_google">Google for WooCommerce</string>
+    <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
 
     <string name="more_menu_button_blaze">Blaze</string>
     <string name="more_menu_button_blaze_description">Promote products with Blaze</string>
@@ -4141,4 +4145,9 @@
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woo_pos_new_transaction_button">New transaction</string>
+    <string name="woopos_payment_subtotal_label">Subtotal</string>
+    <string name="woopos_payment_tax_label">Tax</string>
+    <string name="woopos_payment_total_label">Total</string>
+    <string name="woopos_payment_collect_payment_label">Collect Card Payment</string>
+
 </resources>

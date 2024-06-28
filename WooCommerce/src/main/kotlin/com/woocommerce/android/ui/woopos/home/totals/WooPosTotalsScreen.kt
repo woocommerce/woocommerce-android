@@ -30,8 +30,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
@@ -64,7 +66,7 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
             }
 
             is WooPosTotalsState.PaymentSuccess -> {
-                WooPosPaymentSuccessScreen { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+                WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
 
             is WooPosTotalsState.Loading -> {
@@ -118,7 +120,7 @@ private fun Totals(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Subtotal: ",
+                            text = stringResource(R.string.woopos_payment_subtotal_label),
                             style = MaterialTheme.typography.h6,
                             color = MaterialTheme.colors.primary
                         )
@@ -147,7 +149,7 @@ private fun Totals(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Taxes: ",
+                            text = stringResource(R.string.woopos_payment_tax_label),
                             style = MaterialTheme.typography.h6,
                             color = MaterialTheme.colors.primary
                         )
@@ -180,7 +182,7 @@ private fun Totals(
                         verticalArrangement = Arrangement.Center,
                     ) {
                         Text(
-                            text = "Total: ",
+                            text = stringResource(R.string.woopos_payment_total_label),
                             style = MaterialTheme.typography.h6,
                             color = MaterialTheme.colors.primary
                         )
@@ -208,8 +210,9 @@ private fun Totals(
                     .wrapContentHeight()
                     .padding(16.dp),
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-                text = "Collect Card Payment",
-            )
+            ) {
+                Text(stringResource(R.string.woopos_payment_collect_payment_label))
+            }
         }
     }
 }
