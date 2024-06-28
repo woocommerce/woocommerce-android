@@ -75,16 +75,6 @@ fun StoreStatsScreen(
                 .background(Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            val brush = Brush.verticalGradient(
-                listOf(
-                    WooColors.woo_purple_surface,
-                    Color.Black
-                )
-            )
-            Canvas(
-                modifier = modifier.fillMaxSize(),
-                onDraw = { drawRect(brush) }
-            )
             TimeText()
             Column(
                 modifier = modifier
