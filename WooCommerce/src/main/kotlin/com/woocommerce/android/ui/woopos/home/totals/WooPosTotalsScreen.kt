@@ -92,108 +92,178 @@ private fun Totals(
         elevation = 4.dp,
         modifier = Modifier.padding(16.dp),
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-            Surface(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .wrapContentWidth()
-                    .wrapContentHeight()
-                    .background(Color.Transparent),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, Color(0xFFBDBDBD))
+        if (state is WooPosTotalsState.Totals) {
+
+
+            Column(
+                modifier = modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                Column(
-                    modifier = modifier
-                        .widthIn(max = 420.dp)
+                Spacer(modifier = Modifier.weight(1f))
+
+                Surface(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .wrapContentWidth()
                         .wrapContentHeight()
-                        .padding(12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
+                        .background(Color.Transparent),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, Color(0xFFBDBDBD))
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = modifier
+                            .widthIn(max = 420.dp)
+                            .wrapContentHeight()
+                            .padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
                     ) {
-                        Text(
-                            text = stringResource(R.string.woopos_payment_subtotal_label),
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        if (state is WooPosTotalsState.Totals) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.woopos_payment_subtotal_label),
+                                style = MaterialTheme.typography.h6,
+                                color = MaterialTheme.colors.primary
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = state.orderSubtotalText,
                                 style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
-                        } else {
-                            WooPosShimmerBox(
-                                modifier = Modifier
-                                    .height(30.dp)
-                                    .width(100.dp)
-                            )
+
                         }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Divider()
+                        Divider()
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.woopos_payment_tax_label),
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        if (state is WooPosTotalsState.Totals) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.woopos_payment_tax_label),
+                                style = MaterialTheme.typography.h6,
+                                color = MaterialTheme.colors.primary
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = state.orderTaxText,
                                 style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
-                        } else {
-                            WooPosShimmerBox(
-                                modifier = Modifier
-                                    .height(30.dp)
-                                    .width(100.dp)
-                            )
+
                         }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Divider()
+                        Divider()
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Column(
-                        modifier = modifier
-                            .wrapContentWidth()
-                            .heightIn(max = 80.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.woopos_payment_total_label),
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        if (state is WooPosTotalsState.Totals) {
+                        Column(
+                            modifier = modifier
+                                .wrapContentWidth()
+                                .heightIn(max = 80.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.woopos_payment_total_label),
+                                style = MaterialTheme.typography.h6,
+                                color = MaterialTheme.colors.primary
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = state.orderTotalText,
                                 style = MaterialTheme.typography.h4,
                                 color = MaterialTheme.colors.primary
                             )
-                        } else {
+
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+                WooPosButton(
+                    text = stringResource(R.string.woopos_payment_collect_payment_label),
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp),
+                    onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
+                )
+            }
+
+
+        } else {
+
+
+            Column(
+                modifier = modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+
+                Surface(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .wrapContentWidth()
+                        .wrapContentHeight()
+                        .background(Color.Transparent),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, Color(0xFFBDBDBD))
+                ) {
+                    Column(
+                        modifier = modifier
+                            .widthIn(max = 420.dp)
+                            .wrapContentHeight()
+                            .padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            WooPosShimmerBox(
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .width(150.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Divider()
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            WooPosShimmerBox(
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .width(150.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Divider()
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Column(
+                            modifier = modifier
+                                .wrapContentWidth()
+                                .heightIn(max = 80.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
                             WooPosShimmerBox(
                                 modifier = Modifier
                                     .height(30.dp)
@@ -202,16 +272,20 @@ private fun Totals(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.weight(1f))
+                WooPosButton(
+                    text = stringResource(R.string.woopos_payment_collect_payment_label),
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(16.dp),
+                    onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
+                )
             }
-            Spacer(modifier = Modifier.weight(1f))
-            WooPosButton(
-                text = stringResource(R.string.woopos_payment_collect_payment_label),
-                modifier = modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(16.dp),
-                onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-            )
+
+            /////////////////////
+
         }
     }
 }
