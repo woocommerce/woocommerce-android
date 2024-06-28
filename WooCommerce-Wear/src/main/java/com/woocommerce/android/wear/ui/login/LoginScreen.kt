@@ -5,11 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -29,7 +29,6 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
-import com.woocommerce.android.wear.compose.theme.WooColors
 import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
 
@@ -91,12 +90,7 @@ private fun LoginInstructionsScreen(
                     .padding(top = 8.dp)
                     .wrapContentHeight()
             )
-            Icon(
-                painter = painterResource(id = R.drawable.ic_lightning),
-                contentDescription = null,
-                tint = WooColors.woo_amber_40,
-                modifier = modifier.padding(top = 8.dp)
-            )
+            Spacer(modifier = modifier.padding(4.dp))
             Button(
                 onClick = onTryAgainClicked,
                 colors = ButtonDefaults.buttonColors(
