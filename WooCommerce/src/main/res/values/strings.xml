@@ -2176,6 +2176,7 @@
     <string name="product_creation_ai_entry_sheet_header">Add a product</string>
     <string name="product_creation_ai_entry_sheet_ai_option_title">Create a product with AI</string>
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Quickly generate details for you</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Let us generate product details for you</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>

@@ -48,6 +48,7 @@ import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
@@ -120,41 +121,46 @@ private fun AddProductWithAIContent(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
             )
 
+            val subtitleId = when (FeatureFlag.PRODUCT_CREATION_WITH_AI_V2.isEnabled()) {
+                true -> R.string.product_creation_ai_entry_sheet_ai_option_subtitle_v2
+                else -> R.string.product_creation_ai_entry_sheet_ai_option_subtitle
+            }
             BottomSheetButton(
                 title = stringResource(id = R.string.product_creation_ai_entry_sheet_ai_option_title),
-                subtitle = stringResource(id = R.string.product_creation_ai_entry_sheet_ai_option_subtitle),
+                subtitle = stringResource(id = subtitleId),
                 icon = painterResource(id = R.drawable.ic_ai),
                 onClick = onAIClick,
                 iconTint = MaterialTheme.colors.primary
             )
-
-            Spacer(Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-
-            val learnMoreText = annotatedStringRes(stringResId = R.string.product_creation_ai_entry_sheet_learn_more)
-            ClickableText(
-                text = learnMoreText,
-                style = MaterialTheme.typography.caption.copy(
-                    color = colorResource(id = R.color.color_on_surface_medium)
-                ),
-                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_325))
-            ) {
-                learnMoreText.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-                    .firstOrNull()
-                    ?.let { onLearnMoreClick() }
-            }
-
-            Divider(Modifier.padding(dimensionResource(id = R.dimen.major_100)))
-
-            BottomSheetButton(
-                title = stringResource(id = R.string.product_creation_ai_entry_sheet_manual_option_title),
-                subtitle = stringResource(id = R.string.product_creation_ai_entry_sheet_manual_option_subtitle),
-                icon = painterResource(id = R.drawable.ic_gridicon_circle_plus),
-                onClick = onManualClick
-            )
-
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
+
+        Spacer(Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+
+        val learnMoreText = annotatedStringRes(stringResId = R.string.product_creation_ai_entry_sheet_learn_more)
+        ClickableText(
+            text = learnMoreText,
+            style = MaterialTheme.typography.caption.copy(
+                color = colorResource(id = R.color.color_on_surface_medium)
+            ),
+            modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_325))
+        ) {
+            learnMoreText.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
+                .firstOrNull()
+                ?.let { onLearnMoreClick() }
+        }
+
+        Divider(Modifier.padding(dimensionResource(id = R.dimen.major_100)))
+
+        BottomSheetButton(
+            title = stringResource(id = R.string.product_creation_ai_entry_sheet_manual_option_title),
+            subtitle = stringResource(id = R.string.product_creation_ai_entry_sheet_manual_option_subtitle),
+            icon = painterResource(id = R.drawable.ic_gridicon_circle_plus),
+            onClick = onManualClick
+        )
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
+}
 }
 
 @Composable
