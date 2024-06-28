@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
@@ -71,7 +73,8 @@ fun WooPosPaymentSuccessScreen(
                             )
                         ),
                         shape = RoundedCornerShape(16.dp),
-                    ),
+                    )
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -203,7 +206,7 @@ private fun TotalsSummary(state: WooPosTotalsState.PaymentSuccess) {
                 text = state.orderTotalText,
                 style = MaterialTheme.typography.h4,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF512DA8)
+                color = Color(0xFF3C2861)
             )
         }
     }
