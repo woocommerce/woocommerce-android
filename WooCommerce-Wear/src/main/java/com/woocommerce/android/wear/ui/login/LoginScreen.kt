@@ -1,6 +1,7 @@
 package com.woocommerce.android.wear.ui.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,7 +50,9 @@ fun LoginScreen(
 ) {
     WooTheme {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .background(Color.Black)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             if (isLoading) {
@@ -115,7 +118,7 @@ private fun LoginLoadingScreen(
 ) {
     TimeText()
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = R.drawable.img_woo_bubble_white_background),
