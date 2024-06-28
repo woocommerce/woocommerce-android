@@ -3,22 +3,21 @@ package com.woocommerce.android.ui.products.models
 import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.ResourceProvider
 
-fun generateQuantityRulesProductProperty(
-    quantityRules: QuantityRules,
+fun QuantityRules.getProductProperty(
     resources: ResourceProvider,
     onClick: (() -> Unit)
 ): ProductProperty? {
-    if (quantityRules.allRulesAreNull) {
+    if (allRulesAreNull) {
         return null
     }
 
     var productProperty: ProductProperty
-    if (quantityRules.hasAtLeastOneValidRule) {
+    if (hasAtLeastOneValidRule) {
         val properties: Map<String, String> = buildMap {
-            putIfNotNullOrZero(resources.getString(R.string.min_quantity) to quantityRules.min?.toString())
-            putIfNotNullOrZero(resources.getString(R.string.max_quantity) to quantityRules.max?.toString())
+            putIfNotNullOrZero(resources.getString(R.string.min_quantity) to min?.toString())
+            putIfNotNullOrZero(resources.getString(R.string.max_quantity) to max?.toString())
             if (size < 2) {
-                putIfNotNullOrZero(resources.getString(R.string.group_of) to quantityRules.groupOf?.toString())
+                putIfNotNullOrZero(resources.getString(R.string.group_of) to groupOf?.toString())
             }
         }
 

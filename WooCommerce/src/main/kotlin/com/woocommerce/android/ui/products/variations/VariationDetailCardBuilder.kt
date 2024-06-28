@@ -30,7 +30,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.ui.products.models.generateQuantityRulesProductProperty
+import com.woocommerce.android.ui.products.models.getProductProperty
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
@@ -350,7 +350,7 @@ class VariationDetailCardBuilder(
             )
         }
 
-        return generateQuantityRulesProductProperty(rules, resources, onClick)
+        return rules.getProductProperty(resources, onClick)
     }
 
     private fun SubscriptionProductVariation.subscriptionExpirationDate(): ProductProperty? =
