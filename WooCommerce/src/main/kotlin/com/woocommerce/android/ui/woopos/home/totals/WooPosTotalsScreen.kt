@@ -227,49 +227,35 @@ private fun TotalsLoading(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        WooPosShimmerBox(
-                            modifier = Modifier
-                                .height(30.dp)
-                                .width(150.dp)
-                        )
-                    }
+                    WooPosShimmerBox(
+                        modifier = Modifier
+                            .height(30.dp)
+                            .width(150.dp)
+                    )
+
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Divider()
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        WooPosShimmerBox(
-                            modifier = Modifier
-                                .height(30.dp)
-                                .width(150.dp)
-                        )
-                    }
+                    WooPosShimmerBox(
+                        modifier = Modifier
+                            .height(30.dp)
+                            .width(150.dp)
+                    )
+
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Divider()
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Column(
-                        modifier = modifier
-                            .wrapContentWidth()
-                            .heightIn(max = 80.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        WooPosShimmerBox(
-                            modifier = Modifier
-                                .height(30.dp)
-                                .width(150.dp)
-                        )
-                    }
+                    WooPosShimmerBox(
+                        modifier = Modifier
+                            .height(30.dp)
+                            .width(150.dp)
+                    )
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
