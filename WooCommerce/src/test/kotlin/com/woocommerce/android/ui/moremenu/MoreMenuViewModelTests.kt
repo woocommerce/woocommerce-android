@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.google.IsGoogleListingsAdsEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
@@ -73,6 +74,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     private val isBlazeEnabled: IsBlazeEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
+
+    private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled = mock {
+        onBlocking { invoke() } doReturn true
+    }
+
     private val isWooPosEnabled: IsWooPosEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
@@ -96,6 +102,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             blazeCampaignsStore = blazeCampaignsStore,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             isBlazeEnabled = isBlazeEnabled,
+            isGoogleListingsAdsEnabled = isGoogleListingsAdsEnabled,
             isWooPosEnabled = isWooPosEnabled,
         )
     }
