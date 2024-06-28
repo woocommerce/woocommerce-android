@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.customer
+package com.woocommerce.android.ui.moremenu.customer
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData

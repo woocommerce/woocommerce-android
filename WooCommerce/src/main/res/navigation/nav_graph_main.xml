@@ -800,7 +800,7 @@
     </fragment>
     <fragment
         android:id="@+id/customerDetailsFragment"
-        android:name="com.woocommerce.android.ui.customer.CustomerDetailsFragment"
+        android:name="com.woocommerce.android.ui.moremenu.customer.CustomerDetailsFragment"
         android:label="CustomerDetailsFragment" >
         <argument
             android:name="customer"

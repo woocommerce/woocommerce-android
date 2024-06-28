@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.customer
+package com.woocommerce.android.ui.moremenu.customer
 
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import kotlinx.coroutines.async
