@@ -439,7 +439,7 @@ platform :android do
   # bundle exec fastlane download_translations
   #####################################################################################
   desc 'Download the latest app translations from GlotPress and update the strings.xml files accordingly'
-  lane :download_translations do |_options|
+  lane :download_translations do
     android_download_translations(
       res_dir: RES_DIR_PATH,
       glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
@@ -471,7 +471,7 @@ platform :android do
 
     # Don't check translation coverage in CI
     check_translation_progress_all unless is_ci
-    download_translations(options)
+    download_translations
 
     # Bump the release version and build code
     UI.message 'Bumping final release version and build code...'
