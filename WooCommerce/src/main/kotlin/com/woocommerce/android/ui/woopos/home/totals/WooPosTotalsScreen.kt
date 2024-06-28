@@ -160,7 +160,7 @@ private fun TotalsLoaded(
                     Column(
                         modifier = modifier
                             .wrapContentWidth()
-                            .heightIn(max = 80.dp),
+                            .wrapContentHeight(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
