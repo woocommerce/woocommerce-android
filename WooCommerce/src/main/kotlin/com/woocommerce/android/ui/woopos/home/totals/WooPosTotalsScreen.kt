@@ -90,8 +90,6 @@ private fun TotalsLoaded(
         elevation = 4.dp,
         modifier = Modifier.padding(16.dp),
     ) {
-
-
         Column(
             modifier = modifier
                 .fillMaxSize(),
@@ -131,7 +129,6 @@ private fun TotalsLoaded(
                             style = MaterialTheme.typography.h6,
                             color = MaterialTheme.colors.primary
                         )
-
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -153,7 +150,6 @@ private fun TotalsLoaded(
                             style = MaterialTheme.typography.h6,
                             color = MaterialTheme.colors.primary
                         )
-
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -179,7 +175,6 @@ private fun TotalsLoaded(
                             style = MaterialTheme.typography.h4,
                             color = MaterialTheme.colors.primary
                         )
-
                     }
                 }
             }
@@ -194,11 +189,8 @@ private fun TotalsLoaded(
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
             )
         }
-
-
     }
 }
-
 
 @Composable
 private fun TotalsLoading(
@@ -210,8 +202,6 @@ private fun TotalsLoading(
         elevation = 4.dp,
         modifier = Modifier.padding(16.dp),
     ) {
-
-
         Column(
             modifier = modifier
                 .fillMaxSize(),
