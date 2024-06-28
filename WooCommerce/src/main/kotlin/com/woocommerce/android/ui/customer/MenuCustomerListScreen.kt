@@ -25,7 +25,7 @@ fun MenuCustomerListScreen(viewModel: CustomerListDetailsViewModel) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(stringResource(id = R.string.menu_customers_title)) },
+                    title = { Text(stringResource(id = R.string.more_menu_customers_title)) },
                     navigationIcon = {
                         IconButton(viewModel::onNavigateBack) {
                             Icon(
