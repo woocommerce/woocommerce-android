@@ -7,37 +7,33 @@ fun QuantityRules.getProductProperty(
     resources: ResourceProvider,
     onClick: (() -> Unit)
 ): ProductProperty? {
-    if (allRulesAreNull) {
-        return null
-    }
-
-    var productProperty: ProductProperty
-    if (hasAtLeastOneValidRule) {
-        val properties: Map<String, String> = buildMap {
-            putIfNotNullOrZero(resources.getString(R.string.min_quantity) to min?.toString())
-            putIfNotNullOrZero(resources.getString(R.string.max_quantity) to max?.toString())
-            if (size < 2) {
-                putIfNotNullOrZero(resources.getString(R.string.group_of) to groupOf?.toString())
+    return when {
+        allRulesAreNull -> null
+        hasAtLeastOneValidRule -> {
+            val properties: Map<String, String> = buildMap {
+                putIfNotNullOrZero(resources.getString(R.string.min_quantity) to min?.toString())
+                putIfNotNullOrZero(resources.getString(R.string.max_quantity) to max?.toString())
+                if (size < 2) {
+                    putIfNotNullOrZero(resources.getString(R.string.group_of) to groupOf?.toString())
+                }
             }
+
+            ProductProperty.PropertyGroup(
+                title = R.string.product_quantity_rules_title,
+                icon = R.drawable.ic_gridicons_product,
+                properties = properties,
+                showTitle = true,
+                onClick = onClick
+            )
+        } else -> {
+            ProductProperty.ComplexProperty(
+                title = R.string.product_quantity_rules_title,
+                value = resources.getString(R.string.no_quantity_rules),
+                icon = R.drawable.ic_gridicons_product,
+                onClick = onClick
+            )
         }
-
-        productProperty = ProductProperty.PropertyGroup(
-            title = R.string.product_quantity_rules_title,
-            icon = R.drawable.ic_gridicons_product,
-            properties = properties,
-            showTitle = true,
-            onClick = onClick
-        )
-    } else {
-        productProperty = ProductProperty.ComplexProperty(
-            title = R.string.product_quantity_rules_title,
-            value = resources.getString(R.string.no_quantity_rules),
-            icon = R.drawable.ic_gridicons_product,
-            onClick = onClick
-        )
     }
-
-    return productProperty
 }
 
 private fun MutableMap<String, String>.putIfNotNullOrZero(vararg pairs: Pair<String, String?>) = apply {
