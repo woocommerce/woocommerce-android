@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-18 21:54:03+0000
+Translation-Revision-Date: 2024-06-27 09:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">الجمهور</string>
     <string name="woopos_exit_confirmation_dismiss_button">إلغاء</string>
     <string name="woopos_exit_confirmation_confirm_button">إنهاء</string>
     <string name="woopos_exit_confirmation_message">هل تريد بالتأكيد إنهاء POS؟</string>
@@ -341,6 +342,7 @@ Language: ar
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">الوصول إلى عدد ضخم من الجمهور</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"تقدِّم الأداة التي نطرحها منتجك في المكان الذي يستطيع فيه المتسوقون المهتمون العثور عليه\".</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">أصبح الوصول العالمي بسيطًا</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">يمكنك تشغيل الإعلانات في غضون دقائق - لا يلزم وجود خبرة أو ميزانية كبيرة، بدءًا من 5 دولارات أمريكية فقط يوميًا.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">بدء سريع، تأثير أكبر</string>
     <string name="blaze_campaign_creation_new_intro_description">تم تصميم الأداة التي نطرحها لتمكين التجار من خلال عمليات إعداد سريعة وبسيطة للحملات الإعلانية لتحقيق أقصى قدر من زيادة حركة المرور.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">ترويج</string>
@@ -940,7 +942,6 @@ Language: ar
     <string name="empty_max_quantity">بلا حد أقصى</string>
     <string name="empty_min_quantity">بلا حد أدنى</string>
     <string name="product_type_bundle">حزمة</string>
-    <string name="quantity_rules_info_notice">يمكنك تحرير قواعد كميات المنتجات في لوحة تحكم الويب.</string>
     <string name="group_of">مجموعة</string>
     <string name="max_quantity">الحد الأقصى للكمية</string>
     <string name="min_quantity">الحد الأدنى للكمية</string>

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-18 09:54:03+0000
+Translation-Revision-Date: 2024-06-27 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">読者</string>
     <string name="woopos_exit_confirmation_dismiss_button">キャンセル</string>
     <string name="woopos_exit_confirmation_confirm_button">終了</string>
     <string name="woopos_exit_confirmation_message">POS を終了してもよいですか ?</string>
@@ -341,6 +342,7 @@ Language: ja_JP
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">多数の読者にアクセス</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">「ツールを使えば、関心を持っている買い物客の目に入る場所に商品を表示できます」</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">世界規模のリーチをシンプルに</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">数分で広告を開始 – 経験も多額の予算も必要ありません。1日わずか5ドルから始められます。</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">すばやいスタートで大きなインパクト</string>
     <string name="blaze_campaign_creation_new_intro_description">当社のツールは、マーチャントがシンプルですばやい広告キャンペーン設定でトラフィックを最大化できるよう支援するために設計されています。</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">宣伝</string>
@@ -940,7 +942,6 @@ Language: ja_JP
     <string name="empty_max_quantity">上限無し</string>
     <string name="empty_min_quantity">最小限度額なし</string>
     <string name="product_type_bundle">パッケージ</string>
-    <string name="quantity_rules_info_notice">ウェブダッシュボードで商品の数量ルールを編集できます。</string>
     <string name="group_of">一組の数量</string>
     <string name="max_quantity">最高数量</string>
     <string name="min_quantity">最低数量</string>

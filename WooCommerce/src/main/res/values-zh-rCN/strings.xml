@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-18 09:54:03+0000
+Translation-Revision-Date: 2024-06-26 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">受众</string>
     <string name="woopos_exit_confirmation_dismiss_button">取消</string>
     <string name="woopos_exit_confirmation_confirm_button">退出</string>
     <string name="woopos_exit_confirmation_message">是否确定要退出 POS 机？</string>
@@ -271,9 +272,9 @@ Language: zh_CN
     <string name="blaze_campaign_edit_ad_destination_product_url_option">产品 URL</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL 参数</string>
     <string name="blaze_campaign_creation_location_search_message">开始键入国家/地区、州或城市，查看可用选项</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">点击“提交广告活动”即表示您同意&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款&lt;/u&gt;&lt;/a&gt;和&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;广告政策&lt;/u&gt;&lt;/a&gt;，并授权您的付款方式，以便按照您选择的预算和持续时间收费。 &lt;a href=\'learnMore\'&gt;&lt;u&gt;详细了解&lt;/u&gt;&lt;/a&gt; Promoted Posts 的预算和付款的运作方式。</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">目标 URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">手动输入</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">点击“提交广告活动”即表示您同意&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款&lt;/u&gt;&lt;/a&gt;和&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;广告政策&lt;/u&gt;&lt;/a&gt;，并授权您的付款方式，以便按照您选择的预算和持续时间收费。 &lt;a href=\'learnMore\'&gt;&lt;u&gt;详细了解&lt;/u&gt;&lt;/a&gt; Promoted Posts 的预算和付款的运作方式。</string>
     <string name="blaze_campaign_creation_location_search_failed_message">搜索失败。\n请重试</string>
     <string name="blaze_campaign_payment_summary_add_payment_method">添加付款方式</string>
     <string name="blaze_campaign_payment_summary_total_budget">总计</string>
@@ -302,11 +303,11 @@ Language: zh_CN
     <string name="blaze_campaign_budget_update_button">更新</string>
     <string name="blaze_campaign_budget_edit_duration_button">编辑</string>
     <string name="blaze_campaign_budget_duration_section_title">时长</string>
-    <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
     <string name="blaze_campaign_budget_reach_forecast">每天的预计受众人数</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s 每天</string>
     <string name="blaze_campaign_budget_days_duration">共计 %1$s 天</string>
     <string name="blaze_campaign_budget_total_spend">总支出</string>
+    <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
     <string name="blaze_campaign_budget_subtitle">您愿意在产品推广活动上花费多少资金？</string>
     <string name="blaze_campaign_budget_toolbar_title">设置您的预算</string>
     <string name="blaze_campaign_preview_target_default_value">所有</string>
@@ -341,6 +342,7 @@ Language: zh_CN
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">“我们的工具会在感兴趣的购物者可以找到的地方呈现您的产品。”</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">轻松简单实现全球覆盖</string>
     <string name="blaze_campaign_creation_new_intro_learn_more">了解 Blaze 的运作机制</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">几分钟内发布广告 — 无需经验或高额预算，起价仅为每天 5 美元。</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">起步快，影响大</string>
     <string name="blaze_campaign_creation_new_intro_description">我们的工具旨在助力商家快速简单地进行广告活动设置，以最大限度地提高流量。</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">推广</string>
@@ -940,7 +942,6 @@ Language: zh_CN
     <string name="empty_group_of">未分组</string>
     <string name="empty_max_quantity">无上限</string>
     <string name="empty_min_quantity">无下限</string>
-    <string name="quantity_rules_info_notice">您可以在 Web 仪表盘中编辑产品的数量规则。</string>
     <string name="group_of">组数</string>
     <string name="max_quantity">最大数量</string>
     <string name="min_quantity">最小数量</string>
