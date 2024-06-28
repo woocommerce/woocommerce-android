@@ -44,8 +44,7 @@ fun WooPosBottomToolbar(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(horizontal = 24.dp)
+            modifier = Modifier.padding(horizontal = 24.dp)
         ) {
             ExitPosButton { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
             CardReaderStatus(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
@@ -108,7 +107,7 @@ private fun CardReaderStatus(
         when (state.value.cardReaderStatus) {
             WooPosCardReaderStatus.NotConnected -> {
                 TextButton(onClick = onConnectToReaderClick) {
-                    Text(text = "Connect now")
+                    Text(text = stringResource(R.string.woopos_reader_connect_now_button))
                 }
             }
             else -> Unit
