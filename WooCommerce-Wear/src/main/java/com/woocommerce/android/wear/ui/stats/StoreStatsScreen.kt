@@ -169,7 +169,7 @@ private fun StatsContentScreen(
                 .fillMaxWidth(),
             text = timestamp
                 .takeIf { it.isNotEmpty() }
-                ?.let { stringResource(id = R.string.stats_screen_time_description, it) }
+                ?.let { stringResource(id = R.string.stats_screen_time_description) }
                 ?: stringResource(id = R.string.stats_screen_time_unavailable)
         )
     }

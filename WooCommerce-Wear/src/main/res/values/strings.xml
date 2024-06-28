@@ -11,7 +11,7 @@
 
     <!-- Stats Screen -->
     <string name="stats_screen_revenue_title">Revenue</string>
-    <string name="stats_screen_time_description">Today • As of %1$s</string>
+    <string name="stats_screen_time_description">Today</string>
     <string name="stats_screen_time_unavailable">No stats available</string>
     <string name="stats_screen_error_message">Failed to load the store stats, make sure your Watch is connected to the Internet or your phone is nearby.</string>
 
