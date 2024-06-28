@@ -1,1 +1,5 @@
-Now, seamlessly sync with our new WearOS app for instant updates on store data and orders. Plus, enjoy added flexibility with edit support for Min/Max Quantities directly from product details. Update your WooCommerce app now for a seamless and enhanced experience!
+- [Internal] Workaround for the crash on the product's list screen. [https://github.com/woocommerce/woocommerce-android/pull/11803]
+- [*] Fix a crash on the Receipt Preview screen. [https://github.com/woocommerce/woocommerce-android/pull/11804]
+- [*] Shows meaningful errors from the backend when editing Min/Max Quantities in products and variations. [https://github.com/woocommerce/woocommerce-android/pull/11801]
+- [*] Fix the visibility issue of the Blaze button on product detail screen [https://github.com/woocommerce/woocommerce-android/pull/11837]
+
