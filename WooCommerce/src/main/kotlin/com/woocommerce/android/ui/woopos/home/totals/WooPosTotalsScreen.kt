@@ -23,10 +23,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
+import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 
 @Composable
 fun WooPosTotalsScreen() {
@@ -43,28 +46,35 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { padding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+        when (state) {
+            is WooPosTotalsState.Totals -> {
+                Totals(
+                    modifier = Modifier.padding(padding),
+                    state = state,
+                    onUIEvent = onUIEvent
+                )
+                WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
             }
-        } else {
-            Totals(
-                modifier = Modifier.padding(padding),
-                state = state,
-                onUIEvent = onUIEvent
-            )
+            is WooPosTotalsState.PaymentSuccess -> {
+                WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+            }
+
+            WooPosTotalsState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
-        WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
     }
 }
 
 @Composable
 private fun Totals(
     modifier: Modifier = Modifier,
-    state: WooPosTotalsState,
+    state: WooPosTotalsState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Card(
@@ -83,7 +93,7 @@ private fun Totals(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Subtotal: ",
+                    text = stringResource(R.string.woopos_payment_subtotal_label),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary
                 )
@@ -104,7 +114,7 @@ private fun Totals(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Taxes: ",
+                    text = stringResource(R.string.woopos_payment_tax_label),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary
                 )
@@ -125,7 +135,7 @@ private fun Totals(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Total: ",
+                    text = stringResource(R.string.woopos_payment_total_label),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary
                 )
@@ -145,9 +155,8 @@ private fun Totals(
 
             Button(
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-                enabled = state.isCollectPaymentButtonEnabled,
             ) {
-                Text("Collect Card Payment")
+                Text(stringResource(R.string.woopos_payment_collect_payment_label))
             }
         }
     }
@@ -157,12 +166,10 @@ private fun Totals(
 @WooPosPreview
 fun WooPosTotalsScreenPreview() {
     WooPosTotalsScreen(
-        state = WooPosTotalsState(
+        state = WooPosTotalsState.Totals(
             orderSubtotalText = "$420.00",
             orderTotalText = "$462.00",
             orderTaxText = "$42.00",
-            isCollectPaymentButtonEnabled = true,
-            isLoading = false
         ),
         onUIEvent = {}
     )

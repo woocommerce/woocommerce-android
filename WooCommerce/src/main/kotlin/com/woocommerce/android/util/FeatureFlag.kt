@@ -17,7 +17,8 @@ enum class FeatureFlag {
     APP_PASSWORD_TUTORIAL,
     EOSL_M1,
     EOSL_M3,
-    DYNAMIC_DASHBOARD_M2;
+    DYNAMIC_DASHBOARD_M2,
+    GOOGLE_ADS_M1;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -29,7 +30,8 @@ enum class FeatureFlag {
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE,
+            GOOGLE_ADS_M1 -> PackageUtils.isDebugBuild()
 
             DYNAMIC_DASHBOARD_M2,
             CONNECTIVITY_TOOL,

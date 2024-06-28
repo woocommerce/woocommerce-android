@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+
 @Suppress("LongParameterList")
 abstract class CustomerListViewModel(
     savedState: SavedStateHandle,
@@ -269,7 +270,8 @@ abstract class CustomerListViewModel(
 
     private fun searchParamToSearchType(searchParam: String) =
         when (searchParam) {
-            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_NAME -> CustomerListDisplayTextHandler.SearchType.NAME
+            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_NAME ->
+                CustomerListDisplayTextHandler.SearchType.NAME
             CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_EMAIL ->
                 CustomerListDisplayTextHandler.SearchType.EMAIL
             CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_USERNAME ->

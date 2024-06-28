@@ -792,7 +792,7 @@
         android:label="DashboardWidgetEditorFragment" />
     <fragment
         android:id="@+id/menuCustomerListFragment"
-        android:name="com.woocommerce.android.ui.customer.MenuCustomerListFragment"
+        android:name="com.woocommerce.android.ui.moremenu.customer.MoreMenuCustomerListFragment"
         android:label="CustomerListFragment" >
         <action
             android:id="@+id/action_menuCustomerListFragment_to_customerDetailsFragment"

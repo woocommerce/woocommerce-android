@@ -1,7 +1,8 @@
-package com.woocommerce.android.ui.customer
+package com.woocommerce.android.ui.moremenu.customer
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.customer.CustomerListViewModel
 import com.woocommerce.android.model.CustomerWithAnalytics
 import com.woocommerce.android.model.toCustomerWithAnalytics
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes

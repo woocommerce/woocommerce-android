@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.customer
+package com.woocommerce.android.ui.moremenu.customer
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +17,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MenuCustomerListFragment : BaseFragment() {
+class MoreMenuCustomerListFragment : BaseFragment() {
 
     private val viewModel by viewModels<CustomerListDetailsViewModel>()
 
@@ -43,7 +43,7 @@ class MenuCustomerListFragment : BaseFragment() {
             when (event) {
                 is CustomerSelected -> {
                     findNavController().navigateSafely(
-                        MenuCustomerListFragmentDirections.actionMenuCustomerListFragmentToCustomerDetailsFragment(
+                        MoreMenuCustomerListFragmentDirections.actionMenuCustomerListFragmentToCustomerDetailsFragment(
                             event.customer
                         )
                     )
