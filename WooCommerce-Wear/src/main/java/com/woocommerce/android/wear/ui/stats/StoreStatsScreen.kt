@@ -1,6 +1,6 @@
 package com.woocommerce.android.wear.ui.stats
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -69,19 +68,11 @@ fun StoreStatsScreen(
 ) {
     WooTheme {
         Box(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .fillMaxSize()
+                .background(Color.Black),
             contentAlignment = Alignment.Center
         ) {
-            val brush = Brush.verticalGradient(
-                listOf(
-                    WooColors.woo_purple_surface,
-                    Color.Black
-                )
-            )
-            Canvas(
-                modifier = modifier.fillMaxSize(),
-                onDraw = { drawRect(brush) }
-            )
             TimeText()
             Column(
                 modifier = modifier
@@ -178,7 +169,7 @@ private fun StatsContentScreen(
                 .fillMaxWidth(),
             text = timestamp
                 .takeIf { it.isNotEmpty() }
-                ?.let { stringResource(id = R.string.stats_screen_time_description, it) }
+                ?.let { stringResource(id = R.string.stats_screen_time_description) }
                 ?: stringResource(id = R.string.stats_screen_time_unavailable)
         )
     }
