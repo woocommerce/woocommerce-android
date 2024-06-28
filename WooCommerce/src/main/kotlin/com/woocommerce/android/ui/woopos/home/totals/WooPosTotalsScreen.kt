@@ -205,14 +205,13 @@ private fun Totals(
             }
             Spacer(modifier = Modifier.weight(1f))
             WooPosButton(
+                text = stringResource(R.string.woopos_payment_collect_payment_label),
                 modifier = modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(16.dp),
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-            ) {
-                Text(stringResource(R.string.woopos_payment_collect_payment_label))
-            }
+            )
         }
     }
 }
