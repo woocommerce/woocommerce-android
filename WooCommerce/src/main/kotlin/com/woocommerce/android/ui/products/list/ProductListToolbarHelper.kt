@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class ProductListToolbarHelper @Inject constructor(
     private val activity: Activity,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
+    private val crashLogging: CrashLogging,
 ) : DefaultLifecycleObserver,
     MenuItem.OnActionExpandListener,
     SearchView.OnQueryTextListener,
@@ -211,8 +213,17 @@ class ProductListToolbarHelper @Inject constructor(
      * Prevent search from appearing when a child fragment is active
      */
     private fun shouldShowSearchMenuItem(): Boolean {
-        val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
-        return !isChildShowing
+        return try {
+            !((activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false)
+        } catch (e: IllegalStateException) {
+            // As we don't know the reason why this happens and the worst case scenario is that the search
+            // will be shown when it not needed, we workaround this crash
+            crashLogging.recordException(
+                e,
+                "ProductListToolbarHelper.shouldShowSearchMenuItem: IllegalStateException"
+            )
+            return true
+        }
     }
 
     fun disableSearchListeners() {
