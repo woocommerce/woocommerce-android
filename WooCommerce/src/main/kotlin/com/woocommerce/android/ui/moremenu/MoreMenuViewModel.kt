@@ -23,12 +23,14 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.google.IsGoogleListingsAdsEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -58,6 +60,7 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
+    private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled,
     private val isWooPosEnabled: IsWooPosEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
@@ -110,6 +113,7 @@ class MoreMenuViewModel @Inject constructor(
             )
         )
 
+    @Suppress("LongMethod")
     private suspend fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
@@ -122,6 +126,13 @@ class MoreMenuViewModel @Inject constructor(
                 icon = R.drawable.ic_more_menu_payments,
                 badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
                 onClick = ::onPaymentsButtonClick,
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_google,
+                description = R.string.more_menu_button_google_description,
+                icon = R.drawable.google_logo,
+                onClick = ::onPromoteProductsWithGoogle,
+                isVisible = isGoogleListingsAdsEnabled()
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_blaze,
@@ -250,6 +261,10 @@ class MoreMenuViewModel @Inject constructor(
         )
         moreMenuNewFeatureHandler.markPaymentsIconAsClicked()
         triggerEvent(MoreMenuEvent.ViewPayments)
+    }
+
+    private fun onPromoteProductsWithGoogle() {
+        WooLog.d(WooLog.T.GOOGLE_ADS, "onPromoteProductsWithGoogle")
     }
 
     private fun onPromoteProductsWithBlaze() {

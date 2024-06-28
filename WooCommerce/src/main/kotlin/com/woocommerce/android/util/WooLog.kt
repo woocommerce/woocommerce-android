@@ -39,6 +39,7 @@ object WooLog {
         BARCODE_SCANNER,
         THEMES,
         BLAZE,
+        GOOGLE_ADS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

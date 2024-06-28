@@ -3689,6 +3689,9 @@
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Join the mobile payments</string>
 
+    <string name="more_menu_button_google">Google for WooCommerce</string>
+    <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
+
     <string name="more_menu_button_blaze">Blaze</string>
     <string name="more_menu_button_blaze_description">Promote products with Blaze</string>
 
