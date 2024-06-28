@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.customer
+package com.woocommerce.android.ui.moremenu.customer
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
@@ -16,6 +16,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.customer.CustomerListScreen
 
 @Composable
 fun MenuCustomerListScreen(viewModel: CustomerListDetailsViewModel) {
