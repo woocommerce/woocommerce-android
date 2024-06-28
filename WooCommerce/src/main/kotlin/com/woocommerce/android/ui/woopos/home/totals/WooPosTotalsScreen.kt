@@ -289,3 +289,12 @@ fun WooPosTotalsScreenPreview() {
         onUIEvent = {}
     )
 }
+
+@Composable
+@WooPosPreview
+fun WooPosTotalsScreenLoadingPreview() {
+    WooPosTotalsScreen(
+        state = WooPosTotalsState.Loading,
+        onUIEvent = {}
+    )
+}
