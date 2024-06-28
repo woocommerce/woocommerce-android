@@ -23,10 +23,11 @@ class ScrollStateAdapter(private val scrollState: ScrollState) : PositionIndicat
 
     override fun visibility(scrollableContainerSizePx: Float) = if (scrollState.maxValue == 0) {
         PositionIndicatorVisibility.Hide
-    } else if (scrollState.isScrollInProgress)
+    } else if (scrollState.isScrollInProgress) {
         PositionIndicatorVisibility.Show
-    else
+    } else {
         PositionIndicatorVisibility.AutoHide
+    }
 
     override fun equals(other: Any?): Boolean {
         return (other as? ScrollStateAdapter)?.scrollState == scrollState
