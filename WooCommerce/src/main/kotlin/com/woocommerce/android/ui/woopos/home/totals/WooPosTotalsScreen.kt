@@ -216,8 +216,6 @@ private fun TotalsLoading(
                     .wrapContentWidth()
                     .wrapContentHeight()
                     .background(Color.Transparent),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, Color(0xFFBDBDBD))
             ) {
                 Column(
                     modifier = modifier
@@ -230,31 +228,24 @@ private fun TotalsLoading(
                     WooPosShimmerBox(
                         modifier = Modifier
                             .height(30.dp)
-                            .width(150.dp)
+                            .width(300.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                    Divider()
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     WooPosShimmerBox(
                         modifier = Modifier
                             .height(30.dp)
-                            .width(150.dp)
+                            .width(300.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Divider()
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     WooPosShimmerBox(
                         modifier = Modifier
-                            .height(30.dp)
-                            .width(150.dp)
+                            .height(60.dp)
+                            .width(300.dp)
                     )
                 }
             }
