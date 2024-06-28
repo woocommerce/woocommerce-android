@@ -3,13 +3,20 @@ package com.woocommerce.android.ui.woopos.home.products
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-data class WooPosProductsViewState(
-    val products: List<WooPosProductsListItem>,
-)
+sealed class WooPosProductsViewState {
+    data class Content(
+        val products: List<WooPosProductsListItem>,
+        val loadingMore: Boolean,
+    ) : WooPosProductsViewState()
+    data object Loading : WooPosProductsViewState()
+    data object Error : WooPosProductsViewState()
+    data object Empty : WooPosProductsViewState()
+}
 
 @Parcelize
 data class WooPosProductsListItem(
-    val productId: Long,
-    val title: String,
-    val imageUrl: String? = null,
+    val id: Long,
+    val name: String,
+    val price: String,
+    val imageUrl: String?,
 ) : Parcelable

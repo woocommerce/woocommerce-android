@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -213,16 +212,15 @@ private fun ProductItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val fallbackColor = Color.LightGray
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(item.imageUrl)
                 .crossfade(true)
                 .build(),
-            fallback = ColorPainter(color = fallbackColor),
-            error = ColorPainter(color = fallbackColor),
-            placeholder = ColorPainter(color = fallbackColor),
-            contentDescription = "Product Image",
+            fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+            error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+            placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+            contentDescription = stringResource(R.string.woopos_product_image_description),
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(64.dp)
         )
