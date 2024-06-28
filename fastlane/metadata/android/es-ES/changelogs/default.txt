@@ -1,0 +1,2 @@
+19.2:
+Ahora, puedes sincronizarte fácilmente con nuestra nueva aplicación WearOS para obtener actualizaciones instantáneas de los datos de la tienda y los pedidos. Además, disfrutarás de una mayor flexibilidad gracias a la posibilidad de editar las cantidades mínimas y máximas directamente desde los detalles del producto. ¡Actualiza tu aplicación de WooCommerce ahora para conseguir una experiencia mejorada y más fluida!

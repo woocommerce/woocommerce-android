@@ -1,0 +1,2 @@
+19.2 :
+Procédez à une synchronisation fluide avec notre nouvelle application WearOS pour des mises à jour instantanées des données et commandes de la boutique. Profitez en outre d'une flexibilité accrue avec prise en charge des modifications pour Min/Max Quantities directement dans les détails du produit. Mettez à jour votre application WooCommerce dès à présent pour une expérience fluide et améliorée !
