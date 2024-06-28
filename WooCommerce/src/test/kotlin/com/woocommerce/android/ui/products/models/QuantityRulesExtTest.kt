@@ -12,23 +12,23 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 
 @ExperimentalCoroutinesApi
-class ProductPropertyExtTest : BaseUnitTest() {
+class QuantityRulesExtTest : BaseUnitTest() {
     @Test
-    fun `given all quantity rules null, then generateQuantityRulesProductProperty returns null`() = testBlocking {
+    fun `given all quantity rules null, then getProductProperty returns null`() = testBlocking {
         val resourceProvider: ResourceProvider = mock {}
-        val result = generateQuantityRulesProductProperty(QuantityRules(), resourceProvider) {}
+        val result = QuantityRules().getProductProperty(resourceProvider) {}
 
         assertNull(result)
     }
 
     @Test
-    fun `given all quantity rules with 0 value, then generateQuantityRulesProductProperty returns a ComplexProperty`() = testBlocking {
+    fun `given all quantity rules with 0 value, then getProductProperty returns a ComplexProperty`() = testBlocking {
         val value = "value"
         val resourceProvider: ResourceProvider = mock {
             on { getString(R.string.no_quantity_rules) } doAnswer { value }
         }
 
-        val result = generateQuantityRulesProductProperty(QuantityRules(0, 0, 0), resourceProvider) {}
+        val result = QuantityRules(0, 0, 0).getProductProperty(resourceProvider) {}
 
         assertTrue(result is ProductProperty.ComplexProperty)
 
@@ -39,7 +39,7 @@ class ProductPropertyExtTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given quantity rules with all valid values, then generateQuantityRulesProductProperty returns a PropertyGroup with two properties`() =
+    fun `given quantity rules with all valid values, then getProductProperty returns a PropertyGroup with two properties`() =
         testBlocking {
             val minQuantityPropertyValue = "min"
             val maxQuantityPropertyValue = "max"
@@ -50,7 +50,7 @@ class ProductPropertyExtTest : BaseUnitTest() {
                 on { getString(R.string.max_quantity) } doAnswer { maxQuantityPropertyValue }
             }
 
-            val result = generateQuantityRulesProductProperty(rules, resourceProvider) {}
+            val result = rules.getProductProperty(resourceProvider) {}
 
             assertTrue(result is ProductProperty)
 

@@ -71,7 +71,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
-import com.woocommerce.android.ui.products.models.generateQuantityRulesProductProperty
+import com.woocommerce.android.ui.products.models.getProductProperty
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
@@ -941,7 +941,7 @@ class ProductDetailCardBuilder(
             )
         }
 
-        return generateQuantityRulesProductProperty(rules, resources, onClick)
+        return rules.getProductProperty(resources, onClick)
     }
 
     private suspend fun Product.bundleProducts(): ProductProperty? {
