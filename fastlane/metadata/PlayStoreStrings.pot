@@ -12,21 +12,22 @@ msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
-msgid "Introduces the new Woo WearOS app featuring instant updates on store data and orders at glance!"
+msgid ""
+"\n"
+"\n"
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_193"
+msgid ""
+"19.3:\n"
+"We're thrilled to bring you an enhanced experience with our latest update! We've resolved a crash on the Receipt Preview screen and improved error messages when editing Min/Max Quantities. Plus, the Blaze button visibility issue on the product detail screen has been fixed, ensuring smoother navigation. Update now for a seamless WooCommerce mobile app experience!\n"
+msgstr ""
+
 msgctxt "release_note_192"
 msgid ""
 "19.2:\n"
 "Now, seamlessly sync with our new WearOS app for instant updates on store data and orders. Plus, enjoy added flexibility with edit support for Min/Max Quantities directly from product details. Update your WooCommerce app now for a seamless and enhanced experience!\n"
-msgstr ""
-
-msgctxt "release_note_191"
-msgid ""
-"19.1:\n"
-"This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.\n"
-"\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
