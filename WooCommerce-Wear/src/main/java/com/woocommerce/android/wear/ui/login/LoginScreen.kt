@@ -1,14 +1,15 @@
 package com.woocommerce.android.wear.ui.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -28,7 +29,6 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
-import com.woocommerce.android.wear.compose.theme.WooColors
 import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
 
@@ -49,7 +49,9 @@ fun LoginScreen(
 ) {
     WooTheme {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .background(Color.Black)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             if (isLoading) {
@@ -88,19 +90,15 @@ private fun LoginInstructionsScreen(
                     .padding(top = 8.dp)
                     .wrapContentHeight()
             )
-            Icon(
-                painter = painterResource(id = R.drawable.ic_lightning),
-                contentDescription = null,
-                tint = WooColors.woo_amber_40,
-                modifier = modifier.padding(top = 8.dp)
-            )
             Button(
                 onClick = onTryAgainClicked,
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color.DarkGray
                 ),
                 modifier = modifier
+                    .weight(1f)
                     .padding(top = 8.dp)
+                    .requiredHeight(46.dp)
                     .fillMaxWidth()
             ) {
                 Text(stringResource(id = R.string.login_screen_action_button))
@@ -115,7 +113,7 @@ private fun LoginLoadingScreen(
 ) {
     TimeText()
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(id = R.drawable.img_woo_bubble_white_background),

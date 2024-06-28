@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-18 11:54:03+0000
+Translation-Revision-Date: 2024-06-24 22:48:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">Målgrupp</string>
     <string name="woopos_exit_confirmation_dismiss_button">Avbryt</string>
     <string name="woopos_exit_confirmation_confirm_button">Avsluta</string>
     <string name="woopos_exit_confirmation_message">Är du säker på att du vill avsluta POS?</string>
@@ -341,6 +342,7 @@ Language: sv_SE
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Få tillgång till en stor publik</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Vårt verktyg presenterar din produkt där intresserade shoppare kan hitta den.\"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Global räckvidd på ett enkelt sätt</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Lansera annonser på några minuter – ingen erfarenhet eller stor budget behövs, från bara $5 per dag.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Snabb start, stor påverkan</string>
     <string name="order_creation_coupon_button">Rabattkod</string>
     <string name="order_creation_gift_card_text_field_hint">Ange kod</string>
@@ -681,8 +683,8 @@ Language: sv_SE
     <string name="store_onboarding_task_name_store_title">Namnge din butik</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktivera NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Leveranspaket för små kvantiteter (märkningar krävs)</string>
-    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY-markpaket – Aerosoler, spraydesinfektionsmedel, sprayfärg, hårspray, propan, butan, rengöringsprodukter, osv. - Parfymer, nagellack, nagellackborttagningsmedel, lösningsmedel, handsprit, tvättsprit, etanolbaserade produkter, osv. - Andra ytmaterial i begränsad mängd (kosmetika, rengöringsprodukter, färger, osv.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000-konsumentvarupaket – Luftkvalificerade ID8000-konsumentvaror (icke brandfarliga aerosoler, brandfarliga brännbara vätskor, giftiga ämnen, diverse farliga material)</string>
     <string name="shipping_label_hazmat_option_ground_only">Farliga material endast för markleverans (för föremål som inte är listade, men som är begränsade till endast yta)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Undantagna kvantitetsförsörjningspaket (t.ex. små volymer av brandfarliga vätskor och frätande, giftiga eller miljöfarliga material – märkning krävs) </string>
@@ -946,7 +948,6 @@ Language: sv_SE
     <string name="order_gift_card">Presentkort</string>
     <string name="jetpack_install_role_eligibility_learn_more">Lär dig mer om roller och behörighet</string>
     <string name="jetpack_install_role_eligibility_error_message">Det verkar som att din roll inte tillåter dig att installera Jetpack.\nKontakta din administratör för hjälp.</string>
-    <string name="quantity_rules_info_notice">Du kan redigera produktkvantitetsregler i webbadminpanelen.</string>
     <string name="group_of">Grupp om</string>
     <string name="max_quantity">Största kvantitet</string>
     <string name="min_quantity">Minsta kvantitet</string>

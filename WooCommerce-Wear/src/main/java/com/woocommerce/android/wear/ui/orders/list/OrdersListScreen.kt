@@ -67,7 +67,9 @@ fun OrdersListScreen(
 ) {
     WooTheme {
         Box(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .background(Color.Black)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Column(

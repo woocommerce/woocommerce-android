@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-18 09:54:03+0000
+Translation-Revision-Date: 2024-06-27 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">Audiens</string>
     <string name="woopos_exit_confirmation_dismiss_button">Batal</string>
     <string name="woopos_exit_confirmation_confirm_button">Keluar</string>
     <string name="woopos_exit_confirmation_message">Anda yakin ingin keluar dari POS?</string>
@@ -341,6 +342,7 @@ Language: id
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Jangkau audiens yang besar</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Berkat alat kami, pembeli yang tertarik dengan produk Anda bisa lebih mudah menemukannya.\"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Seluruh dunia dalam jangkauan</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Pasang iklan dalam hitungan menit — tanpa perlu jadi ahli atau banyak biaya, dari $5 USD saja per hari.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Pasang praktis, hasil strategis</string>
     <string name="blaze_campaign_creation_new_intro_description">Menghadirkan proses penyiapan iklan yang cepat nan ringkas, alat kami membantu para penjual memaksimalkan pengunjung situsnya.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Promosikan</string>
@@ -940,7 +942,6 @@ Language: id
     <string name="empty_max_quantity">Tanpa maksimum</string>
     <string name="empty_min_quantity">Tanpa minimum</string>
     <string name="product_type_bundle">Paket</string>
-    <string name="quantity_rules_info_notice">Anda dapat menyunting aturan jumlah produk di dasbor web.</string>
     <string name="group_of">Kelipatan</string>
     <string name="max_quantity">Jumlah maksimal</string>
     <string name="min_quantity">Jumlah minimal</string>
