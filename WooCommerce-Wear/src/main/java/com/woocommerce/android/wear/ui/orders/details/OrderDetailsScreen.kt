@@ -16,28 +16,24 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.PositionIndicator
-import androidx.wear.compose.material.Scaffold
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.google.android.horologist.compose.layout.ScreenScaffold
 import com.woocommerce.android.R
 import com.woocommerce.android.wear.compose.component.ErrorScreen
 import com.woocommerce.android.wear.compose.component.LoadingScreen
-import com.woocommerce.android.wear.compose.component.ScrollingLazyColumnAdapter
+import com.woocommerce.android.wear.compose.component.ScrollStateAdapter
 import com.woocommerce.android.wear.compose.theme.WooColors
 import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
@@ -66,18 +62,12 @@ fun OrderDetailsScreen(
     modifier: Modifier = Modifier
 ) {
     WooTheme {
-        val state = rememberScalingLazyListState(
-            initialCenterItemIndex = 0
-        )
-        val height = remember { mutableIntStateOf(1) }
-        Scaffold(
-            modifier = Modifier.onGloballyPositioned { height.intValue = it.size.height },
+        val scrollState = rememberScrollState()
+        ScreenScaffold(
+            scrollState = scrollState,
             positionIndicator = {
                 PositionIndicator(
-                    state = ScrollingLazyColumnAdapter(
-                        state = state,
-                        viewportHeightPx = height,
-                    ),
+                    state = ScrollStateAdapter(scrollState),
                     indicatorHeight = 100.dp,
                     indicatorWidth = 7.dp,
                     paddingHorizontal = 5.dp,
@@ -89,8 +79,8 @@ fun OrderDetailsScreen(
                 contentAlignment = Alignment.Center,
                 modifier = modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
                     .background(Color.Black)
+                    .verticalScroll(scrollState)
                     .padding(top = 16.dp)
             ) {
                 when {
