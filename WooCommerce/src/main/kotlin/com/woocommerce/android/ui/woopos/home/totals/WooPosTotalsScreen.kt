@@ -72,7 +72,6 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
             is WooPosTotalsState.Loading -> {
                 TotalsLoading(
                     modifier = Modifier.padding(padding),
-                    onUIEvent = onUIEvent
                 )
             }
         }
@@ -204,7 +203,6 @@ private fun TotalsLoaded(
 @Composable
 private fun TotalsLoading(
     modifier: Modifier = Modifier,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -284,16 +282,7 @@ private fun TotalsLoading(
                     }
                 }
             }
-
             Spacer(modifier = Modifier.weight(1f))
-            WooPosButton(
-                text = stringResource(R.string.woopos_payment_collect_payment_label),
-                modifier = modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(16.dp),
-                onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-            )
         }
     }
 }
