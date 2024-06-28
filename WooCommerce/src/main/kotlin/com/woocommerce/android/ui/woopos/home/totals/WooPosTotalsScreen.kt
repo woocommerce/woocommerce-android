@@ -233,7 +233,6 @@ private fun TotalsLoading(
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-
                     WooPosShimmerBox(
                         modifier = Modifier
                             .height(30.dp)
