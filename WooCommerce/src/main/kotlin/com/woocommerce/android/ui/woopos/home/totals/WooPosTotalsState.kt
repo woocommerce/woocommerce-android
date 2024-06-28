@@ -5,12 +5,15 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.Woo
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class WooPosTotalsState(
-    val orderId: Long? = null,
-    val isCollectPaymentButtonEnabled: Boolean,
-    var orderSubtotalText: String,
-    var orderTaxText: String,
-    var orderTotalText: String,
-    val snackbar: WooPosSnackbarState = WooPosSnackbarState.Hidden,
-    val isLoading: Boolean,
-) : Parcelable
+sealed class WooPosTotalsState : Parcelable {
+    data object Loading : WooPosTotalsState()
+
+    data class Totals(
+        var orderSubtotalText: String,
+        var orderTaxText: String,
+        var orderTotalText: String,
+        val snackbar: WooPosSnackbarState = WooPosSnackbarState.Hidden,
+    ) : WooPosTotalsState()
+
+    data object PaymentSuccess : WooPosTotalsState()
+}
