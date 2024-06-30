@@ -34,24 +34,22 @@ class OrderDetailViewModel {
 ```
 
 ### Naming Conventions
-| Name Token | Associated Property | Event Type | Description |
-| --- | --- | --- | --- |
-| _action | type | Action | When there are multiple actions |
-| _add | * | Action | User request to add something new such as an order note |
-| _change | "from: to:" | Action | When a value changes |
-| _confirmation_dialog_result | result="positive|negative" | View | Result of a confirmation dialog |
-| _date | range: | Action | For a date range switcher in a graph or list |
-| _failed | "errorContext:$initiated-classname
-            errorType:$errorType
-            errorDescription:$errorDescription" | Data | Errors for user initiated requests |
-| _filter | * | Action | A list has been filtered or searched |
-| _loaded | * | Data | The data to populate a view has loaded |
-| _open | * | Action | An item from a list was opened by the user |
-| _pulled_to_refresh | type | View | User gesture to do a manual refresh of the view |
-| _reselected | * | View | The user reselected a bottom bar, tab, or dropdown/list option, option. Typically preceded by _tab_ or _bar_ |
-| _selected | type | View | The user selected a bottom bar, tab, or dropdown/list option, option, Typically preceded by _tab_ or _bar_ |
-| _show | name: | Action | Tracks views shown to the user |
-| _success | * | Data | A successful user initiated request |
-| _tapped | * | View | The user clicked on a clickable view, typically preceeded by _button_, _link_, _menu |
-| _toggled | state="on|off" | View | User toggled an option |
-| _undo |  | Action | The user chose to undo a previous action or change |
+| Name Token | Associated Property                                                                              | Event Type | Description |
+| --- |--------------------------------------------------------------------------------------------------| --- | --- |
+| _action | type                                                                                             | Action | When there are multiple actions |
+| _add | *                                                                                                | Action | User request to add something new such as an order note |
+| _change | "from: to:"                                                                                      | Action | When a value changes |
+| _confirmation_dialog_result | result="positive                                                                                 |negative" | View | Result of a confirmation dialog |
+| _date | range:                                                                                           | Action | For a date range switcher in a graph or list |
+| _failed | "errorContext:$initiated-classname<br>errorType:$errorType<br>errorDescription:$errorDescription" | Data | Errors for user initiated requests |
+| _filter | *                                                                                                | Action | A list has been filtered or searched |
+| _loaded | *                                                                                                | Data | The data to populate a view has loaded |
+| _open | *                                                                                                | Action | An item from a list was opened by the user |
+| _pulled_to_refresh | type                                                                                             | View | User gesture to do a manual refresh of the view |
+| _reselected | *                                                                                                | View | The user reselected a bottom bar, tab, or dropdown/list option, option. Typically preceded by _tab_ or _bar_ |
+| _selected | type                                                                                             | View | The user selected a bottom bar, tab, or dropdown/list option, option, Typically preceded by _tab_ or _bar_ |
+| _show | name:                                                                                            | Action | Tracks views shown to the user |
+| _success | *                                                                                                | Data | A successful user initiated request |
+| _tapped | *                                                                                                | View | The user clicked on a clickable view, typically preceeded by _button_, _link_, _menu |
+| _toggled | state="on                                                                                        |off" | View | User toggled an option |
+| _undo |                                                                                                  | Action | The user chose to undo a previous action or change |
