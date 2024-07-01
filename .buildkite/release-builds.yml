@@ -7,6 +7,9 @@ common_params:
   - &common_plugins
     - automattic/a8c-ci-toolkit#3.0.1
 
+agents:
+  queue: "android"
+
 steps:
   - label: "Gradle Wrapper Validation"
     command: |

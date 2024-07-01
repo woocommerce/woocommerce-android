@@ -1,3 +1,6 @@
+agents:
+  queue: "android"
+
 steps:
   - label: "Finalize Hotfix Release"
     plugins:
