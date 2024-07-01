@@ -757,7 +757,7 @@
 
     <fragment
         android:id="@+id/addProductWithAIFragmentV2"
-        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragmentV2"
+        android:name="com.woocommerce.android.ui.products.ai.productinfo.AddProductWithAIFragmentV2"
         android:label="AddProductWithAIFragmentV2" />
 
     <dialog
