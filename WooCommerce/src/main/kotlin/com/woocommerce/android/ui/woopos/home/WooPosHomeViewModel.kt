@@ -55,13 +55,31 @@ class WooPosHomeViewModel @Inject constructor(
                             ParentToChildrenEvent.ItemClickedInProductSelector(event.productId)
                         )
                     }
-                    is ChildToParentEvent.OrderDraftCreated -> {
-                        sendEventToChildren(ParentToChildrenEvent.OrderDraftCreated(event.orderId))
+
+                    is ChildToParentEvent.OrderCreation -> {
+                        when (event) {
+                            ChildToParentEvent.OrderCreation.OrderCreationFailed -> {
+                                sendEventToChildren(ParentToChildrenEvent.OrderCreation.OrderCreationFailed)
+                            }
+
+                            ChildToParentEvent.OrderCreation.OrderCreationStarted -> {
+                                sendEventToChildren(ParentToChildrenEvent.OrderCreation.OrderCreationStarted)
+                            }
+
+                            is ChildToParentEvent.OrderCreation.OrderCreationSucceeded -> {
+                                sendEventToChildren(
+                                    ParentToChildrenEvent.OrderCreation.OrderCreationSucceeded(
+                                        event.orderId
+                                    )
+                                )
+                            }
+                        }
                     }
 
                     is ChildToParentEvent.NewTransactionClicked -> {
                         _state.value = WooPosHomeState.Cart
                     }
+
                     is ChildToParentEvent.OrderSuccessfullyPaid -> {
                         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                     }
