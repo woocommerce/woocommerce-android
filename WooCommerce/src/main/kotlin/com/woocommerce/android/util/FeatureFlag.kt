@@ -17,7 +17,6 @@ enum class FeatureFlag {
     APP_PASSWORD_TUTORIAL,
     EOSL_M1,
     EOSL_M3,
-    DYNAMIC_DASHBOARD_M2,
     GOOGLE_ADS_M1;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -33,7 +32,6 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             GOOGLE_ADS_M1 -> PackageUtils.isDebugBuild()
 
-            DYNAMIC_DASHBOARD_M2,
             CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
