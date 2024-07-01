@@ -6,7 +6,6 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
@@ -80,7 +79,26 @@ private fun WooPosHomeScreen(
     }
 
     when (state) {
-        is WooPosHomeState.Cart,
+        is WooPosHomeState.Cart -> {
+            when (state) {
+                WooPosHomeState.Cart.Empty -> {
+                    WooPosHomeScreen(
+                        scrollState,
+                        totalsProductsWidth + cartWidth.times(.9f),
+                        cartWidth,
+                    )
+                }
+
+                WooPosHomeState.Cart.NotEmpty -> {
+                    WooPosHomeScreen(
+                        scrollState,
+                        totalsProductsWidth,
+                        cartWidth,
+                    )
+                }
+            }
+        }
+
         WooPosHomeState.Checkout ->
             WooPosHomeScreen(
                 scrollState,
@@ -99,7 +117,6 @@ private fun WooPosHomeScreen(
     Row(
         modifier = Modifier
             .horizontalScroll(scrollState, enabled = false)
-            .fillMaxWidth()
     ) {
         Row(modifier = Modifier.width(totalsProductsWidth)) {
             Spacer(modifier = Modifier.width(40.dp))
@@ -125,7 +142,19 @@ private fun WooPosHomeScreen(
 fun WooPosHomeCartScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
-            state = WooPosHomeState.Cart,
+            state = WooPosHomeState.Cart.NotEmpty,
+            onHomeUIEvent = { true },
+            onNavigationEvent = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosHomeCartEmptyScreenPreview() {
+    WooPosTheme {
+        WooPosHomeScreen(
+            state = WooPosHomeState.Cart.Empty,
             onHomeUIEvent = { true },
             onNavigationEvent = {},
         )

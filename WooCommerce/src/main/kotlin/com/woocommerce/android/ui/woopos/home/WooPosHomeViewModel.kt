@@ -13,7 +13,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart)
+    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart.Empty)
     val state: StateFlow<WooPosHomeState> = _state
 
     init {
@@ -25,7 +25,7 @@ class WooPosHomeViewModel @Inject constructor(
             WooPosHomeUIEvent.SystemBackClicked -> {
                 when (_state.value) {
                     WooPosHomeState.Checkout -> {
-                        _state.value = WooPosHomeState.Cart
+                        _state.value = WooPosHomeState.Cart.NotEmpty
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                         true
                     }
@@ -47,7 +47,7 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosHomeState.Cart
+                        _state.value = WooPosHomeState.Cart.NotEmpty
                     }
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
@@ -77,7 +77,7 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.NewTransactionClicked -> {
-                        _state.value = WooPosHomeState.Cart
+                        _state.value = WooPosHomeState.Cart.Empty
                     }
 
                     is ChildToParentEvent.OrderSuccessfullyPaid -> {
