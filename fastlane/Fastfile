@@ -1111,10 +1111,11 @@ platform :android do
   # Private lanes
   #####################################################################################
 
-  # Creates a new GitHub Release for the given version.
+  # Creates a new GitHub Release for the given version. The name (and tag) of the release will be exactly as
+  # the `version` parameter, with a `w` appended in the case of a Wear OS app.
   #
   # @param [String] app The Android app to create the release for (`MOBILE_APP` or `WEAR_APP`)
-  # @param [String] version The version of the app.
+  # @param [String] version The version of the app, as in the `versionName` property from `version.properties`.
   # @param [Boolean] prerelease If true, the GitHub Release will have the prerelease flag
   #
   # @example Running the lane
