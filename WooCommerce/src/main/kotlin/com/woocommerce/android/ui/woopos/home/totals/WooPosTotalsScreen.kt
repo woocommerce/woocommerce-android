@@ -108,7 +108,7 @@ private fun TotalsLoaded(
                 .weight(1f)
                 .fillMaxWidth()
                 .background(
-                    color = MaterialTheme.colors.surface,
+                    color = MaterialTheme.colors.background,
                     shape = RoundedCornerShape(16.dp),
                 )
                 .verticalScroll(rememberScrollState()),
