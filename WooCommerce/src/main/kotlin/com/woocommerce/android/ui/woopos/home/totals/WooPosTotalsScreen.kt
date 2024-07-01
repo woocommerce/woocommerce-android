@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -30,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -55,24 +58,33 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { padding ->
-        when (state) {
-            is WooPosTotalsState.Totals -> {
-                TotalsLoaded(
-                    modifier = Modifier.padding(padding),
-                    state = state,
-                    onUIEvent = onUIEvent
-                )
-                WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
-            }
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            backgroundColor = MaterialTheme.colors.surface,
+            elevation = 4.dp,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
+        ) {
+            when (state) {
+                is WooPosTotalsState.Totals -> {
+                    TotalsLoaded(
+                        modifier = Modifier.padding(padding),
+                        state = state,
+                        onUIEvent = onUIEvent
+                    )
+                    WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
+                }
 
-            is WooPosTotalsState.PaymentSuccess -> {
-                WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
-            }
+                is WooPosTotalsState.PaymentSuccess -> {
+                    WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+                }
 
-            is WooPosTotalsState.Loading -> {
-                TotalsLoading(
-                    modifier = Modifier.padding(padding),
-                )
+                is WooPosTotalsState.Loading -> {
+                    TotalsLoading(
+                        modifier = Modifier.padding(padding),
+                    )
+                }
             }
         }
     }
@@ -84,102 +96,115 @@ private fun TotalsLoaded(
     state: WooPosTotalsState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp,
-        modifier = Modifier.padding(16.dp),
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Column(
-            modifier = modifier
-                .fillMaxSize(),
+            modifier = Modifier
+                .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 0.dp)
+                .weight(1f)
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colors.surface,
+                    shape = RoundedCornerShape(16.dp),
+                )
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
             Spacer(modifier = Modifier.weight(1f))
 
-            Column(
-                modifier = Modifier
-                    .border(
-                        width = (0.5).dp,
-                        color = WooPosTheme.colors.border,
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(24.dp)
-                    .wrapContentWidth()
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.woopos_payment_subtotal_label),
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primary
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = state.orderSubtotalText,
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primary
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.woopos_payment_tax_label),
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primary
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(
-                        text = state.orderTaxText,
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primary
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Column(
-                    modifier = modifier
-                        .wrapContentWidth()
-                        .wrapContentHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    Text(
-                        text = stringResource(R.string.woopos_payment_total_label),
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primary
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = state.orderTotalText,
-                        style = MaterialTheme.typography.h4,
-                        color = MaterialTheme.colors.primary
-                    )
-                }
-            }
+            TotalsGrid(modifier, state)
 
             Spacer(modifier = Modifier.weight(1f))
-            WooPosButton(
-                text = stringResource(R.string.woopos_payment_collect_payment_label),
-                modifier = modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(16.dp),
-                onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
+        }
+
+        WooPosButton(
+            text = stringResource(R.string.woopos_payment_collect_payment_label),
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(24.dp),
+            onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
+        )
+    }
+}
+
+@Composable
+private fun TotalsGrid(
+    modifier: Modifier = Modifier,
+    state: WooPosTotalsState.Totals,
+) {
+    Column(
+        modifier = Modifier
+            .border(
+                width = (0.5).dp,
+                color = WooPosTheme.colors.border,
+                shape = RoundedCornerShape(8.dp)
             )
+            .padding(24.dp)
+            .width(380.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(R.string.woopos_payment_subtotal_label),
+                style = MaterialTheme.typography.h6,
+            )
+            Text(
+                text = state.orderSubtotalText,
+                style = MaterialTheme.typography.h6,
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = stringResource(R.string.woopos_payment_tax_label),
+                style = MaterialTheme.typography.h6,
+            )
+            Text(
+                text = state.orderTaxText,
+                style = MaterialTheme.typography.h6,
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = stringResource(R.string.woopos_payment_total_label),
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = state.orderTotalText,
+                style = MaterialTheme.typography.h2,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
@@ -188,60 +213,53 @@ private fun TotalsLoaded(
 private fun TotalsLoading(
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 4.dp,
-        modifier = Modifier.padding(16.dp),
+    Column(
+        modifier = modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Column(
-            modifier = modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+        Spacer(modifier = Modifier.weight(1f))
+
+        Surface(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .wrapContentWidth()
+                .wrapContentHeight()
+                .background(Color.Transparent),
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-
-            Surface(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .wrapContentWidth()
+            Column(
+                modifier = modifier
+                    .widthIn(max = 420.dp)
                     .wrapContentHeight()
-                    .background(Color.Transparent),
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                Column(
-                    modifier = modifier
-                        .widthIn(max = 420.dp)
-                        .wrapContentHeight()
-                        .padding(12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    WooPosShimmerBox(
-                        modifier = Modifier
-                            .height(30.dp)
-                            .width(300.dp)
-                    )
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .height(30.dp)
+                        .width(300.dp)
+                )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                    WooPosShimmerBox(
-                        modifier = Modifier
-                            .height(30.dp)
-                            .width(300.dp)
-                    )
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .height(30.dp)
+                        .width(300.dp)
+                )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                    WooPosShimmerBox(
-                        modifier = Modifier
-                            .height(60.dp)
-                            .width(300.dp)
-                    )
-                }
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .height(60.dp)
+                        .width(300.dp)
+                )
             }
-            Spacer(modifier = Modifier.weight(1f))
         }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
