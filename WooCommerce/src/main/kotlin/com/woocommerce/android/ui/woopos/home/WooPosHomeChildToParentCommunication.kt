@@ -28,6 +28,10 @@ sealed class ChildToParentEvent {
     }
     data object NewTransactionClicked : ChildToParentEvent()
     data object OrderSuccessfullyPaid : ChildToParentEvent()
+    sealed class CartStatus : ChildToParentEvent() {
+        data object Empty : CartStatus()
+        data object NotEmpty : CartStatus()
+    }
 }
 
 interface WooPosChildrenToParentEventReceiver {

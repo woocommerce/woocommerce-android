@@ -84,7 +84,7 @@ private fun WooPosHomeScreen(
                 WooPosHomeState.Cart.Empty -> {
                     WooPosHomeScreen(
                         scrollState,
-                        totalsProductsWidth + cartWidth.times(.9f),
+                        totalsProductsWidth + cartWidth.times(.8f),
                         cartWidth,
                     )
                 }

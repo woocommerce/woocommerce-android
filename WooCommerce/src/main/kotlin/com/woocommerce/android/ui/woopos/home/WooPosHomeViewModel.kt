@@ -83,6 +83,18 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.OrderSuccessfullyPaid -> {
                         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                     }
+
+                    is ChildToParentEvent.CartStatus -> {
+                        when (event) {
+                            ChildToParentEvent.CartStatus.Empty -> {
+                                _state.value = WooPosHomeState.Cart.Empty
+                            }
+
+                            ChildToParentEvent.CartStatus.NotEmpty -> {
+                                _state.value = WooPosHomeState.Cart.NotEmpty
+                            }
+                        }
+                    }
                 }
             }
         }
