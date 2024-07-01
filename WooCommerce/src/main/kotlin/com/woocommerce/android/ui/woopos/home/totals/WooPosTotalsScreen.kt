@@ -19,13 +19,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,51 +34,42 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
-import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 
 @Composable
-fun WooPosTotalsScreen() {
+fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
     val viewModel: WooPosTotalsViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
-    WooPosTotalsScreen(state, viewModel::onUIEvent)
+    WooPosTotalsScreen(modifier, state, viewModel::onUIEvent)
 }
 
 @Composable
-private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotalsUIEvent) -> Unit) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    Scaffold(
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }
-    ) { padding ->
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            backgroundColor = MaterialTheme.colors.surface,
-            elevation = 4.dp,
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-        ) {
-            when (state) {
-                is WooPosTotalsState.Totals -> {
-                    TotalsLoaded(
-                        modifier = Modifier.padding(padding),
-                        state = state,
-                        onUIEvent = onUIEvent
-                    )
-                    WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
-                }
+private fun WooPosTotalsScreen(
+    modifier: Modifier = Modifier,
+    state: WooPosTotalsState,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+) {
+    Card(
+        modifier = modifier
+            .padding(vertical = 24.dp),
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 4.dp
+    ) {
+        when (state) {
+            is WooPosTotalsState.Totals -> {
+                TotalsLoaded(
+                    state = state,
+                    onUIEvent = onUIEvent
+                )
+            }
 
-                is WooPosTotalsState.PaymentSuccess -> {
-                    WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
-                }
+            is WooPosTotalsState.PaymentSuccess -> {
+                WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+            }
 
-                is WooPosTotalsState.Loading -> {
-                    TotalsLoading(
-                        modifier = Modifier.padding(padding),
-                    )
-                }
+            is WooPosTotalsState.Loading -> {
+                TotalsLoading()
             }
         }
     }
@@ -90,7 +77,6 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
 
 @Composable
 private fun TotalsLoaded(
-    modifier: Modifier = Modifier,
     state: WooPosTotalsState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
@@ -114,14 +100,14 @@ private fun TotalsLoaded(
         ) {
             Spacer(modifier = Modifier.weight(1f))
 
-            TotalsGrid(modifier, state)
+            TotalsGrid(state)
 
             Spacer(modifier = Modifier.weight(1f))
         }
 
         WooPosButton(
             text = stringResource(R.string.woopos_payment_collect_payment_label),
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(24.dp),
@@ -131,10 +117,7 @@ private fun TotalsLoaded(
 }
 
 @Composable
-private fun TotalsGrid(
-    modifier: Modifier = Modifier,
-    state: WooPosTotalsState.Totals,
-) {
+private fun TotalsGrid(state: WooPosTotalsState.Totals) {
     Column(
         modifier = Modifier
             .border(
@@ -184,7 +167,7 @@ private fun TotalsGrid(
         Spacer(modifier = Modifier.height(16.dp))
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -208,11 +191,9 @@ private fun TotalsGrid(
 }
 
 @Composable
-private fun TotalsLoading(
-    modifier: Modifier = Modifier,
-) {
+private fun TotalsLoading() {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .background(
                 color = MaterialTheme.colors.background,
                 shape = RoundedCornerShape(16.dp),
@@ -222,7 +203,7 @@ private fun TotalsLoading(
         verticalArrangement = Arrangement.Center,
     ) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .wrapContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,

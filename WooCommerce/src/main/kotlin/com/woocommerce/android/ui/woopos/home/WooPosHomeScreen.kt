@@ -4,8 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
@@ -29,9 +30,10 @@ fun WooPosHomeScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
     val viewModel: WooPosHomeViewModel = hiltViewModel()
+    val state = viewModel.state.collectAsState().value
 
     WooPosHomeScreen(
-        viewModel.state.collectAsState().value,
+        state,
         onNavigationEvent,
         viewModel::onUIEvent,
     )
@@ -99,14 +101,21 @@ private fun WooPosHomeScreen(
             .horizontalScroll(scrollState, enabled = false)
             .fillMaxWidth()
     ) {
-        Box(modifier = Modifier.width(totalsProductsWidth)) {
-            WooPosProductsScreen()
+        Row(modifier = Modifier.width(totalsProductsWidth)) {
+            Spacer(modifier = Modifier.width(40.dp))
+            WooPosProductsScreen(
+                modifier = Modifier.width(totalsProductsWidth - 56.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
         }
-        Box(modifier = Modifier.width(cartWidth)) {
-            WooPosCartScreen()
+        Row(modifier = Modifier.width(cartWidth)) {
+            Spacer(modifier = Modifier.width(24.dp))
+            WooPosCartScreen(Modifier.width(cartWidth - 48.dp))
+            Spacer(modifier = Modifier.width(24.dp))
         }
-        Box(modifier = Modifier.width(totalsProductsWidth)) {
-            WooPosTotalsScreen()
+        Row(modifier = Modifier.width(totalsProductsWidth)) {
+            WooPosTotalsScreen(modifier = Modifier.width(totalsProductsWidth - 24.dp))
+            Spacer(modifier = Modifier.width(24.dp))
         }
     }
 }
@@ -114,19 +123,23 @@ private fun WooPosHomeScreen(
 @Composable
 @WooPosPreview
 fun WooPosHomeCartScreenPreview() {
-    WooPosHomeScreen(
-        state = WooPosHomeState.Cart,
-        onHomeUIEvent = { true },
-        onNavigationEvent = {},
-    )
+    WooPosTheme {
+        WooPosHomeScreen(
+            state = WooPosHomeState.Cart,
+            onHomeUIEvent = { true },
+            onNavigationEvent = {},
+        )
+    }
 }
 
 @Composable
 @WooPosPreview
 fun WooPosHomeCheckoutScreenPreview() {
-    WooPosHomeScreen(
-        state = WooPosHomeState.Checkout,
-        onHomeUIEvent = { true },
-        onNavigationEvent = {},
-    )
+    WooPosTheme {
+        WooPosHomeScreen(
+            state = WooPosHomeState.Checkout,
+            onHomeUIEvent = { true },
+            onNavigationEvent = {},
+        )
+    }
 }

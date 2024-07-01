@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,9 +53,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun WooPosProductsScreen() {
+fun WooPosProductsScreen(modifier: Modifier = Modifier) {
     val productsViewModel: WooPosProductsViewModel = hiltViewModel()
     WooPosProductsScreen(
+        modifier = modifier,
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
         onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductsGridReached) },
@@ -64,14 +65,15 @@ fun WooPosProductsScreen() {
 
 @Composable
 private fun WooPosProductsScreen(
+    modifier: Modifier = Modifier,
     productsStateFlow: StateFlow<WooPosProductsViewState>,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
     Column(
-        Modifier
-            .fillMaxSize()
-            .padding(top = 36.dp, start = 40.dp, end = 40.dp, bottom = 0.dp)
+        modifier
+            .fillMaxHeight()
+            .padding(top = 36.dp)
     ) {
         Text(
             text = stringResource(id = R.string.woopos_products_screen_title),
