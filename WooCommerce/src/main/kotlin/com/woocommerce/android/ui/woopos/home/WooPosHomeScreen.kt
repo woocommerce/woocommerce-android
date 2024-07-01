@@ -2,14 +2,21 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -91,10 +98,19 @@ private fun WooPosHomeScreen(
         label = "totalsProductsWidthAnimated"
     )
 
+    val cartOverlayAnimated by animateFloatAsState(
+        when (state) {
+            is WooPosHomeState.Cart.Empty -> .4f
+            else -> 0f
+        },
+        label = "cartOverlayAnimated"
+    )
+
     WooPosHomeScreen(
         scrollState = scrollState,
         totalsProductsWidth = totalsProductsWidthAnimated,
         cartWidth = cartWidth,
+        cartOverlayIntensity = cartOverlayAnimated,
     )
 }
 
@@ -103,6 +119,7 @@ private fun WooPosHomeScreen(
     scrollState: ScrollState,
     totalsProductsWidth: Dp,
     cartWidth: Dp,
+    cartOverlayIntensity: Float
 ) {
     Row(
         modifier = Modifier
@@ -112,17 +129,39 @@ private fun WooPosHomeScreen(
         Row(modifier = Modifier.width(totalsProductsWidth)) {
             Spacer(modifier = Modifier.width(40.dp))
             WooPosProductsScreen(
-                modifier = Modifier.width(totalsProductsWidth - 56.dp)
+                modifier = Modifier
+                    .width(totalsProductsWidth - 56.dp)
+                    .padding(top = 36.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
         }
         Row(modifier = Modifier.width(cartWidth)) {
             Spacer(modifier = Modifier.width(24.dp))
-            WooPosCartScreen(Modifier.width(cartWidth - 48.dp))
+            Box {
+                WooPosCartScreen(
+                    Modifier
+                        .width(cartWidth - 48.dp)
+                        .padding(vertical = 24.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .width(cartWidth - 48.dp)
+                        .padding(vertical = 24.dp)
+                        .fillMaxHeight()
+                        .background(
+                            color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                )
+            }
             Spacer(modifier = Modifier.width(24.dp))
         }
         Row(modifier = Modifier.width(totalsProductsWidth)) {
-            WooPosTotalsScreen(modifier = Modifier.width(totalsProductsWidth - 24.dp))
+            WooPosTotalsScreen(
+                modifier = Modifier
+                    .width(totalsProductsWidth - 24.dp)
+                    .padding(vertical = 24.dp)
+            )
             Spacer(modifier = Modifier.width(24.dp))
         }
     }

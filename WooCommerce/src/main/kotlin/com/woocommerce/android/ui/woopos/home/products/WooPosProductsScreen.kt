@@ -73,7 +73,6 @@ private fun WooPosProductsScreen(
     Column(
         modifier
             .fillMaxHeight()
-            .padding(top = 36.dp)
     ) {
         Text(
             text = stringResource(id = R.string.woopos_products_screen_title),

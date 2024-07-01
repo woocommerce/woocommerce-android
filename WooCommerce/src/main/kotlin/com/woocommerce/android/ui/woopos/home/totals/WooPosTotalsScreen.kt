@@ -50,8 +50,7 @@ private fun WooPosTotalsScreen(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Card(
-        modifier = modifier
-            .padding(vertical = 24.dp),
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface,
         elevation = 4.dp
