@@ -30,6 +30,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -238,24 +239,27 @@ private fun TotalsLoading(
             ) {
                 WooPosShimmerBox(
                     modifier = Modifier
-                        .height(30.dp)
-                        .width(300.dp)
+                        .height(24.dp)
+                        .width(332.dp)
+                        .clip(RoundedCornerShape(4.dp))
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 WooPosShimmerBox(
                     modifier = Modifier
-                        .height(30.dp)
-                        .width(300.dp)
+                        .height(24.dp)
+                        .width(332.dp)
+                        .clip(RoundedCornerShape(4.dp))
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 WooPosShimmerBox(
                     modifier = Modifier
-                        .height(60.dp)
-                        .width(300.dp)
+                        .height(40.dp)
+                        .width(332.dp)
+                        .clip(RoundedCornerShape(4.dp))
                 )
             }
         }
