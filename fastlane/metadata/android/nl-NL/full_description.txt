@@ -17,8 +17,8 @@ Nu je aan de slag bent gegaan met verkopen, wil je nooit meer een bestelling of 
 Volg verkoopcijfers en bestverkopende producten
 Bekijk in één oogopslag welke producten het beste verkopen. Check je totale winst, aantal bestellingen en bezoekersgegevens per week, maand en jaar. Kennis is macht.
 
-WooCommerce op je horloge
-Bekijk moeiteloos de gegevens van je winkel van vandaag en volg je bestellingen rechtstreeks vanaf je pols met onze WooCommerce Wear OS App.
+WooCommerce om je pols
+Met onze WooCommerce Wear OS App kun je moeiteloos de gegevens van de winkel van vandaag bekijken en je bestellingen rechtstreeks vanaf je pols volgen. Dankzij onze complicaties heb je ook directe toegang tot de app.
 
 WooCommerce is 's werelds meest aanpasbare opensource eCommerce-platform. Of je nu een bedrijf start, een fysieke winkel online wil starten of sites voor klanten wil ontwikkelen: gebruik WooCommerce voor een winkel waarin content en handel gecombineerd worden.
 

@@ -18,7 +18,7 @@ Spåra försäljningar och bästsäljande produkter
 Se en överblick av vilka produkter som presterar bäst. Håll koll på dina totala intäkter, antalet beställningar och besökardata per vecka, månad och år. Kunskap = makt.
 
 WooCommerce på din klocka
-Se enkelt dagens butiksdata och spåra dina beställningar direkt från handleden med vår WooCommerce Wear OS App.
+Med vår WooCommerce Wear OS-app kan du enkelt visa dagens butiksdata och spåra dina beställningar direkt från handleden. Med våra komplikationer kan du också få omedelbar åtkomst till appen.
 
 WooCommerce är världens mest anpassningsbara e-handelsplattform med öppen källkod. Oavsett om du startar en verksamhet, tar din befintliga butik online eller om du utvecklar webbplatser åt kunder, använd WooCommerce så får du en butik som har en överlägsen kombination av innehåll och handel.
 
