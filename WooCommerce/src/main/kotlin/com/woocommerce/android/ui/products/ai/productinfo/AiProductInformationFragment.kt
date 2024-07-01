@@ -18,7 +18,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddProductWithAIFragmentV2 : BaseFragment() {
+class AiProductInformationFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
