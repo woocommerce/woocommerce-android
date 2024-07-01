@@ -78,11 +78,10 @@ class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
     private fun showAICreationFlow() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_ENTRY_POINT_TAPPED)
         val action = when (FeatureFlag.PRODUCT_CREATION_WITH_AI_V2.isEnabled()) {
-            true -> AddProductWithAIBottomSheetDirections
-                .actionAddProductWithAIBottomSheetToAddProductWithAIFragmentV2()
-
-            else -> AddProductWithAIBottomSheetDirections
-                .actionAddProductWithAIBottomSheetToAddProductWithAIFragment()
+            true ->
+                AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragmentV2()
+            else ->
+                AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragment()
         }
         findNavController().navigateSafely(action)
     }
