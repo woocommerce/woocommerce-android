@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -34,7 +33,6 @@ class WooPosTotalsViewModel @Inject constructor(
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
         private val InitialState = WooPosTotalsState.Loading
-        private const val LOADING_DELAY_MS = 100L
     }
 
     private val _state = savedState.getStateFlow<WooPosTotalsState>(
@@ -131,7 +129,6 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun loadOrderDraft(orderId: Long) {
         viewModelScope.launch {
-            delay(LOADING_DELAY_MS)
             val order = orderDetailRepository.getOrderById(orderId)
             check(order != null) { "Order must not be null" }
             check(order.items.isNotEmpty()) { "Order must have at least one item" }
