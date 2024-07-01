@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -138,16 +139,15 @@ fun WooPosPaymentSuccessScreen(
 
 @Composable
 private fun TotalsSummary(state: WooPosTotalsState.PaymentSuccess) {
-    val borderColor = Color(0xFFC6C6C8)
     Column(
         modifier = Modifier
             .border(
                 width = (0.5).dp,
-                color = borderColor,
+                color = WooPosTheme.colors.border,
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(24.dp)
-            .width(380.dp)
+            .wrapContentWidth()
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -167,7 +167,7 @@ private fun TotalsSummary(state: WooPosTotalsState.PaymentSuccess) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Divider(color = borderColor, thickness = 0.5.dp)
+        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -189,7 +189,7 @@ private fun TotalsSummary(state: WooPosTotalsState.PaymentSuccess) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Divider(color = borderColor, thickness = 0.5.dp)
+        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
 
         Spacer(modifier = Modifier.height(16.dp))
 

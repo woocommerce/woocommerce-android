@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
@@ -86,7 +87,7 @@ private fun TotalsLoaded(
     Card(
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 4.dp,
+        elevation = 0.dp,
         modifier = Modifier.padding(16.dp),
     ) {
         Column(
@@ -97,84 +98,76 @@ private fun TotalsLoaded(
         ) {
             Spacer(modifier = Modifier.weight(1f))
 
-            Surface(
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
+                    .border(
+                        width = (0.5).dp,
+                        color = WooPosTheme.colors.border,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(24.dp)
                     .wrapContentWidth()
-                    .wrapContentHeight()
-                    .background(Color.Transparent),
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, Color(0xFFBDBDBD))
             ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.woopos_payment_subtotal_label),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = state.orderSubtotalText,
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.woopos_payment_tax_label),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = state.orderTaxText,
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Column(
                     modifier = modifier
-                        .widthIn(max = 420.dp)
-                        .wrapContentHeight()
-                        .padding(12.dp),
+                        .wrapContentWidth()
+                        .wrapContentHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.woopos_payment_subtotal_label),
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = state.orderSubtotalText,
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Divider()
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.woopos_payment_tax_label),
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = state.orderTaxText,
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Divider()
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Column(
-                        modifier = modifier
-                            .wrapContentWidth()
-                            .wrapContentHeight(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.woopos_payment_total_label),
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = state.orderTotalText,
-                            style = MaterialTheme.typography.h4,
-                            color = MaterialTheme.colors.primary
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.woopos_payment_total_label),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = state.orderTotalText,
+                        style = MaterialTheme.typography.h4,
+                        color = MaterialTheme.colors.primary
+                    )
                 }
             }
 
