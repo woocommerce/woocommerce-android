@@ -111,15 +111,23 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
-                    is ParentToChildrenEvent.OrderDraftCreated -> {
-                        orderId.value = event.orderId
-                        _state.value = InitialState
-                        loadOrderDraft(event.orderId)
+                    is ParentToChildrenEvent.OrderCreation -> {
+                        when (event) {
+                            is ParentToChildrenEvent.OrderCreation.OrderCreationFailed -> TODO()
+                            is ParentToChildrenEvent.OrderCreation.OrderCreationStarted -> {
+                                _state.value = InitialState
+                            }
+
+                            is ParentToChildrenEvent.OrderCreation.OrderCreationSucceeded -> {
+                                loadOrderDraft(event.orderId)
+                            }
+                        }
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = InitialState
                     }
+
 
                     else -> Unit
                 }
