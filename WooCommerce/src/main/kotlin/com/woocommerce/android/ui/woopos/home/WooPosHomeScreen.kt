@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
@@ -12,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -59,8 +61,6 @@ private fun WooPosHomeScreen(
 
     val scrollState = rememberScrollState()
 
-    println("WooPosHomeState state - $state")
-
     LaunchedEffect(state) {
         val animationSpec = spring<Float>(
             dampingRatio = 0.8f,
@@ -81,34 +81,21 @@ private fun WooPosHomeScreen(
         }
     }
 
-    when (state) {
-        is WooPosHomeState.Cart -> {
-            when (state) {
-                WooPosHomeState.Cart.Empty -> {
-                    WooPosHomeScreen(
-                        scrollState,
-                        totalsProductsWidth + cartWidth.times(.77f),
-                        cartWidth,
-                    )
-                }
+    val totalsProductsWidthAnimated by animateDpAsState(
+        when (state) {
+            is WooPosHomeState.Cart.NotEmpty,
+            is WooPosHomeState.Checkout -> totalsProductsWidth
 
-                WooPosHomeState.Cart.NotEmpty -> {
-                    WooPosHomeScreen(
-                        scrollState,
-                        totalsProductsWidth,
-                        cartWidth,
-                    )
-                }
-            }
-        }
+            is WooPosHomeState.Cart.Empty -> totalsProductsWidth + cartWidth.times(.77f)
+        },
+        label = "totalsProductsWidthAnimated"
+    )
 
-        WooPosHomeState.Checkout ->
-            WooPosHomeScreen(
-                scrollState,
-                totalsProductsWidth,
-                cartWidth,
-            )
-    }
+    WooPosHomeScreen(
+        scrollState = scrollState,
+        totalsProductsWidth = totalsProductsWidthAnimated,
+        cartWidth = cartWidth,
+    )
 }
 
 @Composable
