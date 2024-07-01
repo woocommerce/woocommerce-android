@@ -248,21 +248,25 @@ private fun TotalsLoading(
 @Composable
 @WooPosPreview
 fun WooPosTotalsScreenPreview() {
-    WooPosTotalsScreen(
-        state = WooPosTotalsState.Totals(
-            orderSubtotalText = "$420.00",
-            orderTotalText = "$462.00",
-            orderTaxText = "$42.00",
-        ),
-        onUIEvent = {}
-    )
+    WooPosTheme {
+        WooPosTotalsScreen(
+            state = WooPosTotalsState.Totals(
+                orderSubtotalText = "$420.00",
+                orderTotalText = "$462.00",
+                orderTaxText = "$42.00",
+            ),
+            onUIEvent = {}
+        )
+    }
 }
 
 @Composable
 @WooPosPreview
 fun WooPosTotalsScreenLoadingPreview() {
-    WooPosTotalsScreen(
-        state = WooPosTotalsState.Loading,
-        onUIEvent = {}
-    )
+    WooPosTheme {
+        WooPosTotalsScreen(
+            state = WooPosTotalsState.Loading,
+            onUIEvent = {}
+        )
+    }
 }
