@@ -1,0 +1,2 @@
+19.2:
+Artık mağaza verileri ve siparişlerinde anında güncellemeler almak için yeni WearOS uygulamamızla sorunsuz şekilde senkronize edin. Ayrıca doğrudan ürün ayrıntılarından Min/Maks. Miktarlarda düzenleme desteğiyle ek esnekliğin keyfini çıkarın. Sorunsuz ve gelişmiş bir deneyim için WooCommerce uygulamanızı hemen güncelleyin!

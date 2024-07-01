@@ -1,0 +1,2 @@
+19.2:
+Ora puoi sincronizzare facilmente con la nostra app WearOS per ricevere aggiornamenti sui dati del negozio e degli ordini. Inoltre, avrai maggiore flessibilità grazie al supporto per la modifica delle Quantità min/max direttamente dai dettagli del prodotto. Aggiorna subito l'app WooCommerce per un'esperienza più fluida e ottimizzata.

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-18 11:54:03+0000
+Translation-Revision-Date: 2024-06-26 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">Zielgruppe</string>
     <string name="woopos_exit_confirmation_dismiss_button">Abbrechen</string>
     <string name="woopos_exit_confirmation_confirm_button">Beenden</string>
     <string name="woopos_exit_confirmation_message">Bist du sicher, dass du POS beenden möchtest?</string>
@@ -341,6 +342,7 @@ Language: de
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Erziele eine große Reichweite</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">„Unser Tool zeigt dein Produkt dort an, wo es von interessierten Käufern gefunden werden kann.“</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Globale Reichweite leicht gemacht</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Veröffentliche Werbung in Minutenschnelle – ohne Erfahrung oder großes Budget – schon ab 5 USD täglich.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Schneller Start, große Wirkung</string>
     <string name="blaze_campaign_creation_new_intro_description">Unser Tool ermöglicht es Händlern, Werbekampagnen schnell und einfach einzurichten, um maximalen Traffic zu erzielen.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Bewerben</string>
@@ -940,7 +942,6 @@ Language: de
     <string name="empty_max_quantity">Kein Maximalbetrag</string>
     <string name="empty_min_quantity">Kein Mindestbetrag</string>
     <string name="product_type_bundle">Paket</string>
-    <string name="quantity_rules_info_notice">Du kannst Produktmengenregeln im Web-Dashboard bearbeiten.</string>
     <string name="group_of">Gruppe von</string>
     <string name="max_quantity">Höchstmenge</string>
     <string name="min_quantity">Mindestmenge</string>

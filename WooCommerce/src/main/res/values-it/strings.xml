@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-17 17:54:04+0000
+Translation-Revision-Date: 2024-06-28 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">Pubblico</string>
     <string name="woopos_exit_confirmation_dismiss_button">Annulla</string>
     <string name="woopos_exit_confirmation_confirm_button">Esci</string>
     <string name="woopos_exit_confirmation_message">Desideri uscire da POS?</string>
@@ -341,6 +342,7 @@ Language: it
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Raggiungi un ampio pubblico</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Il nostro strumento presenta il tuo prodotto dove gli acquirenti interessati possono trovarlo\".</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Raggiungere tutto il mondo non è mai stato così facile</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Lancia annunci in pochi minuti, senza bisogno di esperienza o di grandi budget, a partire da soli $ 5 al giorno.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Avvio rapido, grande impatto</string>
     <string name="blaze_campaign_creation_new_intro_description">Il nostro strumento è stato progettato per consentire ai venditori di impostare annunci semplici e veloci per incrementare al massimo il traffico.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Promuovi</string>
@@ -940,7 +942,6 @@ Language: it
     <string name="empty_max_quantity">Nessun limite</string>
     <string name="empty_min_quantity">Nessun minimo</string>
     <string name="product_type_bundle">Pacchetto</string>
-    <string name="quantity_rules_info_notice">Puoi modificare le regole della quantità dei prodotti nella bacheca web.</string>
     <string name="group_of">Gruppi di</string>
     <string name="max_quantity">Quantità massima</string>
     <string name="min_quantity">Quantità minima</string>
