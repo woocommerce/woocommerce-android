@@ -1141,7 +1141,7 @@ platform :android do
     create_release(
       repository: GITHUB_REPO,
       # 'version' is used for the release name as well as the tag that's going to be created for the release
-      version: app == WEAR_APP ? "wear-#{version}" : version,
+      version: version,
       release_notes_file_path: METADATA_SOURCE_CHANGELOG_FILE_PATH[app],
       prerelease: prerelease,
       release_assets: release_assets.join(',')
