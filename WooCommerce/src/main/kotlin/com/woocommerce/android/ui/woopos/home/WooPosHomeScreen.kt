@@ -62,8 +62,8 @@ private fun WooPosHomeScreen(
     }
 
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
-    val cartWidth = (screenWidthDp / 3)
-    val totalsProductsWidth = (screenWidthDp / 3 * 2)
+    val cartWidth = (screenWidthDp * .35f)
+    val totalsProductsWidth = screenWidthDp - cartWidth
     val halfScreenWidthPx = with(LocalDensity.current) { totalsProductsWidth.roundToPx() }
 
     val scrollState = rememberScrollState()
