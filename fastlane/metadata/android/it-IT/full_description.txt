@@ -17,6 +17,9 @@ Ora che vendi attivamente, non perdere mai un ordine o una recensione. Tieniti a
 Tieni traccia delle vendite e dei prodotti di successo
 Visualizza in un solo colpo d'occhio quali prodotti stanno vendendo di più. Tieni sotto controllo il fatturato generale, il conteggio degli ordini e i dati dei visitatori per settimana, mese e anno. Conoscenza = forza.
 
+WooCommerce sul tuo polso
+Con la nostra app WooCommerce per Wear OS, puoi visualizzare facilmente i dati del negozio di oggi e tracciare i tuoi ordini direttamente dal polso. Grazie alle nostre complicazioni, puoi anche accedere istantaneamente all'app.
+
 WooCommerce è la piattaforma open-source di eCommerce più personalizzabile al mondo. Sia che tu stia avviando un'attività, vendendo in un negozio online e avendo anche punti vendita reali o sviluppando siti per i clienti, utilizza WooCommerce per avere un negozio che unisce in modo potente contenuto e affari.
 
 Requisiti: WooCommerce v3.5+.

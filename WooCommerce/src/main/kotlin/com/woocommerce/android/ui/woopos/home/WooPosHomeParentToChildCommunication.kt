@@ -20,7 +20,11 @@ class WooPosParentToChildrenCommunication @Inject constructor() :
 sealed class ParentToChildrenEvent {
     data object BackFromCheckoutToCartClicked : ParentToChildrenEvent()
     data class ItemClickedInProductSelector(val productId: Long) : ParentToChildrenEvent()
-    data class OrderDraftCreated(val orderId: Long) : ParentToChildrenEvent()
+    sealed class OrderCreation : ParentToChildrenEvent() {
+        data object OrderCreationStarted : OrderCreation()
+        data object OrderCreationFailed : OrderCreation()
+        data class OrderCreationSucceeded(val orderId: Long) : OrderCreation()
+    }
     data object OrderSuccessfullyPaid : ParentToChildrenEvent()
 }
 

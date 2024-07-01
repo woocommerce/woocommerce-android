@@ -17,6 +17,9 @@ Jetzt wo du aktiv Verkäufe tätigst, verpasse nie wieder eine Bestellung oder B
 Verfolge Verkäufe und Bestseller-Produkte nach
 Erfahre auf einen Blick, welche Produkte besonders erfolgreich sind. Kontrolliere deine Gesamteinnahmen, die Anzahl der Bestellungen und die Besucherdaten pro Woche, Monat und Jahr. Wissen = Macht.
 
+WooCommerce an Ihrem Handgelenk
+Mit unserer WooCommerce Wear OS App können Sie mühelos die heutigen Laden-Daten anzeigen und Ihre Bestellungen direkt von Ihrem Handgelenk aus verfolgen. Mit unseren Komplikationen haben Sie auch sofortigen Zugriff auf die App.
+
 WooCommerce ist die weltweit anpassbarste Open-Source E-Commerce-Plattform. Ganz gleich, ob du ein Geschäft eröffnest, einen Onlineauftritt für ein bereits bestehendes Geschäft aufbaust oder Websites für Kunden designst – mit WooCommerce bietet dein Shop eine attraktive Mischung aus Inhalten und Commerce.
 
 Anforderungen: WooCommerce Version 3.5 und höher.

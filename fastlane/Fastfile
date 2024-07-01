@@ -221,6 +221,9 @@ platform :android do
 
   # Updates the `PlayStoreStrings.pot` file with the latest content from the `release_notes.txt` files and the other text sources.
   #
+  # The `PlayStoreStrings.pot` file is imported into GlotPress regularly via a WPCOM cron job
+  # See https://opengrok.a8c.com/source/xref/wpcom/bin/i18n/import-github-originals.php?r=accd6334#35-40
+  #
   # @param [String] version The current `x.y` version of the app. Optional. Used to derive the `release_notes_xy` key to use in the `.pot` file.
   #
   # @example Running the lane
@@ -1111,10 +1114,11 @@ platform :android do
   # Private lanes
   #####################################################################################
 
-  # Creates a new GitHub Release for the given version.
+  # Creates a new GitHub Release for the given version. The name (and tag) of the release will be exactly as
+  # the `version` parameter, with a `w` appended in the case of a Wear OS app.
   #
   # @param [String] app The Android app to create the release for (`MOBILE_APP` or `WEAR_APP`)
-  # @param [String] version The version of the app.
+  # @param [String] version The version of the app, as in the `versionName` property from `version.properties`.
   # @param [Boolean] prerelease If true, the GitHub Release will have the prerelease flag
   #
   # @example Running the lane
@@ -1127,7 +1131,7 @@ platform :android do
 
     # We have a convention that the Wear app's version code is offset by 50000 from the Mobile app's one
     # See https://github.com/woocommerce/woocommerce-android/blob/11ae376f2922e4b2eac3f87971b8c2246e56b37b/WooCommerce-Wear/build.gradle#L29
-    version_code_offset = { MOBILE_APP: 0, WEAR_APP: 50_000 }.fetch(app, 0)
+    version_code_offset = { MOBILE_APP => 0, WEAR_APP => 50_000 }.fetch(app, 0)
     download_universal_apk_from_google_play(
       package_name: APP_PACKAGE_NAME,
       version_code: build_code_current.to_i + version_code_offset,
@@ -1141,7 +1145,7 @@ platform :android do
     create_release(
       repository: GITHUB_REPO,
       # 'version' is used for the release name as well as the tag that's going to be created for the release
-      version: app == WEAR_APP ? "wear-#{version}" : version,
+      version: app == WEAR_APP ? "#{version}w" : version,
       release_notes_file_path: METADATA_SOURCE_CHANGELOG_FILE_PATH[app],
       prerelease: prerelease,
       release_assets: release_assets.join(',')
