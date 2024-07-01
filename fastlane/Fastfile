@@ -221,6 +221,9 @@ platform :android do
 
   # Updates the `PlayStoreStrings.pot` file with the latest content from the `release_notes.txt` files and the other text sources.
   #
+  # The `PlayStoreStrings.pot` file is imported into GlotPress regularly via a WPCOM cron job
+  # See https://opengrok.a8c.com/source/xref/wpcom/bin/i18n/import-github-originals.php?r=accd6334#35-40
+  #
   # @param [String] version The current `x.y` version of the app. Optional. Used to derive the `release_notes_xy` key to use in the `.pot` file.
   #
   # @example Running the lane
