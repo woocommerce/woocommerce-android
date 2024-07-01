@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderDraftCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -89,6 +88,10 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun createOrderDraft() {
         viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.OrderCreation.OrderCreationStarted
+            )
+
             val currentState = _state.value
             _state.value = currentState.copy(isOrderCreationInProgress = true)
 
@@ -100,9 +103,14 @@ class WooPosCartViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = { order ->
-                    childrenToParentEventSender.sendToParent(OrderDraftCreated(order.id))
+                    childrenToParentEventSender.sendToParent(
+                        ChildToParentEvent.OrderCreation.OrderCreationSucceeded(order.id)
+                    )
                 },
                 onFailure = { error ->
+                    childrenToParentEventSender.sendToParent(
+                        ChildToParentEvent.OrderCreation.OrderCreationFailed
+                    )
                     Log.e("WooPosCartViewModel", "Order creation failed - $error")
                 }
             )
@@ -135,6 +143,7 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
                         _state.value = WooPosCartState()
                     }
+
                     else -> Unit
                 }
             }
