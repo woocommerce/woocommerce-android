@@ -17,6 +17,9 @@ Artık aktif olarak satış yaptığınız için hiçbir siparişi veya yorumu k
 Satışları ve en çok satan ürünleri takip edin
 Hangi ürünlerin en çok sattığını bir bakışta görün. Haftaya, aya ve yıla göre toplam gelirinizi, sipariş sayısını ve ziyaretçi verilerini takip edin. Bilgi = Güç!
 
+WooCommerce bileğinizde
+Wear OS uygulamamızla WooCommerce, bugünün mağaza verilerini kolayca görüntüleyebilir ve siparişlerinizi bileğinizden takip edebilirsiniz. Komplikasyonlarımızla, uygulamaya anında erişim de sağlayabilirsiniz.
+
 WooCommerce, dünyanın en iyi özelleştirilebilir açık kaynaklı e-ticaret platformudur. İster yeni bir iş kuruyor, ister gerçek mekandaki işinizi çevrimiçi ortama taşıyor veya müşteriler için site geliştiriyor olun, içerik ve ticareti güçlü bir şekilde harmanlayan bir mağaza için WooCommerce'i kullanın.
 
 Gereksinimler: WooCommerce v3.5 ve üzeri.
