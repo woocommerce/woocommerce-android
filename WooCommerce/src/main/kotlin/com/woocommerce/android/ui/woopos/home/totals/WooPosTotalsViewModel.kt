@@ -119,6 +119,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             }
 
                             is ParentToChildrenEvent.OrderCreation.OrderCreationSucceeded -> {
+                                orderId.value = event.orderId
                                 loadOrderDraft(event.orderId)
                             }
                         }
