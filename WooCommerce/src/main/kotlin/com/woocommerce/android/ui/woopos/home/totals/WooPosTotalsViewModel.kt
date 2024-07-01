@@ -128,7 +128,6 @@ class WooPosTotalsViewModel @Inject constructor(
                         _state.value = InitialState
                     }
 
-
                     else -> Unit
                 }
             }
