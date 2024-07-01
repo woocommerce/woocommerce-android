@@ -18,7 +18,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,7 +37,6 @@ class WooPosCartViewModel @Inject constructor(
     )
 
     val state: LiveData<WooPosCartState> = _state
-        .onEach { updateParentCartStatus(it.itemsInCart) }
         .asLiveData()
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
@@ -60,6 +58,8 @@ class WooPosCartViewModel @Inject constructor(
                 if (currentState.isOrderCreationInProgress) return
 
                 _state.value = currentState.copy(itemsInCart = currentState.itemsInCart - event.item)
+
+                updateParentCartStatus(_state.value.itemsInCart)
             }
 
             WooPosCartUIEvent.BackClicked -> {
@@ -140,6 +140,8 @@ class WooPosCartViewModel @Inject constructor(
                         _state.value = currentState.copy(
                             itemsInCart = currentState.itemsInCart + itemClicked.await()
                         )
+
+                        updateParentCartStatus(_state.value.itemsInCart)
                     }
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
@@ -200,9 +202,9 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun updateParentCartStatus(itemsInCart: List<WooPosCartListItem>) {
         if (itemsInCart.isNotEmpty()) {
-            sendEventToParent(ChildToParentEvent.CartStatus.NotEmpty)
+            sendEventToParent(ChildToParentEvent.CartStatusChanged.NotEmpty)
         } else {
-            sendEventToParent(ChildToParentEvent.CartStatus.Empty)
+            sendEventToParent(ChildToParentEvent.CartStatusChanged.Empty)
         }
     }
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
@@ -58,6 +59,8 @@ private fun WooPosHomeScreen(
 
     val scrollState = rememberScrollState()
 
+    println("WooPosHomeState state - $state")
+
     LaunchedEffect(state) {
         val animationSpec = spring<Float>(
             dampingRatio = 0.8f,
@@ -84,7 +87,7 @@ private fun WooPosHomeScreen(
                 WooPosHomeState.Cart.Empty -> {
                     WooPosHomeScreen(
                         scrollState,
-                        totalsProductsWidth + cartWidth.times(.8f),
+                        totalsProductsWidth + cartWidth.times(.77f),
                         cartWidth,
                     )
                 }
@@ -117,6 +120,7 @@ private fun WooPosHomeScreen(
     Row(
         modifier = Modifier
             .horizontalScroll(scrollState, enabled = false)
+            .fillMaxWidth()
     ) {
         Row(modifier = Modifier.width(totalsProductsWidth)) {
             Spacer(modifier = Modifier.width(40.dp))
