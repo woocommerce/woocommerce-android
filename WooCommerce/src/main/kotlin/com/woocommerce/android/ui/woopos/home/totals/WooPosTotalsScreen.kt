@@ -11,9 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -23,7 +22,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -216,54 +213,45 @@ private fun TotalsLoading(
 ) {
     Column(
         modifier = modifier
+            .background(
+                color = MaterialTheme.colors.background,
+                shape = RoundedCornerShape(16.dp),
+            )
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Spacer(modifier = Modifier.weight(1f))
-
-        Surface(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .wrapContentWidth()
-                .wrapContentHeight()
-                .background(Color.Transparent),
+        Column(
+            modifier = modifier
+                .wrapContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            Column(
-                modifier = modifier
-                    .widthIn(max = 420.dp)
-                    .wrapContentHeight()
-                    .padding(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .height(24.dp)
-                        .width(332.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                )
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .height(24.dp)
+                    .width(332.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            )
 
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .height(24.dp)
-                        .width(332.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                )
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .height(24.dp)
+                    .width(332.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            )
 
-                Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .width(332.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                )
-            }
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(332.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            )
         }
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
