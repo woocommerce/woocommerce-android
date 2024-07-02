@@ -1,12 +1,16 @@
 package com.woocommerce.android.ui.woopos.root
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -79,13 +83,7 @@ private fun CardReaderStatus(
     ) {
         when (state.value.cardReaderStatus) {
             WooPosCardReaderStatus.Connected -> {
-                Icon(
-                    painter = painterResource(
-                        id = R.drawable.woopos_ic_reader_connected
-                    ),
-                    contentDescription = null,
-                    tint = Color.Unspecified
-                )
+                ReaderStatus(Color(0xFF03D479))
             }
 
             WooPosCardReaderStatus.NotConnected -> {
@@ -94,6 +92,10 @@ private fun CardReaderStatus(
                     contentDescription = null,
                     tint = Color.Unspecified
                 )
+            }
+
+            WooPosCardReaderStatus.Connecting -> {
+                ReaderStatus(Color(0xFF999999))
             }
 
             else -> Unit
@@ -115,6 +117,13 @@ private fun CardReaderStatus(
     }
 }
 
+@Composable
+private fun ReaderStatus(color: Color) {
+    Box(modifier = Modifier
+        .size(12.dp)
+        .background(color = color, shape = CircleShape))
+}
+
 @WooPosPreview
 @Composable
 fun PreviewWooPosBottomToolbar() {
@@ -131,5 +140,53 @@ fun PreviewWooPosBottomToolbar() {
             Spacer(modifier = Modifier.weight(1f))
             WooPosBottomToolbar(state) {}
         }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun PreviewCardReaderStatusConnecting() {
+    val state = remember {
+        mutableStateOf(
+            WooPosRootScreenState(
+                WooPosCardReaderStatus.Connecting,
+                null
+            )
+        )
+    }
+    WooPosTheme {
+        CardReaderStatus(state) {}
+    }
+}
+
+@WooPosPreview
+@Composable
+fun PreviewCardReaderStatusNotConnected() {
+    val state = remember {
+        mutableStateOf(
+            WooPosRootScreenState(
+                WooPosCardReaderStatus.NotConnected,
+                null
+            )
+        )
+    }
+    WooPosTheme {
+        CardReaderStatus(state) {}
+    }
+}
+
+@WooPosPreview
+@Composable
+fun PreviewCardReaderStatusConnected() {
+    val state = remember {
+        mutableStateOf(
+            WooPosRootScreenState(
+                WooPosCardReaderStatus.Connected,
+                null
+            )
+        )
+    }
+    WooPosTheme {
+        CardReaderStatus(state) {}
     }
 }
