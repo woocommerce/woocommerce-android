@@ -16,7 +16,7 @@ import javax.inject.Inject
 class AiProductPromptViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedState = savedStateHandle) {
-    private val productFeatures = savedStateHandle.getStateFlow(
+    private val _state = savedStateHandle.getStateFlow(
         viewModelScope,
         AiProductPromptState(
             productPrompt = "",
@@ -24,11 +24,24 @@ class AiProductPromptViewModel @Inject constructor(
         )
     )
 
+    val state = _state.asLiveData()
+
     fun onBackButtonClick() {
         triggerEvent(Exit)
     }
 
-    val state = productFeatures.asLiveData()
+    fun onPromptUpdated(prompt: String) {
+        _state.value = _state.value.copy(productPrompt = prompt)
+    }
+
+    fun onReadTextFromProductPhoto() {
+        TODO("Not yet implemented")
+    }
+
+    fun onGenerateProductClicked() {
+        TODO("Not yet implemented")
+    }
+
 
     @Parcelize
     data class AiProductPromptState(
