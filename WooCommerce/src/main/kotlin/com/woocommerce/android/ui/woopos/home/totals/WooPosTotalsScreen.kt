@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
-import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 
 @Composable
@@ -71,7 +70,6 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
                         state = state,
                         onUIEvent = onUIEvent
                     )
-                    WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
                 }
 
                 is WooPosTotalsState.PaymentSuccess -> {
