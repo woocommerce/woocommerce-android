@@ -34,12 +34,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 
 @Composable
@@ -201,4 +203,19 @@ private fun ProductPromptTextField(
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun AiProductPromptScreenPreview() {
+    AiProductPromptScreen(
+        uiState = AiProductPromptState(
+            productPrompt = "Product prompt test",
+            selectedAiTone = AiTone.Casual
+        ),
+        onBackButtonClick = {},
+        onPromptUpdated = {},
+        onReadTextFromProductPhoto = {},
+        onGenerateProductClicked = {}
+    )
 }
