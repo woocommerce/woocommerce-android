@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.ai.productinfo
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -91,21 +94,26 @@ fun AiProductPromptScreen(
     ) { padding ->
         Column(
             modifier = Modifier
+                .background(MaterialTheme.colors.surface)
                 .padding(padding)
                 .padding(16.dp)
                 .fillMaxSize()
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
-                    text = stringResource(id = R.string.ai_product_creation_add_name_title),
+                    text = stringResource(id = R.string.ai_product_creation_product_prompt_title),
                     style = MaterialTheme.typography.h5
                 )
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                 Text(
-                    text = stringResource(id = R.string.ai_product_creation_add_name_subtitle),
+                    text = stringResource(id = R.string.ai_product_creation_product_prompt_subtitle),
                     style = MaterialTheme.typography.subtitle1,
                     color = colorResource(id = R.color.color_on_surface_medium)
                 )
@@ -142,12 +150,6 @@ private fun ProductPromptTextField(
 ) {
     var isFocused by remember { mutableStateOf(false) }
     Column {
-        Text(
-            text = stringResource(id = R.string.ai_product_creation_add_name_keywords_label),
-            style = MaterialTheme.typography.body2,
-            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         Column(
             modifier = Modifier
                 .fillMaxWidth()
