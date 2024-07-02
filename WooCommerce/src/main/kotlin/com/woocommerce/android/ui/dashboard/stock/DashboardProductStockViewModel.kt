@@ -100,8 +100,8 @@ class DashboardProductStockViewModel @AssistedInject constructor(
     private fun trackEventForStockCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
             stat = event,
-            properties = properties
-                + (AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STOCK.trackingIdentifier),
+            properties = properties +
+                (AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STOCK.trackingIdentifier),
         )
     }
 
