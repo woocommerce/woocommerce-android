@@ -92,7 +92,10 @@ private fun WooPosProductsScreen(
                 ProductsLoadingIndicator()
             }
 
-            WooPosProductsViewState.Empty -> TODO()
+            WooPosProductsViewState.Empty -> {
+                ProductsEmptyList()
+            }
+
             WooPosProductsViewState.Error -> TODO()
         }
     }
@@ -241,6 +244,20 @@ private fun ProductItem(
 }
 
 @Composable
+fun ProductsEmptyList() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.woopos_products_empty_list),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
 private fun InfiniteListHandler(
     listState: LazyListState,
     onEndOfProductsListReached: () -> Unit
@@ -309,6 +326,19 @@ fun WooPosHomeScreenPreview() {
 @WooPosPreview
 fun WooPosHomeScreenLoadingPreview() {
     val productState = MutableStateFlow(WooPosProductsViewState.Loading)
+    WooPosTheme {
+        WooPosProductsScreen(
+            productsStateFlow = productState,
+            onItemClicked = {},
+            onEndOfProductsGridReached = {}
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosHomeScreenEmptyListPreview() {
+    val productState = MutableStateFlow(WooPosProductsViewState.Empty)
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,
