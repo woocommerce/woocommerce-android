@@ -3,12 +3,10 @@ package com.woocommerce.android.ui.woopos.home.totals
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
-import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbarState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -72,27 +70,8 @@ class WooPosTotalsViewModel @Inject constructor(
                             childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
                         }
 
-                        is WooPosCardReaderPaymentResult.Failure -> {
-                            when (val state = state.value) {
-                                is WooPosTotalsState.Totals -> {
-                                    _state.value = state.copy(
-                                        snackbar = WooPosSnackbarState.Triggered(
-                                            R.string.woopos_payment_failed_please_try_again
-                                        )
-                                    )
-                                }
-
-                                else -> Unit
-                            }
-                        }
+                        else -> Unit
                     }
-                }
-            }
-
-            WooPosTotalsUIEvent.SnackbarDismissed -> {
-                when (val state = state.value) {
-                    is WooPosTotalsState.Totals -> _state.value = state.copy(snackbar = WooPosSnackbarState.Hidden)
-                    else -> Unit
                 }
             }
 
@@ -111,10 +90,18 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
-                    is ParentToChildrenEvent.OrderDraftCreated -> {
-                        orderId.value = event.orderId
-                        _state.value = InitialState
-                        loadOrderDraft(event.orderId)
+                    is ParentToChildrenEvent.OrderCreation -> {
+                        when (event) {
+                            is ParentToChildrenEvent.OrderCreation.OrderCreationFailed -> TODO()
+                            is ParentToChildrenEvent.OrderCreation.OrderCreationStarted -> {
+                                _state.value = InitialState
+                            }
+
+                            is ParentToChildrenEvent.OrderCreation.OrderCreationSucceeded -> {
+                                orderId.value = event.orderId
+                                loadOrderDraft(event.orderId)
+                            }
+                        }
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
