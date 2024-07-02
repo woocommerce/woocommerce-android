@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -150,9 +149,7 @@ private fun WooPosHomeScreen(
                 backgroundColor = MaterialTheme.colors.surface,
                 elevation = 4.dp
             ) {
-
                 Row(modifier = Modifier.width(cartWidthDp + totalsWidthDp)) {
-
                     Row(modifier = Modifier.width(cartWidthDp)) {
                         Spacer(modifier = Modifier.width(24.dp))
                         Box {
