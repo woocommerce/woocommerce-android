@@ -72,7 +72,7 @@ class WooPosProductsViewModel @Inject constructor(
             return
         }
 
-        if (!productsDataSource.hasMorePages.get()) {
+        if (!productsDataSource.hasMorePages) {
             return
         }
 
