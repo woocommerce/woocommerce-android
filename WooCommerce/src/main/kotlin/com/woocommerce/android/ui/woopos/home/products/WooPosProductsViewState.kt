@@ -7,6 +7,7 @@ sealed class WooPosProductsViewState {
     data class Content(
         val products: List<WooPosProductsListItem>,
         val loadingMore: Boolean,
+        val refreshingProducts: Boolean,
     ) : WooPosProductsViewState()
     data object Loading : WooPosProductsViewState()
     data object Error : WooPosProductsViewState()

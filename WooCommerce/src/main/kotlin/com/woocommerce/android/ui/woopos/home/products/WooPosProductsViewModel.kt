@@ -49,6 +49,19 @@ class WooPosProductsViewModel @Inject constructor(
             is WooPosProductsUIEvent.ItemClicked -> {
                 onItemClicked(event.item)
             }
+
+            WooPosProductsUIEvent.PullToRefreshTriggered -> {
+                reloadProducts()
+            }
+        }
+    }
+
+    private fun reloadProducts() {
+        viewModelScope.launch {
+            if (viewState.value !is WooPosProductsViewState.Content) return@launch
+            _viewState.value = (viewState.value as WooPosProductsViewState.Content).copy(refreshingProducts = true)
+            productsDataSource.loadSimpleProducts()
+            _viewState.value = (viewState.value as WooPosProductsViewState.Content).copy(refreshingProducts = false)
         }
     }
 
@@ -64,6 +77,7 @@ class WooPosProductsViewModel @Inject constructor(
             )
         },
         loadingMore = false,
+        refreshingProducts = false,
     )
 
     private fun onEndOfProductsGridReached() {

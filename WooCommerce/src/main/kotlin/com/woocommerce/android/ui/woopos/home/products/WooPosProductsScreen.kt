@@ -20,8 +20,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,11 +51,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductsGridReached
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.PullToRefreshTriggered
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WooPosProductsScreen() {
     val productsViewModel: WooPosProductsViewModel = hiltViewModel()
@@ -59,14 +65,17 @@ fun WooPosProductsScreen() {
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
         onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductsGridReached) },
+        onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) }
     )
 }
 
+@ExperimentalMaterialApi
 @Composable
 private fun WooPosProductsScreen(
     productsStateFlow: StateFlow<WooPosProductsViewState>,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
+    onPullToRefresh: () -> Unit,
 ) {
     Column(
         Modifier
@@ -85,7 +94,7 @@ private fun WooPosProductsScreen(
 
         when (val productsState = state.value) {
             is WooPosProductsViewState.Content -> {
-                ProductsList(productsState, onItemClicked, onEndOfProductsGridReached)
+                ProductsList(productsState, onItemClicked, onEndOfProductsGridReached, onPullToRefresh)
             }
 
             WooPosProductsViewState.Loading -> {
@@ -98,36 +107,48 @@ private fun WooPosProductsScreen(
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 private fun ProductsList(
     state: WooPosProductsViewState.Content,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsListReached: () -> Unit,
+    onPullToRefresh: () -> Unit,
 ) {
-    val listState = rememberLazyListState()
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(2.dp),
-        state = listState
+    val pullToRefreshState = rememberPullRefreshState(state.refreshingProducts, onPullToRefresh)
+    Box(
+        modifier = Modifier.pullRefresh(pullToRefreshState),
     ) {
-        items(
-            state.products,
-            key = { product -> product.id }
-        ) { product ->
-            ProductItem(item = product, onItemClicked = onItemClicked)
-        }
+        val listState = rememberLazyListState()
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(2.dp),
+            state = listState
+        ) {
+            items(
+                state.products,
+                key = { product -> product.id }
+            ) { product ->
+                ProductItem(item = product, onItemClicked = onItemClicked)
+            }
 
-        if (state.loadingMore) {
+            if (state.loadingMore) {
+                item {
+                    ProductLoadingItem()
+                }
+            }
             item {
-                ProductLoadingItem()
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = state.refreshingProducts,
+            state = pullToRefreshState
+        )
+        InfiniteListHandler(listState) {
+            onEndOfProductsListReached()
         }
-    }
-    InfiniteListHandler(listState) {
-        onEndOfProductsListReached()
     }
 }
 
@@ -266,6 +287,7 @@ private fun InfiniteListHandler(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
 fun WooPosHomeScreenPreview() {
@@ -294,17 +316,20 @@ fun WooPosHomeScreenPreview() {
                 ),
             ),
             loadingMore = true,
+            refreshingProducts = true,
         )
     )
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,
             onItemClicked = {},
-            onEndOfProductsGridReached = {}
+            onEndOfProductsGridReached = {},
+            onPullToRefresh = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
 fun WooPosHomeScreenLoadingPreview() {
@@ -313,7 +338,8 @@ fun WooPosHomeScreenLoadingPreview() {
         WooPosProductsScreen(
             productsStateFlow = productState,
             onItemClicked = {},
-            onEndOfProductsGridReached = {}
+            onEndOfProductsGridReached = {},
+            onPullToRefresh = {},
         )
     }
 }
