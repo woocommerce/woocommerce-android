@@ -49,7 +49,6 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         searchType: SearchType,
     ): Result<Unit> = mutex.withLock {
         offset.value = 0
-        canLoadMore.set(true)
         searchResults.value = emptyList()
 
         this.searchQuery.value = searchQuery
