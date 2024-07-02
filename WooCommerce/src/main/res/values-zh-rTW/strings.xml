@@ -11,7 +11,7 @@ Language: zh_TW
     <string name="woopos_exit_confirmation_confirm_button">結束</string>
     <string name="woopos_exit_confirmation_message">你確定要結束 POS 嗎？</string>
     <string name="woopos_exit_confirmation_title">結束 POS</string>
-    <string name="woo_pos_car_pane_title">購物車</string>
+    <string name="woopos_car_pane_title">購物車</string>
     <string name="woopos_remove_item_from_cart_content_description">從購物車移除項目</string>
     <string name="woopos_checkout_button">結帳</string>
     <string name="woopos_reader_unknown">讀卡機狀態不明</string>

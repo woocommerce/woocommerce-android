@@ -11,7 +11,7 @@ Language: id
     <string name="woopos_exit_confirmation_confirm_button">Keluar</string>
     <string name="woopos_exit_confirmation_message">Anda yakin ingin keluar dari POS?</string>
     <string name="woopos_exit_confirmation_title">Keluar dari POS</string>
-    <string name="woo_pos_car_pane_title">Keranjang</string>
+    <string name="woopos_car_pane_title">Keranjang</string>
     <string name="woopos_remove_item_from_cart_content_description">Hapus item dari keranjang</string>
     <string name="woopos_checkout_button">Checkout</string>
     <string name="woopos_reader_unknown">Status Pembaca Tidak Diketahui</string>

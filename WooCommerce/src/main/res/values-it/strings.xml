@@ -11,7 +11,7 @@ Language: it
     <string name="woopos_exit_confirmation_confirm_button">Esci</string>
     <string name="woopos_exit_confirmation_message">Desideri uscire da POS?</string>
     <string name="woopos_exit_confirmation_title">Esci da POS</string>
-    <string name="woo_pos_car_pane_title">Carrello</string>
+    <string name="woopos_car_pane_title">Carrello</string>
     <string name="woopos_remove_item_from_cart_content_description">Rimuovi elemento dal carrello</string>
     <string name="woopos_checkout_button">Pagamento</string>
     <string name="woopos_reader_unknown">Stato del lettore sconosciuto</string>

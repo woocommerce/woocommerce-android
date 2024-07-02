@@ -11,7 +11,7 @@ Language: es
     <string name="woopos_exit_confirmation_confirm_button">Salir</string>
     <string name="woopos_exit_confirmation_message">¿Estás seguro que quieres salir del punto de venta?</string>
     <string name="woopos_exit_confirmation_title">Salir del punto de venta</string>
-    <string name="woo_pos_car_pane_title">Carrito</string>
+    <string name="woopos_car_pane_title">Carrito</string>
     <string name="woopos_remove_item_from_cart_content_description">Eliminar elemento del carrito</string>
     <string name="woopos_checkout_button">Finalizar compra</string>
     <string name="woopos_reader_unknown">Estado del lector desconocido</string>

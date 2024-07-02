@@ -9,7 +9,7 @@ Language: pt_BR
     <string name="blaze_campaign_preview_audience_section_title">Público</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancelar</string>
     <string name="woopos_exit_confirmation_confirm_button">Sair</string>
-    <string name="woo_pos_car_pane_title">Carrinho</string>
+    <string name="woopos_car_pane_title">Carrinho</string>
     <string name="woopos_remove_item_from_cart_content_description">Remover item do carrinho</string>
     <string name="woopos_exit_confirmation_message">Tem certeza de que deseja sair do PDV?</string>
     <string name="woopos_exit_confirmation_title">Sair do PDV</string>

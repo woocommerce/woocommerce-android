@@ -11,7 +11,7 @@ Language: ko_KR
     <string name="woopos_exit_confirmation_confirm_button">종료</string>
     <string name="woopos_exit_confirmation_message">POS를 종료하시겠어요?</string>
     <string name="woopos_exit_confirmation_title">POS 종료</string>
-    <string name="woo_pos_car_pane_title">장바구니</string>
+    <string name="woopos_car_pane_title">장바구니</string>
     <string name="woopos_remove_item_from_cart_content_description">장바구니에서 아이템 빼기</string>
     <string name="woopos_checkout_button">체크아웃</string>
     <string name="woopos_reader_unknown">리더 상태 알 수 없음</string>

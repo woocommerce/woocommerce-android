@@ -4132,7 +4132,7 @@
     <string name="woopos_reader_unknown">Reader Status Unknown</string>
     <string name="woopos_checkout_button">Check out</string>
     <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
-    <string name="woo_pos_car_pane_title">Cart</string>
+    <string name="woopos_car_pane_title">Cart</string>
     <string name="woo_pos_clear_cart_button">Clear all</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
