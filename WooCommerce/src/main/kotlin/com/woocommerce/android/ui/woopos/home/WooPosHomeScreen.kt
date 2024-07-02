@@ -72,7 +72,8 @@ private fun WooPosHomeScreen(
     val totalsWidthAnimatedDp by animateDpAsState(
         when (state) {
             is WooPosHomeState.Checkout.Paid -> screenWidthDp
-            else -> totalsWidthDp
+            is WooPosHomeState.Cart,
+            WooPosHomeState.Checkout.NotPaid -> totalsWidthDp
         },
         label = "totalsWidthAnimatedDp"
     )
@@ -81,7 +82,8 @@ private fun WooPosHomeScreen(
         when (state) {
             is WooPosHomeState.Cart.Empty -> productsWidthDp + cartWidthDp.times(.77f)
             is WooPosHomeState.Checkout.Paid -> productsWidthDp - cartWidthDp
-            else -> productsWidthDp
+            WooPosHomeState.Cart.NotEmpty,
+            WooPosHomeState.Checkout.NotPaid -> productsWidthDp
         },
         label = "productsWidthAnimatedDp"
     )
@@ -89,19 +91,31 @@ private fun WooPosHomeScreen(
     val cartOverlayIntensityAnimated by animateFloatAsState(
         when (state) {
             is WooPosHomeState.Cart.Empty -> .4f
-            else -> 0f
+            WooPosHomeState.Cart.NotEmpty,
+            WooPosHomeState.Checkout.NotPaid,
+            WooPosHomeState.Checkout.Paid -> 0f
         },
         label = "cartOverlayAnimated"
     )
 
-    val scrollState = buildScrollStateForNavigationBetweenState(state)
+    val totalsStartPaddingDp = remember(state) {
+        when (state) {
+            WooPosHomeState.Cart.Empty,
+            WooPosHomeState.Cart.NotEmpty,
+            WooPosHomeState.Checkout.NotPaid -> 0.dp
 
+            WooPosHomeState.Checkout.Paid -> 24.dp
+        }
+    }
+
+    val scrollState = buildScrollStateForNavigationBetweenState(state)
     WooPosHomeScreen(
         scrollState = scrollState,
         productsWidthDp = productsWidthAnimatedDp,
         cartWidthDp = cartWidthDp,
         cartOverlayIntensity = cartOverlayIntensityAnimated,
         totalsWidthDp = totalsWidthAnimatedDp,
+        totalsStartPaddingDp = totalsStartPaddingDp,
     )
 }
 
@@ -112,6 +126,7 @@ private fun WooPosHomeScreen(
     cartWidthDp: Dp,
     cartOverlayIntensity: Float,
     totalsWidthDp: Dp,
+    totalsStartPaddingDp: Dp,
 ) {
     Row(
         modifier = Modifier
@@ -149,9 +164,10 @@ private fun WooPosHomeScreen(
             Spacer(modifier = Modifier.width(24.dp))
         }
         Row(modifier = Modifier.width(totalsWidthDp)) {
+            Spacer(modifier = Modifier.width(totalsStartPaddingDp))
             WooPosTotalsScreen(
                 modifier = Modifier
-                    .width(totalsWidthDp - 24.dp)
+                    .width(totalsWidthDp - 24.dp - totalsStartPaddingDp)
                     .padding(vertical = 24.dp)
             )
             Spacer(modifier = Modifier.width(24.dp))
