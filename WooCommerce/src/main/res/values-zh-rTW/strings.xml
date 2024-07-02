@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-18 09:54:03+0000
+Translation-Revision-Date: 2024-06-27 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">受眾</string>
     <string name="woopos_exit_confirmation_dismiss_button">取消</string>
     <string name="woopos_exit_confirmation_confirm_button">結束</string>
     <string name="woopos_exit_confirmation_message">你確定要結束 POS 嗎？</string>
@@ -341,6 +342,7 @@ Language: zh_TW
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">觸及廣大受眾</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">「我們的工具會讓感興趣的消費者找到你的產品。」</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">輕鬆觸及全球受眾</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">即便無經驗或高額預算，只需幾分鐘也能發布廣告，每日費用 5 美元起。</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">快速起步，效應非凡</string>
     <string name="blaze_campaign_creation_new_intro_description">我們的工具可為商店提供快速簡單的廣告行銷活動設定，助你衝刺最佳流量表現。</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">宣傳</string>
@@ -940,7 +942,6 @@ Language: zh_TW
     <string name="empty_max_quantity">無最高限制</string>
     <string name="empty_min_quantity">無最低消費</string>
     <string name="product_type_bundle">搭售方案</string>
-    <string name="quantity_rules_info_notice">你可以在網頁儀表板中編輯產品的數量規則。</string>
     <string name="group_of">數量單位</string>
     <string name="max_quantity">數量上限</string>
     <string name="min_quantity">數量下限</string>

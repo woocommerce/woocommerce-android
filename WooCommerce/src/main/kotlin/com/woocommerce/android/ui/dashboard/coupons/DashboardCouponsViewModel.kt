@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transformLatest
@@ -72,6 +73,9 @@ class DashboardCouponsViewModel @AssistedInject constructor(
 
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
+        .onEach {
+            trackEventForCouponsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
+        }
 
     private var couponsReportCache = mutableMapOf<StatsTimeRange, List<CouponPerformanceReport>>()
 
@@ -95,7 +99,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
 
     val viewState = selectedDateRange.flatMapLatest { rangeSelection ->
         refreshTrigger
-            .onStart { emit(RefreshEvent()) }
+            .onStart {
+                trackEventForCouponsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
+                emit(RefreshEvent())
+            }
             .transformLatest {
                 if (it.isForced || !couponsReportCache.containsKey(rangeSelection.currentRange)) {
                     emit(State.Loading)
@@ -103,7 +110,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                 emitAll(
                     observeCouponUiModels(rangeSelection.currentRange, it.isForced).map { result ->
                         result.fold(
-                            onSuccess = { coupons -> State.Loaded(coupons) },
+                            onSuccess = { coupons ->
+                                trackEventForCouponsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
+                                State.Loaded(coupons)
+                            },
                             onFailure = { error ->
                                 when {
                                     error is WooException && error.error.type == WooErrorType.API_NOT_FOUND ->
@@ -161,12 +171,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }
 
     fun onRetryClicked() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.COUPONS.trackingIdentifier
-            )
-        )
+        trackEventForCouponsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         _refreshTrigger.tryEmit(RefreshEvent())
     }
 
@@ -263,6 +268,13 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                         launch { fetchCoupons() }
                     }
                 }
+        )
+    }
+
+    private fun trackEventForCouponsCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.COUPONS.trackingIdentifier)
         )
     }
 

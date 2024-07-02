@@ -8,8 +8,15 @@ import androidx.compose.material.Surface
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.ui.compose.theme.WooTypography
+
+data class CustomColors(
+    val loadingSkeleton: Color,
+    val border: Color
+)
 
 private val DarkColorPalette = darkColors(
     primary = Color(0xFF9C70D3),
@@ -35,6 +42,20 @@ private val LightColorPalette = lightColors(
     onBackground = Color.Black,
 )
 
+private val DarkCustomColors = CustomColors(
+    loadingSkeleton = Color(0xFF616161),
+    border = Color(0xFF8D8D8D)
+)
+
+private val LightCustomColors = CustomColors(
+    loadingSkeleton = Color(0xFFE1E1E1),
+    border = Color(0xFFC6C6C8)
+)
+
+private val LocalCustomColors = staticCompositionLocalOf {
+    LightCustomColors
+}
+
 @Composable
 fun WooPosTheme(content: @Composable () -> Unit) {
     val colors = if (isSystemInDarkTheme()) {
@@ -43,11 +64,19 @@ fun WooPosTheme(content: @Composable () -> Unit) {
         LightColorPalette
     }
 
-    MaterialTheme(
-        colors = colors,
-        typography = WooTypography,
-    ) {
-        SurfacedContent(content)
+    val customColors = if (isSystemInDarkTheme()) {
+        DarkCustomColors
+    } else {
+        LightCustomColors
+    }
+
+    CompositionLocalProvider(LocalCustomColors provides customColors) {
+        MaterialTheme(
+            colors = colors,
+            typography = WooTypography,
+        ) {
+            SurfacedContent(content)
+        }
     }
 }
 
@@ -58,4 +87,10 @@ private fun SurfacedContent(
     Surface(color = MaterialTheme.colors.background) {
         content()
     }
+}
+
+object WooPosTheme {
+    val colors: CustomColors
+        @Composable
+        get() = LocalCustomColors.current
 }

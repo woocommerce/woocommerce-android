@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-19 09:54:05+0000
+Translation-Revision-Date: 2024-06-28 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">קהל</string>
     <string name="woopos_exit_confirmation_dismiss_button">ביטול</string>
     <string name="woopos_exit_confirmation_confirm_button">יציאה</string>
     <string name="woopos_exit_confirmation_message">האם ברצונך לצאת מ-POS?</string>
@@ -341,6 +342,7 @@ Language: he_IL
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">לגשת לקהל עצום</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"הכלי שלנו מציג את המוצר שלך במקומות שבהם לקוחות מעוניינים יוכלו למצוא אותו.\"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">חשיפה עולמית, בלי להסתבך</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">אפשר להפיץ פרסומות בתוך דקות – אין צורך בניסיון או בתקציב גדול, אפשר להתחיל בעלות של 5 $ בלבד ליום.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">התחלה מהירה, השפעה גדולה</string>
     <string name="blaze_campaign_creation_new_intro_description">הכלי שלנו מתוכנן כך שיקדם סוחרים בעזרת הגדרה מהירה ופשוטה של מבצע פרסומות, להגברה מרבית של התעבורה.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">לקדם</string>
@@ -940,7 +942,6 @@ Language: he_IL
     <string name="empty_max_quantity">ללא מקסימום</string>
     <string name="empty_min_quantity">ללא מינימום</string>
     <string name="product_type_bundle">חבילה</string>
-    <string name="quantity_rules_info_notice">אפשר לערוך את כללי הכמות של המוצר בלוח הבקרה שבאתר האינטרנט.</string>
     <string name="group_of">קבוצה של</string>
     <string name="max_quantity">כמות מקסימלית</string>
     <string name="min_quantity">כמות מינימלית</string>

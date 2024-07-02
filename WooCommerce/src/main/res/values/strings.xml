@@ -2176,6 +2176,7 @@
     <string name="product_creation_ai_entry_sheet_header">Add a product</string>
     <string name="product_creation_ai_entry_sheet_ai_option_title">Create a product with AI</string>
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Quickly generate details for you</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Let us generate product details for you</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
@@ -3658,6 +3659,7 @@
     <string name="min_quantity">Minimum quantity</string>
     <string name="max_quantity">Maximum quantity</string>
     <string name="group_of">Group of</string>
+    <string name="no_quantity_rules">No Quantity Rules</string>
 
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
@@ -4138,6 +4140,15 @@
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woo_pos_items_in_cart">%d items</string>
+    <string name="woopos_product_image_description">Product Image</string>
+    <string name="woopos_products_screen_title">Products</string>
     <string name="woo_pos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
+    <string name="woopos_payment_successful_label">Payment successful</string>
+    <string name="woo_pos_new_transaction_button">New transaction</string>
+    <string name="woopos_payment_subtotal_label">Subtotal</string>
+    <string name="woopos_payment_tax_label">Tax</string>
+    <string name="woopos_payment_total_label">Total</string>
+    <string name="woopos_payment_collect_payment_label">Collect card payment</string>
+
 </resources>

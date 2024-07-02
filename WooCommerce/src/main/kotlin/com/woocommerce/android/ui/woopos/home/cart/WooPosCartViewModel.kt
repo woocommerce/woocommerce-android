@@ -10,10 +10,10 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderDraftCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +27,7 @@ class WooPosCartViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val repository: WooPosCartRepository,
     private val resourceProvider: ResourceProvider,
+    private val formatPrice: WooPosFormatPrice,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -87,23 +88,29 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun createOrderDraft() {
         viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.OrderCreation.OrderCreationStarted
+            )
+
             val currentState = _state.value
             _state.value = currentState.copy(isOrderCreationInProgress = true)
 
             val result = repository.createOrderWithProducts(
-                productIds = currentState.itemsInCart.map {
-                    it.productId
-                }
+                productIds = currentState.itemsInCart.map { it.id.productId }
             )
 
             _state.value = _state.value.copy(isOrderCreationInProgress = false)
 
             result.fold(
                 onSuccess = { order ->
-                    Log.d("WooPosCartViewModel", "Order created successfully - $order")
-                    childrenToParentEventSender.sendToParent(OrderDraftCreated(order.id))
+                    childrenToParentEventSender.sendToParent(
+                        ChildToParentEvent.OrderCreation.OrderCreationSucceeded(order.id)
+                    )
                 },
                 onFailure = { error ->
+                    childrenToParentEventSender.sendToParent(
+                        ChildToParentEvent.OrderCreation.OrderCreationFailed
+                    )
                     Log.e("WooPosCartViewModel", "Order creation failed - $error")
                 }
             )
@@ -122,13 +129,19 @@ class WooPosCartViewModel @Inject constructor(
                         if (_state.value.isOrderCreationInProgress) return@collect
 
                         val itemClicked = viewModelScope.async {
-                            repository.getProductById(event.productId)?.toCartListItem()!!
+                            val product = repository.getProductById(event.productId)!!
+                            val itemNumber = (_state.value.itemsInCart.maxOfOrNull { it.id.itemNumber } ?: 0) + 1
+                            product.toCartListItem(itemNumber)
                         }
 
                         val currentState = _state.value
                         _state.value = currentState.copy(
                             itemsInCart = currentState.itemsInCart + itemClicked.await()
                         )
+                    }
+
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
+                        _state.value = WooPosCartState()
                     }
 
                     else -> Unit
@@ -188,10 +201,12 @@ class WooPosCartViewModel @Inject constructor(
             childrenToParentEventSender.sendToParent(event)
         }
     }
-}
 
-private fun Product.toCartListItem(): WooPosCartListItem =
-    WooPosCartListItem(
-        productId = remoteId,
-        title = name
-    )
+    private suspend fun Product.toCartListItem(itemNumber: Int): WooPosCartListItem =
+        WooPosCartListItem(
+            id = WooPosCartListItem.Id(productId = remoteId, itemNumber = itemNumber),
+            name = name,
+            price = formatPrice(price),
+            imageUrl = firstImageUrl
+        )
+}

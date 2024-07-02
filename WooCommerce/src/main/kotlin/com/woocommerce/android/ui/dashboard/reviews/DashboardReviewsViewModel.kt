@@ -65,11 +65,13 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         }
         .transformLatest { (refresh, status) ->
             emit(ViewState.Loading(status))
+            trackEventForReviewsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
             emitAll(
                 observeMostRecentReviews(forceRefresh = refresh.isForced, status = status)
                     .map { result ->
                         result.fold(
                             onSuccess = { reviews ->
+                                trackEventForReviewsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                                 ViewState.Success(reviews, status)
                             },
                             onFailure = { ViewState.Error }
@@ -95,12 +97,7 @@ class DashboardReviewsViewModel @AssistedInject constructor(
     }
 
     fun onRetryClicked() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.REVIEWS.trackingIdentifier
-            )
-        )
+        trackEventForReviewsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
 
@@ -162,6 +159,13 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         }.filter {
             it.status != ProductReviewStatus.TRASH.toString() && it.status != ProductReviewStatus.SPAM.toString()
         }
+    }
+
+    private fun trackEventForReviewsCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.REVIEWS.trackingIdentifier)
+        )
     }
 
     sealed interface ViewState {

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-20 11:54:03+0000
+Translation-Revision-Date: 2024-06-26 14:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="blaze_campaign_preview_audience_section_title">Hedef Kitle</string>
     <string name="woopos_exit_confirmation_dismiss_button">İptal Et</string>
     <string name="woopos_exit_confirmation_confirm_button">Çıkış</string>
     <string name="woopos_exit_confirmation_message">POS\'tan çıkmak istediğinizden emin misiniz?</string>
@@ -341,6 +342,7 @@ Language: tr
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Geniş bir kitleye ulaşın</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Aracımız, ürününüzü ilgilenen müşterilerin bulabileceği bir yerde sunar.\"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Küresel ağa erişmek artık daha kolay</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Dakikalar içinde reklam yayınlayın; deneyim veya büyük bir bütçeye gerek yok, yalnızca günlük 5 ABD dolarından başlayan fiyatlarla.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Hızlı başlangıç, büyük etki</string>
     <string name="blaze_campaign_creation_new_intro_description">Aracımız, maksimum trafik artışı için satıcıları hızlı ve basit reklam kampanyası kurulumlarıyla güçlendirmek üzere tasarlanmıştır.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Tanıtın</string>
@@ -940,7 +942,6 @@ Language: tr
     <string name="empty_max_quantity">Azami harcama yok</string>
     <string name="empty_min_quantity">Asgari tutar yok</string>
     <string name="product_type_bundle">Paket</string>
-    <string name="quantity_rules_info_notice">Ürünün miktar kurallarını web panosunda düzenleyebilirsiniz.</string>
     <string name="group_of">Grup adedi</string>
     <string name="max_quantity">Maksimum miktar</string>
     <string name="min_quantity">Minimum miktar</string>

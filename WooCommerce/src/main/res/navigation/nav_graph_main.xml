@@ -739,6 +739,9 @@
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
             app:destination="@id/addProductWithAIFragment" />
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragmentV2"
+            app:destination="@id/aiProductInformationFragment" />
     </dialog>
     <fragment
         android:id="@+id/addProductWithAIFragment"
@@ -751,6 +754,11 @@
             android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
             app:destination="@id/packagePhotoBottomSheetFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/aiProductInformationFragment"
+        android:name="com.woocommerce.android.ui.products.ai.productinfo.AiProductInformationFragment"
+        android:label="AiProductInformationFragment" />
 
     <dialog
         android:id="@+id/aiProductNameBottomSheetFragment"
