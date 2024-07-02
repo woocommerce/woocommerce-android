@@ -144,10 +144,10 @@ private fun WooPosHomeScreen(
         }
         Row(modifier = Modifier.width(cartWidthDp + totalsWidthDp + 12.dp)) {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
                 shape = RoundedCornerShape(16.dp),
                 backgroundColor = MaterialTheme.colors.surface,
-                elevation = 4.dp
+                elevation = 4.dp,
             ) {
                 Row(modifier = Modifier.width(cartWidthDp + totalsWidthDp)) {
                     Row(modifier = Modifier.width(cartWidthDp)) {
@@ -156,7 +156,6 @@ private fun WooPosHomeScreen(
                             WooPosCartScreen(
                                 Modifier
                                     .width(cartWidthDp - 48.dp)
-                                    .padding(vertical = 24.dp)
                             )
                             Box(
                                 modifier = Modifier
@@ -176,7 +175,6 @@ private fun WooPosHomeScreen(
                         WooPosTotalsScreen(
                             modifier = Modifier
                                 .width(totalsWidthDp - 24.dp - totalsStartPaddingDp)
-                                .padding(vertical = 24.dp)
                         )
                         Spacer(modifier = Modifier.width(24.dp))
                     }
