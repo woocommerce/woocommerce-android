@@ -130,6 +130,7 @@ ext {
     guavaVersion = '33.1.0-android'
     protobufVersion = '3.25.3'
     gravatarVersion = '0.2.0'
+    wearHorologistVersion = '0.6.10'
 
     // Apache
     commonsText = '1.10.0'
