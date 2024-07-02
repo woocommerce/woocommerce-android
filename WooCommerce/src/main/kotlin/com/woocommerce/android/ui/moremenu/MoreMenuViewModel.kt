@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
@@ -23,6 +24,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
@@ -61,8 +63,11 @@ class MoreMenuViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
+    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val isWooPosEnabled: IsWooPosEnabled,
 ) : ScopedViewModel(savedState) {
+    private var hasCreatedGoogleAdsCampaign = false
+
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
@@ -265,6 +270,24 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun onPromoteProductsWithGoogle() {
         WooLog.d(WooLog.T.GOOGLE_ADS, "onPromoteProductsWithGoogle")
+
+        launch {
+            val urlToOpen = when {
+                hasCreatedGoogleAdsCampaign || hasGoogleAdsCampaigns() -> {
+                    selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
+                }
+                else -> {
+                    selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+                }
+            }
+
+            triggerEvent(MoreMenuEvent.ViewAdminEvent(urlToOpen))
+            // This is just temporary to test this function,
+            // in practice we want to set this to true if a campaign is successfully created in webview.
+            if (!hasCreatedGoogleAdsCampaign) {
+                hasCreatedGoogleAdsCampaign = true
+            }
+        }
     }
 
     private fun onPromoteProductsWithBlaze() {
