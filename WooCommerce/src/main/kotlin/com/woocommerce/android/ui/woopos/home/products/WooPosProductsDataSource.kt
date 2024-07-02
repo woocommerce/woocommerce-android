@@ -16,14 +16,11 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
     val products: Flow<List<Product>> = handler.productsFlow
         .map { it.filter { product -> product.price != null } }
 
-    suspend fun loadSimpleProducts() {
+    suspend fun loadSimpleProducts(): Result<Unit> =
         handler.loadFromCacheAndFetch(
             searchType = ProductListHandler.SearchType.DEFAULT,
             filters = mapOf(WCProductStore.ProductFilterOption.TYPE to ProductType.SIMPLE.value)
         )
-    }
 
-    suspend fun loadMore() {
-        handler.loadMore()
-    }
+    suspend fun loadMore() = handler.loadMore()
 }

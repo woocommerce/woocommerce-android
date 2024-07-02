@@ -36,7 +36,10 @@ class WooPosProductsViewModel @Inject constructor(
                 .collect { _viewState.value = it }
         }
         viewModelScope.launch {
-            productsDataSource.loadSimpleProducts()
+            val result = productsDataSource.loadSimpleProducts()
+            if (result.isFailure) {
+                _viewState.value = WooPosProductsViewState.Error
+            }
         }
     }
 
@@ -52,19 +55,23 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun calculateViewState(
-        products: List<Product>
-    ) = WooPosProductsViewState.Content(
-        products = products.map { product ->
-            WooPosProductsListItem(
-                id = product.remoteId,
-                name = product.name,
-                price = priceFormat(product.price),
-                imageUrl = product.firstImageUrl,
+    private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState {
+        return if (products.isEmpty()) {
+            WooPosProductsViewState.Empty
+        } else {
+            WooPosProductsViewState.Content(
+                products = products.map { product ->
+                    WooPosProductsListItem(
+                        id = product.remoteId,
+                        name = product.name,
+                        price = priceFormat(product.price),
+                        imageUrl = product.firstImageUrl,
+                    )
+                },
+                loadingMore = false,
             )
-        },
-        loadingMore = false,
-    )
+        }
+    }
 
     private fun onEndOfProductsGridReached() {
         val currentState = _viewState.value
