@@ -12,7 +12,7 @@ Language: ja_JP
     <string name="woopos_exit_confirmation_message">POS を終了してもよいですか ?</string>
     <string name="woopos_exit_confirmation_title">POS を終了</string>
     <string name="woo_pos_car_pane_title">お買い物カゴ</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">お買い物カゴからアイテムを削除</string>
+    <string name="woopos_remove_item_from_cart_content_description">お買い物カゴからアイテムを削除</string>
     <string name="woopos_checkout_button">購入手続き</string>
     <string name="woopos_reader_unknown">Reader ステータス不明</string>
     <string name="woopos_checkout">購入手続き</string>

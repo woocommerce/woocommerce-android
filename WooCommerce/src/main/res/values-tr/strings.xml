@@ -12,7 +12,7 @@ Language: tr
     <string name="woopos_exit_confirmation_message">POS\'tan çıkmak istediğinizden emin misiniz?</string>
     <string name="woopos_exit_confirmation_title">POS\'tan çık</string>
     <string name="woo_pos_car_pane_title">Sepet</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">Ürünü sepetten çıkarın</string>
+    <string name="woopos_remove_item_from_cart_content_description">Ürünü sepetten çıkarın</string>
     <string name="woopos_checkout_button">Ödeme</string>
     <string name="woopos_reader_unknown">Okuyucu Durumu Bilinmiyor</string>
     <string name="woopos_checkout">Ödeme</string>
