@@ -24,9 +24,15 @@ class WooPosHomeViewModel @Inject constructor(
         return when (event) {
             WooPosHomeUIEvent.SystemBackClicked -> {
                 when (_state.value) {
-                    WooPosHomeState.Checkout -> {
+                    WooPosHomeState.Checkout.NotPaid -> {
                         _state.value = WooPosHomeState.Cart.NotEmpty
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+                        true
+                    }
+
+                    WooPosHomeState.Checkout.Paid -> {
+                        _state.value = WooPosHomeState.Cart.Empty
+                        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                         true
                     }
 
@@ -43,7 +49,7 @@ class WooPosHomeViewModel @Inject constructor(
             childrenToParentEventReceiver.events.collect { event ->
                 when (event) {
                     is ChildToParentEvent.CheckoutClicked -> {
-                        _state.value = WooPosHomeState.Checkout
+                        _state.value = WooPosHomeState.Checkout.NotPaid
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
@@ -78,13 +84,16 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.NewTransactionClicked -> {
                         _state.value = WooPosHomeState.Cart.Empty
-                    }
-
-                    is ChildToParentEvent.OrderSuccessfullyPaid -> {
                         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                     }
 
+                    is ChildToParentEvent.OrderSuccessfullyPaid -> {
+                        _state.value = WooPosHomeState.Checkout.Paid
+                    }
+
                     is ChildToParentEvent.CartStatusChanged -> {
+                        if (_state.value is WooPosHomeState.Checkout.Paid) return@collect
+
                         when (event) {
                             ChildToParentEvent.CartStatusChanged.Empty -> {
                                 _state.value = WooPosHomeState.Cart.Empty
