@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -141,35 +143,48 @@ private fun WooPosHomeScreen(
             )
             Spacer(modifier = Modifier.width(16.dp))
         }
-        Row(modifier = Modifier.width(cartWidthDp)) {
-            Spacer(modifier = Modifier.width(24.dp))
-            Box {
-                WooPosCartScreen(
-                    Modifier
-                        .width(cartWidthDp - 48.dp)
-                        .padding(vertical = 24.dp)
-                )
-                Box(
-                    modifier = Modifier
-                        .width(cartWidthDp - 48.dp)
-                        .padding(vertical = 24.dp)
-                        .fillMaxHeight()
-                        .background(
-                            color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                            shape = RoundedCornerShape(16.dp)
+        Row(modifier = Modifier.width(cartWidthDp + totalsWidthDp + 12.dp)) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = MaterialTheme.colors.surface,
+                elevation = 4.dp
+            ) {
+
+                Row(modifier = Modifier.width(cartWidthDp + totalsWidthDp)) {
+
+                    Row(modifier = Modifier.width(cartWidthDp)) {
+                        Spacer(modifier = Modifier.width(24.dp))
+                        Box {
+                            WooPosCartScreen(
+                                Modifier
+                                    .width(cartWidthDp - 48.dp)
+                                    .padding(vertical = 24.dp)
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .width(cartWidthDp - 48.dp)
+                                    .padding(vertical = 24.dp)
+                                    .fillMaxHeight()
+                                    .background(
+                                        color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
+                                        shape = RoundedCornerShape(16.dp)
+                                    )
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(24.dp))
+                    }
+                    Row(modifier = Modifier.width(totalsWidthDp)) {
+                        Spacer(modifier = Modifier.width(totalsStartPaddingDp))
+                        WooPosTotalsScreen(
+                            modifier = Modifier
+                                .width(totalsWidthDp - 24.dp - totalsStartPaddingDp)
+                                .padding(vertical = 24.dp)
                         )
-                )
+                        Spacer(modifier = Modifier.width(24.dp))
+                    }
+                }
             }
-            Spacer(modifier = Modifier.width(24.dp))
-        }
-        Row(modifier = Modifier.width(totalsWidthDp)) {
-            Spacer(modifier = Modifier.width(totalsStartPaddingDp))
-            WooPosTotalsScreen(
-                modifier = Modifier
-                    .width(totalsWidthDp - 24.dp - totalsStartPaddingDp)
-                    .padding(vertical = 24.dp)
-            )
-            Spacer(modifier = Modifier.width(24.dp))
         }
     }
 }
