@@ -223,9 +223,9 @@ private fun IconStats(
 }
 
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
-@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true, fontScale = 2f)
-@Preview(device = WearDevices.SQUARE, showSystemUi = true, fontScale = 1.5f)
-@Preview(device = WearDevices.RECT, showSystemUi = true, fontScale = 3f)
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.SQUARE, showSystemUi = true)
+@Preview(device = WearDevices.RECT, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     StoreStatsScreen(
