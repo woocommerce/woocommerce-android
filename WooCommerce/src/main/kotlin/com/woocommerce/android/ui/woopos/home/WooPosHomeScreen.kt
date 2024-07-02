@@ -61,8 +61,6 @@ private fun WooPosHomeScreen(
         }
     }
 
-    println("WooPosHomeScreen: state=$state")
-
     val current = LocalConfiguration.current
     val screenWidthDp = remember { current.screenWidthDp.dp }
     val cartWidthDp = remember(screenWidthDp) { screenWidthDp * .35f }
@@ -98,15 +96,16 @@ private fun WooPosHomeScreen(
         label = "cartOverlayAnimated"
     )
 
-    val totalsStartPaddingDp = remember(state) {
+    val totalsStartPaddingAnimatedDp by animateDpAsState(
         when (state) {
             WooPosHomeState.Cart.Empty,
             WooPosHomeState.Cart.NotEmpty,
             WooPosHomeState.Checkout.NotPaid -> 0.dp
 
             WooPosHomeState.Checkout.Paid -> 24.dp
-        }
-    }
+        },
+        label = "totalsStartPaddingAnimatedDp"
+    )
 
     val scrollState = buildScrollStateForNavigationBetweenState(state)
     WooPosHomeScreen(
@@ -115,7 +114,7 @@ private fun WooPosHomeScreen(
         cartWidthDp = cartWidthDp,
         cartOverlayIntensity = cartOverlayIntensityAnimated,
         totalsWidthDp = totalsWidthAnimatedDp,
-        totalsStartPaddingDp = totalsStartPaddingDp,
+        totalsStartPaddingDp = totalsStartPaddingAnimatedDp,
     )
 }
 
@@ -188,21 +187,10 @@ private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState): S
                 )
             }
 
-            is WooPosHomeState.Checkout.NotPaid -> scrollState.animateScrollTo(
+            is WooPosHomeState.Checkout -> scrollState.animateScrollTo(
                 scrollState.maxValue,
                 animationSpec = animationSpec
             )
-
-            WooPosHomeState.Checkout.Paid -> {
-                // avoid animated scrolling to the end of the screen as we extend Payment successful screen
-            }
-        }
-    }
-    LaunchedEffect(scrollState.maxValue) {
-        when (state) {
-            is WooPosHomeState.Cart -> scrollState.scrollTo(0)
-
-            is WooPosHomeState.Checkout -> scrollState.scrollTo(scrollState.maxValue)
         }
     }
     return scrollState
