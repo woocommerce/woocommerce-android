@@ -13,7 +13,7 @@ Language: pt_BR
     <string name="woo_pos_remove_item_from_cart_content_description">Remover item do carrinho</string>
     <string name="woopos_exit_confirmation_message">Tem certeza de que deseja sair do PDV?</string>
     <string name="woopos_exit_confirmation_title">Sair do PDV</string>
-    <string name="woo_pos_checkout_button">Finalizar compra</string>
+    <string name="woopos_checkout_button">Finalizar compra</string>
     <string name="woopos_reader_unknown">Status do leitor desconhecido</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_disconnected">Leitor desconectado</string>

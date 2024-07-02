@@ -13,7 +13,7 @@ Language: ru
     <string name="woopos_exit_confirmation_title">Закрыть POS</string>
     <string name="woo_pos_car_pane_title">Корзина</string>
     <string name="woo_pos_remove_item_from_cart_content_description">Удалить товар из корзины</string>
-    <string name="woo_pos_checkout_button">Оформление заказа</string>
+    <string name="woopos_checkout_button">Оформление заказа</string>
     <string name="woopos_reader_unknown">Статус считывающего устройства неизвестен</string>
     <string name="woopos_checkout">Оформление заказа</string>
     <string name="woopos_reader_disconnected">Считывающее устройство отключено</string>

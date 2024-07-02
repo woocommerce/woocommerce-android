@@ -13,7 +13,7 @@ Language: he_IL
     <string name="woopos_exit_confirmation_title">לצאת מ-POS</string>
     <string name="woo_pos_car_pane_title">עגלת קניות</string>
     <string name="woo_pos_remove_item_from_cart_content_description">להסיר את הפריט מעגלת הקניות</string>
-    <string name="woo_pos_checkout_button">תשלום בקופה</string>
+    <string name="woopos_checkout_button">תשלום בקופה</string>
     <string name="woopos_reader_unknown">הסטטוס של הקורא לא ידוע</string>
     <string name="woopos_checkout">קופה</string>
     <string name="woopos_reader_disconnected">הקורא מנותק</string>

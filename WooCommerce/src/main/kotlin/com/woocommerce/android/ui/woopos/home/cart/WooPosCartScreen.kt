@@ -121,7 +121,7 @@ private fun WooPosCartScreen(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth(),
                     enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
-                    text = stringResource(R.string.woo_pos_checkout_button),
+                    text = stringResource(R.string.woopos_checkout_button),
                     onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
                 )
             }

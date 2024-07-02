@@ -13,7 +13,7 @@ Language: id
     <string name="woopos_exit_confirmation_title">Keluar dari POS</string>
     <string name="woo_pos_car_pane_title">Keranjang</string>
     <string name="woo_pos_remove_item_from_cart_content_description">Hapus item dari keranjang</string>
-    <string name="woo_pos_checkout_button">Checkout</string>
+    <string name="woopos_checkout_button">Checkout</string>
     <string name="woopos_reader_unknown">Status Pembaca Tidak Diketahui</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_disconnected">Sambungan Pembaca Terputus</string>
