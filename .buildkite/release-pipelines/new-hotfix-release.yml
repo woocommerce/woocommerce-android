@@ -1,9 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
 
-agents:
-  queue: "android"
-
 steps:
   - input: "What version code do you want to use for the new hotfix release?"
     fields:
@@ -13,10 +10,12 @@ steps:
   - label: "New Hotfix Release"
     plugins: [$CI_TOOLKIT]
     command: |
-      .buildkite/commands/configure-environment.sh
+      source .buildkite/commands/configure-for-release.sh
 
       # Get the version code from the Buildkite 'input' step
       VERSION_CODE=$(buildkite-agent meta-data get version_code)
 
       echo '--- :fire: Start New Hotfix Release'
       bundle exec fastlane new_hotfix_release version_name:${VERSION} version_code:${VERSION_CODE} skip_confirm:true
+    agents:
+        queue: "tumblr-metal"
