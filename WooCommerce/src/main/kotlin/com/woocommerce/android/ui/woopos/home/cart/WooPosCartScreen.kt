@@ -186,7 +186,7 @@ private fun CartToolbar(
 
             TextButton(onClick = { onClearAllClicked() }) {
                 Text(
-                    text = stringResource(R.string.woo_pos_clear_cart_button),
+                    text = stringResource(R.string.woopos_clear_cart_button),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary,
                     fontWeight = FontWeight.SemiBold,
