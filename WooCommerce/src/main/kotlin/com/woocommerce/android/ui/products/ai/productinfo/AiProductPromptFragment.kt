@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AiProductInformationFragment : BaseFragment() {
+class AiProductPromptFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -22,7 +22,7 @@ class AiProductInformationFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    AiProductInformationScreen()
+                    AiProductPromptScreen()
                 }
             }
         }

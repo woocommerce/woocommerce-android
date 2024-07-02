@@ -15,7 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 
 @Composable
-fun AiProductInformationScreen(
+fun AiProductPromptScreen(
     onBackButtonClick: () -> Unit = {},
 ) {
     Scaffold(
