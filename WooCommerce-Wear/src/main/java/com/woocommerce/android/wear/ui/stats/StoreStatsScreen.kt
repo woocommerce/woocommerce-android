@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Group
@@ -26,12 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.material.Icon
+import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.google.android.horologist.compose.layout.ScreenScaffold
 import com.woocommerce.android.R
 import com.woocommerce.android.wear.compose.component.ErrorScreen
 import com.woocommerce.android.wear.compose.component.LoadingScreen
+import com.woocommerce.android.wear.compose.component.ScrollStateAdapter
 import com.woocommerce.android.wear.compose.theme.WooColors
 import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
@@ -67,43 +72,61 @@ fun StoreStatsScreen(
     modifier: Modifier = Modifier
 ) {
     WooTheme {
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color.Black),
-            contentAlignment = Alignment.Center
+        val scrollState = rememberScrollState()
+        ScreenScaffold(
+            scrollState = scrollState,
+            positionIndicator = {
+                PositionIndicator(
+                    state = ScrollStateAdapter(scrollState),
+                    indicatorHeight = 100.dp,
+                    indicatorWidth = 7.dp,
+                    paddingHorizontal = 5.dp,
+                    reverseDirection = false,
+                )
+            }
         ) {
-            TimeText()
-            Column(
+            Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 24.dp)
+                    .background(Color.Black)
+                    .verticalScroll(scrollState),
+                contentAlignment = Alignment.Center
             ) {
-                if (isError.not()) {
-                    Text(
-                        text = currentSiteName,
-                        textAlign = TextAlign.Center,
-                        style = WooTypography.body1,
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp)
-                    )
-                }
-                when {
-                    isLoading -> LoadingScreen()
-                    isError -> ErrorScreen(
-                        errorText = stringResource(id = R.string.stats_screen_error_message),
-                        onRetryClicked = onRetryClicked
-                    )
-                    else -> StatsContentScreen(
-                        modifier,
-                        totalRevenue,
-                        visitorsCount,
-                        ordersCount,
-                        conversionRate,
-                        timestamp
-                    )
+                TimeText(
+                    modifier = modifier
+                        .align(Alignment.TopCenter)
+                )
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp)
+                        .padding(top = 24.dp)
+                ) {
+                    if (isError.not()) {
+                        Text(
+                            text = currentSiteName,
+                            textAlign = TextAlign.Center,
+                            style = WooTypography.body1,
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        )
+                    }
+                    when {
+                        isLoading -> LoadingScreen()
+                        isError -> ErrorScreen(
+                            errorText = stringResource(id = R.string.stats_screen_error_message),
+                            onRetryClicked = onRetryClicked
+                        )
+                        else -> StatsContentScreen(
+                            modifier,
+                            totalRevenue,
+                            visitorsCount,
+                            ordersCount,
+                            conversionRate,
+                            timestamp
+                        )
+                    }
                 }
             }
         }
@@ -158,20 +181,18 @@ private fun StatsContentScreen(
                     value = conversionRate,
                 )
             }
+            Text(
+                style = WooTypography.caption2,
+                textAlign = TextAlign.Center,
+                modifier = modifier
+                    .padding(bottom = 14.dp)
+                    .fillMaxWidth(),
+                text = timestamp
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { stringResource(id = R.string.stats_screen_time_description) }
+                    ?: stringResource(id = R.string.stats_screen_time_unavailable)
+            )
         }
-
-        Text(
-            style = WooTypography.caption2,
-            textAlign = TextAlign.Center,
-            modifier = modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 14.dp)
-                .fillMaxWidth(),
-            text = timestamp
-                .takeIf { it.isNotEmpty() }
-                ?.let { stringResource(id = R.string.stats_screen_time_description) }
-                ?: stringResource(id = R.string.stats_screen_time_unavailable)
-        )
     }
 }
 
@@ -202,9 +223,9 @@ private fun IconStats(
 }
 
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
-@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
-@Preview(device = WearDevices.SQUARE, showSystemUi = true)
-@Preview(device = WearDevices.RECT, showSystemUi = true)
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true, fontScale = 2f)
+@Preview(device = WearDevices.SQUARE, showSystemUi = true, fontScale = 1.5f)
+@Preview(device = WearDevices.RECT, showSystemUi = true, fontScale = 3f)
 @Composable
 fun DefaultPreview() {
     StoreStatsScreen(
