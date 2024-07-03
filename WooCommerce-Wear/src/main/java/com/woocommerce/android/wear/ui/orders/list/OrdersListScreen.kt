@@ -120,8 +120,8 @@ private fun OrdersLazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top = 56.dp,
-                start = 14.dp,
-                end = 14.dp
+                start = 20.dp,
+                end = 20.dp
             ),
             autoCentering = AutoCenteringParams(itemIndex = 0),
             state = state
@@ -196,7 +196,7 @@ fun OrderListItem(
 }
 
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
-@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true, fontScale = 1.4f)
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Preview(device = WearDevices.SQUARE, showSystemUi = true)
 @Preview(device = WearDevices.RECT, showSystemUi = true)
 @Composable
