@@ -119,9 +119,11 @@ private fun CardReaderStatus(
 
 @Composable
 private fun ReaderStatus(color: Color) {
-    Box(modifier = Modifier
-        .size(12.dp)
-        .background(color = color, shape = CircleShape))
+    Box(
+        modifier = Modifier
+            .size(12.dp)
+            .background(color = color, shape = CircleShape)
+    )
 }
 
 @WooPosPreview
