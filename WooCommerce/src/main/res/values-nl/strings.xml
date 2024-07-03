@@ -11,9 +11,9 @@ Language: nl
     <string name="woopos_exit_confirmation_confirm_button">Afsluiten</string>
     <string name="woopos_exit_confirmation_message">Weet je zeker dat je POS wilt afsluiten?</string>
     <string name="woopos_exit_confirmation_title">POS afsluiten</string>
-    <string name="woo_pos_car_pane_title">Winkelwagen</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">Artikel uit winkelwagen verwijderen</string>
-    <string name="woo_pos_checkout_button">Afrekenen</string>
+    <string name="woopos_cart_title">Winkelwagen</string>
+    <string name="woopos_remove_item_from_cart_content_description">Artikel uit winkelwagen verwijderen</string>
+    <string name="woopos_checkout_button">Afrekenen</string>
     <string name="woopos_reader_unknown">Status van lezer is onbekend</string>
     <string name="woopos_checkout">Afrekenen</string>
     <string name="woopos_reader_disconnected">Verbinding met lezer is verbroken</string>

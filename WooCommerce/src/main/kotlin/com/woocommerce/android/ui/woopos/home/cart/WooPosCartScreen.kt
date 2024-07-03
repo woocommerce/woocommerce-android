@@ -121,7 +121,7 @@ private fun WooPosCartScreen(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth(),
                     enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
-                    text = stringResource(R.string.woo_pos_checkout_button),
+                    text = stringResource(R.string.woopos_checkout_button),
                     onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
                 )
             }
@@ -157,7 +157,7 @@ private fun CartToolbar(
         IconButton(onClick = { onBackClicked() }) {
             Icon(
                 imageVector = ImageVector.vectorResource(toolbar.icon),
-                contentDescription = stringResource(R.string.woo_pos_cart_back_content_description),
+                contentDescription = stringResource(R.string.woopos_cart_back_content_description),
                 tint = MaterialTheme.colors.onBackground,
                 modifier = Modifier.size(28.dp)
             )
@@ -166,7 +166,7 @@ private fun CartToolbar(
         Spacer(modifier = Modifier.width(16.dp))
 
         Text(
-            text = stringResource(R.string.woo_pos_car_pane_title),
+            text = stringResource(R.string.woopos_cart_title),
             style = MaterialTheme.typography.h4,
             color = MaterialTheme.colors.onBackground,
             fontWeight = FontWeight.Bold
@@ -186,7 +186,7 @@ private fun CartToolbar(
 
             TextButton(onClick = { onClearAllClicked() }) {
                 Text(
-                    text = stringResource(R.string.woo_pos_clear_cart_button),
+                    text = stringResource(R.string.woopos_clear_cart_button),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary,
                     fontWeight = FontWeight.SemiBold,
