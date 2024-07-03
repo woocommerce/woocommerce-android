@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -339,7 +340,7 @@ private fun UploadedImageRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ProductThumbnail(
@@ -387,7 +388,7 @@ private fun ImageActionsMenu(
                 DropdownMenuItem(
                     modifier = Modifier
                         .height(dimensionResource(id = R.dimen.major_175))
-                        .padding(end = 32.dp),
+                        .width(200.dp),
                     onClick = {
                         showMenu = false
                         onImageActionSelected(item)
