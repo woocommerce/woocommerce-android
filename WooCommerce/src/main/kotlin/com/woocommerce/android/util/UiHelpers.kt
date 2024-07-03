@@ -99,9 +99,9 @@ class IsWindowClassLargeThanCompact @Inject constructor(val context: Context) {
 }
 
 class IsWindowClassExpandedAndBigger @Inject constructor(val context: Context) {
-    operator fun invoke() = context.windowSizeClass == WindowSizeClass.ExpandedAndBigger
+    operator fun invoke() = context.windowSizeClass >= WindowSizeClass.ExpandedAndBigger
 }
 
 class IsWindowClassExpandedAndBiggerByShortSide @Inject constructor(val context: Context) {
-    operator fun invoke() = context.windowSizeClassByShortSide == WindowSizeClass.ExpandedAndBigger
+    operator fun invoke() = context.windowSizeClassByShortSide >= WindowSizeClass.ExpandedAndBigger
 }
