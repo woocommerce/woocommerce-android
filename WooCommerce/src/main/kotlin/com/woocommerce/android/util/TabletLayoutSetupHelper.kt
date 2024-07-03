@@ -96,8 +96,8 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
 
         val marginPart = when (context.windowSizeClass) {
             WindowSizeClass.Compact -> return
-            WindowSizeClass.ExpandedAndBigger -> MARGINS_FOR_TABLET
             WindowSizeClass.Medium -> MARGINS_FOR_SMALL_TABLET_PORTRAIT
+            WindowSizeClass.Expanded, WindowSizeClass.Large -> MARGINS_FOR_TABLET
         }
 
         val windowWidth = DisplayUtils.getWindowPixelWidth(context)
@@ -153,7 +153,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
             }
 
-            WindowSizeClass.ExpandedAndBigger -> {
+            WindowSizeClass.Expanded, WindowSizeClass.Large -> {
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
             }
         }

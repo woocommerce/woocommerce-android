@@ -13,15 +13,15 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.SystemVersionUtils
 import kotlinx.parcelize.Parcelize
-import kotlin.math.min
+import kotlin.math.max
 
 val Context.windowSizeClass: WindowSizeClass
     get() = determineWindowSizeClassByGivenSize(resources.configuration.screenWidthDp)
 
-val Context.windowSizeClassByShortSide: WindowSizeClass
+val Context.windowSizeClassByLongSide: WindowSizeClass
     get() {
         val configuration = resources.configuration
-        val shortSide = min(configuration.screenWidthDp, configuration.screenHeightDp)
+        val shortSide = max(configuration.screenWidthDp, configuration.screenHeightDp)
         return determineWindowSizeClassByGivenSize(shortSide)
     }
 
@@ -29,7 +29,8 @@ private fun determineWindowSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
     return when {
         sizeDp < WindowSizeClass.Compact.maxWidthDp -> WindowSizeClass.Compact
         sizeDp < WindowSizeClass.Medium.maxWidthDp -> WindowSizeClass.Medium
-        else -> WindowSizeClass.ExpandedAndBigger
+        sizeDp < WindowSizeClass.Expanded.maxWidthDp -> WindowSizeClass.Expanded
+        else -> WindowSizeClass.Large
     }
 }
 
@@ -52,11 +53,17 @@ sealed class WindowSizeClass(val maxWidthDp: Int) : Parcelable, Comparable<Windo
     /**
      * Phone in landscape, tablet in landscape, foldable in landscape, desktop and ultra-wide.
      */
-    data object ExpandedAndBigger : WindowSizeClass(Int.MAX_VALUE)
+    data object Expanded : WindowSizeClass(EXPANDED_SCREEN_MAX_WIDTH)
+
+    /**
+     * Tablet in landscape, Desktop
+     */
+    data object Large : WindowSizeClass(Int.MAX_VALUE)
 
     companion object {
         private const val COMPACT_SCREEN_MAX_WIDTH = 600
         private const val MEDIUM_SCREEN_MAX_WIDTH = 840
+        private const val EXPANDED_SCREEN_MAX_WIDTH = 1200
     }
 
     override fun compareTo(other: WindowSizeClass): Int {

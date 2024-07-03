@@ -231,7 +231,8 @@ class OrderCreateEditFormFragment :
         when (requireContext().windowSizeClass) {
             WindowSizeClass.Compact -> twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
             WindowSizeClass.Medium -> twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
-            WindowSizeClass.ExpandedAndBigger -> twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
+            WindowSizeClass.Expanded,
+            WindowSizeClass.Large -> twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
         }
         setupToolbars(requireContext().windowSizeClass != WindowSizeClass.Compact)
     }
