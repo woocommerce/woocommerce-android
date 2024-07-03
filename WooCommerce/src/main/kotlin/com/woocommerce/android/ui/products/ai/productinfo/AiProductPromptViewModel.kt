@@ -42,6 +42,10 @@ class AiProductPromptViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    fun onToneSelected(aiTone: AiTone) {
+        _state.value = _state.value.copy(selectedAiTone = aiTone)
+    }
+
 
     @Parcelize
     data class AiProductPromptState(
