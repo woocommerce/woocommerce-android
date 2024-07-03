@@ -16,13 +16,12 @@ import kotlinx.parcelize.Parcelize
 import kotlin.math.max
 
 val Context.windowSizeClass: WindowSizeClass
-    get() = determineWindowSizeClassByGivenSize(resources.configuration.screenWidthDp)
+    get() = determineWindowSizeClassByGivenSize(getScreenWidthDp())
 
 val Context.windowSizeClassByLongSide: WindowSizeClass
     get() {
-        val configuration = resources.configuration
-        val shortSide = max(configuration.screenWidthDp, configuration.screenHeightDp)
-        return determineWindowSizeClassByGivenSize(shortSide)
+        val longSide = max(getScreenWidthDp(), getScreenHeightDp())
+        return determineWindowSizeClassByGivenSize(longSide)
     }
 
 private fun determineWindowSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
@@ -101,3 +100,13 @@ val Context.physicalScreenHeightInPx: Int
             size.y
         }
     }
+
+fun Context.getScreenWidthDp(): Int {
+    val displayMetrics = resources.displayMetrics
+    return (displayMetrics.widthPixels / displayMetrics.density).toInt()
+}
+
+fun Context.getScreenHeightDp(): Int {
+    val displayMetrics = resources.displayMetrics
+    return (displayMetrics.heightPixels / displayMetrics.density).toInt()
+}
