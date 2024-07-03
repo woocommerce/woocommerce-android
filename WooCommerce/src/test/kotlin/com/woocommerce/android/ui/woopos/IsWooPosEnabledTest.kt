@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
-import com.woocommerce.android.util.IsWindowClassExpandedAndBigger
+import com.woocommerce.android.util.IsWindowClassExpandedAndBiggerByShortSide
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -30,7 +30,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val ippStore: WCInPersonPaymentsStore = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
-    private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger = mock()
+    private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBiggerByShortSide = mock()
     private val isWooPosFFEnabled: IsWooPosFFEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() }.thenReturn("6.6.0")
@@ -52,7 +52,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
             selectedSite = selectedSite,
             ippStore = ippStore,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-            isWindowSizeExpandedAndBigger = isWindowSizeExpandedAndBigger,
+            isWindowClassExpandedAndBiggerByShortSide = isWindowSizeExpandedAndBigger,
             isWooPosFFEnabled = isWooPosFFEnabled,
             getWooCoreVersion = getWooCoreVersion,
         )

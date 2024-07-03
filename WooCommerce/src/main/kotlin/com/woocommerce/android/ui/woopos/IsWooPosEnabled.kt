@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
-import com.woocommerce.android.util.IsWindowClassExpandedAndBigger
+import com.woocommerce.android.util.IsWindowClassExpandedAndBiggerByShortSide
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
@@ -20,7 +20,7 @@ private typealias LocalSiteId = Int
 class IsWooPosEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val ippStore: WCInPersonPaymentsStore,
-    private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger,
+    private val isWindowClassExpandedAndBiggerByShortSide: IsWindowClassExpandedAndBiggerByShortSide,
     private val isWooPosFFEnabled: IsWooPosFFEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
@@ -32,7 +32,7 @@ class IsWooPosEnabled @Inject constructor(
         val selectedSite = selectedSite.getOrNull() ?: return false
 
         if (!isWooPosFFEnabled()) return false
-        if (!isWindowSizeExpandedAndBigger()) return false
+        if (!isWindowClassExpandedAndBiggerByShortSide()) return false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return false
 
         val onboardingStatus = cardReaderOnboardingChecker.getOnboardingState()
