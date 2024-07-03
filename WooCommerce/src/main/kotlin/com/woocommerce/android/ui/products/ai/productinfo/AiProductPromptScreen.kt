@@ -29,8 +29,10 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -50,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.mediapicker.MediaPickerDialog
@@ -59,8 +62,10 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import kotlin.enums.EnumEntries
 
 @Composable
 fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
@@ -71,11 +76,12 @@ fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
             uiState = state,
             onBackButtonClick = viewModel::onBackButtonClick,
             onPromptUpdated = viewModel::onPromptUpdated,
-            onReadTextFromProductPhoto = viewModel::onReadTextFromProductPhoto,
+            onReadTextFromProductPhoto = viewModel::onAddImageForScanning,
             onGenerateProductClicked = viewModel::onGenerateProductClicked,
             onToneSelected = viewModel::onToneSelected,
             onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
-            onMediaLibraryRequested = viewModel::onMediaLibraryRequested
+            onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
+            onImageActionSelected = viewModel::onImageActionSelected
         )
     }
 }
@@ -89,7 +95,8 @@ fun AiProductPromptScreen(
     onGenerateProductClicked: () -> Unit,
     onToneSelected: (Tone) -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
-    onMediaLibraryRequested: (DataSource) -> Unit
+    onMediaLibraryRequested: (DataSource) -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit
 ) {
     val orientation = LocalConfiguration.current.orientation
 
@@ -146,6 +153,7 @@ fun AiProductPromptScreen(
                     state = uiState,
                     onPromptUpdated = onPromptUpdated,
                     onReadTextFromProductPhoto = onReadTextFromProductPhoto,
+                    onImageActionSelected = onImageActionSelected
                 )
 
                 ToneDropDown(
@@ -248,7 +256,8 @@ private fun ToneDropDown(
 private fun ProductPromptTextField(
     state: AiProductPromptState,
     onPromptUpdated: (String) -> Unit,
-    onReadTextFromProductPhoto: () -> Unit
+    onReadTextFromProductPhoto: () -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
     Column {
@@ -301,26 +310,10 @@ private fun ProductPromptTextField(
                     // TODO() show progress while scanning image
                 }
 
-                state.mediaUri != null -> {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        ProductThumbnail(
-                            imageUrl = state.mediaUri,
-                            contentDescription = stringResource(id = R.string.product_image_content_description),
-                            modifier = Modifier.padding(end = 16.dp)
-                        )
-                        Text(
-                            text = stringResource(id = R.string.product_creation_ai_tone_title),
-                            style = MaterialTheme.typography.subtitle1,
-                            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
+                state.mediaUri != null -> UploadedImageRow(
+                    state.mediaUri,
+                    onImageActionSelected
+                )
 
                 else -> {
                     WCTextButton(
@@ -332,6 +325,84 @@ private fun ProductPromptTextField(
                         allCaps = false,
                         text = stringResource(id = R.string.ai_product_creation_read_text_from_photo_button),
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun UploadedImageRow(
+    mediaUri: String,
+    onImageActionSelected: (ImageAction) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ProductThumbnail(
+            imageUrl = mediaUri,
+            contentDescription = stringResource(id = R.string.product_image_content_description),
+            modifier = Modifier.padding(end = 16.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.product_creation_ai_tone_title),
+            style = MaterialTheme.typography.subtitle1,
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        ImageActionsMenu(
+            ImageAction.entries,
+            onImageActionSelected
+        )
+    }
+}
+
+@Composable
+private fun ImageActionsMenu(
+    actions: EnumEntries<ImageAction>,
+    onImageActionSelected: (ImageAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    Box(modifier = modifier) {
+        IconButton(onClick = { showMenu = !showMenu }) {
+            Icon(
+                imageVector = Outlined.MoreVert,
+                contentDescription = stringResource(R.string.more_menu),
+                tint = colorResource(id = R.color.color_on_surface_high)
+            )
+        }
+        DropdownMenu(
+            offset = DpOffset(
+                x = dimensionResource(id = R.dimen.major_100),
+                y = 0.dp
+            ),
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            actions.forEachIndexed { index, item ->
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.major_175))
+                        .padding(end = 32.dp),
+                    onClick = {
+                        showMenu = false
+                        onImageActionSelected(item)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(id = item.displayName),
+                        color = when (item) {
+                            ImageAction.Remove -> MaterialTheme.colors.error
+                            else -> Color.Unspecified
+                        }
+                    )
+                }
+                if (index < actions.size - 1) {
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 }
             }
         }
@@ -355,6 +426,7 @@ private fun AiProductPromptScreenPreview() {
         onGenerateProductClicked = {},
         onToneSelected = {},
         onMediaPickerDialogDismissed = {},
-        onMediaLibraryRequested = {}
+        onMediaLibraryRequested = {},
+        onImageActionSelected = {}
     )
 }
