@@ -83,6 +83,7 @@ fun OrdersListScreen(
                         errorText = stringResource(id = R.string.orders_list_failed_to_load),
                         onRetryClicked = onRetryClicked
                     )
+
                     else -> OrdersLazyColumn(orders, onOrderClicked, modifier)
                 }
             }
@@ -157,10 +158,12 @@ fun OrderListItem(
             ) {
                 Text(
                     text = order.date,
+                    maxLines = 1,
                     color = WooColors.woo_purple_20
                 )
                 Text(
                     text = order.number,
+                    maxLines = 1,
                     color = WooColors.woo_gray_alpha
                 )
             }
@@ -176,6 +179,7 @@ fun OrderListItem(
                 text = order.total,
                 style = WooTypography.body1,
                 color = Color.White,
+                maxLines = 1,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
