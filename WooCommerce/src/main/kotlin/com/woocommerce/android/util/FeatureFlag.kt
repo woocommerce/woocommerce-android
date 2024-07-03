@@ -26,7 +26,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            INBOX,
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
@@ -38,7 +37,8 @@ enum class FeatureFlag {
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
             EOSL_M1,
-            EOSL_M3 -> true
+            EOSL_M3,
+            INBOX -> true
         }
     }
 }
