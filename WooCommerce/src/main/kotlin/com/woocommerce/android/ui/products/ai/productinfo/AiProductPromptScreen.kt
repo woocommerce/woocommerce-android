@@ -30,9 +30,11 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,7 +48,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -55,6 +59,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
 import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
@@ -73,16 +79,42 @@ fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
     BackHandler(onBack = viewModel::onBackButtonClick)
 
     viewModel.state.observeAsState().value?.let { state ->
-        AiProductPromptScreen(
-            uiState = state,
-            onBackButtonClick = viewModel::onBackButtonClick,
-            onPromptUpdated = viewModel::onPromptUpdated,
-            onReadTextFromProductPhoto = viewModel::onAddImageForScanning,
-            onGenerateProductClicked = viewModel::onGenerateProductClicked,
-            onToneSelected = viewModel::onToneSelected,
-            onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
-            onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
-            onImageActionSelected = viewModel::onImageActionSelected
+        if (state.showImageFullScreen) {
+            FullScreenImage(viewModel, state)
+        } else {
+            AiProductPromptScreen(
+                uiState = state,
+                onBackButtonClick = viewModel::onBackButtonClick,
+                onPromptUpdated = viewModel::onPromptUpdated,
+                onReadTextFromProductPhoto = viewModel::onAddImageForScanning,
+                onGenerateProductClicked = viewModel::onGenerateProductClicked,
+                onToneSelected = viewModel::onToneSelected,
+                onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+                onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
+                onImageActionSelected = viewModel::onImageActionSelected
+            )
+        }
+    }
+}
+
+@Composable
+private fun FullScreenImage(
+    viewModel: AiProductPromptViewModel,
+    state: AiProductPromptState
+) {
+    Column {
+        Toolbar(
+            navigationIcon = Filled.Close,
+            onNavigationButtonClick = viewModel::onImageFullScreenDismissed
+        )
+        AsyncImage(
+            model = Builder(LocalContext.current)
+                .data(state.mediaUri)
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
@@ -419,7 +451,8 @@ private fun AiProductPromptScreenPreview() {
             selectedTone = Tone.Casual,
             isMediaPickerDialogVisible = false,
             mediaUri = null,
-            isScanningImage = false
+            isScanningImage = false,
+            showImageFullScreen = false
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},

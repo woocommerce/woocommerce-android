@@ -34,7 +34,8 @@ class AiProductPromptViewModel @Inject constructor(
             selectedTone = Tone.Casual,
             isMediaPickerDialogVisible = false,
             mediaUri = null,
-            isScanningImage = false
+            isScanningImage = false,
+            showImageFullScreen = false
         )
     )
 
@@ -81,17 +82,16 @@ class AiProductPromptViewModel @Inject constructor(
         _state.value = _state.value.copy(mediaUri = mediaUri)
     }
 
-    fun onImageActionSelected(imageAction: AiProductPromptViewModel.ImageAction) {
+    fun onImageActionSelected(imageAction: ImageAction) {
         when (imageAction) {
-            View -> {
-                state.value?.mediaUri?.let { mediaUri ->
-                    triggerEvent(ViewImage(mediaUri))
-                }
-            }
-
+            View -> _state.value = _state.value.copy(showImageFullScreen = true)
             Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
             Remove -> _state.value = _state.value.copy(mediaUri = null)
         }
+    }
+
+    fun onImageFullScreenDismissed() {
+        _state.value = _state.value.copy(showImageFullScreen = false)
     }
 
     @Parcelize
@@ -100,7 +100,8 @@ class AiProductPromptViewModel @Inject constructor(
         val selectedTone: Tone,
         val isMediaPickerDialogVisible: Boolean,
         val mediaUri: String?,
-        val isScanningImage: Boolean
+        val isScanningImage: Boolean,
+        val showImageFullScreen: Boolean
     ) : Parcelable
 
     enum class Tone(@StringRes val displayName: Int, val slug: String) {
