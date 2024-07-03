@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -116,6 +117,11 @@ private fun OrdersLazyColumn(
     ) {
         ScalingLazyColumn(
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                top = 56.dp,
+                start = 12.dp,
+                end = 12.dp
+            ),
             autoCentering = AutoCenteringParams(itemIndex = 0),
             state = state
         ) {
@@ -184,10 +190,10 @@ fun OrderListItem(
     }
 }
 
-@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
-@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
-@Preview(device = WearDevices.SQUARE, showSystemUi = true)
-@Preview(device = WearDevices.RECT, showSystemUi = true)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true, fontScale = 2.0f)
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true, fontScale = 1.4f)
+@Preview(device = WearDevices.SQUARE, showSystemUi = true, fontScale = 2.0f)
+@Preview(device = WearDevices.RECT, showSystemUi = true, fontScale = 2.0f)
 @Composable
 fun Preview() {
     OrdersListScreen(
@@ -200,7 +206,7 @@ fun Preview() {
                 id = 0L,
                 date = "25 Feb",
                 number = "#125",
-                customerName = "John Doe",
+                customerName = "John Doe Doe Doe DOe",
                 total = "$100.00",
                 status = "Processing"
             ),
