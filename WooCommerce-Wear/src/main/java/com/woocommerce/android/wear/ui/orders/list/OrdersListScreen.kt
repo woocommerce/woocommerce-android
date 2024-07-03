@@ -119,8 +119,8 @@ private fun OrdersLazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top = 56.dp,
-                start = 12.dp,
-                end = 12.dp
+                start = 14.dp,
+                end = 14.dp
             ),
             autoCentering = AutoCenteringParams(itemIndex = 0),
             state = state
@@ -168,6 +168,7 @@ fun OrderListItem(
                 text = order.customerName,
                 style = WooTypography.body1,
                 color = Color.White,
+                maxLines = 1,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -191,7 +192,7 @@ fun OrderListItem(
 }
 
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
-@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true, fontScale = 1.4f)
 @Preview(device = WearDevices.SQUARE, showSystemUi = true)
 @Preview(device = WearDevices.RECT, showSystemUi = true)
 @Composable
@@ -206,7 +207,7 @@ fun Preview() {
                 id = 0L,
                 date = "25 Feb",
                 number = "#125",
-                customerName = "John Doe Doe Doe DOe",
+                customerName = "John Doe Very Long Name",
                 total = "$100.00",
                 status = "Processing"
             ),
