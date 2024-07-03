@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.products
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -107,6 +108,7 @@ private fun WooPosProductsScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterialApi
 @Composable
 private fun ProductsList(
@@ -123,13 +125,17 @@ private fun ProductsList(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(2.dp),
-            state = listState
+            state = listState,
         ) {
             items(
                 state.products,
                 key = { product -> product.id }
             ) { product ->
-                ProductItem(item = product, onItemClicked = onItemClicked)
+                ProductItem(
+                    modifier = Modifier.animateItemPlacement(),
+                    item = product,
+                    onItemClicked = onItemClicked
+                )
             }
 
             if (state.loadingMore) {
@@ -211,10 +217,12 @@ private fun ProductLoadingItem() {
 
 @Composable
 private fun ProductItem(
+    modifier: Modifier = Modifier,
     item: WooPosProductsListItem,
     onItemClicked: (item: WooPosProductsListItem) -> Unit
 ) {
     Card(
+        modifier = modifier,
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {
