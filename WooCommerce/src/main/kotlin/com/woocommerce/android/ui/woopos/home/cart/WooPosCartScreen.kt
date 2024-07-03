@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,28 +52,28 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 
 @Composable
-fun WooPosCartScreen() {
+fun WooPosCartScreen(modifier: Modifier = Modifier) {
     val viewModel: WooPosCartViewModel = hiltViewModel()
 
     viewModel.state.observeAsState().value?.let {
-        WooPosCartScreen(it, viewModel::onUIEvent)
+        WooPosCartScreen(modifier, it, viewModel::onUIEvent)
     }
 }
 
 @Composable
 private fun WooPosCartScreen(
+    modifier: Modifier = Modifier,
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit
 ) {
     Card(
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 4.dp,
-        modifier = Modifier.padding(16.dp)
+        elevation = 4.dp
     ) {
         Box(
             Modifier
-                .fillMaxSize()
                 .padding(24.dp)
         ) {
             Column {
@@ -91,8 +90,7 @@ private fun WooPosCartScreen(
 
                 LazyColumn(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
+                        .weight(1f),
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -151,7 +149,6 @@ private fun CartToolbar(
     onBackClicked: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { onBackClicked() }) {
@@ -207,7 +204,6 @@ private fun ProductItem(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colors.background)
-            .fillMaxWidth()
             .height(64.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
