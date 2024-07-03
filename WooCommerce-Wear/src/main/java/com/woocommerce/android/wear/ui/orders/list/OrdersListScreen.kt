@@ -190,10 +190,10 @@ fun OrderListItem(
     }
 }
 
-@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true, fontScale = 2.0f)
-@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true, fontScale = 1.4f)
-@Preview(device = WearDevices.SQUARE, showSystemUi = true, fontScale = 2.0f)
-@Preview(device = WearDevices.RECT, showSystemUi = true, fontScale = 2.0f)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.SQUARE, showSystemUi = true)
+@Preview(device = WearDevices.RECT, showSystemUi = true)
 @Composable
 fun Preview() {
     OrdersListScreen(
