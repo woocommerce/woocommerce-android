@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ExitAwareWebviewFragment: BaseFragment(R.layout.fragment_exitaware_webview) {
+class ExitAwareWebViewFragment: BaseFragment(R.layout.fragment_exitaware_webview) {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
         const val WEBVIEW_DISMISSED = "webview-dismissed"

@@ -17,7 +17,7 @@ class ExitAwareWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: ExitAwareWebviewFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: ExitAwareWebViewFragmentArgs by savedStateHandle.navArgs()
     private var isExiting = false
 
     val viewState = navArgs.let {

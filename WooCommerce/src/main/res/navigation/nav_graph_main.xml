@@ -512,7 +512,7 @@
         app:destination="@id/WPComWebViewFragment" />
     <fragment
         android:id="@+id/ExitAwareWebViewFragment"
-        android:name="com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebviewFragment"
+        android:name="com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewFragment"
         android:label="ExitAwareWebViewFragment"
         tools:layout="@layout/fragment_exitaware_webview">
         <argument
