@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -142,7 +143,7 @@ fun AiProductPromptScreen(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_250)))
 
                 ProductPromptTextField(
-                    productPrompt = uiState.productPrompt,
+                    state = uiState,
                     onPromptUpdated = onPromptUpdated,
                     onReadTextFromProductPhoto = onReadTextFromProductPhoto,
                 )
@@ -245,7 +246,7 @@ private fun ToneDropDown(
 
 @Composable
 private fun ProductPromptTextField(
-    productPrompt: String,
+    state: AiProductPromptState,
     onPromptUpdated: (String) -> Unit,
     onReadTextFromProductPhoto: () -> Unit
 ) {
@@ -266,7 +267,7 @@ private fun ProductPromptTextField(
                 .clip(RoundedCornerShape(10.dp))
         ) {
             Box {
-                if (productPrompt.isEmpty()) {
+                if (state.productPrompt.isEmpty()) {
                     Text(
                         text = stringResource(id = R.string.ai_product_creation_prompt_placeholder),
                         style = MaterialTheme.typography.body1,
@@ -279,7 +280,7 @@ private fun ProductPromptTextField(
                 }
 
                 WCOutlinedTextField(
-                    value = productPrompt,
+                    value = state.productPrompt,
                     onValueChange = onPromptUpdated,
                     label = "", // Can't use label here as it breaks the visual design.
                     placeholderText = "", // Uses Text() above instead.
@@ -295,15 +296,44 @@ private fun ProductPromptTextField(
 
             Divider()
 
-            WCTextButton(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
-                onClick = onReadTextFromProductPhoto,
-                icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera_primary),
-                allCaps = false,
-                text = stringResource(id = R.string.ai_product_creation_read_text_from_photo_button),
-            )
+            when {
+                state.isScanningImage -> {
+                    // TODO() show progress while scanning image
+                }
+
+                state.mediaUri != null -> {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ProductThumbnail(
+                            imageUrl = state.mediaUri,
+                            contentDescription = stringResource(id = R.string.product_image_content_description),
+                            modifier = Modifier.padding(end = 16.dp)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.product_creation_ai_tone_title),
+                            style = MaterialTheme.typography.subtitle1,
+                            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                }
+
+                else -> {
+                    WCTextButton(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
+                        onClick = onReadTextFromProductPhoto,
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera_primary),
+                        allCaps = false,
+                        text = stringResource(id = R.string.ai_product_creation_read_text_from_photo_button),
+                    )
+                }
+            }
         }
     }
 }
