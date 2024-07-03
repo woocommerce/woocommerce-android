@@ -53,3 +53,11 @@ sealed class AnalyticsHubListViewState : AnalyticsCardViewState {
             }
     }
 }
+
+sealed class AnalyticsHubGoogleStatsViewState : AnalyticsCardViewState {
+    data class LoadingViewState(override val card: AnalyticsCards) : AnalyticsHubGoogleStatsViewState()
+    data class NoDataState(override val card: AnalyticsCards, val message: String) : AnalyticsHubGoogleStatsViewState()
+    data class DataViewState(
+        override val card: AnalyticsCards
+    ) : AnalyticsHubGoogleStatsViewState()
+}
