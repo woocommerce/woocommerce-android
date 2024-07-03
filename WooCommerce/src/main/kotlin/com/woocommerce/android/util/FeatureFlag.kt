@@ -17,7 +17,6 @@ enum class FeatureFlag {
     APP_PASSWORD_TUTORIAL,
     EOSL_M1,
     EOSL_M3,
-    DYNAMIC_DASHBOARD_M2,
     GOOGLE_ADS_M1,
     PRODUCT_CREATION_WITH_AI_V2;
 
@@ -35,7 +34,6 @@ enum class FeatureFlag {
             GOOGLE_ADS_M1,
             PRODUCT_CREATION_WITH_AI_V2 -> PackageUtils.isDebugBuild()
 
-            DYNAMIC_DASHBOARD_M2,
             CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,

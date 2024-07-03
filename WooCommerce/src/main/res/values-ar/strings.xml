@@ -11,9 +11,9 @@ Language: ar
     <string name="woopos_exit_confirmation_confirm_button">إنهاء</string>
     <string name="woopos_exit_confirmation_message">هل تريد بالتأكيد إنهاء POS؟</string>
     <string name="woopos_exit_confirmation_title">إنهاء POS</string>
-    <string name="woo_pos_car_pane_title">عربة التسوق</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">إزالة عنصر من عربة التسوق</string>
-    <string name="woo_pos_checkout_button">السداد</string>
+    <string name="woopos_cart_title">عربة التسوق</string>
+    <string name="woopos_remove_item_from_cart_content_description">إزالة عنصر من عربة التسوق</string>
+    <string name="woopos_checkout_button">السداد</string>
     <string name="woopos_reader_unknown">حالة القارئ مجهولة</string>
     <string name="woopos_checkout">السداد</string>
     <string name="woopos_reader_disconnected">تم فصل القارئ</string>
