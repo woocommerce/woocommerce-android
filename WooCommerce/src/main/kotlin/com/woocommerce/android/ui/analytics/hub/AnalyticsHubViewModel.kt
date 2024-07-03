@@ -68,6 +68,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubGoogleStatsViewState.LoadingAdsViewState
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
@@ -196,6 +197,10 @@ class AnalyticsHubViewModel @Inject constructor(
                             AnalyticsCards.GiftCards -> {
                                 observeGiftCardsChanges()
                                 LoadingViewState(cardConfiguration.card)
+                            }
+                            AnalyticsCards.GoogleAds -> {
+                                observeGoogleAdsChanges()
+                                LoadingAdsViewState(cardConfiguration.card)
                             }
                         }
                     }
@@ -437,6 +442,10 @@ class AnalyticsHubViewModel @Inject constructor(
             }
         }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeGoogleAdsChanges() {
+        // TODO: Implement GoogleAds use case
     }
 
     private fun updateCardStatus(card: AnalyticsCards, newState: AnalyticsCardViewState) {
