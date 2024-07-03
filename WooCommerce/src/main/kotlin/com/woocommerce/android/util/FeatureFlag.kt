@@ -18,7 +18,8 @@ enum class FeatureFlag {
     EOSL_M1,
     EOSL_M3,
     GOOGLE_ADS_M1,
-    PRODUCT_CREATION_WITH_AI_V2;
+    PRODUCT_CREATION_WITH_AI_V2,
+    SHOW_INBOX_CTA;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -38,7 +39,8 @@ enum class FeatureFlag {
             APP_PASSWORD_TUTORIAL,
             EOSL_M1,
             EOSL_M3,
-            INBOX -> true
+            INBOX,
+            SHOW_INBOX_CTA -> true
         }
     }
 }
