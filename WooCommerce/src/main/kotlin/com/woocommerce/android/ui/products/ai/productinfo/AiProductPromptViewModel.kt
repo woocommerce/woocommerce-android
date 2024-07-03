@@ -6,22 +6,32 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import javax.inject.Inject
 
 @HiltViewModel
 class AiProductPromptViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val _state = savedStateHandle.getStateFlow(
         viewModelScope,
         AiProductPromptState(
             productPrompt = "",
-            selectedTone = Tone.Casual
+            selectedTone = Tone.Casual,
+            isMediaPickerDialogVisible = false,
+            mediaUri = null,
+            isScanningImage = false
         )
     )
 
@@ -36,7 +46,24 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onReadTextFromProductPhoto() {
-        TODO("Not yet implemented")
+        tracker.track(
+            AnalyticsEvent.PRODUCT_NAME_AI_PACKAGE_IMAGE_BUTTON_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_AI
+            )
+        )
+        _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
+    }
+
+    fun onMediaPickerDialogDismissed() {
+        _state.value = _state.value.copy(isMediaPickerDialogVisible = false)
+    }
+
+    fun onMediaLibraryRequested(source: DataSource) {
+        viewModelScope.launch {
+            triggerEvent(ShowMediaDialog(source))
+            _state.value = _state.value.copy(isMediaPickerDialogVisible = false)
+        }
     }
 
     fun onGenerateProductClicked() {
@@ -47,10 +74,17 @@ class AiProductPromptViewModel @Inject constructor(
         _state.value = _state.value.copy(selectedTone = tone)
     }
 
+    fun onMediaSelected(mediaUri: String) {
+        _state.value = _state.value.copy(mediaUri = mediaUri)
+    }
+
     @Parcelize
     data class AiProductPromptState(
         val productPrompt: String,
-        val selectedTone: Tone
+        val selectedTone: Tone,
+        val isMediaPickerDialogVisible: Boolean,
+        val mediaUri: String?,
+        val isScanningImage: Boolean
     ) : Parcelable
 
     enum class Tone(@StringRes val displayName: Int, val slug: String) {
@@ -64,4 +98,6 @@ class AiProductPromptViewModel @Inject constructor(
                 Tone.values().firstOrNull { it.slug == source } ?: Casual
         }
     }
+
+    data class ShowMediaDialog(val source: DataSource) : Event()
 }

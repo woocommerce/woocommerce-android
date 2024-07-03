@@ -52,12 +52,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
 fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
@@ -70,7 +72,9 @@ fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
             onPromptUpdated = viewModel::onPromptUpdated,
             onReadTextFromProductPhoto = viewModel::onReadTextFromProductPhoto,
             onGenerateProductClicked = viewModel::onGenerateProductClicked,
-            onToneSelected = viewModel::onToneSelected
+            onToneSelected = viewModel::onToneSelected,
+            onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+            onMediaLibraryRequested = viewModel::onMediaLibraryRequested
         )
     }
 }
@@ -82,7 +86,9 @@ fun AiProductPromptScreen(
     onPromptUpdated: (String) -> Unit,
     onReadTextFromProductPhoto: () -> Unit,
     onGenerateProductClicked: () -> Unit,
-    onToneSelected: (Tone) -> Unit
+    onToneSelected: (Tone) -> Unit,
+    onMediaPickerDialogDismissed: () -> Unit,
+    onMediaLibraryRequested: (DataSource) -> Unit
 ) {
     val orientation = LocalConfiguration.current.orientation
 
@@ -159,6 +165,12 @@ fun AiProductPromptScreen(
                 GenerateProductButton()
             }
         }
+    }
+    if (uiState.isMediaPickerDialogVisible) {
+        MediaPickerDialog(
+            onMediaPickerDialogDismissed,
+            onMediaLibraryRequested
+        )
     }
 }
 
@@ -302,12 +314,17 @@ private fun AiProductPromptScreenPreview() {
     AiProductPromptScreen(
         uiState = AiProductPromptState(
             productPrompt = "Product prompt test",
-            selectedTone = Tone.Casual
+            selectedTone = Tone.Casual,
+            isMediaPickerDialogVisible = false,
+            mediaUri = null,
+            isScanningImage = false
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
         onReadTextFromProductPhoto = {},
         onGenerateProductClicked = {},
-        onToneSelected = {}
+        onToneSelected = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {}
     )
 }
