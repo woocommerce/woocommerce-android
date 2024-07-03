@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.model.Product.Image
@@ -16,6 +17,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ShowMediaDialog
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ViewImage
+import com.woocommerce.android.ui.products.images.ProductImageViewerFragmentDirections
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -51,6 +54,8 @@ class AiProductPromptFragment : BaseFragment(), MediaPickerResultHandler {
             when (event) {
                 Exit -> findNavController().navigateUp()
 
+                is ViewImage -> showImageDetail(event.mediaUri)
+
                 is ShowMediaDialog -> mediaPickerHelper.showMediaPicker(event.source)
             }
         }
@@ -70,5 +75,25 @@ class AiProductPromptFragment : BaseFragment(), MediaPickerResultHandler {
 
     private fun onImageSelected(mediaUri: String) {
         viewModel.onMediaSelected(mediaUri)
+    }
+
+    private fun showImageDetail(imageUri: String) {
+        val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
+            isDeletingAllowed = false,
+            mediaId = 1,
+            remoteId = 0,
+            requestCode = 0,
+            selectedImage = null,
+            showChooser = false,
+            images = arrayOf(
+                Image(
+                    id = 0,
+                    name = null,
+                    source = imageUri,
+                    dateCreated = null,
+                )
+            )
+        )
+        findNavController().navigateSafely(action)
     }
 }

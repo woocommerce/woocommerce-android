@@ -9,6 +9,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Remove
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Replace
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.View
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,7 +48,7 @@ class AiProductPromptViewModel @Inject constructor(
         _state.value = _state.value.copy(productPrompt = prompt)
     }
 
-    fun onReadTextFromProductPhoto() {
+    fun onAddImageForScanning() {
         tracker.track(
             AnalyticsEvent.PRODUCT_NAME_AI_PACKAGE_IMAGE_BUTTON_TAPPED,
             mapOf(
@@ -67,7 +70,7 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onGenerateProductClicked() {
-        TODO("Not yet implemented")
+        // TODO()
     }
 
     fun onToneSelected(tone: Tone) {
@@ -76,6 +79,19 @@ class AiProductPromptViewModel @Inject constructor(
 
     fun onMediaSelected(mediaUri: String) {
         _state.value = _state.value.copy(mediaUri = mediaUri)
+    }
+
+    fun onImageActionSelected(imageAction: AiProductPromptViewModel.ImageAction) {
+        when (imageAction) {
+            View -> {
+                state.value?.mediaUri?.let { mediaUri ->
+                    triggerEvent(ViewImage(mediaUri))
+                }
+            }
+
+            Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
+            Remove -> _state.value = _state.value.copy(mediaUri = null)
+        }
     }
 
     @Parcelize
@@ -99,5 +115,12 @@ class AiProductPromptViewModel @Inject constructor(
         }
     }
 
+    enum class ImageAction(@StringRes val displayName: Int) {
+        View(R.string.ai_product_creation_view_image),
+        Replace(R.string.ai_product_creation_replace_image),
+        Remove(R.string.ai_product_creation_remove_image);
+    }
+
     data class ShowMediaDialog(val source: DataSource) : Event()
+    data class ViewImage(val mediaUri: String) : Event()
 }
