@@ -18,7 +18,8 @@ val Context.windowSizeClass: WindowSizeClass
     get() = when (resources.configuration.screenWidthDp) {
         in 0 until WindowSizeClass.Compact.maxWidth -> WindowSizeClass.Compact
         in WindowSizeClass.Compact.maxWidth until WindowSizeClass.Medium.maxWidth -> WindowSizeClass.Medium
-        else -> WindowSizeClass.ExpandedAndBigger
+        in WindowSizeClass.Medium.maxWidth until WindowSizeClass.Large.maxWidth -> WindowSizeClass.Expanded
+        else -> WindowSizeClass.Large
     }
 
 /**
@@ -40,11 +41,17 @@ sealed class WindowSizeClass(val maxWidth: Int) : Parcelable {
     /**
      * Phone in landscape, tablet in landscape, foldable in landscape, desktop and ultra-wide.
      */
-    data object ExpandedAndBigger : WindowSizeClass(Int.MAX_VALUE)
+    data object Expanded : WindowSizeClass(EXPANDED_SCREEN_MAX_WIDTH)
+
+    /**
+     * Large tablet, tablet in landscape or foldable in landscape (unfolded).
+     */
+    data object Large : WindowSizeClass(Int.MAX_VALUE)
 
     companion object {
         private const val COMPACT_SCREEN_MAX_WIDTH = 600
         private const val MEDIUM_SCREEN_MAX_WIDTH = 840
+        private const val EXPANDED_SCREEN_MAX_WIDTH = 1200
     }
 }
 
