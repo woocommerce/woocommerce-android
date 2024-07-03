@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.products.ai.productinfo
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
+import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -20,7 +21,7 @@ class AiProductPromptViewModel @Inject constructor(
         viewModelScope,
         AiProductPromptState(
             productPrompt = "",
-            selectedAiTone = AiTone.Casual
+            selectedTone = Tone.Casual
         )
     )
 
@@ -42,14 +43,26 @@ class AiProductPromptViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    fun onToneSelected(aiTone: AiTone) {
-        _state.value = _state.value.copy(selectedAiTone = aiTone)
+    fun onToneSelected(tone: Tone) {
+        _state.value = _state.value.copy(selectedTone = tone)
     }
 
 
     @Parcelize
     data class AiProductPromptState(
         val productPrompt: String,
-        val selectedAiTone: AiTone
+        val selectedTone: Tone
     ) : Parcelable
+
+    enum class Tone(@StringRes val displayName: Int, val slug: String) {
+        Casual(R.string.product_creation_ai_tone_casual, "Casual"),
+        Formal(R.string.product_creation_ai_tone_formal, "Formal"),
+        Flowery(R.string.product_creation_ai_tone_flowery, "Flowery"),
+        Convincing(R.string.product_creation_ai_tone_convincing, "Convincing");
+
+        companion object {
+            fun fromString(source: String): Tone =
+                Tone.values().firstOrNull { it.slug == source } ?: Casual
+        }
+    }
 }

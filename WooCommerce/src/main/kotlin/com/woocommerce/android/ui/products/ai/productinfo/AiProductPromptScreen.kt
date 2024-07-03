@@ -56,8 +56,8 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
 
 @Composable
 fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
@@ -82,7 +82,7 @@ fun AiProductPromptScreen(
     onPromptUpdated: (String) -> Unit,
     onReadTextFromProductPhoto: () -> Unit,
     onGenerateProductClicked: () -> Unit,
-    onToneSelected: (AiTone) -> Unit
+    onToneSelected: (Tone) -> Unit
 ) {
     val orientation = LocalConfiguration.current.orientation
 
@@ -142,7 +142,7 @@ fun AiProductPromptScreen(
                 )
 
                 ToneDropDown(
-                    tone = uiState.selectedAiTone,
+                    tone = uiState.selectedTone,
                     onToneSelected = onToneSelected
                 )
 
@@ -164,8 +164,8 @@ fun AiProductPromptScreen(
 
 @Composable
 private fun ToneDropDown(
-    tone: AiTone,
-    onToneSelected: (AiTone) -> Unit,
+    tone: Tone,
+    onToneSelected: (Tone) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -202,7 +202,7 @@ private fun ToneDropDown(
                 modifier = Modifier
                     .defaultMinSize(minWidth = 250.dp)
             ) {
-                AiTone.entries.forEach {
+                Tone.entries.forEach {
                     DropdownMenuItem(
                         onClick = {
                             onToneSelected(it)
@@ -302,7 +302,7 @@ private fun AiProductPromptScreenPreview() {
     AiProductPromptScreen(
         uiState = AiProductPromptState(
             productPrompt = "Product prompt test",
-            selectedAiTone = AiTone.Casual
+            selectedTone = Tone.Casual
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
