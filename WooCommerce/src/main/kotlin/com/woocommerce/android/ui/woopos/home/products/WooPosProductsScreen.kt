@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,9 +58,10 @@ import kotlinx.coroutines.flow.filter
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WooPosProductsScreen() {
+fun WooPosProductsScreen(modifier: Modifier = Modifier) {
     val productsViewModel: WooPosProductsViewModel = hiltViewModel()
     WooPosProductsScreen(
+        modifier = modifier,
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
         onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductsGridReached) },
@@ -72,15 +72,15 @@ fun WooPosProductsScreen() {
 @ExperimentalMaterialApi
 @Composable
 private fun WooPosProductsScreen(
+    modifier: Modifier = Modifier,
     productsStateFlow: StateFlow<WooPosProductsViewState>,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
     onPullToRefresh: () -> Unit,
 ) {
     Column(
-        Modifier
-            .fillMaxSize()
-            .padding(top = 36.dp, start = 40.dp, end = 40.dp, bottom = 0.dp)
+        modifier
+            .fillMaxHeight()
     ) {
         Text(
             text = stringResource(id = R.string.woopos_products_screen_title),
