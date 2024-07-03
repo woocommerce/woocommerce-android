@@ -166,7 +166,7 @@ private fun CartToolbar(
         Spacer(modifier = Modifier.width(16.dp))
 
         Text(
-            text = stringResource(R.string.woopos_car_pane_title),
+            text = stringResource(R.string.woopos_cart_title),
             style = MaterialTheme.typography.h4,
             color = MaterialTheme.colors.onBackground,
             fontWeight = FontWeight.Bold

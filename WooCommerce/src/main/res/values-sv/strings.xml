@@ -11,7 +11,7 @@ Language: sv_SE
     <string name="woopos_exit_confirmation_confirm_button">Avsluta</string>
     <string name="woopos_exit_confirmation_message">Är du säker på att du vill avsluta POS?</string>
     <string name="woopos_exit_confirmation_title">Avsluta POS</string>
-    <string name="woopos_car_pane_title">Varukorg</string>
+    <string name="woopos_cart_title">Varukorg</string>
     <string name="woopos_checkout_button">Kassa</string>
     <string name="woopos_remove_item_from_cart_content_description">Ta bort vara från varukorg</string>
     <string name="dashboard_new_widgets_card_button">Lägg till nya sektioner</string>
