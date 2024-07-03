@@ -51,22 +51,18 @@ data class DashboardWidget(
         REVIEWS(
             titleResource = R.string.my_store_widget_reviews_title,
             trackingIdentifier = "reviews",
-            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
         ),
         COUPONS(
             titleResource = R.string.my_store_widget_coupons_title,
             trackingIdentifier = "coupons",
-            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
         ),
         STOCK(
             titleResource = R.string.my_store_widget_product_stock_title,
             trackingIdentifier = "stock",
-            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
         ),
         ORDERS(
             titleResource = R.string.my_store_widget_orders_title,
             trackingIdentifier = "orders",
-            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
         );
 
         companion object {
