@@ -102,6 +102,7 @@ private fun FullScreenImage(
     viewModel: AiProductPromptViewModel,
     state: AiProductPromptState
 ) {
+    BackHandler(onBack = viewModel::onImageFullScreenDismissed)
     Column {
         Toolbar(
             navigationIcon = Filled.Close,

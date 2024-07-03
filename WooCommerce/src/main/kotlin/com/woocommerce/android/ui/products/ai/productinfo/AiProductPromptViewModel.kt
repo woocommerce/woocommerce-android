@@ -119,7 +119,7 @@ class AiProductPromptViewModel @Inject constructor(
     enum class ImageAction(@StringRes val displayName: Int) {
         View(R.string.ai_product_creation_view_image),
         Replace(R.string.ai_product_creation_replace_image),
-        Remove(R.string.ai_product_creation_remove_image);
+        Remove(R.string.ai_product_creation_remove_image)
     }
 
     data class ShowMediaDialog(val source: DataSource) : Event()
