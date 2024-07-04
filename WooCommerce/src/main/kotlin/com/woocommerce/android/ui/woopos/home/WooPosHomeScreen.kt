@@ -142,7 +142,7 @@ private fun WooPosHomeScreen(
             )
             Spacer(modifier = Modifier.width(16.dp))
         }
-        Row(modifier = Modifier.width(cartWidthDp + totalsWidthDp + 12.dp)) {
+        Row(modifier = Modifier.width(cartWidthDp + totalsWidthDp + 12.dp).padding(horizontal = 24.dp)) {
             Card(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
                 shape = RoundedCornerShape(16.dp),
