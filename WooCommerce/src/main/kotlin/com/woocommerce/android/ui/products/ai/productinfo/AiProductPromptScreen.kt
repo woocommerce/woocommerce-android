@@ -382,7 +382,7 @@ private fun UploadedImageRow(
             modifier = Modifier.padding(end = 16.dp)
         )
         Text(
-            text = stringResource(id = R.string.product_creation_ai_tone_title),
+            text = stringResource(id = R.string.ai_product_creation_image_uploaded),
             style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
