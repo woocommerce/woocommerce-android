@@ -38,7 +38,6 @@ class AiProductPromptFragment : BaseFragment() {
         handleEvents()
     }
 
-
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {

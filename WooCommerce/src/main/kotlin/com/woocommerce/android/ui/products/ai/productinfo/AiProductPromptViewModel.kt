@@ -47,7 +47,6 @@ class AiProductPromptViewModel @Inject constructor(
         _state.value = _state.value.copy(selectedTone = tone)
     }
 
-
     @Parcelize
     data class AiProductPromptState(
         val productPrompt: String,
