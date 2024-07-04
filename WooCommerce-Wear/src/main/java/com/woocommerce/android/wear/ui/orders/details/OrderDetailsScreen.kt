@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -81,7 +82,7 @@ fun OrderDetailsScreen(
                     .fillMaxSize()
                     .background(Color.Black)
                     .verticalScroll(scrollState)
-                    .padding(top = 16.dp)
+                    .padding(16.dp)
             ) {
                 when {
                     isLoadingOrder -> LoadingScreen()
@@ -331,7 +332,7 @@ fun OrderProductsList(
                             contentAlignment = Alignment.Center,
                             modifier = modifier
                                 .padding(2.dp)
-                                .size(16.dp)
+                                .defaultMinSize(16.dp)
                                 .clip(CircleShape)
                                 .background(WooColors.woo_purple_alpha)
                         ) {
@@ -375,7 +376,7 @@ private fun pluralizedProductsText(products: List<ProductItem>): String {
     }
 }
 
-@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true, fontScale = 2f)
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Preview(device = WearDevices.SQUARE, showSystemUi = true)
 @Preview(device = WearDevices.RECT, showSystemUi = true)
@@ -389,7 +390,7 @@ fun Preview() {
             id = 0L,
             date = "25 Feb",
             number = "#125",
-            customerName = "John Doe",
+            customerName = "John Doe Doe Doe Doe Doe",
             total = "$100.00",
             status = "Processing",
             address = OrderItemAddress(
