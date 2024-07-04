@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -153,9 +154,13 @@ class MoreMenuFragment : TopLevelFragment() {
     }
 
     private fun openInExitAwareWebview(url: String) {
+        // todo-11917: The following is a test case where the webview exits automatically when the
+        //  GLA Report tab is opened. It needs to be replaced with the right success URL.
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
-                urlToLoad = url
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf("wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Freports"),
+                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
             )
         )
     }
