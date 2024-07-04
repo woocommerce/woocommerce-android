@@ -11,9 +11,9 @@ Language: fr
     <string name="woopos_exit_confirmation_confirm_button">Quitter</string>
     <string name="woopos_exit_confirmation_message">Voulez-vous vraiment quitter le PDV ?</string>
     <string name="woopos_exit_confirmation_title">Quitter le PDV</string>
-    <string name="woo_pos_car_pane_title">Panier</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">Retirer l’élément du panier</string>
-    <string name="woo_pos_checkout_button">Validation de la commande</string>
+    <string name="woopos_cart_title">Panier</string>
+    <string name="woopos_remove_item_from_cart_content_description">Retirer l’élément du panier</string>
+    <string name="woopos_checkout_button">Validation de la commande</string>
     <string name="woopos_reader_unknown">État du lecteur inconnu</string>
     <string name="woopos_checkout">Validation de la commande</string>
     <string name="woopos_reader_disconnected">Lecteur déconnecté</string>

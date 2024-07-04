@@ -158,7 +158,7 @@ class WooPosCartViewModel @Inject constructor(
     private fun updateToolbarState(newState: WooPosCartState): WooPosCartState {
         val itemsCount = if (newState.itemsInCart.isNotEmpty()) {
             resourceProvider.getString(
-                R.string.woo_pos_items_in_cart,
+                R.string.woopos_items_in_cart,
                 newState.itemsInCart.size
             )
         } else {
