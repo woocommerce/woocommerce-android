@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
@@ -27,6 +28,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.OpenB
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.StartSitePickerEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCouponsEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewGoogleForWooEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewInboxEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewReviewsEvent
@@ -94,6 +96,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
+                is ViewGoogleForWooEvent -> openInExitAwareWebview(event.url)
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
@@ -147,6 +150,14 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private fun openInBrowser(url: String) {
         ChromeCustomTabUtils.launchUrl(requireContext(), url)
+    }
+
+    private fun openInExitAwareWebview(url: String) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+                urlToLoad = url
+            )
+        )
     }
 
     private fun navigateToReviews() {
