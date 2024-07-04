@@ -167,7 +167,6 @@ private fun WooPosHomeScreen(
                                     )
                             )
                         }
-                        Spacer(modifier = Modifier.width(24.dp))
                     }
                     Row(modifier = Modifier.width(totalsWidthDp)) {
                         Spacer(modifier = Modifier.width(totalsStartPaddingDp))
