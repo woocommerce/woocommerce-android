@@ -376,7 +376,7 @@ private fun pluralizedProductsText(products: List<ProductItem>): String {
     }
 }
 
-@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true, fontScale = 2f)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Preview(device = WearDevices.SQUARE, showSystemUi = true)
 @Preview(device = WearDevices.RECT, showSystemUi = true)
@@ -390,7 +390,7 @@ fun Preview() {
             id = 0L,
             date = "25 Feb",
             number = "#125",
-            customerName = "John Doe Doe Doe Doe Doe",
+            customerName = "John Doe",
             total = "$100.00",
             status = "Processing",
             address = OrderItemAddress(
