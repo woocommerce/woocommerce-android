@@ -116,7 +116,7 @@ fun WooPosPaymentSuccessScreen(
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
-                    text = stringResource(R.string.woo_pos_new_transaction_button),
+                    text = stringResource(R.string.woopos_new_transaction_button),
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
