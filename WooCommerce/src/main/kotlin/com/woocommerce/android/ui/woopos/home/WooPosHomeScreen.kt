@@ -151,7 +151,6 @@ private fun WooPosHomeScreen(
             ) {
                 Row(modifier = Modifier.width(cartWidthDp + totalsWidthDp)) {
                     Row(modifier = Modifier.width(cartWidthDp)) {
-                        Spacer(modifier = Modifier.width(24.dp))
                         Box {
                             WooPosCartScreen(
                                 Modifier
