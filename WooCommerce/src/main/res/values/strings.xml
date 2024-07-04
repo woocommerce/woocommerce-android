@@ -2226,6 +2226,7 @@
     <string name="ai_product_creation_replace_image">Replace photo</string>
     <string name="ai_product_creation_remove_image">Remove photo</string>
     <string name="ai_product_creation_image_uploaded">Photo uploaded</string>
+    <string name="ai_product_creation_scanning_image">Scanning image</string>
 
     <!--
         Product Add more details Bottom sheet

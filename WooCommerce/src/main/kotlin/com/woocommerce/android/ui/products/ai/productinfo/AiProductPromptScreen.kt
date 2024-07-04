@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
@@ -340,10 +342,7 @@ private fun ProductPromptTextField(
             Divider()
 
             when {
-                state.isScanningImage -> {
-                    // TODO() show progress while scanning image
-                }
-
+                state.isScanningImage -> ImageScanning()
                 state.mediaUri != null -> UploadedImageRow(
                     state.mediaUri,
                     onImageActionSelected
@@ -362,6 +361,28 @@ private fun ProductPromptTextField(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ImageScanning() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentWidth()
+                .padding(end = 16.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.ai_product_creation_scanning_image),
+            style = MaterialTheme.typography.subtitle1,
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
     }
 }
 

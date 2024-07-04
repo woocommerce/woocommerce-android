@@ -79,7 +79,10 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onMediaSelected(mediaUri: String) {
-        _state.value = _state.value.copy(mediaUri = mediaUri)
+        _state.value = _state.value.copy(isScanningImage = true)
+
+
+//        _state.value = _state.value.copy(mediaUri = mediaUri)
     }
 
     fun onImageActionSelected(imageAction: ImageAction) {
