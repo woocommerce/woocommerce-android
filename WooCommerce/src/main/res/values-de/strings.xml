@@ -11,9 +11,9 @@ Language: de
     <string name="woopos_exit_confirmation_confirm_button">Beenden</string>
     <string name="woopos_exit_confirmation_message">Bist du sicher, dass du POS beenden möchtest?</string>
     <string name="woopos_exit_confirmation_title">POS beenden</string>
-    <string name="woo_pos_car_pane_title">Warenkorb</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">Artikel aus Warenkorb entfernen</string>
-    <string name="woo_pos_checkout_button">Bezahlen</string>
+    <string name="woopos_cart_title">Warenkorb</string>
+    <string name="woopos_remove_item_from_cart_content_description">Artikel aus Warenkorb entfernen</string>
+    <string name="woopos_checkout_button">Bezahlen</string>
     <string name="woopos_reader_unknown">Status des Lesegeräts unbekannt</string>
     <string name="woopos_checkout">Bezahlen</string>
     <string name="woopos_reader_disconnected">Lesegerät nicht verbunden</string>

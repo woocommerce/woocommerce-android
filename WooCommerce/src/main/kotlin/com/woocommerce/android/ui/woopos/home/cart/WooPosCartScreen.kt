@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,28 +52,28 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 
 @Composable
-fun WooPosCartScreen() {
+fun WooPosCartScreen(modifier: Modifier = Modifier) {
     val viewModel: WooPosCartViewModel = hiltViewModel()
 
     viewModel.state.observeAsState().value?.let {
-        WooPosCartScreen(it, viewModel::onUIEvent)
+        WooPosCartScreen(modifier, it, viewModel::onUIEvent)
     }
 }
 
 @Composable
 private fun WooPosCartScreen(
+    modifier: Modifier = Modifier,
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit
 ) {
     Card(
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 4.dp,
-        modifier = Modifier.padding(16.dp)
+        elevation = 4.dp
     ) {
         Box(
             Modifier
-                .fillMaxSize()
                 .padding(24.dp)
         ) {
             Column {
@@ -91,8 +90,7 @@ private fun WooPosCartScreen(
 
                 LazyColumn(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
+                        .weight(1f),
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -121,7 +119,7 @@ private fun WooPosCartScreen(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth(),
                     enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
-                    text = stringResource(R.string.woo_pos_checkout_button),
+                    text = stringResource(R.string.woopos_checkout_button),
                     onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
                 )
             }
@@ -151,13 +149,12 @@ private fun CartToolbar(
     onBackClicked: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { onBackClicked() }) {
             Icon(
                 imageVector = ImageVector.vectorResource(toolbar.icon),
-                contentDescription = stringResource(R.string.woo_pos_cart_back_content_description),
+                contentDescription = stringResource(R.string.woopos_cart_back_content_description),
                 tint = MaterialTheme.colors.onBackground,
                 modifier = Modifier.size(28.dp)
             )
@@ -166,7 +163,7 @@ private fun CartToolbar(
         Spacer(modifier = Modifier.width(16.dp))
 
         Text(
-            text = stringResource(R.string.woo_pos_car_pane_title),
+            text = stringResource(R.string.woopos_cart_title),
             style = MaterialTheme.typography.h4,
             color = MaterialTheme.colors.onBackground,
             fontWeight = FontWeight.Bold
@@ -186,7 +183,7 @@ private fun CartToolbar(
 
             TextButton(onClick = { onClearAllClicked() }) {
                 Text(
-                    text = stringResource(R.string.woo_pos_clear_cart_button),
+                    text = stringResource(R.string.woopos_clear_cart_button),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary,
                     fontWeight = FontWeight.SemiBold,
@@ -207,7 +204,6 @@ private fun ProductItem(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colors.background)
-            .fillMaxWidth()
             .height(64.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
