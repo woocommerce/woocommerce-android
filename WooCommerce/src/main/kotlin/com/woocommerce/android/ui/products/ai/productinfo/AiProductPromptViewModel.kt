@@ -123,5 +123,4 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     data class ShowMediaDialog(val source: DataSource) : Event()
-    data class ViewImage(val mediaUri: String) : Event()
 }
