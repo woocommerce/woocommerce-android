@@ -108,34 +108,28 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = WooPosTotalsState.Loading
 
-            val result = totalsRepository.createOrderWithProducts(
-                productIds = productIds
-            )
-
-            result.fold(
-                onSuccess = { order ->
-                    _state.value = calculateTotals(order)
-                },
-                onFailure = { error ->
-                    Log.e("WooPosCartViewModel", "Order creation failed - $error")
-                }
-            )
+            totalsRepository.createOrderWithProducts(productIds = productIds)
+                .fold(
+                    onSuccess = { order ->
+                        orderId.value = order.id
+                        _state.value = buildTotalsState(order)
+                    },
+                    onFailure = { error ->
+                        Log.e("WooPosCartViewModel", "Order creation failed - $error")
+                    }
+                )
         }
     }
 
-    private suspend fun calculateTotals(order: Order): WooPosTotalsState.Totals {
+    private suspend fun buildTotalsState(order: Order): WooPosTotalsState.Totals {
         val subtotalAmount = order.items.sumOf { it.subtotal }
         val taxAmount = order.totalTax
         val totalAmount = subtotalAmount + taxAmount
 
-        val updatedOrder = order.copy(
-            total = totalAmount,
-        )
-
         return WooPosTotalsState.Totals(
             orderSubtotalText = priceFormat(subtotalAmount),
             orderTaxText = priceFormat(taxAmount),
-            orderTotalText = priceFormat(updatedOrder.total),
+            orderTotalText = priceFormat(totalAmount),
         )
     }
 }
