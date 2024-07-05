@@ -114,7 +114,7 @@ private fun FullScreenImage(
                 .crossfade(true)
                 .build(),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Inside,
             modifier = Modifier.fillMaxSize()
         )
     }
