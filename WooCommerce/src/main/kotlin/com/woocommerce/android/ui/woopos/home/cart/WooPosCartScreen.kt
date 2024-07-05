@@ -67,7 +67,7 @@ private fun WooPosCartScreen(
 ) {
     Column(
         modifier = modifier
-        ) {
+    ) {
         Box(
             Modifier
                 .padding(24.dp).background(MaterialTheme.colors.surface)
