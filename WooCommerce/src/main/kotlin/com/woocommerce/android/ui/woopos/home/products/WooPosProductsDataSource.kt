@@ -16,7 +16,7 @@ class WooPosProductsDataSource @Inject constructor(
     private val handler: ProductListHandler,
     private val productStore: WCProductStore,
     private val site: SelectedSite,
-    ) {
+) {
     var hasMorePages: AtomicBoolean = handler.canLoadMore
 
     val products: Flow<List<Product>> = handler.productsFlow
