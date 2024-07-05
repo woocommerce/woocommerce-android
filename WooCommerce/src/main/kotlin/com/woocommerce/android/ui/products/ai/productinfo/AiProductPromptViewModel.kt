@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.products.ai.TextRecognitionEngine
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Remove
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Replace
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.View
@@ -25,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AiProductPromptViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val tracker: AnalyticsTrackerWrapper
+    private val tracker: AnalyticsTrackerWrapper,
+    private val textRecognitionEngine: TextRecognitionEngine,
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val _state = savedStateHandle.getStateFlow(
         viewModelScope,
@@ -80,9 +82,45 @@ class AiProductPromptViewModel @Inject constructor(
 
     fun onMediaSelected(mediaUri: String) {
         _state.value = _state.value.copy(isScanningImage = true)
+        launch {
+            textRecognitionEngine.processImage(mediaUri)
+                .onSuccess { keywords ->
+                    tracker.track(
+                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_COMPLETED,
+                        mapOf(
+                            AnalyticsTracker.KEY_SCANNED_TEXT_COUNT to keywords.size
+                        )
+                    )
+                    _state.value = _state.value.copy(
+                        isScanningImage = false,
+                        productPrompt = keywords.joinToString(separator = " ")
+                    )
 
 
-//        _state.value = _state.value.copy(mediaUri = mediaUri)
+//                    if (keywords.isNotEmpty()) {
+//                        generateNameAndDescription()
+//                    } else {
+//                        _viewState.update {
+//                            _viewState.value.copy(
+//                                state = NoKeywordsFound
+//                            )
+//                        }
+//                    }
+                }
+                .onFailure { error ->
+                    tracker.track(
+                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_DESC to error.message,
+                        )
+                    )
+
+//                    _viewState.update {
+//                        _viewState.value.copy(state = NoKeywordsFound)
+                }
+            _state.value = _state.value.copy(mediaUri = mediaUri)
+        }
     }
 
     fun onImageActionSelected(imageAction: ImageAction) {
