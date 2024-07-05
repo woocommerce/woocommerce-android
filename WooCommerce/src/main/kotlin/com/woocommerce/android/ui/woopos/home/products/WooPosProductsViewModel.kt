@@ -60,7 +60,7 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentState = viewState.value as? WooPosProductsViewState.Content ?: return@launch
             _viewState.value = currentState.copy(refreshingProducts = true)
-            productsDataSource.loadSimpleProducts()
+            productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
             _viewState.value = currentState.copy(refreshingProducts = false)
         }
     }
