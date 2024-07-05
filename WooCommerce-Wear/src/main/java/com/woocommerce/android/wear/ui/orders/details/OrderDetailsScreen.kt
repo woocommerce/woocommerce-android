@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -81,7 +82,7 @@ fun OrderDetailsScreen(
                     .fillMaxSize()
                     .background(Color.Black)
                     .verticalScroll(scrollState)
-                    .padding(top = 16.dp)
+                    .padding(16.dp)
             ) {
                 when {
                     isLoadingOrder -> LoadingScreen()
@@ -331,7 +332,7 @@ fun OrderProductsList(
                             contentAlignment = Alignment.Center,
                             modifier = modifier
                                 .padding(2.dp)
-                                .size(16.dp)
+                                .defaultMinSize(16.dp)
                                 .clip(CircleShape)
                                 .background(WooColors.woo_purple_alpha)
                         ) {

@@ -1,0 +1,2 @@
+19.3:
+¡Estamos encantados de ofrecerte una experiencia mejorada con nuestra última actualización! Hemos solucionado un bloqueo en la pantalla de vista previa de recibos y mejorado los mensajes de error al editar cantidades mínimas/máximas. Además, se ha solucionado el problema de visibilidad del botón de Blaze en la pantalla de detalles del producto, lo que garantiza una navegación más fluida. Actualiza y disfruta ya de una experiencia fluida con la aplicación móvil WooCommerce.

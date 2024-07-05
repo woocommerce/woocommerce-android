@@ -1,0 +1,2 @@
+19.3:
+Vi är glada över att kunna ge dig en förbättrad upplevelse med vår senaste uppdatering! Vi har åtgärdat en krasch på skärmen Kvittoförhandsgranskning och även förbättrat felmeddelanden vid redigering av min/max-antal. Dessutom har problemet med Blaze-knappens synlighet på produktinformationsskärmen åtgärdats, så att du kan navigera sidan smidigare. Uppdatera nu för en smidig WooCommerce-mobilappsupplevelse.

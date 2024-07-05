@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-27 09:54:05+0000
+Translation-Revision-Date: 2024-07-04 15:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">收取卡片款項</string>
+    <string name="woopos_payment_total_label">總計</string>
+    <string name="woopos_payment_tax_label">稅金</string>
+    <string name="woopos_payment_subtotal_label">小計</string>
+    <string name="woo_pos_new_transaction_button">新交易</string>
+    <string name="woopos_payment_successful_label">付款成功</string>
+    <string name="woopos_payment_failed_please_try_again">付款失敗。 請再試一次。</string>
+    <string name="woo_pos_cart_back_content_description">購物車圖示</string>
+    <string name="woopos_products_screen_title">商品</string>
+    <string name="woopos_product_image_description">商品圖片</string>
+    <string name="woo_pos_items_in_cart">%d 個品項</string>
+    <string name="woo_pos_clear_cart_button">全部清除</string>
+    <string name="more_menu_button_google_description">運用 Google Ads 刺激銷售額並帶來更多流量</string>
+    <string name="more_menu_button_google">Google for WooCommerce</string>
+    <string name="no_quantity_rules">沒有數量規則</string>
     <string name="blaze_campaign_preview_audience_section_title">受眾</string>
     <string name="woopos_exit_confirmation_dismiss_button">取消</string>
     <string name="woopos_exit_confirmation_confirm_button">結束</string>
