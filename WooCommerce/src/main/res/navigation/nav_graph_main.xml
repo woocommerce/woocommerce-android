@@ -741,7 +741,7 @@
             app:destination="@id/addProductWithAIFragment" />
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragmentV2"
-            app:destination="@id/aiProductInformationFragment" />
+            app:destination="@id/AiProductPromptFragment" />
     </dialog>
     <fragment
         android:id="@+id/addProductWithAIFragment"
@@ -756,9 +756,9 @@
     </fragment>
 
     <fragment
-        android:id="@+id/aiProductInformationFragment"
-        android:name="com.woocommerce.android.ui.products.ai.productinfo.AiProductInformationFragment"
-        android:label="AiProductInformationFragment" />
+        android:id="@+id/AiProductPromptFragment"
+        android:name="com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptFragment"
+        android:label="AiProductPromptFragment" />
 
     <dialog
         android:id="@+id/aiProductNameBottomSheetFragment"
