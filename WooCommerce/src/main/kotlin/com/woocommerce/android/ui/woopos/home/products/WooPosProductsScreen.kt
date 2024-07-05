@@ -49,7 +49,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductsListReached
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductListReached
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.PullToRefreshTriggered
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,7 +65,7 @@ fun WooPosProductsScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
-        onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductsListReached) },
+        onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductListReached) },
         onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) }
     )
 }

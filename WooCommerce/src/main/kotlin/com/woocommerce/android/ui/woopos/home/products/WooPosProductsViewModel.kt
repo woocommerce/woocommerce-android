@@ -42,7 +42,7 @@ class WooPosProductsViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosProductsUIEvent) {
         when (event) {
-            is WooPosProductsUIEvent.EndOfProductsListReached -> {
+            is WooPosProductsUIEvent.EndOfProductListReached -> {
                 onEndOfProductsListReached()
             }
 
