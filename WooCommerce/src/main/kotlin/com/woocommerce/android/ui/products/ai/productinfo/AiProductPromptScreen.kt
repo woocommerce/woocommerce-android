@@ -193,6 +193,12 @@ fun AiProductPromptScreen(
                     onImageActionSelected = onImageActionSelected
                 )
 
+                if (uiState.noTextDetectedMessage) {
+                    InformativeMessage(
+                        stringResource(id = R.string.product_creation_package_photo_no_text_detected)
+                    )
+                }
+
                 ToneDropDown(
                     tone = uiState.selectedTone,
                     onToneSelected = onToneSelected
@@ -344,9 +350,6 @@ private fun ProductPromptTextField(
 
             when {
                 state.isScanningImage -> ImageScanning()
-                state.noTextDetectedMessage -> InformativeMessage(
-                    stringResource(id = R.string.product_creation_package_photo_no_text_detected)
-                )
                 state.mediaUri != null -> UploadedImageRow(
                     state.mediaUri,
                     onImageActionSelected
@@ -395,6 +398,7 @@ private fun InformativeMessage(message: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(vertical = 16.dp)
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .background(
                 colorResource(id = R.color.tag_bg_main)
@@ -513,6 +517,30 @@ private fun AiProductPromptScreenPreview() {
             isScanningImage = false,
             showImageFullScreen = false,
             noTextDetectedMessage = false
+        ),
+        onBackButtonClick = {},
+        onPromptUpdated = {},
+        onReadTextFromProductPhoto = {},
+        onGenerateProductClicked = {},
+        onToneSelected = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onImageActionSelected = {}
+    )
+}
+
+@Preview
+@Composable
+private fun AiProductPromptScreenWithErrorPreview() {
+    AiProductPromptScreen(
+        uiState = AiProductPromptState(
+            productPrompt = "Product prompt test",
+            selectedTone = Tone.Casual,
+            isMediaPickerDialogVisible = false,
+            mediaUri = null,
+            isScanningImage = false,
+            showImageFullScreen = false,
+            noTextDetectedMessage = true
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},

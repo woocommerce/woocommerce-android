@@ -123,7 +123,10 @@ class AiProductPromptViewModel @Inject constructor(
         when (imageAction) {
             View -> _state.value = _state.value.copy(showImageFullScreen = true)
             Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
-            Remove -> _state.value = _state.value.copy(mediaUri = null)
+            Remove -> _state.value = _state.value.copy(
+                mediaUri = null,
+                isScanningImage = false,
+            )
         }
     }
 
