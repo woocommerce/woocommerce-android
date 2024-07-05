@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.cart
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -25,7 +26,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
         on { events }.thenReturn(MutableSharedFlow())
     }
-    private val repository: WooPosCartRepository = mock()
+    private val getProductById: WooPosGetProductById = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(eq(R.string.woopos_items_in_cart), eq(1)) }.thenReturn("Items in cart: 1")
         on { getString(eq(R.string.woopos_items_in_cart), eq(2)) }.thenReturn("Items in cart: 2")
@@ -48,7 +49,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
         val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
         whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+        whenever(getProductById(eq(product.id.productId))).thenReturn(
             generateProductWithFirstImage(product.id.productId)
         )
         val sut = createSut()
@@ -78,7 +79,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+            whenever(getProductById(eq(product.id.productId))).thenReturn(
                 generateProductWithFirstImage(product.id.productId)
             )
             val sut = createSut()
@@ -123,7 +124,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+            whenever(getProductById(eq(product.id.productId))).thenReturn(
                 generateProductWithFirstImage(product.id.productId)
             )
 
@@ -155,7 +156,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+            whenever(getProductById(eq(product.id.productId))).thenReturn(
                 generateProductWithFirstImage(product.id.productId)
             )
 
@@ -186,13 +187,13 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product1Id))).thenReturn(
+            whenever(getProductById(eq(product1Id))).thenReturn(
                 generateProductWithFirstImage(product1Id)
             )
-            whenever(repository.getProductById(eq(product2Id))).thenReturn(
+            whenever(getProductById(eq(product2Id))).thenReturn(
                 generateProductWithFirstImage(product3Id)
             )
-            whenever(repository.getProductById(eq(product3Id))).thenReturn(
+            whenever(getProductById(eq(product3Id))).thenReturn(
                 generateProductWithFirstImage(product3Id)
             )
 
@@ -233,7 +234,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
         return WooPosCartViewModel(
             childrenToParentEventSender,
             parentToChildrenEventReceiver,
-            repository,
+            getProductById,
             resourceProvider,
             formatPrice,
             savedState

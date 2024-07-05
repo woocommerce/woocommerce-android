@@ -117,6 +117,10 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
                         _state.value = WooPosCartState()
                     }
+
+                    is ParentToChildrenEvent.CheckoutStarted -> {
+                        // Do nothing
+                    }
                 }
             }
         }

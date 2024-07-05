@@ -22,11 +22,11 @@ class WooPosTotalsRepository @Inject constructor(
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
     suspend fun createOrderWithProducts(productIds: List<Long>): Result<Order> {
+        check(productIds.isNotEmpty()) { "List of IDs is empty" }
+
         orderCreationJob?.cancel()
 
         return withContext(IO) {
-            check(productIds.isNotEmpty()) { "List of IDs is empty" }
-
             orderCreationJob = async {
                 val order = Order.getEmptyOrder(
                     dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
