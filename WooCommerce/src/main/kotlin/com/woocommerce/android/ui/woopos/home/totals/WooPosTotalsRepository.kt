@@ -4,7 +4,9 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.util.DateUtils
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.Date
@@ -17,33 +19,43 @@ class WooPosTotalsRepository @Inject constructor(
     private val dateUtils: DateUtils,
     private val getProductById: WooPosGetProductById,
 ) {
-    suspend fun createOrderWithProducts(productIds: List<Long>): Result<Order> = withContext(IO) {
-        check(productIds.isNotEmpty()) { "List of IDs is empty" }
-        val order = Order.getEmptyOrder(
-            dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
-            dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
-        ).copy(
-            status = Order.Status.Custom(Order.Status.AUTO_DRAFT),
-            items = productIds
-                .groupingBy { it }
-                .eachCount()
-                .map { (productId, quantity) ->
-                    val product = getProductById(productId)
-                    Order.Item.EMPTY.copy(
-                        itemId = 0L,
-                        productId = productId,
-                        variationId = 0L,
-                        quantity = quantity.toFloat(),
-                        total = EMPTY_TOTALS_SUBTOTAL_VALUE,
-                        subtotal = EMPTY_TOTALS_SUBTOTAL_VALUE,
-                        price = product?.price ?: BigDecimal.ZERO,
-                        sku = product?.sku.orEmpty(),
-                        attributesList = emptyList(),
-                    )
-                }
-        )
+    private var orderCreationJob: Deferred<Result<Order>>? = null
 
-        orderCreateEditRepository.createOrUpdateOrder(order)
+    suspend fun createOrderWithProducts(productIds: List<Long>): Result<Order> {
+        orderCreationJob?.cancel()
+
+        return withContext(IO) {
+            check(productIds.isNotEmpty()) { "List of IDs is empty" }
+
+            orderCreationJob = async {
+                val order = Order.getEmptyOrder(
+                    dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+                    dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+                ).copy(
+                    status = Order.Status.Custom(Order.Status.AUTO_DRAFT),
+                    items = productIds
+                        .groupingBy { it }
+                        .eachCount()
+                        .map { (productId, quantity) ->
+                            val product = getProductById(productId)
+                            Order.Item.EMPTY.copy(
+                                itemId = 0L,
+                                productId = productId,
+                                variationId = 0L,
+                                quantity = quantity.toFloat(),
+                                total = EMPTY_TOTALS_SUBTOTAL_VALUE,
+                                subtotal = EMPTY_TOTALS_SUBTOTAL_VALUE,
+                                price = product?.price ?: BigDecimal.ZERO,
+                                sku = product?.sku.orEmpty(),
+                                attributesList = emptyList(),
+                            )
+                        }
+                )
+
+                orderCreateEditRepository.createOrUpdateOrder(order)
+            }
+            orderCreationJob!!.await()
+        }
     }
 
     private companion object {
