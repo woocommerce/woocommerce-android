@@ -2222,6 +2222,10 @@
     <string name="product_creation_survey_button_remind_me_later">Remind Me Later</string>
     <string name="product_creation_survey_button_dont_show_again">Don\’t show it Again</string>
     <string name="ai_product_creation_generate_details_button">Generate Product Details</string>
+    <string name="ai_product_creation_view_image">View photo</string>
+    <string name="ai_product_creation_replace_image">Replace photo</string>
+    <string name="ai_product_creation_remove_image">Remove photo</string>
+    <string name="ai_product_creation_image_uploaded">Photo uploaded</string>
 
     <!--
         Product Add more details Bottom sheet
