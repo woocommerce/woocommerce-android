@@ -43,19 +43,19 @@ val WooTypography = Typography(
     ),
     title1 = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 34.sp,
+        fontSize = 30.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.2.sp
     ),
     title2 = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 24.sp,
+        fontSize = 20.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.2.sp
     ),
     title3 = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 20.sp,
+        fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.2.sp
     ),

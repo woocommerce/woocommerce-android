@@ -1,0 +1,2 @@
+19.3:
+Dengan pembaruan terbaru ini, kami sangat senang menghadirkan pengalaman yang lebih baik untuk Anda! Kami telah mengatasi masalah crash pada layar Pratinjau Tanda Terima dan memperbaiki pesan error saat mengedit Jumlah Min/Max Selain itu, masalah tampilan tombol Blaze pada layar detail produk kini teratasi, sehingga navigasi menjadi lebih lancar. Perbarui sekarang untuk pengalaman menggunakan aplikasi seluler WooCommerce yang lebih mudah.

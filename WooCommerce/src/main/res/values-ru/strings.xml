@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-26 14:54:03+0000
+Translation-Revision-Date: 2024-07-04 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Получение платежа по карте</string>
+    <string name="woopos_payment_total_label">Итого</string>
+    <string name="woopos_payment_tax_label">Налог</string>
+    <string name="woopos_payment_subtotal_label">Подытог</string>
+    <string name="woo_pos_new_transaction_button">Новая транзакция</string>
+    <string name="woopos_payment_successful_label">Оплата прошла успешно</string>
+    <string name="woopos_payment_failed_please_try_again">Платёж не выполнен. Повторите попытку.</string>
+    <string name="woo_pos_cart_back_content_description">Значок корзины</string>
+    <string name="woopos_products_screen_title">Товары</string>
+    <string name="woopos_product_image_description">Изображение товара</string>
+    <string name="woo_pos_items_in_cart">Товары (%d)</string>
+    <string name="woo_pos_clear_cart_button">Очистить все</string>
+    <string name="more_menu_button_google_description">Повышайте продажи и привлекайте больше посетителей при помощи Google Ads</string>
+    <string name="more_menu_button_google">Google для WooCommerce</string>
+    <string name="no_quantity_rules">Нет правил количества</string>
     <string name="blaze_campaign_preview_audience_section_title">Аудитория</string>
     <string name="woopos_exit_confirmation_dismiss_button">Отмена</string>
     <string name="woopos_exit_confirmation_confirm_button">Выход</string>

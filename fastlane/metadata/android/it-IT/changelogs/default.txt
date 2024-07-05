@@ -1,0 +1,2 @@
+19.3:
+Siamo entusiasti di offrirti un'esperienza migliorata con il nostro ultimo aggiornamento. Abbiamo risolto un arresto anomalo nella schermata di Anteprima ricevute e migliorato i messaggi di errore durante la modifica delle Quantità min/max. Inoltre, il problema di visibilità del pulsante Blaze sulla schermata dettagli del prodotto è stato risolto, garantendo una navigazione più fluida. Aggiorna ora per un'esperienza semplice con l'app mobile di WooCommerce.
