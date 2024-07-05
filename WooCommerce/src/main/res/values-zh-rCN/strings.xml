@@ -26,9 +26,9 @@ Language: zh_CN
     <string name="woopos_exit_confirmation_confirm_button">退出</string>
     <string name="woopos_exit_confirmation_message">是否确定要退出 POS 机？</string>
     <string name="woopos_exit_confirmation_title">退出 POS 机</string>
-    <string name="woo_pos_car_pane_title">购物车</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">将商品从购物车中移除</string>
-    <string name="woo_pos_checkout_button">结账</string>
+    <string name="woopos_cart_title">购物车</string>
+    <string name="woopos_remove_item_from_cart_content_description">将商品从购物车中移除</string>
+    <string name="woopos_checkout_button">结账</string>
     <string name="woopos_reader_unknown">读卡器状态未知</string>
     <string name="woopos_checkout">结账</string>
     <string name="woopos_reader_disconnected">读卡器已断开连接</string>
