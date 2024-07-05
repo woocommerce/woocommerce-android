@@ -55,6 +55,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -343,6 +344,9 @@ private fun ProductPromptTextField(
 
             when {
                 state.isScanningImage -> ImageScanning()
+                state.noTextDetectedMessage -> InformativeMessage(
+                    stringResource(id = R.string.product_creation_package_photo_no_text_detected)
+                )
                 state.mediaUri != null -> UploadedImageRow(
                     state.mediaUri,
                     onImageActionSelected
@@ -382,6 +386,39 @@ private fun ImageScanning() {
             text = stringResource(id = R.string.ai_product_creation_scanning_image),
             style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
+    }
+}
+
+@Composable
+private fun InformativeMessage(message: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(
+                colorResource(id = R.color.tag_bg_main)
+            )
+    ) {
+
+        Icon(
+            painter = painterResource(R.drawable.ic_info_outline_20dp),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .size(dimensionResource(id = R.dimen.major_150)),
+            tint = colorResource(id = R.color.tag_text_main),
+        )
+        Text(
+            text = message,
+            color = colorResource(id = R.color.tag_text_main),
+            modifier = Modifier
+                .weight(1f)
+                .padding(
+                    top = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100)
+                )
         )
     }
 }
@@ -474,7 +511,8 @@ private fun AiProductPromptScreenPreview() {
             isMediaPickerDialogVisible = false,
             mediaUri = null,
             isScanningImage = false,
-            showImageFullScreen = false
+            showImageFullScreen = false,
+            noTextDetectedMessage = false
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},

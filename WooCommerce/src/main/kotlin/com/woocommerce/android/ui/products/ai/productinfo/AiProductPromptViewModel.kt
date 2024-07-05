@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewMod
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.View
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +38,8 @@ class AiProductPromptViewModel @Inject constructor(
             isMediaPickerDialogVisible = false,
             mediaUri = null,
             isScanningImage = false,
-            showImageFullScreen = false
+            showImageFullScreen = false,
+            noTextDetectedMessage = false
         )
     )
 
@@ -91,21 +93,14 @@ class AiProductPromptViewModel @Inject constructor(
                             AnalyticsTracker.KEY_SCANNED_TEXT_COUNT to keywords.size
                         )
                     )
-                    _state.value = _state.value.copy(
-                        isScanningImage = false,
-                        productPrompt = keywords.joinToString(separator = " ")
-                    )
-
-
-//                    if (keywords.isNotEmpty()) {
-//                        generateNameAndDescription()
-//                    } else {
-//                        _viewState.update {
-//                            _viewState.value.copy(
-//                                state = NoKeywordsFound
-//                            )
-//                        }
-//                    }
+                    if (keywords.isNotEmpty()) {
+                        _state.value = _state.value.copy(
+                            productPrompt = keywords.joinToString(separator = " "),
+                            noTextDetectedMessage = false
+                        )
+                    } else {
+                        _state.value = _state.value.copy(noTextDetectedMessage = true)
+                    }
                 }
                 .onFailure { error ->
                     tracker.track(
@@ -115,11 +110,12 @@ class AiProductPromptViewModel @Inject constructor(
                             AnalyticsTracker.KEY_ERROR_DESC to error.message,
                         )
                     )
-
-//                    _viewState.update {
-//                        _viewState.value.copy(state = NoKeywordsFound)
+                    triggerEvent(ShowSnackbar(R.string.ai_product_creation_scanning_photo_error))
                 }
-            _state.value = _state.value.copy(mediaUri = mediaUri)
+            _state.value = _state.value.copy(
+                mediaUri = mediaUri,
+                isScanningImage = false,
+            )
         }
     }
 
@@ -142,7 +138,8 @@ class AiProductPromptViewModel @Inject constructor(
         val isMediaPickerDialogVisible: Boolean,
         val mediaUri: String?,
         val isScanningImage: Boolean,
-        val showImageFullScreen: Boolean
+        val showImageFullScreen: Boolean,
+        val noTextDetectedMessage: Boolean,
     ) : Parcelable
 
     enum class Tone(@StringRes val displayName: Int, val slug: String) {
