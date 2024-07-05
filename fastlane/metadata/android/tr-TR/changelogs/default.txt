@@ -1,0 +1,2 @@
+19.3:
+Son güncellememizle size gelişmiş bir deneyim sağlamaktan mutluluk duyuyoruz! Makbuz Önizlemesi ekranındaki bir çökme sorunuzu çözdük ve Min./Maks. Miktarları düzenlerken gösterilen hata mesajlarını iyileştirdik. Ayrıca ürün ayrıntıları ekranındaki Blaze düğmesi görünürlük sorunu da çözülerek daha sorunsuz bir gezinme deneyimi sağlandı. Daha sorunsuz bir WooCommerce mobil uygulama deneyimi için hemen güncelleyin!

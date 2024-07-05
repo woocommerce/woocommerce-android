@@ -1,0 +1,2 @@
+19.3:
+We zijn blij dat we je een verbeterde ervaring kunnen bieden met onze nieuwste update! We hebben een crash opgelost in het scherm Betalingsbewijs bekijken en de foutberichten bij het bewerken van min/max aantallen verbeterd. Daarnaast is het probleem met de zichtbaarheid van de Blaze-knop in het scherm met productgegevens opgelost, wat zorgt voor soepelere navigatie. Update nu voor een naadloze ervaring van de mobiele WooCommerce-app!
