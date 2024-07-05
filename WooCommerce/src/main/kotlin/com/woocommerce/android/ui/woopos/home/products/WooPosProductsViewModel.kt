@@ -69,8 +69,10 @@ class WooPosProductsViewModel @Inject constructor(
     }
 
     private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState {
-        return if (products.isEmpty()) {
+        return if (products.isEmpty() && !isRefreshingProducts()) {
             WooPosProductsViewState.Empty
+        } else if (products.isEmpty() && isRefreshingProducts()) {
+            WooPosProductsViewState.Loading
         } else {
             WooPosProductsViewState.Content(
                 products = products.map { product ->
@@ -85,6 +87,11 @@ class WooPosProductsViewModel @Inject constructor(
                 refreshingProducts = false,
             )
         }
+    }
+
+    private fun isRefreshingProducts(): Boolean {
+        return viewState.value is WooPosProductsViewState.Content &&
+            (viewState.value as WooPosProductsViewState.Content).refreshingProducts
     }
 
     private fun onEndOfProductsListReached() {

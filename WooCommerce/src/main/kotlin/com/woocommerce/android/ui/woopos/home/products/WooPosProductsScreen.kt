@@ -66,7 +66,7 @@ fun WooPosProductsScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
-        onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductListReached) },
+        onEndOfProductListReached = { productsViewModel.onUIEvent(EndOfProductListReached) },
         onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) }
     )
 }
@@ -77,7 +77,7 @@ private fun WooPosProductsScreen(
     modifier: Modifier = Modifier,
     productsStateFlow: StateFlow<WooPosProductsViewState>,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
-    onEndOfProductsGridReached: () -> Unit,
+    onEndOfProductListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
 ) {
     Column(
@@ -96,7 +96,7 @@ private fun WooPosProductsScreen(
 
         when (val productsState = state.value) {
             is WooPosProductsViewState.Content -> {
-                ProductsList(productsState, onItemClicked, onEndOfProductsGridReached, onPullToRefresh)
+                ProductsList(productsState, onItemClicked, onEndOfProductListReached, onPullToRefresh)
             }
 
             WooPosProductsViewState.Loading -> {
@@ -349,7 +349,7 @@ fun WooPosHomeScreenPreview() {
         WooPosProductsScreen(
             productsStateFlow = productState,
             onItemClicked = {},
-            onEndOfProductsGridReached = {},
+            onEndOfProductListReached = {},
             onPullToRefresh = {},
         )
     }
@@ -364,12 +364,13 @@ fun WooPosHomeScreenLoadingPreview() {
         WooPosProductsScreen(
             productsStateFlow = productState,
             onItemClicked = {},
-            onEndOfProductsGridReached = {},
+            onEndOfProductListReached = {},
             onPullToRefresh = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
 fun WooPosHomeScreenEmptyListPreview() {
@@ -378,7 +379,8 @@ fun WooPosHomeScreenEmptyListPreview() {
         WooPosProductsScreen(
             productsStateFlow = productState,
             onItemClicked = {},
-            onEndOfProductsGridReached = {}
+            onEndOfProductListReached = {},
+            onPullToRefresh = {},
         )
     }
 }

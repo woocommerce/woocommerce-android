@@ -83,7 +83,8 @@ class WooPosProductsViewModelTest {
         }
 
     @Test
-    fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() = testBlocking {
+    fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() =
+        runTest {
         // GIVEN
         val products = listOf(
             ProductTestUtils.generateProduct(

@@ -21,11 +21,11 @@ class WooPosProductsDataSource @Inject constructor(
     val products: Flow<List<Product>> = handler.productsFlow
         .map { it.filter { product -> product.price != null } }
 
-    suspend fun loadSimpleProducts(forceRefreshProducts: Boolean = false) {
+    suspend fun loadSimpleProducts(forceRefreshProducts: Boolean = false): Result<Unit> {
         if (forceRefreshProducts) {
             productStore.deleteProductsForSite(site.getOrNull()!!)
         }
-        handler.loadFromCacheAndFetch(
+        return handler.loadFromCacheAndFetch(
             searchType = ProductListHandler.SearchType.DEFAULT,
             filters = mapOf(WCProductStore.ProductFilterOption.TYPE to ProductType.SIMPLE.value),
         )
