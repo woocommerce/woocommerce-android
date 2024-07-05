@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-28 11:54:04+0000
+Translation-Revision-Date: 2024-07-04 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Ricevi pagamenti con carta</string>
+    <string name="woopos_payment_total_label">Totale</string>
+    <string name="woopos_payment_tax_label">Imposta</string>
+    <string name="woopos_payment_subtotal_label">Subtotale</string>
+    <string name="woo_pos_new_transaction_button">Nuova transazione</string>
+    <string name="woopos_payment_successful_label">Pagamento avvenuto correttamente</string>
+    <string name="woopos_payment_failed_please_try_again">Pagamento non riuscito. Riprova.</string>
+    <string name="woo_pos_cart_back_content_description">Icona della carta</string>
+    <string name="woopos_products_screen_title">Prodotti</string>
+    <string name="woopos_product_image_description">Immagine prodotto</string>
+    <string name="woo_pos_items_in_cart">%d elementi</string>
+    <string name="woo_pos_clear_cart_button">Cancella tutto</string>
+    <string name="more_menu_button_google_description">Aumenta le vendite e genera più traffico con Google Ads</string>
+    <string name="more_menu_button_google">Google per WooCommerce</string>
+    <string name="no_quantity_rules">Nessuna regola sulla quantità</string>
     <string name="blaze_campaign_preview_audience_section_title">Pubblico</string>
     <string name="woopos_exit_confirmation_dismiss_button">Annulla</string>
     <string name="woopos_exit_confirmation_confirm_button">Esci</string>

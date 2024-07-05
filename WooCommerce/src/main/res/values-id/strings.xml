@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-27 09:54:03+0000
+Translation-Revision-Date: 2024-07-04 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Terima Pembayaran dengan Kartu</string>
+    <string name="woopos_payment_total_label">Total</string>
+    <string name="woopos_payment_tax_label">Pajak</string>
+    <string name="woopos_payment_subtotal_label">Subtotal</string>
+    <string name="woo_pos_new_transaction_button">Transaksi baru</string>
+    <string name="woopos_payment_successful_label">Pembayaran berhasil</string>
+    <string name="woopos_payment_failed_please_try_again">Pembayaran gagal. Coba lagi.</string>
+    <string name="woo_pos_cart_back_content_description">Ikon keranjang</string>
+    <string name="woopos_products_screen_title">Produk</string>
+    <string name="woopos_product_image_description">Gambar Produk</string>
+    <string name="woo_pos_items_in_cart">%d item</string>
+    <string name="woo_pos_clear_cart_button">Hapus semua</string>
+    <string name="more_menu_button_google_description">Tingkatkan penjualan dan hasilkan lebih banyak lalu lintas dengan Google Ads</string>
+    <string name="more_menu_button_google">Google untuk WooCommerce</string>
+    <string name="no_quantity_rules">Tidak Ada Aturan Jumlah</string>
     <string name="blaze_campaign_preview_audience_section_title">Audiens</string>
     <string name="woopos_exit_confirmation_dismiss_button">Batal</string>
     <string name="woopos_exit_confirmation_confirm_button">Keluar</string>
