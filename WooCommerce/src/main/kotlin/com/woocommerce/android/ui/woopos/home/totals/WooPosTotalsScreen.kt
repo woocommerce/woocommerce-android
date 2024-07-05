@@ -55,7 +55,6 @@ private fun WooPosTotalsScreen(
             is WooPosTotalsState.Totals -> {
                 TotalsLoaded(
                     state = state,
-                    onUIEvent = onUIEvent
                 )
             }
 
@@ -72,8 +71,7 @@ private fun WooPosTotalsScreen(
 
 @Composable
 private fun TotalsLoaded(
-    state: WooPosTotalsState.Totals,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+    state: WooPosTotalsState.Totals
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -99,15 +97,6 @@ private fun TotalsLoaded(
 
             Spacer(modifier = Modifier.weight(1f))
         }
-
-        WooPosButton(
-            text = stringResource(R.string.woopos_payment_collect_payment_label),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(24.dp),
-            onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-        )
     }
 }
 
