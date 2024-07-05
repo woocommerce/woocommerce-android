@@ -58,6 +58,32 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
             assertThat(value.products[1].imageUrl).isEqualTo("https://test.com")
         }
 
+    @Test
+    fun `given empty products list returned, when view model created, then view state is empty`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.products).thenReturn(flowOf(emptyList()))
+
+            // WHEN
+            val viewModel = createViewMode()
+
+            // THEN
+            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Empty)
+        }
+
+    @Test
+    fun `given loading products is failure, when view model created, then view state is empty`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.loadSimpleProducts()).thenReturn(Result.failure(Exception()))
+
+            // WHEN
+            val viewModel = createViewMode()
+
+            // THEN
+            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error)
+        }
+
     private fun createViewMode() =
         WooPosProductsViewModel(
             productsDataSource,
