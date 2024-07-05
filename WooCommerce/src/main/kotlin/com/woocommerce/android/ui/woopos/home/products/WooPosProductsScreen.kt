@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -101,7 +102,10 @@ private fun WooPosProductsScreen(
                 ProductsLoadingIndicator()
             }
 
-            WooPosProductsViewState.Empty -> TODO()
+            WooPosProductsViewState.Empty -> {
+                ProductsEmptyList()
+            }
+
             WooPosProductsViewState.Error -> TODO()
         }
     }
@@ -262,6 +266,20 @@ private fun ProductItem(
 }
 
 @Composable
+fun ProductsEmptyList() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.woopos_products_empty_list),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
 private fun InfiniteListHandler(
     listState: LazyListState,
     onEndOfProductsListReached: () -> Unit
@@ -340,6 +358,19 @@ fun WooPosHomeScreenLoadingPreview() {
             onItemClicked = {},
             onEndOfProductsGridReached = {},
             onPullToRefresh = {},
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosHomeScreenEmptyListPreview() {
+    val productState = MutableStateFlow(WooPosProductsViewState.Empty)
+    WooPosTheme {
+        WooPosProductsScreen(
+            productsStateFlow = productState,
+            onItemClicked = {},
+            onEndOfProductsGridReached = {}
         )
     }
 }

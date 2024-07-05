@@ -36,7 +36,10 @@ class WooPosProductsViewModel @Inject constructor(
                 .collect { _viewState.value = it }
         }
         viewModelScope.launch {
-            productsDataSource.loadSimpleProducts()
+            val result = productsDataSource.loadSimpleProducts()
+            if (result.isFailure) {
+                _viewState.value = WooPosProductsViewState.Error
+            }
         }
     }
 
@@ -49,36 +52,26 @@ class WooPosProductsViewModel @Inject constructor(
             is WooPosProductsUIEvent.ItemClicked -> {
                 onItemClicked(event.item)
             }
-
-            WooPosProductsUIEvent.PullToRefreshTriggered -> {
-                reloadProducts()
-            }
         }
     }
 
-    private fun reloadProducts() {
-        viewModelScope.launch {
-            if (viewState.value !is WooPosProductsViewState.Content) return@launch
-            _viewState.value = (viewState.value as WooPosProductsViewState.Content).copy(refreshingProducts = true)
-            productsDataSource.loadSimpleProducts()
-            _viewState.value = (viewState.value as WooPosProductsViewState.Content).copy(refreshingProducts = false)
-        }
-    }
-
-    private suspend fun calculateViewState(
-        products: List<Product>
-    ) = WooPosProductsViewState.Content(
-        products = products.map { product ->
-            WooPosProductsListItem(
-                id = product.remoteId,
-                name = product.name,
-                price = priceFormat(product.price),
-                imageUrl = product.firstImageUrl,
+    private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState {
+        return if (products.isEmpty()) {
+            WooPosProductsViewState.Empty
+        } else {
+            WooPosProductsViewState.Content(
+                products = products.map { product ->
+                    WooPosProductsListItem(
+                        id = product.remoteId,
+                        name = product.name,
+                        price = priceFormat(product.price),
+                        imageUrl = product.firstImageUrl,
+                    )
+                },
+                loadingMore = false,
             )
-        },
-        loadingMore = false,
-        refreshingProducts = false,
-    )
+        }
+    }
 
     private fun onEndOfProductsGridReached() {
         val currentState = _viewState.value
@@ -86,7 +79,7 @@ class WooPosProductsViewModel @Inject constructor(
             return
         }
 
-        if (!productsDataSource.hasMorePages.get()) {
+        if (!productsDataSource.hasMorePages) {
             return
         }
 
