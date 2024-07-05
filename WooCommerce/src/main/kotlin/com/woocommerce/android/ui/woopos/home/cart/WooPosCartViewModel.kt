@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -56,7 +55,6 @@ class WooPosCartViewModel @Inject constructor(
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
                 goToTotals()
-                createOrderDraft()
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
@@ -88,7 +86,8 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun goToTotals() {
-        sendEventToParent(ChildToParentEvent.CheckoutClicked)
+        val productIds = _state.value.itemsInCart.map { it.id.productId }
+        sendEventToParent(ChildToParentEvent.CheckoutStarted(productIds))
         _state.value = _state.value.copy(cartStatus = WooPosCartStatus.CHECKOUT)
     }
 
@@ -118,8 +117,6 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
                         _state.value = WooPosCartState()
                     }
-
-                    else -> Unit
                 }
             }
         }
