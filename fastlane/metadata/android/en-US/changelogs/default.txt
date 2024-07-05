@@ -1,2 +1,1 @@
-- [***] Inbox Notes have been enabled in both the Dynamic Dashboard and the Hub Menu, offering users a centralized and non-intrusive method for receiving important updates, feature announcements, and pertinent information. [https://github.com/woocommerce/woocommerce-android/pull/11900]
-
+Explore our latest update with Inbox Notes now available in both the Dynamic Dashboard and the Hub Menu. This new feature offers a centralized, non-intrusive way to keep you informed about important updates, feature announcements, and essential information. Upgrade today to stay in the loop effortlessly!
