@@ -92,37 +92,6 @@ class WooPosCartViewModel @Inject constructor(
         _state.value = _state.value.copy(cartStatus = WooPosCartStatus.CHECKOUT)
     }
 
-    private fun createOrderDraft() {
-        viewModelScope.launch {
-            childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.OrderCreation.OrderCreationStarted
-            )
-
-            val currentState = _state.value
-            _state.value = currentState.copy(isOrderCreationInProgress = true)
-
-            val result = repository.createOrderWithProducts(
-                productIds = currentState.itemsInCart.map { it.id.productId }
-            )
-
-            _state.value = _state.value.copy(isOrderCreationInProgress = false)
-
-            result.fold(
-                onSuccess = { order ->
-                    childrenToParentEventSender.sendToParent(
-                        ChildToParentEvent.OrderCreation.OrderCreationSucceeded(order.id)
-                    )
-                },
-                onFailure = { error ->
-                    childrenToParentEventSender.sendToParent(
-                        ChildToParentEvent.OrderCreation.OrderCreationFailed
-                    )
-                    Log.e("WooPosCartViewModel", "Order creation failed - $error")
-                }
-            )
-        }
-    }
-
     private fun listenEventsFromParent() {
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->

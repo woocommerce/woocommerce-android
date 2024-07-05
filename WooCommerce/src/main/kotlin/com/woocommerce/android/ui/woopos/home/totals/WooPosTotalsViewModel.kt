@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -24,7 +24,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val cardReaderFacade: WooPosCardReaderFacade,
-    private val orderDetailRepository: OrderDetailRepository,
+    private val totalsRepository: WooPosTotalsRepository,
     private val priceFormat: WooPosFormatPrice,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -90,18 +90,8 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
-                    is ParentToChildrenEvent.OrderCreation -> {
-                        when (event) {
-                            is ParentToChildrenEvent.OrderCreation.OrderCreationFailed -> TODO()
-                            is ParentToChildrenEvent.OrderCreation.OrderCreationStarted -> {
-                                _state.value = InitialState
-                            }
-
-                            is ParentToChildrenEvent.OrderCreation.OrderCreationSucceeded -> {
-                                orderId.value = event.orderId
-                                loadOrderDraft(event.orderId)
-                            }
-                        }
+                    is ParentToChildrenEvent.CheckoutStarted -> {
+                        createOrderDraft(event.productIds)
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
@@ -114,12 +104,22 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private fun loadOrderDraft(orderId: Long) {
+    private fun createOrderDraft(productIds: List<Long>) {
         viewModelScope.launch {
-            val order = orderDetailRepository.getOrderById(orderId)
-            check(order != null) { "Order must not be null" }
-            check(order.items.isNotEmpty()) { "Order must have at least one item" }
-            _state.value = calculateTotals(order)
+            _state.value = WooPosTotalsState.Loading
+
+            val result = totalsRepository.createOrderWithProducts(
+                productIds = productIds
+            )
+
+            result.fold(
+                onSuccess = { order ->
+                    _state.value = calculateTotals(order)
+                },
+                onFailure = { error ->
+                    Log.e("WooPosCartViewModel", "Order creation failed - $error")
+                }
+            )
         }
     }
 
