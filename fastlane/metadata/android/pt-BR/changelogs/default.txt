@@ -1,2 +1,0 @@
-19.3:
-Estamos felizes em trazer uma melhor experiência com nossa última atualização! Nós resolvemos um problema na visualização do recibo e melhoramos as mensagens de erro ao editar a quantidade. E mais, consertamos o problema na aparência do botão Blaze, nos detalhes do produto. Garantindo uma navegação mais fluída. Atualize agora mesmo para ter uma experiência mais eficiente no app móvel do WooCommerce!

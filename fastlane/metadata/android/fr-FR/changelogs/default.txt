@@ -1,2 +1,0 @@
-19.3 :
-Nous sommes ravis d’améliorer votre expérience avec cette mise à jour ! Nous avons résolu un incident sur l’écran Aperçu du reçu et amélioré les messages d’erreur lors de la modification des quantités min. /max. Par ailleurs, le problème de visibilité du bouton Blaze sur l’écran des détails du produit a été corrigé pour une navigation plus fluide. Mettez à jour dès maintenant pour une expérience plus fluide sur l’application mobile WooCommerce !
