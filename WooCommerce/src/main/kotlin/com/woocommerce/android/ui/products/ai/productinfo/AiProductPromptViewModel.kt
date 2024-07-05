@@ -125,7 +125,7 @@ class AiProductPromptViewModel @Inject constructor(
             Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
             Remove -> _state.value = _state.value.copy(
                 mediaUri = null,
-                isScanningImage = false,
+                noTextDetectedMessage = false,
             )
         }
     }
