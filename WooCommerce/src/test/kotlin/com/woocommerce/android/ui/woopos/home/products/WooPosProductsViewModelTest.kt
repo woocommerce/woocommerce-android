@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
@@ -57,6 +58,34 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
             assertThat(value.products[1].price).isEqualTo("$20.0")
             assertThat(value.products[1].imageUrl).isEqualTo("https://test.com")
         }
+
+    @Test
+    fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() = testBlocking {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+
+        // WHEN
+        val viewModel = createViewMode()
+        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+        // THEN
+        verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = true)
+    }
 
     private fun createViewMode() =
         WooPosProductsViewModel(
