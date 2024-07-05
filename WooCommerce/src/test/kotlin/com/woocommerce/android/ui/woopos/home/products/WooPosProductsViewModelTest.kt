@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.woopos.home.products
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -14,8 +12,7 @@ import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class WooPosProductsViewModelTest : BaseUnitTest() {
+class WooPosProductsViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val priceFormat: WooPosFormatPrice = mock {
@@ -60,6 +57,32 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given empty products list returned, when view model created, then view state is empty`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.products).thenReturn(flowOf(emptyList()))
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Empty)
+        }
+
+    @Test
+    fun `given loading products is failure, when view model created, then view state is empty`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.loadSimpleProducts()).thenReturn(Result.failure(Exception()))
+
+            // WHEN
+            val viewModel = createViewModel()
+
+            // THEN
+            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error)
+        }
+
+    @Test
     fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() = testBlocking {
         // GIVEN
         val products = listOf(
@@ -88,7 +111,7 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when loading without pull to refresh, then should not ask to remove products`() = testBlocking {
+    fun `when loading without pull to refresh, then should not ask to remove products`() = runTest {
         // GIVEN
         val products = listOf(
             ProductTestUtils.generateProduct(

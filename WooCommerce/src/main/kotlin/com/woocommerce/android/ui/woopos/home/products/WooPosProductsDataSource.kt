@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.store.WCProductStore
-import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,7 +16,7 @@ class WooPosProductsDataSource @Inject constructor(
     private val productStore: WCProductStore,
     private val site: SelectedSite,
 ) {
-    var hasMorePages: AtomicBoolean = handler.canLoadMore
+    val hasMorePages = handler.canLoadMore.get()
 
     val products: Flow<List<Product>> = handler.productsFlow
         .map { it.filter { product -> product.price != null } }
@@ -32,7 +31,5 @@ class WooPosProductsDataSource @Inject constructor(
         )
     }
 
-    suspend fun loadMore() {
-        handler.loadMore()
-    }
+    suspend fun loadMore() = handler.loadMore()
 }

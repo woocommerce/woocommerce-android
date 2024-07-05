@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-26 14:54:03+0000
+Translation-Revision-Date: 2024-07-03 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Kartla Ödeme Alın</string>
+    <string name="woopos_payment_total_label">Toplam</string>
+    <string name="woopos_payment_tax_label">Vergi</string>
+    <string name="woopos_payment_subtotal_label">Ara Toplam</string>
+    <string name="woo_pos_new_transaction_button">Yeni işlem</string>
+    <string name="woopos_payment_successful_label">Ödeme başarılı</string>
+    <string name="woopos_payment_failed_please_try_again">Ödeme başarısız. Lütfen tekrar deneyin.</string>
+    <string name="woo_pos_cart_back_content_description">Sepet simgesi</string>
+    <string name="woopos_products_screen_title">Ürünler</string>
+    <string name="woopos_product_image_description">Ürün Görseli</string>
+    <string name="woo_pos_items_in_cart">%d ürün</string>
+    <string name="woo_pos_clear_cart_button">Tümünü temizle</string>
+    <string name="more_menu_button_google_description">Google Reklamlar ile satışları teşvik edin ve trafiği artırın</string>
+    <string name="more_menu_button_google">WooCommerce için Google</string>
+    <string name="no_quantity_rules">Miktar Kuralı Yok</string>
     <string name="blaze_campaign_preview_audience_section_title">Hedef Kitle</string>
     <string name="woopos_exit_confirmation_dismiss_button">İptal Et</string>
     <string name="woopos_exit_confirmation_confirm_button">Çıkış</string>
