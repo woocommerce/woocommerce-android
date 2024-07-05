@@ -48,7 +48,7 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
             // GIVEN
             val productIds = listOf(1L, 2L, 3L)
             val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutStarted(productIds))
-            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock() {
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
             val order = Order.getEmptyOrder(
