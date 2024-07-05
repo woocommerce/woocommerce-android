@@ -42,8 +42,8 @@ class WooPosProductsViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosProductsUIEvent) {
         when (event) {
-            is WooPosProductsUIEvent.EndOfProductsGridReached -> {
-                onEndOfProductsGridReached()
+            is WooPosProductsUIEvent.EndOfProductsListReached -> {
+                onEndOfProductsListReached()
             }
 
             is WooPosProductsUIEvent.ItemClicked -> {
@@ -80,7 +80,7 @@ class WooPosProductsViewModel @Inject constructor(
         refreshingProducts = false,
     )
 
-    private fun onEndOfProductsGridReached() {
+    private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
         if (currentState !is WooPosProductsViewState.Content) {
             return
