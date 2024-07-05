@@ -2181,10 +2181,14 @@
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="ai_product_creation_add_name_title">Add your product name</string>
+    <string name="ai_product_creation_product_prompt_title">Starting information</string>
     <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Tell us about your product, what it is and what makes it unique, then let the AI work its magic.</string>
     <string name="ai_product_creation_add_name_keywords_label">Product name</string>
     <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
+    <string name="ai_product_creation_prompt_placeholder">For example: Black cotton t-shirt, soft fabric, durable stitching, unique design</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Read text from product photo</string>
     <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
@@ -2217,6 +2221,7 @@
     <string name="product_creation_survey_button_open">Start the Survey</string>
     <string name="product_creation_survey_button_remind_me_later">Remind Me Later</string>
     <string name="product_creation_survey_button_dont_show_again">Don\’t show it Again</string>
+    <string name="ai_product_creation_generate_details_button">Generate Product Details</string>
 
     <!--
         Product Add more details Bottom sheet

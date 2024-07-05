@@ -6,5 +6,8 @@ sealed class WooPosHomeState {
         data object NotEmpty : Cart()
     }
 
-    data object Checkout : WooPosHomeState()
+    sealed class Checkout : WooPosHomeState() {
+        data object NotPaid : Checkout()
+        data object Paid : Checkout()
+    }
 }
