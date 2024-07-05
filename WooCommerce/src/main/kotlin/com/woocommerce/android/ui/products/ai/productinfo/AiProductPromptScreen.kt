@@ -404,7 +404,6 @@ private fun InformativeMessage(message: String) {
                 colorResource(id = R.color.tag_bg_main)
             )
     ) {
-
         Icon(
             painter = painterResource(R.drawable.ic_info_outline_20dp),
             contentDescription = null,
