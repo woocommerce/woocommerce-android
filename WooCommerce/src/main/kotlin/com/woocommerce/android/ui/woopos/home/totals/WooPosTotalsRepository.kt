@@ -2,17 +2,20 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartRepository.Companion.EMPTY_TOTALS_SUBTOTAL_VALUE
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class WooPosTotalsRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val getProductById: WooPosGetProductById,
 ) {
     suspend fun createOrderWithProducts(productIds: List<Long>): Result<Order> = withContext(IO) {
         check(productIds.isNotEmpty()) { "List of IDs is empty" }

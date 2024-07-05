@@ -9,6 +9,7 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -26,7 +27,7 @@ import javax.inject.Inject
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val repository: WooPosCartRepository,
+    private val getProductById: WooPosGetProductById,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     savedState: SavedStateHandle,
@@ -134,7 +135,7 @@ class WooPosCartViewModel @Inject constructor(
                         if (_state.value.isOrderCreationInProgress) return@collect
 
                         val itemClicked = viewModelScope.async {
-                            val product = repository.getProductById(event.productId)!!
+                            val product = getProductById(event.productId)!!
                             val itemNumber = (_state.value.itemsInCart.maxOfOrNull { it.id.itemNumber } ?: 0) + 1
                             product.toCartListItem(itemNumber)
                         }
