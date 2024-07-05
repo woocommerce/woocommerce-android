@@ -45,7 +45,7 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
             whenever(productsDataSource.products).thenReturn(flowOf(products))
 
             // WHEN
-            val viewModel = createViewMode()
+            val viewModel = createViewModel()
 
             // THEN
             val value = viewModel.viewState.value as WooPosProductsViewState.Content
@@ -80,14 +80,41 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
         whenever(productsDataSource.products).thenReturn(flowOf(products))
 
         // WHEN
-        val viewModel = createViewMode()
+        val viewModel = createViewModel()
         viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
 
         // THEN
         verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = true)
     }
 
-    private fun createViewMode() =
+    @Test
+    fun `when loading without pull to refresh, then should not ask to remove products`() = testBlocking {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+
+        // WHEN
+        createViewModel()
+
+        // THEN
+        verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = false)
+    }
+
+    private fun createViewModel() =
         WooPosProductsViewModel(
             productsDataSource,
             fromChildToParentEventSender,
