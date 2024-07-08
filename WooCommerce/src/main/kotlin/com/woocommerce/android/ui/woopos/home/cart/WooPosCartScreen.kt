@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +44,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -148,46 +151,77 @@ private fun CartToolbar(
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = { onBackClicked() }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(toolbar.icon),
-                contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                tint = MaterialTheme.colors.onBackground,
-                modifier = Modifier.size(28.dp)
-            )
-        }
+    BoxWithConstraints {
+        val isNarrowScreen = maxWidth < 300.dp
+        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+            val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Text(
-            text = stringResource(R.string.woopos_cart_title),
-            style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.onBackground,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = toolbar.itemsCount,
-            style = MaterialTheme.typography.h6,
-            color = MaterialTheme.colors.secondaryVariant,
-            fontWeight = FontWeight.SemiBold,
-        )
-
-        if (toolbar.isClearAllButtonVisible) {
-            Spacer(modifier = Modifier.width(16.dp))
-
-            TextButton(onClick = { onClearAllClicked() }) {
-                Text(
-                    text = stringResource(R.string.woopos_clear_cart_button),
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.primary,
-                    fontWeight = FontWeight.SemiBold,
+            IconButton(
+                onClick = { onBackClicked() },
+                modifier = Modifier.constrainAs(backButton) {
+                    start.linkTo(parent.start)
+                    centerVerticallyTo(parent)
+                }
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(toolbar.icon),
+                    contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                    tint = MaterialTheme.colors.onBackground,
+                    modifier = Modifier.size(28.dp)
                 )
+            }
+
+            if (!isNarrowScreen) {
+                Text(
+                    text = stringResource(R.string.woopos_cart_title),
+                    style = MaterialTheme.typography.h4,
+                    color = MaterialTheme.colors.onBackground,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier.constrainAs(title) {
+                        start.linkTo(backButton.end, margin = 16.dp)
+                        centerVerticallyTo(parent)
+                    }
+                )
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .constrainAs(spacer) {
+                        start.linkTo(title.end)
+                        end.linkTo(itemsCount.start)
+                        width = Dimension.fillToConstraints
+                    }
+            )
+
+            Text(
+                text = toolbar.itemsCount,
+                style = MaterialTheme.typography.h6,
+                color = MaterialTheme.colors.secondaryVariant,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                modifier = Modifier.constrainAs(itemsCount) {
+                    end.linkTo(clearAllButton.start)
+                    centerVerticallyTo(parent)
+                }
+            )
+
+            if (toolbar.isClearAllButtonVisible) {
+                TextButton(
+                    onClick = { onClearAllClicked() },
+                    modifier = Modifier.constrainAs(clearAllButton) {
+                        end.linkTo(parent.end)
+                        centerVerticallyTo(parent)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.woopos_clear_cart_button),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                    )
+                }
             }
         }
     }
