@@ -19,6 +19,7 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubGoogleStatsViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
@@ -68,7 +69,8 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubGoogleStatsViewState.LoadingAdsViewState
+import com.woocommerce.android.model.GoogleAdsStat
+import com.woocommerce.android.ui.analytics.hub.sync.GoogleAdsState
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
@@ -138,6 +140,9 @@ class AnalyticsHubViewModel @Inject constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var giftCardsObservationJob: Job? = null
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var googleAdsObservationJob: Job? = null
 
     init {
         observeConfigurationChanges()
@@ -445,7 +450,24 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeGoogleAdsChanges() {
-        // TODO: Implement GoogleAds use case
+        googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
+            when (state) {
+                is GoogleAdsState.Available -> {
+                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
+                }
+
+                is GoogleAdsState.Error -> {
+                    val message = resourceProvider.getString(R.string.analytics_google_ads_no_data)
+                    val title = resourceProvider.getString(AnalyticsCards.GoogleAds.resId)
+                    updateCardStatus(AnalyticsCards.GoogleAds, NoDataState(AnalyticsCards.GoogleAds, title, message))
+                }
+
+                is GoogleAdsState.Loading -> {
+                    updateCardStatus(AnalyticsCards.GoogleAds, LoadingAdsViewState(AnalyticsCards.GoogleAds))
+                }
+            }
+
+        }.launchIn(viewModelScope)
     }
 
     private fun updateCardStatus(card: AnalyticsCards, newState: AnalyticsCardViewState) {
@@ -643,6 +665,11 @@ class AnalyticsHubViewModel @Inject constructor(
                 selection = ranges,
                 card = ReportCard.GiftCard
             )
+        )
+
+    private fun buildGoogleAdsDataViewState(googleAdsStat: GoogleAdsStat) =
+        AnalyticsHubGoogleStatsViewState.DataViewState(
+            card = AnalyticsCards.GoogleAds
         )
 
     private fun trackSelectedDateRange() {
