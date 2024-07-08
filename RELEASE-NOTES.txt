@@ -2,7 +2,7 @@
 
 19.5
 -----
-- [**] Adds support for the Customer section in the Hub Menu.
+- [**] Adds support for the Customer section in the Hub Menu. [https://github.com/woocommerce/woocommerce-android/pull/11944]
 
 19.4
 -----
