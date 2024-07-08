@@ -77,8 +77,7 @@ private fun WooPosCartScreen(
         elevation = 4.dp
     ) {
         Box(
-            Modifier
-                .padding(24.dp)
+            Modifier.padding(24.dp.toAdaptiveMargin())
         ) {
             Column {
                 CartToolbar(
@@ -87,7 +86,7 @@ private fun WooPosCartScreen(
                     onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp.toAdaptiveMargin()))
 
                 val listState = rememberLazyListState()
                 ScrollToBottomHandler(state, listState)
@@ -96,7 +95,7 @@ private fun WooPosCartScreen(
                     modifier = Modifier
                         .weight(1f),
                     state = listState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptiveMargin()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     items(
@@ -173,6 +172,7 @@ private fun CartToolbar(
             }
 
             if (!isNarrowScreen) {
+                val cartTitleEndMargin = 16.dp.toAdaptiveMargin()
                 Text(
                     text = stringResource(R.string.woopos_cart_title),
                     style = MaterialTheme.typography.h4,
@@ -180,7 +180,7 @@ private fun CartToolbar(
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     modifier = Modifier.constrainAs(title) {
-                        start.linkTo(backButton.end, margin = 16.dp)
+                        start.linkTo(backButton.end, margin = cartTitleEndMargin)
                         centerVerticallyTo(parent)
                     }
                 )
@@ -261,7 +261,7 @@ private fun ProductItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(64.dp)
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(8.dp.toAdaptiveMargin()))
 
         Column(
             modifier = Modifier.weight(1f)
@@ -273,12 +273,12 @@ private fun ProductItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp.toAdaptiveMargin()))
             Text(text = item.price, style = MaterialTheme.typography.body1)
         }
 
         if (canRemoveItems) {
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp.toAdaptiveMargin()))
 
             IconButton(
                 onClick = { onRemoveClicked(item) },
@@ -292,7 +292,7 @@ private fun ProductItem(
                 )
             }
         }
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(16.dp.toAdaptiveMargin()))
     }
 }
 
