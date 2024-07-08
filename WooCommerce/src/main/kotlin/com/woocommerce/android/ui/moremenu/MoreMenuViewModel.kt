@@ -61,7 +61,7 @@ class MoreMenuViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled,
-    private val wooPosIsEnabled: WooPosIsEnabled,
+    private val WooPosIsEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
