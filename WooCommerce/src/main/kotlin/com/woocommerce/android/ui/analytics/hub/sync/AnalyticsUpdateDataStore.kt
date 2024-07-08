@@ -137,6 +137,7 @@ class AnalyticsUpdateDataStore @Inject constructor(
         ORDERS,
         BUNDLES,
         GIFT_CARDS,
+        GOOGLE_ADS,
         ALL
     }
 }
