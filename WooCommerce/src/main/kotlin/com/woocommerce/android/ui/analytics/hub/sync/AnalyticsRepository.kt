@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
+import com.woocommerce.android.model.Campaign
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsStat
@@ -37,11 +38,13 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
+import org.wordpress.android.fluxc.store.WCGoogleStore
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
+    private val googleAdsStore: WCGoogleStore,
     private val wooCommerceStore: WooCommerceStore
 ) {
     private val getCurrentRevenueMutex = Mutex()
@@ -458,6 +461,31 @@ class AnalyticsRepository @Inject constructor(
                 )
             )
         }
+    }
+
+    suspend fun fetchGoogleAdsStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
+        val currentPeriod = rangeSelection.currentRange
+        val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
+        val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val currentGoogleAdsStatsCall = async {
+            googleAdsStore.fetchAllPrograms(
+                site = selectedSite.get(),
+                startDate = currentStartDate,
+                endDate = currentEndDate,
+                metricType = WCGoogleStore.MetricType.SALES
+            )
+        }
+
+        val currentGoogleAdsStats = currentGoogleAdsStatsCall.await().model
+
+        val campaigns = currentGoogleAdsStats
+            ?.campaigns?.map { Campaign(it.id) }
+            ?: emptyList()
+
+        GoogleAdsResult.GoogleAdsData(
+            GoogleAdsStat(campaigns = campaigns)
+        )
     }
 
     companion object {
