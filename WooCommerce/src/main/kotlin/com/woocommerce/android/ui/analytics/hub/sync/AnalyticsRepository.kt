@@ -34,11 +34,11 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
+import org.wordpress.android.fluxc.store.WCGoogleStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
-import org.wordpress.android.fluxc.store.WCGoogleStore
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(

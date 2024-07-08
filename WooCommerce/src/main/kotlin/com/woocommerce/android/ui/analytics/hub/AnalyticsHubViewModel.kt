@@ -14,6 +14,7 @@ import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.GiftCardsStat
+import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -32,6 +33,7 @@ import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardIte
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.hub.sync.BundlesState
 import com.woocommerce.android.ui.analytics.hub.sync.GiftCardsState
+import com.woocommerce.android.ui.analytics.hub.sync.GoogleAdsState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -69,8 +71,6 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
-import com.woocommerce.android.model.GoogleAdsStat
-import com.woocommerce.android.ui.analytics.hub.sync.GoogleAdsState
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
@@ -466,7 +466,6 @@ class AnalyticsHubViewModel @Inject constructor(
                     updateCardStatus(AnalyticsCards.GoogleAds, LoadingAdsViewState(AnalyticsCards.GoogleAds))
                 }
             }
-
         }.launchIn(viewModelScope)
     }
 
