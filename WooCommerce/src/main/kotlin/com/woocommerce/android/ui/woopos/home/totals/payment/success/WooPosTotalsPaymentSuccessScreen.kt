@@ -118,7 +118,7 @@ fun WooPosPaymentSuccessScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    modifier = Modifier.size(24.dp.toAdaptiveMargin()),
+                    modifier = Modifier.size(24.dp),
                     painter = painterResource(id = R.drawable.woo_pos_ic_return_home),
                     contentDescription = null
                 )
