@@ -18,7 +18,6 @@ class WooPosProductsDataSourceTest {
     private val productStore: WCProductStore = mock()
     private val site: SelectedSite = mock()
 
-
     @Before
     fun setup() {
         whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))

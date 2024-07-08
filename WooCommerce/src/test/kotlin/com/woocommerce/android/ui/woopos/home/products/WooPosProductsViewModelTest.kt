@@ -85,31 +85,31 @@ class WooPosProductsViewModelTest {
     @Test
     fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() =
         runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
+            // GIVEN
+            val products = listOf(
+                ProductTestUtils.generateProduct(
+                    productId = 1,
+                    productName = "Product 1",
+                    amount = "10.0",
+                    productType = "simple"
+                ),
+                ProductTestUtils.generateProduct(
+                    productId = 2,
+                    productName = "Product 2",
+                    amount = "20.0",
+                    productType = "simple"
+                ).copy(firstImageUrl = "https://test.com")
+            )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+            whenever(productsDataSource.products).thenReturn(flowOf(products))
 
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
 
-        // THEN
-        verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = true)
-    }
+            // THEN
+            verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = true)
+        }
 
     @Test
     fun `when loading without pull to refresh, then should not ask to remove products`() = runTest {
