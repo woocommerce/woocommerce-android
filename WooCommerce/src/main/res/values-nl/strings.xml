@@ -1,19 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-28 11:54:04+0000
+Translation-Revision-Date: 2024-07-04 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Pinbetaling aannemen</string>
+    <string name="woopos_payment_total_label">Totaal</string>
+    <string name="woopos_payment_tax_label">Belasting</string>
+    <string name="woopos_payment_subtotal_label">Subtotaal</string>
+    <string name="woo_pos_new_transaction_button">Nieuwe transactie</string>
+    <string name="woopos_payment_successful_label">Betaling gelukt</string>
+    <string name="woopos_payment_failed_please_try_again">Betaling mislukt. Probeer het opnieuw.</string>
+    <string name="woo_pos_cart_back_content_description">Winkelwagenpictogram</string>
+    <string name="woopos_products_screen_title">Producten</string>
+    <string name="woopos_product_image_description">Productafbeelding</string>
+    <string name="woo_pos_items_in_cart">%d items</string>
+    <string name="woo_pos_clear_cart_button">Alles wissen</string>
+    <string name="more_menu_button_google_description">Verkoop meer en genereer meer verkeer met Google Ads</string>
+    <string name="more_menu_button_google">Google voor WooCommerce</string>
+    <string name="no_quantity_rules">Geen regels voor hoeveelheid</string>
     <string name="blaze_campaign_preview_audience_section_title">Bezoekers</string>
     <string name="woopos_exit_confirmation_dismiss_button">Annuleren</string>
     <string name="woopos_exit_confirmation_confirm_button">Afsluiten</string>
     <string name="woopos_exit_confirmation_message">Weet je zeker dat je POS wilt afsluiten?</string>
     <string name="woopos_exit_confirmation_title">POS afsluiten</string>
-    <string name="woo_pos_car_pane_title">Winkelwagen</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">Artikel uit winkelwagen verwijderen</string>
-    <string name="woo_pos_checkout_button">Afrekenen</string>
+    <string name="woopos_cart_title">Winkelwagen</string>
+    <string name="woopos_remove_item_from_cart_content_description">Artikel uit winkelwagen verwijderen</string>
+    <string name="woopos_checkout_button">Afrekenen</string>
     <string name="woopos_reader_unknown">Status van lezer is onbekend</string>
     <string name="woopos_checkout">Afrekenen</string>
     <string name="woopos_reader_disconnected">Verbinding met lezer is verbroken</string>
