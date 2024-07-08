@@ -1,7 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+agents:
+  queue: "android"
+
 steps:
   - label: "New Beta Release"
-    plugins:
-      - automattic/a8c-ci-toolkit#3.0.1
+    plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/commands/configure-environment.sh
 

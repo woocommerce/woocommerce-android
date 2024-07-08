@@ -1,8 +1,5 @@
-# Nodes with values to reuse in the pipeline.
-common_params:
-  # Common plugin settings to use with the `plugins` key.
-  - &ci_toolkit
-      automattic/a8c-ci-toolkit#3.0.1
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
 
 agents:
   queue: "android"
@@ -10,11 +7,10 @@ agents:
 steps:
   - label: "dependency analysis"
     command: |
-      buildkite-agent meta-data set "scheduled-build" "dependency-analysis"
       echo "--- 📊 Analyzing"
       cp gradle.properties-example gradle.properties
       ./gradlew buildHealth
-    plugins: [*ci_toolkit]
+    plugins: [$CI_TOOLKIT]
     artifact_paths:
       - "build/reports/dependency-analysis/build-health-report.*"
     notify:
