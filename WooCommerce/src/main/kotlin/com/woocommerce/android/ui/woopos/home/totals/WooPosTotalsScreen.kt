@@ -91,7 +91,8 @@ private fun TotalsLoaded(
                     top = 24.dp.toAdaptivePadding(),
                     start = 24.dp.toAdaptivePadding(),
                     end = 24.dp.toAdaptivePadding(),
-                    bottom = 0.dp.toAdaptivePadding())
+                    bottom = 0.dp.toAdaptivePadding()
+                )
                 .weight(1f)
                 .fillMaxWidth()
                 .background(

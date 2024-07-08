@@ -146,6 +146,7 @@ private fun ScrollToBottomHandler(
 }
 
 @Composable
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun CartToolbar(
     toolbar: WooPosCartToolbar,
     onClearAllClicked: () -> Unit,
