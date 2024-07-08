@@ -16,11 +16,11 @@ import javax.inject.Singleton
 private typealias LocalSiteId = Int
 
 @Singleton
-class IsWooPosEnabled @Inject constructor(
+class WooPosIsEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val ippStore: WCInPersonPaymentsStore,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
-    private val isWooPosFFEnabled: IsWooPosFFEnabled,
+    private val isFeatureFlagEnabled: WooPosisFeatureFlagEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) {
@@ -30,7 +30,7 @@ class IsWooPosEnabled @Inject constructor(
     suspend operator fun invoke(): Boolean {
         val selectedSite = selectedSite.getOrNull() ?: return false
 
-        if (!isWooPosFFEnabled()) return false
+        if (!isFeatureFlagEnabled()) return false
         if (!isScreenSizeAllowed()) return false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return false
 

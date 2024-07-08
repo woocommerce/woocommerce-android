@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -61,7 +61,7 @@ class MoreMenuViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled,
-    private val isWooPosEnabled: IsWooPosEnabled,
+    private val wooPosIsEnabled: WooPosIsEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
@@ -105,7 +105,7 @@ class MoreMenuViewModel @Inject constructor(
                     description = R.string.more_menu_button_woo_pos_description,
                     icon = R.drawable.ic_more_menu_pos,
                     extraIcon = R.drawable.ic_more_menu_pos_extra,
-                    isVisible = isWooPosEnabled(),
+                    isVisible = wooPosIsEnabled(),
                     onClick = {
                         triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
                     }

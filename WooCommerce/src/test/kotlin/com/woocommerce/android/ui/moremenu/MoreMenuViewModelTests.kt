@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -79,7 +79,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
 
-    private val isWooPosEnabled: IsWooPosEnabled = mock {
+    private val wooPosIsEnabled: WooPosIsEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
 
@@ -103,7 +103,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             isBlazeEnabled = isBlazeEnabled,
             isGoogleListingsAdsEnabled = isGoogleListingsAdsEnabled,
-            isWooPosEnabled = isWooPosEnabled,
+            wooPosIsEnabled = wooPosIsEnabled,
         )
     }
 
@@ -427,7 +427,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         testBlocking {
             // GIVEN
             setup {
-                whenever(isWooPosEnabled.invoke()).thenReturn(false)
+                whenever(wooPosIsEnabled.invoke()).thenReturn(false)
             }
 
             // WHEN
@@ -444,7 +444,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given isWooPosEnabled returns true, when building state, then WooPOS section is displayed`() = testBlocking {
         // GIVEN
         setup {
-            whenever(isWooPosEnabled.invoke()).thenReturn(true)
+            whenever(wooPosIsEnabled.invoke()).thenReturn(true)
         }
 
         // WHEN
@@ -464,7 +464,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         testBlocking {
             // GIVEN
             setup {
-                whenever(isWooPosEnabled.invoke()).thenReturn(true)
+                whenever(wooPosIsEnabled.invoke()).thenReturn(true)
                 whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
             }
 
