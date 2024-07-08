@@ -39,9 +39,6 @@ data class CustomerListViewState(
                 val payload: WCCustomerModel,
             ) : Item() {
 
-                val isGuest
-                    get() = remoteId == 0L
-
                 sealed class Text {
                     data class Highlighted(val text: String, val start: Int, val end: Int) : Text()
                     data class Placeholder(val text: String) : Text()
