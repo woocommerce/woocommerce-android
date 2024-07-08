@@ -6,7 +6,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
-import com.woocommerce.android.util.IsWindowClassLargeAndBiggerByLongSide
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
@@ -20,7 +19,7 @@ private typealias LocalSiteId = Int
 class IsWooPosEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val ippStore: WCInPersonPaymentsStore,
-    private val isWindowClassLargeAndBiggerByLongSide: IsWindowClassLargeAndBiggerByLongSide,
+    private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val isWooPosFFEnabled: IsWooPosFFEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
@@ -32,7 +31,7 @@ class IsWooPosEnabled @Inject constructor(
         val selectedSite = selectedSite.getOrNull() ?: return false
 
         if (!isWooPosFFEnabled()) return false
-        if (!isWindowClassLargeAndBiggerByLongSide()) return false
+        if (!isScreenSizeAllowed()) return false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return false
 
         val onboardingStatus = cardReaderOnboardingChecker.getOnboardingState()
