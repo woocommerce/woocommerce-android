@@ -95,4 +95,35 @@ class WooPosCartCartRepositoryTest {
         // WHEN & THEN
         repository.createOrderWithProducts(productIds)
     }
+//
+//    @Test
+//    fun `given invalid product id, when createOrderWithProducts, then result is failure`() = runTest {
+//        // GIVEN
+//        val productIds = listOf(999L)
+//        `when`(productStore.getProductByRemoteId(any(), any())).thenReturn(null)
+//
+//        // WHEN
+//        val result = repository.createOrderWithProducts(productIds)
+//
+//        // THEN
+//        assertThat(result.isFailure).isTrue()
+//    }
+//
+//    @Test
+//    fun `given date utils failure, when createOrderWithProducts, then use default date`() = runTest {
+//        // GIVEN
+//        val productIds = listOf(1L, 2L, 3L)
+//        `when`(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(null)
+//        val defaultDate = Date()
+//        `when`(dateUtils.getCurrentDateInSiteTimeZone()).thenReturn(defaultDate)
+//
+//        // WHEN
+//        val result = repository.createOrderWithProducts(productIds)
+//
+//        // THEN
+//        val orderCapture = argumentCaptor<Order>()
+//        verify(orderCreateEditRepository).createOrUpdateOrder(orderCapture.capture(), eq(""))
+//        assertThat(orderCapture.lastValue.dateCreated).isEqualTo(defaultDate)
+//        assertThat(orderCapture.lastValue.dateModified).isEqualTo(defaultDate)
+//    }
 }
