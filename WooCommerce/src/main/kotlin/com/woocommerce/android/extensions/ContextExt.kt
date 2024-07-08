@@ -13,16 +13,9 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.SystemVersionUtils
 import kotlinx.parcelize.Parcelize
-import kotlin.math.max
 
 val Context.windowSizeClass: WindowSizeClass
-    get() = determineWindowSizeClassByGivenSize(getScreenWidthDp())
-
-val Context.windowSizeClassByLongSide: WindowSizeClass
-    get() {
-        val longSide = max(getScreenWidthDp(), getScreenHeightDp())
-        return determineWindowSizeClassByGivenSize(longSide)
-    }
+    get() = determineWindowSizeClassByGivenSize(resources.configuration.screenWidthDp)
 
 private fun determineWindowSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
     return when {
@@ -100,13 +93,3 @@ val Context.physicalScreenHeightInPx: Int
             size.y
         }
     }
-
-fun Context.getScreenWidthDp(): Int {
-    val displayMetrics = resources.displayMetrics
-    return (displayMetrics.widthPixels / displayMetrics.density).toInt()
-}
-
-fun Context.getScreenHeightDp(): Int {
-    val displayMetrics = resources.displayMetrics
-    return (displayMetrics.heightPixels / displayMetrics.density).toInt()
-}

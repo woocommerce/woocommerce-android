@@ -10,7 +10,6 @@ import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.windowSizeClass
-import com.woocommerce.android.extensions.windowSizeClassByLongSide
 import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.model.UiDimen.UiDimenDPInt
 import com.woocommerce.android.model.UiDimen.UiDimenRes
@@ -100,8 +99,4 @@ class IsWindowClassLargeThanCompact @Inject constructor(val context: Context) {
 
 class IsWindowClassExpandedAndBigger @Inject constructor(val context: Context) {
     operator fun invoke() = context.windowSizeClass >= WindowSizeClass.Expanded
-}
-
-class IsWindowClassLargeAndBiggerByLongSide @Inject constructor(val context: Context) {
-    operator fun invoke() = context.windowSizeClassByLongSide >= WindowSizeClass.Large
 }
