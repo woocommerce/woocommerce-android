@@ -1,6 +1,27 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 19.4
+Explore our latest update with Inbox Notes now available in both the Dynamic Dashboard and the Hub Menu. This new feature offers a centralized, non-intrusive way to keep you informed about important updates, feature announcements, and essential information. Upgrade today to stay in the loop effortlessly!
+
+## 19.3
+We're thrilled to bring you an enhanced experience with our latest update! We've resolved a crash on the Receipt Preview screen and improved error messages when editing Min/Max Quantities. Plus, the Blaze button visibility issue on the product detail screen has been fixed, ensuring smoother navigation. Update now for a seamless WooCommerce mobile app experience!
+
+## 19.2
+Now, seamlessly sync with our new WearOS app for instant updates on store data and orders. Plus, enjoy added flexibility with edit support for Min/Max Quantities directly from product details. Update your WooCommerce app now for a seamless and enhanced experience!
+
+## 19.1
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
+## 19.0
+Discover the latest improvements in our WooCommerce mobile app! We've enhanced payment dialogs for a better experience on larger screens, resolved issues with push notifications, and fixed a login bug that prevented error messages from displaying. Plus, our new dashboard cards give merchants deeper insights into their stores. Update now for a smoother, more informative experience!
+
+## 18.9
+Exciting updates are here! Now, you can manage orders more efficiently with multiple shipping lines per order. Enjoy a smoother navigation with the redesigned More Menu. Plus, we've added a handy feature to calculate change for cash payments. Update your WooCommerce app now for a seamless and enhanced experience!
+
+## 18.8
+In this release, we've honed in on enhancing the app's efficiency by ironing out bugs and executing vital improvements. These updates aim to empower your business journey. Your feedback is our roadmap to continuous development, so please, keep it flowing.
+
 ## 18.7
 We've fixed an issue that caused the app to crash during screen rotation, ensuring a smoother shopping experience. Update now to enjoy a more stable and reliable app!
 

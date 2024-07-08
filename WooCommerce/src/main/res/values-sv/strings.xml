@@ -1,17 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-19 09:04:32+0000
+Translation-Revision-Date: 2024-07-04 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="woopos_payment_total_label">Totalt</string>
+    <string name="woopos_payment_tax_label">Moms</string>
+    <string name="woopos_payment_subtotal_label">Delsumma</string>
+    <string name="woo_pos_new_transaction_button">Ny transaktion</string>
+    <string name="woopos_payment_successful_label">Betalning lyckades</string>
+    <string name="woopos_payment_failed_please_try_again">Betalning misslyckades. Försök igen.</string>
+    <string name="woo_pos_cart_back_content_description">Varukorgsikon</string>
+    <string name="woopos_products_screen_title">Produkter</string>
+    <string name="woopos_product_image_description">Produktbild</string>
+    <string name="woo_pos_clear_cart_button">Rensa allt</string>
+    <string name="more_menu_button_google">Google för WooCommerce</string>
+    <string name="no_quantity_rules">Inga regler för antal</string>
+    <string name="more_menu_button_google_description">Öka försäljningen och generera mer trafik med Google Ads</string>
+    <string name="woo_pos_items_in_cart">%d artiklar</string>
+    <string name="woopos_payment_collect_payment_label">Ta emot kortbetalning</string>
+    <string name="blaze_campaign_preview_audience_section_title">Målgrupp</string>
+    <string name="woopos_exit_confirmation_dismiss_button">Avbryt</string>
+    <string name="woopos_exit_confirmation_confirm_button">Avsluta</string>
+    <string name="woopos_exit_confirmation_message">Är du säker på att du vill avsluta POS?</string>
+    <string name="woopos_exit_confirmation_title">Avsluta POS</string>
+    <string name="woopos_cart_title">Varukorg</string>
+    <string name="woopos_checkout_button">Kassa</string>
+    <string name="woopos_remove_item_from_cart_content_description">Ta bort vara från varukorg</string>
+    <string name="dashboard_new_widgets_card_button">Lägg till nya sektioner</string>
+    <string name="dashboard_product_stock_empty_products">Inga produkter hittades för den valda lagerstatusen</string>
+    <string name="woopos_reader_disconnected">Läsare frånkopplad</string>
+    <string name="woopos_reader_connecting">Läsare ansluter</string>
+    <string name="woopos_reader_connected">Läsare ansluten</string>
+    <string name="woopos_exit_pos">Avsluta POS</string>
+    <string name="woopos_reader_unknown">Läsarens status okänd</string>
+    <string name="woopos_checkout">Kassa</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Det gick inte att läsa in lagerrapporten</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Ingen vara såld de senaste 30 dagarna</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d varor sålda de senaste 30 dagarna</string>
+    <string name="product_stock_status_low_stock">Lågt lager</string>
+    <string name="order_creation_feedback_action">Dela din feedback</string>
+    <string name="dashboard_new_widgets_card_title">Letar du efter fler insikter?</string>
+    <string name="dashboard_product_stock_products">Produkter</string>
+    <string name="dashboard_product_stock_levels">Lagernivåer</string>
+    <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="more_menu_button_woo_pos_description">Använd appen som kassaregister</string>
+    <string name="more_menu_button_woo_pos">Försäljningsplatsläge</string>
+    <string name="order_detail_shipping_header">FRAKT</string>
+    <string name="order_creation_shipping_feedback_message">Gör Woo frakt enkelt?</string>
+    <string name="order_creation_shipping_feedback_title">Frakt tillagd.</string>
+    <string name="order_creation_shipping_edit">Redigera frakt</string>
+    <string name="order_creation_shipping_title_edit">Redigera frakt</string>
+    <string name="cash_payments_order_note_adding_error">Det gick inte att lägga till beställningsanteckningen</string>
+    <string name="cash_payments_order_note_text">Beställningen betalades kontant. Kunden betalade %s. Växeln var %s</string>
+    <string name="cash_payments_mark_order_as_complete">Markera beställningen som slutförd</string>
+    <string name="cash_payments_record_transaction_details">Registrera transaktionsinformation i beställningsanteckning</string>
+    <string name="dashboard_new_widgets_card_description">Lägg till nya sektioner för att anpassa din butikshanteringsupplevelse</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Behöver du fortfarande hjälp? Kontakta oss</string>
+    <string name="dashboard_coupons_view_all_button">Visa alla rabattkoder</string>
+    <string name="dashboard_coupons_card_header_uses">Användningar</string>
+    <string name="dashboard_coupons_card_header_coupons">Rabattkoder</string>
+    <string name="my_store_widget_product_stock_title">Lager</string>
+    <string name="dashboard_action_view_all_messages">Visa alla meddelanden</string>
+    <string name="na">N/A</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Det går inte att hämta rapporten över användning av rabattkoder</string>
+    <string name="dashboard_coupons_card_empty_view_message">Ingen användning av rabattkoder under denna period</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Det gick inte att läsa in toppresterande produkter</string>
+    <string name="my_store_widget_coupons_title">Mest aktiva rabattkoder</string>
+    <string name="cash_payments_cash_received">Kontanter mottagna</string>
+    <string name="cash_payments_change_due">Växel</string>
+    <string name="cash_payments_take_payment_title">Ta emot betalning (%s)</string>
     <string name="dashboard_reviews_card_header_title">Status</string>
     <string name="dashboard_action_view_all_orders">Visa alla beställningar</string>
     <string name="dashboard_reviews_card_view_all_button">Visa alla recensioner</string>
     <string name="dashboard_reviews_card_empty_title_filtered">Inga recensioner hittades</string>
     <string name="my_store_widget_reviews_title">De senaste recensionerna</string>
     <string name="my_store_widget_orders_title">De senaste beställningarna</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Inga recensioner matchar det valda filtret, testa att ändra filter</string>
+    <string name="dashboard_filter_menu_content_description">Öppna listrutan för filter</string>
     <string name="product_category_clear_parent">Rensa överordnad kategori</string>
     <string name="product_list_fetch_error">Fel vid hämtning av produkter!</string>
     <string name="order_creation_add_shipping_name">Namn</string>
@@ -30,10 +98,9 @@ Language: sv_SE
     <string name="dynamic_dashboard_widget_menu_item_hide">Dölj %s</string>
     <string name="my_store_widget_onboarding_completed">Slutförd</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Behöver du fortfarande hjälp? Kontakta oss</string>
     <string name="dynamic_dashboard_widget_error_title">Kan inte ladda data</string>
-    <string name="my_store_stats_plugin_inactive_description">Se till att du kör den senaste versionen av WooCommerce på din webbplats och att du har WooCommerce Admin aktiverad.</string>
     <string name="my_store_stats_plugin_inactive_title">Vi kan inte visa din\n butiks analys</string>
+    <string name="dashboard_wcanalytics_inactive_description">Se till att du kör den senaste versionen av WooCommerce på din webbplats och att du har WooCommerce Analytics aktiverat.</string>
     <string name="my_store_widget_unavailable">Inte tillgänglig</string>
     <string name="dashboard_stats_custom_range_label">Anpassad</string>
     <string name="store_onboarding_task_view_all_tasks">Visa alla uppgifter</string>
@@ -257,9 +324,9 @@ Language: sv_SE
     <string name="blaze_campaign_budget_daily_spend">%1$s dagligen</string>
     <string name="blaze_campaign_budget_subtitle">Hur mycket skulle du vilja spendera på din produktmarknadsföringskampanj?</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Föreslaget av AI</string>
+    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="blaze_campaign_budget_impressions_title">Visningar</string>
     <string name="blaze_campaign_budget_reach_forecast">Uppskattat antal personer som nås per dag</string>
-    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="product_creation_survey_button_dont_show_again">Visa det inte igen</string>
     <string name="product_creation_survey_button_remind_me_later">Påminn mig senare</string>
     <string name="product_creation_survey_description">Har du tid en minut? Hjälp oss att förbättra våra AI-assisterade funktioner genom lite snabb feedback.</string>
@@ -290,7 +357,7 @@ Language: sv_SE
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Få tillgång till en stor publik</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Vårt verktyg presenterar din produkt där intresserade shoppare kan hitta den.\"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Global räckvidd på ett enkelt sätt</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Lansera annonser på några minuter – varken erfarenhet eller en stor budget behövs, och det kostar bara från 5 USD och uppåt.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Lansera annonser på några minuter – ingen erfarenhet eller stor budget behövs, från bara $5 per dag.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Snabb start, stor påverkan</string>
     <string name="order_creation_coupon_button">Rabattkod</string>
     <string name="order_creation_gift_card_text_field_hint">Ange kod</string>
@@ -631,8 +698,8 @@ Language: sv_SE
     <string name="store_onboarding_task_name_store_title">Namnge din butik</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktivera NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Leveranspaket för små kvantiteter (märkningar krävs)</string>
-    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY-markpaket – Aerosoler, spraydesinfektionsmedel, sprayfärg, hårspray, propan, butan, rengöringsprodukter, osv. - Parfymer, nagellack, nagellackborttagningsmedel, lösningsmedel, handsprit, tvättsprit, etanolbaserade produkter, osv. - Andra ytmaterial i begränsad mängd (kosmetika, rengöringsprodukter, färger, osv.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000-konsumentvarupaket – Luftkvalificerade ID8000-konsumentvaror (icke brandfarliga aerosoler, brandfarliga brännbara vätskor, giftiga ämnen, diverse farliga material)</string>
     <string name="shipping_label_hazmat_option_ground_only">Farliga material endast för markleverans (för föremål som inte är listade, men som är begränsade till endast yta)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Undantagna kvantitetsförsörjningspaket (t.ex. små volymer av brandfarliga vätskor och frätande, giftiga eller miljöfarliga material – märkning krävs) </string>
@@ -896,7 +963,6 @@ Language: sv_SE
     <string name="order_gift_card">Presentkort</string>
     <string name="jetpack_install_role_eligibility_learn_more">Lär dig mer om roller och behörighet</string>
     <string name="jetpack_install_role_eligibility_error_message">Det verkar som att din roll inte tillåter dig att installera Jetpack.\nKontakta din administratör för hjälp.</string>
-    <string name="quantity_rules_info_notice">Du kan redigera produktkvantitetsregler i webbadminpanelen.</string>
     <string name="group_of">Grupp om</string>
     <string name="max_quantity">Största kvantitet</string>
     <string name="min_quantity">Minsta kvantitet</string>
@@ -972,7 +1038,6 @@ Language: sv_SE
     <string name="store_onboarding_launch_store_button">Publicera min butik</string>
     <string name="upgrades_error_fetching_data">Det gick inte att hämta paketinformationen</string>
     <string name="upgrades_non_upgradeable_caption">Du är %1$s-prenumerant. Du har tillgång till alla våra funktioner fram till %2$s. </string>
-    <string name="upgrades_trial_ended_caption">Din kostnadsfria provperiod har avslutats och du har begränsad åtkomst till alla funktionerna. Prenumerera på %1$s nu.</string>
     <string name="free_trial_trial_ended">Provperioden avslutades</string>
     <string name="free_trial_your_trial_ended">Din provperiod har avslutats.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Hoppsan, det uppstod några oväntade fel.</string>
@@ -982,7 +1047,8 @@ Language: sv_SE
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">För att lansera din butik behöver du uppgradera till vårt paket. &lt;u&gt;Uppgradera&lt;/u&gt;</string>
     <string name="store_onboarding_store_already_launched_error_description">Vi upptäckte att butiken redan har lanserats.</string>
     <string name="upgrades_upgradeable_caption">Du har en kostnadsfri provperiod på %1$d dagar. Din kostnadsfria provperiod löper ut om %2$s. Uppgradera för att låsa upp nya funktioner och hålla igång din butik.</string>
-    <string name="free_trial_days_left">%1$s kvar på din utvärdering.</string>
+    <string name="free_trial_days_left">%1$s kvar på din provperiod.</string>
+    <string name="upgrades_trial_ended_caption">Din gratis provperiod har avslutats och har begränsad åtkomst till alla funktioner. Prenumerera på %1$s nu.</string>
     <string name="something_went_wrong_try_again">Något gick fel. Försök igen senare.</string>
     <string name="login_site_credentials_http_error">Inloggning misslyckades med statuskod %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Det gick inte att logga in, eftersom vi inte kan identifiera admin-URL:en för din butik</string>

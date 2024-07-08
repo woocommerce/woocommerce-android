@@ -37,7 +37,11 @@ class OrderShippingFragment : BaseFragment() {
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.order_creation_shipping_title_add)
+    override fun getFragmentTitle() = if (viewModel.isEditFlow) {
+        getString(R.string.order_creation_shipping_title_edit)
+    } else {
+        getString(R.string.order_creation_shipping_title_add)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->

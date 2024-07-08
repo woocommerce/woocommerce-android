@@ -163,6 +163,9 @@
         <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
             android:exported="false" />
+        <activity
+            android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity"
+            android:theme="@style/Theme.Woo.Transparent" />
 
         <!-- Stats today app widget -->
         <meta-data
@@ -252,6 +255,50 @@
             <meta-data
                 android:name="photopicker_activity:0:required"
                 android:value="" />
+        </service>
+
+        <service
+            android:name=".wear.WearableConnectionService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/request-site"
+                    android:scheme="wear" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/request-stats"
+                    android:scheme="wear" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/request-orders"
+                    android:scheme="wear" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/request-order-products"
+                    android:scheme="wear" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/analytics-data"
+                    android:scheme="wear" />
+            </intent-filter>
         </service>
 
     </application>

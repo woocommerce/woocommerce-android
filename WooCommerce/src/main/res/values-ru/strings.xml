@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 15:54:04+0000
+Translation-Revision-Date: 2024-07-04 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Получение платежа по карте</string>
+    <string name="woopos_payment_total_label">Итого</string>
+    <string name="woopos_payment_tax_label">Налог</string>
+    <string name="woopos_payment_subtotal_label">Подытог</string>
+    <string name="woo_pos_new_transaction_button">Новая транзакция</string>
+    <string name="woopos_payment_successful_label">Оплата прошла успешно</string>
+    <string name="woopos_payment_failed_please_try_again">Платёж не выполнен. Повторите попытку.</string>
+    <string name="woo_pos_cart_back_content_description">Значок корзины</string>
+    <string name="woopos_products_screen_title">Товары</string>
+    <string name="woopos_product_image_description">Изображение товара</string>
+    <string name="woo_pos_items_in_cart">Товары (%d)</string>
+    <string name="woo_pos_clear_cart_button">Очистить все</string>
+    <string name="more_menu_button_google_description">Повышайте продажи и привлекайте больше посетителей при помощи Google Ads</string>
+    <string name="more_menu_button_google">Google для WooCommerce</string>
+    <string name="no_quantity_rules">Нет правил количества</string>
+    <string name="blaze_campaign_preview_audience_section_title">Аудитория</string>
+    <string name="woopos_exit_confirmation_dismiss_button">Отмена</string>
+    <string name="woopos_exit_confirmation_confirm_button">Выход</string>
+    <string name="woopos_exit_confirmation_message">Вы уверены, что хотите закрыть POS?</string>
+    <string name="woopos_exit_confirmation_title">Закрыть POS</string>
+    <string name="woopos_cart_title">Корзина</string>
+    <string name="woopos_remove_item_from_cart_content_description">Удалить товар из корзины</string>
+    <string name="woopos_checkout_button">Оформление заказа</string>
+    <string name="woopos_reader_unknown">Статус считывающего устройства неизвестен</string>
+    <string name="woopos_checkout">Оформление заказа</string>
+    <string name="woopos_reader_disconnected">Считывающее устройство отключено</string>
+    <string name="woopos_reader_connecting">Подключение считывающего устройства</string>
+    <string name="woopos_reader_connected">Считывающее устройство подключено</string>
+    <string name="woopos_exit_pos">Закрыть POS</string>
+    <string name="dashboard_new_widgets_card_button">Добавить новые разделы</string>
+    <string name="dashboard_product_stock_empty_products">Не найдено товаров с выбранным статусом запаса</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Не удалось загрузить отчёты о запасах товаров</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">За последние 30 дней не продано ни одного товара</string>
+    <string name="dashboard_product_stock_sales_last_30_days">Продано товаров за последние 30 дней: %d</string>
+    <string name="more_menu_button_woo_pos_description">Пользуйтесь приложением как кассовым аппаратом</string>
+    <string name="more_menu_button_woo_pos">Режим «Пункт продажи»</string>
+    <string name="product_stock_status_low_stock">Малый запас</string>
+    <string name="order_detail_shipping_header">ДОСТАВКА</string>
+    <string name="order_creation_feedback_action">Поделитесь своим мнением</string>
+    <string name="order_creation_shipping_feedback_message">Как вы считаете, Woo делает доставку проще?</string>
+    <string name="order_creation_shipping_feedback_title">Доставка добавлена!</string>
+    <string name="order_creation_shipping_edit">Изменить доставку</string>
+    <string name="order_creation_shipping_title_edit">Изменить доставку</string>
+    <string name="cash_payments_order_note_adding_error">При добавлении примечания к заказу возникла ошибка</string>
+    <string name="cash_payments_order_note_text">Заказ оплачен наличными. Клиент уплатил %s. Сумма сдачи составила %s.</string>
+    <string name="cash_payments_mark_order_as_complete">Отметить заказ как выполненный</string>
+    <string name="cash_payments_record_transaction_details">Записывать данные транзакции в примечаниях к заказам</string>
+    <string name="dashboard_new_widgets_card_description">Добавьте новые разделы, чтобы вам было удобнее управлять магазином</string>
+    <string name="dashboard_new_widgets_card_title">Хотите узнать больше?</string>
+    <string name="dashboard_product_stock_products">Товары</string>
+    <string name="dashboard_product_stock_levels">Уровни запасов</string>
+    <string name="dashboard_product_stock_status_header_title">Статус</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Вам по-прежнему требуется помощь? Свяжитесь с нами</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Не удалось загрузить отчёт о применении купонов</string>
+    <string name="dashboard_coupons_card_empty_view_message">В этот период купоны не применялись</string>
+    <string name="dashboard_coupons_view_all_button">Просмотреть все купоны</string>
+    <string name="dashboard_coupons_card_header_uses">Использовано</string>
+    <string name="dashboard_coupons_card_header_coupons">Купоны</string>
+    <string name="my_store_widget_product_stock_title">В наличии</string>
+    <string name="dashboard_action_view_all_messages">Просмотреть все сообщения</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Не удалось загрузить самые продаваемые товары</string>
+    <string name="na">Н/Д</string>
+    <string name="cash_payments_change_due">Сумма сдачи</string>
+    <string name="cash_payments_cash_received">Полученные наличные</string>
+    <string name="my_store_widget_coupons_title">Самые активные купоны</string>
+    <string name="cash_payments_take_payment_title">Получить оплату (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Посмотреть все отзывы</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Не найдено ни одного отзыва, соответствующего выбранному фильтру. Попробуйте изменить фильтр.</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Не найдено отзывов</string>
+    <string name="dashboard_reviews_card_header_title">Статус</string>
+    <string name="my_store_widget_reviews_title">Последние отзывы</string>
+    <string name="my_store_widget_orders_title">Последние заказы</string>
+    <string name="dashboard_action_view_all_orders">Просмотреть все заказы</string>
+    <string name="dashboard_filter_menu_content_description">Открыть раскрывающийся список фильтров</string>
     <string name="product_category_clear_parent">Очистить родительскую рубрику</string>
     <string name="product_list_fetch_error">Ошибка при получении товаров!</string>
     <string name="order_creation_add_shipping_method_select_hint">Выберите способ доставки</string>
@@ -25,8 +99,7 @@ Language: ru
     <string name="dynamic_dashboard_widget_menu_item_hide">Скрыть %s</string>
     <string name="my_store_widget_onboarding_completed">Завершено</string>
     <string name="my_store_widget_feedback_title">Обратная связь</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Вам по-прежнему требуется помощь? Свяжитесь с нами</string>
-    <string name="my_store_stats_plugin_inactive_description">Убедитесь, что на сайте используется последняя версия WooCommerce и вы активировали WooCommerce Admin.</string>
+    <string name="dashboard_wcanalytics_inactive_description">Убедитесь, что на сайте используется последняя версия WooCommerce и аналитика WooCommerce активирована.</string>
     <string name="my_store_stats_plugin_inactive_title">Не удалось отобразить\n аналитику вашего магазина</string>
     <string name="store_onboarding_task_view_all_tasks">Посмотреть все задачи</string>
     <string name="analytics_session_no_available_description">Аналитические данные сеанса основываются на количестве уникальных посетителей, которое невозможно определить для произвольных временных промежутков.</string>
@@ -284,7 +357,7 @@ Language: ru
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Охватите широкую аудиторию</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">«Наш инструмент покажет ваш товар именно там, где его смогут увидеть заинтересованные покупатели».</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Простота глобального охвата</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Запуск рекламы за несколько минут: вам не понадобится ни навык, ни солидный бюджет, можно начать всего с 5 долларов США.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Запуск рекламы за несколько минут: вам не понадобится ни навык, ни солидный бюджет, можно начать всего с 5 долларов США в день.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Быстрый старт, значительный эффект</string>
     <string name="blaze_campaign_creation_new_intro_description">Наш инструмент разработан специально для того, чтобы дать продавцам возможность простой и быстрой настройки рекламных кампаний с целью максимального увеличения посещаемости.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Продвижение</string>
@@ -884,7 +957,6 @@ Language: ru
     <string name="empty_max_quantity">Нет максимума</string>
     <string name="empty_min_quantity">Нет минимума</string>
     <string name="product_type_bundle">Комплект</string>
-    <string name="quantity_rules_info_notice">Правила, регулирующие количество товара, можно редактировать в консоли.</string>
     <string name="group_of">Количество в комплекте</string>
     <string name="max_quantity">Максимальное количество</string>
     <string name="min_quantity">Минимальное количество</string>

@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 15:54:04+0000
+Translation-Revision-Date: 2024-07-04 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Pinbetaling aannemen</string>
+    <string name="woopos_payment_total_label">Totaal</string>
+    <string name="woopos_payment_tax_label">Belasting</string>
+    <string name="woopos_payment_subtotal_label">Subtotaal</string>
+    <string name="woo_pos_new_transaction_button">Nieuwe transactie</string>
+    <string name="woopos_payment_successful_label">Betaling gelukt</string>
+    <string name="woopos_payment_failed_please_try_again">Betaling mislukt. Probeer het opnieuw.</string>
+    <string name="woo_pos_cart_back_content_description">Winkelwagenpictogram</string>
+    <string name="woopos_products_screen_title">Producten</string>
+    <string name="woopos_product_image_description">Productafbeelding</string>
+    <string name="woo_pos_items_in_cart">%d items</string>
+    <string name="woo_pos_clear_cart_button">Alles wissen</string>
+    <string name="more_menu_button_google_description">Verkoop meer en genereer meer verkeer met Google Ads</string>
+    <string name="more_menu_button_google">Google voor WooCommerce</string>
+    <string name="no_quantity_rules">Geen regels voor hoeveelheid</string>
+    <string name="blaze_campaign_preview_audience_section_title">Bezoekers</string>
+    <string name="woopos_exit_confirmation_dismiss_button">Annuleren</string>
+    <string name="woopos_exit_confirmation_confirm_button">Afsluiten</string>
+    <string name="woopos_exit_confirmation_message">Weet je zeker dat je POS wilt afsluiten?</string>
+    <string name="woopos_exit_confirmation_title">POS afsluiten</string>
+    <string name="woopos_cart_title">Winkelwagen</string>
+    <string name="woopos_remove_item_from_cart_content_description">Artikel uit winkelwagen verwijderen</string>
+    <string name="woopos_checkout_button">Afrekenen</string>
+    <string name="woopos_reader_unknown">Status van lezer is onbekend</string>
+    <string name="woopos_checkout">Afrekenen</string>
+    <string name="woopos_reader_disconnected">Verbinding met lezer is verbroken</string>
+    <string name="woopos_reader_connecting">Verbinden met lezer</string>
+    <string name="woopos_reader_connected">Verbonden met lezer</string>
+    <string name="woopos_exit_pos">POS verlaten</string>
+    <string name="dashboard_new_widgets_card_button">Nieuwe delen toevoegen</string>
+    <string name="dashboard_product_stock_empty_products">Geen producten gevonden voor de geselecteerde voorraadstatus</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Kan voorraadrapporten niet laden</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Geen artikelen verkocht in de afgelopen 30 dagen</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d artikelen verkocht in de afgelopen 30 dagen</string>
+    <string name="more_menu_button_woo_pos_description">Gebruik de app als kassa</string>
+    <string name="more_menu_button_woo_pos">Verkooppuntmodus</string>
+    <string name="product_stock_status_low_stock">Lage voorraad</string>
+    <string name="order_detail_shipping_header">verzending</string>
+    <string name="order_creation_feedback_action">Deel je feedback!</string>
+    <string name="order_creation_shipping_feedback_message">Does Woo make shipping easy?</string>
+    <string name="order_creation_shipping_feedback_title">Verzendzone toegevoegd.</string>
+    <string name="order_creation_shipping_edit">Verzending bewerken</string>
+    <string name="order_creation_shipping_title_edit">Verzending bewerken</string>
+    <string name="cash_payments_order_note_adding_error">Error adding order note</string>
+    <string name="cash_payments_mark_order_as_complete">Bestelling markeren als voltooid</string>
+    <string name="cash_payments_record_transaction_details">Noteer transactiedetails in bestelnotitie</string>
+    <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
+    <string name="dashboard_new_widgets_card_title">Op zoek naar inzichten?</string>
+    <string name="dashboard_product_stock_products">Producten</string>
+    <string name="dashboard_product_stock_levels">Voorraadniveaus</string>
+    <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Meer hulp nodig? Neem contact met ons op</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Kan rapport over coupongebruik niet laden</string>
+    <string name="dashboard_coupons_card_empty_view_message">Geen coupon gebruikt gedurende deze periode</string>
+    <string name="dashboard_coupons_view_all_button">Alle coupons</string>
+    <string name="dashboard_coupons_card_header_uses">Toepassingen</string>
+    <string name="my_store_widget_product_stock_title">Voorraad</string>
+    <string name="dashboard_action_view_all_messages">Alle berichten bekijken</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
+    <string name="na">N.v.t.</string>
+    <string name="cash_payments_change_due">Wisselgeld</string>
+    <string name="cash_payments_cash_received">Cash ontvangen</string>
+    <string name="my_store_widget_coupons_title">Meest actieve coupons</string>
+    <string name="cash_payments_take_payment_title">Betaling ontvangen (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Alle beoordelingen weergeven</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Geen beoordelingen komen overeen met de geselecteerde filter, probeer de filter te veranderen</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Geen beoordelingen gevonden.</string>
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="my_store_widget_reviews_title">Recente beoordelingen</string>
+    <string name="my_store_widget_orders_title">Recente bestellingen</string>
+    <string name="dashboard_action_view_all_orders">Alle bestellingen weergeven</string>
+    <string name="dashboard_filter_menu_content_description">Vervolgkeuzelijst met filters openen</string>
     <string name="product_category_clear_parent">Duidelijke bovenliggende categorie</string>
     <string name="product_list_fetch_error">Fout bij ophalen producten!</string>
     <string name="order_creation_add_shipping_method_select_hint">Een verzendmethode selecteren</string>
@@ -25,8 +97,7 @@ Language: nl
     <string name="dynamic_dashboard_widget_menu_item_hide">Verbergen %s</string>
     <string name="my_store_widget_onboarding_completed">Voltooid</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Meer hulp nodig? Neem contact met ons op</string>
-    <string name="my_store_stats_plugin_inactive_description">Zorg dat je de nieuwste versie van WooCommerce gebruikt op je site en dat WooCommerce Admin geactiveerd is.</string>
+    <string name="dashboard_wcanalytics_inactive_description">Zorg dat je de nieuwste versie van WooCommerce gebruikt op je site en dat WooCommerce Admin geactiveerd is.</string>
     <string name="my_store_stats_plugin_inactive_title">We kunnen de\n analyses van je winkel niet weergeven</string>
     <string name="store_onboarding_task_view_all_tasks">Alle taken bekijken</string>
     <string name="analytics_session_no_available_description">Sessie-analyses gebruiken tellingen van unieke bezoekers, die niet beschikbaar zijn voor aangepaste datumbereiken</string>
@@ -284,7 +355,7 @@ Language: nl
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Bereik een groot publiek</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">Onze tool toont je product daar waar geïnteresseerde winkelaars dit kunnen vinden. \"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Wereldwijd bereik vereenvoudigd</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Lanceer je advertenties binnen een paar minuten, zonder benodigde ervaring of een groot budget. Vanaf slecht $ 5 USD.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Lanceer je advertenties binnen een paar minuten, zonder benodigde ervaring of een groot budget. Vanaf slecht $ 5 USD per dag.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Snel aan de slag, grote impact</string>
     <string name="blaze_campaign_creation_new_intro_description">Onze tool is zo ontworpen dat verkopers snel en eenvoudig een campagne kunnen opzetten om meer klanten te kunnen trekken.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Promoten</string>
@@ -884,7 +955,6 @@ Language: nl
     <string name="empty_max_quantity">Geen maximum</string>
     <string name="empty_min_quantity">Geen minimum</string>
     <string name="product_type_bundle">Bundel</string>
-    <string name="quantity_rules_info_notice">Je kunt gebundelde producten bewerken in de nieuwe online dashboard.</string>
     <string name="group_of">Aantal stuks</string>
     <string name="max_quantity">Maximaal aantal</string>
     <string name="min_quantity">Minimaal aantal</string>

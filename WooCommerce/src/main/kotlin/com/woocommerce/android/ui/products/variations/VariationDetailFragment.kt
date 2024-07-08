@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionExpirationFragment.Companion.KEY_SUBSCRIPTION_EXPIRATION_RESULT
@@ -244,6 +246,18 @@ class VariationDetailFragment :
         handleResult<FreeTrialState>(KEY_SUBSCRIPTION_FREE_TRIAL_RESULT) { freeTrial ->
             viewModel.onVariationSubscriptionChanged(trialLength = freeTrial.length, trialPeriod = freeTrial.period)
         }
+
+        setupQuantityRulesHandleResult()
+    }
+
+    private fun setupQuantityRulesHandleResult() {
+        handleResult<QuantityRules>(BaseProductEditorFragment.KEY_QUANTITY_RULES_DIALOG_RESULT) {
+            viewModel.onVariationChanged(
+                minAllowedQuantity = it.min,
+                maxAllowedQuantity = it.max,
+                groupOfQuantity = it.groupOf
+            )
+        }
     }
 
     private fun setupObservers(viewModel: VariationDetailViewModel) {
@@ -304,6 +318,7 @@ class VariationDetailFragment :
                 is ShowDialog -> event.showDialog()
                 is ShowDialogFragment -> event.showIn(parentFragmentManager, this)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+                is VariationDetailViewModel.ShowUpdateVariationError -> showUpdateVariationError(event.message)
                 else -> event.isHandled = false
             }
         }
@@ -336,6 +351,14 @@ class VariationDetailFragment :
                 binding.imageGallery.showProductImage(it, this)
             }
         }
+    }
+
+    private fun showUpdateVariationError(message: String) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variation_detail_update_variation_error)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 
     override fun onGalleryImageClicked(image: Image) {

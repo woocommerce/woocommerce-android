@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,9 +32,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -272,6 +275,29 @@ fun CampaignHeader(
                 }
             }
         }
+        if (adDetails.isContentSuggestedByAi) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_ai),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(colorResource(id = R.color.color_on_surface_medium)),
+                    modifier = Modifier
+                        .size(dimensionResource(id = R.dimen.image_minor_50))
+                        .padding(end = dimensionResource(id = R.dimen.minor_100))
+                )
+                Text(
+                    text = stringResource(id = R.string.blaze_campaign_edit_ad_suggested_by_ai),
+                    style = MaterialTheme.typography.body2,
+                    color = colorResource(id = R.color.color_on_surface_medium),
+                )
+            }
+        }
         WCTextButton(
             modifier = Modifier.padding(top = 8.dp),
             onClick = onEditAdClicked,
@@ -297,6 +323,11 @@ fun CampaignDetails(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience
+        Text(
+            modifier = Modifier.padding(bottom = 8.dp),
+            text = stringResource(id = R.string.blaze_campaign_preview_audience_section_title),
+            style = MaterialTheme.typography.body2
+        )
         CampaignPropertyGroupItem(items = campaignDetails.targetDetails)
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -382,6 +413,7 @@ fun CampaignScreenPreview() {
                 description = "Get the latest white t-shirts",
                 tagLine = "From 45.00 USD",
                 campaignImageUrl = "https://rb.gy/gmjuwb",
+                isContentSuggestedByAi = true
             ),
             campaignDetails = CampaignDetailsUi(
                 budget = CampaignDetailItemUi(

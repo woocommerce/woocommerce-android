@@ -1,3 +1,9 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+agents:
+  queue: "android"
+
 steps:
   - input: "What version code do you want to use for the new hotfix release?"
     fields:
@@ -5,8 +11,7 @@ steps:
         key: "version_code"
         format: "[0-9]+" # Only allow numbers
   - label: "New Hotfix Release"
-    plugins:
-      - automattic/a8c-ci-toolkit#3.0.1
+    plugins: [$CI_TOOLKIT]
     command: |
       .buildkite/commands/configure-environment.sh
 

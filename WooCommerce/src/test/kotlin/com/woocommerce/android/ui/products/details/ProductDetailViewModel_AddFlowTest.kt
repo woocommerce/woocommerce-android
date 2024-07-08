@@ -183,7 +183,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 duplicateProduct = mock(),
                 tracker = tracker,
                 selectedSite = selectedSite,
-                getProductQuantityRules = mock(),
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),
                 productListRepository = mock(),
@@ -337,7 +336,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             Assertions.assertThat(productData?.productDraft).isEqualTo(product)
 
             // when
-            doReturn(true).whenever(productRepository).updateProduct(any())
+            doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any())
 
             viewModel.onPublishButtonClicked()
             verify(productRepository, times(1)).updateProduct(any())

@@ -40,107 +40,42 @@
                         android:screenReaderFocusable="true"
                         tools:ignore="UnusedAttribute">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/min_quantity_title"
-                            style="@style/Woo.Card.Title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:text="@string/min_quantity"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/min_quantity_value"
-                            style="@style/Woo.Card.Body"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/minor_100"
-                            tools:text="2"
-                            tools:visibility="visible" />
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginStart="@dimen/major_100"
-                        android:layout_marginEnd="@dimen/major_100" />
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="true"
-                        android:orientation="vertical"
-                        android:screenReaderFocusable="true"
-                        tools:ignore="UnusedAttribute">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/max_quantity_title"
-                            style="@style/Woo.Card.Title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:text="@string/max_quantity"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/max_quantity_value"
-                            style="@style/Woo.Card.Body"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/minor_100"
-                            android:focusable="false"
-                            tools:text="24" />
-
-                        <com.google.android.material.divider.MaterialDivider
+                        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                            android:id="@+id/min_quantity"
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/major_100"
-                            android:layout_marginEnd="@dimen/major_100" />
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="true"
-                        android:orientation="vertical"
-                        android:screenReaderFocusable="true"
-                        tools:ignore="UnusedAttribute">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/group_of_title"
-                            style="@style/Woo.Card.Title"
-                            android:layout_width="wrap_content"
+                            android:layout_marginTop="@dimen/major_75"
+                            android:layout_marginEnd="@dimen/major_100"
+                            android:layout_marginBottom="@dimen/major_100"
+                            android:hint="@string/min_quantity"
+                            android:inputType="numberDecimal" />
+                        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                            android:id="@+id/max_quantity"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
-                            android:text="@string/group_of"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/group_of_value"
-                            style="@style/Woo.Card.Body"
-                            android:layout_width="wrap_content"
+                            android:layout_marginStart="@dimen/major_100"
+                            android:layout_marginTop="@dimen/major_75"
+                            android:layout_marginEnd="@dimen/major_100"
+                            android:layout_marginBottom="@dimen/major_100"
+                            android:hint="@string/max_quantity"
+                            android:inputType="numberDecimal" />
+                        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                            android:id="@+id/group_of"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/minor_100"
-                            android:focusable="false"
-                            tools:text="2" />
+                            android:layout_marginStart="@dimen/major_100"
+                            android:layout_marginTop="@dimen/major_75"
+                            android:layout_marginEnd="@dimen/major_100"
+                            android:layout_marginBottom="@dimen/major_100"
+                            android:hint="@string/group_of"
+                            android:inputType="numberDecimal" />
+
                     </androidx.appcompat.widget.LinearLayoutCompat>
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/Woo.TextView.Caption"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/minor_100"
-                android:layout_marginEnd="@dimen/major_100"
-                android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
-                android:drawablePadding="@dimen/minor_100"
-                android:gravity="center_vertical"
-                android:text="@string/quantity_rules_info_notice"
-                android:visibility="visible"
-                tools:text="You can edit product subscriptions in the web dashboard." />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.core.widget.NestedScrollView>

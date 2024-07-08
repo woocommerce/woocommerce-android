@@ -29,10 +29,13 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorFragment
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -60,8 +63,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSelectPaymentMethodBinding.inflate(inflater, container, false)
-        setupToolbar()
-        return binding.root
+        return if (viewModel.displayUi) {
+            setupToolbar()
+            binding.root
+        } else {
+            View(requireContext())
+        }
     }
 
     private fun setupToolbar() {
@@ -273,9 +280,27 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             )
                     )
                 }
+
+                is ReturnResultToWooPos -> {
+                    parentFragmentManager.setFragmentResult(
+                        WooPosCardReaderActivity.WOO_POS_CARD_PAYMENT_REQUEST_KEY,
+                        Bundle().apply {
+                            putParcelable(
+                                WooPosCardReaderActivity.WOO_POS_CARD_PAYMENT_RESULT_KEY,
+                                event.asWooPosCardReaderPaymentResult(),
+                            )
+                        }
+                    )
+                }
             }
         }
     }
+
+    private fun ReturnResultToWooPos.asWooPosCardReaderPaymentResult() =
+        when (this) {
+            is ReturnResultToWooPos.Success -> WooPosCardReaderPaymentResult.Success
+            else -> WooPosCardReaderPaymentResult.Failure
+        }
 
     private fun setupResultHandlers() {
         handleDialogResult<Boolean>(
@@ -297,6 +322,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             entryId = R.id.selectPaymentMethodFragment
         ) {
             viewModel.onScanToPayCompleted()
+        }
+
+        handleDialogResult<Boolean>(
+            key = ChangeDueCalculatorFragment.IS_ORDER_PAID_RESULT,
+            entryId = R.id.selectPaymentMethodFragment
+        ) { paid ->
+            viewModel.handleIsOrderPaid(paid)
         }
     }
 

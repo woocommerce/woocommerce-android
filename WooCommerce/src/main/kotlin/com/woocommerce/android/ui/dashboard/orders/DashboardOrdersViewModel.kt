@@ -70,7 +70,10 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     private val statusOptions = MutableStateFlow(listOf(defaultFilterOption))
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
-        .onStart { emit(RefreshEvent()) }
+        .onStart {
+            emit(RefreshEvent())
+            trackEventForOrderCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
+        }
     private val selectedFilter = savedStateHandle.getStateFlow(viewModelScope, DEFAULT_FILTER_OPTION_STATUS)
 
     val menu = DashboardWidgetMenu(
@@ -96,6 +99,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
         val hasOrders = orderListRepository.hasOrdersLocally(statusFilter)
         if (refresh.isForced || !hasOrders) {
             emit(ViewState.Loading)
+            trackEventForOrderCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
         }
         emitAll(
             combine(
@@ -108,10 +112,12 @@ class DashboardOrdersViewModel @AssistedInject constructor(
             ) { result, statusOptions ->
                 result.fold(
                     onSuccess = { orders ->
+                        trackEventForOrderCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                         Content(
                             orders = orders.map { order ->
                                 val status = statusOptions
-                                    .first { option -> option.key == order.status.value }.label
+                                    .firstOrNull { option -> option.key == order.status.value }?.label
+                                    ?: order.status.value
 
                                 ViewState.OrderItem(
                                     id = order.id,
@@ -159,25 +165,30 @@ class DashboardOrdersViewModel @AssistedInject constructor(
         }
 
     private fun onNavigateToOrders() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ORDERS.trackingIdentifier)
         triggerEvent(NavigateToOrders)
     }
 
     fun onRefresh() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.ORDERS.trackingIdentifier
-            )
-        )
+        trackEventForOrderCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
     fun onFilterSelected(filter: OrderStatusOption) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ORDERS.trackingIdentifier)
         selectedFilter.value = filter.key
     }
 
     fun onOrderClicked(orderId: Long) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ORDERS.trackingIdentifier)
         triggerEvent(NavigateToOrderDetails(orderId))
+    }
+
+    private fun trackEventForOrderCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.ORDERS.trackingIdentifier)
+        )
     }
 
     sealed class ViewState {
@@ -189,7 +200,8 @@ class DashboardOrdersViewModel @AssistedInject constructor(
             val selectedFilter: OrderStatusOption
         ) : ViewState()
 
-        @StringRes val title: Int = ORDERS.titleResource
+        @StringRes
+        val title: Int = ORDERS.titleResource
 
         data class OrderItem(
             val id: Long,

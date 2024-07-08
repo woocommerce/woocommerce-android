@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 09:54:04+0000
+Translation-Revision-Date: 2024-07-03 13:54:09+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">تحصيل المدفوعات بالبطاقة</string>
+    <string name="woopos_payment_total_label">الإجمالي</string>
+    <string name="woopos_payment_tax_label">الضريبة</string>
+    <string name="woopos_payment_subtotal_label">الإجمالي الفرعي</string>
+    <string name="woo_pos_new_transaction_button">معاملة جديدة</string>
+    <string name="woopos_payment_successful_label">تمت عملية الدفع بنجاح</string>
+    <string name="woopos_payment_failed_please_try_again">فشلت عملية الدفع. يرجى المحاولة مجددًا.</string>
+    <string name="woo_pos_cart_back_content_description">أيقونة عربة التسوق</string>
+    <string name="woopos_products_screen_title">المنتجات</string>
+    <string name="woopos_product_image_description">صورة المنتج</string>
+    <string name="woo_pos_items_in_cart">%d من العناصر</string>
+    <string name="woo_pos_clear_cart_button">مسح الكل</string>
+    <string name="more_menu_button_google_description">زيادة المبيعات وإنشاء مزيد من حركة المرور باستخدام Google Ads</string>
+    <string name="more_menu_button_google">Google for WooCommerce</string>
+    <string name="no_quantity_rules">لا توجد قواعد للكميات</string>
+    <string name="blaze_campaign_preview_audience_section_title">الجمهور</string>
+    <string name="woopos_exit_confirmation_dismiss_button">إلغاء</string>
+    <string name="woopos_exit_confirmation_confirm_button">إنهاء</string>
+    <string name="woopos_exit_confirmation_message">هل تريد بالتأكيد إنهاء POS؟</string>
+    <string name="woopos_exit_confirmation_title">إنهاء POS</string>
+    <string name="woopos_cart_title">عربة التسوق</string>
+    <string name="woopos_remove_item_from_cart_content_description">إزالة عنصر من عربة التسوق</string>
+    <string name="woopos_checkout_button">السداد</string>
+    <string name="woopos_reader_unknown">حالة القارئ مجهولة</string>
+    <string name="woopos_checkout">السداد</string>
+    <string name="woopos_reader_disconnected">تم فصل القارئ</string>
+    <string name="woopos_reader_connecting">اتصال القارئ</string>
+    <string name="woopos_reader_connected">تم اتصال القارئ</string>
+    <string name="woopos_exit_pos">إنهاء POS</string>
+    <string name="dashboard_new_widgets_card_button">إضافة أقسام جديدة</string>
+    <string name="dashboard_product_stock_empty_products">لم يتم العثور على منتجات لحالة المخزون المحددة</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">يتعذر تحميل تقارير مخزون المنتجات</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">لم يتم بيع أي عناصر في آخر 30 يومًا</string>
+    <string name="dashboard_product_stock_sales_last_30_days">تم بيع %d من العناصر في آخر 30 يومًا</string>
+    <string name="more_menu_button_woo_pos_description">استخدام التطبيق كسجل أعطال</string>
+    <string name="more_menu_button_woo_pos">وضع نقطة البيع</string>
+    <string name="product_stock_status_low_stock">مخزون منخفض</string>
+    <string name="order_detail_shipping_header">الشحن</string>
+    <string name="order_creation_feedback_action">مشاركة ملاحظاتك</string>
+    <string name="order_creation_shipping_feedback_message">هل يجعل Woo الشحن سهلاً؟</string>
+    <string name="order_creation_shipping_feedback_title">تمت إضافة الشحن!</string>
+    <string name="order_creation_shipping_edit">تحرير الشحن</string>
+    <string name="order_creation_shipping_title_edit">تحرير الشحن</string>
+    <string name="cash_payments_order_note_adding_error">خطأ في أثناء إضافة ملاحظة الطلب</string>
+    <string name="cash_payments_order_note_text">تم دفع قيمة الطلب نقدًا. دفع العميل %s. كان التغيير المستحق %s.</string>
+    <string name="cash_payments_mark_order_as_complete">وسم الطلب بأنه مكتمل</string>
+    <string name="cash_payments_record_transaction_details">تسجيل تفاصيل المعاملات في ملاحظة الطلب</string>
+    <string name="dashboard_new_widgets_card_description">إضافة أقسام جديدة لتخصيص تجربة إدارة متجرك</string>
+    <string name="dashboard_new_widgets_card_title">هل تبحث عن بعض الرؤى؟</string>
+    <string name="dashboard_product_stock_products">المنتجات</string>
+    <string name="dashboard_product_stock_levels">مستويات المخزون</string>
+    <string name="dashboard_product_stock_status_header_title">الحالة</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">هل لا تزال تحتاج إلى مساعدة؟ الاتصال بنا</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">يتعذر تحميل تقرير استخدام القسائم</string>
+    <string name="dashboard_coupons_card_empty_view_message">لا يوجد استخدام قسائم في أثناء هذه الفترة</string>
+    <string name="dashboard_coupons_view_all_button">عرض كل القسائم</string>
+    <string name="dashboard_coupons_card_header_uses">الاستخدامات</string>
+    <string name="dashboard_coupons_card_header_coupons">القسائم</string>
+    <string name="my_store_widget_product_stock_title">المخزون</string>
+    <string name="dashboard_action_view_all_messages">عرض كل الرسائل</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">يتعذر تحميل أهم المؤدِّين</string>
+    <string name="na">غير محدَّد</string>
+    <string name="cash_payments_change_due">التغيير المستحق</string>
+    <string name="cash_payments_cash_received">تم تلقي النقد</string>
+    <string name="my_store_widget_coupons_title">معظم القسائم النشطة</string>
+    <string name="cash_payments_take_payment_title">تحصيل الدفع (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">عرض جميع المراجعات</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">لا توجد مراجعات تتطابق مع عامل التصفية المحدد، يرجى محاولة تغيير عامل التصفية</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">لم يتم العثور على مراجعات</string>
+    <string name="dashboard_reviews_card_header_title">الحالة</string>
+    <string name="my_store_widget_reviews_title">أحدث المراجعات</string>
+    <string name="my_store_widget_orders_title">أحدث الطلبات</string>
+    <string name="dashboard_action_view_all_orders">عرض كل الطلبات</string>
+    <string name="dashboard_filter_menu_content_description">فتح النافذة المنبثقة لعامل التصفية</string>
     <string name="product_category_clear_parent">مسح التصنيف الأصلي </string>
     <string name="product_list_fetch_error">خطأ في أثناء إحضار المنتجات!</string>
     <string name="order_creation_add_shipping_method_select_hint">تحديد طريقة شحن</string>
@@ -25,8 +99,7 @@ Language: ar
     <string name="dynamic_dashboard_widget_menu_item_hide">إخفاء %s</string>
     <string name="my_store_widget_onboarding_completed">مكتمل</string>
     <string name="my_store_widget_feedback_title">ملاحظات</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">هل لا تزال تحتاج إلى مساعدة؟ اتصل بنا</string>
-    <string name="my_store_stats_plugin_inactive_description">تأكد من أنك تقوم بتشغيل أحدث إصدار من WooCommerce على موقعك وأنك قمت بتفعيل مسؤول WooCommerce.</string>
+    <string name="dashboard_wcanalytics_inactive_description">تأكد من أنك تقوم بتشغيل أحدث إصدار من WooCommerce على موقعك وأنك قمت بتفعيل تحليلات WooCommerce.</string>
     <string name="my_store_stats_plugin_inactive_title">يتعذر علينا عرض\n تحليلات متجرك</string>
     <string name="store_onboarding_task_view_all_tasks">عرض جميع المهام</string>
     <string name="analytics_session_no_available_description">تعتمد تحليلات الجلسة على أعداد الزائرين الفريدة غير المتاحة لنطاقات التواريخ المخصصة</string>
@@ -284,7 +357,7 @@ Language: ar
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">الوصول إلى عدد ضخم من الجمهور</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"تقدِّم الأداة التي نطرحها منتجك في المكان الذي يستطيع فيه المتسوقون المهتمون العثور عليه\".</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">أصبح الوصول العالمي بسيطًا</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">يمكنك تشغيل الإعلانات في غضون دقائق - لا يلزم وجود خبرة أو ميزانية كبيرة، بدءًا من 5 دولارات أمريكية فقط.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">يمكنك تشغيل الإعلانات في غضون دقائق - لا يلزم وجود خبرة أو ميزانية كبيرة، بدءًا من 5 دولارات أمريكية فقط يوميًا.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">بدء سريع، تأثير أكبر</string>
     <string name="blaze_campaign_creation_new_intro_description">تم تصميم الأداة التي نطرحها لتمكين التجار من خلال عمليات إعداد سريعة وبسيطة للحملات الإعلانية لتحقيق أقصى قدر من زيادة حركة المرور.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">ترويج</string>
@@ -884,7 +957,6 @@ Language: ar
     <string name="empty_max_quantity">بلا حد أقصى</string>
     <string name="empty_min_quantity">بلا حد أدنى</string>
     <string name="product_type_bundle">حزمة</string>
-    <string name="quantity_rules_info_notice">يمكنك تحرير قواعد كميات المنتجات في لوحة تحكم الويب.</string>
     <string name="group_of">مجموعة</string>
     <string name="max_quantity">الحد الأقصى للكمية</string>
     <string name="min_quantity">الحد الأدنى للكمية</string>

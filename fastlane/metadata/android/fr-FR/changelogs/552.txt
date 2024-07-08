@@ -1,2 +1,0 @@
-18.6 :
-Fonctionnalité accrue avec notre dernière mise à jour ! Nous avons amélioré « Appuyer pour payer » avec un nouveau chemin de navigation depuis le récapitulatif de l’écran « À propos d’Appuyer pour payer » et revu sa description pour plus de clarté. Méthodes d’expédition plus flexibles : vous pouvez spécifier des options directement lors de l’ajout ou de la modification des détails d’expédition d’une commande. Mettez à jour votre application pour une expérience plus fluide et efficace !

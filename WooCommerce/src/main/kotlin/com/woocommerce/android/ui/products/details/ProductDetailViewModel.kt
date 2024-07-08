@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -53,7 +54,6 @@ import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.GetBundledProductsCount
 import com.woocommerce.android.ui.products.GetComponentProducts
-import com.woocommerce.android.ui.products.GetProductQuantityRules
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductHelper
@@ -64,12 +64,12 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.canDisplayMessage
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.details.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
@@ -95,15 +95,19 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -111,6 +115,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -124,6 +129,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @Suppress("EmptyFunctionBlock")
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -144,7 +150,6 @@ class ProductDetailViewModel @Inject constructor(
     private val duplicateProduct: DuplicateProduct,
     private val tracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
-    private val getProductQuantityRules: GetProductQuantityRules,
     private val getBundledProductsCount: GetBundledProductsCount,
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
@@ -226,6 +231,8 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private var hasTrackedProductDetailLoaded = false
+
+    private val productCategorySearchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
 
     private val cardBuilder by lazy {
         ProductDetailCardBuilder(
@@ -365,6 +372,8 @@ class ProductDetailViewModel @Inject constructor(
                 uris = navArgs.images!!.asList()
             )
         }
+
+        observeProductCategorySearchQuery()
     }
 
     private fun initializeViewState() {
@@ -1236,7 +1245,10 @@ class ProductDetailViewModel @Inject constructor(
         downloadExpiry: Int? = null,
         isDownloadable: Boolean? = null,
         attributes: List<ProductAttribute>? = null,
-        numVariation: Int? = null
+        numVariation: Int? = null,
+        minAllowedQuantity: Int? = null,
+        maxAllowedQuantity: Int? = null,
+        groupOfQuantity: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val updatedProduct = product.copy(
@@ -1292,7 +1304,10 @@ class ProductDetailViewModel @Inject constructor(
                 downloadExpiry = downloadExpiry ?: product.downloadExpiry,
                 isDownloadable = isDownloadable ?: product.isDownloadable,
                 attributes = attributes ?: product.attributes,
-                numVariations = numVariation ?: product.numVariations
+                numVariations = numVariation ?: product.numVariations,
+                minAllowedQuantity = minAllowedQuantity ?: product.minAllowedQuantity,
+                maxAllowedQuantity = maxAllowedQuantity ?: product.maxAllowedQuantity,
+                groupOfQuantity = groupOfQuantity ?: product.groupOfQuantity,
             )
             viewState = viewState.copy(productDraft = updatedProduct)
         }
@@ -1425,10 +1440,9 @@ class ProductDetailViewModel @Inject constructor(
         if (hasTrackedProductDetailLoaded.not()) {
             storedProduct.value?.let { product ->
                 launch {
-                    val hasQuantityRules = getProductQuantityRules(product.remoteId) != null
                     val properties = mapOf(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
-                        AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules,
+                        AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to product.hasQuantityRules(),
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
                             IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString,
                     )
@@ -1898,7 +1912,8 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = false)
             return
         }
-        if (productRepository.updateProduct(product)) {
+        val result = productRepository.updateProduct(product)
+        if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
             if (viewState.isPasswordChanged) {
                 val password = viewState.draftPassword
@@ -1920,7 +1935,13 @@ class ProductDetailViewModel @Inject constructor(
             triggerEvent(ProductUpdated)
             loadRemoteProduct(product.remoteId)
         } else {
-            triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+            result.second?.let {
+                if (it.canDisplayMessage) {
+                    triggerEvent(ShowUpdateProductError(it.message))
+                } else {
+                    triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+                }
+            } ?: triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
@@ -2239,11 +2260,29 @@ class ProductDetailViewModel @Inject constructor(
         // Get the categories of the product
         val selectedCategories = product.categories
 
-        // Sort all incoming categories by their parent
-        val sortedList = productCategories.sortCategories(resources)
+        // Check if the list has any child categories which parent is not included in the list.
+        // This is a possibility, e.g.: in a category search result.
+        val remoteCategoryIds = productCategories.map { it.remoteCategoryId }.toSet()
+        val hasChildWithMissingParentCategory = productCategories.any { category ->
+            category.parentId != 0L && !remoteCategoryIds.contains(category.parentId)
+        }
+
+        // If there is any missing parent, simply make a flat list. Otherwise, sort incoming categories by their parents.
+        val sortedList = if (hasChildWithMissingParentCategory) {
+            productCategories
+                .sortedBy { it.name.lowercase(Locale.US) }
+                .map {
+                    ProductCategoryItemUiModel(
+                        category = it,
+                        margin = resources.getDimensionPixelSize(R.dimen.major_125)
+                    )
+                }
+        } else {
+            productCategories.sortCategories(resources)
+        }
 
         // Mark the product categories as selected in the sorted list
-        sortedList.map { productCategoryItemUiModel ->
+        sortedList.forEach { productCategoryItemUiModel ->
             for (selectedCategory in selectedCategories) {
                 if (productCategoryItemUiModel.category.remoteCategoryId == selectedCategory.remoteCategoryId) {
                     productCategoryItemUiModel.isSelected = true
@@ -2251,7 +2290,7 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
 
-        return sortedList.toList()
+        return sortedList
     }
 
     fun onProductTagsBackButtonClicked() {
@@ -2484,10 +2523,6 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
-    suspend fun getQuantityRules(productRemoteID: Long): QuantityRules? {
-        return getProductQuantityRules(productRemoteID)
-    }
-
     suspend fun getBundledProductsSize(remoteId: Long): Int {
         return getBundledProductsCount(remoteId)
     }
@@ -2502,6 +2537,46 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun hasSubscriptionExpirationChanges(): Boolean {
         return storedProduct.value?.subscription?.length != viewState.productDraft?.subscription?.length
+    }
+
+    fun onProductCategorySearchQueryChanged(query: String) {
+        productCategorySearchQuery.value = query
+    }
+    fun onProductCategorySearchStateChanged(open: Boolean) {
+        productCategorySearchQuery.value = if (open) {
+            productCategorySearchQuery.value.orEmpty()
+        } else {
+            null
+        }
+    }
+
+    private fun observeProductCategorySearchQuery() {
+        viewModelScope.launch {
+            productCategorySearchQuery
+                .withIndex()
+                .filterNot {
+                    // Skip the first time customer focuses the Search View
+                    it.index == 1 && it.value == ""
+                }
+                .map { it.value }
+                .debounce {
+                    if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                }
+                .collectLatest {
+                    val oldValue = _productCategories.value
+                    productCategoriesViewState = productCategoriesViewState.copy(
+                        isRefreshing = true
+                    )
+                    _productCategories.value = productCategoriesRepository.searchCategories(it)
+                        .getOrElse {
+                            triggerEvent(ShowSnackbar(R.string.error_generic))
+                            oldValue
+                        }
+                    productCategoriesViewState = productCategoriesViewState.copy(
+                        isRefreshing = false
+                    )
+                }
+        }
     }
 
     /**
@@ -2553,6 +2628,8 @@ class ProductDetailViewModel @Inject constructor(
 
     object ProductUpdated : Event()
 
+    data class ShowUpdateProductError(val message: String) : Event()
+
     data class TrashProduct(val productId: Long) : Event()
 
     /**
@@ -2603,10 +2680,14 @@ class ProductDetailViewModel @Inject constructor(
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val searchQuery: String? = null
     ) : Parcelable {
         val isAddCategoryButtonVisible: Boolean
-            get() = isSkeletonShown == false
+            get() = isRefreshing == false
+
+        val isSearchOpen: Boolean
+            get() = searchQuery != null
     }
 
     @Parcelize

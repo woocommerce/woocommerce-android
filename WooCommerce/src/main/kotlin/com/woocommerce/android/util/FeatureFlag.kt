@@ -8,18 +8,18 @@ import android.content.Context
 enum class FeatureFlag {
     WOO_POS,
     DB_DOWNGRADE,
-    MORE_MENU_INBOX,
+    INBOX,
     WC_SHIPPING_BANNER,
-    OTHER_PAYMENT_METHODS,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
-    CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
-    DYNAMIC_DASHBOARD,
     APP_PASSWORD_TUTORIAL,
     EOSL_M1,
-    DYNAMIC_DASHBOARD_M2;
+    EOSL_M3,
+    GOOGLE_ADS_M1,
+    PRODUCT_CREATION_WITH_AI_V2,
+    SHOW_INBOX_CTA;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -27,21 +27,20 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            OTHER_PAYMENT_METHODS -> false
-
-            MORE_MENU_INBOX,
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            DYNAMIC_DASHBOARD_M2 -> PackageUtils.isDebugBuild()
+            GOOGLE_ADS_M1,
+            PRODUCT_CREATION_WITH_AI_V2 -> PackageUtils.isDebugBuild()
 
-            DYNAMIC_DASHBOARD,
             CONNECTIVITY_TOOL,
-            CUSTOM_RANGE_ANALYTICS,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
-            EOSL_M1 -> true
+            EOSL_M1,
+            EOSL_M3,
+            INBOX,
+            SHOW_INBOX_CTA -> true
         }
     }
 }

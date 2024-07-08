@@ -1,6 +1,14 @@
 package com.woocommerce.android.analytics
 
-enum class AnalyticsEvent(val siteless: Boolean = false) {
+import com.woocommerce.commons.WearAnalyticsEvent
+
+interface IAnalyticsEvent {
+    val siteless: Boolean
+    val name: String
+    val isPosEvent: Boolean
+}
+
+enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEvent {
     // -- General
     APPLICATION_OPENED(siteless = true),
     APPLICATION_CLOSED(siteless = true),
@@ -179,6 +187,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     DYNAMIC_DASHBOARD_HIDE_CARD_TAPPED,
     DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
     DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+    DYNAMIC_DASHBOARD_ADD_NEW_SECTIONS_TAPPED,
+    DYNAMIC_DASHBOARD_CARD_INTERACTED,
+    DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED,
+    DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED,
 
     // -- Analytics Hub
     ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED,
@@ -259,6 +271,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAILS_GIFT_CARD_SHOWN,
     ORDER_PRODUCTS_LOADED,
     ORDER_DETAIL_TRASH_TAPPED,
+    ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
@@ -923,6 +936,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED,
     PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED,
 
+    PRODUCT_DETAIL_QUANTITY_RULES_DONE_BUTTON_TAPPED,
+    PRODUCT_VARIATION_QUANTITY_RULES_DONE_BUTTON_TAPPED,
+
     // Bundled products
     PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED,
 
@@ -1053,5 +1069,46 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Connectivity Tool
     CONNECTIVITY_TOOL_REQUEST_RESPONSE,
     CONNECTIVITY_TOOL_READ_MORE_TAPPED,
-    CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED
+    CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED,
+
+    // Woo Wear App
+    WATCH_STORE_DATA_REQUESTED,
+    WATCH_STORE_DATA_SUCCEEDED,
+    WATCH_STORE_DATA_FAILED,
+    WATCH_STATS_DATA_REQUESTED,
+    WATCH_STATS_DATA_SUCCEEDED,
+    WATCH_STATS_DATA_FAILED,
+    WATCH_ORDERS_LIST_DATA_REQUESTED,
+    WATCH_ORDERS_LIST_DATA_SUCCEEDED,
+    WATCH_ORDERS_LIST_DATA_FAILED,
+    WATCH_ORDER_DETAILS_DATA_REQUESTED,
+    WATCH_ORDER_DETAILS_DATA_SUCCEEDED,
+    WATCH_ORDER_DETAILS_DATA_FAILED,
+    WATCH_APP_OPENED,
+    WATCH_ORDERS_LIST_OPENED,
+    WATCH_ORDER_DETAILS_OPENED;
+
+    override val isPosEvent: Boolean = false
+}
+
+@Suppress("CyclomaticComplexMethod")
+fun WearAnalyticsEvent.toAnalyticsEvent(): AnalyticsEvent? {
+    return when (this) {
+        WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED -> AnalyticsEvent.WATCH_STORE_DATA_REQUESTED
+        WearAnalyticsEvent.WATCH_STORE_DATA_SUCCEEDED -> AnalyticsEvent.WATCH_STORE_DATA_SUCCEEDED
+        WearAnalyticsEvent.WATCH_STORE_DATA_FAILED -> AnalyticsEvent.WATCH_STORE_DATA_FAILED
+        WearAnalyticsEvent.WATCH_STATS_DATA_REQUESTED -> AnalyticsEvent.WATCH_STATS_DATA_REQUESTED
+        WearAnalyticsEvent.WATCH_STATS_DATA_SUCCEEDED -> AnalyticsEvent.WATCH_STATS_DATA_SUCCEEDED
+        WearAnalyticsEvent.WATCH_STATS_DATA_FAILED -> AnalyticsEvent.WATCH_STATS_DATA_FAILED
+        WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_REQUESTED -> AnalyticsEvent.WATCH_ORDERS_LIST_DATA_REQUESTED
+        WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED -> AnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED
+        WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_FAILED -> AnalyticsEvent.WATCH_ORDERS_LIST_DATA_FAILED
+        WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED
+        WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_SUCCEEDED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_SUCCEEDED
+        WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED
+        WearAnalyticsEvent.WATCH_APP_OPENED -> AnalyticsEvent.WATCH_APP_OPENED
+        WearAnalyticsEvent.WATCH_ORDERS_LIST_OPENED -> AnalyticsEvent.WATCH_ORDERS_LIST_OPENED
+        WearAnalyticsEvent.WATCH_ORDER_DETAILS_OPENED -> AnalyticsEvent.WATCH_ORDER_DETAILS_OPENED
+        else -> null
+    }
 }

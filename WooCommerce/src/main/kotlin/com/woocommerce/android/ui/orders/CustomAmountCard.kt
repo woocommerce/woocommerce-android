@@ -114,13 +114,15 @@ fun ImageWithBorder() {
 }
 
 @Composable
-fun Header() {
+fun Header(
+    text: String,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = stringResource(id = R.string.order_detail_custom_amounts_header),
+            text = text,
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.CenterStart),
@@ -165,7 +167,7 @@ fun CustomAmountCardWithLongNamePreview() {
 @Composable
 fun HeaderPreview() {
     WooThemeWithBackground {
-        Header()
+        Header(text = stringResource(id = R.string.order_detail_custom_amounts_header))
     }
 }
 
@@ -175,7 +177,7 @@ fun HeaderPreview() {
 fun CustomAmountCardWithHeaderPreview() {
     WooThemeWithBackground {
         Column {
-            Header()
+            Header(text = stringResource(id = R.string.order_detail_custom_amounts_header))
             CustomAmountCard(
                 CustomAmountUI(
                     name = "Services Rendered",

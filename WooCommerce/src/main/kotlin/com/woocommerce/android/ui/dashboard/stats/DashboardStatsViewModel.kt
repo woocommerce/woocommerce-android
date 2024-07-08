@@ -40,12 +40,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -75,6 +78,12 @@ class DashboardStatsViewModel @AssistedInject constructor(
     val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     private val selectedDateRange = getSelectedDateRange()
+        .onEach {
+            // Reset selected chart date when date range changes
+            selectedChartDate.value = null
+        }
+        .shareIn(viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
+
     private val selectedChartDate = MutableStateFlow<String?>(null)
 
     val dateRangeState = combine(
@@ -115,6 +124,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     }
 
     fun onTabSelected(selectionType: SelectionType) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
         usageTracksEventEmitter.interacted()
         if (selectionType != SelectionType.CUSTOM) {
             appPrefsWrapper.setActiveStatsTab(selectionType.name)
@@ -147,6 +157,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     }
 
     fun onAddCustomRangeClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
         triggerEvent(
             OpenDatePicker(
                 fromDate = dateRangeState.value?.customRange?.start ?: Date(),
@@ -163,6 +174,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     }
 
     fun onViewAnalyticsClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         dateRangeState.value?.rangeSelection?.let {
             triggerEvent(OpenAnalytics(it))
@@ -174,12 +186,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     }
 
     fun onRefresh() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier
-            )
-        )
+        trackEventForStatsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
@@ -193,6 +200,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         if (forceRefresh) {
             _visitorStatsState.value = VisitorStatsViewState.NotLoaded
         }
+        trackEventForStatsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
         getStats(forceRefresh, selectedRange)
             .collect {
                 when (it) {
@@ -240,6 +248,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
                 putIfNotNull(AnalyticsTracker.KEY_ID to result.stats?.rangeId)
             }
         )
+        trackEventForStatsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
     }
 
     private fun trackLocalTimezoneDifferenceFromStore() {
@@ -288,6 +297,13 @@ class DashboardStatsViewModel @AssistedInject constructor(
                 it.subtotals?.totalSales
             )
         }
+
+    private fun trackEventForStatsCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier)
+        )
+    }
 
     sealed class RevenueStatsViewState {
         data class Loading(val isForced: Boolean) : RevenueStatsViewState()

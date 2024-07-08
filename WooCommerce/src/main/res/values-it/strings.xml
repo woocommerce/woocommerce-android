@@ -1,13 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-20 10:54:04+0000
+Translation-Revision-Date: 2024-07-04 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
-    <string name="more_menu_button_woo_pos_description">Punto di accesso temporaneo alla modalità POS</string>
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="woopos_payment_collect_payment_label">Ricevi pagamenti con carta</string>
+    <string name="woopos_payment_total_label">Totale</string>
+    <string name="woopos_payment_tax_label">Imposta</string>
+    <string name="woopos_payment_subtotal_label">Subtotale</string>
+    <string name="woo_pos_new_transaction_button">Nuova transazione</string>
+    <string name="woopos_payment_successful_label">Pagamento avvenuto correttamente</string>
+    <string name="woopos_payment_failed_please_try_again">Pagamento non riuscito. Riprova.</string>
+    <string name="woo_pos_cart_back_content_description">Icona della carta</string>
+    <string name="woopos_products_screen_title">Prodotti</string>
+    <string name="woopos_product_image_description">Immagine prodotto</string>
+    <string name="woo_pos_items_in_cart">%d elementi</string>
+    <string name="woo_pos_clear_cart_button">Cancella tutto</string>
+    <string name="more_menu_button_google_description">Aumenta le vendite e genera più traffico con Google Ads</string>
+    <string name="more_menu_button_google">Google per WooCommerce</string>
+    <string name="no_quantity_rules">Nessuna regola sulla quantità</string>
+    <string name="blaze_campaign_preview_audience_section_title">Pubblico</string>
+    <string name="woopos_exit_confirmation_dismiss_button">Annulla</string>
+    <string name="woopos_exit_confirmation_confirm_button">Esci</string>
+    <string name="woopos_exit_confirmation_message">Desideri uscire da POS?</string>
+    <string name="woopos_exit_confirmation_title">Esci da POS</string>
+    <string name="woopos_cart_title">Carrello</string>
+    <string name="woopos_remove_item_from_cart_content_description">Rimuovi elemento dal carrello</string>
+    <string name="woopos_checkout_button">Pagamento</string>
+    <string name="woopos_reader_unknown">Stato del lettore sconosciuto</string>
+    <string name="woopos_checkout">Pagamento</string>
+    <string name="woopos_reader_disconnected">Lettore disconnesso</string>
+    <string name="woopos_reader_connecting">Connessione in corso del lettore</string>
+    <string name="woopos_reader_connected">Lettore connesso</string>
+    <string name="woopos_exit_pos">Esci da POS</string>
+    <string name="dashboard_new_widgets_card_button">Aggiungi nuove sezioni</string>
+    <string name="dashboard_product_stock_empty_products">Nessun prodotto trovato per lo stato di magazzino selezionato</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Impossibile caricare i report sulle disponibilità in magazzino dei prodotti</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Nessun articolo venduto negli ultimi 30 giorni</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d articoli venduti negli ultimi 30 giorni</string>
+    <string name="more_menu_button_woo_pos_description">Usa l\'app come registratore di cassa</string>
+    <string name="more_menu_button_woo_pos">Modalità punto vendita</string>
+    <string name="product_stock_status_low_stock">In esaurimento</string>
+    <string name="order_detail_shipping_header">SPEDIZIONE</string>
+    <string name="order_creation_feedback_action">Lascia il tuo feedback</string>
+    <string name="order_creation_shipping_feedback_message">Woo semplifica la spedizione?</string>
+    <string name="order_creation_shipping_feedback_title">Spedizione aggiunta.</string>
+    <string name="order_creation_shipping_edit">Modifica spedizione</string>
+    <string name="order_creation_shipping_title_edit">Modifica spedizione</string>
+    <string name="cash_payments_order_note_adding_error">Errore durante l\'aggiunta della nota dell\'ordine</string>
+    <string name="cash_payments_order_note_text">L\'ordine è stato pagato in contanti. Il cliente ha pagato %s. Il resto dovuto era di %s.</string>
+    <string name="cash_payments_mark_order_as_complete">Contrassegna l\'ordine come completo</string>
+    <string name="cash_payments_record_transaction_details">Registra i dettagli della transazione nella nota dell\'ordine</string>
+    <string name="dashboard_new_widgets_card_description">Aggiungi nuove sezioni per personalizzare l\'esperienza di gestione del negozio</string>
+    <string name="dashboard_new_widgets_card_title">Sei alla ricerca di una panoramica più dettagliata?</string>
+    <string name="dashboard_product_stock_products">Prodotti</string>
+    <string name="dashboard_product_stock_levels">Livelli di stoccaggio</string>
+    <string name="dashboard_product_stock_status_header_title">Stato</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Hai ancora bisogno di aiuto? Contattaci</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Impossibile caricare il report sull\'utilizzo dei coupon</string>
+    <string name="dashboard_coupons_card_empty_view_message">Nessun coupon utilizzato in questo periodo</string>
+    <string name="dashboard_coupons_view_all_button">Visualizza tutti i codici promozionali</string>
+    <string name="dashboard_coupons_card_header_uses">Usi</string>
+    <string name="dashboard_coupons_card_header_coupons">Codici promozionali</string>
+    <string name="my_store_widget_product_stock_title">Magazzino</string>
+    <string name="dashboard_action_view_all_messages">Visualizza tutti i messaggi</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Impossibile caricare i prodotti più venduti</string>
+    <string name="na">N/D</string>
+    <string name="cash_payments_change_due">Resto dovuto</string>
+    <string name="cash_payments_cash_received">Contanti ricevuti</string>
+    <string name="my_store_widget_coupons_title">Codici promozionali più attivi</string>
     <string name="cash_payments_take_payment_title">Ricevi il pagamento%s</string>
     <string name="dashboard_reviews_card_view_all_button">Visualizza tutte le recensioni</string>
     <string name="dashboard_reviews_card_empty_message_filtered">Nessuna recensione corrisponde al filtro selezionato, prova a cambiare il filtro</string>
@@ -16,7 +79,7 @@ Language: it
     <string name="my_store_widget_reviews_title">Recensioni più recenti</string>
     <string name="my_store_widget_orders_title">Ordini più recenti</string>
     <string name="dashboard_action_view_all_orders">Visualizza tutti gli ordini</string>
-    <string name="dashboard_filter_menu_content_description">Open filter dropdown</string>
+    <string name="dashboard_filter_menu_content_description">Apri menu a discesa del filtro</string>
     <string name="product_category_clear_parent">Cancella la categoria genitore</string>
     <string name="product_list_fetch_error">Errore durante il recupero dei prodotti.</string>
     <string name="order_creation_add_shipping_method_select_hint">Seleziona un metodo di spedizione</string>
@@ -36,8 +99,7 @@ Language: it
     <string name="dynamic_dashboard_widget_menu_item_hide">Nascondi %s</string>
     <string name="my_store_widget_onboarding_completed">Completata</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Hai ancora bisogno di aiuto? Contattaci</string>
-    <string name="my_store_stats_plugin_inactive_description">Assicurati di star utilizzando la versione più recente di WooCommerce sul tuo sito e di aver attivato WooCommerce Admin.</string>
+    <string name="dashboard_wcanalytics_inactive_description">Assicurati di disporre della versione più recente di WooCommerce sul tuo sito e di aver attivato Analisi WooCommerce.</string>
     <string name="my_store_stats_plugin_inactive_title">Non possiamo visualizzare il tuo\n analisi del negozio</string>
     <string name="store_onboarding_task_view_all_tasks">Visualizza tutte le attività</string>
     <string name="analytics_session_no_available_description">L\'analisi delle sessioni si basa su un numero unico di visitatori non disponibile per intervalli di date personalizzati</string>
@@ -295,7 +357,7 @@ Language: it
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Raggiungi un ampio pubblico</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Il nostro strumento presenta il tuo prodotto dove gli acquirenti interessati possono trovarlo\".</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Raggiungere tutto il mondo non è mai stato così facile</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Lancia annunci in pochi minuti, senza bisogno di esperienza o di grandi budget, a partire da soli $ 5.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Lancia annunci in pochi minuti, senza bisogno di esperienza o di grandi budget, a partire da soli $ 5 al giorno.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Avvio rapido, grande impatto</string>
     <string name="blaze_campaign_creation_new_intro_description">Il nostro strumento è stato progettato per consentire ai venditori di impostare annunci semplici e veloci per incrementare al massimo il traffico.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Promuovi</string>
@@ -895,7 +957,6 @@ Language: it
     <string name="empty_max_quantity">Nessun limite</string>
     <string name="empty_min_quantity">Nessun minimo</string>
     <string name="product_type_bundle">Pacchetto</string>
-    <string name="quantity_rules_info_notice">Puoi modificare le regole della quantità dei prodotti nella bacheca web.</string>
     <string name="group_of">Gruppi di</string>
     <string name="max_quantity">Quantità massima</string>
     <string name="min_quantity">Quantità minima</string>

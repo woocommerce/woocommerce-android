@@ -134,6 +134,7 @@
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
     <string name="other">Other</string>
+    <string name="na">N/A</string>
     <string name="free">free</string>
     <string name="and">and</string>
     <string name="generic_string" translatable="false">%s</string>
@@ -387,14 +388,15 @@
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
+    <string name="dashboard_action_view_all_messages">View all messages</string>
+
     <string name="my_store_stats_plugin_inactive_title">We can\'t display your\n store\'s analytics</string>
-    <string name="my_store_stats_plugin_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Still need help? Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
     <string name="my_store_custom_range_granularity_label">%s interval</string>
     <string name="my_store_custom_range_granularity_hour">Hourly</string>
@@ -413,6 +415,8 @@
     <string name="my_store_widget_feedback_title">Feedback</string>
     <string name="my_store_widget_orders_title">Most recent orders</string>
     <string name="my_store_widget_reviews_title">Most recent reviews</string>
+    <string name="my_store_widget_coupons_title">Most active coupons</string>
+    <string name="my_store_widget_product_stock_title">Stock</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
@@ -425,6 +429,27 @@
     <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>
     <string name="dashboard_reviews_card_empty_message_filtered">No reviews match the selected filter, please try changing the filter</string>
     <string name="dashboard_reviews_card_view_all_button">View all reviews</string>
+
+    <string name="dashboard_coupons_card_header_coupons">Coupons</string>
+    <string name="dashboard_coupons_card_header_uses">Uses</string>
+    <string name="dashboard_coupons_view_all_button">View all coupons</string>
+    <string name="dashboard_coupons_card_empty_view_message">No coupon usage during this period</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Unable to load coupon usage report</string>
+
+    <string name="dashboard_wcanalytics_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Analytics activated.</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Still need help? Contact us</string>
+
+    <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="dashboard_product_stock_levels">Stock levels</string>
+    <string name="dashboard_product_stock_products">Products</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d items sold in last 30 days</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">No items sold in the last 30 days</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Unable to load product stock reports</string>
+    <string name="dashboard_product_stock_empty_products">No products found for the selected stock status</string>
+
+    <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
+    <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
+    <string name="dashboard_new_widgets_card_button">Add new Sections</string>
     <!--
         Sign Up Flow
     -->
@@ -573,8 +598,14 @@
 
     <!--
      Cash Payments
--->
+    -->
     <string name="cash_payments_take_payment_title">Take payment (%s)</string>
+    <string name="cash_payments_cash_received">Cash received</string>
+    <string name="cash_payments_change_due">Change due</string>
+    <string name="cash_payments_record_transaction_details">Record transaction details in order note</string>
+    <string name="cash_payments_mark_order_as_complete">Mark Order as Complete</string>
+    <string name="cash_payments_order_note_text">The order was paid by cash. Customer paid %s. The change due was %s.</string>
+    <string name="cash_payments_order_note_adding_error">Error adding order note</string>
 
     <!--
          Custom Amounts
@@ -681,9 +712,11 @@
     <string name="order_creation_payment_tax_label">Taxes</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
+    <string name="order_creation_shipping_title_edit">Edit Shipping</string>
     <string name="order_creation_shipping_methods_title">Method</string>
     <string name="order_creation_shipping_methods_error">Error while fetching your shipping methods. Please try again</string>
     <string name="order_creation_shipping_add">Add Shipping</string>
+    <string name="order_creation_shipping_edit">Edit Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
     <string name="order_creation_add_shipping_method">Method</string>
     <string name="order_creation_add_shipping_amount">Amount</string>
@@ -732,6 +765,10 @@
     <string name="order_creation_simple_payment_migration_button">Add a Custom Amount</string>
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
     <string name="customer_picker_guest">Guest</string>
+
+    <string name="order_creation_shipping_feedback_title">Shipping added!</string>
+    <string name="order_creation_shipping_feedback_message">Does Woo make shipping easy?</string>
+    <string name="order_creation_feedback_action">Share your feedback</string>
 
     <!--
          Barcode Scanning
@@ -982,6 +1019,7 @@
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
     <string name="order_detail_payment_header">PAYMENT TOTALS</string>
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
+    <string name="order_detail_shipping_header">SHIPPING</string>
     <string name="order_detail_attribution_header">Order attribution</string>
     <string name="order_detail_attribution_origin">Origin</string>
     <string name="order_detail_attribution_organic_origin">Organic: %1$s</string>
@@ -1948,6 +1986,7 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_low_stock">Low stock</string>
     <string name="product_stock_status_instock_quantified">%s in stock</string>
     <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
@@ -2137,14 +2176,19 @@
     <string name="product_creation_ai_entry_sheet_header">Add a product</string>
     <string name="product_creation_ai_entry_sheet_ai_option_title">Create a product with AI</string>
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Quickly generate details for you</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Let us generate product details for you</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="ai_product_creation_add_name_title">Add your product name</string>
+    <string name="ai_product_creation_product_prompt_title">Starting information</string>
     <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Tell us about your product, what it is and what makes it unique, then let the AI work its magic.</string>
     <string name="ai_product_creation_add_name_keywords_label">Product name</string>
     <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
+    <string name="ai_product_creation_prompt_placeholder">For example: Black cotton t-shirt, soft fabric, durable stitching, unique design</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Read text from product photo</string>
     <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
@@ -2177,6 +2221,7 @@
     <string name="product_creation_survey_button_open">Start the Survey</string>
     <string name="product_creation_survey_button_remind_me_later">Remind Me Later</string>
     <string name="product_creation_survey_button_dont_show_again">Don\’t show it Again</string>
+    <string name="ai_product_creation_generate_details_button">Generate Product Details</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3619,7 +3664,7 @@
     <string name="min_quantity">Minimum quantity</string>
     <string name="max_quantity">Maximum quantity</string>
     <string name="group_of">Group of</string>
-    <string name="quantity_rules_info_notice">You can edit product\'s quantity rules in the web dashboard.</string>
+    <string name="no_quantity_rules">No Quantity Rules</string>
 
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
@@ -3650,6 +3695,9 @@
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Join the mobile payments</string>
 
+    <string name="more_menu_button_google">Google for WooCommerce</string>
+    <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
+
     <string name="more_menu_button_blaze">Blaze</string>
     <string name="more_menu_button_blaze_description">Promote products with Blaze</string>
 
@@ -3671,8 +3719,8 @@
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
 
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
-    <string name="more_menu_button_woo_pos_description">Temporary entry point to POS mode</string>
+    <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
+    <string name="more_menu_button_woo_pos_description">Use the app as a cash register</string>
 
     <!--
     Composite products
@@ -3811,6 +3859,7 @@
     <string name="blaze_campaign_preview_edit_ad">Edit ad</string>
     <string name="blaze_campaign_preview_shop_now_button">Shop now</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
+    <string name="blaze_campaign_preview_audience_section_title">Audience</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
     <string name="blaze_campaign_preview_details_language">Language</string>
     <string name="blaze_campaign_preview_details_devices">Devices</string>
@@ -4022,7 +4071,7 @@
     <string name="product_variation_picker_title">Select a variation</string>
     <string name="blaze_campaign_creation_new_intro_description">Our tool is designed to empower merchants with fast, simple ad campaign setups for maximum traffic boost.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Quick start, big impact</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Launch ads in minutes – no experience or big budget needed, starting at just $5 USD.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Launch ads in minutes – no experience or big budget needed, starting at just $5 USD daily.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Global reach made simple</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">"Our tool presents your product where interested shoppers can find it. "</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Access a vast audience</string>
@@ -4076,4 +4125,36 @@
     <string name="login_app_password_exit_dialog_message">It seems that you have not approved the app connection yet. Are you sure you want to exit?</string>
     <string name="login_app_password_exit_dialog_confirmation">Exit Anyway</string>
     <string name="login_app_password_exit_dialog_cancel">Cancel</string>
+
+    <!--
+    Woo POS
+    -->
+    <string name="woopos_exit_pos">Exit POS</string>
+    <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_reader_connecting">Reader Connecting</string>
+    <string name="woopos_reader_disconnected">Reader Disconnected</string>
+    <string name="woopos_checkout">Checkout</string>
+    <string name="woopos_reader_unknown">Reader Status Unknown</string>
+    <string name="woopos_checkout_button">Check out</string>
+    <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
+    <string name="woopos_cart_title">Cart</string>
+    <string name="woopos_clear_cart_button">Clear all</string>
+
+    <string name="woopos_exit_confirmation_title">Exit POS</string>
+    <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
+    <string name="woopos_exit_confirmation_confirm_button">Exit</string>
+    <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
+    <string name="woopos_items_in_cart">%d items</string>
+    <string name="woopos_product_image_description">Product Image</string>
+    <string name="woopos_products_screen_title">Products</string>
+    <string name="woopos_cart_back_content_description">Cart icon</string>
+    <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
+    <string name="woopos_payment_successful_label">Payment successful</string>
+    <string name="woopos_new_transaction_button">New transaction</string>
+    <string name="woopos_payment_subtotal_label">Subtotal</string>
+    <string name="woopos_payment_tax_label">Tax</string>
+    <string name="woopos_payment_total_label">Total</string>
+    <string name="woopos_payment_collect_payment_label">Collect card payment</string>
+    <string name="woopos_reader_connect_now_button">Connect now</string>
+
 </resources>

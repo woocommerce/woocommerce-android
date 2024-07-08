@@ -90,6 +90,12 @@
         <action
             android:id="@+id/action_dashboard_to_reviews"
             app:destination="@id/reviews" />
+        <action
+            android:id="@+id/action_dashboard_to_couponListFragment"
+            app:destination="@id/nav_graph_coupons" />
+        <action
+            android:id="@+id/action_dashboard_to_inboxFragment"
+            app:destination="@id/inboxFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -733,6 +739,9 @@
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
             app:destination="@id/addProductWithAIFragment" />
+        <action
+            android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragmentV2"
+            app:destination="@id/AiProductPromptFragment" />
     </dialog>
     <fragment
         android:id="@+id/addProductWithAIFragment"
@@ -745,6 +754,11 @@
             android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
             app:destination="@id/packagePhotoBottomSheetFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/AiProductPromptFragment"
+        android:name="com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptFragment"
+        android:label="AiProductPromptFragment" />
 
     <dialog
         android:id="@+id/aiProductNameBottomSheetFragment"

@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialContainerTransform
@@ -19,18 +18,13 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class StoreOnboardingFragment : BaseFragment() {
-    private val viewModel: StoreOnboardingViewModel by if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
-        viewModels()
-    } else {
-        activityViewModels()
-    }
+    private val viewModel: StoreOnboardingViewModel by viewModels()
 
     @Inject
     lateinit var addProductNavigator: AddProductNavigator

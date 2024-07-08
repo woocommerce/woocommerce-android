@@ -1,4 +1,46 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+*** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+
+19.5
+-----
+
+
+19.4
+-----
+- [***] Inbox Notes have been enabled in both the Dynamic Dashboard and the Hub Menu, offering users a centralized and non-intrusive method for receiving important updates, feature announcements, and pertinent information. [https://github.com/woocommerce/woocommerce-android/pull/11900]
+
+19.3
+-----
+- [Internal] Workaround for the crash on the product's list screen. [https://github.com/woocommerce/woocommerce-android/pull/11803]
+- [*] Fix a crash on the Receipt Preview screen. [https://github.com/woocommerce/woocommerce-android/pull/11804]
+- [*] Shows meaningful errors from the backend when editing Min/Max Quantities in products and variations. [https://github.com/woocommerce/woocommerce-android/pull/11801]
+- [*] Fix the visibility issue of the Blaze button on product detail screen [https://github.com/woocommerce/woocommerce-android/pull/11837]
+
+19.2
+-----
+- [***][WEAR] Introduces the WearOS app with Store stats, Orders list and details. [https://github.com/woocommerce/woocommerce-android/pull/11557]
+- [***] Add support for the app to support and sync with the WearOS app. [https://github.com/woocommerce/woocommerce-android/pull/11557]
+- [**] Adds edit support for the Min/Max Quantities extension in product details. [https://github.com/woocommerce/woocommerce-android/pull/11753]
+
+
+19.1
+-----
+
+
+19.0
+-----
+- [*] Payments: Slightly bigger dialog sizes on bigger screens for better user experience [https://github.com/woocommerce/woocommerce-android/pull/11638]
+- [*] Fixed an issue that could cause push notifications to stop working after long periods [https://github.com/woocommerce/woocommerce-android/pull/11672]
+- [*] Login: fixed a bug where the error message was not displayed when the login fails [https://github.com/woocommerce/woocommerce-android/pull/11682]
+- [***] Dashboard: Added new cards to allow merchants to get more insights about their store [https://github.com/woocommerce/woocommerce-android/issues/11460]
+
+18.9
+-----
+- [**] Shipping: Merchants can now use multiple shipping lines for a single order. [https://github.com/woocommerce/woocommerce-android/pull/11580]
+- [*] More Menu: UI improvements for the More Menu screen [https://github.com/woocommerce/woocommerce-android/pull/11566]
+- [**] Cash Payments: Added the option for users to calculate change due when receiving cash for the order. [https://github.com/woocommerce/woocommerce-android/pull/11594]
+- [***] Login: fixed a bug that caused some intermittent failures when signing in using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/11650]
+
 18.8
 -----
 
@@ -6,6 +48,7 @@
 18.7
 -----
 - [*] Products: Fixed a bug that caused the app to crash sometimes during screen rotation [https://github.com/woocommerce/woocommerce-android/pull/11484]
+- [*] Dashboard: Fixed an issue that caused the date range picker to be invisible when using large fonts [https://github.com/woocommerce/woocommerce-android/pull/11552]
 
 18.6
 -----

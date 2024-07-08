@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenWPComWebView
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.PopBackStackForWooPOS
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
@@ -57,6 +58,10 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MissingMerchantAddressError
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -281,6 +286,7 @@ class CardReaderConnectViewModel @Inject constructor(
                         Unit
                     }
                 }
+
                 CardReaderStatus.Connecting -> {
                     connectionStarted = true
                     viewState.value = provideConnectingState()
@@ -309,13 +315,16 @@ class CardReaderConnectViewModel @Inject constructor(
                     viewState.value = provideScanningState()
                 }
             }
+
             is ReadersFound -> {
                 tracker.trackReadersDiscovered(discoveryEvent.list.size)
                 onReadersFound(discoveryEvent)
             }
+
             Succeeded -> {
                 // noop
             }
+
             is Failed -> {
                 tracker.trackReaderDiscoveryFailed(discoveryEvent.msg)
                 WooLog.e(WooLog.T.CARD_READER, "Scanning failed: ${discoveryEvent.msg}")
@@ -330,6 +339,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 triggerEvent(ShowToast(R.string.card_reader_detail_connected_update_failed))
                 exitFlow(connected = false)
             }
+
             CardReaderUpdateViewModel.UpdateResult.SUCCESS -> {
                 // noop
             }
@@ -400,6 +410,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 ::onCancelClicked,
                 ::onLearnMoreClicked
             )
+
             EXTERNAL -> ExternalReaderScanningState(
                 ::onCancelClicked,
                 ::onLearnMoreClicked
@@ -424,6 +435,7 @@ class CardReaderConnectViewModel @Inject constructor(
                         tracker.trackFetchingLocationSucceeded()
                         cardReaderManager.startConnectionToReader(cardReader, result.locationId)
                     }
+
                     is CardReaderLocationRepository.LocationIdFetchingResult.Error -> {
                         handleLocationFetchingError(result)
                     }
@@ -453,10 +465,12 @@ class CardReaderConnectViewModel @Inject constructor(
                     }
                 )
             }
+
             is CardReaderLocationRepository.LocationIdFetchingResult.Error.InvalidPostalCode -> {
                 trackLocationFailureFetching("Invalid Postal Code")
                 viewState.value = InvalidMerchantAddressPostCodeError(::restartFlow)
             }
+
             is CardReaderLocationRepository.LocationIdFetchingResult.Error.Other -> {
                 trackLocationFailureFetching(result.error)
                 onReaderConnectionFailed()
@@ -510,10 +524,24 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun exitFlow(connected: Boolean) {
         if (!connected) {
-            triggerEvent(ExitWithResult(false))
+            when (val param = arguments.cardReaderFlowParam) {
+                is CardReadersHub, is Refund -> triggerEvent(ExitWithResult(false))
+                is Payment -> {
+                    if (param.paymentType == Payment.PaymentType.WOO_POS) {
+                        returnToWooPos()
+                    } else {
+                        triggerEvent(ExitWithResult(false))
+                    }
+                }
+                CardReaderFlowParam.WooPosConnection -> returnToWooPos()
+            }
         } else {
             triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam, arguments.cardReaderType))
         }
+    }
+
+    private fun returnToWooPos() {
+        triggerEvent(PopBackStackForWooPOS)
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {

@@ -69,7 +69,8 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        binding.receiptPreviewPreviewWebview.saveState(outState)
+        // onSaveInstanceState might be called after onDestroyView, so we need to check if `binding` is null.
+        _binding?.receiptPreviewPreviewWebview?.saveState(outState)
     }
 
     override fun onDestroyView() {

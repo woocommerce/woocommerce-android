@@ -69,7 +69,9 @@ import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.models.getProductProperty
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
@@ -80,7 +82,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 
 @Suppress("LargeClass", "LongParameterList")
@@ -931,26 +932,16 @@ class ProductDetailCardBuilder(
     }
 
     private suspend fun Product.quantityRules(): ProductProperty? {
-        val rules = viewModel.getQuantityRules(this.remoteId) ?: return null
+        val rules = QuantityRules(this.minAllowedQuantity, this.maxAllowedQuantity, this.groupOfQuantity)
 
-        val properties = buildMap {
-            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
-            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
-            if (size < 2) putIfNotNull(resources.getString(string.group_of) to rules.groupOf?.toString())
+        val onClick = {
+            viewModel.onEditProductCardClicked(
+                ViewProductQuantityRules(rules, AnalyticsEvent.PRODUCT_DETAIL_QUANTITY_RULES_DONE_BUTTON_TAPPED),
+                AnalyticsEvent.PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED
+            )
         }
 
-        return PropertyGroup(
-            title = string.product_quantity_rules_title,
-            icon = drawable.ic_gridicons_product,
-            properties = properties,
-            showTitle = true,
-            onClick = {
-                viewModel.onEditProductCardClicked(
-                    ViewProductQuantityRules(rules),
-                    AnalyticsEvent.PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED
-                )
-            }
-        )
+        return rules.getProductProperty(resources, onClick)
     }
 
     private suspend fun Product.bundleProducts(): ProductProperty? {

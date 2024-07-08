@@ -27,9 +27,9 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.canDisplayMessage
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.subscriptions.resetSubscriptionLengthIfThePeriodOrIntervalChanged
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery
@@ -61,7 +61,6 @@ class VariationDetailViewModel @Inject constructor(
     private val parameterRepository: ParameterRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val resources: ResourceProvider,
-    private val getProductVariationQuantityRules: GetProductVariationQuantityRules,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
@@ -227,7 +226,10 @@ class VariationDetailViewModel @Inject constructor(
         length: Float? = null,
         width: Float? = null,
         height: Float? = null,
-        weight: Float? = null
+        weight: Float? = null,
+        minAllowedQuantity: Int? = null,
+        maxAllowedQuantity: Int? = null,
+        groupOfQuantity: Int? = null
     ) {
         viewState.variation?.let { variation ->
             showVariation(
@@ -256,7 +258,10 @@ class VariationDetailViewModel @Inject constructor(
                     length = length ?: variation.length,
                     width = width ?: variation.width,
                     height = height ?: variation.height,
-                    weight = weight ?: variation.weight
+                    weight = weight ?: variation.weight,
+                    minAllowedQuantity = minAllowedQuantity ?: variation.minAllowedQuantity,
+                    maxAllowedQuantity = maxAllowedQuantity ?: variation.maxAllowedQuantity,
+                    groupOfQuantity = groupOfQuantity ?: variation.groupOfQuantity,
                 )
             )
         }
@@ -311,15 +316,12 @@ class VariationDetailViewModel @Inject constructor(
                 showVariation(variation)
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
                 triggerEvent(Event.ShowSnackbar(string.variation_detail_update_product_success))
+            } else if (variation.image?.id == 0L && result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID) {
+                triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
+            } else if (result.error.canDisplayMessage) {
+                triggerEvent(ShowUpdateVariationError(result.error.message))
             } else {
-                if (
-                    variation.image?.id == 0L &&
-                    result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID
-                ) {
-                    triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
-                } else {
-                    triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
-                }
+                triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
             }
         } else {
             triggerEvent(Event.ShowSnackbar(string.offline_error))
@@ -464,15 +466,13 @@ class VariationDetailViewModel @Inject constructor(
             .launchIn(this)
     }
 
-    suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
-        return getProductVariationQuantityRules(remoteProductId, remoteVariationId)
-    }
-
     fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
         onVariationSubscriptionChanged(length = selectedExpirationValue)
     }
 
     object HideImageUploadErrorSnackbar : Event()
+
+    data class ShowUpdateVariationError(val message: String) : Event()
 
     @Parcelize
     data class VariationViewState(

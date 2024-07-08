@@ -36,6 +36,11 @@ data class NavigateToOrderDetails(
     val orderId: Long
 ) : MultiLiveEvent.Event()
 
+sealed class ReturnResultToWooPos : MultiLiveEvent.Event() {
+    data object Success : ReturnResultToWooPos()
+    data object Failure : ReturnResultToWooPos()
+}
+
 data class NavigateToTapToPaySummary(
     val order: Order
 ) : MultiLiveEvent.Event()

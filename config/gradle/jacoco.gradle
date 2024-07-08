@@ -8,7 +8,11 @@ jacoco {
 
 rootProject.afterEvaluate {
     tasks.register("jacocoTestReport", JacocoReport) {
-        dependsOn(':WooCommerce:testJalapenoDebugUnitTest', ':libs:cardreader:testDebugUnitTest')
+        dependsOn(
+                ':WooCommerce:testJalapenoDebugUnitTest',
+                ':libs:cardreader:testDebugUnitTest',
+                ':WooCommerce-Wear:testJalapenoDebugUnitTest',
+        )
 
         group = "Reporting"
         description = "Generate Jacoco coverage reports for JalapenoDebug variant"
@@ -37,7 +41,7 @@ rootProject.afterEvaluate {
                 '**/dagger',
                 '**/*Hilt*.*',
                 '**/hilt_aggregated_deps',
-                '**/*Module.*',
+                '**/*Module*',
                 '**/*Module$*.*',
                 '**/com/bumptech',
                 '**/*FragmentDirections*',
@@ -56,6 +60,19 @@ rootProject.afterEvaluate {
                 '**/*Adapter$*.*',
                 '**/*Screen*',
                 '**/*Screen$*',
+
+                // Classes below have the same name in WooCommerce and WooCommerce-Wear modules
+                // Without exclusions, JaCoCo fails with "Can't add different class with same name"
+                "**/AppCoroutineScope*",
+                "**/*DateUtils*",
+                "**/*NumberExt*",
+                "**/*DateExt*",
+                "**/*OrderEntityExt*",
+                "**/*CalendarExt*",
+
+                "**/*DataStoreType*",
+                "**/*DataStoreQualifier*",
+                "**/*AnalyticsTracker*",
         ]
 
         def kClasses = rootProject.subprojects.collect { proj ->
@@ -75,7 +92,8 @@ rootProject.afterEvaluate {
 
         executionData.from = files([
                 "WooCommerce/build/outputs/unit_test_code_coverage/jalapenoDebugUnitTest/testJalapenoDebugUnitTest.exec",
-                "libs/cardreader/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
+                "libs/cardreader/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+                "WooCommerce-Wear/build/outputs/unit_test_code_coverage/jalapenoDebugUnitTest/testJalapenoDebugUnitTest.exec",
         ])
     }
 }

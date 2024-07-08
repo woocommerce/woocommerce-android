@@ -51,7 +51,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 @Suppress("LongParameterList")
 class DashboardBlazeViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
-    @Assisted parentViewModel: DashboardViewModel,
+    @Assisted private val parentViewModel: DashboardViewModel,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
     private val blazeUrlsHelper: BlazeUrlsHelper,
@@ -88,11 +88,13 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                         return@combine null
                     }
 
+                    trackEventForBlazeCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                     when {
                         blazeCampaignModel == null -> showUiForNoCampaign(products)
                         else -> showUiForCampaign(blazeCampaignModel)
                     }
                 }.onStart {
+                    trackEventForBlazeCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
                     emit(DashboardBlazeCampaignState.Loading)
                 }
             }
@@ -144,6 +146,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                 )
             ),
             onCampaignClicked = {
+                parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)
                 analyticsTrackerWrapper.track(
                     stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
                     properties = mapOf(
@@ -169,6 +172,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     }
 
     private fun viewAllCampaigns() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)
         analyticsTrackerWrapper.track(
             stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
             properties = mapOf(
@@ -208,17 +212,20 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     )
 
     private fun launchCampaignCreation(productId: Long?) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)
         triggerEvent(LaunchBlazeCampaignCreation(productId))
     }
 
     fun onRefresh() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.BLAZE.trackingIdentifier
-            )
-        )
+        trackEventForBlazeCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
+    private fun trackEventForBlazeCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.BLAZE.trackingIdentifier)
+        )
     }
 
     sealed class DashboardBlazeCampaignState(

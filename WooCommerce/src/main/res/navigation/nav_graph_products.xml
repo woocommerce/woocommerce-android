@@ -700,11 +700,14 @@
     </fragment>
     <fragment
         android:id="@+id/productQuantityRulesFragment"
-        android:name="com.woocommerce.android.ui.products.ProductQuantityRulesFragment"
+        android:name="com.woocommerce.android.ui.products.quantityRules.ProductQuantityRulesFragment"
         android:label="ProductQuantityRulesFragment">
         <argument
             android:name="quantityRules"
             app:argType="com.woocommerce.android.ui.products.models.QuantityRules" />
+        <argument
+            android:name="exitAnalyticsEvent"
+            app:argType="com.woocommerce.android.analytics.AnalyticsEvent" />
     </fragment>
     <fragment
         android:id="@+id/productBundleFragment"

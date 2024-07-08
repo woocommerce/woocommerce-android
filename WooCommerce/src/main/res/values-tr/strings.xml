@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 13:54:03+0000
+Translation-Revision-Date: 2024-07-03 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Kartla Ödeme Alın</string>
+    <string name="woopos_payment_total_label">Toplam</string>
+    <string name="woopos_payment_tax_label">Vergi</string>
+    <string name="woopos_payment_subtotal_label">Ara Toplam</string>
+    <string name="woo_pos_new_transaction_button">Yeni işlem</string>
+    <string name="woopos_payment_successful_label">Ödeme başarılı</string>
+    <string name="woopos_payment_failed_please_try_again">Ödeme başarısız. Lütfen tekrar deneyin.</string>
+    <string name="woo_pos_cart_back_content_description">Sepet simgesi</string>
+    <string name="woopos_products_screen_title">Ürünler</string>
+    <string name="woopos_product_image_description">Ürün Görseli</string>
+    <string name="woo_pos_items_in_cart">%d ürün</string>
+    <string name="woo_pos_clear_cart_button">Tümünü temizle</string>
+    <string name="more_menu_button_google_description">Google Reklamlar ile satışları teşvik edin ve trafiği artırın</string>
+    <string name="more_menu_button_google">WooCommerce için Google</string>
+    <string name="no_quantity_rules">Miktar Kuralı Yok</string>
+    <string name="blaze_campaign_preview_audience_section_title">Hedef Kitle</string>
+    <string name="woopos_exit_confirmation_dismiss_button">İptal Et</string>
+    <string name="woopos_exit_confirmation_confirm_button">Çıkış</string>
+    <string name="woopos_exit_confirmation_message">POS\'tan çıkmak istediğinizden emin misiniz?</string>
+    <string name="woopos_exit_confirmation_title">POS\'tan çık</string>
+    <string name="woopos_cart_title">Sepet</string>
+    <string name="woopos_remove_item_from_cart_content_description">Ürünü sepetten çıkarın</string>
+    <string name="woopos_checkout_button">Ödeme</string>
+    <string name="woopos_reader_unknown">Okuyucu Durumu Bilinmiyor</string>
+    <string name="woopos_checkout">Ödeme</string>
+    <string name="woopos_reader_disconnected">Okuyucu Bağlantısı Kesildi</string>
+    <string name="woopos_reader_connecting">Okuyucu Bağlanıyor</string>
+    <string name="woopos_reader_connected">Okuyucu Bağlandı</string>
+    <string name="woopos_exit_pos">POS\'tan çık</string>
+    <string name="dashboard_new_widgets_card_button">Yeni bölümler ekle</string>
+    <string name="dashboard_product_stock_empty_products">Seçilen stok durumu için ürün bulunamadı</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Ürün stoğu raporları yüklenemiyor</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Son 30 günde satılan ürün yok</string>
+    <string name="dashboard_product_stock_sales_last_30_days">Son 30 günde %d ürün satıldı</string>
+    <string name="more_menu_button_woo_pos_description">Uygulamayı yazarkasa olarak kullanın</string>
+    <string name="more_menu_button_woo_pos">Satış Noktası Modu</string>
+    <string name="product_stock_status_low_stock">Düşük stok</string>
+    <string name="order_detail_shipping_header">GÖNDERİM</string>
+    <string name="order_creation_feedback_action">Görüşlerinizi almak isteriz</string>
+    <string name="order_creation_shipping_feedback_message">Woo gönderim yapmayı kolaylaştırır mı?</string>
+    <string name="order_creation_shipping_feedback_title">Gönderim eklendi!</string>
+    <string name="order_creation_shipping_edit">Gönderimi Düzenle</string>
+    <string name="order_creation_shipping_title_edit">Gönderimi Düzenleyin</string>
+    <string name="cash_payments_order_note_adding_error">Sipariş notu eklenirken hata oluştu</string>
+    <string name="cash_payments_order_note_text">Sipariş nakit ile ödendi. Müşteri %s ödedi. Ödenmesi gereken para üstü %s.</string>
+    <string name="cash_payments_mark_order_as_complete">Siparişi Tamamlanmış Olarak İşaretle</string>
+    <string name="cash_payments_record_transaction_details">İşlem ayrıntılarını sipariş notunda kaydedin</string>
+    <string name="dashboard_new_widgets_card_description">Mağaza yönetimi deneyiminizi özelleştirmek için yeni bölümler ekleyin</string>
+    <string name="dashboard_new_widgets_card_title">Daha fazla içgörü mü arıyorsunuz?</string>
+    <string name="dashboard_product_stock_products">Ürünler</string>
+    <string name="dashboard_product_stock_levels">Stok düzeyi</string>
+    <string name="dashboard_product_stock_status_header_title">Durum</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Hâlâ yardıma ihtiyacınız mı var? Bizimle iletişim kurun</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Kupon kullanımı raporu yüklenemiyor</string>
+    <string name="dashboard_coupons_card_empty_view_message">Bu dönemde kupon kullanımı yok</string>
+    <string name="dashboard_coupons_view_all_button">Tüm kuponları görüntüle</string>
+    <string name="dashboard_coupons_card_header_uses">Kullanımlar</string>
+    <string name="dashboard_coupons_card_header_coupons">Kuponlar</string>
+    <string name="my_store_widget_product_stock_title">Stok</string>
+    <string name="dashboard_action_view_all_messages">Tüm mesajları görüntüle</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">En yüksek performans gösterenler yüklenemedi</string>
+    <string name="na">Yok</string>
+    <string name="cash_payments_change_due">Ödenmesi gereken para üstü</string>
+    <string name="cash_payments_cash_received">Nakit alındı</string>
+    <string name="my_store_widget_coupons_title">En çok etkin olan kuponlar</string>
+    <string name="cash_payments_take_payment_title">Ödeme Al (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Tüm incelemeleri görüntüle</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Seçilen filtreyle eşleşen inceleme yok, lütfen filtreyi değiştirmeyi deneyin</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Hiç inceleme bulunamadı</string>
+    <string name="dashboard_reviews_card_header_title">Durum</string>
+    <string name="my_store_widget_reviews_title">En son incelemeler</string>
+    <string name="my_store_widget_orders_title">En son siparişler</string>
+    <string name="dashboard_action_view_all_orders">Tüm siparişleri görüntüle</string>
+    <string name="dashboard_filter_menu_content_description">Filtre açılır menüsünü açın</string>
     <string name="product_category_clear_parent">Üst kategoriyi temizle</string>
     <string name="product_list_fetch_error">Ürünler getirilirken hata oluştu!</string>
     <string name="order_creation_add_shipping_method_select_hint">Gönderim yöntemi seç</string>
@@ -25,8 +99,7 @@ Language: tr
     <string name="dynamic_dashboard_widget_menu_item_hide">Şunu Gizle: %s</string>
     <string name="my_store_widget_onboarding_completed">Tamamlandı</string>
     <string name="my_store_widget_feedback_title">Geri bildirim</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Hâlâ yardıma ihtiyacınız mı var? Bizimle iletişim kurun</string>
-    <string name="my_store_stats_plugin_inactive_description">Sitenizde en son WooCommerce sürümünü çalıştırdığınızdan ve WooCommerce Admin\'i etkinleştirdiğinizden emin olun.</string>
+    <string name="dashboard_wcanalytics_inactive_description">Sitenizde en son WooCommerce sürümünü çalıştırdığınızdan ve WooCommerce Analytics\'i etkinleştirdiğinizden emin olun.</string>
     <string name="my_store_stats_plugin_inactive_title">Mağazanızın analizlerini\n gösteremiyoruz</string>
     <string name="store_onboarding_task_view_all_tasks">Tüm görevleri görüntüle</string>
     <string name="analytics_session_no_available_description">Oturum analizleri, özel tarih aralıklarında kullanılamayan benzersiz ziyaretçi sayılarına dayanır</string>
@@ -284,7 +357,7 @@ Language: tr
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Geniş bir kitleye ulaşın</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Aracımız, ürününüzü ilgilenen müşterilerin bulabileceği bir yerde sunar.\"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Küresel ağa erişmek artık daha kolay</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Dakikalar içinde reklam yayınlayın; deneyim veya büyük bir bütçeye gerek yok, yalnızca ayda 5 ABD dolarından başlayan fiyatlarla.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Dakikalar içinde reklam yayınlayın; deneyim veya büyük bir bütçeye gerek yok, yalnızca günlük 5 ABD dolarından başlayan fiyatlarla.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Hızlı başlangıç, büyük etki</string>
     <string name="blaze_campaign_creation_new_intro_description">Aracımız, maksimum trafik artışı için satıcıları hızlı ve basit reklam kampanyası kurulumlarıyla güçlendirmek üzere tasarlanmıştır.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Tanıtın</string>
@@ -884,7 +957,6 @@ Language: tr
     <string name="empty_max_quantity">Azami harcama yok</string>
     <string name="empty_min_quantity">Asgari tutar yok</string>
     <string name="product_type_bundle">Paket</string>
-    <string name="quantity_rules_info_notice">Ürünün miktar kurallarını web panosunda düzenleyebilirsiniz.</string>
     <string name="group_of">Grup adedi</string>
     <string name="max_quantity">Maksimum miktar</string>
     <string name="min_quantity">Minimum miktar</string>

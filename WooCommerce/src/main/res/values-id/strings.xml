@@ -1,11 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 11:54:03+0000
+Translation-Revision-Date: 2024-07-04 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">Terima Pembayaran dengan Kartu</string>
+    <string name="woopos_payment_total_label">Total</string>
+    <string name="woopos_payment_tax_label">Pajak</string>
+    <string name="woopos_payment_subtotal_label">Subtotal</string>
+    <string name="woo_pos_new_transaction_button">Transaksi baru</string>
+    <string name="woopos_payment_successful_label">Pembayaran berhasil</string>
+    <string name="woopos_payment_failed_please_try_again">Pembayaran gagal. Coba lagi.</string>
+    <string name="woo_pos_cart_back_content_description">Ikon keranjang</string>
+    <string name="woopos_products_screen_title">Produk</string>
+    <string name="woopos_product_image_description">Gambar Produk</string>
+    <string name="woo_pos_items_in_cart">%d item</string>
+    <string name="woo_pos_clear_cart_button">Hapus semua</string>
+    <string name="more_menu_button_google_description">Tingkatkan penjualan dan hasilkan lebih banyak lalu lintas dengan Google Ads</string>
+    <string name="more_menu_button_google">Google untuk WooCommerce</string>
+    <string name="no_quantity_rules">Tidak Ada Aturan Jumlah</string>
+    <string name="blaze_campaign_preview_audience_section_title">Audiens</string>
+    <string name="woopos_exit_confirmation_dismiss_button">Batal</string>
+    <string name="woopos_exit_confirmation_confirm_button">Keluar</string>
+    <string name="woopos_exit_confirmation_message">Anda yakin ingin keluar dari POS?</string>
+    <string name="woopos_exit_confirmation_title">Keluar dari POS</string>
+    <string name="woopos_cart_title">Keranjang</string>
+    <string name="woopos_remove_item_from_cart_content_description">Hapus item dari keranjang</string>
+    <string name="woopos_checkout_button">Checkout</string>
+    <string name="woopos_reader_unknown">Status Pembaca Tidak Diketahui</string>
+    <string name="woopos_checkout">Checkout</string>
+    <string name="woopos_reader_disconnected">Sambungan Pembaca Terputus</string>
+    <string name="woopos_reader_connecting">Pembaca Mengubungkan</string>
+    <string name="woopos_reader_connected">Pembaca Terhubung</string>
+    <string name="woopos_exit_pos">Keluar POS</string>
+    <string name="dashboard_new_widgets_card_button">Tambahkan Bagian baru</string>
+    <string name="dashboard_product_stock_empty_products">Tidak tersedia produk untuk status stok yang dipilih</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Tidak dapat memuat laporan stok produk</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Tidak ada barang terjual dalam 30 hari</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d barang terjual dalam 30 hari</string>
+    <string name="more_menu_button_woo_pos_description">Gunakan aplikasi sebagai mesin kasir</string>
+    <string name="more_menu_button_woo_pos">Mode Titik Penjualan</string>
+    <string name="product_stock_status_low_stock">Stok menipis</string>
+    <string name="order_detail_shipping_header">PENGIRIMAN</string>
+    <string name="order_creation_feedback_action">Bagikan feedback Anda</string>
+    <string name="order_creation_shipping_feedback_message">Apakah Woo mempermudah pengiriman?</string>
+    <string name="order_creation_shipping_feedback_title">Pengiriman telah ditambahkan!</string>
+    <string name="order_creation_shipping_edit">Edit Pengiriman</string>
+    <string name="order_creation_shipping_title_edit">Edit Pengiriman</string>
+    <string name="cash_payments_order_note_adding_error">Terjadi error saat menambahkan catatan pesanan</string>
+    <string name="cash_payments_order_note_text">Pesanan dibayar dengan uang tunai. Pelanggan membayar %s. Uang kembaliannya adalah %s.</string>
+    <string name="cash_payments_mark_order_as_complete">Tandai Pesanan Selesai</string>
+    <string name="cash_payments_record_transaction_details">Catat detail transaksi dalam catatan pesanan</string>
+    <string name="dashboard_new_widgets_card_description">Tambahkan bagian baru untuk menyesuaikan pengalaman manajemen toko Anda</string>
+    <string name="dashboard_new_widgets_card_title">Mencari lebih banyak wawasan?</string>
+    <string name="dashboard_product_stock_products">Produk</string>
+    <string name="dashboard_product_stock_levels">Tingkat stok</string>
+    <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Masih butuh bantuan? Hubungi kami</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Tidak dapat memuat laporan penggunaan kupon</string>
+    <string name="dashboard_coupons_card_empty_view_message">Kupon tidak digunakan selama periode ini</string>
+    <string name="dashboard_coupons_view_all_button">Lihat semua kupon</string>
+    <string name="dashboard_coupons_card_header_uses">Pemakaian</string>
+    <string name="dashboard_coupons_card_header_coupons">Kupon</string>
+    <string name="my_store_widget_product_stock_title">Stok</string>
+    <string name="dashboard_action_view_all_messages">Lihat semua pesan</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Gagal memuat produk dengan performa tertinggi</string>
+    <string name="na">Tidak tersedia</string>
+    <string name="cash_payments_change_due">Kembalian terutang</string>
+    <string name="cash_payments_cash_received">Uang tunai diterima</string>
+    <string name="my_store_widget_coupons_title">Kupon paling aktif</string>
+    <string name="cash_payments_take_payment_title">Terima pembayaran (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Lihat semua ulasan</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Tidak ada ulasan yang memenuhi penyaring yang dipilih, silakan ganti penyaring</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Tidak ada ulasan yang ditemukan</string>
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="my_store_widget_reviews_title">Ulasan terbaru</string>
+    <string name="my_store_widget_orders_title">Pesanan terbaru</string>
+    <string name="dashboard_action_view_all_orders">Lihat semua pesanan</string>
+    <string name="dashboard_filter_menu_content_description">Buka menu tarik-turun penyaring</string>
     <string name="product_category_clear_parent">Hapus kategori induk</string>
     <string name="product_list_fetch_error">Terjadi error saat mengambil produk!</string>
     <string name="order_creation_add_shipping_method_select_hint">Pilih metode pengiriman</string>
@@ -25,8 +99,7 @@ Language: id
     <string name="dynamic_dashboard_widget_menu_item_hide">Sembunyikan %s</string>
     <string name="my_store_widget_onboarding_completed">Selesai</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Masih butuh bantuan? Hubungi kami</string>
-    <string name="my_store_stats_plugin_inactive_description">Pastikan Anda mengoperasikan WooCommerce versi terbaru di situs Anda dan telah mengaktifkan WooCommerce Admin.</string>
+    <string name="dashboard_wcanalytics_inactive_description">Pastikan Anda mengoperasikan WooCommerce versi terbaru di situs Anda dan telah mengaktifkan WooCommerce Analytics.</string>
     <string name="my_store_stats_plugin_inactive_title">Kami tidak dapat menampilkan \n Anda analitik toko</string>
     <string name="store_onboarding_task_view_all_tasks">Lihat semua tugas</string>
     <string name="analytics_session_no_available_description">Analitik sesi bergantung pada jumlah pengunjung unik yang tidak tersedia untuk rentang tanggal kustom</string>
@@ -284,7 +357,7 @@ Language: id
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Jangkau audiens yang besar</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Berkat alat kami, pembeli yang tertarik dengan produk Anda bisa lebih mudah menemukannya.\"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Seluruh dunia dalam jangkauan</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Pasang iklan dalam hitungan menit — tanpa perlu jadi ahli atau banyak biaya, dari $5 USD saja</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Pasang iklan dalam hitungan menit — tanpa perlu jadi ahli atau banyak biaya, dari $5 USD saja per hari.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Pasang praktis, hasil strategis</string>
     <string name="blaze_campaign_creation_new_intro_description">Menghadirkan proses penyiapan iklan yang cepat nan ringkas, alat kami membantu para penjual memaksimalkan pengunjung situsnya.</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Promosikan</string>
@@ -884,7 +957,6 @@ Language: id
     <string name="empty_max_quantity">Tanpa maksimum</string>
     <string name="empty_min_quantity">Tanpa minimum</string>
     <string name="product_type_bundle">Paket</string>
-    <string name="quantity_rules_info_notice">Anda dapat menyunting aturan jumlah produk di dasbor web.</string>
     <string name="group_of">Kelipatan</string>
     <string name="max_quantity">Jumlah maksimal</string>
     <string name="min_quantity">Jumlah minimal</string>

@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.common.environment.EnvironmentRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.dispatchAndAwait
+import com.woocommerce.android.wear.WearableConnectionRepository
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -29,6 +30,7 @@ class SiteObserver @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val environmentRepository: EnvironmentRepository,
+    private val wearableConnectionRepository: WearableConnectionRepository,
     private val dispatcher: Dispatcher
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
@@ -42,6 +44,8 @@ class SiteObserver @Inject constructor(
                     launch { fetchStoreId(site) }
 
                     launch { fetchOrderStatusOptions(site) }
+
+                    launch { sendSiteDataToWearable(site) }
                 }
             }
     }
@@ -67,5 +71,10 @@ class SiteObserver @Inject constructor(
                 FetchOrderStatusOptionsPayload(site)
             )
         )
+    }
+
+    private fun sendSiteDataToWearable(site: SiteModel) {
+        WooLog.d(WooLog.T.UTILS, "Sending site ${site.name} to connected Wearables")
+        wearableConnectionRepository.sendSiteData(site)
     }
 }

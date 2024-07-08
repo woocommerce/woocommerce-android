@@ -63,26 +63,29 @@ class SelectedSite @Inject constructor(
     fun get(): SiteModel {
         state.value?.let { return it }
 
-        getSelectedSiteFromPersistence()?.let {
-            state.value = it
-            return it
-        }
+        synchronized(this) {
+            getSelectedSiteFromPersistence()?.let {
+                state.value = it
+                return it
+            }
 
-        // if the selected site id is valid but the site isn't in the site store, reset the
-        // preference. this can happen if the user has been removed from the active site.
-        val localSiteId = getSelectedSiteId()
-        if (localSiteId > -1) {
-            getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
-        }
+            // if the selected site id is valid but the site isn't in the site store, reset the
+            // preference. this can happen if the user has been removed from the active site.
+            val localSiteId = getSelectedSiteId()
+            if (localSiteId > -1) {
+                getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
+            }
 
-        if (wasReset) {
-            throw SelectedSiteResetException()
-        } else {
-            throw SelectedSiteUninitializedException(localSiteId)
+            if (wasReset) {
+                throw SelectedSiteResetException()
+            } else {
+                throw SelectedSiteUninitializedException(localSiteId)
+            }
         }
     }
 
     @Suppress("DEPRECATION")
+    @Synchronized
     fun set(siteModel: SiteModel) {
         wasReset = false
         state.value = siteModel
@@ -98,6 +101,15 @@ class SelectedSite @Inject constructor(
             .build()
     }
 
+    @Synchronized
+    fun reset() {
+        wasReset = true
+        state.value = null
+        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
+        siteComponent = null
+        siteCoroutineScope?.cancel()
+    }
+
     fun exists(): Boolean {
         val siteModel = siteStore.getSiteByLocalId(getSelectedSiteId())
         return siteModel != null
@@ -106,14 +118,6 @@ class SelectedSite @Inject constructor(
     fun getIfExists(): SiteModel? = if (exists()) get() else null
 
     fun getSelectedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
-
-    fun reset() {
-        wasReset = true
-        state.value = null
-        getPreferences().edit().remove(SELECTED_SITE_LOCAL_ID).apply()
-        siteComponent = null
-        siteCoroutineScope?.cancel()
-    }
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 

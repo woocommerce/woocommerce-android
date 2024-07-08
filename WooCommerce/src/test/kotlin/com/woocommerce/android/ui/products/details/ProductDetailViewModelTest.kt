@@ -260,7 +260,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 duplicateProduct = mock(),
                 tracker = tracker,
                 selectedSite = selectedSite,
-                getProductQuantityRules = mock(),
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),
                 productListRepository = mock(),
@@ -476,7 +475,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays progress dialog when product is edited`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(false).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(false, null)).whenever(productRepository).updateProduct(any())
 
         val isProgressDialogShown = ArrayList<Boolean>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
@@ -515,9 +514,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on update product error`() = testBlocking {
+    fun `Display error message on generic update product error`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(false).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(false, WCProductStore.ProductError())).whenever(productRepository).updateProduct(any())
 
         var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -538,9 +537,42 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `Display error message on min-max quantities update product error`() = testBlocking {
+        val displayErrorMessage = "This is an error message"
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(
+            Pair(
+                false,
+                WCProductStore.ProductError(
+                    type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
+                    message = displayErrorMessage
+                )
+            )
+        )
+            .whenever(productRepository).updateProduct(any())
+
+        var showUpdateProductError: ProductDetailViewModel.ShowUpdateProductError? = null
+        viewModel.event.observeForever {
+            if (it is ProductDetailViewModel.ShowUpdateProductError) showUpdateProductError = it
+        }
+
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        viewModel.onSaveButtonClicked()
+
+        verify(productRepository, times(1)).updateProduct(any())
+        Assertions.assertThat(showUpdateProductError)
+            .isEqualTo(ProductDetailViewModel.ShowUpdateProductError(displayErrorMessage))
+        Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
+    }
+
+    @Test
     fun `Display success message on update product success`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(true).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any())
 
         var successSnackbarShown = false
         viewModel.event.observeForever {
@@ -1054,7 +1086,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `given product updated successfuly, when onPublishButtonClicked, then ProductUpdated event emitted`() = testBlocking {
         // GIVEN
         whenever(productRepository.getProductAsync(any())).thenReturn(product)
-        whenever(productRepository.updateProduct(any())).thenReturn(true)
+        whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
         viewModel.start()
 
         // WHEN
@@ -1093,7 +1125,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 duplicateProduct = mock(),
                 tracker = tracker,
                 selectedSite = selectedSite,
-                getProductQuantityRules = mock(),
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),
                 productListRepository = mock(),

@@ -10,6 +10,7 @@ pluginManagement {
     gradle.ext.sentryVersion = '4.3.1'
     gradle.ext.violationCommentsVersion = '1.69.0'
     gradle.ext.protobufVersion = '0.9.4'
+    gradle.ext.dependencyAnalysisVersion = '1.28.0'
 
     repositories {
         google()
@@ -42,6 +43,7 @@ pluginManagement {
         id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
         id 'com.google.devtools.ksp' version gradle.ext.kspVersion
         id "com.google.protobuf" version gradle.ext.protobufVersion
+        id "com.autonomousapps.dependency-analysis" version gradle.ext.dependencyAnalysisVersion
     }
 }
 
@@ -52,6 +54,7 @@ plugins {
 rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
+include ':libs:commons'
 include ':libs:cardreader'
 include ':libs:iap'
 include ':WooCommerce'
@@ -74,3 +77,4 @@ gradle.ext {
 
 apply from: './config/gradle/include_builds.gradle'
 apply from: './config/gradle/gradle_build_cache.gradle'
+include ':WooCommerce-Wear'

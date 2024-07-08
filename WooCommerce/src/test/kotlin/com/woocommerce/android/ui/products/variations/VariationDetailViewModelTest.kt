@@ -18,6 +18,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -28,6 +29,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -102,8 +104,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
             currencyFormatter = mock(),
             parameterRepository = parameterRepository,
             resources = resourceProvider,
-            mediaFileUploadHandler = mediaFileUploadHandler,
-            getProductVariationQuantityRules = mock()
+            mediaFileUploadHandler = mediaFileUploadHandler
         )
     }
 
@@ -162,6 +163,29 @@ class VariationDetailViewModelTest : BaseUnitTest() {
             it is ShowActionSnackbar &&
                 it.message == errorMessage
         }
+    }
+
+    @Test
+    fun `Display error message on min-max quantities update product error`() = testBlocking {
+        val displayErrorMessage = "This is an error message"
+        var result = WCProductStore.OnVariationUpdated(1, 1, 2)
+        result.error = WCProductStore.ProductError(
+            type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
+            message = displayErrorMessage
+        )
+        doReturn(result).whenever(variationRepository).updateVariation(any())
+
+        setup()
+
+        var showUpdateProductError: VariationDetailViewModel.ShowUpdateVariationError? = null
+        sut.event.observeForever {
+            if (it is VariationDetailViewModel.ShowUpdateVariationError) showUpdateProductError = it
+        }
+
+        sut.onUpdateButtonClicked()
+
+        Assertions.assertThat(showUpdateProductError?.message)
+            .isEqualTo(displayErrorMessage)
     }
 
     @Test

@@ -239,7 +239,7 @@ private fun AdDataSection(
                 Image(
                     painter = painterResource(id = drawable.ic_ai),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
+                    colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface_medium)),
                     modifier = Modifier
                         .size(dimensionResource(id = dimen.image_minor_80))
                         .padding(end = dimensionResource(id = dimen.minor_100))
@@ -247,6 +247,7 @@ private fun AdDataSection(
                 Text(
                     text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
                     style = MaterialTheme.typography.subtitle2,
+                    color = colorResource(id = color.color_on_surface_medium),
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
