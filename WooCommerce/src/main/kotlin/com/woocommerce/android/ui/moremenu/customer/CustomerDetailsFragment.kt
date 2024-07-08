@@ -8,8 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -17,11 +15,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MoreMenuCustomerListFragment : BaseFragment() {
-
-    private val viewModel by viewModels<CustomerListDetailsViewModel>()
-
+class CustomerDetailsFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
+
+    private val viewModel by viewModels<CustomerDetailsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,34 +27,17 @@ class MoreMenuCustomerListFragment : BaseFragment() {
     ) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            WooThemeWithBackground {
-                MenuCustomerListScreen(viewModel)
-            }
+            WooThemeWithBackground { CustomerDetailsScreen(viewModel = viewModel) }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        viewModel.event.observe(
-            viewLifecycleOwner
-        ) { event ->
+        viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is CustomerSelected -> {
-                    findNavController().navigateSafely(
-                        MoreMenuCustomerListFragmentDirections.actionMenuCustomerListFragmentToCustomerDetailsFragment(
-                            event.customer
-                        )
-                    )
-                }
-
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        AnalyticsTracker.trackViewShown(this)
     }
 }

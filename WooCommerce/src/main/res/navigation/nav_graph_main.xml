@@ -793,5 +793,17 @@
     <fragment
         android:id="@+id/menuCustomerListFragment"
         android:name="com.woocommerce.android.ui.moremenu.customer.MoreMenuCustomerListFragment"
-        android:label="CustomerListFragment" />
+        android:label="CustomerListFragment" >
+        <action
+            android:id="@+id/action_menuCustomerListFragment_to_customerDetailsFragment"
+            app:destination="@id/customerDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerDetailsFragment"
+        android:name="com.woocommerce.android.ui.moremenu.customer.CustomerDetailsFragment"
+        android:label="CustomerDetailsFragment" >
+        <argument
+            android:name="customer"
+            app:argType="com.woocommerce.android.model.CustomerWithAnalytics" />
+    </fragment>
 </navigation>
