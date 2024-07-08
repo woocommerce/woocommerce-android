@@ -53,6 +53,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptiveMargin
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -201,7 +202,13 @@ private fun CartToolbar(
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 modifier = Modifier.constrainAs(itemsCount) {
-                    end.linkTo(clearAllButton.start)
+                    end.linkTo(
+                        if (toolbar.isClearAllButtonVisible) {
+                            clearAllButton.start
+                        } else {
+                            parent.end
+                        }
+                    )
                     centerVerticallyTo(parent)
                 }
             )
@@ -293,7 +300,9 @@ private fun ProductItem(
 @WooPosPreview
 fun WooPosCartScreenPreview() {
     WooPosTheme {
-        Row {
+        Row(
+            modifier = Modifier.padding(24.dp.toAdaptiveMargin())
+        ) {
             Spacer(modifier = Modifier.weight(0.65f))
 
             WooPosCartScreen(
