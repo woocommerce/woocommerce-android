@@ -5,6 +5,7 @@ import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.GiftCardsStat
+import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -497,6 +498,11 @@ class AnalyticsRepository @Inject constructor(
     sealed class GiftCardResult {
         object GiftCardError : GiftCardResult()
         data class GiftCardData(val giftCardStat: GiftCardsStat) : GiftCardResult()
+    }
+
+    sealed class GoogleAdsResult {
+        data object GoogleAdsError : GoogleAdsResult()
+        data class GoogleAdsData(val googleAdsStat: GoogleAdsStat) : GoogleAdsResult()
     }
 
     sealed class FetchStrategy {
