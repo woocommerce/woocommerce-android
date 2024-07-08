@@ -79,7 +79,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
 
-    private val wooPosIsEnabled: WooPosIsEnabled = mock {
+    private val isWooPosEnabled: WooPosIsEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
 
@@ -103,7 +103,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             isBlazeEnabled = isBlazeEnabled,
             isGoogleListingsAdsEnabled = isGoogleListingsAdsEnabled,
-            wooPosIsEnabled = wooPosIsEnabled,
+            isWooPosEnabled = isWooPosEnabled,
         )
     }
 
@@ -427,7 +427,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         testBlocking {
             // GIVEN
             setup {
-                whenever(wooPosIsEnabled.invoke()).thenReturn(false)
+                whenever(isWooPosEnabled.invoke()).thenReturn(false)
             }
 
             // WHEN
@@ -444,7 +444,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given isWooPosEnabled returns true, when building state, then WooPOS section is displayed`() = testBlocking {
         // GIVEN
         setup {
-            whenever(wooPosIsEnabled.invoke()).thenReturn(true)
+            whenever(isWooPosEnabled.invoke()).thenReturn(true)
         }
 
         // WHEN
@@ -464,7 +464,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         testBlocking {
             // GIVEN
             setup {
-                whenever(wooPosIsEnabled.invoke()).thenReturn(true)
+                whenever(isWooPosEnabled.invoke()).thenReturn(true)
                 whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
             }
 
