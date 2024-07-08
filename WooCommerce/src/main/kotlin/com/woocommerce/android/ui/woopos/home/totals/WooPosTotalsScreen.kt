@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptiveMargin
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 
 @Composable
@@ -86,7 +87,11 @@ private fun TotalsLoaded(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 0.dp)
+                .padding(
+                    top = 24.dp.toAdaptiveMargin(),
+                    start = 24.dp.toAdaptiveMargin(),
+                    end = 24.dp.toAdaptiveMargin(),
+                    bottom = 0.dp.toAdaptiveMargin())
                 .weight(1f)
                 .fillMaxWidth()
                 .background(
@@ -109,7 +114,7 @@ private fun TotalsLoaded(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(24.dp),
+                .padding(24.dp.toAdaptiveMargin()),
             onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
         )
     }
@@ -140,11 +145,12 @@ private fun TotalsGrid(state: WooPosTotalsState.Totals) {
                 style = MaterialTheme.typography.h6,
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+
+        Spacer(modifier = Modifier.height(16.dp.toAdaptiveMargin()))
 
         Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp.toAdaptiveMargin()))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -159,11 +165,11 @@ private fun TotalsGrid(state: WooPosTotalsState.Totals) {
                 style = MaterialTheme.typography.h6,
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp.toAdaptiveMargin()))
 
         Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp.toAdaptiveMargin()))
 
         Column(
             modifier = Modifier
@@ -172,19 +178,19 @@ private fun TotalsGrid(state: WooPosTotalsState.Totals) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp.toAdaptiveMargin()))
             Text(
                 text = stringResource(R.string.woopos_payment_total_label),
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold,
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp.toAdaptiveMargin()))
             Text(
                 text = state.orderTotalText,
                 style = MaterialTheme.typography.h2,
                 fontWeight = FontWeight.Bold,
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp.toAdaptiveMargin()))
         }
     }
 }
@@ -214,7 +220,7 @@ private fun TotalsLoading() {
                     .clip(RoundedCornerShape(4.dp))
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp.toAdaptiveMargin()))
 
             WooPosShimmerBox(
                 modifier = Modifier
@@ -223,7 +229,7 @@ private fun TotalsLoading() {
                     .clip(RoundedCornerShape(4.dp))
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp.toAdaptiveMargin()))
 
             WooPosShimmerBox(
                 modifier = Modifier
