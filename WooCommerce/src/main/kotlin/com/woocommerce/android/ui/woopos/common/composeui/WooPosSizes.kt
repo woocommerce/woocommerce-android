@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.woopos.util.ext.getLongestScreenSideDp
 
 
 @Composable
-fun Dp.toAdaptiveMargin(): Dp {
+fun Dp.toAdaptivePadding(): Dp {
     val longestSide = LocalContext.current.getLongestScreenSideDp()
     return when {
         longestSide < 880.dp -> {

@@ -53,7 +53,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptiveMargin
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -77,7 +77,7 @@ private fun WooPosCartScreen(
         elevation = 4.dp
     ) {
         Box(
-            Modifier.padding(24.dp.toAdaptiveMargin())
+            Modifier.padding(24.dp.toAdaptivePadding())
         ) {
             Column {
                 CartToolbar(
@@ -86,7 +86,7 @@ private fun WooPosCartScreen(
                     onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
                 )
 
-                Spacer(modifier = Modifier.height(16.dp.toAdaptiveMargin()))
+                Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
                 val listState = rememberLazyListState()
                 ScrollToBottomHandler(state, listState)
@@ -95,7 +95,7 @@ private fun WooPosCartScreen(
                     modifier = Modifier
                         .weight(1f),
                     state = listState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptiveMargin()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     items(
@@ -172,7 +172,7 @@ private fun CartToolbar(
             }
 
             if (!isNarrowScreen) {
-                val cartTitleEndMargin = 16.dp.toAdaptiveMargin()
+                val cartTitleEndMargin = 16.dp.toAdaptivePadding()
                 Text(
                     text = stringResource(R.string.woopos_cart_title),
                     style = MaterialTheme.typography.h4,
@@ -261,7 +261,7 @@ private fun ProductItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(64.dp)
         )
-        Spacer(modifier = Modifier.width(8.dp.toAdaptiveMargin()))
+        Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
 
         Column(
             modifier = Modifier.weight(1f)
@@ -273,12 +273,12 @@ private fun ProductItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(4.dp.toAdaptiveMargin()))
+            Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
             Text(text = item.price, style = MaterialTheme.typography.body1)
         }
 
         if (canRemoveItems) {
-            Spacer(modifier = Modifier.width(8.dp.toAdaptiveMargin()))
+            Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
 
             IconButton(
                 onClick = { onRemoveClicked(item) },
@@ -292,7 +292,7 @@ private fun ProductItem(
                 )
             }
         }
-        Spacer(modifier = Modifier.width(16.dp.toAdaptiveMargin()))
+        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
     }
 }
 
@@ -301,7 +301,7 @@ private fun ProductItem(
 fun WooPosCartScreenPreview() {
     WooPosTheme {
         Row(
-            modifier = Modifier.padding(24.dp.toAdaptiveMargin())
+            modifier = Modifier.padding(24.dp.toAdaptivePadding())
         ) {
             Spacer(modifier = Modifier.weight(0.65f))
 

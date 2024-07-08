@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.toAdaptiveMargin
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
@@ -101,9 +101,9 @@ private fun WooPosHomeScreen(
         when (state) {
             WooPosHomeState.Cart.Empty,
             WooPosHomeState.Cart.NotEmpty,
-            WooPosHomeState.Checkout.NotPaid -> 0.dp.toAdaptiveMargin()
+            WooPosHomeState.Checkout.NotPaid -> 0.dp.toAdaptivePadding()
 
-            WooPosHomeState.Checkout.Paid -> 24.dp.toAdaptiveMargin()
+            WooPosHomeState.Checkout.Paid -> 24.dp.toAdaptivePadding()
         },
         label = "totalsStartPaddingAnimatedDp"
     )
@@ -134,43 +134,43 @@ private fun WooPosHomeScreen(
             .fillMaxWidth(),
     ) {
         Row(modifier = Modifier.width(productsWidthDp)) {
-            Spacer(modifier = Modifier.width(40.dp.toAdaptiveMargin()))
+            Spacer(modifier = Modifier.width(40.dp.toAdaptivePadding()))
             WooPosProductsScreen(
                 modifier = Modifier
-                    .width(productsWidthDp - 56.dp.toAdaptiveMargin())
-                    .padding(top = 36.dp.toAdaptiveMargin())
+                    .width(productsWidthDp - 56.dp.toAdaptivePadding())
+                    .padding(top = 36.dp.toAdaptivePadding())
             )
-            Spacer(modifier = Modifier.width(16.dp.toAdaptiveMargin()))
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         }
         Row(modifier = Modifier.width(cartWidthDp)) {
-            Spacer(modifier = Modifier.width(24.dp.toAdaptiveMargin()))
+            Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
             Box {
                 WooPosCartScreen(
                     Modifier
-                        .width(cartWidthDp - 48.dp.toAdaptiveMargin())
-                        .padding(vertical = 24.dp.toAdaptiveMargin())
+                        .width(cartWidthDp - 48.dp.toAdaptivePadding())
+                        .padding(vertical = 24.dp.toAdaptivePadding())
                 )
                 Box(
                     modifier = Modifier
-                        .width(cartWidthDp - 48.dp.toAdaptiveMargin())
-                        .padding(vertical = 24.dp.toAdaptiveMargin())
+                        .width(cartWidthDp - 48.dp.toAdaptivePadding())
+                        .padding(vertical = 24.dp.toAdaptivePadding())
                         .fillMaxHeight()
                         .background(
                             color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                            shape = RoundedCornerShape(16.dp.toAdaptiveMargin())
+                            shape = RoundedCornerShape(16.dp.toAdaptivePadding())
                         )
                 )
             }
-            Spacer(modifier = Modifier.width(24.dp.toAdaptiveMargin()))
+            Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
         }
         Row(modifier = Modifier.width(totalsWidthDp)) {
             Spacer(modifier = Modifier.width(totalsStartPaddingDp))
             WooPosTotalsScreen(
                 modifier = Modifier
-                    .width(totalsWidthDp - 24.dp.toAdaptiveMargin() - totalsStartPaddingDp)
-                    .padding(vertical = 24.dp.toAdaptiveMargin())
+                    .width(totalsWidthDp - 24.dp.toAdaptivePadding() - totalsStartPaddingDp)
+                    .padding(vertical = 24.dp.toAdaptivePadding())
             )
-            Spacer(modifier = Modifier.width(24.dp.toAdaptiveMargin()))
+            Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
         }
     }
 }
