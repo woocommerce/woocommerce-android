@@ -259,38 +259,43 @@ private fun ProductItem(
 @WooPosPreview
 fun WooPosCartScreenPreview() {
     WooPosTheme {
-        WooPosCartScreen(
-            state = WooPosCartState(
-                toolbar = WooPosCartToolbar(
-                    icon = R.drawable.ic_shopping_cart,
-                    itemsCount = "3 items",
-                    isClearAllButtonVisible = true
-                ),
-                itemsInCart = listOf(
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
-                        imageUrl = "",
-                        name = "VW California, VW California VW California, VW California VW California, " +
-                            "VW California VW California, VW California,VW California",
-                        price = "€50,000"
+        Row {
+            Spacer(modifier = Modifier.weight(0.65f))
+
+            WooPosCartScreen(
+                modifier = Modifier.weight(0.35f),
+                state = WooPosCartState(
+                    toolbar = WooPosCartToolbar(
+                        icon = R.drawable.ic_shopping_cart,
+                        itemsCount = "3 items",
+                        isClearAllButtonVisible = true
                     ),
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
-                        imageUrl = "",
-                        name = "VW California",
-                        price = "$150,000"
+                    itemsInCart = listOf(
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
+                            imageUrl = "",
+                            name = "VW California, VW California VW California, VW California VW California, " +
+                                "VW California VW California, VW California,VW California",
+                            price = "€50,000"
+                        ),
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
+                            imageUrl = "",
+                            name = "VW California",
+                            price = "$150,000"
+                        ),
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
+                            imageUrl = "",
+                            name = "VW California",
+                            price = "€250,000"
+                        )
                     ),
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
-                        imageUrl = "",
-                        name = "VW California",
-                        price = "€250,000"
-                    )
-                ),
-                areItemsRemovable = true,
-                isOrderCreationInProgress = true,
-                isCheckoutButtonVisible = true
-            )
-        ) {}
+                    areItemsRemovable = true,
+                    isOrderCreationInProgress = true,
+                    isCheckoutButtonVisible = true
+                )
+            ) {}
+        }
     }
 }
