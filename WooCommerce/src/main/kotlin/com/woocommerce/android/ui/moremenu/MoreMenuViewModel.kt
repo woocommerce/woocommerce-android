@@ -61,7 +61,7 @@ class MoreMenuViewModel @Inject constructor(
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled,
-    private val WooPosIsEnabled,
+    private val isWooPosEnabled: WooPosIsEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
@@ -105,7 +105,7 @@ class MoreMenuViewModel @Inject constructor(
                     description = R.string.more_menu_button_woo_pos_description,
                     icon = R.drawable.ic_more_menu_pos,
                     extraIcon = R.drawable.ic_more_menu_pos_extra,
-                    isVisible = wooPosIsEnabled(),
+                    isVisible = isWooPosEnabled(),
                     onClick = {
                         triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
                     }

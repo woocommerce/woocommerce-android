@@ -307,8 +307,7 @@ class OrderListFragment :
             WindowSizeClass.Medium -> {
                 binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
             }
-            WindowSizeClass.Expanded,
-            WindowSizeClass.Large -> {
+            WindowSizeClass.ExpandedAndBigger -> {
                 binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
             }
         }

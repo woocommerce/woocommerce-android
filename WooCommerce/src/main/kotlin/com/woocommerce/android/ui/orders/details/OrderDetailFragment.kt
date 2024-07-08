@@ -266,7 +266,7 @@ class OrderDetailFragment :
                 )
             }
 
-            WindowSizeClass.Expanded, WindowSizeClass.Large -> {
+            WindowSizeClass.ExpandedAndBigger -> {
                 val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
                 layoutParams.setMargins(
                     marginHorizontal,
