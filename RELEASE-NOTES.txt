@@ -1,5 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 
+19.5
+-----
+- [**] Adds support for the Customer section in the Hub Menu.
+
+19.4
+-----
+
 19.3
 -----
 - [Internal] Workaround for the crash on the product's list screen. [https://github.com/woocommerce/woocommerce-android/pull/11803]
