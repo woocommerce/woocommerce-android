@@ -27,8 +27,7 @@ data class CustomerListViewState(
         data class Error(@StringRes val message: Int) : CustomerList()
         data class Loaded(
             val customers: List<Item>,
-            val shouldResetScrollPosition: Boolean,
-            val showGuestChip: Boolean
+            val shouldResetScrollPosition: Boolean
         ) : CustomerList()
 
         sealed class Item {

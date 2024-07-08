@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -149,7 +148,6 @@ private fun CustomerListLoaded(
                 is CustomerListViewState.CustomerList.Item.Customer -> {
                     CustomerListItem(
                         customer = customer,
-                        showGuestChip = body.showGuestChip,
                         onCustomerSelected = onCustomerSelected
                     )
                     if (customer != body.customers.last()) {
@@ -189,7 +187,6 @@ private fun CustomerListLoaded(
 @Composable
 private fun CustomerListItem(
     customer: CustomerListViewState.CustomerList.Item.Customer,
-    showGuestChip: Boolean,
     onCustomerSelected: (WCCustomerModel) -> Unit,
 ) {
     Row(
@@ -227,25 +224,6 @@ private fun CustomerListItem(
                 color = colorResource(id = R.color.color_on_surface),
                 style = MaterialTheme.typography.body2,
             )
-        }
-
-        if (showGuestChip && customer.isGuest) {
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = colorResource(id = R.color.color_on_surface_disabled),
-                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
-                    )
-                    .padding(
-                        vertical = dimensionResource(id = R.dimen.minor_50),
-                        horizontal = dimensionResource(id = R.dimen.minor_100)
-                    )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.customer_picker_guest),
-                    color = colorResource(id = R.color.woo_white)
-                )
-            }
         }
     }
 }
@@ -471,8 +449,7 @@ fun CustomerListScreenPreview() {
                     ),
                     CustomerListViewState.CustomerList.Item.Loading,
                 ),
-                shouldResetScrollPosition = true,
-                showGuestChip = true,
+                shouldResetScrollPosition = true
             ),
         ),
         {},

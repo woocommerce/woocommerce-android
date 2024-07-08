@@ -234,8 +234,7 @@ abstract class CustomerListViewModel(
                     customers = customers.map {
                         mapper.mapFromWCCustomerToItem(it, searchQuery, searchParamToSearchType(searchParam))
                     },
-                    shouldResetScrollPosition = true,
-                    showGuestChip = !allowGuests
+                    shouldResetScrollPosition = true
                 ),
                 showFab = allowCustomerCreation,
             )
