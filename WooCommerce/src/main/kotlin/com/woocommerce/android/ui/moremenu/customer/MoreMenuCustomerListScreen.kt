@@ -19,7 +19,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.customer.CustomerListScreen
 
 @Composable
-fun MenuCustomerListScreen(viewModel: CustomerListDetailsViewModel) {
+fun MenuCustomerListScreen(viewModel: MoreMenuCustomerListViewModel) {
     val state by viewModel.viewState.observeAsState()
 
     state?.let {

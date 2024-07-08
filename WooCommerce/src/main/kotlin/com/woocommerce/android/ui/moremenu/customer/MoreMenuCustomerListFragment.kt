@@ -19,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MoreMenuCustomerListFragment : BaseFragment() {
 
-    private val viewModel by viewModels<CustomerListDetailsViewModel>()
+    private val viewModel by viewModels<MoreMenuCustomerListViewModel>()
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 

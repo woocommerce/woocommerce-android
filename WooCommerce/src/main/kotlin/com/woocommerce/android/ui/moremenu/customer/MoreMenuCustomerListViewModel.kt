@@ -16,7 +16,7 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CustomerListDetailsViewModel @Inject constructor(
+class MoreMenuCustomerListViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: CustomerListRepository,
     private val mapper: CustomerListViewModelMapper,
