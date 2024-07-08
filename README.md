@@ -76,7 +76,6 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
     - [Using Android Resources](docs/using-android-resources.md)
     - [Localization](docs/localization.md)
     - [Themes & Styling Practices](docs/theming-styling-best-practices.md)
-    - [Subtree'd Library Projects](docs/subtreed-library-projects.md)
     - [Optimising screens for tablets](docs/supporting-tablets.md)
 - Data
     - [Tracking Events](docs/tracking-events.md)

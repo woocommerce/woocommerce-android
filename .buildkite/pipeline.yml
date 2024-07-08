@@ -1,10 +1,9 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
 # Nodes with values to reuse in the pipeline.
 common_params:
   # Common plugin settings to use with the `plugins` key.
-  - &ci_toolkit
-    automattic/a8c-ci-toolkit#3.0.1
-  - &test_collector
-    test-collector#v1.10.0
   - &test_collector_common_params
       files: "WooCommerce/build/buildkite-test-analytics/*.xml"
       format: "junit"
@@ -16,7 +15,7 @@ steps:
   - label: "Gradle Wrapper Validation"
     command: |
       validate_gradle_wrapper
-    plugins: [*ci_toolkit]
+    plugins: [$CI_TOOLKIT]
 
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
@@ -40,7 +39,7 @@ steps:
           echo "--- 🧹 Linting"
           cp gradle.properties-example gradle.properties
           ./gradlew detektAll
-        plugins: [*ci_toolkit]
+        plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/detekt/detekt.html"
 
@@ -49,7 +48,7 @@ steps:
           echo "--- 🧹 Linting"
           cp gradle.properties-example gradle.properties
           ./gradlew lintJalapenoDebug
-        plugins: [*ci_toolkit]
+        plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/lint-results*.*"
 
@@ -58,7 +57,7 @@ steps:
           cp gradle.properties-example gradle.properties
           .buildkite/commands/dependency-tree-diff.sh
         if: build.pull_request.id != null
-        plugins: [*ci_toolkit]
+        plugins: [$CI_TOOLKIT]
 
   ########################################
   - group: "🛠 Prototype Builds"
@@ -68,13 +67,13 @@ steps:
         command: |
           ".buildkite/commands/prototype-build.sh" "WooCommerce"
         if: build.pull_request.id != null
-        plugins: [*ci_toolkit]
+        plugins: [$CI_TOOLKIT]
 
       - label: "🛠 Prototype Build: Wear App"
         command: |
           ".buildkite/commands/prototype-build.sh" "WooCommerce-Wear"
         if: build.pull_request.id != null
-        plugins: [*ci_toolkit]
+        plugins: [$CI_TOOLKIT]
 
   ########################################
   - group: "🔬 Tests"
@@ -83,8 +82,8 @@ steps:
       - label: "Unit tests"
         command: .buildkite/commands/run-unit-tests.sh
         plugins:
-          - *ci_toolkit
-          - *test_collector :
+          - $CI_TOOLKIT
+          - $TEST_COLLECTOR :
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
         artifact_paths:
@@ -95,13 +94,13 @@ steps:
           echo "--- ⚒️ Building"
           cp gradle.properties-example gradle.properties
           ./gradlew assembleJalapenoDebugAndroidTest
-        plugins: [*ci_toolkit]
+        plugins: [$CI_TOOLKIT]
 
       - label: "Instrumented tests"
         command: .buildkite/commands/run-instrumented-tests.sh
         plugins:
-          - *ci_toolkit
-          - *test_collector :
+          - $CI_TOOLKIT
+          - $TEST_COLLECTOR :
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
         artifact_paths:

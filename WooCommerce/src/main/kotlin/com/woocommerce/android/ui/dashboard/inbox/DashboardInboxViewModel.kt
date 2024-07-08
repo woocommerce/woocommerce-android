@@ -57,7 +57,10 @@ class DashboardInboxViewModel @AssistedInject constructor(
 
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
-        .onStart { emit(RefreshEvent()) }
+        .onStart {
+            emit(RefreshEvent())
+            trackEventForInboxCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
+        }
 
     val menu = DashboardWidgetMenu(
         items = listOf(
@@ -78,6 +81,7 @@ class DashboardInboxViewModel @AssistedInject constructor(
             val shouldFetchFirst = it.isForced || inboxRepository.observeInboxNotes().first().isEmpty()
             if (shouldFetchFirst) {
                 emit(ViewState.Loading)
+                trackEventForInboxCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
             }
 
             emitAll(
@@ -85,6 +89,7 @@ class DashboardInboxViewModel @AssistedInject constructor(
                     .map { result ->
                         result.fold(
                             onSuccess = { notes ->
+                                trackEventForInboxCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                                 ViewState.Content(
                                     notes
                                         .take(MAX_NUMBER_OF_NOTES_TO_DISPLAY_IN_CARD)
@@ -178,13 +183,15 @@ class DashboardInboxViewModel @AssistedInject constructor(
     }
 
     fun onRefresh() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.INBOX.trackingIdentifier
-            )
-        )
+        trackEventForInboxCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
+    private fun trackEventForInboxCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.INBOX.trackingIdentifier)
+        )
     }
 
     sealed class ViewState {
