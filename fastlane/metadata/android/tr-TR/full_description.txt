@@ -6,7 +6,7 @@ Tek dokunuşla ürün ekleyin ve düzenleyin
 Saniyeler içinde kullanmaya başlayın! Ürünleri doğrudan Android telefonunuzdan veya tabletinizden oluşturun, gruplayın ve yayınlayın. Yaratıcılığınızı ilham geldiği anda yakalayın; fikirlerinizi anında ürünlere dönüştürün veya daha sonra kullanmak üzere taslak olarak kaydedin.
 
 Anında sipariş oluşturun
-Bazı ürünleri oluşturduktan sonra iş çok basittir. Kataloğunuzdan öğeler seçip, gönderim bilgisini ve müşteri ayrıntılarını girerek, stok durumunuzla eşitlenen bir siparişi hızlı bir şekilde oluşturun.
+Birkaç ürünü oluşturduktan sonra iş çok basittir. Kataloğunuzdan öğeler seçip, gönderim bilgisini ve müşteri ayrıntılarını girerek, stok durumunuzla eşitlenen bir siparişi hızlı bir şekilde oluşturun.
 
 Şahsen ödemeleri alın
 WooCommerce Şahsen Ödemeler ve bir kart okuyucu ile ödemeleri fiziksel olarak toplayın. Yeni bir sipariş başlatın veya ödeme bekleyen mevcut bir siparişi bulun ve kart okuyucuyu veya Google Pay gibi bir dijital cüzdanı kullanarak ödeme alın.
@@ -15,13 +15,13 @@ Her satıştan haberdar olun
 Artık aktif olarak satış yaptığınız için hiçbir siparişi veya yorumu kaçırmayın. Gerçek zamanlı uyarıları etkinleştirerek hiçbir şeyi kaçırmayın ve her yeni satışla birlikte duyacağınız o bağımlılık yaratan "yazarkasa" sesine odaklanın!
 
 Satışları ve en çok satan ürünleri takip edin
-Hangi ürünlerin en çok sattığını bir bakışta görün. Haftaya, aya ve yıla göre toplam gelirinizi, sipariş sayısını ve ziyaretçi verilerini takip edin. Bilgi = Güç!
+Hangi ürünlerin en çok sattığını bir bakışta görün. Haftaya, aya ve yıla göre toplam gelirinizi, sipariş sayısını ve ziyaretçi verilerini takip edin. Bilgi = Güç.
 
-WooCommerce bileğinizde
-Wear OS uygulamamızla WooCommerce, bugünün mağaza verilerini kolayca görüntüleyebilir ve siparişlerinizi bileğinizden takip edebilirsiniz. Komplikasyonlarımızla, uygulamaya anında erişim de sağlayabilirsiniz.
+WooCommerce artık akıllı saatinizde
+WooCommerce Wear OS Uygulamamızla doğrudan bileğinizden bugünün mağaza verilerini görüntüleyebilir ve siparişlerinizi takip edebilirsiniz. Komplikasyonlarımızla uygulamaya da anında erişebilirsiniz.
 
 WooCommerce, dünyanın en iyi özelleştirilebilir açık kaynaklı e-ticaret platformudur. İster yeni bir iş kuruyor, ister gerçek mekandaki işinizi çevrimiçi ortama taşıyor veya müşteriler için site geliştiriyor olun, içerik ve ticareti güçlü bir şekilde harmanlayan bir mağaza için WooCommerce'i kullanın.
 
 Gereksinimler: WooCommerce v3.5 ve üzeri.
 
-Kaliforniya'daki Kullanıcılar Gizlilik Bildirimi'ni https://automattic.com/privacy/#california-consumer-privacy-act-ccpa adresinden görüntüleyebilirler.
+Kaliforniya'daki Kullanıcılar Gizlilik Bildirimi'ni https://automattic.com/privacy/#california-consumer-privacy-act-ccpa adresinden görüntüleyebilir.

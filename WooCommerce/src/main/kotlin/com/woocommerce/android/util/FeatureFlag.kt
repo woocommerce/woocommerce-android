@@ -18,7 +18,8 @@ enum class FeatureFlag {
     EOSL_M1,
     EOSL_M3,
     GOOGLE_ADS_M1,
-    PRODUCT_CREATION_WITH_AI_V2;
+    PRODUCT_CREATION_WITH_AI_V2,
+    SHOW_INBOX_CTA;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -26,7 +27,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            INBOX,
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
@@ -38,7 +38,9 @@ enum class FeatureFlag {
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
             EOSL_M1,
-            EOSL_M3 -> true
+            EOSL_M3,
+            INBOX,
+            SHOW_INBOX_CTA -> true
         }
     }
 }

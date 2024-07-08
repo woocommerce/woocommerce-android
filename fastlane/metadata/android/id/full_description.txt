@@ -1,24 +1,24 @@
 Kelola toko Anda dari mana saja
 
-Kelola bisnis Anda dari mana saja dengan Aplikasi Seluler WooCommerce. Tambahkan produk, buat pesanan, terima pembayaran cepat, dan pantau penjualan baru serta statistik utama secara real-time.
+Kelola bisnis Anda dari mana saja dengan Aplikasi Seluler WooCommerce. Tambahkan produk, buat pesanan, terima pembayaran cepat, serta pantau penjualan baru dan statistik utama secara real-time.
 
 Tambahkan dan sunting produk dengan sekali sentuh
-Mulai berjualan dalam hitungan detik! Buat, kelompokkan, dan publikasikan produk langsung dari ponsel atau tablet Android Anda. Realisasikan kreativitas Anda secara langsung – segera ubah ide Anda menjadi produk, atau simpan sebagai draf untuk lain waktu.
+Siap dalam sekejap! Buat, kelompokkan, dan publikasikan produk langsung dari ponsel atau tablet Android Anda. Realisasikan kreativitas Anda secara langsung – segera ubah ide Anda menjadi produk, atau simpan sebagai draf untuk lain waktu.
 
 Buat pesanan dari mana saja
-Setelah Anda membuat beberapa produk, selebihnya mudah. Pilih item dari katalog Anda, tambahkan pengiriman, lalu isi detail pelanggan untuk membuat pesanan dengan cepat dan tersinkronisasi dengan inventaris Anda.
+Setelah Anda membuat beberapa produk, selebihnya mudah. Pilih item dari katalog Anda, tambahkan pengiriman, lalu isi detail pelanggan untuk membuat pesanan secara cepat yang tersinkronisasi dengan inventaris Anda.
 
 Terima pembayaran secara langsung
-Terima pembayaran fisik menggunakan WooCommerce In-Person Payments dan pembaca kartu. Buat pesanan baru, atau cari pesanan dengan pembayaran tertunda, lalu terima pembayaran menggunakan pembaca kartu atau dompet digital, seperti Google Pay.
+Terima pembayaran fisik menggunakan Pembayaran Langsung WooCommerce dan pembaca kartu. Buat pesanan baru - atau temukan pesanan lama yang pembayarannya tertunda - lalu terima pembayaran menggunakan pembaca kartu atau dompet digital, seperti Google Pay.
 
 Dapatkan pemberitahuan untuk setiap penjualan
-Kini setelah Anda aktif berjualan, jangan lewatkan pesanan atau ulasan. Terus pantau dengan mengaktifkan peringatan real-time dan nantikan bunyi "cring-cring" yang muncul di setiap penjualan!
+Kini setelah Anda aktif berjualan, jangan lewatkan pesanan atau ulasan. Terus pantau prosesnya dengan mengaktifkan peringatan real-time – dan dengarkan bunyi “cring-cring” setiap kali ada penjualan!
 
 Lacak penjualan dan produk terlaris
 Lihat produk mana yang paling laris. Pantau pendapatan keseluruhan, jumlah pesanan, dan data pengunjung Anda per minggu, bulan, dan tahun. Pengetahuan = kekuatan.
 
-WooCommerce di pergelangan tangan Anda
-Dengan aplikasi WooCommerce kami untuk Wear OS, Anda dapat dengan mudah melihat data toko hari ini dan melacak pesanan Anda langsung dari pergelangan tangan Anda. Dengan komplikasi kami, Anda juga dapat mengakses aplikasi secara instan.
+WooCommerce di tangan Anda
+Dengan Aplikasi WooCommerce Wear OS, Anda dapat melihat data toko hari ini dan melacak pesanan secara langsung dari tangan Anda. Dengan pintasan kami, Anda juga bisa mendapatkan akses instan ke aplikasi.
 
 WooCommerce adalah platform eCommerce sumber terbuka yang paling fleksibel dalam kustomisasi. Untuk meluncurkan bisnis, mentransformasi toko fisik ke dunia online, maupun mengembangkan situs untuk klien, manfaatkan WooCommerce untuk membangun toko yang memadukan konten dan dagangan.
 

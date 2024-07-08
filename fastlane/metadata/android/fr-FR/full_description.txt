@@ -1,4 +1,4 @@
-Gérez votre boutique depuis n’importe où
+Gérer votre boutique depuis n’importe où
 
 Gérez votre entreprise où que vous soyez avec l’application mobile WooCommerce. Ajoutez des produits, créez des commandes, autorisez les paiements rapides et gardez un œil sur les nouvelles ventes et les statistiques clés en temps réel.
 
@@ -12,15 +12,15 @@ Acceptez les paiements en personne
 Recueillez les paiements physiques à l’aide de WooCommerce In-Person Payments et d’un lecteur de carte. Créez une commande ou trouvez une commande existante en attente de paiement, et encaissez le paiement à l’aide d’un lecteur de carte ou d’un portefeuille numérique, tel que Google Pay.
 
 Recevez des notifications lors de chaque vente
-Maintenant que vous vendez activement, ne manquez jamais une commande ou un avis.  Restez au courant en activant les alertes en temps réel et ne manquez pas ce « gling-gling » addictif qui retentit lors de chaque nouvelle vente !
+Maintenant que vous vendez activement, ne manquez jamais une commande ou un avis.  Restez au courant en activant les alertes en temps réel et ne manquez pas ce « gling-gling » addictif qui retentit lors de chaque nouvelle vente ! 
 
 Suivez les ventes et les produits les plus vendus
 Affichez en un clin d’œil les produits les plus vendus. Surveillez facilement les revenus globaux, le nombre de commandes et les données sur les visiteurs par semaine, mois et année. Savoir = pouvoir !
 
-WooCommerce à votre poignet
-Avec notre application WooCommerce pour Wear OS, vous pouvez facilement consulter les données de votre magasin aujourd'hui et suivre vos commandes directement depuis votre poignet. Grâce à nos complications, vous avez également un accès instantané à l'application.
+WooCommerce sur votre montre
+Avec notre application WooCommerce sur Wear OS, vous pouvez consulter sans effort les données du jour de votre boutique et suivre vos commandes sur votre poignet. Vous pouvez également accéder à l’application instantanément, sans complications.
 
-WooCommerce est la plateforme de commerce électronique Open-Source la plus personnalisable au monde. Que vous lanciez une activité, basculiez un magasin physique en ligne ou développiez des sites pour vos clients, WooCommerce permet d’obtenir une boutique qui allie puissamment contenu et commerce.
+WooCommerce est la plateforme de commerce électronique open source la plus personnalisable au monde. Que vous lanciez une activité, basculiez un magasin physique en ligne ou développiez des sites pour vos clients, WooCommerce permet d’obtenir une boutique qui allie puissamment contenu et commerce.
 
 Conditions requises : WooCommerce v3.5+.
 
