@@ -757,12 +757,27 @@
             android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
             app:destination="@id/packagePhotoBottomSheetFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/AiProductPromptFragment"
         android:name="com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptFragment"
-        android:label="AiProductPromptFragment" />
-
+        android:label="AiProductPromptFragment">
+        <action
+            android:id="@+id/action_AiProductPromptFragment_to_aiProductPreviewFragment"
+            app:destination="@id/aiProductPreviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/aiProductPreviewFragment"
+        android:name="com.woocommerce.android.ui.products.ai.preview.AiProductPreviewFragment"
+        android:label="AiProductPreviewFragment">
+        <argument
+            android:name="productFeatures"
+            app:argType="string" />
+        <!-- TODO: Introduce a model to better represent the image with its source -->
+        <argument
+            android:name="image"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
     <dialog
         android:id="@+id/aiProductNameBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
@@ -801,7 +816,7 @@
     <fragment
         android:id="@+id/menuCustomerListFragment"
         android:name="com.woocommerce.android.ui.moremenu.customer.MoreMenuCustomerListFragment"
-        android:label="CustomerListFragment" >
+        android:label="CustomerListFragment">
         <action
             android:id="@+id/action_menuCustomerListFragment_to_customerDetailsFragment"
             app:destination="@id/customerDetailsFragment" />
@@ -809,7 +824,7 @@
     <fragment
         android:id="@+id/customerDetailsFragment"
         android:name="com.woocommerce.android.ui.moremenu.customer.CustomerDetailsFragment"
-        android:label="CustomerDetailsFragment" >
+        android:label="CustomerDetailsFragment">
         <argument
             android:name="customer"
             app:argType="com.woocommerce.android.model.CustomerWithAnalytics" />

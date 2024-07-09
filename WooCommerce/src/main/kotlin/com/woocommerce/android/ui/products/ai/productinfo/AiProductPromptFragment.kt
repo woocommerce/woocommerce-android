@@ -50,8 +50,15 @@ class AiProductPromptFragment : BaseFragment(), MediaPickerResultHandler {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 Exit -> findNavController().navigateUp()
-
                 is ShowMediaDialog -> mediaPickerHelper.showMediaPicker(event.source)
+                is AiProductPromptViewModel.ShowProductPreviewScreen -> {
+                    findNavController().navigate(
+                        AiProductPromptFragmentDirections.actionAiProductPromptFragmentToAiProductPreviewFragment(
+                            productFeatures = event.productFeatures,
+                            image = event.image
+                        )
+                    )
+                }
             }
         }
     }

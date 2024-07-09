@@ -71,7 +71,12 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onGenerateProductClicked() {
-        // TODO()
+        triggerEvent(
+            ShowProductPreviewScreen(
+                productFeatures = _state.value.productPrompt,
+                image = _state.value.mediaUri
+            )
+        )
     }
 
     fun onToneSelected(tone: Tone) {
@@ -123,4 +128,8 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     data class ShowMediaDialog(val source: DataSource) : Event()
+    data class ShowProductPreviewScreen(
+        val productFeatures: String,
+        val image: String?
+    ) : Event()
 }
