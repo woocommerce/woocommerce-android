@@ -32,11 +32,9 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -50,9 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -62,8 +58,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
 import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
@@ -71,6 +65,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.products.ai.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
@@ -82,44 +77,24 @@ fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
     BackHandler(onBack = viewModel::onBackButtonClick)
 
     viewModel.state.observeAsState().value?.let { state ->
-        if (state.showImageFullScreen) {
-            FullScreenImage(viewModel, state)
-        } else {
-            AiProductPromptScreen(
-                uiState = state,
-                onBackButtonClick = viewModel::onBackButtonClick,
-                onPromptUpdated = viewModel::onPromptUpdated,
-                onReadTextFromProductPhoto = viewModel::onAddImageForScanning,
-                onGenerateProductClicked = viewModel::onGenerateProductClicked,
-                onToneSelected = viewModel::onToneSelected,
-                onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
-                onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
-                onImageActionSelected = viewModel::onImageActionSelected
+        AiProductPromptScreen(
+            uiState = state,
+            onBackButtonClick = viewModel::onBackButtonClick,
+            onPromptUpdated = viewModel::onPromptUpdated,
+            onReadTextFromProductPhoto = viewModel::onAddImageForScanning,
+            onGenerateProductClicked = viewModel::onGenerateProductClicked,
+            onToneSelected = viewModel::onToneSelected,
+            onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+            onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
+            onImageActionSelected = viewModel::onImageActionSelected
+        )
+
+        if (state.showImageFullScreen && state.selectedImage != null) {
+            FullScreenImageViewer(
+                state.selectedImage,
+                viewModel::onImageFullScreenDismissed
             )
         }
-    }
-}
-
-@Composable
-private fun FullScreenImage(
-    viewModel: AiProductPromptViewModel,
-    state: AiProductPromptState
-) {
-    BackHandler(onBack = viewModel::onImageFullScreenDismissed)
-    Column {
-        Toolbar(
-            navigationIcon = Filled.Close,
-            onNavigationButtonClick = viewModel::onImageFullScreenDismissed
-        )
-        AsyncImage(
-            model = Builder(LocalContext.current)
-                .data(state.selectedImage?.uri)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Inside,
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }
 
