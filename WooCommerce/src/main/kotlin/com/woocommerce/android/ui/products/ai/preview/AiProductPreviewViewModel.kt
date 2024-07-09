@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.products.ai.AIProductModel
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.flowOf
@@ -28,6 +29,10 @@ class AiProductPreviewViewModel @Inject constructor(
     @Suppress("UNUSED_PARAMETER")
     fun onFeedbackReceived(positive: Boolean) {
         TODO()
+    }
+
+    fun onBackButtonClick() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     sealed interface State {

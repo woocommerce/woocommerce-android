@@ -22,6 +22,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,6 +35,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AIProductModel
@@ -44,7 +46,8 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
     viewModel.state.observeAsState().value?.let { state ->
         AiProductPreviewScreen(
             state = state,
-            onFeedbackReceived = viewModel::onFeedbackReceived
+            onFeedbackReceived = viewModel::onFeedbackReceived,
+            onBackButtonClick = viewModel::onBackButtonClick
         )
     }
 }
@@ -52,45 +55,63 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
 @Composable
 private fun AiProductPreviewScreen(
     state: AiProductPreviewViewModel.State,
-    onFeedbackReceived: (Boolean) -> Unit
+    onFeedbackReceived: (Boolean) -> Unit,
+    onBackButtonClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colors.surface)
-            .verticalScroll(rememberScrollState())
-            .padding(dimensionResource(id = R.dimen.major_100))
-    ) {
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_title),
-            style = MaterialTheme.typography.h5
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_subtitle),
-            style = MaterialTheme.typography.subtitle1,
-            color = colorResource(id = R.color.color_on_surface_medium)
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-        when (state) {
-            AiProductPreviewViewModel.State.Loading,
-            is AiProductPreviewViewModel.State.Error -> ProductPreviewLoading(
-                modifier = Modifier.fillMaxHeight()
-            )
-
-            is AiProductPreviewViewModel.State.Success -> ProductPreviewContent(
-                state = state,
-                onFeedbackReceived = onFeedbackReceived,
-                modifier = Modifier.fillMaxHeight()
+    Scaffold(
+        topBar = {
+            Toolbar(
+                onNavigationButtonClick = onBackButtonClick,
+                actions = {
+                    WCTextButton(onClick = { TODO() }) {
+                        Text(text = stringResource(id = R.string.product_detail_save_as_draft))
+                    }
+                    WCTextButton(onClick = { TODO() }) {
+                        Text(text = stringResource(id = R.string.product_detail_publish))
+                    }
+                }
             )
         }
-
-        if (state is AiProductPreviewViewModel.State.Error) {
-            ErrorDialog(
-                onRetryClick = state.onRetryClick,
-                onDismissClick = state.onDismissClick
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colors.surface)
+                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
+                .padding(dimensionResource(id = R.dimen.major_100))
+        ) {
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Text(
+                text = stringResource(id = R.string.product_creation_ai_preview_title),
+                style = MaterialTheme.typography.h5
             )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Text(
+                text = stringResource(id = R.string.product_creation_ai_preview_subtitle),
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.color_on_surface_medium)
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+            when (state) {
+                AiProductPreviewViewModel.State.Loading,
+                is AiProductPreviewViewModel.State.Error -> ProductPreviewLoading(
+                    modifier = Modifier.fillMaxHeight()
+                )
+
+                is AiProductPreviewViewModel.State.Success -> ProductPreviewContent(
+                    state = state,
+                    onFeedbackReceived = onFeedbackReceived,
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
         }
+    }
+
+    if (state is AiProductPreviewViewModel.State.Error) {
+        ErrorDialog(
+            onRetryClick = state.onRetryClick,
+            onDismissClick = state.onDismissClick
+        )
     }
 }
 
@@ -348,7 +369,8 @@ private fun ProductPreviewLoadingPreview() {
     WooThemeWithBackground {
         AiProductPreviewScreen(
             state = AiProductPreviewViewModel.State.Loading,
-            onFeedbackReceived = {}
+            onFeedbackReceived = {},
+            onBackButtonClick = {}
         )
     }
 }
@@ -387,7 +409,8 @@ private fun ProductPreviewContentPreview() {
                     )
                 )
             ),
-            onFeedbackReceived = {}
+            onFeedbackReceived = {},
+            onBackButtonClick = {}
         )
     }
 }
