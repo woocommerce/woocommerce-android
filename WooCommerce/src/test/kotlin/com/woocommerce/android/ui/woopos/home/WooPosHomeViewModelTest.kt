@@ -60,7 +60,6 @@ class WooPosHomeViewModelTest : BaseUnitTest() {
         verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
     }
 
-
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender
