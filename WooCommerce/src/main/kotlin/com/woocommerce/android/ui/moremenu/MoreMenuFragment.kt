@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.OpenB
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.StartSitePickerEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCouponsEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCustomersEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewInboxEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewReviewsEvent
@@ -99,6 +100,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is ViewReviewsEvent -> navigateToReviews()
                 is ViewInboxEvent -> navigateToInbox()
                 is ViewCouponsEvent -> navigateToCoupons()
+                is ViewCustomersEvent -> navigateToCustomers()
                 is ViewPayments -> navigateToPayments()
                 is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
@@ -164,6 +166,12 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun navigateToCoupons() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToCouponListFragment()
+        )
+    }
+
+    private fun navigateToCustomers() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToCustomerListFragment()
         )
     }
 }

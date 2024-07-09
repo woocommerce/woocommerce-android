@@ -18,7 +18,7 @@ Haz un seguimiento de las ventas y los productos más vendidos
 Consulta los mejores productos de un vistazo. Controla los ingresos generales, el número de pedidos y los datos de los visitantes por semana, mes y año. ¡El conocimiento es poder!
 
 WooCommerce en tu reloj
-Con nuestra aplicación WooCommerce para Wear OS, puedes ver sin esfuerzo los datos de la tienda de hoy y seguir tus pedidos desde tu muñeca. Con nuestras complicaciones, también puedes acceder instantáneamente a la aplicación.
+Con nuestra aplicación WooCommerce Wear OS, puedes ver sin esfuerzo los datos actuales de la tienda y hacer un seguimiento de tus pedidos directamente desde tu muñeca. Con nuestras soluciones, también puedes obtener acceso instantáneo a la aplicación.
 
 WooCommerce es la plataforma de comercio electrónico de código abierto más personalizable del mundo. Tanto si emprendes un negocio como si realizas la actividad comercial en tiendas físicas en línea o desarrollas sitios para clientes, utiliza WooCommerce para que tu tienda pueda aprovechar la combinación de contenido y comercio.
 
