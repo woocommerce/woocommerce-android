@@ -29,8 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenPreview
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -145,11 +147,7 @@ private fun WooPosHomeScreen(
         Row(modifier = Modifier.width(cartWidthDp)) {
             Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
             Box {
-                WooPosCartScreen(
-                    Modifier
-                        .width(cartWidthDp - 48.dp.toAdaptivePadding())
-                        .padding(vertical = 24.dp.toAdaptivePadding())
-                )
+                WooPosCartScreen(cartWidthDp)
                 Box(
                     modifier = Modifier
                         .width(cartWidthDp - 48.dp.toAdaptivePadding())
@@ -172,6 +170,18 @@ private fun WooPosHomeScreen(
             )
             Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
         }
+    }
+}
+
+@Composable
+private fun WooPosCartScreen(cartWidthDp: Dp) {
+    val modifier = Modifier
+        .width(cartWidthDp - 48.dp.toAdaptivePadding())
+        .padding(vertical = 24.dp.toAdaptivePadding())
+    if (isPreviewMode()) {
+        WooPosCartScreenPreview(modifier)
+    } else {
+        WooPosCartScreen(modifier)
     }
 }
 
