@@ -91,6 +91,7 @@ class MoreMenuFragment : TopLevelFragment() {
         viewModel.onViewResumed()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
