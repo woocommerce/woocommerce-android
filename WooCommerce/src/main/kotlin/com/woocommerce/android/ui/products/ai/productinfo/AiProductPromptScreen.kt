@@ -442,7 +442,7 @@ private fun SelectedImageRow(
             modifier = Modifier.padding(end = 16.dp)
         )
         Text(
-            text = stringResource(id = R.string.ai_product_creation_image_uploaded),
+            text = stringResource(id = R.string.ai_product_creation_image_selected),
             style = MaterialTheme.typography.subtitle1,
         )
         Spacer(modifier = Modifier.weight(1f))
