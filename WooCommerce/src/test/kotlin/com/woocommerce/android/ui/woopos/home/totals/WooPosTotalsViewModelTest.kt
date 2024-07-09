@@ -28,10 +28,12 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
     private val priceFormat: WooPosFormatPrice = mock()
 
     private fun createMockSavedStateHandle(): SavedStateHandle {
-        val handle = SavedStateHandle()
-        handle["orderId"] = MutableStateFlow(EMPTY_ORDER_ID)
-        handle["totalsViewState"] = MutableStateFlow(WooPosTotalsState.Loading)
-        return handle
+        return SavedStateHandle(
+            mapOf(
+                "orderId" to EMPTY_ORDER_ID,
+                "totalsViewState" to WooPosTotalsState.Loading
+            )
+        )
     }
 
     private companion object {
