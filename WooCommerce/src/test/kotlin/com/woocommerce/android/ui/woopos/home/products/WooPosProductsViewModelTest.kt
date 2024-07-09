@@ -166,6 +166,40 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
         verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ItemClickedInProductSelector(product.id))
     }
 
+    @Test
+    fun `given load more products is called, when products source loads successfully then state is updated`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts()).thenReturn(Result.success(Unit))
+
+        val viewModel = createViewMode()
+
+        // Initial load
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductsGridReached)
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        assertThat(contentState.loadingMore).isFalse()
+    }
+
     private fun createViewMode() =
         WooPosProductsViewModel(
             productsDataSource,
