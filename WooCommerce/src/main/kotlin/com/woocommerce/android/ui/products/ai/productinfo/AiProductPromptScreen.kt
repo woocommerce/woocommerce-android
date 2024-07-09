@@ -388,7 +388,6 @@ private fun ImageScanning() {
         Text(
             text = stringResource(id = R.string.ai_product_creation_scanning_image),
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
     }
 }
@@ -445,7 +444,6 @@ private fun SelectedImageRow(
         Text(
             text = stringResource(id = R.string.ai_product_creation_image_uploaded),
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
         Spacer(modifier = Modifier.weight(1f))
         ImageActionsMenu(
