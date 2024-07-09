@@ -20,7 +20,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UpdateAnalyticsDashboardRangeSelectionsTest: BaseUnitTest() {
+class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
     private val getSelectedRangeForTopPerformers: GetSelectedRangeForTopPerformers = mock()
     private val getSelectedRangeForDashboardStats: GetSelectedRangeForDashboardStats = mock()
     private val updateAnalyticsData: UpdateAnalyticsDataByRangeSelection = mock()
@@ -51,13 +51,17 @@ class UpdateAnalyticsDashboardRangeSelectionsTest: BaseUnitTest() {
 
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(yesterday))
-        whenever(updateAnalyticsData.invoke(
-            selectedRange = yesterday,
-            forceCardUpdates = forceCardUpdates)
+        whenever(
+            updateAnalyticsData.invoke(
+                selectedRange = yesterday,
+                forceCardUpdates = forceCardUpdates
+            )
         ).doReturn(true)
-        whenever(updateAnalyticsData.invoke(
-            selectedRange = today,
-            forceCardUpdates = forceCardUpdates)
+        whenever(
+            updateAnalyticsData.invoke(
+                selectedRange = today,
+                forceCardUpdates = forceCardUpdates
+            )
         ).doReturn(true)
 
         sut.invoke()
@@ -79,9 +83,11 @@ class UpdateAnalyticsDashboardRangeSelectionsTest: BaseUnitTest() {
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(today))
 
-        whenever(updateAnalyticsData.invoke(
-            selectedRange = today,
-            forceCardUpdates = forceCardUpdates)
+        whenever(
+            updateAnalyticsData.invoke(
+                selectedRange = today,
+                forceCardUpdates = forceCardUpdates
+            )
         ).doReturn(true)
 
         sut.invoke()
@@ -99,14 +105,18 @@ class UpdateAnalyticsDashboardRangeSelectionsTest: BaseUnitTest() {
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(yesterday))
 
-        whenever(updateAnalyticsData.invoke(
-            selectedRange = today,
-            forceCardUpdates = forceCardUpdates)
+        whenever(
+            updateAnalyticsData.invoke(
+                selectedRange = today,
+                forceCardUpdates = forceCardUpdates
+            )
         ).doReturn(true)
 
-        whenever(updateAnalyticsData.invoke(
-            selectedRange = yesterday,
-            forceCardUpdates = forceCardUpdates)
+        whenever(
+            updateAnalyticsData.invoke(
+                selectedRange = yesterday,
+                forceCardUpdates = forceCardUpdates
+            )
         ).doReturn(false)
 
         val result = sut.invoke()
@@ -121,14 +131,18 @@ class UpdateAnalyticsDashboardRangeSelectionsTest: BaseUnitTest() {
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(yesterday))
 
-        whenever(updateAnalyticsData.invoke(
-            selectedRange = today,
-            forceCardUpdates = forceCardUpdates)
+        whenever(
+            updateAnalyticsData.invoke(
+                selectedRange = today,
+                forceCardUpdates = forceCardUpdates
+            )
         ).doReturn(true)
 
-        whenever(updateAnalyticsData.invoke(
-            selectedRange = yesterday,
-            forceCardUpdates = forceCardUpdates)
+        whenever(
+            updateAnalyticsData.invoke(
+                selectedRange = yesterday,
+                forceCardUpdates = forceCardUpdates
+            )
         ).doReturn(true)
 
         val result = sut.invoke()

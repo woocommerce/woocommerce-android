@@ -14,6 +14,7 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
     private val analyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
     private val analyticsRepository: AnalyticsRepository
 ) {
+    @Suppress("LongMethod")
     suspend operator fun invoke(
         selectedRange: StatsTimeRangeSelection,
         forceCardUpdates: List<AnalyticsCards> = emptyList()
@@ -23,7 +24,6 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
             .filter { analyticCardConfiguration -> analyticCardConfiguration.isVisible }
             .map { analyticCardConfiguration -> analyticCardConfiguration.card }
             .union(forceCardUpdates)
-
 
         return coroutineScope {
             val asyncCalls = visibleCards.map { visibleCard ->
@@ -37,7 +37,6 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                             result is AnalyticsRepository.RevenueResult.RevenueData
                         }
                     }
-
                     AnalyticsCards.Orders -> {
                         async {
                             val result = analyticsRepository.fetchOrdersData(
@@ -47,7 +46,6 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                             result is AnalyticsRepository.OrdersResult.OrdersData
                         }
                     }
-
                     AnalyticsCards.Products -> {
                         async {
                             val result = analyticsRepository.fetchProductsData(
@@ -57,7 +55,6 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                             result is AnalyticsRepository.ProductsResult.ProductsData
                         }
                     }
-
                     AnalyticsCards.Session -> {
                         async {
                             val result = analyticsRepository.fetchVisitorsData(
@@ -68,14 +65,12 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                                 result is AnalyticsRepository.VisitorsResult.VisitorsNotSupported
                         }
                     }
-
                     AnalyticsCards.Bundles -> {
                         async {
                             val result = analyticsRepository.fetchProductBundlesStats(selectedRange)
                             result is AnalyticsRepository.BundlesResult.BundlesData
                         }
                     }
-
                     AnalyticsCards.GiftCards -> {
                         async {
                             val result = analyticsRepository.fetchGiftCardsStats(selectedRange)
