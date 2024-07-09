@@ -86,12 +86,13 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
 
             val shouldFetch = refreshEvent.isForced || !onboardingRepository.hasCachedTasks
             if (shouldFetch) {
+                trackEventForOnboardingCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
                 onboardingRepository.fetchOnboardingTasks().onFailure {
                     emit(initialState.copy(isLoading = false, isError = true))
                     return@transformLatest
                 }
+                trackEventForOnboardingCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
             }
-
             emitAll(
                 onboardingRepository.observeOnboardingTasks()
                     .map { tasks ->
@@ -131,13 +132,15 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     }
 
     fun onRefresh() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.ONBOARDING.trackingIdentifier
-            )
-        )
+        trackEventForOnboardingCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED)
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
+    private fun trackEventForOnboardingCard(event: AnalyticsEvent) {
+        analyticsTrackerWrapper.track(
+            event,
+            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.ONBOARDING.trackingIdentifier)
+        )
     }
 
     data class OnboardingDashBoardState(

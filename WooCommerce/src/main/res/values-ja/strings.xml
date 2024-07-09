@@ -1,18 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-18 09:54:03+0000
+Translation-Revision-Date: 2024-07-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="woopos_payment_collect_payment_label">カード支払いを受け取る</string>
+    <string name="woopos_payment_total_label">合計</string>
+    <string name="woopos_payment_tax_label">税</string>
+    <string name="woopos_payment_subtotal_label">小計</string>
+    <string name="woo_pos_new_transaction_button">新規トランザクション</string>
+    <string name="woopos_payment_successful_label">支払いに成功しました</string>
+    <string name="woopos_payment_failed_please_try_again">支払いに失敗しました。 もう一度お試しください。</string>
+    <string name="woo_pos_cart_back_content_description">お買い物カゴアイコン</string>
+    <string name="woopos_products_screen_title">商品</string>
+    <string name="woopos_product_image_description">商品画像</string>
+    <string name="woo_pos_items_in_cart">%d個のアイテム</string>
+    <string name="woo_pos_clear_cart_button">すべてクリア</string>
+    <string name="more_menu_button_google_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう</string>
+    <string name="more_menu_button_google">Google for WooCommerce</string>
+    <string name="no_quantity_rules">数量ルールなし</string>
+    <string name="blaze_campaign_preview_audience_section_title">読者</string>
     <string name="woopos_exit_confirmation_dismiss_button">キャンセル</string>
     <string name="woopos_exit_confirmation_confirm_button">終了</string>
     <string name="woopos_exit_confirmation_message">POS を終了してもよいですか ?</string>
     <string name="woopos_exit_confirmation_title">POS を終了</string>
-    <string name="woo_pos_car_pane_title">お買い物カゴ</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">お買い物カゴからアイテムを削除</string>
-    <string name="woo_pos_checkout_button">購入手続き</string>
+    <string name="woopos_cart_title">お買い物カゴ</string>
+    <string name="woopos_remove_item_from_cart_content_description">お買い物カゴからアイテムを削除</string>
+    <string name="woopos_checkout_button">購入手続き</string>
     <string name="woopos_reader_unknown">Reader ステータス不明</string>
     <string name="woopos_checkout">購入手続き</string>
     <string name="woopos_reader_disconnected">Reader 切断済み</string>
@@ -341,6 +357,7 @@ Language: ja_JP
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">多数の読者にアクセス</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">「ツールを使えば、関心を持っている買い物客の目に入る場所に商品を表示できます」</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">世界規模のリーチをシンプルに</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">数分で広告を開始 – 経験も多額の予算も必要ありません。1日わずか5ドルから始められます。</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">すばやいスタートで大きなインパクト</string>
     <string name="blaze_campaign_creation_new_intro_description">当社のツールは、マーチャントがシンプルですばやい広告キャンペーン設定でトラフィックを最大化できるよう支援するために設計されています。</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">宣伝</string>
@@ -940,7 +957,6 @@ Language: ja_JP
     <string name="empty_max_quantity">上限無し</string>
     <string name="empty_min_quantity">最小限度額なし</string>
     <string name="product_type_bundle">パッケージ</string>
-    <string name="quantity_rules_info_notice">ウェブダッシュボードで商品の数量ルールを編集できます。</string>
     <string name="group_of">一組の数量</string>
     <string name="max_quantity">最高数量</string>
     <string name="min_quantity">最低数量</string>

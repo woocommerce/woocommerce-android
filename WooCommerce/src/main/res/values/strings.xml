@@ -2176,14 +2176,19 @@
     <string name="product_creation_ai_entry_sheet_header">Add a product</string>
     <string name="product_creation_ai_entry_sheet_ai_option_title">Create a product with AI</string>
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle">Quickly generate details for you</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Let us generate product details for you</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="ai_product_creation_add_name_title">Add your product name</string>
+    <string name="ai_product_creation_product_prompt_title">Starting information</string>
     <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Tell us about your product, what it is and what makes it unique, then let the AI work its magic.</string>
     <string name="ai_product_creation_add_name_keywords_label">Product name</string>
     <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
+    <string name="ai_product_creation_prompt_placeholder">For example: Black cotton t-shirt, soft fabric, durable stitching, unique design</string>
     <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Read text from product photo</string>
     <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
     <string name="product_creation_ai_about_product_title">About your product</string>
     <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
@@ -2216,6 +2221,11 @@
     <string name="product_creation_survey_button_open">Start the Survey</string>
     <string name="product_creation_survey_button_remind_me_later">Remind Me Later</string>
     <string name="product_creation_survey_button_dont_show_again">Don\’t show it Again</string>
+    <string name="ai_product_creation_generate_details_button">Generate Product Details</string>
+    <string name="ai_product_creation_view_image">View photo</string>
+    <string name="ai_product_creation_replace_image">Replace photo</string>
+    <string name="ai_product_creation_remove_image">Remove photo</string>
+    <string name="ai_product_creation_image_uploaded">Photo uploaded</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3658,6 +3668,7 @@
     <string name="min_quantity">Minimum quantity</string>
     <string name="max_quantity">Maximum quantity</string>
     <string name="group_of">Group of</string>
+    <string name="no_quantity_rules">No Quantity Rules</string>
 
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
@@ -3688,6 +3699,9 @@
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Join the mobile payments</string>
 
+    <string name="more_menu_button_google">Google for WooCommerce</string>
+    <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
+
     <string name="more_menu_button_blaze">Blaze</string>
     <string name="more_menu_button_blaze_description">Promote products with Blaze</string>
 
@@ -3700,6 +3714,9 @@
     <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_coupons_description">Boost sales with special offers</string>
 
+    <string name="more_menu_button_customers">Customers</string>
+    <string name="more_menu_button_customers_description">Get customer insights</string>
+
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
 
@@ -3711,6 +3728,8 @@
 
     <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
     <string name="more_menu_button_woo_pos_description">Use the app as a cash register</string>
+
+    <string name="more_menu_customers_title">Customers</string>
 
     <!--
     Composite products
@@ -4125,18 +4144,48 @@
     <string name="woopos_reader_disconnected">Reader Disconnected</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_unknown">Reader Status Unknown</string>
-    <string name="woo_pos_checkout_button">Check out</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">Remove item from cart</string>
-    <string name="woo_pos_car_pane_title">Cart</string>
-    <string name="woo_pos_clear_cart_button">Clear all</string>
+    <string name="woopos_checkout_button">Check out</string>
+    <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
+    <string name="woopos_cart_title">Cart</string>
+    <string name="woopos_clear_cart_button">Clear all</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
-    <string name="woo_pos_items_in_cart">%d items</string>
-    <string name="woo_pos_cart_back_content_description">Cart icon</string>
+    <string name="woopos_items_in_cart">%d items</string>
+    <string name="woopos_product_image_description">Product Image</string>
+    <string name="woopos_products_screen_title">Products</string>
+    <string name="woopos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
-    <string name="woo_pos_new_transaction_button">New transaction</string>
+    <string name="woopos_new_transaction_button">New transaction</string>
+    <string name="woopos_payment_subtotal_label">Subtotal</string>
+    <string name="woopos_payment_tax_label">Tax</string>
+    <string name="woopos_payment_total_label">Total</string>
+    <string name="woopos_payment_collect_payment_label">Collect card payment</string>
+    <string name="woopos_products_empty_list">No products</string>
+    <string name="woopos_reader_connect_now_button">Connect now</string>
+
+    <string name="customers_details_customer_section">Customer</string>
+    <string name="customers_details_orders_section">Orders</string>
+    <string name="customers_details_registration_section">Registration</string>
+    <string name="customers_details_billing_address_section">Billing Address</string>
+    <string name="customers_details_shipping_address_section">Shipping Address</string>
+    <string name="customers_details_shipping_location_section">Location</string>
+
+    <string name="customers_details_last_active_value_title">Last active</string>
+    <string name="customers_details_orders_value_title">Orders</string>
+    <string name="customers_details_total_spend_value_title">Total spend</string>
+    <string name="customers_details_average_order_value_title">Average order value</string>
+    <string name="customers_details_username_value_title">Username</string>
+    <string name="customers_details_date_registered_value_title">Date registered</string>
+    <string name="customers_details_country_value_title">Country</string>
+    <string name="customers_details_region_value_title">Region</string>
+    <string name="customers_details_city_value_title">City</string>
+    <string name="customers_details_postal_code_value_title">Postal code</string>
+
+    <string name="customers_details_no_phone_hint">No phone number</string>
+    <string name="customers_details_none_hint">None</string>
+
 </resources>

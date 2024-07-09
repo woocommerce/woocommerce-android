@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMA
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.models.getProductProperty
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
@@ -46,7 +47,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import org.wordpress.android.fluxc.utils.putIfNotNull
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,
@@ -335,26 +335,22 @@ class VariationDetailCardBuilder(
     }
 
     private suspend fun ProductVariation.quantityRules(): ProductProperty? {
-        val rules = QuantityRules(this.minAllowedQuantity, this.maxAllowedQuantity, this.groupOfQuantity)
+        val rulesAreApplicable = this.overrideProductQuantities == true &&
+            parentProduct?.combineVariationQuantities == false
 
-        val properties = buildMap {
-            putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
-            putIfNotNull(resources.getString(string.max_quantity) to rules.max?.toString())
-            if (size < 2) putIfNotNull(resources.getString(string.group_of) to rules.groupOf?.toString())
+        if (!rulesAreApplicable) {
+            return null
         }
 
-        return PropertyGroup(
-            title = string.product_quantity_rules_title,
-            icon = drawable.ic_gridicons_product,
-            properties = properties,
-            showTitle = true,
-            onClick = {
-                viewModel.onEditVariationCardClicked(
-                    ViewProductQuantityRules(rules, AnalyticsEvent.PRODUCT_VARIATION_QUANTITY_RULES_DONE_BUTTON_TAPPED),
-                    AnalyticsEvent.PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED
-                )
-            }
-        )
+        val rules = QuantityRules(this.minAllowedQuantity, this.maxAllowedQuantity, this.groupOfQuantity)
+        val onClick = {
+            viewModel.onEditVariationCardClicked(
+                ViewProductQuantityRules(rules, AnalyticsEvent.PRODUCT_VARIATION_QUANTITY_RULES_DONE_BUTTON_TAPPED),
+                AnalyticsEvent.PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED
+            )
+        }
+
+        return rules.getProductProperty(resources, onClick)
     }
 
     private fun SubscriptionProductVariation.subscriptionExpirationDate(): ProductProperty? =

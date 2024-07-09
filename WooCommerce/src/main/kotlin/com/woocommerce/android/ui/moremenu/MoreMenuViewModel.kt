@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_CUSTOMERS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
@@ -23,12 +24,14 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.google.IsGoogleListingsAdsEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -58,6 +61,7 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
+    private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled,
     private val isWooPosEnabled: IsWooPosEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
@@ -110,6 +114,7 @@ class MoreMenuViewModel @Inject constructor(
             )
         )
 
+    @Suppress("LongMethod")
     private suspend fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
@@ -122,6 +127,13 @@ class MoreMenuViewModel @Inject constructor(
                 icon = R.drawable.ic_more_menu_payments,
                 badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
                 onClick = ::onPaymentsButtonClick,
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_google,
+                description = R.string.more_menu_button_google_description,
+                icon = R.drawable.google_logo,
+                onClick = ::onPromoteProductsWithGoogle,
+                isVisible = isGoogleListingsAdsEnabled()
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_blaze,
@@ -156,6 +168,12 @@ class MoreMenuViewModel @Inject constructor(
                 icon = R.drawable.ic_more_menu_reviews,
                 badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
                 onClick = ::onReviewsButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_customers,
+                description = R.string.more_menu_button_customers_description,
+                icon = R.drawable.icon_multiple_users,
+                onClick = ::onCustomersButtonClick
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_inbox,
@@ -252,6 +270,10 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewPayments)
     }
 
+    private fun onPromoteProductsWithGoogle() {
+        WooLog.d(WooLog.T.GOOGLE_ADS, "onPromoteProductsWithGoogle")
+    }
+
     private fun onPromoteProductsWithBlaze() {
         launch {
             val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).isNotEmpty()
@@ -282,6 +304,11 @@ class MoreMenuViewModel @Inject constructor(
     private fun onCouponsButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_COUPONS)
         triggerEvent(MoreMenuEvent.ViewCouponsEvent)
+    }
+
+    private fun onCustomersButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_CUSTOMERS)
+        triggerEvent(MoreMenuEvent.ViewCustomersEvent)
     }
 
     private fun onReviewsButtonClick() {
@@ -347,6 +374,8 @@ class MoreMenuViewModel @Inject constructor(
         object ViewReviewsEvent : MoreMenuEvent()
         object ViewInboxEvent : MoreMenuEvent()
         object ViewCouponsEvent : MoreMenuEvent()
+
+        object ViewCustomersEvent : MoreMenuEvent()
         object NavigateToWooPosEvent : MoreMenuEvent()
     }
 }

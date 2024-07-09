@@ -155,6 +155,17 @@ class DateUtils @Inject constructor(
         }
     }
 
+    fun getShortMonthDayAndYearStringFromFullIsoDate(fullIso8601Date: String): String? {
+        return try {
+            getDateUsingSiteTimeZone(fullIso8601Date)?.let { date ->
+                friendlyMonthDayYearFormat.format(date)
+            }
+        } catch (e: Exception) {
+            "Date string argument is not of format YYYY-MM-DD: $fullIso8601Date".reportAsError(e)
+            return null
+        }
+    }
+
     /**
      * Given a date of format YYYY-MM-DD, returns the string in a localized full long date format.
      *

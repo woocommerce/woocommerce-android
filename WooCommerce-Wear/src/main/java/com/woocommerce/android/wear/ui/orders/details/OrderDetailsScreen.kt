@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,10 +28,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.material.CircularProgressIndicator
+import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.google.android.horologist.compose.layout.ScreenScaffold
 import com.woocommerce.android.R
 import com.woocommerce.android.wear.compose.component.ErrorScreen
 import com.woocommerce.android.wear.compose.component.LoadingScreen
+import com.woocommerce.android.wear.compose.component.ScrollStateAdapter
 import com.woocommerce.android.wear.compose.theme.WooColors
 import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
@@ -59,24 +63,40 @@ fun OrderDetailsScreen(
     modifier: Modifier = Modifier
 ) {
     WooTheme {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(top = 16.dp)
+        val scrollState = rememberScrollState()
+        ScreenScaffold(
+            scrollState = scrollState,
+            positionIndicator = {
+                PositionIndicator(
+                    state = ScrollStateAdapter(scrollState),
+                    indicatorHeight = 100.dp,
+                    indicatorWidth = 7.dp,
+                    paddingHorizontal = 5.dp,
+                    reverseDirection = false,
+                )
+            }
         ) {
-            when {
-                isLoadingOrder -> LoadingScreen()
-                order == null -> ErrorScreen(
-                    errorText = stringResource(id = R.string.order_details_failed_to_load),
-                    onRetryClicked = onRetryClicked
-                )
-                else -> OrderDetailsContent(
-                    order = order,
-                    isLoadingProducts = isLoadingProducts,
-                    modifier = modifier
-                )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+                    .verticalScroll(scrollState)
+                    .padding(16.dp)
+            ) {
+                when {
+                    isLoadingOrder -> LoadingScreen()
+                    order == null -> ErrorScreen(
+                        errorText = stringResource(id = R.string.order_details_failed_to_load),
+                        onRetryClicked = onRetryClicked
+                    )
+
+                    else -> OrderDetailsContent(
+                        order = order,
+                        isLoadingProducts = isLoadingProducts,
+                        modifier = modifier
+                    )
+                }
             }
         }
     }
@@ -312,7 +332,7 @@ fun OrderProductsList(
                             contentAlignment = Alignment.Center,
                             modifier = modifier
                                 .padding(2.dp)
-                                .size(16.dp)
+                                .defaultMinSize(16.dp)
                                 .clip(CircleShape)
                                 .background(WooColors.woo_purple_alpha)
                         ) {

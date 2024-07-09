@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,7 +68,9 @@ fun OrdersListScreen(
 ) {
     WooTheme {
         Box(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier
+                .background(Color.Black)
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -80,6 +83,7 @@ fun OrdersListScreen(
                         errorText = stringResource(id = R.string.orders_list_failed_to_load),
                         onRetryClicked = onRetryClicked
                     )
+
                     else -> OrdersLazyColumn(orders, onOrderClicked, modifier)
                 }
             }
@@ -114,6 +118,11 @@ private fun OrdersLazyColumn(
     ) {
         ScalingLazyColumn(
             modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                top = 56.dp,
+                start = 20.dp,
+                end = 20.dp
+            ),
             autoCentering = AutoCenteringParams(itemIndex = 0),
             state = state
         ) {
@@ -149,10 +158,12 @@ fun OrderListItem(
             ) {
                 Text(
                     text = order.date,
+                    maxLines = 1,
                     color = WooColors.woo_purple_20
                 )
                 Text(
                     text = order.number,
+                    maxLines = 1,
                     color = WooColors.woo_gray_alpha
                 )
             }
@@ -160,6 +171,7 @@ fun OrderListItem(
                 text = order.customerName,
                 style = WooTypography.body1,
                 color = Color.White,
+                maxLines = 1,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -167,6 +179,7 @@ fun OrderListItem(
                 text = order.total,
                 style = WooTypography.body1,
                 color = Color.White,
+                maxLines = 1,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
@@ -198,7 +211,7 @@ fun Preview() {
                 id = 0L,
                 date = "25 Feb",
                 number = "#125",
-                customerName = "John Doe",
+                customerName = "John Doe Very Long Name",
                 total = "$100.00",
                 status = "Processing"
             ),

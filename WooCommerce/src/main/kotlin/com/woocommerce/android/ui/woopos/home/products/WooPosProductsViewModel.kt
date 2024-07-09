@@ -1,13 +1,14 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -17,23 +18,28 @@ import javax.inject.Inject
 class WooPosProductsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
-    savedStateHandle: SavedStateHandle,
-) : ScopedViewModel(savedStateHandle) {
-
+    private val priceFormat: WooPosFormatPrice,
+) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    val viewState: StateFlow<WooPosProductsViewState> =
-        productsDataSource.products
-            .map {
-                it.filter { product -> product.price != null }
-            }
-            .map { products ->
-                calculateViewState(products)
-            }.toStateFlow(WooPosProductsViewState(products = emptyList()))
+    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading)
+    val viewState: StateFlow<WooPosProductsViewState> = _viewState
 
     init {
-        launch {
-            productsDataSource.loadSimpleProducts()
+        loadProducts()
+    }
+
+    private fun loadProducts() {
+        viewModelScope.launch {
+            productsDataSource.products
+                .map { products -> calculateViewState(products) }
+                .collect { _viewState.value = it }
+        }
+        viewModelScope.launch {
+            val result = productsDataSource.loadSimpleProducts()
+            if (result.isFailure) {
+                _viewState.value = WooPosProductsViewState.Error
+            }
         }
     }
 
@@ -42,27 +48,45 @@ class WooPosProductsViewModel @Inject constructor(
             is WooPosProductsUIEvent.EndOfProductsGridReached -> {
                 onEndOfProductsGridReached()
             }
+
             is WooPosProductsUIEvent.ItemClicked -> {
                 onItemClicked(event.item)
             }
         }
     }
 
-    private fun calculateViewState(
-        products: List<Product>
-    ) = WooPosProductsViewState(
-        products = products.map { product ->
-            WooPosProductsListItem(
-                productId = product.remoteId,
-                title = product.name,
-                imageUrl = product.firstImageUrl
+    private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState {
+        return if (products.isEmpty()) {
+            WooPosProductsViewState.Empty
+        } else {
+            WooPosProductsViewState.Content(
+                products = products.map { product ->
+                    WooPosProductsListItem(
+                        id = product.remoteId,
+                        name = product.name,
+                        price = priceFormat(product.price),
+                        imageUrl = product.firstImageUrl,
+                    )
+                },
+                loadingMore = false,
             )
         }
-    )
+    }
 
     private fun onEndOfProductsGridReached() {
+        val currentState = _viewState.value
+        if (currentState !is WooPosProductsViewState.Content) {
+            return
+        }
+
+        if (!productsDataSource.hasMorePages) {
+            return
+        }
+
+        _viewState.value = currentState.copy(loadingMore = true)
+
         loadMoreProductsJob?.cancel()
-        loadMoreProductsJob = launch {
+        loadMoreProductsJob = viewModelScope.launch {
             productsDataSource.loadMore()
         }
     }
@@ -70,7 +94,7 @@ class WooPosProductsViewModel @Inject constructor(
     private fun onItemClicked(item: WooPosProductsListItem) {
         viewModelScope.launch {
             fromChildToParentEventSender.sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(item.productId)
+                ChildToParentEvent.ItemClickedInProductSelector(item.id)
             )
         }
     }

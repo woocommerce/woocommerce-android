@@ -24,7 +24,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     private val mutex = Mutex()
     private val offset = MutableStateFlow(0)
-    private val canLoadMore = AtomicBoolean(true)
+    val canLoadMore = AtomicBoolean(false)
 
     private val searchQuery = MutableStateFlow("")
     private val searchType = MutableStateFlow(SearchType.DEFAULT)
@@ -49,7 +49,6 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         searchType: SearchType,
     ): Result<Unit> = mutex.withLock {
         offset.value = 0
-        canLoadMore.set(true)
         searchResults.value = emptyList()
 
         this.searchQuery.value = searchQuery
