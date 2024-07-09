@@ -84,6 +84,68 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error)
         }
 
+    @Test
+    fun `given content state, when end of products grid reached and more pages available, then loading more products`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+
+        val viewModel = createViewMode()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductsGridReached)
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        assertThat(contentState.loadingMore).isTrue()
+    }
+
+    @Test
+    fun `given content state, when end of products grid reached and no more pages, then do not load more`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.hasMorePages).thenReturn(false)
+
+        val viewModel = createViewMode()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductsGridReached)
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        assertThat(contentState.loadingMore).isFalse()
+    }
+
     private fun createViewMode() =
         WooPosProductsViewModel(
             productsDataSource,
