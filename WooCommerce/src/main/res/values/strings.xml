@@ -2225,7 +2225,9 @@
     <string name="ai_product_creation_view_image">View photo</string>
     <string name="ai_product_creation_replace_image">Replace photo</string>
     <string name="ai_product_creation_remove_image">Remove photo</string>
-    <string name="ai_product_creation_image_uploaded">Photo uploaded</string>
+    <string name="ai_product_creation_image_selected">Photo selected</string>
+    <string name="ai_product_creation_scanning_image">Scanning image</string>
+    <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3714,6 +3716,9 @@
     <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_coupons_description">Boost sales with special offers</string>
 
+    <string name="more_menu_button_customers">Customers</string>
+    <string name="more_menu_button_customers_description">Get customer insights</string>
+
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
 
@@ -3725,6 +3730,8 @@
 
     <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
     <string name="more_menu_button_woo_pos_description">Use the app as a cash register</string>
+
+    <string name="more_menu_customers_title">Customers</string>
 
     <!--
     Composite products
@@ -4161,4 +4168,26 @@
     <string name="woopos_payment_collect_payment_label">Collect card payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
+
+    <string name="customers_details_customer_section">Customer</string>
+    <string name="customers_details_orders_section">Orders</string>
+    <string name="customers_details_registration_section">Registration</string>
+    <string name="customers_details_billing_address_section">Billing Address</string>
+    <string name="customers_details_shipping_address_section">Shipping Address</string>
+    <string name="customers_details_shipping_location_section">Location</string>
+
+    <string name="customers_details_last_active_value_title">Last active</string>
+    <string name="customers_details_orders_value_title">Orders</string>
+    <string name="customers_details_total_spend_value_title">Total spend</string>
+    <string name="customers_details_average_order_value_title">Average order value</string>
+    <string name="customers_details_username_value_title">Username</string>
+    <string name="customers_details_date_registered_value_title">Date registered</string>
+    <string name="customers_details_country_value_title">Country</string>
+    <string name="customers_details_region_value_title">Region</string>
+    <string name="customers_details_city_value_title">City</string>
+    <string name="customers_details_postal_code_value_title">Postal code</string>
+
+    <string name="customers_details_no_phone_hint">No phone number</string>
+    <string name="customers_details_none_hint">None</string>
+
 </resources>
