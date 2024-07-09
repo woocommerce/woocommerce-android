@@ -350,7 +350,7 @@ private fun ProductPromptTextField(
 
             when {
                 state.isScanningImage -> ImageScanning()
-                state.mediaUri != null -> UploadedImageRow(
+                state.mediaUri != null -> SelectedImageRow(
                     state.mediaUri,
                     onImageActionSelected
                 )
@@ -427,7 +427,7 @@ private fun InformativeMessage(message: String) {
 }
 
 @Composable
-private fun UploadedImageRow(
+private fun SelectedImageRow(
     mediaUri: String,
     onImageActionSelected: (ImageAction) -> Unit
 ) {
