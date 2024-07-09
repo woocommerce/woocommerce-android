@@ -110,7 +110,7 @@ private fun FullScreenImage(
         )
         AsyncImage(
             model = Builder(LocalContext.current)
-                .data(state.mediaUri)
+                .data(state.selectedImage?.uri)
                 .crossfade(true)
                 .build(),
             contentDescription = null,
@@ -344,8 +344,8 @@ private fun ProductPromptTextField(
                     // TODO() show progress while scanning image
                 }
 
-                state.mediaUri != null -> UploadedImageRow(
-                    state.mediaUri,
+                state.selectedImage != null -> UploadedImageRow(
+                    state.selectedImage.uri,
                     onImageActionSelected
                 )
 
@@ -451,7 +451,7 @@ private fun AiProductPromptScreenPreview() {
             productPrompt = "Product prompt test",
             selectedTone = Tone.Casual,
             isMediaPickerDialogVisible = false,
-            mediaUri = null,
+            selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false
         ),

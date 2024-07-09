@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Remove
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Replace
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.View
@@ -33,7 +34,7 @@ class AiProductPromptViewModel @Inject constructor(
             productPrompt = "",
             selectedTone = Tone.Casual,
             isMediaPickerDialogVisible = false,
-            mediaUri = null,
+            selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false
         )
@@ -74,7 +75,7 @@ class AiProductPromptViewModel @Inject constructor(
         triggerEvent(
             ShowProductPreviewScreen(
                 productFeatures = _state.value.productPrompt,
-                image = _state.value.mediaUri
+                image = _state.value.selectedImage
             )
         )
     }
@@ -83,15 +84,15 @@ class AiProductPromptViewModel @Inject constructor(
         _state.value = _state.value.copy(selectedTone = tone)
     }
 
-    fun onMediaSelected(mediaUri: String) {
-        _state.value = _state.value.copy(mediaUri = mediaUri)
+    fun onMediaSelected(image: Image) {
+        _state.value = _state.value.copy(selectedImage = image)
     }
 
     fun onImageActionSelected(imageAction: ImageAction) {
         when (imageAction) {
             View -> _state.value = _state.value.copy(showImageFullScreen = true)
             Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
-            Remove -> _state.value = _state.value.copy(mediaUri = null)
+            Remove -> _state.value = _state.value.copy(selectedImage = null)
         }
     }
 
@@ -104,7 +105,7 @@ class AiProductPromptViewModel @Inject constructor(
         val productPrompt: String,
         val selectedTone: Tone,
         val isMediaPickerDialogVisible: Boolean,
-        val mediaUri: String?,
+        val selectedImage: Image?,
         val isScanningImage: Boolean,
         val showImageFullScreen: Boolean
     ) : Parcelable
@@ -130,6 +131,6 @@ class AiProductPromptViewModel @Inject constructor(
     data class ShowMediaDialog(val source: DataSource) : Event()
     data class ShowProductPreviewScreen(
         val productFeatures: String,
-        val image: String?
+        val image: Image?
     ) : Event()
 }

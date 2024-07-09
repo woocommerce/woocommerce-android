@@ -772,10 +772,9 @@
         <argument
             android:name="productFeatures"
             app:argType="string" />
-        <!-- TODO: Introduce a model to better represent the image with its source -->
         <argument
             android:name="image"
-            app:argType="string"
+            app:argType="com.woocommerce.android.model.Image"
             app:nullable="true" />
     </fragment>
     <dialog
