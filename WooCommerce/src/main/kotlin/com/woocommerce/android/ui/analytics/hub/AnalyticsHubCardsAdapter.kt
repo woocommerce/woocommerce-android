@@ -15,6 +15,7 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
     companion object {
         private const val VIEW_TYPE_INFORMATION = 0
         private const val VIEW_TYPE_LIST = 1
+        private const val VIEW_TYPE_CUSTOM_SELECTION_LIST = 2
     }
 
     private val params = ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
@@ -75,6 +76,7 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
         return when (cardList[position]) {
             is AnalyticsHubListViewState -> VIEW_TYPE_LIST
             is AnalyticsHubInformationViewState -> VIEW_TYPE_INFORMATION
+            is AnalyticsHubCustomSelectionList -> VIEW_TYPE_CUSTOM_SELECTION_LIST
         }
     }
 

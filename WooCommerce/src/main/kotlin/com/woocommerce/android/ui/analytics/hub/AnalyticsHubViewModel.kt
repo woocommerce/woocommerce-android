@@ -20,7 +20,7 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubGoogleStatsViewState.LoadingAdsViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionList.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
@@ -667,7 +667,7 @@ class AnalyticsHubViewModel @Inject constructor(
         )
 
     private fun buildGoogleAdsDataViewState(googleAdsStat: GoogleAdsStat) =
-        AnalyticsHubGoogleStatsViewState.DataViewState(
+        AnalyticsHubCustomSelectionList.DataViewState(
             card = AnalyticsCards.GoogleAds
         )
 
