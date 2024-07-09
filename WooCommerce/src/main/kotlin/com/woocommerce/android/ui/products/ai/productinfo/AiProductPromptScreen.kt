@@ -381,7 +381,6 @@ private fun ImageScanning() {
     ) {
         CircularProgressIndicator(
             modifier = Modifier
-                .fillMaxWidth()
                 .wrapContentWidth()
                 .padding(end = 16.dp)
         )
