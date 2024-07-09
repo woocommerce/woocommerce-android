@@ -482,7 +482,6 @@ class AnalyticsRepository @Inject constructor(
                 GoogleAdsStat(campaigns = response.campaigns.map { Campaign(it.id) })
             )
         } ?: GoogleAdsResult.GoogleAdsError
-
     }
 
     companion object {

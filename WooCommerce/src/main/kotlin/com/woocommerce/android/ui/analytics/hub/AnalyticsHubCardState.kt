@@ -56,7 +56,10 @@ sealed class AnalyticsHubListViewState : AnalyticsCardViewState {
 
 sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
     data class LoadingAdsViewState(override val card: AnalyticsCards) : AnalyticsHubCustomSelectionListViewState()
-    data class NoAdsState(override val card: AnalyticsCards, val message: String) : AnalyticsHubCustomSelectionListViewState()
+    data class NoAdsState(
+        override val card: AnalyticsCards,
+        val message: String
+    ) : AnalyticsHubCustomSelectionListViewState()
     data class DataViewState(
         override val card: AnalyticsCards
     ) : AnalyticsHubCustomSelectionListViewState()

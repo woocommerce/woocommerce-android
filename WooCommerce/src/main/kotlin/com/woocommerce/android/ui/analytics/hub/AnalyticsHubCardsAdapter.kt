@@ -123,7 +123,6 @@ class AnalyticsHubCardsInformationViewHolder(private val cardView: AnalyticsHubI
 class AnalyticsHubCustomSelectionListViewHolder(cardView: View) :
     AnalyticsHubCardsViewHolder(cardView) {
     fun bind(state: AnalyticsHubCustomSelectionListViewState) {
-        state.apply {  }
+        state.apply { }
     }
-
 }
