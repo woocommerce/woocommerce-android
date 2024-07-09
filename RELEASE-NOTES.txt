@@ -3,7 +3,7 @@
 
 19.5
 -----
-
+- [**] Customer Section in Hub Menu: Merchants now have a centralized location to access customer contact information and view analytics about their customers.  [https://github.com/woocommerce/woocommerce-android/pull/11944]
 
 19.4
 -----

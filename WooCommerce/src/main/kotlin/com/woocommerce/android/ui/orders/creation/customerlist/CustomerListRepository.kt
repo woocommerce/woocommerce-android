@@ -6,6 +6,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.customer.WCCustomerFromAnalytics
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCCustomerStore
@@ -79,6 +80,25 @@ class CustomerListRepository @Inject constructor(
 
     suspend fun fetchCustomerByRemoteId(remoteId: Long): WooResult<WCCustomerModel> = withContext(dispatchers.io) {
         customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
+    }
+
+    suspend fun fetchCustomerFromAnalyticsByUserId(remoteId: Long): WooResult<WCCustomerFromAnalytics> =
+        withContext(dispatchers.io) {
+            customerStore.fetchSingleCustomerFromAnalyticsByUserId(selectedSite.get(), remoteId)
+        }
+
+    suspend fun fetchCustomerFromAnalyticsByAnalyticsCustomerId(
+        analyticsCustomerId: Long
+    ): WooResult<WCCustomerFromAnalytics> = withContext(dispatchers.io) {
+        customerStore.fetchSingleCustomerFromAnalyticsByAnalyticsCustomerId(selectedSite.get(), analyticsCustomerId)
+    }
+
+    suspend fun getCustomerByRemoteId(remoteId: Long) = withContext(dispatchers.io) {
+        customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
+    }
+
+    suspend fun getCustomerByAnalyticsCustomerId(customerId: Long) = withContext(dispatchers.io) {
+        customerStore.getCustomerFromAnalyticsByAnalyticsId(selectedSite.get(), customerId)
     }
 
     private companion object {

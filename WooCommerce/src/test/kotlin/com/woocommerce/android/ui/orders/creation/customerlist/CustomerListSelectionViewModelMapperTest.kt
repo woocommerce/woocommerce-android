@@ -10,7 +10,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.model.order.OrderAddress
 
-class CustomerListViewModelMapperTest {
+class CustomerListSelectionViewModelMapperTest {
     private val textHandler: CustomerListDisplayTextHandler = mock()
     private val mapper = CustomerListViewModelMapper(textHandler)
 
