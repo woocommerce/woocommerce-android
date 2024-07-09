@@ -19,7 +19,7 @@ class AiProductPreviewViewModel @Inject constructor(
     private val buildProductPreviewProperties: BuildProductPreviewProperties
 ) : ScopedViewModel(savedStateHandle) {
     val state: LiveData<State> = flow {
-        // TODO: Replace with actual AI generation
+        // TODO Replace with actual AI generation
         val productModel = AIProductModel.buildDefault(
             name = "Product Name",
             description = "Product Description"
@@ -27,15 +27,20 @@ class AiProductPreviewViewModel @Inject constructor(
 
         val propertyGroups = buildProductPreviewProperties(productModel.toProduct(emptyList(), emptyList()))
 
-        emit(State.Success(productModel, propertyGroups.map { group ->
-            group.map { property ->
-                ProductPropertyCard(
-                    icon = property.icon,
-                    title = property.title,
-                    content = property.content
-                )
-            }
-        }))
+        emit(
+            State.Success(
+                productModel,
+                propertyGroups.map { group ->
+                    group.map { property ->
+                        ProductPropertyCard(
+                            icon = property.icon,
+                            title = property.title,
+                            content = property.content
+                        )
+                    }
+                }
+            )
+        )
     }.asLiveData()
 
     @Suppress("UNUSED_PARAMETER")
