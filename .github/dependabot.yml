@@ -28,4 +28,9 @@ updates:
       # Assertj is a java first library only used for testing. It has caused troubles several times due to library
       # updates with Kotlin breaking changes. For that it has been decided to update this library on a manual basis
       - dependency-name: "org.assertj:assertj-core"
-
+      # Ignore dependencies that were added only to address security vulnerabilities of transitive WireMock dependencies
+      - dependency-name: "com.github.tomakehurst:wiremock"
+      - dependency-name: "org.eclipse.jetty:jetty-webapp"
+      - dependency-name: "com.fasterxml.jackson.core:jackson-databind"
+      - dependency-name: "com.jayway.jsonpath:json-path"
+      - dependency-name: "commons-fileupload:commons-fileupload"
