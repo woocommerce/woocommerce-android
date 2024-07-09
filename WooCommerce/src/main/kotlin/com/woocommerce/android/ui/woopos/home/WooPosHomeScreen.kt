@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenPreview
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreenPreview
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
@@ -137,11 +138,7 @@ private fun WooPosHomeScreen(
     ) {
         Row(modifier = Modifier.width(productsWidthDp)) {
             Spacer(modifier = Modifier.width(40.dp.toAdaptivePadding()))
-            WooPosProductsScreen(
-                modifier = Modifier
-                    .width(productsWidthDp - 56.dp.toAdaptivePadding())
-                    .padding(top = 36.dp.toAdaptivePadding())
-            )
+            WooPosProductsScreen(productsWidthDp)
             Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         }
         Row(modifier = Modifier.width(cartWidthDp)) {
@@ -170,6 +167,19 @@ private fun WooPosHomeScreen(
             )
             Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
         }
+    }
+}
+
+@Composable
+private fun WooPosProductsScreen(productsWidthDp: Dp) {
+    val modifier = Modifier
+        .width(productsWidthDp - 56.dp.toAdaptivePadding())
+        .padding(top = 36.dp.toAdaptivePadding())
+
+    if (isPreviewMode()) {
+        WooPosProductsScreenPreview(modifier)
+    } else {
+        WooPosProductsScreen(modifier)
     }
 }
 
