@@ -7,6 +7,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.analytics.hub.customlistcard.AnalyticsHubCustomSelectionCardView
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
 import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardView
@@ -52,7 +53,9 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
                 }
             )
 
-            VIEW_TYPE_CUSTOM_SELECTION_LIST -> AnalyticsHubCustomSelectionListViewModel()
+            VIEW_TYPE_CUSTOM_SELECTION_LIST -> AnalyticsHubCustomSelectionListViewHolder(
+                AnalyticsHubCustomSelectionCardView(parent.context)
+            )
 
             else -> throw IllegalArgumentException("Unexpected viewType in AnalyticsHubCardsAdapter")
         }
@@ -117,7 +120,7 @@ class AnalyticsHubCardsInformationViewHolder(private val cardView: AnalyticsHubI
     }
 }
 
-class AnalyticsHubCustomSelectionListViewModel(cardView: View) :
+class AnalyticsHubCustomSelectionListViewHolder(cardView: View) :
     AnalyticsHubCardsViewHolder(cardView) {
     fun bind(state: AnalyticsHubCustomSelectionListViewState) {
         state.apply {  }
