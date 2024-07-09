@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
-import com.woocommerce.android.util.IsWindowClassExpandedAndBigger
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -26,17 +25,17 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class IsWooPosEnabledTest : BaseUnitTest() {
+class WooPosIsEnabledTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val ippStore: WCInPersonPaymentsStore = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
-    private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger = mock()
-    private val isWooPosFFEnabled: IsWooPosFFEnabled = mock()
+    private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
+    private val isFeatureFlagEnabled: WooPosisFeatureFlagEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() }.thenReturn("6.6.0")
     }
 
-    private lateinit var sut: IsWooPosEnabled
+    private lateinit var sut: WooPosIsEnabled
 
     @Before
     fun setup() = testBlocking {
@@ -44,16 +43,16 @@ class IsWooPosEnabledTest : BaseUnitTest() {
         val onboardingCompleted = mock<CardReaderOnboardingState.OnboardingCompleted>()
         whenever(onboardingCompleted.preferredPlugin).thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
         whenever(cardReaderOnboardingChecker.getOnboardingState()).thenReturn(onboardingCompleted)
-        whenever(isWindowSizeExpandedAndBigger()).thenReturn(true)
+        whenever(isScreenSizeAllowed()).thenReturn(true)
         whenever(ippStore.loadAccount(any(), any())).thenReturn(buildPaymentAccountResult())
-        whenever(isWooPosFFEnabled()).thenReturn(true)
+        whenever(isFeatureFlagEnabled()).thenReturn(true)
 
-        sut = IsWooPosEnabled(
+        sut = WooPosIsEnabled(
             selectedSite = selectedSite,
             ippStore = ippStore,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
-            isWindowSizeExpandedAndBigger = isWindowSizeExpandedAndBigger,
-            isWooPosFFEnabled = isWooPosFFEnabled,
+            isScreenSizeAllowed = isScreenSizeAllowed,
+            isFeatureFlagEnabled = isFeatureFlagEnabled,
             getWooCoreVersion = getWooCoreVersion,
         )
     }
@@ -62,13 +61,13 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     fun `given big enough screen, IPP Onboarding completed, USD currency, store in the US, then return true`() =
         testBlocking {
             whenever(selectedSite.getOrNull()).thenReturn(SiteModel().also { it.id = 1 })
-            whenever(isWindowSizeExpandedAndBigger()).thenReturn(true)
+            whenever(isScreenSizeAllowed()).thenReturn(true)
             val onboardingCompleted = mock<CardReaderOnboardingState.OnboardingCompleted>()
             whenever(cardReaderOnboardingChecker.getOnboardingState()).thenReturn(onboardingCompleted)
             whenever(onboardingCompleted.preferredPlugin).thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
             whenever(ippStore.loadAccount(any(), any()))
                 .thenReturn(buildPaymentAccountResult(countryCode = "US", defaultCurrency = "USD"))
-            whenever(isWooPosFFEnabled()).thenReturn(true)
+            whenever(isFeatureFlagEnabled()).thenReturn(true)
 
             assertTrue(sut())
         }
@@ -82,7 +81,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
 
     @Test
     fun `given not big enough screen, then return false`() = testBlocking {
-        whenever(isWindowSizeExpandedAndBigger()).thenReturn(false)
+        whenever(isScreenSizeAllowed()).thenReturn(false)
         assertFalse(sut())
     }
 
@@ -130,7 +129,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
 
     @Test
     fun `given feature flag disabled, then return false`() = testBlocking {
-        whenever(isWooPosFFEnabled.invoke()).thenReturn(false)
+        whenever(isFeatureFlagEnabled.invoke()).thenReturn(false)
         assertFalse(sut())
     }
 
