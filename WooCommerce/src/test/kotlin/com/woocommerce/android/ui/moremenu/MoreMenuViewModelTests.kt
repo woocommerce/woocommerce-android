@@ -80,9 +80,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
 
-    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock {
-        onBlocking { invoke() } doReturn true
-    }
+    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
 
     private val isWooPosEnabled: IsWooPosEnabled = mock {
         onBlocking { invoke() } doReturn true
