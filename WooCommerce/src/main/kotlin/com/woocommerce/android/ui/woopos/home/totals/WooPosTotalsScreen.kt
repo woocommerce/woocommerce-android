@@ -244,7 +244,7 @@ private fun TotalsLoading() {
 
 @Composable
 @WooPosPreview
-fun WooPosTotalsScreenPreview() {
+fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
     WooPosTheme {
         WooPosTotalsScreen(
             state = WooPosTotalsState.Totals(
