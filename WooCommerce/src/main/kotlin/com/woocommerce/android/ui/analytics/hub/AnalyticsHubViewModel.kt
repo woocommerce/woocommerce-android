@@ -14,7 +14,6 @@ import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.GiftCardsStat
-import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -453,7 +452,7 @@ class AnalyticsHubViewModel @Inject constructor(
         googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
             when (state) {
                 is GoogleAdsState.Available -> {
-                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
+                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState())
                 }
 
                 is GoogleAdsState.Error -> {
@@ -666,7 +665,7 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
-    private fun buildGoogleAdsDataViewState(googleAdsStat: GoogleAdsStat) =
+    private fun buildGoogleAdsDataViewState() =
         AnalyticsHubCustomSelectionListViewState.DataViewState(
             card = AnalyticsCards.GoogleAds
         )

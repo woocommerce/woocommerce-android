@@ -477,15 +477,12 @@ class AnalyticsRepository @Inject constructor(
             )
         }
 
-        val currentGoogleAdsStats = currentGoogleAdsStatsCall.await().model
+        currentGoogleAdsStatsCall.await().model?.let { response ->
+            GoogleAdsResult.GoogleAdsData(
+                GoogleAdsStat(campaigns = response.campaigns.map { Campaign(it.id) })
+            )
+        } ?: GoogleAdsResult.GoogleAdsError
 
-        val campaigns = currentGoogleAdsStats
-            ?.campaigns?.map { Campaign(it.id) }
-            ?: emptyList()
-
-        GoogleAdsResult.GoogleAdsData(
-            GoogleAdsStat(campaigns = campaigns)
-        )
     }
 
     companion object {
