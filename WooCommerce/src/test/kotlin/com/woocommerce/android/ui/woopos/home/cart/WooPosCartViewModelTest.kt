@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -14,6 +16,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
@@ -228,6 +231,31 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             assertEquals(2, itemsInCart[0].id.itemNumber)
             assertEquals(3, itemsInCart[1].id.itemNumber)
         }
+
+    @Test
+    fun `given checkout clicked, when order creation succeeds, then should update state and send event to parent`() = testBlocking {
+        // GIVEN
+        val productIds = listOf(1L)
+        val orderId = 123L
+        val order = OrderTestUtils.generateTestOrder(orderId)
+        whenever(repository.createOrderWithProducts(productIds)).thenReturn(Result.success(order))
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        whenever(repository.getProductById(eq(1L))).thenReturn(generateProductWithFirstImage(1L))
+
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.ItemClickedInProductSelector(1L))
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+        // THEN
+        assertEquals(WooPosCartStatus.CHECKOUT, states.last().cartStatus)
+        verify(
+            childrenToParentEventSender
+        ).sendToParent(ChildToParentEvent.OrderCreation.OrderCreationSucceeded(orderId))
+    }
 
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
