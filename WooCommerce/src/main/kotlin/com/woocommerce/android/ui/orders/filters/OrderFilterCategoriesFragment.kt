@@ -19,7 +19,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment.Companion.KEY_CUSTOMER_RESULT
+import com.woocommerce.android.ui.orders.creation.customerlist.OrderCustomerListFragment.Companion.KEY_CUSTOMER_RESULT
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT

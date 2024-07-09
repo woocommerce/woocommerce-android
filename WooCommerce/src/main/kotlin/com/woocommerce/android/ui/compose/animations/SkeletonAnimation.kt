@@ -47,9 +47,13 @@ fun skeletonAnimationBrush(): Brush {
 }
 
 @Composable
-fun SkeletonView(width: Dp, height: Dp) {
+fun SkeletonView(
+    width: Dp,
+    height: Dp,
+    modifier: Modifier = Modifier
+) {
     Spacer(
-        modifier = Modifier
+        modifier = modifier
             .width(width)
             .height(height)
             .background(skeletonAnimationBrush())

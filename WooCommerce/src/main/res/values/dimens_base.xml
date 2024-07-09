@@ -155,6 +155,6 @@ so that's the baseline as defined in `major_100`.
     <dimen name="stats_widget_list_item_min_height">30dp</dimen>
     <dimen name="stats_widget_content_height">120dp</dimen>
     <dimen name="stats_widget_min_width">250dp</dimen>
-    <dimen name="stats_widget_min_height">150dp</dimen>
+    <dimen name="stats_widget_min_height">75dp</dimen>
 
 </resources>

@@ -484,6 +484,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
             assertThat(states.last().menuSections[2].title).isEqualTo(R.string.more_menu_general_section_title)
             val itemsSecondSection = states.last().menuSections[2].items
-            assertThat(itemsSecondSection.count()).isEqualTo(8)
+            assertThat(itemsSecondSection.count()).isEqualTo(9)
         }
 }
