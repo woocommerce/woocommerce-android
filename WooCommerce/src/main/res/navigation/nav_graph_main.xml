@@ -325,6 +325,9 @@
         <action
             android:id="@+id/action_moreMenu_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
+        <action
+            android:id="@+id/action_moreMenu_to_customerListFragment"
+            app:destination="@id/menuCustomerListFragment" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -795,4 +798,20 @@
         android:id="@+id/dashboardWidgetEditorFragment"
         android:name="com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorFragment"
         android:label="DashboardWidgetEditorFragment" />
+    <fragment
+        android:id="@+id/menuCustomerListFragment"
+        android:name="com.woocommerce.android.ui.moremenu.customer.MoreMenuCustomerListFragment"
+        android:label="CustomerListFragment" >
+        <action
+            android:id="@+id/action_menuCustomerListFragment_to_customerDetailsFragment"
+            app:destination="@id/customerDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerDetailsFragment"
+        android:name="com.woocommerce.android.ui.moremenu.customer.CustomerDetailsFragment"
+        android:label="CustomerDetailsFragment" >
+        <argument
+            android:name="customer"
+            app:argType="com.woocommerce.android.model.CustomerWithAnalytics" />
+    </fragment>
 </navigation>

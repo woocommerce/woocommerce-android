@@ -343,7 +343,7 @@
     </fragment>
     <fragment
         android:id="@+id/customerListFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlist.OrderCustomerListFragment"
         android:label="customerListFragment" >
         <argument
             android:name="allowCustomerCreation"
