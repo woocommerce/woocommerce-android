@@ -110,8 +110,8 @@ steps:
         command: .buildkite/commands/run-instrumented-tests.sh "MediumTablet.arm" "34" "landscape"
         plugins:
           - $CI_TOOLKIT
-#         - *test_collector :
-#              <<: *test_collector_common_params
-#              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
+          - $TEST_COLLECTOR :
+              <<: *test_collector_common_params
+              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS_TABLET"
         artifact_paths:
           - "**/build/instrumented-tests-tablet/**/*"
