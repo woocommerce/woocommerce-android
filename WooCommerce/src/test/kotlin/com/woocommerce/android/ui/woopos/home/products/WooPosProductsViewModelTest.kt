@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
@@ -144,6 +146,24 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
         assertThat(contentState.loadingMore).isFalse()
+    }
+
+    @Test
+    fun `when item clicked, then send event to parent`() = runTest {
+        // GIVEN
+        val product = WooPosProductsListItem(
+            id = 1,
+            name = "Product 1",
+            price = "$10.0",
+            imageUrl = "https://test.com"
+        )
+        val viewModel = createViewMode()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(product))
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ItemClickedInProductSelector(product.id))
     }
 
     private fun createViewMode() =
