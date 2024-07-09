@@ -281,7 +281,10 @@ class MoreMenuViewModel @Inject constructor(
                 }
             }
 
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen))
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(
+                url = urlToOpen,
+                successUrl = AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUCCESS_SUFFIX)
+            )
             // This is just temporary to test this function,
             // in practice we want to set this to true if a campaign is successfully created in webview.
             if (!hasCreatedGoogleAdsCampaign) {
@@ -380,7 +383,7 @@ class MoreMenuViewModel @Inject constructor(
         object ViewPayments : MoreMenuEvent()
         object OpenBlazeCampaignListEvent : MoreMenuEvent()
         data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
-        data class ViewGoogleForWooEvent(val url: String) : MoreMenuEvent()
+        data class ViewGoogleForWooEvent(val url: String, val successUrl: String) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()

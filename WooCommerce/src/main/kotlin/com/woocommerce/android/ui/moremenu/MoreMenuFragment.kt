@@ -97,7 +97,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
-                is ViewGoogleForWooEvent -> openInExitAwareWebview(event.url)
+                is ViewGoogleForWooEvent -> openInExitAwareWebview(event.url, event.successUrl)
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
@@ -153,13 +153,13 @@ class MoreMenuFragment : TopLevelFragment() {
         ChromeCustomTabUtils.launchUrl(requireContext(), url)
     }
 
-    private fun openInExitAwareWebview(url: String) {
+    private fun openInExitAwareWebview(url: String, successUrl: String) {
         // todo-11917: The following is a test case where the webview exits automatically when the
         //  GLA Report tab is opened. It needs to be replaced with the right success URL.
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
                 urlToLoad = url,
-                urlsToTriggerExit = arrayOf("wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Freports"),
+                urlsToTriggerExit = arrayOf(successUrl),
                 urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
             )
         )
