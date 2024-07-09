@@ -257,6 +257,29 @@ class WooPosCartViewModelTest : BaseUnitTest() {
         ).sendToParent(ChildToParentEvent.OrderCreation.OrderCreationSucceeded(orderId))
     }
 
+    @Test
+    fun `given checkout clicked, when order creation fails, then should update state and send event to parent`() =
+        testBlocking {
+            // GIVEN
+            val productIds = listOf(1L)
+            val exception = Exception("Order failed")
+            whenever(repository.createOrderWithProducts(eq(productIds))).thenReturn(Result.failure(exception))
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(repository.getProductById(eq(1L))).thenReturn(generateProductWithFirstImage(1L))
+
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            // WHEN
+            parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.ItemClickedInProductSelector(1L))
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+            // THEN
+            assertEquals(false, states.last().isOrderCreationInProgress)
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OrderCreation.OrderCreationFailed)
+        }
+
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
             childrenToParentEventSender,
