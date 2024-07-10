@@ -132,4 +132,14 @@ object AppUrls {
 
     fun getScreenshotUrl(themeDemoUrl: String) =
         "https://s0.wp.com/mshots/v1/$themeDemoUrl?demo=true/?w=1200&h=2400&vpw=400&vph=800"
+
+    // Google for Woo
+    const val GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX =
+        "admin.php?page=wc-admin&path=%2Fgoogle%2Fsetup-ads"
+
+    const val GOOGLE_ADMIN_CAMPAIGN_CREATION_SUCCESS_SUFFIX =
+        "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard&campaign=saved"
+
+    const val GOOGLE_ADMIN_DASHBOARD =
+        "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard"
 }
