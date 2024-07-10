@@ -16,7 +16,8 @@ class WooPosProductsDataSource @Inject constructor(
     private val productStore: WCProductStore,
     private val site: SelectedSite,
 ) {
-    val hasMorePages = handler.canLoadMore.get()
+    val hasMorePages
+        get() = handler.canLoadMore.get()
 
     val products: Flow<List<Product>> = handler.productsFlow
         .map { it.filter { product -> product.price != null } }
