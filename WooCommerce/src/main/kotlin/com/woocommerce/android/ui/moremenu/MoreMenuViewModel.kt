@@ -27,12 +27,16 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.WooPOSCheckStatus.Disabled
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.WooPOSCheckStatus.Enabled
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.WooPOSCheckStatus.Loading
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.ui.woopos.IsWooPosFFEnabled
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -41,6 +45,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -66,6 +71,7 @@ class MoreMenuViewModel @Inject constructor(
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val isWooPosEnabled: IsWooPosEnabled,
+    private val isWooPosFFEnabled: IsWooPosFFEnabled,
 ) : ScopedViewModel(savedState) {
     private var hasCreatedGoogleAdsCampaign = false
 
@@ -74,11 +80,12 @@ class MoreMenuViewModel @Inject constructor(
             unseenReviewsCountHandler.observeUnseenCount(),
             selectedSite.observe().filterNotNull(),
             moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
-            loadSitePlanName()
-        ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName ->
+            loadSitePlanName(),
+            checkWooPosAvailability()
+        ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName, wooPosAvailabilityStatus ->
             MoreMenuViewState(
                 menuSections = listOf(
-                    generatePOSSection(),
+                    generatePOSSection(wooPosAvailabilityStatus),
                     generateSettingsMenuButtons(),
                     generateGeneralSection(
                         unseenReviewsCount = count,
@@ -102,22 +109,31 @@ class MoreMenuViewModel @Inject constructor(
         launch { trackBlazeDisplayed() }
     }
 
-    private suspend fun generatePOSSection() =
-        MoreMenuItemSection(
-            title = null,
-            items = listOf<MoreMenuItem>(
-                MoreMenuItem.Button(
-                    title = R.string.more_menu_button_woo_pos,
-                    description = R.string.more_menu_button_woo_pos_description,
-                    icon = R.drawable.ic_more_menu_pos,
-                    extraIcon = R.drawable.ic_more_menu_pos_extra,
-                    isVisible = isWooPosEnabled(),
-                    onClick = {
-                        triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
-                    }
-                )
+    private fun generatePOSSection(wooPosAvailabilityStatus: WooPOSCheckStatus) =
+        when (wooPosAvailabilityStatus) {
+            Loading -> MoreMenuItemSection(
+                title = null,
+                items = listOf<MoreMenuItem>(MoreMenuItem.Loading(isVisible = true))
             )
-        )
+
+            Enabled, Disabled -> {
+                MoreMenuItemSection(
+                    title = null,
+                    items = listOf<MoreMenuItem>(
+                        MoreMenuItem.Button(
+                            title = R.string.more_menu_button_woo_pos,
+                            description = R.string.more_menu_button_woo_pos_description,
+                            icon = R.drawable.ic_more_menu_pos,
+                            extraIcon = R.drawable.ic_more_menu_pos_extra,
+                            isVisible = wooPosAvailabilityStatus == Enabled,
+                            onClick = {
+                                triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
+                            }
+                        )
+                    )
+                )
+            }
+        }
 
     @Suppress("LongMethod")
     private suspend fun generateGeneralSection(
@@ -283,6 +299,7 @@ class MoreMenuViewModel @Inject constructor(
                 hasCreatedGoogleAdsCampaign || hasGoogleAdsCampaigns() -> {
                     selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
                 }
+
                 else -> {
                     selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
                 }
@@ -373,8 +390,23 @@ class MoreMenuViewModel @Inject constructor(
         }
         .onStart { emit("") }
 
+    private fun checkWooPosAvailability(): Flow<WooPOSCheckStatus> =
+        flow {
+            if (!isWooPosFFEnabled()) {
+                emit(Disabled)
+                return@flow
+            }
+
+            emit(Loading)
+            emit(if (isWooPosEnabled()) Enabled else Disabled)
+        }
+
     private val SitePlan.formattedPlanName
         get() = generateFormattedPlanName(resourceProvider)
+
+    private enum class WooPOSCheckStatus {
+        Loading, Enabled, Disabled
+    }
 
     data class MoreMenuViewState(
         val menuSections: List<MoreMenuItemSection>,
