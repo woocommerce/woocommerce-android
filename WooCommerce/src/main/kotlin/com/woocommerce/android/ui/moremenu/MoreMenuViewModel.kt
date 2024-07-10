@@ -105,9 +105,7 @@ class MoreMenuViewModel @Inject constructor(
     ) = listOf(
         generatePOSSection(moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.WooPos)),
         generateSettingsMenuButtons(
-            settingsMenuButtonState = moreMenuButtonStatus.getButtonStatus(
-                MoreMenuButtonStatus.Type.Settings
-            )
+            settingsMenuButtonState = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.Settings)
         ),
         generateGeneralSection(
             unseenReviewsCount = count,
@@ -115,10 +113,10 @@ class MoreMenuViewModel @Inject constructor(
             googleForWooState = moreMenuButtonStatus.getButtonStatus(
                 MoreMenuButtonStatus.Type.GoogleForWoo
             ),
-            blazeStatus = moreMenuButtonStatus.getButtonStatus(
+            blazeState = moreMenuButtonStatus.getButtonStatus(
                 MoreMenuButtonStatus.Type.Blaze
             ),
-            inboxStatus = moreMenuButtonStatus.getButtonStatus(
+            inboxState = moreMenuButtonStatus.getButtonStatus(
                 MoreMenuButtonStatus.Type.Inbox
             ),
         )
@@ -129,7 +127,7 @@ class MoreMenuViewModel @Inject constructor(
         launch { trackBlazeDisplayed() }
     }
 
-    private fun generatePOSSection(wooPosAvailabilityStatus: MoreMenuButtonStatus.State) =
+    private fun generatePOSSection(wooPosState: MoreMenuButtonStatus.State) =
         MoreMenuItemSection(
             title = null,
             items = listOf(
@@ -138,7 +136,7 @@ class MoreMenuViewModel @Inject constructor(
                     description = R.string.more_menu_button_woo_pos_description,
                     icon = R.drawable.ic_more_menu_pos,
                     extraIcon = R.drawable.ic_more_menu_pos_extra,
-                    state = wooPosAvailabilityStatus,
+                    state = wooPosState,
                     onClick = {
                         triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
                     }
@@ -151,8 +149,8 @@ class MoreMenuViewModel @Inject constructor(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
         googleForWooState: MoreMenuButtonStatus.State,
-        blazeStatus: MoreMenuButtonStatus.State,
-        inboxStatus: MoreMenuButtonStatus.State,
+        blazeState: MoreMenuButtonStatus.State,
+        inboxState: MoreMenuButtonStatus.State,
     ) = MoreMenuItemSection(
         title = R.string.more_menu_general_section_title,
         items = listOf(
@@ -175,7 +173,7 @@ class MoreMenuViewModel @Inject constructor(
                 description = R.string.more_menu_button_blaze_description,
                 icon = R.drawable.ic_blaze,
                 onClick = ::onPromoteProductsWithBlaze,
-                state = blazeStatus,
+                state = blazeState,
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_wс_admin,
@@ -215,7 +213,7 @@ class MoreMenuViewModel @Inject constructor(
                 description = R.string.more_menu_button_inbox_description,
                 icon = R.drawable.ic_more_menu_inbox,
                 onClick = ::onInboxButtonClick,
-                state = inboxStatus,
+                state = inboxState,
             )
         )
     )
@@ -405,41 +403,34 @@ class MoreMenuViewModel @Inject constructor(
         }
         .onStart { emit("") }
 
-    private fun checkFeaturesAvailability(): Flow<MoreMenuButtonStatus> =
-        merge(
+    private fun checkFeaturesAvailability(): Flow<MoreMenuButtonStatus> {
+        val flows = mutableListOf(
             doCheckAvailability(MoreMenuButtonStatus.Type.Blaze) { isBlazeEnabled() },
             doCheckAvailability(MoreMenuButtonStatus.Type.GoogleForWoo) { isGoogleForWooEnabled() },
             doCheckAvailability(MoreMenuButtonStatus.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
-            doCheckAvailability(MoreMenuButtonStatus.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
-
-            if (!isWooPosFFEnabled()) {
-                flow {
-                    emit(
-                        MoreMenuButtonStatus(MoreMenuButtonStatus.Type.WooPos, MoreMenuButtonStatus.State.Hidden)
-                    )
-                }
-            } else {
-                doCheckAvailability(MoreMenuButtonStatus.Type.WooPos) { isWooPosEnabled() }
-            }
+            doCheckAvailability(MoreMenuButtonStatus.Type.Settings) { moreMenuRepository.isUpgradesEnabled() }
         )
+
+        flows += if (isWooPosFFEnabled()) {
+            doCheckAvailability(MoreMenuButtonStatus.Type.WooPos) { isWooPosEnabled() }
+        } else {
+            flow {
+                emit(MoreMenuButtonStatus(MoreMenuButtonStatus.Type.WooPos, MoreMenuButtonStatus.State.Hidden))
+            }
+        }
+
+        return flows.merge()
+    }
 
     private fun doCheckAvailability(
         type: MoreMenuButtonStatus.Type,
         checker: suspend () -> Boolean
-    ): Flow<MoreMenuButtonStatus> =
-        flow {
-            emit(MoreMenuButtonStatus(type, MoreMenuButtonStatus.State.Loading))
-            emit(
-                MoreMenuButtonStatus(
-                    type = type,
-                    state = if (checker()) {
-                        MoreMenuButtonStatus.State.Visible
-                    } else {
-                        MoreMenuButtonStatus.State.Hidden
-                    }
-                )
-            )
-        }
+    ): Flow<MoreMenuButtonStatus> = flow {
+        val state = if (checker()) MoreMenuButtonStatus.State.Visible else MoreMenuButtonStatus.State.Hidden
+        emit(MoreMenuButtonStatus(type, state))
+    }.onStart {
+        emit(MoreMenuButtonStatus(type, MoreMenuButtonStatus.State.Loading))
+    }
 
     private fun MoreMenuButtonStatus.getButtonStatus(type: MoreMenuButtonStatus.Type) =
         if (this.type == type) {
