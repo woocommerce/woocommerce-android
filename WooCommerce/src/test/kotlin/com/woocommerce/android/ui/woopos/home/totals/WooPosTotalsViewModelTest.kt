@@ -2,13 +2,13 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.woopos.WooPosBaseUnitTest
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
@@ -19,7 +19,7 @@ import org.mockito.kotlin.whenever
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosTotalsViewModelTest : BaseUnitTest() {
+class WooPosTotalsViewModelTest : WooPosBaseUnitTest() {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
