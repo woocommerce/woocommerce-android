@@ -107,7 +107,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
     protected lateinit var totalsHelper: OrderCreateEditTotalsHelper
     private lateinit var getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
-    private lateinit var feedbackRepository: FeedbackRepository
+    protected lateinit var feedbackRepository: FeedbackRepository
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -307,16 +307,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when shipping added or edited, send tracks event`() {
-        sut.onShippingEdited(BigDecimal.TEN, "")
-
-        verify(tracker).track(
-            AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow),
-        )
-    }
-
-    @Test
     fun `when shipping line added or edited, send tracks event`() {
         val result = ShippingUpdateResult(
             id = null,
@@ -466,17 +456,20 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when shipping method removed, send tracks event`() {
+        val itemId = 2L
         val shippingLines = listOf(
             Order.ShippingLine(
+                itemId = itemId,
                 methodId = "other",
                 total = BigDecimal(10),
+                totalTax = BigDecimal.ZERO,
                 methodTitle = "name"
             )
         )
         val order = defaultOrderValue.copy(shippingLines = shippingLines)
         initMocksForAnalyticsWithOrder(order)
         createSut()
-        sut.onShippingRemoved()
+        sut.onRemoveShipping(itemId)
         verify(tracker).track(
             AnalyticsEvent.ORDER_SHIPPING_METHOD_REMOVE,
             mapOf(
