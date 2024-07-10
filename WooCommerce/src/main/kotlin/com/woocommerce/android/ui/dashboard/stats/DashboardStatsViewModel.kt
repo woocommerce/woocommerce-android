@@ -205,19 +205,41 @@ class DashboardStatsViewModel @AssistedInject constructor(
             .collect {
                 when (it) {
                     is LoadStatsResult.RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
-                    is LoadStatsResult.RevenueStatsError ->
+                    is LoadStatsResult.RevenueStatsError -> {
                         _revenueStatsState.value = RevenueStatsViewState.GenericError
+                        trackEventForStatsCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
+                        )
+                    }
 
-                    LoadStatsResult.PluginNotActive ->
+                    LoadStatsResult.PluginNotActive -> {
                         _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
+                        trackEventForStatsCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
+                        )
+                    }
 
                     is LoadStatsResult.VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(
                         stats = it.stats, totalVisitorCount = it.totalVisitorCount
                     )
 
-                    is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                    is LoadStatsResult.VisitorStatUnavailable ->
+                    is LoadStatsResult.VisitorsStatsError -> {
+                        _visitorStatsState.value = VisitorStatsViewState.Error
+                        trackEventForStatsCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
+                        )
+                    }
+
+                    is LoadStatsResult.VisitorStatUnavailable -> {
                         _visitorStatsState.value = VisitorStatsViewState.Unavailable
+                        trackEventForStatsCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
+                        )
+                    }
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
             }
@@ -298,10 +320,10 @@ class DashboardStatsViewModel @AssistedInject constructor(
             )
         }
 
-    private fun trackEventForStatsCard(event: AnalyticsEvent) {
+    private fun trackEventForStatsCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
-            event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier)
+            stat = event,
+            properties = properties + mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier)
         )
     }
 
