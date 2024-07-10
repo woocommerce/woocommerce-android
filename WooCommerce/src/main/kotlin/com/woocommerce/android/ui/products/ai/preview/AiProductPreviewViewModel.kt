@@ -25,12 +25,19 @@ class AiProductPreviewViewModel @Inject constructor(
             description = "Product Description"
         )
 
-        val propertyGroups = buildProductPreviewProperties(productModel.toProduct(emptyList(), emptyList()))
+        val propertyGroups = buildProductPreviewProperties(
+            productModel.toProduct(
+                variant = 0,
+                existingCategories = emptyList(),
+                existingTags = emptyList()
+            )
+        )
 
         emit(
             State.Success(
-                productModel,
-                propertyGroups.map { group ->
+                selectedVariant = 0,
+                product = productModel,
+                propertyGroups = propertyGroups.map { group ->
                     group.map { property ->
                         ProductPropertyCard(
                             icon = property.icon,
@@ -55,16 +62,17 @@ class AiProductPreviewViewModel @Inject constructor(
     sealed interface State {
         data object Loading : State
         data class Success(
+            private val selectedVariant: Int,
             private val product: AIProductModel,
             val propertyGroups: List<List<ProductPropertyCard>>,
             val shouldShowFeedbackView: Boolean = true
         ) : State {
             val title: String
-                get() = product.name
+                get() = product.names[selectedVariant]
             val description: String
-                get() = product.description
+                get() = product.descriptions[selectedVariant]
             val shortDescription: String
-                get() = product.shortDescription
+                get() = product.shortDescriptions[selectedVariant]
         }
 
         data class Error(

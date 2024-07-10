@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.products.ProductType.SIMPLE
 import java.math.BigDecimal
 
 data class AIProductModel(
-    val selectedVersion: Int = 0,
     val names: List<String>,
     val descriptions: List<String>,
     val shortDescriptions: List<String>,
@@ -19,23 +18,15 @@ data class AIProductModel(
     val categories: List<String>? = null,
     val tags: List<String>? = null
 ) {
-    val name: String
-        get() = names[selectedVersion]
-
-    val description: String
-        get() = descriptions[selectedVersion]
-
-    val shortDescription: String
-        get() = shortDescriptions[selectedVersion]
-
     @Suppress("unused")
     fun toProduct(
+        variant: Int,
         existingCategories: List<ProductCategory>,
         existingTags: List<ProductTag>
     ): Product = ProductHelper.getDefaultNewProduct(SIMPLE, isVirtual).copy(
-        name = name,
-        description = description,
-        shortDescription = shortDescription,
+        name = names[variant],
+        description = descriptions[variant],
+        shortDescription = shortDescriptions[variant],
         regularPrice = price,
         categories = getCategories(existingCategories),
         tags = getTags(existingTags),
