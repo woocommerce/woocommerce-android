@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
@@ -24,7 +25,8 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.google.IsGoogleListingsAdsEnabled
+import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
+import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
@@ -61,9 +63,12 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled,
+    private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
+    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val isWooPosEnabled: IsWooPosEnabled,
 ) : ScopedViewModel(savedState) {
+    private var hasCreatedGoogleAdsCampaign = false
+
     val moreMenuViewState =
         combine(
             unseenReviewsCountHandler.observeUnseenCount(),
@@ -133,7 +138,7 @@ class MoreMenuViewModel @Inject constructor(
                 description = R.string.more_menu_button_google_description,
                 icon = R.drawable.google_logo,
                 onClick = ::onPromoteProductsWithGoogle,
-                isVisible = isGoogleListingsAdsEnabled()
+                isVisible = isGoogleForWooEnabled()
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_blaze,
@@ -272,6 +277,24 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun onPromoteProductsWithGoogle() {
         WooLog.d(WooLog.T.GOOGLE_ADS, "onPromoteProductsWithGoogle")
+
+        launch {
+            val urlToOpen = when {
+                hasCreatedGoogleAdsCampaign || hasGoogleAdsCampaigns() -> {
+                    selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
+                }
+                else -> {
+                    selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+                }
+            }
+
+            triggerEvent(MoreMenuEvent.ViewGoogleEvent(urlToOpen))
+            // This is just temporary to test this function,
+            // in practice we want to set this to true if a campaign is successfully created in webview.
+            if (!hasCreatedGoogleAdsCampaign) {
+                hasCreatedGoogleAdsCampaign = true
+            }
+        }
     }
 
     private fun onPromoteProductsWithBlaze() {
@@ -370,6 +393,7 @@ class MoreMenuViewModel @Inject constructor(
         object OpenBlazeCampaignListEvent : MoreMenuEvent()
         data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
+        data class ViewGoogleEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
         object ViewInboxEvent : MoreMenuEvent()
