@@ -105,3 +105,10 @@ steps:
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
         artifact_paths:
           - "**/build/instrumented-tests/**/*"
+      - label: "Instrumented tests but sharded"
+        plugins: [$CI_TOOLKIT]
+        command: |
+          install_gems
+          bundle exec fastlane run configure_apply
+          ./gradlew assembleVanillaDebug assembleVanillaDebugAndroidTest
+          ./gradlew :WooCommerce:runFlank

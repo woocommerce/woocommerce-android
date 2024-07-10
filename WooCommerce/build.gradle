@@ -5,6 +5,7 @@ import se.bjurr.violations.lib.model.SEVERITY
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id "com.osacky.fladle"
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'com.google.dagger.hilt.android'
     id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
@@ -201,6 +202,18 @@ android {
     testOptions {
         animationsDisabled = true
     }
+}
+
+fladle {
+    serviceAccountCredentials = rootProject.file(".configure-files/firebase.secrets.json")
+    variant = "debugVanilla"
+    debugApk = "$buildDir/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk"
+    instrumentationApk = "$buildDir/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk"
+
+    // Default recipe
+    maxTestShards = 50
+    shardTime = 120
+    smartFlankGcsPath = "gs://fladle-results/smart-flank/JUnitReport.xml"
 }
 
 dependencies {

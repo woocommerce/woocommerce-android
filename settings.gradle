@@ -44,6 +44,7 @@ pluginManagement {
         id 'com.google.devtools.ksp' version gradle.ext.kspVersion
         id "com.google.protobuf" version gradle.ext.protobufVersion
         id "com.autonomousapps.dependency-analysis" version gradle.ext.dependencyAnalysisVersion
+        id "com.osacky.fladle" version "0.17.5"
     }
 }
 
