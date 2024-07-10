@@ -19,7 +19,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -80,23 +82,19 @@ private fun WooPosProductsScreen(
     onEndOfProductListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
 ) {
-    Column(
-        modifier
-            .fillMaxHeight()
-    ) {
-        Text(
-            text = stringResource(id = R.string.woopos_products_screen_title),
-            style = MaterialTheme.typography.h3,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-        val state = productsStateFlow.collectAsState()
-        val pullToRefreshState =
-            rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
-        Box(
-            modifier = Modifier.pullRefresh(pullToRefreshState),
+    val state = productsStateFlow.collectAsState()
+    val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
+    Box(modifier = modifier.fillMaxSize().pullRefresh(pullToRefreshState)) {
+        Column(
+            modifier.fillMaxHeight()
         ) {
+            Text(
+                text = stringResource(id = R.string.woopos_products_screen_title),
+                style = MaterialTheme.typography.h3,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
             when (val productsState = state.value) {
                 is WooPosProductsViewState.Content -> {
                     ProductsList(
@@ -114,14 +112,14 @@ private fun WooPosProductsScreen(
                     ProductsEmptyList()
                 }
 
-                is WooPosProductsViewState.Error -> TODO()
+                is WooPosProductsViewState.Error -> ProductsEmptyList()
             }
-            PullRefreshIndicator(
-                modifier = Modifier.align(Alignment.TopCenter),
-                refreshing = state.value.reloadingProducts,
-                state = pullToRefreshState
-            )
         }
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = state.value.reloadingProducts,
+            state = pullToRefreshState
+        )
     }
 }
 
@@ -277,7 +275,7 @@ private fun ProductItem(
 @Composable
 fun ProductsEmptyList() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
         Text(
