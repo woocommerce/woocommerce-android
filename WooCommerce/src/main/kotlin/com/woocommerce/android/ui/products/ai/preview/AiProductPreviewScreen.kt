@@ -227,7 +227,7 @@ private fun ProductImage(
         dropDownActions = listOf(ImageAction.View, ImageAction.Remove),
         modifier = modifier
             .background(
-                color = colorResource(id = R.color.woo_gray_6),
+                color = colorResource(id = R.color.ai_generated_text_background),
                 shape = RoundedCornerShape(8.dp)
             )
     )
