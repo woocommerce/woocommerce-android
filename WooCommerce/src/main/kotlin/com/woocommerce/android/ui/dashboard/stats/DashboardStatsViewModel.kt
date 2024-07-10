@@ -246,6 +246,10 @@ class DashboardStatsViewModel @AssistedInject constructor(
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
             }
 
+        observeLastUpdate(selectedRange)
+    }
+
+    private fun observeLastUpdate(selectedRange: StatsTimeRangeSelection) {
         launch {
             observeLastUpdate(
                 selectedRange,
