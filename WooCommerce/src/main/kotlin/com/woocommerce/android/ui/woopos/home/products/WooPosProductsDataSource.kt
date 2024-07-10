@@ -24,7 +24,7 @@ class WooPosProductsDataSource @Inject constructor(
 
     suspend fun loadSimpleProducts(forceRefreshProducts: Boolean = false): Result<Unit> {
         if (forceRefreshProducts) {
-            productStore.deleteProductsForSite(site.getOrNull()!!)
+            productStore.deleteProductsForSite(site.get())
         }
         return handler.loadFromCacheAndFetch(
             searchType = ProductListHandler.SearchType.DEFAULT,
