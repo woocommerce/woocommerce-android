@@ -29,7 +29,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 @ExperimentalCoroutinesApi
-class CustomerListViewModelTest : BaseUnitTest() {
+class CustomerListSelectionViewModelTest : BaseUnitTest() {
     private val customerListRepository: CustomerListRepository = mock {
         onBlocking {
             searchCustomerListWithEmail(
@@ -1106,7 +1106,7 @@ class CustomerListViewModelTest : BaseUnitTest() {
         assertThat(viewModel.event.value).isEqualTo(MultiLiveEvent.Event.Exit)
     }
 
-    private fun initViewModel() = CustomerListViewModel(
+    private fun initViewModel() = CustomerListSelectionViewModel(
         savedState = CustomerListDialogFragmentArgs(
             allowCustomerCreation = true,
             allowGuests = true

@@ -67,7 +67,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment
+import com.woocommerce.android.ui.orders.creation.customerlist.OrderCustomerListFragment
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardFragment.Companion.GIFT_CARD_RESULT
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
@@ -1117,7 +1117,7 @@ class OrderCreateEditFormFragment :
         handleResult<GiftCardResult>(GIFT_CARD_RESULT) { result ->
             viewModel.onGiftCardSelected(result.selectedGiftCard)
         }
-        handleResult<Order.Customer>(CustomerListFragment.KEY_CUSTOMER_RESULT) {
+        handleResult<Order.Customer>(OrderCustomerListFragment.KEY_CUSTOMER_RESULT) {
             viewModel.onCustomerEdited(it)
         }
         handleResult<ShippingUpdateResult>(UPDATE_SHIPPING_RESULT) { result ->
