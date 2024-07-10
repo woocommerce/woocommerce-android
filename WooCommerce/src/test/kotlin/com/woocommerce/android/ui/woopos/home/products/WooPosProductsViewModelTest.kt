@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.home.products
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -12,7 +14,8 @@ import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
 
-class WooPosProductsViewModelTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class WooPosProductsViewModelTest: BaseUnitTest() {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val priceFormat: WooPosFormatPrice = mock {
