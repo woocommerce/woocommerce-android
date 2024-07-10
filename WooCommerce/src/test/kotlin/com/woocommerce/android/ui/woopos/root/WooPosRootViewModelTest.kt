@@ -137,7 +137,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
 
         val job = launch {
             sut.rootScreenState.drop(1).collect {
-                val state = it.cardReaderStatus as WooPosRootScreenState.WooPosCardReaderStatus.NotConnected
+                val state = it.cardReaderStatus as WooPosCardReaderStatus.NotConnected
                 assertThat(state.title).isEqualTo(notConnectedStatus.errorMessage)
             }
         }
