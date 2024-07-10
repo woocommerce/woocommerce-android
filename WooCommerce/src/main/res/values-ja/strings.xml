@@ -609,7 +609,7 @@ Language: ja_JP
     <string name="product_creation_ai_preview_details_section">詳細</string>
     <string name="product_creation_ai_preview_description_section">商品説明</string>
     <string name="product_creation_ai_preview_name_section">商品名</string>
-    <string name="product_creation_ai_preview_subtitle">以下の情報は後からいつでも変更できます。</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">以下の情報は後からいつでも変更できます。</string>
     <string name="product_creation_ai_preview_title">プレビュー</string>
     <string name="product_creation_ai_about_product_continue_button">商品情報を作成</string>
     <string name="product_creation_ai_about_product_set_tone">トーンと声を設定する</string>

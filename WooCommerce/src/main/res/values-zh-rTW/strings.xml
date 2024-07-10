@@ -609,7 +609,7 @@ Language: zh_TW
     <string name="product_creation_ai_preview_details_section">詳細資料</string>
     <string name="product_creation_ai_preview_description_section">產品說明</string>
     <string name="product_creation_ai_preview_name_section">產品名稱</string>
-    <string name="product_creation_ai_preview_subtitle">稍後也可隨時變更下方詳細資訊。</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">稍後也可隨時變更下方詳細資訊。</string>
     <string name="product_creation_ai_preview_title">預覽</string>
     <string name="product_creation_ai_about_product_continue_button">建立產品詳細資料</string>
     <string name="product_creation_ai_about_product_set_tone">設定語氣和風格</string>

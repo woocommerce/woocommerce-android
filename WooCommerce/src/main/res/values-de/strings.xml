@@ -609,7 +609,7 @@ Language: de
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_description_section">Produktbeschreibung</string>
     <string name="product_creation_ai_preview_name_section">Produktname</string>
-    <string name="product_creation_ai_preview_subtitle">Du kannst die unten angegebenen Informationen später jederzeit ändern.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Du kannst die unten angegebenen Informationen später jederzeit ändern.</string>
     <string name="product_creation_ai_preview_title">Vorschau</string>
     <string name="product_creation_ai_about_product_continue_button">Produktdetails erstellen</string>
     <string name="product_creation_ai_about_product_set_tone">Sprache und Tonalität festlegen</string>
