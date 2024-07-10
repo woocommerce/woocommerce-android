@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.google
 
 import com.woocommerce.android.extensions.isVersionAtLeast
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.util.FeatureFlag
 import org.json.JSONArray
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -11,7 +10,6 @@ import javax.inject.Inject
 class IsGoogleForWooEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val googleRepository: GoogleRepository,
-    private val pluginRepository: PluginRepository,
     private val wooCommerceStore: WooCommerceStore
 ) {
 
@@ -39,7 +37,8 @@ class IsGoogleForWooEnabled @Inject constructor(
             val currentPluginName = plugin.optString("plugin")
             val currentPluginVersion = plugin.optString("version")
             if (currentPluginName == GOOGLE_FOR_WOO_PLUGIN_NAME &&
-                currentPluginVersion.isVersionAtLeast(GOOGLE_FOR_WOO_PLUGIN_MIN_VERSION)) {
+                currentPluginVersion.isVersionAtLeast(GOOGLE_FOR_WOO_PLUGIN_MIN_VERSION)
+            ) {
                 return true
             }
         }
