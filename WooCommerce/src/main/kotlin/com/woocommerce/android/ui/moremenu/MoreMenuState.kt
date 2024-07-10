@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.moremenu
 
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
@@ -31,14 +35,41 @@ sealed class MoreMenuEvent : MultiLiveEvent.Event() {
 }
 
 data class MoreMenuButtonStatus(
-    val type: MoreMenuButtonType,
-    val status: MoreMenuButtonCheckStatus
+    val type: Type,
+    val state: State,
+) {
+    enum class Type {
+        Blaze, GoogleForWoo, WooPos, Inbox, Settings,
+    }
+
+    enum class State {
+        Loading, Visible, Hidden,
+    }
+}
+
+data class MoreMenuItemSection(
+    @StringRes val title: Int?,
+    val items: List<MoreMenuItemButton>,
+    val isVisible: Boolean = true,
 )
 
-enum class MoreMenuButtonType {
-    Blaze, GoogleForWoo, WooPos
-}
+data class MoreMenuItemButton(
+    @StringRes val title: Int,
+    @StringRes val description: Int,
+    @DrawableRes val icon: Int,
+    @DrawableRes val extraIcon: Int? = null,
+    val isVisible: Boolean = true,
+    val state: MoreMenuButtonStatus.State = MoreMenuButtonStatus.State.Visible,
+    val badgeState: BadgeState? = null,
+    val onClick: () -> Unit = {},
+)
 
-enum class MoreMenuButtonCheckStatus {
-    Loading, Enabled, Disabled
-}
+data class BadgeState(
+    @DimenRes val badgeSize: Int,
+    @ColorRes val backgroundColor: Int,
+    @ColorRes val textColor: Int,
+    val textState: TextState,
+    val animateAppearance: Boolean = false,
+)
+
+data class TextState(val text: String, @DimenRes val fontSize: Int)

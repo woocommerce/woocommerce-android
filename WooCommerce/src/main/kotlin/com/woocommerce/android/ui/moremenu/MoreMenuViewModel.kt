@@ -27,9 +27,6 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.WooPOSCheckStatus.Disabled
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.WooPOSCheckStatus.Enabled
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.WooPOSCheckStatus.Loading
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
@@ -46,6 +43,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -80,15 +78,20 @@ class MoreMenuViewModel @Inject constructor(
             selectedSite.observe().filterNotNull(),
             moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
             loadSitePlanName(),
-            checkWooPosAvailability()
-        ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName, wooPosAvailabilityStatus ->
+            checkFeaturesAvailability()
+        ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName, moreMenuButtonStatus ->
             MoreMenuViewState(
                 menuSections = listOf(
-                    generatePOSSection(wooPosAvailabilityStatus),
-                    generateSettingsMenuButtons(),
+                    generatePOSSection(moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.WooPos)),
+                    generateSettingsMenuButtons(
+                        settingsMenuButtonState = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.Settings)
+                    ),
                     generateGeneralSection(
                         unseenReviewsCount = count,
                         paymentsFeatureWasClicked = paymentsFeatureWasClicked,
+                        googleForWooState = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.GoogleForWoo),
+                        blazeStatus = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.Blaze),
+                        inboxStatus = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.Inbox),
                     )
                 ).map { section ->
                     section.copy(
@@ -108,121 +111,116 @@ class MoreMenuViewModel @Inject constructor(
         launch { trackBlazeDisplayed() }
     }
 
-    private fun generatePOSSection(wooPosAvailabilityStatus: WooPOSCheckStatus) =
-        when (wooPosAvailabilityStatus) {
-            Loading -> MoreMenuItemSection(
-                title = null,
-                items = listOf<MoreMenuItem>(MoreMenuItem.Loading(isVisible = true))
-            )
-
-            Enabled, Disabled -> {
-                MoreMenuItemSection(
-                    title = null,
-                    items = listOf<MoreMenuItem>(
-                        MoreMenuItem.Button(
-                            title = R.string.more_menu_button_woo_pos,
-                            description = R.string.more_menu_button_woo_pos_description,
-                            icon = R.drawable.ic_more_menu_pos,
-                            extraIcon = R.drawable.ic_more_menu_pos_extra,
-                            isVisible = wooPosAvailabilityStatus == Enabled,
-                            onClick = {
-                                triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
-                            }
-                        )
-                    )
+    private fun generatePOSSection(wooPosAvailabilityStatus: MoreMenuButtonStatus.State) =
+        MoreMenuItemSection(
+            title = null,
+            items = listOf(
+                MoreMenuItemButton(
+                    title = R.string.more_menu_button_woo_pos,
+                    description = R.string.more_menu_button_woo_pos_description,
+                    icon = R.drawable.ic_more_menu_pos,
+                    extraIcon = R.drawable.ic_more_menu_pos_extra,
+                    state = wooPosAvailabilityStatus,
+                    onClick = {
+                        triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
+                    }
                 )
-            }
-        }
+            )
+        )
 
     @Suppress("LongMethod")
     private fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
+        googleForWooState: MoreMenuButtonStatus.State,
+        blazeStatus: MoreMenuButtonStatus.State,
+        inboxStatus: MoreMenuButtonStatus.State,
     ) = MoreMenuItemSection(
         title = R.string.more_menu_general_section_title,
         items = listOf(
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_payments,
                 description = R.string.more_menu_button_payments_description,
                 icon = R.drawable.ic_more_menu_payments,
                 badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
                 onClick = ::onPaymentsButtonClick,
             ),
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_google,
                 description = R.string.more_menu_button_google_description,
                 icon = R.drawable.google_logo,
                 onClick = ::onPromoteProductsWithGoogle,
-                isVisible = isGoogleForWooEnabled()
+                state = googleForWooState,
             ),
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_blaze,
                 description = R.string.more_menu_button_blaze_description,
                 icon = R.drawable.ic_blaze,
                 onClick = ::onPromoteProductsWithBlaze,
-                isVisible = isBlazeEnabled()
+                state = blazeStatus,
             ),
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_wс_admin,
                 description = R.string.more_menu_button_wc_admin_description,
                 icon = R.drawable.ic_more_menu_wp_admin,
                 extraIcon = R.drawable.ic_external,
                 onClick = ::onViewAdminButtonClick
             ),
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_store,
                 description = R.string.more_menu_button_store_description,
                 icon = R.drawable.ic_more_menu_store,
                 extraIcon = R.drawable.ic_external,
                 onClick = ::onViewStoreButtonClick
             ),
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_coupons,
                 description = R.string.more_menu_button_coupons_description,
                 icon = R.drawable.ic_more_menu_coupons,
                 onClick = ::onCouponsButtonClick
             ),
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_reviews,
                 description = R.string.more_menu_button_reviews_description,
                 icon = R.drawable.ic_more_menu_reviews,
                 badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
                 onClick = ::onReviewsButtonClick
             ),
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_customers,
                 description = R.string.more_menu_button_customers_description,
                 icon = R.drawable.icon_multiple_users,
                 onClick = ::onCustomersButtonClick
             ),
-            MoreMenuItem.Button(
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_inbox,
                 description = R.string.more_menu_button_inbox_description,
                 icon = R.drawable.ic_more_menu_inbox,
-                isVisible = moreMenuRepository.isInboxEnabled(),
                 onClick = ::onInboxButtonClick,
+                state = inboxStatus,
             )
         )
     )
 
-    private fun generateSettingsMenuButtons() = MoreMenuItemSection(
-        title = R.string.more_menu_settings_section_title,
-        items = listOf(
-            MoreMenuItem.Button(
-                title = R.string.more_menu_button_settings,
-                description = R.string.more_menu_button_settings_description,
-                icon = R.drawable.ic_more_screen_settings,
-                onClick = ::onSettingsClick
-            ),
-            MoreMenuItem.Button(
-                title = R.string.more_menu_button_subscriptions,
-                description = R.string.more_menu_button_subscriptions_description,
-                icon = R.drawable.ic_more_menu_upgrades,
-                isVisible = moreMenuRepository.isUpgradesEnabled(),
-                onClick = ::onUpgradesButtonClick
+    private fun generateSettingsMenuButtons(settingsMenuButtonState: MoreMenuButtonStatus.State) =
+        MoreMenuItemSection(
+            title = R.string.more_menu_settings_section_title,
+            items = listOf(
+                MoreMenuItemButton(
+                    title = R.string.more_menu_button_settings,
+                    description = R.string.more_menu_button_settings_description,
+                    icon = R.drawable.ic_more_screen_settings,
+                    onClick = ::onSettingsClick
+                ),
+                MoreMenuItemButton(
+                    title = R.string.more_menu_button_subscriptions,
+                    description = R.string.more_menu_button_subscriptions_description,
+                    icon = R.drawable.ic_more_menu_upgrades,
+                    state = settingsMenuButtonState,
+                    onClick = ::onUpgradesButtonClick
+                )
             )
         )
-    )
 
     private suspend fun trackBlazeDisplayed() {
         if (isBlazeEnabled()) {
@@ -377,7 +375,7 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun isPaymentBadgeVisible() = moreMenuViewState.value
         ?.menuSections
-        ?.filterIsInstance<MoreMenuItem.Button>()
+        ?.filterIsInstance<MoreMenuItemButton>()
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
@@ -389,15 +387,47 @@ class MoreMenuViewModel @Inject constructor(
         }
         .onStart { emit("") }
 
-    private fun checkWooPosAvailability(): Flow<MoreMenuButtonCheckStatus> =
-        flow {
-            if (!isWooPosFFEnabled()) {
-                emit(Disabled)
-                return@flow
-            }
+    private fun checkFeaturesAvailability(): Flow<MoreMenuButtonStatus> =
+        merge(
+            doCheckAvailability(MoreMenuButtonStatus.Type.Blaze) { isBlazeEnabled() },
+            doCheckAvailability(MoreMenuButtonStatus.Type.GoogleForWoo) { isGoogleForWooEnabled() },
+            doCheckAvailability(MoreMenuButtonStatus.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
+            doCheckAvailability(MoreMenuButtonStatus.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
 
-            emit(Loading)
-            emit(if (isWooPosEnabled()) Enabled else Disabled)
+            if (!isWooPosFFEnabled()) {
+                flow {
+                    emit(
+                        MoreMenuButtonStatus(MoreMenuButtonStatus.Type.WooPos, MoreMenuButtonStatus.State.Hidden)
+                    )
+                }
+            } else {
+                doCheckAvailability(MoreMenuButtonStatus.Type.WooPos) { isWooPosEnabled() }
+            }
+        )
+
+    private fun doCheckAvailability(
+        type: MoreMenuButtonStatus.Type,
+        checker: suspend () -> Boolean
+    ): Flow<MoreMenuButtonStatus> =
+        flow {
+            emit(MoreMenuButtonStatus(type, MoreMenuButtonStatus.State.Loading))
+            emit(
+                MoreMenuButtonStatus(
+                    type = type,
+                    state = if (checker()) {
+                        MoreMenuButtonStatus.State.Visible
+                    } else {
+                        MoreMenuButtonStatus.State.Hidden
+                    }
+                )
+            )
+        }
+
+    private fun MoreMenuButtonStatus.getButtonStatus(type: MoreMenuButtonStatus.Type) =
+        if (this.type == type) {
+            this.state
+        } else {
+            MoreMenuButtonStatus.State.Hidden
         }
 
     private val SitePlan.formattedPlanName
