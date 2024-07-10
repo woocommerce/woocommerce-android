@@ -74,7 +74,13 @@ class DashboardReviewsViewModel @AssistedInject constructor(
                                 trackEventForReviewsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                                 ViewState.Success(reviews, status)
                             },
-                            onFailure = { ViewState.Error }
+                            onFailure = { error ->
+                                trackEventForReviewsCard(
+                                    AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                                    properties = mapOf(AnalyticsTracker.KEY_ERROR to error.toString())
+                                )
+                                ViewState.Error
+                            }
                         )
                     }
             )
@@ -161,10 +167,10 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         }
     }
 
-    private fun trackEventForReviewsCard(event: AnalyticsEvent) {
+    private fun trackEventForReviewsCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
             event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.REVIEWS.trackingIdentifier)
+            properties + mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.REVIEWS.trackingIdentifier)
         )
     }
 
