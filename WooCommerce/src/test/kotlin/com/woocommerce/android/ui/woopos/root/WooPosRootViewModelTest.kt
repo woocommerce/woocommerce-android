@@ -101,7 +101,9 @@ class WooPosRootViewModelTest : BaseUnitTest() {
         val sut = createSut()
         val job = launch {
             sut.rootScreenState.drop(1).collect {
-                assertThat(it.cardReaderStatus).isEqualTo(com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting)
+                assertThat(
+                    it.cardReaderStatus
+                ).isEqualTo(com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting)
             }
         }
 
@@ -127,7 +129,6 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     @Test
     fun `given reader status as not connected, should update state with not connected status`() = testBlocking {
         // GIVEN
-        val errorMessage = "Connection error"
         val notConnectedStatus = NotConnected()
 
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(notConnectedStatus))
