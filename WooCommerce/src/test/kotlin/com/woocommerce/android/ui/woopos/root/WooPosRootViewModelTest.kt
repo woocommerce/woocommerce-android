@@ -98,12 +98,11 @@ class WooPosRootViewModelTest : BaseUnitTest() {
         whenever(
             cardReaderFacade.readerStatus
         ).thenReturn(flowOf(com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting))
+
         val sut = createSut()
         val job = launch {
             sut.rootScreenState.drop(1).collect {
-                assertThat(
-                    it.cardReaderStatus
-                ).isEqualTo(com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting)
+                assertThat(it.cardReaderStatus).isEqualTo(WooPosRootScreenState.WooPosCardReaderStatus.Connecting)
             }
         }
 
@@ -113,7 +112,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() {
+    fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() = testBlocking {
         // GIVEN
         val sut = createSut()
 
@@ -129,16 +128,15 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     @Test
     fun `given reader status as not connected, should update state with not connected status`() = testBlocking {
         // GIVEN
-        val notConnectedStatus = NotConnected()
+        val notConnectedStatus = com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected()
 
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(notConnectedStatus))
 
         val sut = createSut()
-
         val job = launch {
             sut.rootScreenState.drop(1).collect {
                 val state = it.cardReaderStatus as WooPosCardReaderStatus.NotConnected
-                assertThat(state.title).isEqualTo(notConnectedStatus.errorMessage)
+                assertThat(state.title).isEqualTo(R.string.woopos_reader_disconnected)
             }
         }
 
