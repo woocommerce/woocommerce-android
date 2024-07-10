@@ -27,8 +27,6 @@ abstract class WooPosBaseUnitTest(
         .outerRule(InstantTaskExecutorRule())
         .around(CoroutineTestRule(testDispatcher))
 
-    protected val testScope = TestScope(testDispatcher)
-
     protected fun testBlocking(block: suspend TestScope.() -> Unit) = runTest(testDispatcher) { block() }
 
     class CoroutineTestRule(
