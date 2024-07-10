@@ -292,7 +292,10 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
 
         Column {
             section.items.forEach { item ->
-                MoreMenuButton(item)
+                when (item) {
+                    is MoreMenuItem.Button -> MoreMenuButton(item)
+                    is MoreMenuItem.Loading -> MoreMenuLoading()
+                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
@@ -300,7 +303,18 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
 }
 
 @Composable
-private fun MoreMenuButton(button: MoreMenuItem) {
+fun MoreMenuLoading() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+
+    }
+}
+
+@Composable
+private fun MoreMenuButton(button: MoreMenuItem.Button) {
     Button(
         onClick = button.onClick,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
@@ -414,7 +428,7 @@ private fun MoreMenuPreview() {
                 MoreMenuItemSection(
                     title = null,
                     items = listOf(
-                        MoreMenuItem(
+                        MoreMenuItem.Button(
                             title = R.string.more_menu_button_woo_pos,
                             description = R.string.more_menu_button_woo_pos_description,
                             icon = R.drawable.ic_more_menu_pos,
@@ -425,12 +439,12 @@ private fun MoreMenuPreview() {
                 MoreMenuItemSection(
                     title = R.string.more_menu_settings_section_title,
                     items = listOf(
-                        MoreMenuItem(
+                        MoreMenuItem.Button(
                             title = R.string.more_menu_button_settings,
                             description = R.string.more_menu_button_settings_description,
                             icon = R.drawable.ic_more_screen_settings,
                         ),
-                        MoreMenuItem(
+                        MoreMenuItem.Button(
                             title = R.string.more_menu_button_subscriptions,
                             description = R.string.more_menu_button_subscriptions_description,
                             icon = R.drawable.ic_more_menu_upgrades,
@@ -441,7 +455,7 @@ private fun MoreMenuPreview() {
                 MoreMenuItemSection(
                     title = R.string.more_menu_general_section_title,
                     items = listOf(
-                        MoreMenuItem(
+                        MoreMenuItem.Button(
                             title = R.string.more_menu_button_payments,
                             description = R.string.more_menu_button_payments_description,
                             icon = R.drawable.ic_more_menu_payments,
@@ -453,18 +467,18 @@ private fun MoreMenuPreview() {
                                 animateAppearance = true
                             )
                         ),
-                        MoreMenuItem(
+                        MoreMenuItem.Button(
                             title = R.string.more_menu_button_wс_admin,
                             description = R.string.more_menu_button_wc_admin_description,
                             icon = R.drawable.ic_more_menu_wp_admin,
                             extraIcon = R.drawable.ic_external
                         ),
-                        MoreMenuItem(
+                        MoreMenuItem.Button(
                             title = R.string.more_menu_button_store,
                             description = R.string.more_menu_button_store_description,
                             icon = R.drawable.ic_more_menu_store
                         ),
-                        MoreMenuItem(
+                        MoreMenuItem.Button(
                             title = R.string.more_menu_button_reviews,
                             description = R.string.more_menu_button_reviews_description,
                             icon = R.drawable.ic_more_menu_reviews,
@@ -476,7 +490,7 @@ private fun MoreMenuPreview() {
                                 animateAppearance = false
                             )
                         ),
-                        MoreMenuItem(
+                        MoreMenuItem.Button(
                             title = R.string.more_menu_button_coupons,
                             description = R.string.more_menu_button_coupons_description,
                             icon = R.drawable.ic_more_menu_coupons,
