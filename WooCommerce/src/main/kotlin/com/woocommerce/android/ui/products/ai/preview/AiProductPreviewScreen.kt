@@ -53,7 +53,9 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
         AiProductPreviewScreen(
             state = state,
             onFeedbackReceived = viewModel::onFeedbackReceived,
-            onBackButtonClick = viewModel::onBackButtonClick
+            onBackButtonClick = viewModel::onBackButtonClick,
+            onImageActionSelected = viewModel::onImageActionSelected,
+            onFullScreenImageDismissed = viewModel::onFullScreenImageDismissed
         )
     }
 }
@@ -62,7 +64,9 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
 private fun AiProductPreviewScreen(
     state: AiProductPreviewViewModel.State,
     onFeedbackReceived: (Boolean) -> Unit,
-    onBackButtonClick: () -> Unit
+    onBackButtonClick: () -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit,
+    onFullScreenImageDismissed: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -107,6 +111,8 @@ private fun AiProductPreviewScreen(
                 is AiProductPreviewViewModel.State.Success -> ProductPreviewContent(
                     state = state,
                     onFeedbackReceived = onFeedbackReceived,
+                    onImageActionSelected = onImageActionSelected,
+                    onFullScreenImageDismissed = onFullScreenImageDismissed,
                     modifier = Modifier.fillMaxHeight()
                 )
             }
@@ -125,6 +131,8 @@ private fun AiProductPreviewScreen(
 private fun ProductPreviewContent(
     state: AiProductPreviewViewModel.State.Success,
     onFeedbackReceived: (Boolean) -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit,
+    onFullScreenImageDismissed: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -170,8 +178,8 @@ private fun ProductPreviewContent(
             Spacer(Modifier.height(8.dp))
             ProductImage(
                 state = state.imageState,
-                onImageActionSelected = { TODO() },
-                onFullViewDismissed = { TODO() },
+                onImageActionSelected = onImageActionSelected,
+                onFullScreenImageDismissed = onFullScreenImageDismissed,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -206,7 +214,7 @@ private fun ProductPreviewContent(
 @Composable
 private fun ProductImage(
     state: AiProductPreviewViewModel.ImageState,
-    onFullViewDismissed: () -> Unit,
+    onFullScreenImageDismissed: () -> Unit,
     onImageActionSelected: (ImageAction) -> Unit,
     modifier: Modifier
 ) {
@@ -227,7 +235,7 @@ private fun ProductImage(
     if (state.showImageFullScreen) {
         FullScreenImageViewer(
             image = state.image,
-            onDismiss = onFullViewDismissed
+            onDismiss = onFullScreenImageDismissed
         )
     }
 }
@@ -394,7 +402,9 @@ private fun ProductPreviewLoadingPreview() {
         AiProductPreviewScreen(
             state = AiProductPreviewViewModel.State.Loading,
             onFeedbackReceived = {},
-            onBackButtonClick = {}
+            onBackButtonClick = {},
+            onImageActionSelected = {},
+            onFullScreenImageDismissed = {}
         )
     }
 }
@@ -437,7 +447,9 @@ private fun ProductPreviewContentPreview() {
                 imageState = AiProductPreviewViewModel.ImageState(null)
             ),
             onFeedbackReceived = {},
-            onBackButtonClick = {}
+            onBackButtonClick = {},
+            onImageActionSelected = {},
+            onFullScreenImageDismissed = {}
         )
     }
 }

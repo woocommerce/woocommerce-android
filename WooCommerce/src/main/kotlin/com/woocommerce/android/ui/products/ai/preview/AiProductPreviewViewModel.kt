@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
+import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -95,6 +96,18 @@ class AiProductPreviewViewModel @Inject constructor(
 
     fun onBackButtonClick() {
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onImageActionSelected(action: ImageAction) {
+        when (action) {
+            ImageAction.View -> imageState.value = imageState.value.copy(showImageFullScreen = true)
+            ImageAction.Remove -> imageState.value = imageState.value.copy(image = null)
+            else -> error("Unsupported action: $action")
+        }
+    }
+
+    fun onFullScreenImageDismissed() {
+        imageState.value = imageState.value.copy(showImageFullScreen = false)
     }
 
     sealed interface State {
