@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
@@ -53,6 +55,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -189,6 +192,12 @@ fun AiProductPromptScreen(
                     onReadTextFromProductPhoto = onReadTextFromProductPhoto,
                     onImageActionSelected = onImageActionSelected
                 )
+
+                if (uiState.noTextDetectedMessage) {
+                    InformativeMessage(
+                        stringResource(id = R.string.product_creation_package_photo_no_text_detected)
+                    )
+                }
 
                 ToneDropDown(
                     tone = uiState.selectedTone,
@@ -340,11 +349,8 @@ private fun ProductPromptTextField(
             Divider()
 
             when {
-                state.isScanningImage -> {
-                    // TODO() show progress while scanning image
-                }
-
-                state.mediaUri != null -> UploadedImageRow(
+                state.isScanningImage -> ImageScanning()
+                state.mediaUri != null -> SelectedImageRow(
                     state.mediaUri,
                     onImageActionSelected
                 )
@@ -366,7 +372,60 @@ private fun ProductPromptTextField(
 }
 
 @Composable
-private fun UploadedImageRow(
+private fun ImageScanning() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .wrapContentWidth()
+                .padding(end = 16.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.ai_product_creation_scanning_image),
+            style = MaterialTheme.typography.subtitle1,
+        )
+    }
+}
+
+@Composable
+private fun InformativeMessage(message: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(
+                colorResource(id = R.color.tag_bg_main)
+            )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_info_outline_20dp),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .size(dimensionResource(id = R.dimen.major_150)),
+            tint = colorResource(id = R.color.tag_text_main),
+        )
+        Text(
+            text = message,
+            color = colorResource(id = R.color.tag_text_main),
+            modifier = Modifier
+                .weight(1f)
+                .padding(
+                    top = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100)
+                )
+        )
+    }
+}
+
+@Composable
+private fun SelectedImageRow(
     mediaUri: String,
     onImageActionSelected: (ImageAction) -> Unit
 ) {
@@ -382,9 +441,8 @@ private fun UploadedImageRow(
             modifier = Modifier.padding(end = 16.dp)
         )
         Text(
-            text = stringResource(id = R.string.ai_product_creation_image_uploaded),
+            text = stringResource(id = R.string.ai_product_creation_image_selected),
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
         Spacer(modifier = Modifier.weight(1f))
         ImageActionsMenu(
@@ -453,7 +511,32 @@ private fun AiProductPromptScreenPreview() {
             isMediaPickerDialogVisible = false,
             mediaUri = null,
             isScanningImage = false,
-            showImageFullScreen = false
+            showImageFullScreen = false,
+            noTextDetectedMessage = false
+        ),
+        onBackButtonClick = {},
+        onPromptUpdated = {},
+        onReadTextFromProductPhoto = {},
+        onGenerateProductClicked = {},
+        onToneSelected = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onImageActionSelected = {}
+    )
+}
+
+@Preview
+@Composable
+private fun AiProductPromptScreenWithErrorPreview() {
+    AiProductPromptScreen(
+        uiState = AiProductPromptState(
+            productPrompt = "Product prompt test",
+            selectedTone = Tone.Casual,
+            isMediaPickerDialogVisible = false,
+            mediaUri = null,
+            isScanningImage = false,
+            showImageFullScreen = false,
+            noTextDetectedMessage = true
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
