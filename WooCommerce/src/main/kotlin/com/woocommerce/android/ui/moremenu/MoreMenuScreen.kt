@@ -63,6 +63,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
@@ -308,8 +309,34 @@ fun MoreMenuLoading() {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxSize()
+            .background(
+                color = colorResource(id = R.color.more_menu_button_background),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+            )
+            .padding(all = 12.dp)
     ) {
+        SkeletonView(
+            modifier = Modifier
+                .clip(CircleShape),
+            height = 40.dp,
+            width = 40.dp
+        )
 
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column {
+            SkeletonView(
+                modifier = Modifier
+                    .height(16.dp)
+                    .width(120.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            SkeletonView(
+                modifier = Modifier
+                    .height(14.dp)
+                    .width(200.dp)
+            )
+        }
     }
 }
 
@@ -495,6 +522,7 @@ private fun MoreMenuPreview() {
                             description = R.string.more_menu_button_coupons_description,
                             icon = R.drawable.ic_more_menu_coupons,
                         ),
+                        MoreMenuItem.Loading(isVisible = true),
                     ),
                 )
             ),
