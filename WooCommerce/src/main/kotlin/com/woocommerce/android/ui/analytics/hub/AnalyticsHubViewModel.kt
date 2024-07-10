@@ -170,44 +170,9 @@ class AnalyticsHubViewModel @Inject constructor(
         launch {
             observeAnalyticsCardsConfiguration().collect { configuration ->
                 cancelCardsObservation()
-                val cardsState =
-                    configuration.filter { cardConfiguration -> cardConfiguration.isVisible }.map { cardConfiguration ->
-                        when (cardConfiguration.card) {
-                            AnalyticsCards.Revenue -> {
-                                observeRevenueChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.Orders -> {
-                                observeOrdersStatChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.Products -> {
-                                observeProductsChanges()
-                                LoadingListViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.Session -> {
-                                observeSessionChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.Bundles -> {
-                                observeBundlesChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.GiftCards -> {
-                                observeGiftCardsChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-                            AnalyticsCards.GoogleAds -> {
-                                observeGoogleAdsChanges()
-                                LoadingAdsViewState(cardConfiguration.card)
-                            }
-                        }
-                    }
+                val cardsState = configuration
+                    .filter { cardConfiguration -> cardConfiguration.isVisible }
+                    .map(::generateObservedLoadingState)
                 mutableState.update { viewState ->
                     viewState.copy(cards = AnalyticsHubCardViewState.CardsState(cardsState))
                 }
@@ -302,6 +267,44 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         }.launchIn(viewModelScope)
     }
+
+    private fun generateObservedLoadingState(config: AnalyticCardConfiguration) =
+        when (config.card) {
+            AnalyticsCards.Revenue -> {
+                observeRevenueChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.Orders -> {
+                observeOrdersStatChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.Products -> {
+                observeProductsChanges()
+                LoadingListViewState(config.card)
+            }
+
+            AnalyticsCards.Session -> {
+                observeSessionChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.Bundles -> {
+                observeBundlesChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.GiftCards -> {
+                observeGiftCardsChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.GoogleAds -> {
+                observeGoogleAdsChanges()
+                LoadingAdsViewState(config.card)
+            }
+        }
 
     private fun observeOrdersStatChanges() {
         ordersObservationJob = updateStats.ordersState.onEach { state ->
