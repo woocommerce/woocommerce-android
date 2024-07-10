@@ -77,7 +77,9 @@ class DashboardReviewsViewModel @AssistedInject constructor(
                             onFailure = { error ->
                                 trackEventForReviewsCard(
                                     AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
-                                    properties = mapOf(AnalyticsTracker.KEY_ERROR to error.toString())
+                                    properties = mapOf(
+                                        AnalyticsTracker.KEY_ERROR to (error.message ?: error.toString())
+                                    )
                                 )
                                 ViewState.Error
                             }
