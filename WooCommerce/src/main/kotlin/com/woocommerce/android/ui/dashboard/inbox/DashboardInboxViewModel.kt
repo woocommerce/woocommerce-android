@@ -102,7 +102,13 @@ class DashboardInboxViewModel @AssistedInject constructor(
                                         }
                                 )
                             },
-                            onFailure = { ViewState.Error }
+                            onFailure = { error ->
+                                trackEventForInboxCard(
+                                    AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                                    properties = mapOf(AnalyticsTracker.KEY_ERROR to error.toString())
+                                )
+                                ViewState.Error
+                            }
                         )
                     }
             )
@@ -187,10 +193,10 @@ class DashboardInboxViewModel @AssistedInject constructor(
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
-    private fun trackEventForInboxCard(event: AnalyticsEvent) {
+    private fun trackEventForInboxCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
             event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.INBOX.trackingIdentifier)
+            properties + mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.INBOX.trackingIdentifier)
         )
     }
 
