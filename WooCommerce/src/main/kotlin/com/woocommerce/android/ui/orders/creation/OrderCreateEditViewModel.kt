@@ -1634,27 +1634,6 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onShippingEdited(amount: BigDecimal, name: String) {
-        tracker.track(
-            ORDER_SHIPPING_METHOD_ADD,
-            mapOf(KEY_FLOW to flow)
-        )
-
-        _orderDraft.update { draft ->
-            val shipping: List<ShippingLine> = draft.shippingLines.mapIndexed { index, shippingLine ->
-                if (index == 0) {
-                    shippingLine.copy(total = amount, methodTitle = name)
-                } else {
-                    shippingLine
-                }
-            }.ifEmpty {
-                listOf(ShippingLine(methodId = "other", total = amount, methodTitle = name))
-            }
-
-            draft.copy(shippingLines = shipping)
-        }
-    }
-
     fun onRemoveShipping(itemId: Long) {
         tracker.track(
             ORDER_SHIPPING_METHOD_REMOVE,
@@ -1667,28 +1646,6 @@ class OrderCreateEditViewModel @Inject constructor(
             draft.copy(
                 shippingLines = draft.shippingLines.map { shippingLine ->
                     if (itemId == shippingLine.itemId) {
-                        // Setting methodId to null will remove the shipping line in core
-                        shippingLine.copy(methodId = null)
-                    } else {
-                        shippingLine
-                    }
-                }
-            )
-        }
-    }
-
-    fun onShippingRemoved() {
-        tracker.track(
-            ORDER_SHIPPING_METHOD_REMOVE,
-            mapOf(
-                KEY_FLOW to flow,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
-            )
-        )
-        _orderDraft.update { draft ->
-            draft.copy(
-                shippingLines = draft.shippingLines.mapIndexed { index, shippingLine ->
-                    if (index == 0) {
                         // Setting methodId to null will remove the shipping line in core
                         shippingLine.copy(methodId = null)
                     } else {
