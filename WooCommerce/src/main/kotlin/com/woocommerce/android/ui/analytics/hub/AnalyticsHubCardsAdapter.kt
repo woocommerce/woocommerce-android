@@ -77,6 +77,11 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
                 val state = cardList[position] as AnalyticsHubListViewState
                 (holder as AnalyticsHubCardsListViewHolder).bind(state, onSeeReport)
             }
+
+            VIEW_TYPE_CUSTOM_SELECTION_LIST -> {
+                val state = cardList[position] as AnalyticsHubCustomSelectionListViewState
+                (holder as AnalyticsHubCustomSelectionListViewHolder).bind(state)
+            }
         }
     }
 
