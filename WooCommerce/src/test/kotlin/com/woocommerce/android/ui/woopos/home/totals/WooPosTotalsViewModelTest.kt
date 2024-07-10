@@ -12,11 +12,11 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosTotalsViewModelTest : BaseUnitTest() {
@@ -46,7 +46,7 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
         val viewModel = createViewModel(savedState)
 
         // THEN
-        assertEquals(WooPosTotalsState.Loading, viewModel.state.value)
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
     }
 
     @Test
@@ -59,7 +59,7 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
         viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
 
         // THEN
-        assertEquals(WooPosTotalsState.Loading, viewModel.state.value)
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NewTransactionClicked)
     }
 
@@ -76,7 +76,7 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
         parentToChildrenEventsFlow.emit(ParentToChildrenEvent.OrderCreation.OrderCreationStarted)
 
         // THEN
-        assertEquals(WooPosTotalsState.Loading, viewModel.state.value)
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
     }
 
     private fun createViewModel(savedState: SavedStateHandle) = WooPosTotalsViewModel(
