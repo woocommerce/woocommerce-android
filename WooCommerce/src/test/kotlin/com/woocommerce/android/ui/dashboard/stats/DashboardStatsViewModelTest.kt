@@ -216,7 +216,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         testBlocking {
             setup {
                 whenever(getStats.invoke(any(), any()))
-                    .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsError))
+                    .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsError("")))
             }
 
             Assertions.assertThat(viewModel.revenueStatsState.value)
