@@ -66,7 +66,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
                     },
                     onFailure = {
                         val errorState = when ((it as? WooException)?.error?.type) {
-                            WooErrorType.API_NOT_FOUND -> ViewState.Error.WCAnalyticsDisabled
+                            WooErrorType.API_NOT_FOUND -> ViewState.Error.WCAnalyticsInactive
                             else -> ViewState.Error.Generic
                         }
                         emit(errorState)
@@ -112,7 +112,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         ) : ViewState
 
         enum class Error : ViewState {
-            Generic, WCAnalyticsDisabled
+            Generic, WCAnalyticsInactive
         }
     }
 

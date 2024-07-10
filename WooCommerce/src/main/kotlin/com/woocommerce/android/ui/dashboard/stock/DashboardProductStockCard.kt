@@ -136,7 +136,7 @@ private fun DashboardProductStockCard(
                 )
             }
 
-            DashboardProductStockViewModel.ViewState.Error.WCAnalyticsDisabled -> {
+            DashboardProductStockViewModel.ViewState.Error.WCAnalyticsInactive -> {
                 WCAnalyticsNotAvailableErrorView(
                     title = stringResource(id = R.string.dashboard_product_stock_wcanalytics_inactive_title),
                     onContactSupportClick = onContactSupportClicked
