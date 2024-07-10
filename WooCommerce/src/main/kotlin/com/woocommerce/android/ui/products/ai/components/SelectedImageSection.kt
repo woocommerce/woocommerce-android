@@ -34,12 +34,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 
-enum class ImageAction(@StringRes val displayName: Int) {
-    View(R.string.ai_product_creation_view_image),
-    Replace(R.string.ai_product_creation_replace_image),
-    Remove(R.string.ai_product_creation_remove_image)
-}
-
 @Composable
 fun SelectedImageSection(
     image: Image,
@@ -128,4 +122,10 @@ private fun ImageActionsMenu(
             }
         }
     }
+}
+
+enum class ImageAction(@StringRes val displayName: Int) {
+    View(R.string.ai_product_creation_view_image),
+    Replace(R.string.ai_product_creation_replace_image),
+    Remove(R.string.ai_product_creation_remove_image)
 }
