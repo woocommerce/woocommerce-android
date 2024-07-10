@@ -2226,7 +2226,9 @@
     <string name="ai_product_creation_view_image">View photo</string>
     <string name="ai_product_creation_replace_image">Replace photo</string>
     <string name="ai_product_creation_remove_image">Remove photo</string>
-    <string name="ai_product_creation_image_uploaded">Photo uploaded</string>
+    <string name="ai_product_creation_image_selected">Photo selected</string>
+    <string name="ai_product_creation_scanning_image">Scanning image</string>
+    <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
 
     <!--
         Product Add more details Bottom sheet

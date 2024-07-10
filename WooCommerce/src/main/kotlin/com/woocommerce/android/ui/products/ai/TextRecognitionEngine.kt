@@ -9,6 +9,7 @@ import coil.request.SuccessResult
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -27,6 +28,7 @@ class TextRecognitionEngine @Inject constructor(
             val result = textRecognizer.process(image).await()
             Result.success(result.textBlocks.map { it.text })
         } catch (e: Exception) {
+            WooLog.d(WooLog.T.AI, "Failed to scan text from image: ${e.message}")
             Result.failure(e)
         }
     }
