@@ -11,7 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
-import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.model.Image
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -55,26 +56,29 @@ class AiProductPromptFragment : BaseFragment(), MediaPickerResultHandler {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 Exit -> findNavController().navigateUp()
-
                 is ShowMediaDialog -> mediaPickerHelper.showMediaPicker(event.source)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is AiProductPromptViewModel.ShowProductPreviewScreen -> {
+                    findNavController().navigate(
+                        AiProductPromptFragmentDirections.actionAiProductPromptFragmentToAiProductPreviewFragment(
+                            productFeatures = event.productFeatures,
+                            image = event.image
+                        )
+                    )
+                }
             }
         }
     }
 
     override fun onDeviceMediaSelected(imageUris: List<Uri>, source: String) {
         if (imageUris.isNotEmpty()) {
-            onImageSelected(imageUris.first().toString())
+            viewModel.onMediaSelected(Image.LocalImage(imageUris.first().toString()))
         }
     }
 
-    override fun onWPMediaSelected(images: List<Image>) {
+    override fun onWPMediaSelected(images: List<Product.Image>) {
         if (images.isNotEmpty()) {
-            onImageSelected(images.first().source)
+            viewModel.onMediaSelected(Image.WPMediaLibraryImage(images.first()))
         }
-    }
-
-    private fun onImageSelected(mediaUri: String) {
-        viewModel.onMediaSelected(mediaUri)
     }
 }
