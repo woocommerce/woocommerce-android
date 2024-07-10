@@ -384,6 +384,7 @@ private fun ProductPreviewContentPreview() {
     WooThemeWithBackground {
         AiProductPreviewScreen(
             state = AiProductPreviewViewModel.State.Success(
+                selectedVariant = 0,
                 product = AIProductModel.buildDefault(
                     name = "Soft Black Tee: Elevate Your Everyday Style",
                     description = "Introducing our USA-Made Classic Organic Cotton Tee—a staple piece designed for" +
@@ -411,7 +412,7 @@ private fun ProductPreviewContentPreview() {
                         )
                     )
                 ),
-                selectedVariant = 0,
+                imageState = AiProductPreviewViewModel.ImageState(null)
             ),
             onFeedbackReceived = {},
             onBackButtonClick = {}
