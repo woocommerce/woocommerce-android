@@ -4,9 +4,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.ui.woopos.WooPosBaseUnitTest
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
-import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
@@ -22,7 +22,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosRootViewModelTest : BaseUnitTest() {
+class WooPosRootViewModelTest : WooPosBaseUnitTest() {
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
 
     @Test
