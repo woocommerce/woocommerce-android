@@ -81,18 +81,10 @@ class MoreMenuViewModel @Inject constructor(
             checkFeaturesAvailability()
         ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName, moreMenuButtonStatus ->
             MoreMenuViewState(
-                menuSections = listOf(
-                    generatePOSSection(moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.WooPos)),
-                    generateSettingsMenuButtons(
-                        settingsMenuButtonState = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.Settings)
-                    ),
-                    generateGeneralSection(
-                        unseenReviewsCount = count,
-                        paymentsFeatureWasClicked = paymentsFeatureWasClicked,
-                        googleForWooState = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.GoogleForWoo),
-                        blazeStatus = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.Blaze),
-                        inboxStatus = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.Inbox),
-                    )
+                menuSections = generateAllSections(
+                    moreMenuButtonStatus,
+                    count,
+                    paymentsFeatureWasClicked
                 ).map { section ->
                     section.copy(
                         items = section.items.filter { it.state != MoreMenuButtonStatus.State.Hidden }
@@ -105,6 +97,32 @@ class MoreMenuViewModel @Inject constructor(
                 isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords,
             )
         }.asLiveData()
+
+    private fun generateAllSections(
+        moreMenuButtonStatus: MoreMenuButtonStatus,
+        count: Int,
+        paymentsFeatureWasClicked: Boolean
+    ) = listOf(
+        generatePOSSection(moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.WooPos)),
+        generateSettingsMenuButtons(
+            settingsMenuButtonState = moreMenuButtonStatus.getButtonStatus(
+                MoreMenuButtonStatus.Type.Settings
+            )
+        ),
+        generateGeneralSection(
+            unseenReviewsCount = count,
+            paymentsFeatureWasClicked = paymentsFeatureWasClicked,
+            googleForWooState = moreMenuButtonStatus.getButtonStatus(
+                MoreMenuButtonStatus.Type.GoogleForWoo
+            ),
+            blazeStatus = moreMenuButtonStatus.getButtonStatus(
+                MoreMenuButtonStatus.Type.Blaze
+            ),
+            inboxStatus = moreMenuButtonStatus.getButtonStatus(
+                MoreMenuButtonStatus.Type.Inbox
+            ),
+        )
+    )
 
     fun onViewResumed() {
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
