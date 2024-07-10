@@ -78,7 +78,6 @@ class AnalyticsUpdateDataStore @Inject constructor(
         }
     }
 
-
     /***
      * Creates a flow that will emit the latest timestamp stored for a given [rangeSelection] and [analyticData]
      *
