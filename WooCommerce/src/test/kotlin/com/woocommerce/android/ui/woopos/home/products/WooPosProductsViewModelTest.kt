@@ -66,7 +66,7 @@ class WooPosProductsViewModelTest {
             val viewModel = createViewModel()
 
             // THEN
-            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Empty)
+            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Empty())
         }
 
     @Test
@@ -79,7 +79,7 @@ class WooPosProductsViewModelTest {
             val viewModel = createViewModel()
 
             // THEN
-            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error)
+            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error())
         }
 
     @Test
