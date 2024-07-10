@@ -410,7 +410,8 @@ private fun ProductPreviewContentPreview() {
                             content = "In stock"
                         )
                     )
-                )
+                ),
+                selectedVariant = 0,
             ),
             onFeedbackReceived = {},
             onBackButtonClick = {}
