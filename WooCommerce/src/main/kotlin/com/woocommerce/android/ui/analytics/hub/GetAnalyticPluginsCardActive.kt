@@ -12,7 +12,8 @@ class GetAnalyticPluginsCardActive @Inject constructor(
     private val analyticPlugins = listOf(
         WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES,
         WooCommerceStore.WooPlugin.WOO_GIFT_CARDS,
-        WooCommerceStore.WooPlugin.JETPACK
+        WooCommerceStore.WooPlugin.JETPACK,
+        WooCommerceStore.WooPlugin.GOOGLE_ADS
     )
 
     suspend operator fun invoke(): Set<AnalyticsCards> {
@@ -25,6 +26,7 @@ class GetAnalyticPluginsCardActive @Inject constructor(
                     WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName -> AnalyticsCards.Bundles
                     WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName -> AnalyticsCards.GiftCards
                     WooCommerceStore.WooPlugin.JETPACK.pluginName -> AnalyticsCards.Session
+                    WooCommerceStore.WooPlugin.GOOGLE_ADS.pluginName -> AnalyticsCards.GoogleAds
                     else -> null
                 }
             }.toSet()
