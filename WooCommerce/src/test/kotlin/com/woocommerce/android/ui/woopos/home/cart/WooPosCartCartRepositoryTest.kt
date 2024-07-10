@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import java.util.Date
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
 class WooPosCartCartRepositoryTest {
     private val mockedDate: Date = mock()
@@ -84,5 +85,15 @@ class WooPosCartCartRepositoryTest {
 
         assertThat(orderCapture.lastValue.items.size).isEqualTo(3)
         assertThat(orderCapture.lastValue.items.map { it.quantity }).containsExactly(2f, 1f, 3f)
+    }
+
+    fun `given empty product id list, when createOrderWithProducts, then throw IllegalStateException`() = runTest {
+        // GIVEN
+        val productIds = emptyList<Long>()
+
+        // WHEN & THEN
+        assertFailsWith<IllegalStateException> {
+            repository.createOrderWithProducts(productIds)
+        }
     }
 }

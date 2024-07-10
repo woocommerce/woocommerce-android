@@ -45,6 +45,21 @@ class WooPosHomeViewModelTest : BaseUnitTest() {
             assertFalse(result)
         }
 
+    @Test
+    fun `given state checkout is paid, when SystemBackClicked passed, then OrderSuccessfullyPaid event should be sent`() = runTest {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.OrderSuccessfullyPaid)
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(SystemBackClicked)
+
+        // THEN
+        verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
+    }
+
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender
