@@ -4,13 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.WooPosBaseUnitTest
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.captureValues
-import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,7 +23,7 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosCartViewModelTest : BaseUnitTest() {
+class WooPosCartViewModelTest : WooPosBaseUnitTest() {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
         on { events }.thenReturn(MutableSharedFlow())
