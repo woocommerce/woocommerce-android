@@ -27,8 +27,8 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     }
     private val repository: WooPosCartRepository = mock()
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(eq(R.string.woo_pos_items_in_cart), eq(1)) }.thenReturn("Items in cart: 1")
-        on { getString(eq(R.string.woo_pos_items_in_cart), eq(2)) }.thenReturn("Items in cart: 2")
+        on { getString(eq(R.string.woopos_items_in_cart), eq(1)) }.thenReturn("Items in cart: 1")
+        on { getString(eq(R.string.woopos_items_in_cart), eq(2)) }.thenReturn("Items in cart: 2")
     }
     private val formatPrice: WooPosFormatPrice = mock {
         onBlocking { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")

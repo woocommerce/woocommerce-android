@@ -13,7 +13,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart)
+    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart.Empty)
     val state: StateFlow<WooPosHomeState> = _state
 
     init {
@@ -24,9 +24,15 @@ class WooPosHomeViewModel @Inject constructor(
         return when (event) {
             WooPosHomeUIEvent.SystemBackClicked -> {
                 when (_state.value) {
-                    WooPosHomeState.Checkout -> {
-                        _state.value = WooPosHomeState.Cart
+                    WooPosHomeState.Checkout.NotPaid -> {
+                        _state.value = WooPosHomeState.Cart.NotEmpty
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+                        true
+                    }
+
+                    WooPosHomeState.Checkout.Paid -> {
+                        _state.value = WooPosHomeState.Cart.Empty
+                        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                         true
                     }
 
@@ -43,11 +49,11 @@ class WooPosHomeViewModel @Inject constructor(
             childrenToParentEventReceiver.events.collect { event ->
                 when (event) {
                     is ChildToParentEvent.CheckoutClicked -> {
-                        _state.value = WooPosHomeState.Checkout
+                        _state.value = WooPosHomeState.Checkout.NotPaid
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosHomeState.Cart
+                        _state.value = WooPosHomeState.Cart.NotEmpty
                     }
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
@@ -77,11 +83,26 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.NewTransactionClicked -> {
-                        _state.value = WooPosHomeState.Cart
+                        _state.value = WooPosHomeState.Cart.Empty
+                        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                     }
 
                     is ChildToParentEvent.OrderSuccessfullyPaid -> {
-                        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
+                        _state.value = WooPosHomeState.Checkout.Paid
+                    }
+
+                    is ChildToParentEvent.CartStatusChanged -> {
+                        if (_state.value is WooPosHomeState.Checkout.Paid) return@collect
+
+                        when (event) {
+                            ChildToParentEvent.CartStatusChanged.Empty -> {
+                                _state.value = WooPosHomeState.Cart.Empty
+                            }
+
+                            ChildToParentEvent.CartStatusChanged.NotEmpty -> {
+                                _state.value = WooPosHomeState.Cart.NotEmpty
+                            }
+                        }
                     }
                 }
             }

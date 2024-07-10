@@ -30,6 +30,8 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.Start
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCouponsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewGoogleForWooEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCustomersEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewGoogleEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewInboxEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewReviewsEvent
@@ -91,6 +93,7 @@ class MoreMenuFragment : TopLevelFragment() {
         viewModel.onViewResumed()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -99,10 +102,12 @@ class MoreMenuFragment : TopLevelFragment() {
                 is StartSitePickerEvent -> startSitePicker()
                 is ViewGoogleForWooEvent -> openInExitAwareWebview(event.url)
                 is ViewAdminEvent -> openInBrowser(event.url)
+                is ViewGoogleEvent -> openInAuthBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
                 is ViewInboxEvent -> navigateToInbox()
                 is ViewCouponsEvent -> navigateToCoupons()
+                is ViewCustomersEvent -> navigateToCustomers()
                 is ViewPayments -> navigateToPayments()
                 is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
@@ -180,6 +185,23 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun navigateToCoupons() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToCouponListFragment()
+        )
+    }
+
+    private fun navigateToCustomers() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToCustomerListFragment()
+        )
+    }
+
+    private fun openInAuthBrowser(url: String) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf(),
+                title = getString(R.string.more_menu_button_google),
+                clearCache = true
+            )
         )
     }
 }

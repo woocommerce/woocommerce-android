@@ -3,12 +3,10 @@ package com.woocommerce.android.ui.woopos.home.totals
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
-import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbarState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -72,27 +70,8 @@ class WooPosTotalsViewModel @Inject constructor(
                             childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
                         }
 
-                        is WooPosCardReaderPaymentResult.Failure -> {
-                            when (val state = state.value) {
-                                is WooPosTotalsState.Totals -> {
-                                    _state.value = state.copy(
-                                        snackbar = WooPosSnackbarState.Triggered(
-                                            R.string.woopos_payment_failed_please_try_again
-                                        )
-                                    )
-                                }
-
-                                else -> Unit
-                            }
-                        }
+                        else -> Unit
                     }
-                }
-            }
-
-            WooPosTotalsUIEvent.SnackbarDismissed -> {
-                when (val state = state.value) {
-                    is WooPosTotalsState.Totals -> _state.value = state.copy(snackbar = WooPosSnackbarState.Hidden)
-                    else -> Unit
                 }
             }
 

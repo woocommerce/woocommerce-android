@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customerlist
+package com.woocommerce.android.ui.moremenu.customer
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -18,12 +17,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CustomerListFragment : BaseFragment() {
-    companion object {
-        const val KEY_CUSTOMER_RESULT = "customer_model"
-    }
+class MoreMenuCustomerListFragment : BaseFragment() {
 
-    private val viewModel by viewModels<CustomerListViewModel>()
+    private val viewModel by viewModels<CustomerListDetailsViewModel>()
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -35,7 +31,7 @@ class CustomerListFragment : BaseFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             WooThemeWithBackground {
-                CustomerListScreen(viewModel)
+                MenuCustomerListScreen(viewModel)
             }
         }
     }
@@ -46,23 +42,12 @@ class CustomerListFragment : BaseFragment() {
         ) { event ->
             when (event) {
                 is CustomerSelected -> {
-                    navigateBackWithResult(
-                        KEY_CUSTOMER_RESULT,
-                        event.customer
-                    )
-                }
-
-                is AddCustomer -> {
                     findNavController().navigateSafely(
-                        CustomerListFragmentDirections
-                            .actionCustomerListFragmentToOrderCreationCustomerFragment(
-                                editingOfAddedCustomer = false,
-                                initialEmail = event.email.orEmpty()
-                            )
+                        MoreMenuCustomerListFragmentDirections.actionMenuCustomerListFragmentToCustomerDetailsFragment(
+                            event.customer
+                        )
                     )
                 }
-
-                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
 
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
