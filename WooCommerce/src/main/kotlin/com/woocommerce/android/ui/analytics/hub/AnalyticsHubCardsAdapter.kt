@@ -54,7 +54,10 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
             )
 
             VIEW_TYPE_CUSTOM_SELECTION_LIST -> AnalyticsHubCustomSelectionListViewHolder(
-                AnalyticsHubCustomSelectionCardView(parent.context)
+                AnalyticsHubCustomSelectionCardView(parent.context).apply {
+                    layoutParams = params
+                    elevation = resources.getDimension(R.dimen.minor_25)
+                }
             )
 
             else -> throw IllegalArgumentException("Unexpected viewType in AnalyticsHubCardsAdapter")
@@ -120,9 +123,9 @@ class AnalyticsHubCardsInformationViewHolder(private val cardView: AnalyticsHubI
     }
 }
 
-class AnalyticsHubCustomSelectionListViewHolder(cardView: View) :
+class AnalyticsHubCustomSelectionListViewHolder(private val cardView: AnalyticsHubCustomSelectionCardView) :
     AnalyticsHubCardsViewHolder(cardView) {
     fun bind(state: AnalyticsHubCustomSelectionListViewState) {
-        state.apply { }
+        cardView.updateInformation(state)
     }
 }
