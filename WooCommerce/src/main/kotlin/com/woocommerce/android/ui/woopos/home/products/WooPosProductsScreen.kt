@@ -91,74 +91,75 @@ private fun WooPosProductsScreen(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
-
         val state = productsStateFlow.collectAsState()
+        val pullToRefreshState =
+            rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
+        Box(
+            modifier = Modifier.pullRefresh(pullToRefreshState),
+        ) {
+            when (val productsState = state.value) {
+                is WooPosProductsViewState.Content -> {
+                    ProductsList(
+                        productsState,
+                        onItemClicked,
+                        onEndOfProductListReached,
+                    )
+                }
 
-        when (val productsState = state.value) {
-            is WooPosProductsViewState.Content -> {
-                ProductsList(productsState, onItemClicked, onEndOfProductListReached, onPullToRefresh)
+                is WooPosProductsViewState.Loading -> {
+                    ProductsLoadingIndicator()
+                }
+
+                is WooPosProductsViewState.Empty -> {
+                    ProductsEmptyList()
+                }
+
+                is WooPosProductsViewState.Error -> TODO()
             }
-
-            WooPosProductsViewState.Loading -> {
-                ProductsLoadingIndicator()
-            }
-
-            WooPosProductsViewState.Empty -> {
-                ProductsEmptyList()
-            }
-
-            WooPosProductsViewState.Error -> TODO()
+            PullRefreshIndicator(
+                modifier = Modifier.align(Alignment.TopCenter),
+                refreshing = state.value.reloadingProducts,
+                state = pullToRefreshState
+            )
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-@ExperimentalMaterialApi
 @Composable
 private fun ProductsList(
     state: WooPosProductsViewState.Content,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsListReached: () -> Unit,
-    onPullToRefresh: () -> Unit,
 ) {
-    val pullToRefreshState = rememberPullRefreshState(state.refreshingProducts, onPullToRefresh)
-    Box(
-        modifier = Modifier.pullRefresh(pullToRefreshState),
+    val listState = rememberLazyListState()
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(2.dp),
+        state = listState,
     ) {
-        val listState = rememberLazyListState()
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(2.dp),
-            state = listState,
-        ) {
-            items(
-                state.products,
-                key = { product -> product.id }
-            ) { product ->
-                ProductItem(
-                    modifier = Modifier.animateItemPlacement(),
-                    item = product,
-                    onItemClicked = onItemClicked
-                )
-            }
+        items(
+            state.products,
+            key = { product -> product.id }
+        ) { product ->
+            ProductItem(
+                modifier = Modifier.animateItemPlacement(),
+                item = product,
+                onItemClicked = onItemClicked
+            )
+        }
 
-            if (state.loadingMore) {
-                item {
-                    ProductLoadingItem()
-                }
-            }
+        if (state.loadingMore) {
             item {
-                Spacer(modifier = Modifier.height(16.dp))
+                ProductLoadingItem()
             }
         }
-        PullRefreshIndicator(
-            modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = state.refreshingProducts,
-            state = pullToRefreshState
-        )
-        InfiniteListHandler(listState) {
-            onEndOfProductsListReached()
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
         }
+    }
+    InfiniteListHandler(listState) {
+        onEndOfProductsListReached()
     }
 }
 
@@ -342,7 +343,7 @@ fun WooPosHomeScreenPreview() {
                 ),
             ),
             loadingMore = true,
-            refreshingProducts = true,
+            reloadingProducts = true,
         )
     )
     WooPosTheme {
@@ -359,7 +360,7 @@ fun WooPosHomeScreenPreview() {
 @Composable
 @WooPosPreview
 fun WooPosHomeScreenLoadingPreview() {
-    val productState = MutableStateFlow(WooPosProductsViewState.Loading)
+    val productState = MutableStateFlow(WooPosProductsViewState.Loading(true))
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,
@@ -374,7 +375,7 @@ fun WooPosHomeScreenLoadingPreview() {
 @Composable
 @WooPosPreview
 fun WooPosHomeScreenEmptyListPreview() {
-    val productState = MutableStateFlow(WooPosProductsViewState.Empty)
+    val productState = MutableStateFlow(WooPosProductsViewState.Empty(true))
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,

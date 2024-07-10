@@ -22,7 +22,7 @@ class WooPosProductsViewModel @Inject constructor(
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading)
+    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading(reloadingProducts = false))
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
 
     init {
@@ -38,7 +38,7 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch {
             val result = productsDataSource.loadSimpleProducts()
             if (result.isFailure) {
-                _viewState.value = WooPosProductsViewState.Error
+                _viewState.value = WooPosProductsViewState.Error(reloadingProducts = false)
             }
         }
     }
@@ -61,18 +61,26 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun reloadProducts() {
         viewModelScope.launch {
-            val currentState = viewState.value as? WooPosProductsViewState.Content ?: return@launch
-            _viewState.value = currentState.copy(refreshingProducts = true)
+            updateProductsReloadingState(isReloading = true)
             productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
-            _viewState.value = currentState.copy(refreshingProducts = false)
+            updateProductsReloadingState(isReloading = false)
+        }
+    }
+
+    private fun updateProductsReloadingState(isReloading: Boolean) {
+        _viewState.value = when (val state = viewState.value) {
+            is WooPosProductsViewState.Content -> state.copy(reloadingProducts = isReloading)
+            is WooPosProductsViewState.Loading -> state.copy(reloadingProducts = isReloading)
+            is WooPosProductsViewState.Error -> state.copy(reloadingProducts = isReloading)
+            is WooPosProductsViewState.Empty -> state.copy(reloadingProducts = isReloading)
         }
     }
 
     private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState {
         return if (products.isEmpty() && !isRefreshingProducts()) {
-            WooPosProductsViewState.Empty
+            WooPosProductsViewState.Empty(reloadingProducts = false)
         } else if (products.isEmpty() && isRefreshingProducts()) {
-            WooPosProductsViewState.Loading
+            WooPosProductsViewState.Loading(reloadingProducts = false)
         } else {
             WooPosProductsViewState.Content(
                 products = products.map { product ->
@@ -84,14 +92,14 @@ class WooPosProductsViewModel @Inject constructor(
                     )
                 },
                 loadingMore = false,
-                refreshingProducts = false,
+                reloadingProducts = false,
             )
         }
     }
 
     private fun isRefreshingProducts(): Boolean {
         return viewState.value is WooPosProductsViewState.Content &&
-            (viewState.value as WooPosProductsViewState.Content).refreshingProducts
+            (viewState.value as WooPosProductsViewState.Content).reloadingProducts
     }
 
     private fun onEndOfProductsListReached() {
