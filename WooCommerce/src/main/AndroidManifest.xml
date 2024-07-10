@@ -19,6 +19,7 @@
         android:name="com.google.android.gms.permission.AD_ID"
         tools:node="remove" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <queries>
         <package android:name="com.whatsapp" />
@@ -199,6 +200,7 @@
         <service
             android:name="org.wordpress.android.login.LoginWpcomService"
             android:exported="false"
+            android:foregroundServiceType="shortService"
             android:label="Login to WPCOM Service" />
 
         <meta-data
