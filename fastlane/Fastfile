@@ -931,6 +931,18 @@ platform :android do
     )
   end
 
+  lane :test_git_push do |options|
+    Fastlane::Helper::GitHelper.checkout_and_pull('iangmaia/trusted-agent-for-push-access')
+
+    UI.message 'Bumping beta version and build code...'
+    VERSION_FILE.write_version(
+      version_name: release_version_next,
+      version_code: build_code_next
+    )
+    commit_version_bump
+    push_to_git_remote(tags: false)
+  end
+
   # This lane downloads the translated promo strings from the translation system.
   #
   lane :download_promo_strings do
