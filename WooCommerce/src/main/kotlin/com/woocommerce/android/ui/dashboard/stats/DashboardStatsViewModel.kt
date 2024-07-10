@@ -214,10 +214,12 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     }
 
                     LoadStatsResult.PluginNotActive -> {
-                        _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
+                        _revenueStatsState.value = RevenueStatsViewState.WCAnalyticsInactive
                         trackEventForStatsCard(
                             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
-                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_ERROR to RevenueStatsViewState.WCAnalyticsInactive.toString()
+                            )
                         )
                     }
 
@@ -330,7 +332,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     sealed class RevenueStatsViewState {
         data class Loading(val isForced: Boolean) : RevenueStatsViewState()
         data object GenericError : RevenueStatsViewState()
-        data object PluginNotActiveError : RevenueStatsViewState()
+        data object WCAnalyticsInactive : RevenueStatsViewState()
         data class Content(
             val revenueStats: RevenueStatsUiModel?,
             val statsRangeSelection: StatsTimeRangeSelection

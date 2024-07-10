@@ -232,7 +232,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             }
 
             Assertions.assertThat(viewModel.revenueStatsState.value).isEqualTo(
-                DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError
+                DashboardStatsViewModel.RevenueStatsViewState.WCAnalyticsInactive
             )
         }
 
