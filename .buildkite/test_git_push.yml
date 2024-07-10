@@ -6,6 +6,8 @@ steps:
   - label: "Test Git Push 👀"
     plugins: [$CI_TOOLKIT]
     command: |
+      source use-bot-for-git
+
       install_gems
 
       bundle exec fastlane test_git_push
