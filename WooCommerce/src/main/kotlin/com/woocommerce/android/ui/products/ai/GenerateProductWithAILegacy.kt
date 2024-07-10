@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class GenerateProductWithAI @Inject constructor(
+class GenerateProductWithAILegacy @Inject constructor(
     private val aiRepository: AIRepository,
     private val categoriesRepository: ProductCategoriesRepository,
     private val tagsRepository: ProductTagsRepository,

@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductError
 class ProductPreviewSubViewModel(
     private val aiRepository: AIRepository,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
-    private val generateProductWithAI: GenerateProductWithAI,
+    private val generateProductWithAI: GenerateProductWithAILegacy,
     private val tracker: AnalyticsTrackerWrapper,
     override val onDone: (Product) -> Unit,
 ) : AddProductWithAISubViewModel<Product> {
