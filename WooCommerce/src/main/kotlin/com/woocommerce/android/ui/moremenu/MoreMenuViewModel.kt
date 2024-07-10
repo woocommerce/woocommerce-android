@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.IsWooPosEnabled
 import com.woocommerce.android.ui.woopos.IsWooPosFFEnabled
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -136,7 +135,7 @@ class MoreMenuViewModel @Inject constructor(
         }
 
     @Suppress("LongMethod")
-    private suspend fun generateGeneralSection(
+    private fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
     ) = MoreMenuItemSection(
@@ -390,7 +389,7 @@ class MoreMenuViewModel @Inject constructor(
         }
         .onStart { emit("") }
 
-    private fun checkWooPosAvailability(): Flow<WooPOSCheckStatus> =
+    private fun checkWooPosAvailability(): Flow<MoreMenuButtonCheckStatus> =
         flow {
             if (!isWooPosFFEnabled()) {
                 emit(Disabled)
@@ -403,35 +402,4 @@ class MoreMenuViewModel @Inject constructor(
 
     private val SitePlan.formattedPlanName
         get() = generateFormattedPlanName(resourceProvider)
-
-    private enum class WooPOSCheckStatus {
-        Loading, Enabled, Disabled
-    }
-
-    data class MoreMenuViewState(
-        val menuSections: List<MoreMenuItemSection>,
-        val siteName: String = "",
-        val siteUrl: String = "",
-        val sitePlan: String = "",
-        val userAvatarUrl: String = "",
-        val isStoreSwitcherEnabled: Boolean = false
-    )
-
-    sealed class MoreMenuEvent : MultiLiveEvent.Event() {
-        data object NavigateToSettingsEvent : MoreMenuEvent()
-        data object NavigateToSubscriptionsEvent : MoreMenuEvent()
-        data object StartSitePickerEvent : MoreMenuEvent()
-        data object ViewPayments : MoreMenuEvent()
-        data object OpenBlazeCampaignListEvent : MoreMenuEvent()
-        data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
-        data class ViewAdminEvent(val url: String) : MoreMenuEvent()
-        data class ViewGoogleEvent(val url: String) : MoreMenuEvent()
-        data class ViewStoreEvent(val url: String) : MoreMenuEvent()
-        data object ViewReviewsEvent : MoreMenuEvent()
-        data object ViewInboxEvent : MoreMenuEvent()
-        data object ViewCouponsEvent : MoreMenuEvent()
-
-        data object ViewCustomersEvent : MoreMenuEvent()
-        data object NavigateToWooPosEvent : MoreMenuEvent()
-    }
 }
