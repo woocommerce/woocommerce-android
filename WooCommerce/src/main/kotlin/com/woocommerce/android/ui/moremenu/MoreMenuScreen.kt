@@ -65,7 +65,6 @@ import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @Composable
 fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
@@ -293,9 +292,10 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
 
         Column {
             section.items.forEach { item ->
-                when (item) {
-                    is MoreMenuItem.Button -> MoreMenuButton(item)
-                    is MoreMenuItem.Loading -> MoreMenuLoading()
+                when (item.state) {
+                    MoreMenuButtonStatus.State.Loading -> MoreMenuLoading()
+                    MoreMenuButtonStatus.State.Visible -> MoreMenuButton(item)
+                    MoreMenuButtonStatus.State.Hidden -> Unit
                 }
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -341,7 +341,7 @@ fun MoreMenuLoading() {
 }
 
 @Composable
-private fun MoreMenuButton(button: MoreMenuItem.Button) {
+private fun MoreMenuButton(button: MoreMenuItemButton) {
     Button(
         onClick = button.onClick,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
@@ -455,7 +455,7 @@ private fun MoreMenuPreview() {
                 MoreMenuItemSection(
                     title = null,
                     items = listOf(
-                        MoreMenuItem.Button(
+                        MoreMenuItemButton(
                             title = R.string.more_menu_button_woo_pos,
                             description = R.string.more_menu_button_woo_pos_description,
                             icon = R.drawable.ic_more_menu_pos,
@@ -466,12 +466,12 @@ private fun MoreMenuPreview() {
                 MoreMenuItemSection(
                     title = R.string.more_menu_settings_section_title,
                     items = listOf(
-                        MoreMenuItem.Button(
+                        MoreMenuItemButton(
                             title = R.string.more_menu_button_settings,
                             description = R.string.more_menu_button_settings_description,
                             icon = R.drawable.ic_more_screen_settings,
                         ),
-                        MoreMenuItem.Button(
+                        MoreMenuItemButton(
                             title = R.string.more_menu_button_subscriptions,
                             description = R.string.more_menu_button_subscriptions_description,
                             icon = R.drawable.ic_more_menu_upgrades,
@@ -482,7 +482,7 @@ private fun MoreMenuPreview() {
                 MoreMenuItemSection(
                     title = R.string.more_menu_general_section_title,
                     items = listOf(
-                        MoreMenuItem.Button(
+                        MoreMenuItemButton(
                             title = R.string.more_menu_button_payments,
                             description = R.string.more_menu_button_payments_description,
                             icon = R.drawable.ic_more_menu_payments,
@@ -494,18 +494,18 @@ private fun MoreMenuPreview() {
                                 animateAppearance = true
                             )
                         ),
-                        MoreMenuItem.Button(
+                        MoreMenuItemButton(
                             title = R.string.more_menu_button_wс_admin,
                             description = R.string.more_menu_button_wc_admin_description,
                             icon = R.drawable.ic_more_menu_wp_admin,
                             extraIcon = R.drawable.ic_external
                         ),
-                        MoreMenuItem.Button(
+                        MoreMenuItemButton(
                             title = R.string.more_menu_button_store,
                             description = R.string.more_menu_button_store_description,
                             icon = R.drawable.ic_more_menu_store
                         ),
-                        MoreMenuItem.Button(
+                        MoreMenuItemButton(
                             title = R.string.more_menu_button_reviews,
                             description = R.string.more_menu_button_reviews_description,
                             icon = R.drawable.ic_more_menu_reviews,
@@ -517,12 +517,24 @@ private fun MoreMenuPreview() {
                                 animateAppearance = false
                             )
                         ),
-                        MoreMenuItem.Button(
+                        MoreMenuItemButton(
                             title = R.string.more_menu_button_coupons,
                             description = R.string.more_menu_button_coupons_description,
                             icon = R.drawable.ic_more_menu_coupons,
                         ),
-                        MoreMenuItem.Loading(isVisible = true),
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_reviews,
+                            description = R.string.more_menu_button_reviews_description,
+                            icon = R.drawable.ic_more_menu_reviews,
+                            badgeState = BadgeState(
+                                badgeSize = R.dimen.major_150,
+                                backgroundColor = R.color.color_primary,
+                                textColor = R.color.color_on_primary,
+                                textState = TextState("3", R.dimen.text_minor_80),
+                                animateAppearance = false
+                            ),
+                            state = MoreMenuButtonStatus.State.Loading
+                        ),
                     ),
                 )
             ),

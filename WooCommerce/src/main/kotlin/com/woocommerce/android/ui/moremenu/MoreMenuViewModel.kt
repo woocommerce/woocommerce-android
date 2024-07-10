@@ -95,7 +95,7 @@ class MoreMenuViewModel @Inject constructor(
                     )
                 ).map { section ->
                     section.copy(
-                        items = section.items.filter { it.isVisible }
+                        items = section.items.filter { it.state != MoreMenuButtonStatus.State.Hidden }
                     )
                 }.filter { it.isVisible && it.items.isNotEmpty() },
                 siteName = selectedSite.getSelectedSiteName(),

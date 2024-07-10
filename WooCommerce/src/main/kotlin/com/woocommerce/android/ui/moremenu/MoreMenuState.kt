@@ -58,7 +58,6 @@ data class MoreMenuItemButton(
     @StringRes val description: Int,
     @DrawableRes val icon: Int,
     @DrawableRes val extraIcon: Int? = null,
-    val isVisible: Boolean = true,
     val state: MoreMenuButtonStatus.State = MoreMenuButtonStatus.State.Visible,
     val badgeState: BadgeState? = null,
     val onClick: () -> Unit = {},
