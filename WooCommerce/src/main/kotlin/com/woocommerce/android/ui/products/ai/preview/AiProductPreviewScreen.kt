@@ -31,8 +31,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -133,8 +135,9 @@ private fun ProductPreviewContent(
         )
 
         Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_name_section),
-            style = MaterialTheme.typography.body2
+            text = stringResource(id = R.string.product_creation_ai_preview_name_description_sections),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
         )
         Text(
             text = state.title,
@@ -144,12 +147,6 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        Spacer(Modifier)
-
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
-            style = MaterialTheme.typography.body2
-        )
         Text(
             text = state.shortDescription,
             modifier = Modifier
@@ -158,12 +155,6 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        Spacer(Modifier)
-
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_description_section),
-            style = MaterialTheme.typography.body2
-        )
         Text(
             text = state.description,
             modifier = Modifier
@@ -172,16 +163,16 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        Spacer(Modifier)
+        Spacer(Modifier.height(8.dp))
 
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_details_section),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
         )
 
         state.propertyGroups.forEach { properties ->
             ProductProperties(properties = properties, modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier)
         }
 
         AnimatedVisibility(
@@ -286,8 +277,9 @@ private fun ProductPreviewLoading(modifier: Modifier) {
         )
 
         Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_name_section),
-            style = MaterialTheme.typography.body2
+            text = stringResource(id = R.string.product_creation_ai_preview_name_description_sections),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
         )
         LoadingSkeleton(
             modifier = Modifier
@@ -295,24 +287,12 @@ private fun ProductPreviewLoading(modifier: Modifier) {
                 .then(sectionsBorder)
         )
 
-        Spacer(Modifier)
-
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
-            style = MaterialTheme.typography.body2
-        )
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(sectionsBorder)
         )
 
-        Spacer(Modifier)
-
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_description_section),
-            style = MaterialTheme.typography.body2
-        )
         LoadingSkeleton(
             lines = 3,
             modifier = Modifier
@@ -320,18 +300,18 @@ private fun ProductPreviewLoading(modifier: Modifier) {
                 .then(sectionsBorder)
         )
 
-        Spacer(Modifier)
+        Spacer(Modifier.height(8.dp))
 
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_details_section),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
         )
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(sectionsBorder)
         )
-        Spacer(Modifier)
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
