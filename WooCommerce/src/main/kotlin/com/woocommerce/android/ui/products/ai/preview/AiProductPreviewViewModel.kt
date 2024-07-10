@@ -34,7 +34,9 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private val imageState = savedStateHandle.getStateFlow(viewModelScope, ImageState(navArgs.image))
     private val selectedVariant = savedStateHandle.getStateFlow(viewModelScope, 0)
-    private val generatedProduct = MutableStateFlow<Result<AIProductModel>?>(null)
+    private val generatedProduct = MutableStateFlow<Result<AIProductModel>?>(
+        Result.success(AIProductModel.buildDefault("Name", navArgs.productFeatures))
+    )
 
     val state: LiveData<State> = generatedProduct.transformLatest {
         if (it == null) {

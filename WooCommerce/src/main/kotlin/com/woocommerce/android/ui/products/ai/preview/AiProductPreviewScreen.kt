@@ -43,6 +43,9 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.AiFeedbackForm
+import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
+import com.woocommerce.android.ui.products.ai.components.ImageAction
+import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 
 @Composable
 fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
@@ -163,6 +166,16 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
+        if (state.imageState.image != null) {
+            Spacer(Modifier.height(8.dp))
+            ProductImage(
+                state = state.imageState,
+                onImageActionSelected = { TODO() },
+                onFullViewDismissed = { TODO() },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
         Spacer(Modifier.height(8.dp))
 
         Text(
@@ -187,6 +200,35 @@ private fun ProductPreviewContent(
                 onFeedbackReceived = onFeedbackReceived,
             )
         }
+    }
+}
+
+@Composable
+private fun ProductImage(
+    state: AiProductPreviewViewModel.ImageState,
+    onFullViewDismissed: () -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit,
+    modifier: Modifier
+) {
+    if (state.image == null) return
+
+    SelectedImageSection(
+        image = state.image,
+        subtitle = stringResource(id = R.string.ai_product_creation_image_selected_subtitle),
+        onImageActionSelected = onImageActionSelected,
+        dropDownActions = listOf(ImageAction.View, ImageAction.Remove),
+        modifier = modifier
+            .background(
+                color = colorResource(id = R.color.woo_gray_6),
+                shape = RoundedCornerShape(8.dp)
+            )
+    )
+
+    if (state.showImageFullScreen) {
+        FullScreenImageViewer(
+            image = state.image,
+            onDismiss = onFullViewDismissed
+        )
     }
 }
 
