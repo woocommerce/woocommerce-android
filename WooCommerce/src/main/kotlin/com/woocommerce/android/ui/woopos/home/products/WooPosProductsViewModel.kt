@@ -22,7 +22,7 @@ class WooPosProductsViewModel @Inject constructor(
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading(reloadingProducts = false))
+    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
 
     init {
@@ -76,31 +76,28 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState {
-        return if (products.isEmpty() && !isRefreshingProducts()) {
-            WooPosProductsViewState.Empty(reloadingProducts = false)
-        } else if (products.isEmpty() && isRefreshingProducts()) {
-            WooPosProductsViewState.Loading(reloadingProducts = false)
-        } else {
-            WooPosProductsViewState.Content(
-                products = products.map { product ->
-                    WooPosProductsListItem(
-                        id = product.remoteId,
-                        name = product.name,
-                        price = priceFormat(product.price),
-                        imageUrl = product.firstImageUrl,
-                    )
-                },
-                loadingMore = false,
-                reloadingProducts = false,
-            )
+    private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState =
+        when {
+            products.isEmpty() && !isReloadingProducts() -> WooPosProductsViewState.Empty()
+            products.isEmpty() && isReloadingProducts() ->
+                WooPosProductsViewState.Loading(reloadingProducts = true)
+            else -> products.toContentState()
         }
-    }
 
-    private fun isRefreshingProducts(): Boolean {
-        return viewState.value is WooPosProductsViewState.Content &&
-            (viewState.value as WooPosProductsViewState.Content).reloadingProducts
-    }
+    private suspend fun List<Product>.toContentState() = WooPosProductsViewState.Content(
+        products = map { product ->
+            WooPosProductsListItem(
+                id = product.remoteId,
+                name = product.name,
+                price = priceFormat(product.price),
+                imageUrl = product.firstImageUrl,
+            )
+        },
+        loadingMore = false,
+        reloadingProducts = false,
+    )
+
+    private fun isReloadingProducts(): Boolean = viewState.value.reloadingProducts
 
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value

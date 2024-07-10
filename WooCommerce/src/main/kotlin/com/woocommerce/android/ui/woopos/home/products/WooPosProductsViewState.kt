@@ -9,16 +9,16 @@ sealed class WooPosProductsViewState(
     data class Content(
         val products: List<WooPosProductsListItem>,
         val loadingMore: Boolean,
-        override val reloadingProducts: Boolean,
+        override val reloadingProducts: Boolean = false,
     ) : WooPosProductsViewState(reloadingProducts)
 
-    data class Loading(override val reloadingProducts: Boolean) :
+    data class Loading(override val reloadingProducts: Boolean = false) :
         WooPosProductsViewState(reloadingProducts)
 
-    data class Error(override val reloadingProducts: Boolean) :
+    data class Error(override val reloadingProducts: Boolean = false) :
         WooPosProductsViewState(reloadingProducts)
 
-    data class Empty(override val reloadingProducts: Boolean) :
+    data class Empty(override val reloadingProducts: Boolean = false) :
         WooPosProductsViewState(reloadingProducts)
 }
 
