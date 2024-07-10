@@ -25,7 +25,7 @@ abstract class WooPosBaseUnitTest(
     init {
 
         /**
-         * This is a temporary workaround  to fix existing tests that were broken by
+         * This is copied from BaseUnitTest to fix existing tests that were broken by
          * the change on kotlinx.coroutines 1.7.0 that causes tests that
          * throw exceptions to fail. Previously test methods that threw exceptions would not prevent
          * tests from passing, which was a bug in kotlinx.coroutines that has now been fixed. However,
