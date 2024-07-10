@@ -7,19 +7,25 @@ import androidx.annotation.StringRes
 
 data class MoreMenuItemSection(
     @StringRes val title: Int?,
-    val items: List<MoreMenuItemButton>,
+    val items: List<MoreMenuItem>,
     val isVisible: Boolean = true,
 )
 
-data class MoreMenuItemButton(
-    @StringRes val title: Int,
-    @StringRes val description: Int,
-    @DrawableRes val icon: Int,
-    @DrawableRes val extraIcon: Int? = null,
-    val isVisible: Boolean = true,
-    val badgeState: BadgeState? = null,
-    val onClick: () -> Unit = {},
-)
+sealed class MoreMenuItem(open val isVisible: Boolean) {
+    data class Button(
+        @StringRes val title: Int,
+        @StringRes val description: Int,
+        @DrawableRes val icon: Int,
+        @DrawableRes val extraIcon: Int? = null,
+        override val isVisible: Boolean = true,
+        val badgeState: BadgeState? = null,
+        val onClick: () -> Unit = {},
+    ) : MoreMenuItem(isVisible)
+
+    data class Loading(
+        override val isVisible: Boolean,
+    ) : MoreMenuItem(isVisible)
+}
 
 data class BadgeState(
     @DimenRes val badgeSize: Int,

@@ -105,8 +105,8 @@ class MoreMenuViewModel @Inject constructor(
     private suspend fun generatePOSSection() =
         MoreMenuItemSection(
             title = null,
-            items = listOf(
-                MoreMenuItemButton(
+            items = listOf<MoreMenuItem>(
+                MoreMenuItem.Button(
                     title = R.string.more_menu_button_woo_pos,
                     description = R.string.more_menu_button_woo_pos_description,
                     icon = R.drawable.ic_more_menu_pos,
@@ -126,61 +126,61 @@ class MoreMenuViewModel @Inject constructor(
     ) = MoreMenuItemSection(
         title = R.string.more_menu_general_section_title,
         items = listOf(
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_payments,
                 description = R.string.more_menu_button_payments_description,
                 icon = R.drawable.ic_more_menu_payments,
                 badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
                 onClick = ::onPaymentsButtonClick,
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_google,
                 description = R.string.more_menu_button_google_description,
                 icon = R.drawable.google_logo,
                 onClick = ::onPromoteProductsWithGoogle,
                 isVisible = isGoogleForWooEnabled()
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_blaze,
                 description = R.string.more_menu_button_blaze_description,
                 icon = R.drawable.ic_blaze,
                 onClick = ::onPromoteProductsWithBlaze,
                 isVisible = isBlazeEnabled()
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_wс_admin,
                 description = R.string.more_menu_button_wc_admin_description,
                 icon = R.drawable.ic_more_menu_wp_admin,
                 extraIcon = R.drawable.ic_external,
                 onClick = ::onViewAdminButtonClick
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_store,
                 description = R.string.more_menu_button_store_description,
                 icon = R.drawable.ic_more_menu_store,
                 extraIcon = R.drawable.ic_external,
                 onClick = ::onViewStoreButtonClick
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_coupons,
                 description = R.string.more_menu_button_coupons_description,
                 icon = R.drawable.ic_more_menu_coupons,
                 onClick = ::onCouponsButtonClick
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_reviews,
                 description = R.string.more_menu_button_reviews_description,
                 icon = R.drawable.ic_more_menu_reviews,
                 badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
                 onClick = ::onReviewsButtonClick
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_customers,
                 description = R.string.more_menu_button_customers_description,
                 icon = R.drawable.icon_multiple_users,
                 onClick = ::onCustomersButtonClick
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_inbox,
                 description = R.string.more_menu_button_inbox_description,
                 icon = R.drawable.ic_more_menu_inbox,
@@ -193,13 +193,13 @@ class MoreMenuViewModel @Inject constructor(
     private fun generateSettingsMenuButtons() = MoreMenuItemSection(
         title = R.string.more_menu_settings_section_title,
         items = listOf(
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_settings,
                 description = R.string.more_menu_button_settings_description,
                 icon = R.drawable.ic_more_screen_settings,
                 onClick = ::onSettingsClick
             ),
-            MoreMenuItemButton(
+            MoreMenuItem.Button(
                 title = R.string.more_menu_button_subscriptions,
                 description = R.string.more_menu_button_subscriptions_description,
                 icon = R.drawable.ic_more_menu_upgrades,
@@ -361,7 +361,7 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun isPaymentBadgeVisible() = moreMenuViewState.value
         ?.menuSections
-        ?.filterIsInstance<MoreMenuItemButton>()
+        ?.filterIsInstance<MoreMenuItem.Button>()
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
@@ -386,20 +386,20 @@ class MoreMenuViewModel @Inject constructor(
     )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
-        object NavigateToSettingsEvent : MoreMenuEvent()
-        object NavigateToSubscriptionsEvent : MoreMenuEvent()
-        object StartSitePickerEvent : MoreMenuEvent()
-        object ViewPayments : MoreMenuEvent()
-        object OpenBlazeCampaignListEvent : MoreMenuEvent()
+        data object NavigateToSettingsEvent : MoreMenuEvent()
+        data object NavigateToSubscriptionsEvent : MoreMenuEvent()
+        data object StartSitePickerEvent : MoreMenuEvent()
+        data object ViewPayments : MoreMenuEvent()
+        data object OpenBlazeCampaignListEvent : MoreMenuEvent()
         data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewGoogleEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
-        object ViewReviewsEvent : MoreMenuEvent()
-        object ViewInboxEvent : MoreMenuEvent()
-        object ViewCouponsEvent : MoreMenuEvent()
+        data object ViewReviewsEvent : MoreMenuEvent()
+        data object ViewInboxEvent : MoreMenuEvent()
+        data object ViewCouponsEvent : MoreMenuEvent()
 
-        object ViewCustomersEvent : MoreMenuEvent()
-        object NavigateToWooPosEvent : MoreMenuEvent()
+        data object ViewCustomersEvent : MoreMenuEvent()
+        data object NavigateToWooPosEvent : MoreMenuEvent()
     }
 }
