@@ -78,7 +78,7 @@ class MoreMenuViewModel @Inject constructor(
             selectedSite.observe().filterNotNull(),
             moreMenuNewFeatureHandler.moreMenuPaymentsFeatureWasClicked,
             loadSitePlanName(),
-            checkFeaturesAvailability()
+            checkFeaturesAvailability(),
         ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName, moreMenuButtonStatus ->
             MoreMenuViewState(
                 menuSections = generateAllSections(
@@ -87,7 +87,7 @@ class MoreMenuViewModel @Inject constructor(
                     paymentsFeatureWasClicked
                 ).map { section ->
                     section.copy(
-                        items = section.items.filter { it.state != MoreMenuButtonStatus.State.Hidden }
+                        items = section.items.filter { it.state != MoreMenuItemButton.State.Hidden }
                     )
                 }.filter { it.isVisible && it.items.isNotEmpty() },
                 siteName = selectedSite.getSelectedSiteName(),
@@ -99,26 +99,18 @@ class MoreMenuViewModel @Inject constructor(
         }.asLiveData()
 
     private fun generateAllSections(
-        moreMenuButtonStatus: MoreMenuButtonStatus,
+        buttonsStates: Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>,
         count: Int,
         paymentsFeatureWasClicked: Boolean
     ) = listOf(
-        generatePOSSection(moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.WooPos)),
-        generateSettingsMenuButtons(
-            settingsMenuButtonState = moreMenuButtonStatus.getButtonStatus(MoreMenuButtonStatus.Type.Settings)
-        ),
+        generatePOSSection(buttonsStates[MoreMenuItemButton.Type.WooPos]!!),
+        generateSettingsMenuButtons(buttonsStates[MoreMenuItemButton.Type.Settings]!!),
         generateGeneralSection(
             unseenReviewsCount = count,
             paymentsFeatureWasClicked = paymentsFeatureWasClicked,
-            googleForWooState = moreMenuButtonStatus.getButtonStatus(
-                MoreMenuButtonStatus.Type.GoogleForWoo
-            ),
-            blazeState = moreMenuButtonStatus.getButtonStatus(
-                MoreMenuButtonStatus.Type.Blaze
-            ),
-            inboxState = moreMenuButtonStatus.getButtonStatus(
-                MoreMenuButtonStatus.Type.Inbox
-            ),
+            googleForWooState = buttonsStates[MoreMenuItemButton.Type.GoogleForWoo]!!,
+            blazeState = buttonsStates[MoreMenuItemButton.Type.Blaze]!!,
+            inboxState = buttonsStates[MoreMenuItemButton.Type.Inbox]!!,
         )
     )
 
@@ -127,7 +119,7 @@ class MoreMenuViewModel @Inject constructor(
         launch { trackBlazeDisplayed() }
     }
 
-    private fun generatePOSSection(wooPosState: MoreMenuButtonStatus.State) =
+    private fun generatePOSSection(wooPosState: MoreMenuItemButton.State) =
         MoreMenuItemSection(
             title = null,
             items = listOf(
@@ -148,9 +140,9 @@ class MoreMenuViewModel @Inject constructor(
     private fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
-        googleForWooState: MoreMenuButtonStatus.State,
-        blazeState: MoreMenuButtonStatus.State,
-        inboxState: MoreMenuButtonStatus.State,
+        googleForWooState: MoreMenuItemButton.State,
+        blazeState: MoreMenuItemButton.State,
+        inboxState: MoreMenuItemButton.State,
     ) = MoreMenuItemSection(
         title = R.string.more_menu_general_section_title,
         items = listOf(
@@ -218,7 +210,7 @@ class MoreMenuViewModel @Inject constructor(
         )
     )
 
-    private fun generateSettingsMenuButtons(settingsMenuButtonState: MoreMenuButtonStatus.State) =
+    private fun generateSettingsMenuButtons(settingsMenuButtonState: MoreMenuItemButton.State) =
         MoreMenuItemSection(
             title = R.string.more_menu_settings_section_title,
             items = listOf(
@@ -403,41 +395,39 @@ class MoreMenuViewModel @Inject constructor(
         }
         .onStart { emit("") }
 
-    private fun checkFeaturesAvailability(): Flow<MoreMenuButtonStatus> {
+    private fun checkFeaturesAvailability(): Flow<Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>> {
+        val initialState = MoreMenuItemButton.Type.entries.associateWith { MoreMenuItemButton.State.Loading }
+            .toMutableMap()
+
         val flows = mutableListOf(
-            doCheckAvailability(MoreMenuButtonStatus.Type.Blaze) { isBlazeEnabled() },
-            doCheckAvailability(MoreMenuButtonStatus.Type.GoogleForWoo) { isGoogleForWooEnabled() },
-            doCheckAvailability(MoreMenuButtonStatus.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
-            doCheckAvailability(MoreMenuButtonStatus.Type.Settings) { moreMenuRepository.isUpgradesEnabled() }
+            doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
+            doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
+            doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
+            doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
         )
 
-        flows += if (isWooPosFFEnabled()) {
-            doCheckAvailability(MoreMenuButtonStatus.Type.WooPos) { isWooPosEnabled() }
+        // While this in development better to not show loading state for WooPos at all
+        if (isWooPosFFEnabled()) {
+            flows += doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
         } else {
-            flow {
-                emit(MoreMenuButtonStatus(MoreMenuButtonStatus.Type.WooPos, MoreMenuButtonStatus.State.Hidden))
-            }
+            initialState[MoreMenuItemButton.Type.WooPos] = MoreMenuItemButton.State.Hidden
         }
 
         return flows.merge()
+            .map { update ->
+                initialState[update.first] = update.second
+                initialState
+            }
+            .onStart { emit(initialState) }
     }
 
     private fun doCheckAvailability(
-        type: MoreMenuButtonStatus.Type,
+        type: MoreMenuItemButton.Type,
         checker: suspend () -> Boolean
-    ): Flow<MoreMenuButtonStatus> = flow {
-        val state = if (checker()) MoreMenuButtonStatus.State.Visible else MoreMenuButtonStatus.State.Hidden
-        emit(MoreMenuButtonStatus(type, state))
-    }.onStart {
-        emit(MoreMenuButtonStatus(type, MoreMenuButtonStatus.State.Loading))
+    ): Flow<Pair<MoreMenuItemButton.Type, MoreMenuItemButton.State>> = flow {
+        val state = if (checker()) MoreMenuItemButton.State.Visible else MoreMenuItemButton.State.Hidden
+        emit(type to state)
     }
-
-    private fun MoreMenuButtonStatus.getButtonStatus(type: MoreMenuButtonStatus.Type) =
-        if (this.type == type) {
-            this.state
-        } else {
-            MoreMenuButtonStatus.State.Hidden
-        }
 
     private val SitePlan.formattedPlanName
         get() = generateFormattedPlanName(resourceProvider)

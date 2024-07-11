@@ -34,19 +34,6 @@ sealed class MoreMenuEvent : MultiLiveEvent.Event() {
     data object NavigateToWooPosEvent : MoreMenuEvent()
 }
 
-data class MoreMenuButtonStatus(
-    val type: Type,
-    val state: State,
-) {
-    enum class Type {
-        Blaze, GoogleForWoo, WooPos, Inbox, Settings,
-    }
-
-    enum class State {
-        Loading, Visible, Hidden,
-    }
-}
-
 data class MoreMenuItemSection(
     @StringRes val title: Int?,
     val items: List<MoreMenuItemButton>,
@@ -58,10 +45,18 @@ data class MoreMenuItemButton(
     @StringRes val description: Int,
     @DrawableRes val icon: Int,
     @DrawableRes val extraIcon: Int? = null,
-    val state: MoreMenuButtonStatus.State = MoreMenuButtonStatus.State.Visible,
+    val state: State = State.Visible,
     val badgeState: BadgeState? = null,
     val onClick: () -> Unit = {},
-)
+) {
+    enum class State {
+        Loading, Visible, Hidden,
+    }
+
+    enum class Type {
+        Blaze, GoogleForWoo, WooPos, Inbox, Settings,
+    }
+}
 
 data class BadgeState(
     @DimenRes val badgeSize: Int,

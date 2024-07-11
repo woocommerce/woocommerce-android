@@ -293,9 +293,9 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
         Column {
             section.items.forEach { item ->
                 when (item.state) {
-                    MoreMenuButtonStatus.State.Loading -> MoreMenuLoading()
-                    MoreMenuButtonStatus.State.Visible -> MoreMenuButton(item)
-                    MoreMenuButtonStatus.State.Hidden -> Unit
+                    MoreMenuItemButton.State.Loading -> MoreMenuLoading()
+                    MoreMenuItemButton.State.Visible -> MoreMenuButton(item)
+                    MoreMenuItemButton.State.Hidden -> Unit
                 }
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -533,7 +533,7 @@ private fun MoreMenuPreview() {
                                 textState = TextState("3", R.dimen.text_minor_80),
                                 animateAppearance = false
                             ),
-                            state = MoreMenuButtonStatus.State.Loading
+                            state = MoreMenuItemButton.State.Loading
                         ),
                     ),
                 )
