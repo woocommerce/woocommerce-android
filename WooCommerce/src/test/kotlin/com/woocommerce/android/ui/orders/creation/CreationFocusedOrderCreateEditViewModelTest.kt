@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
 import com.woocommerce.android.ui.orders.creation.totals.TotalsSectionsState
 import com.woocommerce.android.ui.orders.creation.views.ProductAmountEvent
@@ -82,6 +83,7 @@ import java.math.BigDecimal
 import java.util.Date
 import java.util.function.Consumer
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
@@ -901,37 +903,53 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
     @Test
     fun `when editing a shipping fee, then reuse the existent one with different value`() {
-        var orderDraft: Order? = null
-        sut.orderDraft.observeForever {
-            orderDraft = it
-        }
-
-        val newShippingFeeTotal = BigDecimal(123.5)
-
-        sut.onShippingEdited(BigDecimal(1), "1")
-        sut.onShippingEdited(BigDecimal(2), "2")
-        sut.onShippingEdited(BigDecimal(3), "3")
-        sut.onShippingEdited(newShippingFeeTotal, "4")
-
-        orderDraft?.shippingLines
-            ?.takeIf { it.size == 1 }
-            ?.let {
-                val shippingFee = it.first()
-                assertThat(shippingFee.total).isEqualTo(newShippingFeeTotal)
-                assertThat(shippingFee.methodTitle).isEqualTo("4")
-                assertThat(shippingFee.methodId).isNotNull
-            } ?: fail("Expected a shipping lines list with a single shipping fee with 123.5 as total")
-    }
-
-    @Test
-    fun `when editing a shipping fee, do not remove the rest of the shipping fees`() {
-        // given
+        val itemId = 2L
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
-                            Order.ShippingLine("first", "first", BigDecimal(1)),
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
+                            Order.ShippingLine("second", "second", BigDecimal(2)),
+                            Order.ShippingLine("third", "third", BigDecimal(3)),
+                        )
+                    )
+                )
+            )
+        }
+        createSut()
+        var orderDraft: Order? = null
+        sut.orderDraft.observeForever {
+            orderDraft = it
+        }
+
+        val newValue = BigDecimal(125.3)
+        val result = ShippingUpdateResult(
+            id = itemId,
+            amount = newValue,
+            methodId = "first",
+            name = "first"
+        )
+        sut.onUpdatedShipping(result)
+
+        assertThat(orderDraft?.shippingLines).hasSize(3)
+        val line = orderDraft?.shippingLines?.find { it.itemId == itemId }
+        assertNotNull(line)
+        assertThat(line.total).isEqualTo(newValue)
+        assertThat(line.methodTitle).isEqualTo("first")
+        assertThat(line.methodId).isNotNull
+    }
+
+    @Test
+    fun `when editing a shipping fee, do not remove the rest of the shipping fees`() {
+        // given
+        val itemId = 2L
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(
+                Succeeded(
+                    Order.getEmptyOrder(Date(), Date()).copy(
+                        shippingLines = listOf(
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
                             Order.ShippingLine("second", "second", BigDecimal(2)),
                             Order.ShippingLine("third", "third", BigDecimal(3)),
                         )
@@ -947,17 +965,30 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         // when
         val newValue = BigDecimal(321)
-        sut.onShippingEdited(newValue, "1")
+        val result = ShippingUpdateResult(
+            id = itemId,
+            amount = newValue,
+            methodId = "first",
+            name = "first"
+        )
+        sut.onUpdatedShipping(result)
 
         // then
-        assertThat(orderDraft?.shippingLines)
-            .hasSize(3)
-            .first().satisfies(Consumer { firstFee -> assertThat(firstFee.total).isEqualTo(newValue) })
+        assertThat(orderDraft?.shippingLines).hasSize(3)
+        val item = orderDraft?.shippingLines?.find { it.itemId == itemId }
+        assertNotNull(item)
+        assertThat(item.total).isEqualTo(newValue)
     }
 
     @Test
     fun `when order has no shipping fees, add one`() {
         // given
+        val result = ShippingUpdateResult(
+            id = null,
+            amount = BigDecimal.TEN,
+            methodId = "first",
+            name = "first"
+        )
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
             orderDraft = it
@@ -965,7 +996,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         assert(orderDraft?.shippingLines?.isEmpty() == true)
 
         // when
-        sut.onShippingEdited(BigDecimal(1), "1")
+        sut.onUpdatedShipping(result)
 
         // then
         assertThat(orderDraft?.shippingLines).hasSize(1)
@@ -974,14 +1005,15 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when removing a shipping fee, then mark the first one with null methodId`() {
         // given
+        val itemId = 1L
         createUpdateOrderUseCase = mock {
             onBlocking { invoke(any(), any()) } doReturn flowOf(
                 Succeeded(
                     Order.getEmptyOrder(Date(), Date()).copy(
                         shippingLines = listOf(
-                            Order.ShippingLine("first", "first", BigDecimal(1)),
-                            Order.ShippingLine("second", "second", BigDecimal(2)),
-                            Order.ShippingLine("third", "third", BigDecimal(3)),
+                            Order.ShippingLine(itemId, "first", "first", BigDecimal(1), BigDecimal.ZERO),
+                            Order.ShippingLine(2L, "second", "second", BigDecimal(2), BigDecimal.ZERO),
+                            Order.ShippingLine(3L, "third", "third", BigDecimal(3), BigDecimal.ZERO),
                         )
                     )
                 )
@@ -994,10 +1026,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         }
 
         // when
-        sut.onShippingRemoved()
+        sut.onRemoveShipping(itemId)
+
+        val item = orderDraft?.shippingLines?.find { it.itemId == itemId }
 
         // then
-        assertThat(orderDraft?.shippingLines?.first()?.methodId).isNull()
+        assertNotNull(item)
+        assertThat(item.methodId).isNull()
     }
 
     @Test

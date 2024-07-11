@@ -78,7 +78,7 @@ object UiHelpers {
         setInvisible: Boolean = false
     ) {
         val isLandscape = DisplayUtils.isLandscape(imageView.context)
-        val isExpandedOrBigger = imageView.context.windowSizeClass == WindowSizeClass.ExpandedAndBigger
+        val isExpandedOrBigger = imageView.context.windowSizeClass >= WindowSizeClass.ExpandedAndBigger
         val shouldShowBasedOnOrientationAndSize = !isLandscape || isExpandedOrBigger
         val showImage = resId != null && shouldShowBasedOnOrientationAndSize
         updateVisibility(imageView, showImage, setInvisible)
@@ -98,5 +98,5 @@ class IsWindowClassLargeThanCompact @Inject constructor(val context: Context) {
 }
 
 class IsWindowClassExpandedAndBigger @Inject constructor(val context: Context) {
-    operator fun invoke() = context.windowSizeClass == WindowSizeClass.ExpandedAndBigger
+    operator fun invoke() = context.windowSizeClass >= WindowSizeClass.ExpandedAndBigger
 }
