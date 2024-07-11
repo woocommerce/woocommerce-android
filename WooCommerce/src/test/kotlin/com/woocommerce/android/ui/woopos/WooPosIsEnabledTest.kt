@@ -30,7 +30,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     private val ippStore: WCInPersonPaymentsStore = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
-    private val isFeatureFlagEnabled: WooPosisFeatureFlagEnabled = mock()
+    private val isFeatureFlagEnabled: WooPosIsFeatureFlagEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() }.thenReturn("6.6.0")
     }
