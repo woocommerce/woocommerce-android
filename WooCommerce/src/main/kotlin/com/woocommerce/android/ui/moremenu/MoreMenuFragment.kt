@@ -31,7 +31,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCustomersEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewGoogleForWooEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleForWooEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewInboxEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewReviewsEvent
