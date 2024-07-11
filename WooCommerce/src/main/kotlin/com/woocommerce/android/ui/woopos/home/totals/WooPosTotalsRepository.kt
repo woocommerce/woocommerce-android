@@ -11,9 +11,7 @@ import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class WooPosTotalsRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val dateUtils: DateUtils,
