@@ -22,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -257,7 +256,6 @@ private fun ToneDropDown(
         Text(
             text = stringResource(id = R.string.product_creation_ai_tone_title),
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
