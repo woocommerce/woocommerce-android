@@ -113,7 +113,7 @@ private fun FullScreenImage(
         )
         AsyncImage(
             model = Builder(LocalContext.current)
-                .data(state.mediaUri)
+                .data(state.selectedImage?.uri)
                 .crossfade(true)
                 .build(),
             contentDescription = null,
@@ -350,8 +350,8 @@ private fun ProductPromptTextField(
 
             when {
                 state.isScanningImage -> ImageScanning()
-                state.mediaUri != null -> SelectedImageRow(
-                    state.mediaUri,
+                state.selectedImage != null -> SelectedImageRow(
+                    state.selectedImage.uri,
                     onImageActionSelected
                 )
 
@@ -509,7 +509,7 @@ private fun AiProductPromptScreenPreview() {
             productPrompt = "Product prompt test",
             selectedTone = Tone.Casual,
             isMediaPickerDialogVisible = false,
-            mediaUri = null,
+            selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false,
             noTextDetectedMessage = false
@@ -533,7 +533,7 @@ private fun AiProductPromptScreenWithErrorPreview() {
             productPrompt = "Product prompt test",
             selectedTone = Tone.Casual,
             isMediaPickerDialogVisible = false,
-            mediaUri = null,
+            selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false,
             noTextDetectedMessage = true
