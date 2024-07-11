@@ -496,4 +496,26 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             val itemsSecondSection = states.last().menuSections[2].items
             assertThat(itemsSecondSection.count()).isEqualTo(9)
         }
+
+    @Test
+    fun `when building state, then all optional buttons start with loading state`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isWooPosEnabled()).thenReturn(true)
+            whenever(isBlazeEnabled.invoke()).thenReturn(true)
+            whenever(isGoogleForWooEnabled.invoke()).thenReturn(true)
+            whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
+            whenever(moreMenuRepository.isInboxEnabled()).thenReturn(true)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        val items = states.first().menuSections.flatMap { it.items }
+        assertThat(items.first { it.title == R.string.more_menu_button_woo_pos }.state).isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state).isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_google }.state).isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state).isEqualTo(MoreMenuItemButton.State.Loading)
+    }
 }
