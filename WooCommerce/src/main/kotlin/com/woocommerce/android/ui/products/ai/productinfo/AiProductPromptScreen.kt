@@ -15,9 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
@@ -29,8 +32,12 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,34 +50,75 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
+import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
+import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import kotlin.enums.EnumEntries
 
 @Composable
 fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
     BackHandler(onBack = viewModel::onBackButtonClick)
 
     viewModel.state.observeAsState().value?.let { state ->
-        AiProductPromptScreen(
-            uiState = state,
-            onBackButtonClick = viewModel::onBackButtonClick,
-            onPromptUpdated = viewModel::onPromptUpdated,
-            onReadTextFromProductPhoto = viewModel::onReadTextFromProductPhoto,
-            onGenerateProductClicked = viewModel::onGenerateProductClicked,
-            onToneSelected = viewModel::onToneSelected
+        if (state.showImageFullScreen) {
+            FullScreenImage(viewModel, state)
+        } else {
+            AiProductPromptScreen(
+                uiState = state,
+                onBackButtonClick = viewModel::onBackButtonClick,
+                onPromptUpdated = viewModel::onPromptUpdated,
+                onReadTextFromProductPhoto = viewModel::onAddImageForScanning,
+                onGenerateProductClicked = viewModel::onGenerateProductClicked,
+                onToneSelected = viewModel::onToneSelected,
+                onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+                onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
+                onImageActionSelected = viewModel::onImageActionSelected
+            )
+        }
+    }
+}
+
+@Composable
+private fun FullScreenImage(
+    viewModel: AiProductPromptViewModel,
+    state: AiProductPromptState
+) {
+    BackHandler(onBack = viewModel::onImageFullScreenDismissed)
+    Column {
+        Toolbar(
+            navigationIcon = Filled.Close,
+            onNavigationButtonClick = viewModel::onImageFullScreenDismissed
+        )
+        AsyncImage(
+            model = Builder(LocalContext.current)
+                .data(state.selectedImage?.uri)
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
+            contentScale = ContentScale.Inside,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
@@ -82,7 +130,10 @@ fun AiProductPromptScreen(
     onPromptUpdated: (String) -> Unit,
     onReadTextFromProductPhoto: () -> Unit,
     onGenerateProductClicked: () -> Unit,
-    onToneSelected: (Tone) -> Unit
+    onToneSelected: (Tone) -> Unit,
+    onMediaPickerDialogDismissed: () -> Unit,
+    onMediaLibraryRequested: (DataSource) -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit
 ) {
     val orientation = LocalConfiguration.current.orientation
 
@@ -136,10 +187,17 @@ fun AiProductPromptScreen(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_250)))
 
                 ProductPromptTextField(
-                    productPrompt = uiState.productPrompt,
+                    state = uiState,
                     onPromptUpdated = onPromptUpdated,
                     onReadTextFromProductPhoto = onReadTextFromProductPhoto,
+                    onImageActionSelected = onImageActionSelected
                 )
+
+                if (uiState.noTextDetectedMessage) {
+                    InformativeMessage(
+                        stringResource(id = R.string.product_creation_package_photo_no_text_detected)
+                    )
+                }
 
                 ToneDropDown(
                     tone = uiState.selectedTone,
@@ -159,6 +217,12 @@ fun AiProductPromptScreen(
                 GenerateProductButton()
             }
         }
+    }
+    if (uiState.isMediaPickerDialogVisible) {
+        MediaPickerDialog(
+            onMediaPickerDialogDismissed,
+            onMediaLibraryRequested
+        )
     }
 }
 
@@ -233,9 +297,10 @@ private fun ToneDropDown(
 
 @Composable
 private fun ProductPromptTextField(
-    productPrompt: String,
+    state: AiProductPromptState,
     onPromptUpdated: (String) -> Unit,
-    onReadTextFromProductPhoto: () -> Unit
+    onReadTextFromProductPhoto: () -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
     Column {
@@ -254,7 +319,7 @@ private fun ProductPromptTextField(
                 .clip(RoundedCornerShape(10.dp))
         ) {
             Box {
-                if (productPrompt.isEmpty()) {
+                if (state.productPrompt.isEmpty()) {
                     Text(
                         text = stringResource(id = R.string.ai_product_creation_prompt_placeholder),
                         style = MaterialTheme.typography.body1,
@@ -267,7 +332,7 @@ private fun ProductPromptTextField(
                 }
 
                 WCOutlinedTextField(
-                    value = productPrompt,
+                    value = state.productPrompt,
                     onValueChange = onPromptUpdated,
                     label = "", // Can't use label here as it breaks the visual design.
                     placeholderText = "", // Uses Text() above instead.
@@ -283,15 +348,155 @@ private fun ProductPromptTextField(
 
             Divider()
 
-            WCTextButton(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
-                onClick = onReadTextFromProductPhoto,
-                icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera_primary),
-                allCaps = false,
-                text = stringResource(id = R.string.ai_product_creation_read_text_from_photo_button),
+            when {
+                state.isScanningImage -> ImageScanning()
+                state.selectedImage != null -> SelectedImageRow(
+                    state.selectedImage.uri,
+                    onImageActionSelected
+                )
+
+                else -> {
+                    WCTextButton(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
+                        onClick = onReadTextFromProductPhoto,
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera_primary),
+                        allCaps = false,
+                        text = stringResource(id = R.string.ai_product_creation_read_text_from_photo_button),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ImageScanning() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier
+                .wrapContentWidth()
+                .padding(end = 16.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.ai_product_creation_scanning_image),
+            style = MaterialTheme.typography.subtitle1,
+        )
+    }
+}
+
+@Composable
+private fun InformativeMessage(message: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(
+                colorResource(id = R.color.tag_bg_main)
             )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_info_outline_20dp),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .size(dimensionResource(id = R.dimen.major_150)),
+            tint = colorResource(id = R.color.tag_text_main),
+        )
+        Text(
+            text = message,
+            color = colorResource(id = R.color.tag_text_main),
+            modifier = Modifier
+                .weight(1f)
+                .padding(
+                    top = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100)
+                )
+        )
+    }
+}
+
+@Composable
+private fun SelectedImageRow(
+    mediaUri: String,
+    onImageActionSelected: (ImageAction) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ProductThumbnail(
+            imageUrl = mediaUri,
+            contentDescription = stringResource(id = R.string.product_image_content_description),
+            modifier = Modifier.padding(end = 16.dp)
+        )
+        Text(
+            text = stringResource(id = R.string.ai_product_creation_image_selected),
+            style = MaterialTheme.typography.subtitle1,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        ImageActionsMenu(
+            ImageAction.entries,
+            onImageActionSelected
+        )
+    }
+}
+
+@Composable
+private fun ImageActionsMenu(
+    actions: EnumEntries<ImageAction>,
+    onImageActionSelected: (ImageAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    Box(modifier = modifier) {
+        IconButton(onClick = { showMenu = !showMenu }) {
+            Icon(
+                imageVector = Outlined.MoreVert,
+                contentDescription = stringResource(R.string.more_menu),
+                tint = colorResource(id = R.color.color_on_surface_high)
+            )
+        }
+        DropdownMenu(
+            offset = DpOffset(
+                x = dimensionResource(id = R.dimen.major_100),
+                y = 0.dp
+            ),
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            actions.forEachIndexed { index, item ->
+                DropdownMenuItem(
+                    modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.major_175))
+                        .width(200.dp),
+                    onClick = {
+                        showMenu = false
+                        onImageActionSelected(item)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(id = item.displayName),
+                        color = when (item) {
+                            ImageAction.Remove -> MaterialTheme.colors.error
+                            else -> Color.Unspecified
+                        }
+                    )
+                }
+                if (index < actions.size - 1) {
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                }
+            }
         }
     }
 }
@@ -302,12 +507,44 @@ private fun AiProductPromptScreenPreview() {
     AiProductPromptScreen(
         uiState = AiProductPromptState(
             productPrompt = "Product prompt test",
-            selectedTone = Tone.Casual
+            selectedTone = Tone.Casual,
+            isMediaPickerDialogVisible = false,
+            selectedImage = null,
+            isScanningImage = false,
+            showImageFullScreen = false,
+            noTextDetectedMessage = false
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
         onReadTextFromProductPhoto = {},
         onGenerateProductClicked = {},
-        onToneSelected = {}
+        onToneSelected = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onImageActionSelected = {}
+    )
+}
+
+@Preview
+@Composable
+private fun AiProductPromptScreenWithErrorPreview() {
+    AiProductPromptScreen(
+        uiState = AiProductPromptState(
+            productPrompt = "Product prompt test",
+            selectedTone = Tone.Casual,
+            isMediaPickerDialogVisible = false,
+            selectedImage = null,
+            isScanningImage = false,
+            showImageFullScreen = false,
+            noTextDetectedMessage = true
+        ),
+        onBackButtonClick = {},
+        onPromptUpdated = {},
+        onReadTextFromProductPhoto = {},
+        onGenerateProductClicked = {},
+        onToneSelected = {},
+        onMediaPickerDialogDismissed = {},
+        onMediaLibraryRequested = {},
+        onImageActionSelected = {}
     )
 }

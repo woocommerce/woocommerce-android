@@ -83,13 +83,6 @@
                 app:argType="boolean" />
         </action>
         <action
-            android:id="@+id/action_orderCreationFragment_to_orderCreationShippingFragment"
-            app:destination="@id/orderCreationShippingFragment"
-            app:enterAnim="@anim/default_enter_anim"
-            app:exitAnim="@anim/default_exit_anim"
-            app:popEnterAnim="@anim/default_pop_enter_anim"
-            app:popExitAnim="@anim/default_pop_exit_anim" />
-        <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationEditFeeFragment"
             app:destination="@id/orderCreationFeeFragment"
             app:enterAnim="@anim/default_enter_anim"
@@ -270,16 +263,6 @@
             app:argType="string" />
     </fragment>
     <fragment
-        android:id="@+id/orderCreationShippingFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.shipping.OrderCreateEditShippingFragment"
-        android:label="OrderCreationShippingFragment"
-        tools:layout="@layout/fragment_order_create_edit_shipping">
-        <argument
-            android:name="currentShippingLine"
-            app:argType="com.woocommerce.android.model.Order$ShippingLine"
-            app:nullable="true" />
-    </fragment>
-    <fragment
         android:id="@+id/orderCreationFeeFragment"
         android:name="com.woocommerce.android.ui.orders.creation.fees.OrderCreateEditFeeFragment"
         android:label="OrderCreationFeeFragment"
@@ -343,7 +326,7 @@
     </fragment>
     <fragment
         android:id="@+id/customerListFragment"
-        android:name="com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment"
+        android:name="com.woocommerce.android.ui.orders.creation.customerlist.OrderCustomerListFragment"
         android:label="customerListFragment" >
         <argument
             android:name="allowCustomerCreation"

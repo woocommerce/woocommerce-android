@@ -12,6 +12,7 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import kotlin.test.assertFailsWith
 
 class WooPosTotalsRepositoryTest {
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
@@ -77,5 +78,15 @@ class WooPosTotalsRepositoryTest {
 
         assertThat(orderCapture.lastValue.items.size).isEqualTo(3)
         assertThat(orderCapture.lastValue.items.map { it.quantity }).containsExactly(2f, 1f, 3f)
+    }
+
+    fun `given empty product id list, when createOrderWithProducts, then throw IllegalStateException`() = runTest {
+        // GIVEN
+        val productIds = emptyList<Long>()
+
+        // WHEN & THEN
+        assertFailsWith<IllegalStateException> {
+            repository.createOrderWithProducts(productIds)
+        }
     }
 }
