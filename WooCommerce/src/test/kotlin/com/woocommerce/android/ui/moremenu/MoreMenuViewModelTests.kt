@@ -11,8 +11,8 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.woopos.IsWooPosEnabled
-import com.woocommerce.android.ui.woopos.IsWooPosFFEnabled
+import com.woocommerce.android.ui.woopos.WooPosIsEnabled
+import com.woocommerce.android.ui.woopos.WooPosFFEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -83,11 +83,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
 
-    private val isWooPosEnabled: IsWooPosEnabled = mock {
+    private val isWooPosEnabled: WooPosIsEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
 
-    private val isWooPosFFEnabled: IsWooPosFFEnabled = mock {
+    private val isWooPosFFEnabled: WooPosFFEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
 
