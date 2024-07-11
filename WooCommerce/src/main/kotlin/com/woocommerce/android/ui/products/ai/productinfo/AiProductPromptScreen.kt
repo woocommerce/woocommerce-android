@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products.ai.productinfo
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.annotation.ColorRes
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +28,9 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -169,6 +173,13 @@ fun AiProductPromptScreen(
                     )
                 }
 
+                PromptSuggestions(
+                    progress = 0.5f,
+                    message = "Add your product’s name and key features, benefits, or details to help it get found online.",
+                    colorRes = R.color.divider_color,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+
                 ToneDropDown(
                     tone = uiState.selectedTone,
                     onToneSelected = onToneSelected
@@ -192,6 +203,43 @@ fun AiProductPromptScreen(
         MediaPickerDialog(
             onMediaPickerDialogDismissed,
             onMediaLibraryRequested
+        )
+    }
+}
+
+@Composable
+fun PromptSuggestions(
+    progress: Float = 0f,
+    message: String,
+    @ColorRes colorRes: Int,
+    modifier: Modifier = Modifier
+) {
+    val animatedProgress = animateFloatAsState(
+        targetValue = progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = ""
+    ).value
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(colorResource(id = R.color.ai_feedback_form_background))
+            .padding(16.dp)
+    ) {
+        LinearProgressIndicator(
+            progress = animatedProgress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
+            backgroundColor = colorResource(id = colorRes),
+            color = colorResource(id = R.color.divider_color)
+        )
+        Text(
+            text = message,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 8.dp),
         )
     }
 }
