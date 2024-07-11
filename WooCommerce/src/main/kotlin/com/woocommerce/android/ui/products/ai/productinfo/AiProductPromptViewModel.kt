@@ -156,10 +156,8 @@ class AiProductPromptViewModel @Inject constructor(
                         )
                     )
                     if (keywords.isNotEmpty()) {
-                        _state.value = _state.value.copy(
-                            productPrompt = keywords.joinToString(separator = DEFAULT_PROMPT_DELIMITER),
-                            noTextDetectedMessage = false
-                        )
+                        onPromptUpdated(keywords.joinToString(separator = DEFAULT_PROMPT_DELIMITER))
+                        _state.value = _state.value.copy(noTextDetectedMessage = false)
                     } else {
                         _state.value = _state.value.copy(noTextDetectedMessage = true)
                     }
