@@ -28,7 +28,7 @@ import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
-import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -59,7 +59,7 @@ class MainActivityViewModel @Inject constructor(
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
-    isWooPosEnabled: IsWooPosEnabled,
+    wooPosIsEnabled: WooPosIsEnabled,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
@@ -67,7 +67,7 @@ class MainActivityViewModel @Inject constructor(
         }
         launch(IO) {
             // cache Woo POS eligibility result as soon as possible so that it doesn't block UI
-            isWooPosEnabled()
+            wooPosIsEnabled()
         }
     }
 
