@@ -40,14 +40,15 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPayme
 fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
     val viewModel: WooPosTotalsViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
-    WooPosTotalsScreen(modifier, state, viewModel::onUIEvent)
+    WooPosTotalsScreen(modifier, state, viewModel::onUIEvent, viewModel::retryOrderCreation)
 }
 
 @Composable
 private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     state: WooPosTotalsState,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
+    onRetryClick: () -> Unit
 ) {
     Card(
         modifier = modifier,
@@ -69,6 +70,13 @@ private fun WooPosTotalsScreen(
 
             is WooPosTotalsState.Loading -> {
                 TotalsLoading()
+            }
+
+            is WooPosTotalsState.Error -> {
+                WooPosTotalsErrorScreen(
+                    errorMessage = state.message,
+                    onRetryClick = onRetryClick
+                )
             }
         }
     }
@@ -285,7 +293,8 @@ fun WooPosTotalsScreenPreview() {
                 orderTotalText = "$462.00",
                 orderTaxText = "$42.00",
             ),
-            onUIEvent = {}
+            onUIEvent = {},
+            onRetryClick = {}
         )
     }
 }
@@ -296,7 +305,8 @@ fun WooPosTotalsScreenLoadingPreview() {
     WooPosTheme {
         WooPosTotalsScreen(
             state = WooPosTotalsState.Loading,
-            onUIEvent = {}
+            onUIEvent = {},
+            onRetryClick = {}
         )
     }
 }

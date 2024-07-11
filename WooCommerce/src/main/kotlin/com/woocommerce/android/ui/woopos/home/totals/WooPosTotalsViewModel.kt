@@ -123,6 +123,11 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
+    fun retryOrderCreation() {
+        _state.value = WooPosTotalsState.Loading
+        // TODO createOrderDraft()
+    }
+
     private suspend fun calculateTotals(order: Order): WooPosTotalsState.Totals {
         val subtotalAmount = order.items.sumOf { it.subtotal }
         val taxAmount = order.totalTax
