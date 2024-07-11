@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -29,7 +30,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val buildProductPreviewProperties: BuildProductPreviewProperties
+    private val buildProductPreviewProperties: BuildProductPreviewProperties,
+    private val generateProductWithAI: GenerateProductWithAI
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
 
@@ -56,6 +58,10 @@ class AiProductPreviewViewModel @Inject constructor(
             else -> emitAll(product.prepareState())
         }
     }.asLiveData()
+
+    init {
+        generateProduct()
+    }
 
     private fun AIProductModel.prepareState() = flow {
         val propertyGroups = buildProductPreviewProperties(
@@ -87,6 +93,11 @@ class AiProductPreviewViewModel @Inject constructor(
                 )
             }
         )
+    }
+
+    private fun generateProduct() = launch {
+        generatedProduct.value = null
+        generatedProduct.value = generateProductWithAI(navArgs.productFeatures)
     }
 
     @Suppress("UNUSED_PARAMETER")
