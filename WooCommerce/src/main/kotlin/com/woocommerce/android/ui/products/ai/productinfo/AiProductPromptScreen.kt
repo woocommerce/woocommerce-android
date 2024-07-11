@@ -173,9 +173,9 @@ fun AiProductPromptScreen(
                 }
 
                 PromptSuggestions(
-                    progress = 0.5f,
+                    progress = 0.1f,
                     message = "Add your product’s name and key features, benefits, or details to help it get found online.",
-                    colorRes = R.color.divider_color,
+                    colorRes = R.color.linear_progress_background_disabled,
                     modifier = Modifier.padding(top = 16.dp)
                 )
 
@@ -222,7 +222,7 @@ fun PromptSuggestions(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
-            .background(colorResource(id = R.color.ai_feedback_form_background))
+            .background(colorResource(id = R.color.ai_product_suggestion_box_background))
             .padding(16.dp)
     ) {
         LinearProgressIndicator(
@@ -231,8 +231,7 @@ fun PromptSuggestions(
                 .fillMaxWidth()
                 .height(4.dp)
                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-            backgroundColor = colorResource(id = colorRes),
-            color = colorResource(id = R.color.divider_color)
+            color = colorResource(id = colorRes)
         )
         Text(
             text = message,

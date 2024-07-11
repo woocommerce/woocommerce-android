@@ -254,11 +254,6 @@
     <color name="free_trial_banner_content">@color/color_on_surface</color>
 
     <!--
-    Product Creation using AI
-    -->
-    <color name="linear_progress_background">@color/woo_purple_0</color>
-
-    <!--
     Highlight tooltip
     -->
     <color name="highlights_tooltip_background">@color/woo_gray_80</color>
@@ -275,10 +270,12 @@
     <color name="woo_payments_setup_bullet_background">@color/woo_purple_0</color>
 
     <!--
-    AI
+    Product Creation using AI
     -->
+    <color name="linear_progress_background">@color/woo_purple_0</color>
+    <color name="linear_progress_background_disabled">@color/woo_gray_20</color>
     <color name="ai_generated_text_background">@color/woo_gray_6</color>
-    <color name="ai_feedback_form_background">@color/woo_black_alpha_008</color>
+    <color name="ai_product_suggestion_box_background">@color/woo_black_alpha_008</color>
 
     <!--
     Tap To Pay About
