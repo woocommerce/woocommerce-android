@@ -64,6 +64,7 @@ class AiProductPromptViewModel @Inject constructor(
         updatePromptSuggestionBarState(prompt)
     }
 
+    @Suppress("MagicNumber")
     private fun updatePromptSuggestionBarState(prompt: String) {
         val wordCount = prompt.split(DEFAULT_PROMPT_DELIMITER).size
         val promptSuggestionBarState = when {
