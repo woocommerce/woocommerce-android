@@ -247,7 +247,6 @@ fun WooPosTotalsErrorScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
@@ -275,7 +274,6 @@ fun WooPosTotalsErrorScreenPreview() {
         )
     }
 }
-
 
 @Composable
 @WooPosPreview
