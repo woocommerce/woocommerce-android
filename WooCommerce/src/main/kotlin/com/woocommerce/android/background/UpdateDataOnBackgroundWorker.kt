@@ -16,7 +16,7 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
     private val updateAnalyticsDashboardRangeSelections: UpdateAnalyticsDashboardRangeSelections,
 ) : CoroutineWorker(appContext, workerParams) {
     companion object {
-        const val REFRESH_TIME = 30L
+        const val REFRESH_TIME = 4L
         const val WORK_NAME = "UpdateDataOnBackgroundWork"
     }
 

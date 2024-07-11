@@ -481,7 +481,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         val dataSyncWorkRequest = PeriodicWorkRequestBuilder<UpdateDataOnBackgroundWorker>(
             UpdateDataOnBackgroundWorker.REFRESH_TIME,
-            TimeUnit.MINUTES
+            TimeUnit.HOURS
         )
             .setConstraints(constraints)
             .build()
