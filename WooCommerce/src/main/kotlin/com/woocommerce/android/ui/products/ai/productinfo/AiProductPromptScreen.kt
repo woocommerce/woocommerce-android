@@ -447,7 +447,7 @@ private fun AiProductPromptScreenPreview() {
             showImageFullScreen = false,
             noTextDetectedMessage = false,
             promptSuggestionBarState = PromptSuggestionBar(
-                progressBarColorRes = R.color.linear_progress_background_disabled,
+                progressBarColorRes = R.color.linear_progress_background_gray,
                 messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
                 progress = 0.1f
             )
@@ -476,7 +476,7 @@ private fun AiProductPromptScreenWithErrorPreview() {
             showImageFullScreen = false,
             noTextDetectedMessage = true,
             promptSuggestionBarState = PromptSuggestionBar(
-                progressBarColorRes = R.color.linear_progress_background_disabled,
+                progressBarColorRes = R.color.linear_progress_background_gray,
                 messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
                 progress = 0.1f
             )

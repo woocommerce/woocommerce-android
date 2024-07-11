@@ -31,8 +31,10 @@ class AiProductPromptViewModel @Inject constructor(
     private val textRecognitionEngine: TextRecognitionEngine,
 ) : ScopedViewModel(savedState = savedStateHandle) {
     companion object {
-        private const val SUGGESTIONS_BAR_INITIAL_PROGRESS = 0.06F
+        private const val SUGGESTIONS_BAR_INITIAL_PROGRESS = 0.05F
+        private const val DEFAULT_PROMPT_DELIMITER = " "
     }
+
     private val _state = savedStateHandle.getStateFlow(
         viewModelScope,
         AiProductPromptState(
@@ -44,7 +46,7 @@ class AiProductPromptViewModel @Inject constructor(
             showImageFullScreen = false,
             noTextDetectedMessage = false,
             promptSuggestionBarState = PromptSuggestionBar(
-                progressBarColorRes = R.color.linear_progress_background_disabled,
+                progressBarColorRes = R.color.linear_progress_background_gray,
                 messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
                 progress = SUGGESTIONS_BAR_INITIAL_PROGRESS
             )
@@ -59,6 +61,53 @@ class AiProductPromptViewModel @Inject constructor(
 
     fun onPromptUpdated(prompt: String) {
         _state.value = _state.value.copy(productPrompt = prompt)
+        updatePromptSuggestionBarState(prompt)
+    }
+
+    private fun updatePromptSuggestionBarState(prompt: String) {
+        val wordCount = prompt.split(DEFAULT_PROMPT_DELIMITER).size
+        val promptSuggestionBarState = when {
+            prompt.isEmpty() -> {
+                PromptSuggestionBar(
+                    progressBarColorRes = R.color.linear_progress_background_gray,
+                    messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
+                    progress = SUGGESTIONS_BAR_INITIAL_PROGRESS
+                )
+            }
+
+            wordCount < 11 -> {
+                PromptSuggestionBar(
+                    progressBarColorRes = R.color.ai_linear_progress_background_more_red,
+                    messageRes = R.string.ai_product_creation_prompt_suggestion_add_more_details,
+                    progress = 0.2f
+                )
+            }
+
+            wordCount < 20 -> {
+                PromptSuggestionBar(
+                    progressBarColorRes = R.color.ai_linear_progress_background_orange,
+                    messageRes = R.string.ai_product_creation_prompt_suggestion_getting_better,
+                    progress = 0.4f
+                )
+            }
+
+            wordCount < 30 -> {
+                PromptSuggestionBar(
+                    progressBarColorRes = R.color.ai_linear_progress_background_yellow,
+                    messageRes = R.string.ai_product_creation_prompt_suggestion_almost_there,
+                    progress = 0.7f
+                )
+            }
+
+            else -> {
+                PromptSuggestionBar(
+                    progressBarColorRes = R.color.ai_linear_progress_background_green,
+                    messageRes = R.string.ai_product_creation_prompt_suggestion_great_prompt,
+                    progress = 0.9f
+                )
+            }
+        }
+        _state.value = _state.value.copy(promptSuggestionBarState = promptSuggestionBarState)
     }
 
     fun onAddImageForScanning() {
@@ -108,7 +157,7 @@ class AiProductPromptViewModel @Inject constructor(
                     )
                     if (keywords.isNotEmpty()) {
                         _state.value = _state.value.copy(
-                            productPrompt = keywords.joinToString(separator = " "),
+                            productPrompt = keywords.joinToString(separator = DEFAULT_PROMPT_DELIMITER),
                             noTextDetectedMessage = false
                         )
                     } else {
@@ -164,7 +213,7 @@ class AiProductPromptViewModel @Inject constructor(
         @ColorRes val progressBarColorRes: Int,
         @StringRes val messageRes: Int,
         val progress: Float,
-    ): Parcelable
+    ) : Parcelable
 
     enum class Tone(@StringRes val displayName: Int, val slug: String) {
         Casual(R.string.product_creation_ai_tone_casual, "Casual"),
