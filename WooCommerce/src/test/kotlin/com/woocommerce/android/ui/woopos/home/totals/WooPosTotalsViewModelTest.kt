@@ -49,7 +49,7 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
         runTest {
             // GIVEN
             val productIds = listOf(1L, 2L, 3L)
-            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutStarted(productIds))
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
@@ -71,7 +71,7 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
         runTest {
             // GIVEN
             val productIds = listOf(1L, 2L, 3L)
-            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutStarted(productIds))
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }

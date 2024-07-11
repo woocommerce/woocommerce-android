@@ -87,7 +87,7 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun goToTotals() {
         val productIds = _state.value.itemsInCart.map { it.id.productId }
-        sendEventToParent(ChildToParentEvent.CheckoutStarted(productIds))
+        sendEventToParent(ChildToParentEvent.CheckoutClicked(productIds))
         _state.value = _state.value.copy(cartStatus = WooPosCartStatus.CHECKOUT)
     }
 
@@ -118,7 +118,7 @@ class WooPosCartViewModel @Inject constructor(
                         _state.value = WooPosCartState()
                     }
 
-                    is ParentToChildrenEvent.CheckoutStarted -> {
+                    is ParentToChildrenEvent.CheckoutClicked -> {
                         // Do nothing
                     }
                 }

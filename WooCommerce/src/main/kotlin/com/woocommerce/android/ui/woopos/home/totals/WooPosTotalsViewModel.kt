@@ -90,7 +90,7 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
-                    is ParentToChildrenEvent.CheckoutStarted -> {
+                    is ParentToChildrenEvent.CheckoutClicked -> {
                         createOrderDraft(event.productIds)
                     }
 

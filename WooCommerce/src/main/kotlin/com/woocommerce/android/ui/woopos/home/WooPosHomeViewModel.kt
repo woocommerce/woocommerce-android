@@ -48,9 +48,9 @@ class WooPosHomeViewModel @Inject constructor(
         viewModelScope.launch {
             childrenToParentEventReceiver.events.collect { event ->
                 when (event) {
-                    is ChildToParentEvent.CheckoutStarted -> {
+                    is ChildToParentEvent.CheckoutClicked -> {
                         _state.value = WooPosHomeState.Checkout.NotPaid
-                        sendEventToChildren(ParentToChildrenEvent.CheckoutStarted(event.productIds))
+                        sendEventToChildren(ParentToChildrenEvent.CheckoutClicked(event.productIds))
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
