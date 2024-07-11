@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.ui.woopos.IsWooPosFFEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -86,6 +87,10 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
 
+    private val isWooPosFFEnabled: IsWooPosFFEnabled = mock {
+        onBlocking { invoke() } doReturn true
+    }
+
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
@@ -108,6 +113,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             isGoogleForWooEnabled = isGoogleForWooEnabled,
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             isWooPosEnabled = isWooPosEnabled,
+            isWooPosFFEnabled = isWooPosFFEnabled,
         )
     }
 
@@ -407,7 +413,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             button.onClick()
         }.last()
 
-        assertThat(event).isInstanceOf(MoreMenuViewModel.MoreMenuEvent.OpenBlazeCampaignCreationEvent::class.java)
+        assertThat(event).isInstanceOf(MoreMenuEvent.OpenBlazeCampaignCreationEvent::class.java)
     }
 
     @Test
@@ -423,7 +429,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             button.onClick()
         }.last()
 
-        assertThat(event).isEqualTo(MoreMenuViewModel.MoreMenuEvent.OpenBlazeCampaignListEvent)
+        assertThat(event).isEqualTo(MoreMenuEvent.OpenBlazeCampaignListEvent)
     }
 
     @Test
@@ -459,8 +465,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         assertThat(states.last().menuSections.first().items.count()).isEqualTo(1)
         assertThat(
             states.last().menuSections.flatMap { it.items }
-                .first { it.title == R.string.more_menu_button_woo_pos }.isVisible
-        ).isTrue()
+                .first { it.title == R.string.more_menu_button_woo_pos }.state
+        ).isEqualTo(MoreMenuItemButton.State.Visible)
     }
 
     @Test
