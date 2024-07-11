@@ -58,6 +58,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -228,7 +230,7 @@ fun PromptSuggestions(
             color = colorResource(id = promptSuggestionBarState.progressBarColorRes)
         )
         Text(
-            text = stringResource(id = promptSuggestionBarState.messageRes),
+            text = annotatedStringRes(promptSuggestionBarState.messageRes),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 8.dp),
