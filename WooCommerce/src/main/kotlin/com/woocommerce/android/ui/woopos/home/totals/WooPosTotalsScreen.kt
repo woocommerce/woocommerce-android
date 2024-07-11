@@ -236,6 +236,48 @@ private fun TotalsLoading() {
 }
 
 @Composable
+fun WooPosTotalsErrorScreen(
+    errorMessage: String,
+    onRetryClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = errorMessage,
+            style = MaterialTheme.typography.body2
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        WooPosButton(
+            text = stringResource(R.string.retry),
+            onClick = onRetryClick,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosTotalsErrorScreenPreview() {
+    WooPosTheme {
+        WooPosTotalsErrorScreen(
+            errorMessage = "An error occurred. Please try again.",
+            onRetryClick = {}
+        )
+    }
+}
+
+
+@Composable
 @WooPosPreview
 fun WooPosTotalsScreenPreview() {
     WooPosTheme {
