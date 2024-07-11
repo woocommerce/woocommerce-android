@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
+import com.woocommerce.android.ui.analytics.hub.sync.toAnalyticData
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
@@ -49,6 +50,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,6 +58,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -456,13 +459,23 @@ class AnalyticsHubViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeLastUpdateTimestamp() {
         lastUpdateObservationJob?.cancel()
+        val rangeSelection: StatsTimeRangeSelection = rangeSelectionState.value
         mutableState.value = viewState.value.copy(lastUpdateTimestamp = "")
-        lastUpdateObservationJob = observeLastUpdate(timeRangeSelection = rangeSelectionState.value)
+        lastUpdateObservationJob = currentConfiguration
+            .filterNotNull()
+            .map { configuration ->
+                configuration.filter { it.isVisible }.map { it.card.toAnalyticData() }
+            }.flatMapLatest { analyticData ->
+                observeLastUpdate(rangeSelection, analyticData)
+            }
             .filterNotNull()
             .map { dateUtils.getDateOrTimeFromMillis(it) }
-            .onEach { mutableState.value = viewState.value.copy(lastUpdateTimestamp = it.orEmpty()) }
+            .onEach {
+                mutableState.value = viewState.value.copy(lastUpdateTimestamp = it.orEmpty())
+            }
             .launchIn(viewModelScope)
     }
 

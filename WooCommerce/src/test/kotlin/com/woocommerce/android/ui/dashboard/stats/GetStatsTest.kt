@@ -172,14 +172,14 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
-                any(),
-                any(),
-                eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+                rangeSelection = any(),
+                analyticData = eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE),
+                maxOutdatedTime = any()
             )
             verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
-                any(),
-                any(),
-                eq(AnalyticsUpdateDataStore.AnalyticData.VISITORS)
+                rangeSelection = any(),
+                analyticData = eq(AnalyticsUpdateDataStore.AnalyticData.VISITORS),
+                maxOutdatedTime = any()
             )
         }
 
@@ -191,7 +191,7 @@ class GetStatsTest : BaseUnitTest() {
             getStats(refresh = true, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(analyticsUpdateDataStore, never())
-                .shouldUpdateAnalytics(any(), any(), any())
+                .shouldUpdateAnalytics(rangeSelection = any(), analyticData = any(), maxOutdatedTime = any())
         }
 
     @Test
@@ -307,8 +307,8 @@ class GetStatsTest : BaseUnitTest() {
         whenever(
             analyticsUpdateDataStore.shouldUpdateAnalytics(
                 rangeSelection = any(),
-                maxOutdatedTime = any(),
-                analyticData = any()
+                analyticData = any(),
+                maxOutdatedTime = any()
             )
         )
             .thenReturn(flowOf(shouldUpdateAnalytics))

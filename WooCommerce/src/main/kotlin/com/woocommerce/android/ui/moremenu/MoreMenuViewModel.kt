@@ -310,7 +310,7 @@ class MoreMenuViewModel @Inject constructor(
                 }
             }
 
-            triggerEvent(MoreMenuEvent.ViewGoogleEvent(urlToOpen))
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen))
             // This is just temporary to test this function,
             // in practice we want to set this to true if a campaign is successfully created in webview.
             if (!hasCreatedGoogleAdsCampaign) {

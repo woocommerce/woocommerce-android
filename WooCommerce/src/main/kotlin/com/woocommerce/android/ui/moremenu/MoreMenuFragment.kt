@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCustomersEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewGoogleForWooEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewInboxEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewReviewsEvent
@@ -98,6 +100,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
+                is ViewGoogleForWooEvent -> openInExitAwareWebview(event.url)
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewGoogleEvent -> openInAuthBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
@@ -153,6 +156,18 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private fun openInBrowser(url: String) {
         ChromeCustomTabUtils.launchUrl(requireContext(), url)
+    }
+
+    private fun openInExitAwareWebview(url: String) {
+        // todo-11917: The following is a test case where the webview exits automatically when the
+        //  GLA Report tab is opened. It needs to be replaced with the right success URL.
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf("wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Freports"),
+                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+            )
+        )
     }
 
     private fun navigateToReviews() {
