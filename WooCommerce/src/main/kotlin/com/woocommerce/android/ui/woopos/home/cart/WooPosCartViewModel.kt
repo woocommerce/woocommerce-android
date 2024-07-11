@@ -117,9 +117,14 @@ class WooPosCartViewModel @Inject constructor(
                         ChildToParentEvent.OrderCreation.OrderCreationFailed
                     )
                     Log.e("WooPosCartViewModel", "Order creation failed - $error")
+                    showOrderCreationError()
                 }
             )
         }
+    }
+
+    private fun showOrderCreationError() {
+        // TODO Display a dialog with the error message and a retry option
     }
 
     private fun listenEventsFromParent() {
