@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.ai.productinfo
 
 import android.os.Parcelable
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -29,6 +30,9 @@ class AiProductPromptViewModel @Inject constructor(
     private val tracker: AnalyticsTrackerWrapper,
     private val textRecognitionEngine: TextRecognitionEngine,
 ) : ScopedViewModel(savedState = savedStateHandle) {
+    companion object {
+        private const val SUGGESTIONS_BAR_INITIAL_PROGRESS = 0.06F
+    }
     private val _state = savedStateHandle.getStateFlow(
         viewModelScope,
         AiProductPromptState(
@@ -38,7 +42,12 @@ class AiProductPromptViewModel @Inject constructor(
             selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false,
-            noTextDetectedMessage = false
+            noTextDetectedMessage = false,
+            promptSuggestionBarState = PromptSuggestionBar(
+                progressBarColorRes = R.color.linear_progress_background_disabled,
+                messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
+                progress = SUGGESTIONS_BAR_INITIAL_PROGRESS
+            )
         )
     )
 
@@ -147,7 +156,15 @@ class AiProductPromptViewModel @Inject constructor(
         val isScanningImage: Boolean,
         val showImageFullScreen: Boolean,
         val noTextDetectedMessage: Boolean,
+        val promptSuggestionBarState: PromptSuggestionBar
     ) : Parcelable
+
+    @Parcelize
+    data class PromptSuggestionBar(
+        @ColorRes val progressBarColorRes: Int,
+        @StringRes val messageRes: Int,
+        val progress: Float,
+    ): Parcelable
 
     enum class Tone(@StringRes val displayName: Int, val slug: String) {
         Casual(R.string.product_creation_ai_tone_casual, "Casual"),

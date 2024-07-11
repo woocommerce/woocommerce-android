@@ -2235,6 +2235,11 @@
     <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">Add your product’s name and key features, benefits, or details to help it get found online.</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">Add more details. The more details you provide, the better your generated details will be.</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">Getting better. How does the t-shirt fit? Does it have any other unique properties?</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">Almost there. Where was it made?</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">Great prompt! You’ve given us enough to work with, but you may add more detail to make it even better.</string>
 
     <!--
         Product Add more details Bottom sheet

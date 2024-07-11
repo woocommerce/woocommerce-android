@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.ai.productinfo
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
-import androidx.annotation.ColorRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,6 +66,8 @@ import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
@@ -171,19 +172,14 @@ fun AiProductPromptScreen(
                         stringResource(id = R.string.product_creation_package_photo_no_text_detected)
                     )
                 }
-
                 PromptSuggestions(
-                    progress = 0.1f,
-                    message = "Add your product’s name and key features, benefits, or details to help it get found online.",
-                    colorRes = R.color.linear_progress_background_disabled,
+                    promptSuggestionBarState = uiState.promptSuggestionBarState,
                     modifier = Modifier.padding(top = 16.dp)
                 )
-
                 ToneDropDown(
                     tone = uiState.selectedTone,
                     onToneSelected = onToneSelected
                 )
-
                 Spacer(modifier = Modifier.weight(1f))
 
                 // Button will scroll with the rest of UI on landscape mode, or... (see below)
@@ -208,13 +204,11 @@ fun AiProductPromptScreen(
 
 @Composable
 fun PromptSuggestions(
-    progress: Float = 0f,
-    message: String,
-    @ColorRes colorRes: Int,
+    promptSuggestionBarState: PromptSuggestionBar,
     modifier: Modifier = Modifier
 ) {
     val animatedProgress = animateFloatAsState(
-        targetValue = progress,
+        targetValue = promptSuggestionBarState.progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
         label = ""
     ).value
@@ -231,10 +225,10 @@ fun PromptSuggestions(
                 .fillMaxWidth()
                 .height(4.dp)
                 .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-            color = colorResource(id = colorRes)
+            color = colorResource(id = promptSuggestionBarState.progressBarColorRes)
         )
         Text(
-            text = message,
+            text = stringResource(id = promptSuggestionBarState.messageRes),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 8.dp),
@@ -451,7 +445,12 @@ private fun AiProductPromptScreenPreview() {
             selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false,
-            noTextDetectedMessage = false
+            noTextDetectedMessage = false,
+            promptSuggestionBarState = PromptSuggestionBar(
+                progressBarColorRes = R.color.linear_progress_background_disabled,
+                messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
+                progress = 0.1f
+            )
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
@@ -475,7 +474,12 @@ private fun AiProductPromptScreenWithErrorPreview() {
             selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false,
-            noTextDetectedMessage = true
+            noTextDetectedMessage = true,
+            promptSuggestionBarState = PromptSuggestionBar(
+                progressBarColorRes = R.color.linear_progress_background_disabled,
+                messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
+                progress = 0.1f
+            )
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
