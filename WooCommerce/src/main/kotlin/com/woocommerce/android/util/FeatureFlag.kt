@@ -15,8 +15,6 @@ enum class FeatureFlag {
     CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
     APP_PASSWORD_TUTORIAL,
-    EOSL_M1,
-    EOSL_M3,
     GOOGLE_ADS_M1,
     PRODUCT_CREATION_WITH_AI_V2,
     SHOW_INBOX_CTA,
@@ -39,8 +37,6 @@ enum class FeatureFlag {
             CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
-            EOSL_M1,
-            EOSL_M3,
             INBOX,
             SHOW_INBOX_CTA -> true
         }

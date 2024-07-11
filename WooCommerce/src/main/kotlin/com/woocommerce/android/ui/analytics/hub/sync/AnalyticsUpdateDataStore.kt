@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
@@ -34,11 +35,27 @@ class AnalyticsUpdateDataStore @Inject constructor(
      */
     fun shouldUpdateAnalytics(
         rangeSelection: StatsTimeRangeSelection,
+        analyticData: AnalyticData,
         maxOutdatedTime: Long = defaultMaxOutdatedTime,
-        analyticData: AnalyticData = AnalyticData.ALL
     ) = dataStore.data
         .map { prefs -> prefs[longPreferencesKey(getTimeStampKey(rangeSelection.identifier, analyticData))] }
         .map { lastUpdateTime -> isElapsedTimeExpired(lastUpdateTime, maxOutdatedTime) }
+
+    fun shouldUpdateAnalytics(
+        rangeSelection: StatsTimeRangeSelection,
+        analyticDataList: List<AnalyticData>,
+        maxOutdatedTime: Long = defaultMaxOutdatedTime,
+    ): Flow<Boolean> {
+        val timestampKeys = analyticDataList.map { getTimeStampKey(rangeSelection.identifier, it) }
+        val flows = timestampKeys.map { timestampKey ->
+            dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
+        }
+        return combine(flows) { lastUpdateMillisArray ->
+            lastUpdateMillisArray.all { lastUpdateTime ->
+                lastUpdateTime?.let { isElapsedTimeExpired(lastUpdateTime, maxOutdatedTime) } ?: true
+            }
+        }
+    }
 
     /***
      * Stores the current timestamp for a given [rangeSelection] and [analyticData]
@@ -47,13 +64,16 @@ class AnalyticsUpdateDataStore @Inject constructor(
      */
     suspend fun storeLastAnalyticsUpdate(
         rangeSelection: StatsTimeRangeSelection,
-        analyticData: AnalyticData = AnalyticData.ALL
+        analyticData: AnalyticData
     ) {
-        if (analyticData == AnalyticData.ALL) {
-            AnalyticData.values().forEach { dataItem ->
-                storeLastAnalyticsUpdate(getTimeStampKey(rangeSelection.identifier, dataItem))
-            }
-        } else {
+        storeLastAnalyticsUpdate(getTimeStampKey(rangeSelection.identifier, analyticData))
+    }
+
+    suspend fun storeLastAnalyticsUpdate(
+        rangeSelection: StatsTimeRangeSelection,
+        analyticDataList: List<AnalyticData>
+    ) {
+        analyticDataList.forEach { analyticData ->
             storeLastAnalyticsUpdate(getTimeStampKey(rangeSelection.identifier, analyticData))
         }
     }
@@ -136,7 +156,17 @@ class AnalyticsUpdateDataStore @Inject constructor(
         TOP_PERFORMERS,
         ORDERS,
         BUNDLES,
-        GIFT_CARDS,
-        ALL
+        GIFT_CARDS
+    }
+}
+
+fun AnalyticsCards.toAnalyticData(): AnalyticsUpdateDataStore.AnalyticData {
+    return when (this) {
+        AnalyticsCards.Revenue -> AnalyticsUpdateDataStore.AnalyticData.REVENUE
+        AnalyticsCards.Orders -> AnalyticsUpdateDataStore.AnalyticData.ORDERS
+        AnalyticsCards.Products -> AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+        AnalyticsCards.Session -> AnalyticsUpdateDataStore.AnalyticData.VISITORS
+        AnalyticsCards.Bundles -> AnalyticsUpdateDataStore.AnalyticData.BUNDLES
+        AnalyticsCards.GiftCards -> AnalyticsUpdateDataStore.AnalyticData.GIFT_CARDS
     }
 }
