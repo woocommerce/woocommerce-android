@@ -101,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/analytics_total_sales_title"
+            android:text="@string/analytics_google_ads_programs_card_title"
             android:textSize="@dimen/text_minor_125"
             app:layout_constraintStart_toStartOf="@+id/analyticsItems"
             app:layout_constraintTop_toBottomOf="@+id/analyticsItems"
