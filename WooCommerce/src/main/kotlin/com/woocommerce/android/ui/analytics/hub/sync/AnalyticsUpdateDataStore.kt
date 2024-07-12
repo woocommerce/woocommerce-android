@@ -156,7 +156,8 @@ class AnalyticsUpdateDataStore @Inject constructor(
         TOP_PERFORMERS,
         ORDERS,
         BUNDLES,
-        GIFT_CARDS
+        GIFT_CARDS,
+        GOOGLE_ADS
     }
 }
 
@@ -168,5 +169,6 @@ fun AnalyticsCards.toAnalyticData(): AnalyticsUpdateDataStore.AnalyticData {
         AnalyticsCards.Session -> AnalyticsUpdateDataStore.AnalyticData.VISITORS
         AnalyticsCards.Bundles -> AnalyticsUpdateDataStore.AnalyticData.BUNDLES
         AnalyticsCards.GiftCards -> AnalyticsUpdateDataStore.AnalyticData.GIFT_CARDS
+        AnalyticsCards.GoogleAds -> AnalyticsUpdateDataStore.AnalyticData.GOOGLE_ADS
     }
 }

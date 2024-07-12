@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 13:54:04+0000
+Translation-Revision-Date: 2024-07-09 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">Connettiti ora</string>
+    <string name="woopos_cart_title">Carrello</string>
+    <string name="ai_product_creation_generate_details_button">Genera dettagli del prodotto</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Leggi il testo dalla foto del prodotto</string>
+    <string name="ai_product_creation_prompt_placeholder">Ad esempio: maglietta nera in tessuto, tessuto morbido, cuciture resistenti e design unico</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Parlaci del tuo prodotto, dicci cos\'è e cosa lo rende unico, poi lascia che l\'IA faccia la sua magia.</string>
+    <string name="ai_product_creation_product_prompt_title">Informazioni iniziali</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Lascia generare a noi i dettagli del prodotto</string>
     <string name="woopos_payment_collect_payment_label">Ricevi pagamenti con carta</string>
     <string name="woopos_payment_total_label">Totale</string>
     <string name="woopos_payment_tax_label">Imposta</string>
     <string name="woopos_payment_subtotal_label">Subtotale</string>
-    <string name="woo_pos_new_transaction_button">Nuova transazione</string>
+    <string name="woopos_new_transaction_button">Nuova transazione</string>
     <string name="woopos_payment_successful_label">Pagamento avvenuto correttamente</string>
     <string name="woopos_payment_failed_please_try_again">Pagamento non riuscito. Riprova.</string>
-    <string name="woo_pos_cart_back_content_description">Icona della carta</string>
+    <string name="woopos_cart_back_content_description">Icona della carta</string>
     <string name="woopos_products_screen_title">Prodotti</string>
     <string name="woopos_product_image_description">Immagine prodotto</string>
-    <string name="woo_pos_items_in_cart">%d elementi</string>
-    <string name="woo_pos_clear_cart_button">Cancella tutto</string>
+    <string name="woopos_items_in_cart">%d elementi</string>
+    <string name="woopos_clear_cart_button">Cancella tutto</string>
     <string name="more_menu_button_google_description">Aumenta le vendite e genera più traffico con Google Ads</string>
     <string name="more_menu_button_google">Google per WooCommerce</string>
     <string name="no_quantity_rules">Nessuna regola sulla quantità</string>
@@ -26,7 +34,6 @@ Language: it
     <string name="woopos_exit_confirmation_confirm_button">Esci</string>
     <string name="woopos_exit_confirmation_message">Desideri uscire da POS?</string>
     <string name="woopos_exit_confirmation_title">Esci da POS</string>
-    <string name="woopos_cart_title">Carrello</string>
     <string name="woopos_remove_item_from_cart_content_description">Rimuovi elemento dal carrello</string>
     <string name="woopos_checkout_button">Pagamento</string>
     <string name="woopos_reader_unknown">Stato del lettore sconosciuto</string>
@@ -609,7 +616,7 @@ Language: it
     <string name="product_creation_ai_preview_details_section">Dettagli</string>
     <string name="product_creation_ai_preview_description_section">Descrizione del prodotto</string>
     <string name="product_creation_ai_preview_name_section">Nome del prodotto</string>
-    <string name="product_creation_ai_preview_subtitle">Puoi sempre modificare i dettagli riportati di seguito in un secondo momento.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Puoi sempre modificare i dettagli riportati di seguito in un secondo momento.</string>
     <string name="product_creation_ai_preview_title">Anteprima</string>
     <string name="product_creation_ai_about_product_continue_button">Crea dettagli del prodotto</string>
     <string name="product_creation_ai_about_product_set_tone">Imposta il tone of voice</string>

@@ -76,7 +76,7 @@ fun DashboardStatsCard(
             titleResource = R.string.analytics_section_see_all,
             action = viewModel::onViewAnalyticsClicked
         ),
-        isError = revenueStatsState is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError ||
+        isError = revenueStatsState is DashboardStatsViewModel.RevenueStatsViewState.WCAnalyticsInactive ||
             revenueStatsState == DashboardStatsViewModel.RevenueStatsViewState.GenericError,
         modifier = modifier.testTag(DashboardStatsTestTags.DASHBOARD_STATS_CARD)
     ) {
@@ -88,7 +88,7 @@ fun DashboardStatsCard(
                 )
             }
 
-            !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError -> {
+            !is DashboardStatsViewModel.RevenueStatsViewState.WCAnalyticsInactive -> {
                 DashboardStatsContent(
                     dateRange = dateRange,
                     revenueStatsState = revenueStatsState,
