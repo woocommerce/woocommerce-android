@@ -10,11 +10,11 @@ class ObserveLastUpdate @Inject constructor(
 ) {
     operator fun invoke(
         selectedRange: StatsTimeRangeSelection,
-        analyticData: List<AnalyticsUpdateDataStore.AnalyticData>
+        analyticDataList: List<AnalyticsUpdateDataStore.AnalyticData>
     ): Flow<Long?> {
         return analyticsUpdateDataStore.observeLastUpdate(
             rangeSelection = selectedRange,
-            analyticData = analyticData
+            analyticData = analyticDataList
         )
     }
 
@@ -25,15 +25,6 @@ class ObserveLastUpdate @Inject constructor(
         return analyticsUpdateDataStore.observeLastUpdate(
             rangeSelection = selectedRange,
             analyticData = analyticData
-        )
-    }
-
-    operator fun invoke(
-        timeRangeSelection: StatsTimeRangeSelection
-    ): Flow<Long?> {
-        return analyticsUpdateDataStore.observeLastUpdate(
-            rangeSelection = timeRangeSelection,
-            analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
         )
     }
 }

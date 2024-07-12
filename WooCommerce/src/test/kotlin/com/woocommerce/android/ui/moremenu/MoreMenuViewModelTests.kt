@@ -5,12 +5,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.google.IsGoogleListingsAdsEnabled
+import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
+import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.ui.woopos.WooPosIsEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -75,11 +76,13 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
 
-    private val isGoogleListingsAdsEnabled: IsGoogleListingsAdsEnabled = mock {
+    private val isGoogleForWooEnabled: IsGoogleForWooEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
 
-    private val isWooPosEnabled: IsWooPosEnabled = mock {
+    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
+
+    private val isWooPosEnabled: WooPosIsEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
 
@@ -102,7 +105,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             blazeCampaignsStore = blazeCampaignsStore,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             isBlazeEnabled = isBlazeEnabled,
-            isGoogleListingsAdsEnabled = isGoogleListingsAdsEnabled,
+            isGoogleForWooEnabled = isGoogleForWooEnabled,
+            hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             isWooPosEnabled = isWooPosEnabled,
         )
     }
@@ -484,6 +488,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
             assertThat(states.last().menuSections[2].title).isEqualTo(R.string.more_menu_general_section_title)
             val itemsSecondSection = states.last().menuSections[2].items
-            assertThat(itemsSecondSection.count()).isEqualTo(8)
+            assertThat(itemsSecondSection.count()).isEqualTo(9)
         }
 }

@@ -50,6 +50,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         // When
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS,
             maxOutdatedTime = maxOutdatedTime
         ).single()
 
@@ -69,6 +70,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         // When
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS,
             maxOutdatedTime = maxOutdatedTime
         ).single()
 
@@ -88,6 +90,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         // When
         val result = sut.shouldUpdateAnalytics(
             rangeSelection = defaultSelectionData,
+            analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS,
             maxOutdatedTime = maxOutdatedTime
         ).single()
 
@@ -120,7 +123,7 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given store analytics is called with an analytic data ALL, then save the value for ALL analytic keys`() = testBlocking {
+    fun `given store analytics is called with an analytic data list, then save the value for ALL analytic keys`() = testBlocking {
         // Given
         createAnalyticsUpdateScenarioWith(
             lastUpdateTimestamp = null,
@@ -132,16 +135,20 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             calendar = Calendar.getInstance(),
             locale = Locale.getDefault()
         )
-        val numberOfAnalyticsDataKeys = AnalyticsUpdateDataStore.AnalyticData.entries.size
+        val analyticsData = listOf(
+            AnalyticsUpdateDataStore.AnalyticData.VISITORS,
+            AnalyticsUpdateDataStore.AnalyticData.BUNDLES,
+            AnalyticsUpdateDataStore.AnalyticData.REVENUE
+        )
 
         // When
         sut.storeLastAnalyticsUpdate(
             rangeSelection = rangeSelection,
-            analyticData = AnalyticsUpdateDataStore.AnalyticData.ALL
+            analyticDataList = analyticsData
         )
 
         // Then saved for all analytic data values
-        verify(dataStore, times(numberOfAnalyticsDataKeys)).edit(any())
+        verify(dataStore, times(analyticsData.size)).edit(any())
     }
 
     @Test

@@ -69,7 +69,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
             }
         }
 
-        withFetchStrategyFrom(rangeSelection, forceUpdate) { fetchStrategy ->
+        withFetchStrategyFrom(visibleCards, rangeSelection, forceUpdate) { fetchStrategy ->
             updateStatsData(scope, rangeSelection, fetchStrategy, visibleCards)
         }
 
@@ -97,55 +97,12 @@ class UpdateAnalyticsHubStats @Inject constructor(
         asyncCalls.awaitAll()
 
         if (fetchStrategy == FetchStrategy.ForceNew) {
-            storeLastAnalyticsUpdate(visibleCards, rangeSelection)
-        }
-    }
-
-    private suspend fun storeLastAnalyticsUpdate(
-        visibleCards: List<AnalyticsCards>,
-        rangeSelection: StatsTimeRangeSelection
-    ) {
-        visibleCards.forEach { card ->
-            when (card) {
-                AnalyticsCards.Revenue -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection,
-                    AnalyticsUpdateDataStore.AnalyticData.REVENUE
-                )
-
-                AnalyticsCards.Orders -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection,
-                    AnalyticsUpdateDataStore.AnalyticData.ORDERS
-                )
-
-                AnalyticsCards.Products -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection,
-                    AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
-                )
-
-                AnalyticsCards.Session -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection,
-                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
-                )
-
-                AnalyticsCards.Bundles -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection,
-                    AnalyticsUpdateDataStore.AnalyticData.BUNDLES
-                )
-
-                AnalyticsCards.GiftCards -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection,
-                    AnalyticsUpdateDataStore.AnalyticData.GIFT_CARDS
-                )
-
-                AnalyticsCards.GoogleAds -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection,
-                    AnalyticsUpdateDataStore.AnalyticData.GOOGLE_ADS
-                )
-            }
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(rangeSelection, visibleCards.map { it.toAnalyticData() })
         }
     }
 
     private suspend fun withFetchStrategyFrom(
+        visibleCards: List<AnalyticsCards>,
         rangeSelection: StatsTimeRangeSelection,
         forceUpdate: Boolean,
         action: suspend (FetchStrategy) -> Unit
@@ -156,7 +113,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         }
 
         analyticsUpdateDataStore
-            .shouldUpdateAnalytics(rangeSelection)
+            .shouldUpdateAnalytics(rangeSelection, visibleCards.map { it.toAnalyticData() })
             .map { if (it) FetchStrategy.ForceNew else FetchStrategy.Saved }
             .firstOrNull()
             ?.let { action(it) }

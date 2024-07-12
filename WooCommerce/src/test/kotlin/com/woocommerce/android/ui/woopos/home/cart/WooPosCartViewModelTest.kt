@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -12,12 +14,13 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCartViewModelTest : BaseUnitTest() {
@@ -61,8 +64,8 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
         // THEN
         val itemsInCart = states.last().itemsInCart
-        assertEquals(1, itemsInCart.size)
-        assertEquals(product.id, itemsInCart.first().id)
+        assertThat(itemsInCart).hasSize(1)
+        assertThat(itemsInCart.first().id).isEqualTo(product.id)
     }
 
     @Test
@@ -93,7 +96,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             // THEN
             val itemsInCartAfterRemoveClicked = states.last().itemsInCart
-            assertEquals(0, itemsInCartAfterRemoveClicked.size)
+            assertThat(itemsInCartAfterRemoveClicked).isEmpty()
         }
 
     @Test
@@ -105,9 +108,9 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             // THEN
             val toolbar = states.last().toolbar
-            assertEquals(R.drawable.ic_shopping_cart, toolbar.icon)
-            assertEquals("", toolbar.itemsCount)
-            assertEquals(false, toolbar.isClearAllButtonVisible)
+            assertThat(toolbar.icon).isEqualTo(R.drawable.ic_shopping_cart)
+            assertThat(toolbar.itemsCount).isEmpty()
+            assertThat(toolbar.isClearAllButtonVisible).isFalse()
         }
 
     @Test
@@ -137,9 +140,9 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             // THEN
             val toolbar = states.last().toolbar
-            assertEquals(R.drawable.ic_shopping_cart, toolbar.icon)
-            assertEquals("Items in cart: 1", toolbar.itemsCount)
-            assertEquals(true, toolbar.isClearAllButtonVisible)
+            assertThat(toolbar.icon).isEqualTo(R.drawable.ic_shopping_cart)
+            assertThat(toolbar.itemsCount).isEqualTo("Items in cart: 1")
+            assertThat(toolbar.isClearAllButtonVisible).isTrue()
         }
 
     @Test
@@ -171,9 +174,9 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             // THEN
             val toolbar = states.last().toolbar
-            assertEquals(R.drawable.ic_back_24dp, toolbar.icon)
-            assertEquals("Items in cart: 1", toolbar.itemsCount)
-            assertEquals(false, toolbar.isClearAllButtonVisible)
+            assertThat(toolbar.icon).isEqualTo(R.drawable.ic_back_24dp)
+            assertThat(toolbar.itemsCount).isEqualTo("Items in cart: 1")
+            assertThat(toolbar.isClearAllButtonVisible).isFalse()
         }
 
     @Test
@@ -190,7 +193,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
                 generateProductWithFirstImage(product1Id)
             )
             whenever(repository.getProductById(eq(product2Id))).thenReturn(
-                generateProductWithFirstImage(product3Id)
+                generateProductWithFirstImage(product2Id)
             )
             whenever(repository.getProductById(eq(product3Id))).thenReturn(
                 generateProductWithFirstImage(product3Id)
@@ -224,9 +227,58 @@ class WooPosCartViewModelTest : BaseUnitTest() {
 
             // THEN
             val itemsInCart = states.last().itemsInCart
-            assertEquals(2, itemsInCart.size)
-            assertEquals(2, itemsInCart[0].id.itemNumber)
-            assertEquals(3, itemsInCart[1].id.itemNumber)
+            assertThat(itemsInCart).hasSize(2)
+            assertThat(itemsInCart[0].id.itemNumber).isEqualTo(2)
+            assertThat(itemsInCart[1].id.itemNumber).isEqualTo(3)
+        }
+
+    @Test
+    fun `given checkout clicked, when order creation succeeds, then should update state and send event to parent`() =
+        testBlocking {
+            // GIVEN
+            val productIds = listOf(1L)
+            val orderId = 123L
+            val order = OrderTestUtils.generateTestOrder(orderId)
+            whenever(repository.createOrderWithProducts(productIds)).thenReturn(Result.success(order))
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(repository.getProductById(eq(1L))).thenReturn(generateProductWithFirstImage(1L))
+
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            // WHEN
+            parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.ItemClickedInProductSelector(1L))
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+            // THEN
+            assertThat(states.last().cartStatus).isEqualTo(WooPosCartStatus.CHECKOUT)
+            verify(
+                childrenToParentEventSender
+            ).sendToParent(ChildToParentEvent.OrderCreation.OrderCreationSucceeded(orderId))
+        }
+
+    @Test
+    fun `given checkout clicked, when order creation fails, then should update state and send event to parent`() =
+        testBlocking {
+            // GIVEN
+            val productIds = listOf(1L)
+            val exception = Exception("Order failed")
+            whenever(repository.createOrderWithProducts(eq(productIds))).thenReturn(Result.failure(exception))
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(repository.getProductById(eq(1L))).thenReturn(generateProductWithFirstImage(1L))
+
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            // WHEN
+            parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.ItemClickedInProductSelector(1L))
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+            // THEN
+            assertThat(states.last().isOrderCreationInProgress).isFalse
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OrderCreation.OrderCreationFailed)
         }
 
     private fun createSut(): WooPosCartViewModel {
