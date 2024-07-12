@@ -609,7 +609,7 @@ Language: he_IL
     <string name="product_creation_ai_preview_details_section">פרטים</string>
     <string name="product_creation_ai_preview_description_section">תיאור המוצר</string>
     <string name="product_creation_ai_preview_name_section">שם המוצר</string>
-    <string name="product_creation_ai_preview_subtitle">תמיד אפשר לשנות את הפרטים שלמטה מאוחר יותר.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">תמיד אפשר לשנות את הפרטים שלמטה מאוחר יותר.</string>
     <string name="product_creation_ai_preview_title">תצוגה מקדימה</string>
     <string name="product_creation_ai_about_product_continue_button">ליצור את פרטי המוצר</string>
     <string name="product_creation_ai_about_product_set_tone">להגדיר את הנימה וטון הדיבור</string>
