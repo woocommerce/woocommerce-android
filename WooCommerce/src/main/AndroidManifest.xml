@@ -162,7 +162,6 @@
             tools:replace="android:screenOrientation" />
         <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
-            android:theme="@style/Theme.WooPos"
             android:exported="false" />
         <activity
             android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity"

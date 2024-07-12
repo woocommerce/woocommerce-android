@@ -37,40 +37,38 @@ private fun WooPosRootScreen(
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit
 ) {
-    WooPosTheme {
-        val rootController = rememberNavController()
-        val activity = LocalContext.current as ComponentActivity
+    val rootController = rememberNavController()
+    val activity = LocalContext.current as ComponentActivity
 
-        state.value.exitConfirmationDialog?.let {
-            WooPosConfirmationDialog(
-                title = stringResource(id = it.title),
-                message = stringResource(id = it.message),
-                confirmButtonText = stringResource(id = it.confirmButton),
-                dismissButtonText = stringResource(id = it.dismissButton),
-                onDismiss = { onUIEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed) },
-                onConfirm = {
-                    rootController.handleNavigationEvent(
-                        WooPosNavigationEvent.ExitPosClicked,
-                        activity,
-                        onUIEvent
-                    )
-                }
-            )
-        }
+    state.value.exitConfirmationDialog?.let {
+        WooPosConfirmationDialog(
+            title = stringResource(id = it.title),
+            message = stringResource(id = it.message),
+            confirmButtonText = stringResource(id = it.confirmButton),
+            dismissButtonText = stringResource(id = it.dismissButton),
+            onDismiss = { onUIEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed) },
+            onConfirm = {
+                rootController.handleNavigationEvent(
+                    WooPosNavigationEvent.ExitPosClicked,
+                    activity,
+                    onUIEvent
+                )
+            }
+        )
+    }
 
-        Column(modifier = modifier.background(MaterialTheme.colors.background)) {
-            WooPosRootHost(
-                modifier = Modifier.weight(1f),
-                rootController = rootController,
-                onNavigationEvent = { event ->
-                    rootController.handleNavigationEvent(event, activity, onUIEvent)
-                }
-            )
-            WooPosBottomToolbar(
-                state,
-                onUIEvent,
-            )
-        }
+    Column(modifier = modifier.background(MaterialTheme.colors.background)) {
+        WooPosRootHost(
+            modifier = Modifier.weight(1f),
+            rootController = rootController,
+            onNavigationEvent = { event ->
+                rootController.handleNavigationEvent(event, activity, onUIEvent)
+            }
+        )
+        WooPosBottomToolbar(
+            state,
+            onUIEvent,
+        )
     }
 }
 
