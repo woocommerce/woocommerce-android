@@ -12,7 +12,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.last
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -22,6 +24,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.GENERIC_ERROR
@@ -32,7 +35,10 @@ import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class GetStatsTest : BaseUnitTest() {
-    private val selectedSite: SelectedSite = mock()
+    private val siteModel: SiteModel = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { get() }.thenReturn(siteModel)
+    }
     private val statsRepository: StatsRepository = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
@@ -52,6 +58,9 @@ class GetStatsTest : BaseUnitTest() {
         givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
         givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
         givenFetchTotalVisitorStats(Result.success(ANY_TOTAL_VISITOR_COUNT))
+        givenGetRevenueStats(Result.success(ANY_REVENUE_STATS))
+        givenGetTotalVisitorStats(ANY_TOTAL_VISITOR_COUNT)
+        givenGetNewVisitorStats(Result.success(ANY_VISITOR_STATS))
     }
 
     @Test
@@ -61,7 +70,7 @@ class GetStatsTest : BaseUnitTest() {
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.RevenueStatsSuccess }
-                .first()
+                .last()
 
             assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS))
         }
@@ -73,7 +82,7 @@ class GetStatsTest : BaseUnitTest() {
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.RevenueStatsError }
-                .first()
+                .last()
 
             assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsError)
         }
@@ -85,7 +94,7 @@ class GetStatsTest : BaseUnitTest() {
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.PluginNotActive }
-                .first()
+                .last()
 
             assertThat(result).isEqualTo(GetStats.LoadStatsResult.PluginNotActive)
         }
@@ -118,7 +127,7 @@ class GetStatsTest : BaseUnitTest() {
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorsStatsSuccess }
-                .first()
+                .last()
 
             assertThat(result).isEqualTo(
                 GetStats.LoadStatsResult.VisitorsStatsSuccess(
@@ -135,7 +144,7 @@ class GetStatsTest : BaseUnitTest() {
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorsStatsError }
-                .first()
+                .last()
 
             assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsError)
         }
@@ -147,7 +156,7 @@ class GetStatsTest : BaseUnitTest() {
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorsStatsError }
-                .first()
+                .last()
 
             assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsError)
         }
@@ -159,7 +168,7 @@ class GetStatsTest : BaseUnitTest() {
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorStatUnavailable }
-                .first()
+                .last()
 
             assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorStatUnavailable)
         }
@@ -274,6 +283,62 @@ class GetStatsTest : BaseUnitTest() {
                 )
         }
 
+    @Test
+    fun `Given there are cached revenue stats, when get stats with refresh, then emits outdated stats first`() =
+        testBlocking {
+            givenGetRevenueStats(Result.success(ANY_REVENUE_STATS))
+
+            val result = getStats(refresh = true, selectedRange = ANY_STATS_RANGE_SELECTION)
+                .filter { it is GetStats.LoadStatsResult.RevenueStatsSuccess }
+                .first()
+
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true))
+        }
+
+    @Test
+    fun `Given there are cached visitor stats, when get stats with refresh, then emits outdated stats first`() =
+        testBlocking {
+            givenGetTotalVisitorStats(ANY_TOTAL_VISITOR_COUNT)
+            givenGetNewVisitorStats(Result.success(ANY_VISITOR_STATS))
+
+            val result = getStats(refresh = true, selectedRange = ANY_STATS_RANGE_SELECTION)
+                .filter { it is GetStats.LoadStatsResult.VisitorsStatsSuccess }
+                .first()
+
+            assertThat(result).isEqualTo(
+                GetStats.LoadStatsResult.VisitorsStatsSuccess(
+                    ANY_VISITOR_STATS,
+                    ANY_TOTAL_VISITOR_COUNT,
+                    true
+                )
+            )
+        }
+
+    @Test
+    fun `Given there are NO cached revenue stats, when get stats with refresh, then emits Loading`() =
+        testBlocking {
+            givenGetRevenueStats(Result.success(null))
+
+            val result = getStats(refresh = true, selectedRange = ANY_STATS_RANGE_SELECTION)
+                .filter { it is GetStats.LoadStatsResult.RevenueStatsLoading }
+                .firstOrNull()
+
+            assertThat(result).isNotNull
+        }
+
+    @Test
+    fun `Given there are NO cached visitor stats, when get stats with refresh, then emits outdated stats first`() =
+        testBlocking {
+            givenGetTotalVisitorStats(null)
+            givenGetNewVisitorStats(Result.success(emptyMap()))
+
+            val result = getStats(refresh = true, selectedRange = ANY_STATS_RANGE_SELECTION)
+                .filter { it is GetStats.LoadStatsResult.VisitorStatsLoading }
+                .firstOrNull()
+
+            assertThat(result).isNotNull
+        }
+
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
         whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
             .thenReturn(result)
@@ -312,6 +377,18 @@ class GetStatsTest : BaseUnitTest() {
             )
         )
             .thenReturn(flowOf(shouldUpdateAnalytics))
+    }
+
+    private suspend fun givenGetRevenueStats(result: Result<WCRevenueStatsModel?>) {
+        whenever(statsRepository.getRevenueStatsById(any())).thenReturn(result)
+    }
+
+    private suspend fun givenGetTotalVisitorStats(result: Int?) {
+        whenever(statsRepository.getTotalVisitorStats(any(), any())).thenReturn(result)
+    }
+
+    private suspend fun givenGetNewVisitorStats(result: Result<Map<String, Int>>) {
+        whenever(statsRepository.getNewVisitorStats(any(), any(), any())).thenReturn(result)
     }
 
     private companion object {
