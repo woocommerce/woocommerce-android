@@ -233,7 +233,6 @@ dependencies {
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
-    api "androidx.navigation:navigation-dynamic-features-fragment:$gradle.ext.navigationVersion"
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 
