@@ -362,7 +362,9 @@ private fun ProductPromptTextField(
                 state.selectedImage != null -> SelectedImageSection(
                     image = state.selectedImage,
                     onImageActionSelected = onImageActionSelected,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = colorResource(id = R.color.ai_generated_text_background),)
                 )
 
                 else -> {
