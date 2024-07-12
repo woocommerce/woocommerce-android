@@ -513,6 +513,45 @@
     <action
         android:id="@+id/action_global_WPComWebViewFragment"
         app:destination="@id/WPComWebViewFragment" />
+    <fragment
+        android:id="@+id/ExitAwareWebViewFragment"
+        android:name="com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewFragment"
+        android:label="ExitAwareWebViewFragment"
+        tools:layout="@layout/fragment_exitaware_webview">
+        <argument
+            android:name="urlToLoad"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="urlsToTriggerExit"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="displayMode"
+            android:defaultValue="REGULAR"
+            app:argType="com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_ExitAwareWebViewFragment"
+        app:destination="@id/ExitAwareWebViewFragment" />
+
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"
         app:destination="@id/userEligibilityErrorFragment" />
@@ -757,12 +796,26 @@
             android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
             app:destination="@id/packagePhotoBottomSheetFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/AiProductPromptFragment"
         android:name="com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptFragment"
-        android:label="AiProductPromptFragment" />
-
+        android:label="AiProductPromptFragment">
+        <action
+            android:id="@+id/action_AiProductPromptFragment_to_aiProductPreviewFragment"
+            app:destination="@id/aiProductPreviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/aiProductPreviewFragment"
+        android:name="com.woocommerce.android.ui.products.ai.preview.AiProductPreviewFragment"
+        android:label="AiProductPreviewFragment">
+        <argument
+            android:name="productFeatures"
+            app:argType="string" />
+        <argument
+            android:name="image"
+            app:argType="com.woocommerce.android.model.Image"
+            app:nullable="true" />
+    </fragment>
     <dialog
         android:id="@+id/aiProductNameBottomSheetFragment"
         android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
@@ -801,7 +854,7 @@
     <fragment
         android:id="@+id/menuCustomerListFragment"
         android:name="com.woocommerce.android.ui.moremenu.customer.MoreMenuCustomerListFragment"
-        android:label="CustomerListFragment" >
+        android:label="CustomerListFragment">
         <action
             android:id="@+id/action_menuCustomerListFragment_to_customerDetailsFragment"
             app:destination="@id/customerDetailsFragment" />
@@ -809,7 +862,7 @@
     <fragment
         android:id="@+id/customerDetailsFragment"
         android:name="com.woocommerce.android.ui.moremenu.customer.CustomerDetailsFragment"
-        android:label="CustomerDetailsFragment" >
+        android:label="CustomerDetailsFragment">
         <argument
             android:name="customer"
             app:argType="com.woocommerce.android.model.CustomerWithAnalytics" />

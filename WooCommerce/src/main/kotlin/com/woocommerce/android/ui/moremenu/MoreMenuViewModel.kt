@@ -288,9 +288,16 @@ class MoreMenuViewModel @Inject constructor(
                 }
             }
 
-            triggerEvent(MoreMenuEvent.ViewGoogleEvent(urlToOpen))
-            // This is just temporary to test this function,
-            // in practice we want to set this to true if a campaign is successfully created in webview.
+            // Sites using Jetpack will use the `WPComWebView` component so it can auto-login.
+            // Other types will use the `ExitAwareWebView` component, which does not support auto-login.
+            // Although technically Jetpack Connection Package sites can auto-login, it redirects incorrectly to
+            // wordpress.com after login, so `WPComWebView` can't be used.
+            val canAutoLogin = selectedSite.get().connectionType == SiteConnectionType.Jetpack
+
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canAutoLogin))
+
+            // todo-11917: This is just temporary to test this function,
+            //  in practice we want to set this to true if a campaign is successfully created in webview.
             if (!hasCreatedGoogleAdsCampaign) {
                 hasCreatedGoogleAdsCampaign = true
             }
@@ -392,8 +399,8 @@ class MoreMenuViewModel @Inject constructor(
         object ViewPayments : MoreMenuEvent()
         object OpenBlazeCampaignListEvent : MoreMenuEvent()
         data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
+        data class ViewGoogleForWooEvent(val url: String, val canAutoLogin: Boolean) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
-        data class ViewGoogleEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()
         object ViewInboxEvent : MoreMenuEvent()

@@ -20,7 +20,7 @@ class WooPosIsEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val ippStore: WCInPersonPaymentsStore,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
-    private val isFeatureFlagEnabled: WooPosisFeatureFlagEnabled,
+    private val isFeatureFlagEnabled: WooPosIsFeatureFlagEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) {
