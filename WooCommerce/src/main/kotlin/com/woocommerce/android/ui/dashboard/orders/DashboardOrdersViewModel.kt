@@ -136,6 +136,10 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                         )
                     },
                     onFailure = { error ->
+                        trackEventForOrderCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to error.toString())
+                        )
                         ViewState.Error(error.message ?: "")
                     }
                 )
@@ -184,10 +188,10 @@ class DashboardOrdersViewModel @AssistedInject constructor(
         triggerEvent(NavigateToOrderDetails(orderId))
     }
 
-    private fun trackEventForOrderCard(event: AnalyticsEvent) {
+    private fun trackEventForOrderCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
             event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.ORDERS.trackingIdentifier)
+            properties + mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.ORDERS.trackingIdentifier)
         )
     }
 

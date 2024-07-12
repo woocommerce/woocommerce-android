@@ -18,24 +18,24 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSettingsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSubscriptionsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToWooPosEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignCreationEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignListEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.StartSitePickerEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewAdminEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCustomersEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleForWooEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewInboxEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewPayments
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewReviewsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewStoreEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.NavigateToSettingsEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.NavigateToSubscriptionsEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.NavigateToWooPosEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.OpenBlazeCampaignCreationEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.OpenBlazeCampaignListEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.StartSitePickerEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewAdminEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCouponsEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCustomersEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewGoogleForWooEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewInboxEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewPayments
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewReviewsEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewStoreEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -100,9 +100,8 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
-                is ViewGoogleForWooEvent -> openInExitAwareWebview(event.url)
+                is ViewGoogleForWooEvent -> openGoogleForWooWebview(event.url, event.canAutoLogin)
                 is ViewAdminEvent -> openInBrowser(event.url)
-                is ViewGoogleEvent -> openInAuthBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
                 is ViewInboxEvent -> navigateToInbox()
@@ -158,18 +157,6 @@ class MoreMenuFragment : TopLevelFragment() {
         ChromeCustomTabUtils.launchUrl(requireContext(), url)
     }
 
-    private fun openInExitAwareWebview(url: String) {
-        // todo-11917: The following is a test case where the webview exits automatically when the
-        //  GLA Report tab is opened. It needs to be replaced with the right success URL.
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
-                urlToLoad = url,
-                urlsToTriggerExit = arrayOf("wp-admin/admin.php?page=wc-admin&path=%2Fgoogle%2Freports"),
-                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
-            )
-        )
-    }
-
     private fun navigateToReviews() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToReviewList()
@@ -194,13 +181,31 @@ class MoreMenuFragment : TopLevelFragment() {
         )
     }
 
+    private fun openGoogleForWooWebview(url: String, canAutoLogin: Boolean) {
+        when {
+            canAutoLogin -> openInAuthBrowser(url)
+            else -> openInExitAwareWebview(url)
+        }
+    }
+
+    private fun openInExitAwareWebview(url: String) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                title = getString(R.string.more_menu_button_google),
+                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+            )
+        )
+    }
+
     private fun openInAuthBrowser(url: String) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = url,
-                urlsToTriggerExit = arrayOf(),
+                urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
                 title = getString(R.string.more_menu_button_google),
-                clearCache = true
+                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
             )
         )
     }
