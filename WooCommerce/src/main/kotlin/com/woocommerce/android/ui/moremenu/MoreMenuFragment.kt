@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -181,10 +182,10 @@ class MoreMenuFragment : TopLevelFragment() {
     }
 
     private fun openGoogleForWooWebview(url: String, canAutoLogin: Boolean) {
-when {
-    canAutoLogin -> openInAuthBrowser(url)
-    else -> openInExitAwareWebview(url)
-}
+        when {
+            canAutoLogin -> openInAuthBrowser(url)
+            else -> openInExitAwareWebview(url)
+        }
     }
 
     private fun openInExitAwareWebview(url: String) {
