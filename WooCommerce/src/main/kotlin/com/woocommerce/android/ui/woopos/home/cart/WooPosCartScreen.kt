@@ -70,11 +70,8 @@ private fun WooPosCartScreen(
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit
 ) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 4.dp
+    Column(
+        modifier = modifier
     ) {
         Box(
             Modifier.padding(16.dp.toAdaptivePadding()).background(MaterialTheme.colors.surface)
