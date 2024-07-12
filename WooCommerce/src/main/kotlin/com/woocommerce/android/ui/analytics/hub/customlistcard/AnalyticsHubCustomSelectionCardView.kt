@@ -39,7 +39,7 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
 
     private fun setSkeleton() {
         skeletonView.show(
-            binding.analyticsCardListContainer,
+            binding.analyticsCustomCardListContainer,
             R.layout.skeleton_analytics_list_card,
             delayed = true
         )

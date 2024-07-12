@@ -12,7 +12,7 @@
         android:paddingTop="@dimen/major_75">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/analyticsCardListItemTitle"
+            android:id="@+id/analyticsCardCustomListItemTitle"
             style="@style/Woo.Card.Title"
             android:layout_width="0dp"
             android:layout_marginHorizontal="@dimen/major_100"
@@ -27,14 +27,14 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/analyticsCardListItemDescription"
+            app:layout_constraintBottom_toTopOf="@+id/analyticsCardCustomListItemDescription"
             app:layout_constraintEnd_toStartOf="@+id/analyticsCardListItemValue"
             app:layout_constraintVertical_chainStyle="spread_inside"
             app:lineHeight="@dimen/text_major_50"
             tools:text="Google Smart Shopping: Fall" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/analyticsCardListItemDescription"
+            android:id="@+id/analyticsCardCustomListItemDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
@@ -44,8 +44,8 @@
             android:maxLines="1"
             android:textSize="@dimen/text_minor_125"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/analyticsCardListItemTitle"
-            app:layout_constraintTop_toBottomOf="@+id/analyticsCardListItemTitle"
+            app:layout_constraintStart_toStartOf="@id/analyticsCardCustomListItemTitle"
+            app:layout_constraintTop_toBottomOf="@id/analyticsCardCustomListItemTitle"
             app:layout_constraintVertical_chainStyle="spread_inside"
             app:lineHeight="@dimen/text_major_25"
             tools:text="Spend: $300" />
@@ -58,7 +58,7 @@
             android:layout_marginHorizontal="@dimen/major_100"
             android:textSize="@dimen/text_minor_125"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="analyticsCardListItemTitle"
+            app:layout_constraintTop_toTopOf="@id/analyticsCardCustomListItemTitle"
             app:lineHeight="@dimen/text_major_50"
             tools:text="$2,527.91" />
 
@@ -69,7 +69,7 @@
             android:layout_height="@dimen/minor_10"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/analyticsCardListItemDescription" />
+            app:layout_constraintStart_toStartOf="@id/analyticsCardCustomListItemDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

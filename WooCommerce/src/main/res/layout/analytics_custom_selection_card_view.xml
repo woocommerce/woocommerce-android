@@ -7,7 +7,7 @@
     tools:context=".ui.analytics.hub.customlistcard.AnalyticsHubCustomSelectionCardView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/analyticsCardListContainer"
+        android:id="@+id/analyticsCustomCardListContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/major_100">
