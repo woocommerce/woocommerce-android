@@ -114,7 +114,9 @@ private fun CardReaderStatus(
     ) { status ->
         when (status) {
             WooPosCardReaderStatus.Connected -> MaterialTheme.colors.secondary
-            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.secondaryVariant
+            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.secondaryVariant.copy(
+                alpha = 0.8f
+            )
         }
     }
 
