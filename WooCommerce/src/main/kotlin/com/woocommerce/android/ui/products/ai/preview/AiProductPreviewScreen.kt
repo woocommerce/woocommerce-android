@@ -19,13 +19,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -38,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.autoMirror
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -55,7 +64,9 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
             onFeedbackReceived = viewModel::onFeedbackReceived,
             onBackButtonClick = viewModel::onBackButtonClick,
             onImageActionSelected = viewModel::onImageActionSelected,
-            onFullScreenImageDismissed = viewModel::onFullScreenImageDismissed
+            onFullScreenImageDismissed = viewModel::onFullScreenImageDismissed,
+            onSelectNextVariant = viewModel::onSelectNextVariant,
+            onSelectPreviousVariant = viewModel::onSelectPreviousVariant
         )
     }
 }
@@ -66,7 +77,9 @@ private fun AiProductPreviewScreen(
     onFeedbackReceived: (Boolean) -> Unit,
     onBackButtonClick: () -> Unit,
     onImageActionSelected: (ImageAction) -> Unit,
-    onFullScreenImageDismissed: () -> Unit
+    onFullScreenImageDismissed: () -> Unit,
+    onSelectNextVariant: () -> Unit,
+    onSelectPreviousVariant: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -113,6 +126,8 @@ private fun AiProductPreviewScreen(
                     onFeedbackReceived = onFeedbackReceived,
                     onImageActionSelected = onImageActionSelected,
                     onFullScreenImageDismissed = onFullScreenImageDismissed,
+                    onSelectNextVariant = onSelectNextVariant,
+                    onSelectPreviousVariant = onSelectPreviousVariant,
                     modifier = Modifier.fillMaxHeight()
                 )
             }
@@ -133,6 +148,8 @@ private fun ProductPreviewContent(
     onFeedbackReceived: (Boolean) -> Unit,
     onImageActionSelected: (ImageAction) -> Unit,
     onFullScreenImageDismissed: () -> Unit,
+    onSelectNextVariant: () -> Unit,
+    onSelectPreviousVariant: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -174,6 +191,17 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
+        if (true || state.shouldShowVariantSelector) {
+            Spacer(Modifier)
+            ProductVariantSelector(
+                selectedVariant = state.selectedVariant,
+                totalVariants = state.variantsCount,
+                onSelectNextVariant = onSelectNextVariant,
+                onSelectPreviousVariant = onSelectPreviousVariant,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
         if (state.imageState.image != null) {
             Spacer(Modifier.height(8.dp))
             ProductImage(
@@ -206,6 +234,61 @@ private fun ProductPreviewContent(
         ) {
             AiFeedbackForm(
                 onFeedbackReceived = onFeedbackReceived,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProductVariantSelector(
+    selectedVariant: Int,
+    totalVariants: Int,
+    onSelectNextVariant: () -> Unit,
+    onSelectPreviousVariant: () -> Unit,
+    modifier: Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(
+                id = R.string.product_creation_ai_preview_variant_selector,
+                selectedVariant + 1,
+                totalVariants
+            ),
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(
+            onClick = onSelectPreviousVariant,
+            enabled = selectedVariant > 0,
+            modifier = Modifier
+                .border(ButtonDefaults.outlinedBorder, shape = RoundedCornerShape(8.dp))
+        ) {
+            Icon(
+                imageVector = Icons.Default.ChevronLeft,
+                contentDescription = stringResource(id = R.string.product_creation_ai_select_previous_option),
+                tint = MaterialTheme.colors.primary.copy(alpha = LocalContentAlpha.current),
+                modifier = Modifier
+                    .size(32.dp)
+                    .autoMirror()
+            )
+        }
+        IconButton(
+            onClick = onSelectNextVariant,
+            enabled = selectedVariant < totalVariants - 1,
+            modifier = Modifier
+                .border(ButtonDefaults.outlinedBorder, shape = RoundedCornerShape(8.dp))
+        ) {
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = stringResource(id = R.string.product_creation_ai_select_next_option),
+                tint = MaterialTheme.colors.primary.copy(alpha = LocalContentAlpha.current),
+                modifier = Modifier
+                    .size(32.dp)
+                    .autoMirror()
             )
         }
     }
@@ -404,7 +487,9 @@ private fun ProductPreviewLoadingPreview() {
             onFeedbackReceived = {},
             onBackButtonClick = {},
             onImageActionSelected = {},
-            onFullScreenImageDismissed = {}
+            onFullScreenImageDismissed = {},
+            onSelectNextVariant = {},
+            onSelectPreviousVariant = {}
         )
     }
 }
@@ -449,7 +534,9 @@ private fun ProductPreviewContentPreview() {
             onFeedbackReceived = {},
             onBackButtonClick = {},
             onImageActionSelected = {},
-            onFullScreenImageDismissed = {}
+            onFullScreenImageDismissed = {},
+            onSelectNextVariant = {},
+            onSelectPreviousVariant = {}
         )
     }
 }

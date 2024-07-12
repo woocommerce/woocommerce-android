@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -121,15 +122,26 @@ class AiProductPreviewViewModel @Inject constructor(
         imageState.value = imageState.value.copy(showImageFullScreen = false)
     }
 
+    fun onSelectNextVariant() {
+        selectedVariant.update { it + 1 }
+    }
+
+    fun onSelectPreviousVariant() {
+        selectedVariant.update { it - 1 }
+    }
+
     sealed interface State {
         data object Loading : State
         data class Success(
-            private val selectedVariant: Int,
+            val selectedVariant: Int,
             private val product: AIProductModel,
             val propertyGroups: List<List<ProductPropertyCard>>,
             val imageState: ImageState,
             val shouldShowFeedbackView: Boolean = true
         ) : State {
+            val variantsCount = minOf(product.names.size, product.descriptions.size, product.shortDescriptions.size)
+            val shouldShowVariantSelector = variantsCount > 1
+
             val title: String
                 get() = product.names[selectedVariant]
             val description: String
