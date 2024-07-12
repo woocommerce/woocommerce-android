@@ -82,7 +82,7 @@ class AIRepository @Inject constructor(
             }
     }
 
-    @Suppress("LongParameterList")
+    @Suppress("LongParameterList", "MagicNumber")
     suspend fun generateProduct(
         productKeyWords: String,
         tone: String,
@@ -105,7 +105,8 @@ class AIRepository @Inject constructor(
                 languageISOCode = languageISOCode
             ),
             feature = PRODUCT_CREATION_FEATURE,
-            format = ResponseFormat.JSON
+            format = ResponseFormat.JSON,
+            maxTokens = 4000 // Specify a higher limit for max_tokens to avoid truncated responses, see pe5sF9-2UY-p2
         )
     }
 
@@ -163,13 +164,15 @@ class AIRepository @Inject constructor(
         prompt: String,
         feature: String,
         format: ResponseFormat = ResponseFormat.TEXT,
+        maxTokens: Int? = null
     ): Result<String> = withContext(Dispatchers.IO) {
         jetpackAIStore.fetchJetpackAIQuery(
             site = selectedSite.get(),
             question = prompt,
             feature = feature,
             format = format,
-            stream = false
+            stream = false,
+            maxTokens = maxTokens
         ).run {
             when (this) {
                 is JetpackAIQueryResponse.Success -> {
