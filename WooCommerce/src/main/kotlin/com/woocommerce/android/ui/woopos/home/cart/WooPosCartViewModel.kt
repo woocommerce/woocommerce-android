@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -9,6 +8,7 @@ import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val repository: WooPosCartRepository,
+    private val getProductById: WooPosGetProductById,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     savedState: SavedStateHandle,
@@ -55,7 +55,6 @@ class WooPosCartViewModel @Inject constructor(
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
                 goToTotals()
-                createOrderDraft()
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
@@ -87,44 +86,9 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun goToTotals() {
-        sendEventToParent(ChildToParentEvent.CheckoutClicked)
+        val productIds = _state.value.itemsInCart.map { it.id.productId }
+        sendEventToParent(ChildToParentEvent.CheckoutClicked(productIds))
         _state.value = _state.value.copy(cartStatus = WooPosCartStatus.CHECKOUT)
-    }
-
-    private fun createOrderDraft() {
-        viewModelScope.launch {
-            childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.OrderCreation.OrderCreationStarted
-            )
-
-            val currentState = _state.value
-            _state.value = currentState.copy(isOrderCreationInProgress = true)
-
-            val result = repository.createOrderWithProducts(
-                productIds = currentState.itemsInCart.map { it.id.productId }
-            )
-
-            _state.value = _state.value.copy(isOrderCreationInProgress = false)
-
-            result.fold(
-                onSuccess = { order ->
-                    childrenToParentEventSender.sendToParent(
-                        ChildToParentEvent.OrderCreation.OrderCreationSucceeded(order.id)
-                    )
-                },
-                onFailure = { error ->
-                    childrenToParentEventSender.sendToParent(
-                        ChildToParentEvent.OrderCreation.OrderCreationFailed
-                    )
-                    Log.e("WooPosCartViewModel", "Order creation failed - $error")
-                    showOrderCreationError()
-                }
-            )
-        }
-    }
-
-    private fun showOrderCreationError() {
-        // TODO Display a dialog with the error message and a retry option
     }
 
     private fun listenEventsFromParent() {
@@ -139,7 +103,7 @@ class WooPosCartViewModel @Inject constructor(
                         if (_state.value.isOrderCreationInProgress) return@collect
 
                         val itemClicked = viewModelScope.async {
-                            val product = repository.getProductById(event.productId)!!
+                            val product = getProductById(event.productId)!!
                             val itemNumber = (_state.value.itemsInCart.maxOfOrNull { it.id.itemNumber } ?: 0) + 1
                             product.toCartListItem(itemNumber)
                         }
@@ -154,7 +118,9 @@ class WooPosCartViewModel @Inject constructor(
                         _state.value = WooPosCartState()
                     }
 
-                    else -> Unit
+                    is ParentToChildrenEvent.CheckoutClicked -> {
+                        // Do nothing
+                    }
                 }
             }
         }

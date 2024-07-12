@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +44,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -50,6 +53,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -73,8 +77,7 @@ private fun WooPosCartScreen(
         elevation = 4.dp
     ) {
         Box(
-            Modifier
-                .padding(24.dp)
+            Modifier.padding(24.dp.toAdaptivePadding())
         ) {
             Column {
                 CartToolbar(
@@ -83,7 +86,7 @@ private fun WooPosCartScreen(
                     onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
                 val listState = rememberLazyListState()
                 ScrollToBottomHandler(state, listState)
@@ -92,7 +95,7 @@ private fun WooPosCartScreen(
                     modifier = Modifier
                         .weight(1f),
                     state = listState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     items(
@@ -143,51 +146,90 @@ private fun ScrollToBottomHandler(
 }
 
 @Composable
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun CartToolbar(
     toolbar: WooPosCartToolbar,
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = { onBackClicked() }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(toolbar.icon),
-                contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                tint = MaterialTheme.colors.onBackground,
-                modifier = Modifier.size(28.dp)
-            )
-        }
+    BoxWithConstraints {
+        val isNarrowScreen = maxWidth < 300.dp
+        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+            val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-        Spacer(modifier = Modifier.width(16.dp))
-
-        Text(
-            text = stringResource(R.string.woopos_cart_title),
-            style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.onBackground,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = toolbar.itemsCount,
-            style = MaterialTheme.typography.h6,
-            color = MaterialTheme.colors.secondaryVariant,
-            fontWeight = FontWeight.SemiBold,
-        )
-
-        if (toolbar.isClearAllButtonVisible) {
-            Spacer(modifier = Modifier.width(16.dp))
-
-            TextButton(onClick = { onClearAllClicked() }) {
-                Text(
-                    text = stringResource(R.string.woopos_clear_cart_button),
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.primary,
-                    fontWeight = FontWeight.SemiBold,
+            IconButton(
+                onClick = { onBackClicked() },
+                modifier = Modifier.constrainAs(backButton) {
+                    start.linkTo(parent.start)
+                    centerVerticallyTo(parent)
+                }
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(toolbar.icon),
+                    contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                    tint = MaterialTheme.colors.onBackground,
+                    modifier = Modifier.size(28.dp)
                 )
+            }
+
+            if (!isNarrowScreen) {
+                val cartTitleEndMargin = 16.dp.toAdaptivePadding()
+                Text(
+                    text = stringResource(R.string.woopos_cart_title),
+                    style = MaterialTheme.typography.h4,
+                    color = MaterialTheme.colors.onBackground,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    modifier = Modifier.constrainAs(title) {
+                        start.linkTo(backButton.end, margin = cartTitleEndMargin)
+                        centerVerticallyTo(parent)
+                    }
+                )
+            }
+
+            Spacer(
+                modifier = Modifier
+                    .constrainAs(spacer) {
+                        start.linkTo(title.end)
+                        end.linkTo(itemsCount.start)
+                        width = Dimension.fillToConstraints
+                    }
+            )
+
+            Text(
+                text = toolbar.itemsCount,
+                style = MaterialTheme.typography.h6,
+                color = MaterialTheme.colors.secondaryVariant,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                modifier = Modifier.constrainAs(itemsCount) {
+                    end.linkTo(
+                        if (toolbar.isClearAllButtonVisible) {
+                            clearAllButton.start
+                        } else {
+                            parent.end
+                        }
+                    )
+                    centerVerticallyTo(parent)
+                }
+            )
+
+            if (toolbar.isClearAllButtonVisible) {
+                TextButton(
+                    onClick = { onClearAllClicked() },
+                    modifier = Modifier.constrainAs(clearAllButton) {
+                        end.linkTo(parent.end)
+                        centerVerticallyTo(parent)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.woopos_clear_cart_button),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.primary,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                    )
+                }
             }
         }
     }
@@ -220,7 +262,7 @@ private fun ProductItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(64.dp)
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
 
         Column(
             modifier = Modifier.weight(1f)
@@ -232,12 +274,12 @@ private fun ProductItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
             Text(text = item.price, style = MaterialTheme.typography.body1)
         }
 
         if (canRemoveItems) {
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
 
             IconButton(
                 onClick = { onRemoveClicked(item) },
@@ -251,15 +293,16 @@ private fun ProductItem(
                 )
             }
         }
-        Spacer(modifier = Modifier.width(16.dp))
+        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
     }
 }
 
 @Composable
 @WooPosPreview
-fun WooPosCartScreenPreview() {
+fun WooPosCartScreenPreview(modifier: Modifier = Modifier) {
     WooPosTheme {
         WooPosCartScreen(
+            modifier = modifier,
             state = WooPosCartState(
                 toolbar = WooPosCartToolbar(
                     icon = R.drawable.ic_shopping_cart,

@@ -3,14 +3,23 @@ package com.woocommerce.android.ui.woopos.home.products
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-sealed class WooPosProductsViewState {
+sealed class WooPosProductsViewState(
+    open val reloadingProducts: Boolean,
+) {
     data class Content(
         val products: List<WooPosProductsListItem>,
         val loadingMore: Boolean,
-    ) : WooPosProductsViewState()
-    data object Loading : WooPosProductsViewState()
-    data object Error : WooPosProductsViewState()
-    data object Empty : WooPosProductsViewState()
+        override val reloadingProducts: Boolean = false,
+    ) : WooPosProductsViewState(reloadingProducts)
+
+    data class Loading(override val reloadingProducts: Boolean = false) :
+        WooPosProductsViewState(reloadingProducts)
+
+    data class Error(override val reloadingProducts: Boolean = false) :
+        WooPosProductsViewState(reloadingProducts)
+
+    data class Empty(override val reloadingProducts: Boolean = false) :
+        WooPosProductsViewState(reloadingProducts)
 }
 
 @Parcelize
