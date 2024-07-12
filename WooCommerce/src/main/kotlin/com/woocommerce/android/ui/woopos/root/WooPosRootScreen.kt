@@ -22,16 +22,18 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 import com.woocommerce.android.ui.woopos.root.navigation.handleNavigationEvent
 
 @Composable
-fun WooPosRootScreen() {
+fun WooPosRootScreen(modifier: Modifier = Modifier) {
     val viewModel: WooPosRootViewModel = hiltViewModel()
     WooPosRootScreen(
-        viewModel.rootScreenState.collectAsState(),
-        viewModel::onUiEvent
+        modifier = modifier,
+        state = viewModel.rootScreenState.collectAsState(),
+        onUIEvent = viewModel::onUiEvent,
     )
 }
 
 @Composable
 private fun WooPosRootScreen(
+    modifier: Modifier = Modifier,
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit
 ) {
@@ -56,7 +58,7 @@ private fun WooPosRootScreen(
             )
         }
 
-        Column(modifier = Modifier.background(MaterialTheme.colors.background)) {
+        Column(modifier = modifier.background(MaterialTheme.colors.background)) {
             WooPosRootHost(
                 modifier = Modifier.weight(1f),
                 rootController = rootController,
@@ -84,6 +86,9 @@ fun PreviewWooPosRootScreen() {
         )
     }
     WooPosTheme {
-        WooPosRootScreen(state, {})
+        WooPosRootScreen(
+            state = state,
+            onUIEvent = {}
+        )
     }
 }
