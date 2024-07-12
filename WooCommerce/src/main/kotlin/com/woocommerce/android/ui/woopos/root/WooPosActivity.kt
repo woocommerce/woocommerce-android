@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -39,10 +38,7 @@ class WooPosActivity : AppCompatActivity() {
 
                 WooPosRootScreen(
                     modifier = Modifier
-                        .padding(
-                            top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
-                            bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                        )
+                        .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
                 )
             }
         }
