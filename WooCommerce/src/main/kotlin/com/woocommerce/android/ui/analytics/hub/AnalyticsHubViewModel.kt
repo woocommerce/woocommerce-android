@@ -74,7 +74,9 @@ import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as Lis
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
 
+
 @HiltViewModel
+@SuppressWarnings("LargeClass")
 class AnalyticsHubViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
@@ -749,7 +751,6 @@ class AnalyticsHubViewModel @Inject constructor(
         triggerEvent(AnalyticsViewEvent.OpenSettings)
     }
 }
-
 enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {

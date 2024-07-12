@@ -30,11 +30,11 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
     }
 
     private fun setDataViewState(viewState: DataViewState) {
-        viewState.apply {  }
+        viewState.apply { }
     }
 
     private fun setNoAdsViewState(viewState: NoAdsState) {
-        viewState.apply {  }
+        viewState.apply { }
     }
 
     private fun setSkeleton() {
