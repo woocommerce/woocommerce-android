@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai
 
+import com.google.gson.annotations.SerializedName
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
@@ -11,8 +12,8 @@ import java.math.BigDecimal
 data class AIProductModel(
     val names: List<String>,
     val descriptions: List<String>,
-    val shortDescriptions: List<String>,
-    val isVirtual: Boolean,
+    @SerializedName("short_descriptions") val shortDescriptions: List<String>,
+    @SerializedName("virtual") val isVirtual: Boolean,
     val price: BigDecimal,
     val shipping: Shipping,
     val categories: List<String>? = null,

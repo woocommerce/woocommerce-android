@@ -23,6 +23,7 @@ import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import javax.inject.Inject
 
+// TODO remove this when cleaning up legacy code for product creation
 class GenerateProductWithAILegacy @Inject constructor(
     private val aiRepository: AIRepository,
     private val categoriesRepository: ProductCategoriesRepository,
@@ -67,7 +68,7 @@ class GenerateProductWithAILegacy @Inject constructor(
             return Result.failure(it)
         }
 
-        return aiRepository.generateProduct(
+        return aiRepository.generateProductLegacy(
             productName = productName,
             productKeyWords = productKeyWords,
             tone = tone.slug,

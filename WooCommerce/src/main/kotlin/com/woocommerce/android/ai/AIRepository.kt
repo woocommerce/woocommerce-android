@@ -82,9 +82,7 @@ class AIRepository @Inject constructor(
             }
     }
 
-    @Suppress("LongParameterList")
     suspend fun generateProduct(
-        productName: String,
         productKeyWords: String,
         tone: String,
         weightUnit: String,
@@ -96,6 +94,35 @@ class AIRepository @Inject constructor(
     ): Result<String> {
         return fetchJetpackAIQuery(
             prompt = AIPrompts.generateProductCreationPrompt(
+                keywords = productKeyWords,
+                tone = tone,
+                weightUnit = weightUnit,
+                dimensionUnit = dimensionUnit,
+                currency = currency,
+                existingCategories = existingCategories.map { it.name },
+                existingTags = existingTags.map { it.name },
+                languageISOCode = languageISOCode
+            ),
+            feature = PRODUCT_CREATION_FEATURE,
+            format = ResponseFormat.JSON
+        )
+    }
+
+    // TODO remove this when cleaning up legacy code for product creation
+    @Suppress("LongParameterList")
+    suspend fun generateProductLegacy(
+        productName: String,
+        productKeyWords: String,
+        tone: String,
+        weightUnit: String,
+        dimensionUnit: String,
+        currency: String,
+        existingCategories: List<ProductCategory>,
+        existingTags: List<ProductTag>,
+        languageISOCode: String
+    ): Result<String> {
+        return fetchJetpackAIQuery(
+            prompt = AIPrompts.generateProductCreationPromptLegacy(
                 name = productName,
                 keywords = productKeyWords,
                 tone = tone,
