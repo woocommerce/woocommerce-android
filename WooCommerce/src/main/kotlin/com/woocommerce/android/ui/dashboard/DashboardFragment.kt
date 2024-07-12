@@ -132,7 +132,6 @@ class DashboardFragment :
         }
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
-            binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
             refreshJitm()
         }
@@ -201,6 +200,9 @@ class DashboardFragment :
         }
         dashboardViewModel.hasNewWidgets.observe(viewLifecycleOwner) { hasNewWidgets ->
             editButtonBadge.isVisible = hasNewWidgets
+        }
+        dashboardViewModel.isRefreshingOnBackground.observe(viewLifecycleOwner) { isRefreshing ->
+            binding.myStoreRefreshLayout.isRefreshing = isRefreshing
         }
     }
 
