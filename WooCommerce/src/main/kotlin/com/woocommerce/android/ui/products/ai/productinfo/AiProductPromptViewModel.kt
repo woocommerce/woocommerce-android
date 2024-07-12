@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.TextRecognitionEngine
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Remove
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Replace
@@ -36,7 +37,7 @@ class AiProductPromptViewModel @Inject constructor(
             productPrompt = "",
             selectedTone = Tone.Casual,
             isMediaPickerDialogVisible = false,
-            mediaUri = null,
+            selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false,
             noTextDetectedMessage = false
@@ -75,17 +76,22 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onGenerateProductClicked() {
-        // TODO()
+        triggerEvent(
+            ShowProductPreviewScreen(
+                productFeatures = _state.value.productPrompt,
+                image = _state.value.selectedImage
+            )
+        )
     }
 
     fun onToneSelected(tone: Tone) {
         _state.value = _state.value.copy(selectedTone = tone)
     }
 
-    fun onMediaSelected(mediaUri: String) {
+    fun onMediaSelected(image: Image) {
         _state.value = _state.value.copy(isScanningImage = true)
         launch {
-            textRecognitionEngine.processImage(mediaUri)
+            textRecognitionEngine.processImage(image.uri)
                 .onSuccess { keywords ->
                     tracker.track(
                         AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_COMPLETED,
@@ -113,7 +119,7 @@ class AiProductPromptViewModel @Inject constructor(
                     triggerEvent(ShowSnackbar(R.string.ai_product_creation_scanning_photo_error))
                 }
             _state.value = _state.value.copy(
-                mediaUri = mediaUri,
+                selectedImage = image,
                 isScanningImage = false,
             )
         }
@@ -124,7 +130,7 @@ class AiProductPromptViewModel @Inject constructor(
             View -> _state.value = _state.value.copy(showImageFullScreen = true)
             Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
             Remove -> _state.value = _state.value.copy(
-                mediaUri = null,
+                selectedImage = null,
                 noTextDetectedMessage = false,
             )
         }
@@ -139,7 +145,7 @@ class AiProductPromptViewModel @Inject constructor(
         val productPrompt: String,
         val selectedTone: Tone,
         val isMediaPickerDialogVisible: Boolean,
-        val mediaUri: String?,
+        val selectedImage: Image?,
         val isScanningImage: Boolean,
         val showImageFullScreen: Boolean,
         val noTextDetectedMessage: Boolean,
@@ -164,4 +170,8 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     data class ShowMediaDialog(val source: DataSource) : Event()
+    data class ShowProductPreviewScreen(
+        val productFeatures: String,
+        val image: Image?
+    ) : Event()
 }

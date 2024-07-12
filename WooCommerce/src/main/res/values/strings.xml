@@ -498,6 +498,7 @@
     <string name="analytics_orders_no_data">No orders this period</string>
     <string name="analytics_products_no_data">No products this period</string>
     <string name="analytics_gift_cards_no_data">No gift cards this period</string>
+    <string name="analytics_google_ads_no_data">No Programs this period</string>
     <string name="analytics_session_no_data">No sessions this period</string>
     <string name="analytics_session_no_available">Session data unavailable</string>
     <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
@@ -519,6 +520,8 @@
     <string name="analytics_session_card_title">Sessions</string>
     <string name="analytics_bundles_card_title">Bundles</string>
     <string name="analytics_gift_cards_card_title">Gift Cards</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_programs_card_title">Programs</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
     <string name="analytics_item">item</string>
@@ -2142,6 +2145,7 @@
     <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
+    <string name="product_detail_publish">Publish</string>
     <string name="product_detail_linked_products">Linked products</string>
     <string name="upsells_label">Upsells</string>
     <string name="upsells_desc">Products promoted instead of the currently viewed product (ie: more profitable products)</string>

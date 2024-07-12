@@ -584,7 +584,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 determineTrialStatusBarState = mock {
                     onBlocking { invoke(any()) } doReturn emptyFlow()
                 },
-                isWooPosEnabled = mock(),
+                wooPosIsEnabled = mock(),
             )
         )
     }
