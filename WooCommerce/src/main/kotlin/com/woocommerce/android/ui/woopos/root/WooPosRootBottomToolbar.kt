@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.woopos.root
 
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +25,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -88,34 +93,58 @@ private fun CardReaderStatus(
     state: State<WooPosRootScreenState>,
     onClick: () -> Unit
 ) {
-    TextButton(onClick = onClick) {
-        when (state.value.cardReaderStatus) {
-            WooPosCardReaderStatus.Connected -> {
-                ReaderStatusIllustration(WooPosTheme.colors.success)
-                Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
-                ReaderStatusText(
-                    state.value.cardReaderStatus.title,
-                    MaterialTheme.colors.secondary
-                )
-            }
+    val transition = updateTransition(
+        targetState = state.value.cardReaderStatus,
+        label = "CardReaderStatusTransition"
+    )
 
-            WooPosCardReaderStatus.NotConnected -> {
-                ReaderStatusIllustration(WooPosTheme.colors.error)
-                Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
-                ReaderStatusText(
-                    state.value.cardReaderStatus.title,
-                    MaterialTheme.colors.secondaryVariant
-                )
-            }
+    val illustrationColor by transition.animateColor(
+        transitionSpec = { tween(durationMillis = 300) },
+        label = "IllustrationColorTransition"
+    ) { status ->
+        when (status) {
+            WooPosCardReaderStatus.Connected -> WooPosTheme.colors.success
+            WooPosCardReaderStatus.NotConnected -> WooPosTheme.colors.error
         }
+    }
+
+    val textColor by transition.animateColor(
+        transitionSpec = { tween(durationMillis = 300) },
+        label = "TextColorTransition"
+    ) { status ->
+        when (status) {
+            WooPosCardReaderStatus.Connected -> MaterialTheme.colors.secondary
+            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.secondaryVariant
+        }
+    }
+
+    val title = stringResource(
+        id = when (state.value.cardReaderStatus) {
+            WooPosCardReaderStatus.Connected -> WooPosCardReaderStatus.Connected.title
+            WooPosCardReaderStatus.NotConnected -> WooPosCardReaderStatus.NotConnected.title
+        }
+    )
+
+    TextButton(onClick = onClick) {
+        ReaderStatusIllustration(illustrationColor)
+        Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
+        ReaderStatusText(
+            modifier = Modifier.animateContentSize(),
+            title = title,
+            color = textColor,
+        )
     }
 }
 
 @Composable
-private fun ReaderStatusText(textId: Int, color: Color) {
+private fun ReaderStatusText(
+    modifier: Modifier,
+    title: String,
+    color: Color
+) {
     Text(
-        modifier = Modifier.padding(8.dp.toAdaptivePadding()),
-        text = stringResource(id = textId),
+        modifier = modifier.padding(8.dp.toAdaptivePadding()),
+        text = title,
         color = color,
         style = MaterialTheme.typography.button
     )
