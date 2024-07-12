@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 09:54:04+0000
+Translation-Revision-Date: 2024-07-09 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">いますぐ連携</string>
+    <string name="woopos_cart_title">お買い物カゴ</string>
+    <string name="ai_product_creation_generate_details_button">商品詳細を生成</string>
+    <string name="ai_product_creation_read_text_from_photo_button">商品写真からテキストを読む</string>
+    <string name="ai_product_creation_prompt_placeholder">例: 黒色の綿 T シャツ、やわらかな生地、丈夫な縫製、ユニークなデザイン</string>
+    <string name="ai_product_creation_product_prompt_subtitle">商品が何かと、そのユニークポイントを教えてください。あとは AI の魔法に任せましょう。</string>
+    <string name="ai_product_creation_product_prompt_title">開始情報</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">商品詳細を生成いたします</string>
     <string name="woopos_payment_collect_payment_label">カード支払いを受け取る</string>
     <string name="woopos_payment_total_label">合計</string>
     <string name="woopos_payment_tax_label">税</string>
     <string name="woopos_payment_subtotal_label">小計</string>
-    <string name="woo_pos_new_transaction_button">新規トランザクション</string>
+    <string name="woopos_new_transaction_button">新規トランザクション</string>
     <string name="woopos_payment_successful_label">支払いに成功しました</string>
     <string name="woopos_payment_failed_please_try_again">支払いに失敗しました。 もう一度お試しください。</string>
-    <string name="woo_pos_cart_back_content_description">お買い物カゴアイコン</string>
+    <string name="woopos_cart_back_content_description">お買い物カゴアイコン</string>
     <string name="woopos_products_screen_title">商品</string>
     <string name="woopos_product_image_description">商品画像</string>
-    <string name="woo_pos_items_in_cart">%d個のアイテム</string>
-    <string name="woo_pos_clear_cart_button">すべてクリア</string>
+    <string name="woopos_items_in_cart">%d個のアイテム</string>
+    <string name="woopos_clear_cart_button">すべてクリア</string>
     <string name="more_menu_button_google_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう</string>
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="no_quantity_rules">数量ルールなし</string>
@@ -26,7 +34,6 @@ Language: ja_JP
     <string name="woopos_exit_confirmation_confirm_button">終了</string>
     <string name="woopos_exit_confirmation_message">POS を終了してもよいですか ?</string>
     <string name="woopos_exit_confirmation_title">POS を終了</string>
-    <string name="woopos_cart_title">お買い物カゴ</string>
     <string name="woopos_remove_item_from_cart_content_description">お買い物カゴからアイテムを削除</string>
     <string name="woopos_checkout_button">購入手続き</string>
     <string name="woopos_reader_unknown">Reader ステータス不明</string>

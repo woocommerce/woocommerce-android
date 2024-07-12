@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-03 13:54:09+0000
+Translation-Revision-Date: 2024-07-08 14:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">الاتصال الآن</string>
+    <string name="woopos_cart_title">عربة التسوق</string>
+    <string name="ai_product_creation_generate_details_button">إنشاء تفاصيل المنتج</string>
+    <string name="ai_product_creation_read_text_from_photo_button">قراء النص من صور المنتج</string>
+    <string name="ai_product_creation_prompt_placeholder">على سبيل المثال، تيشيرت أسود من القطن، وقماش ناعم، وخياطة متينة، وتصميم فريد</string>
+    <string name="ai_product_creation_product_prompt_subtitle">أخبرنا حول منتجك، ومضمونه والميزات التي تجعله فريدًا من نوعه، ثم اسمح بالذكاء الاصطناعي بنثر سحره.</string>
+    <string name="ai_product_creation_product_prompt_title">معلومات البدء</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">السماح لنا بإنشاء تفاصيل المنتج من أجلك</string>
     <string name="woopos_payment_collect_payment_label">تحصيل المدفوعات بالبطاقة</string>
     <string name="woopos_payment_total_label">الإجمالي</string>
     <string name="woopos_payment_tax_label">الضريبة</string>
     <string name="woopos_payment_subtotal_label">الإجمالي الفرعي</string>
-    <string name="woo_pos_new_transaction_button">معاملة جديدة</string>
+    <string name="woopos_new_transaction_button">معاملة جديدة</string>
     <string name="woopos_payment_successful_label">تمت عملية الدفع بنجاح</string>
     <string name="woopos_payment_failed_please_try_again">فشلت عملية الدفع. يرجى المحاولة مجددًا.</string>
-    <string name="woo_pos_cart_back_content_description">أيقونة عربة التسوق</string>
+    <string name="woopos_cart_back_content_description">أيقونة عربة التسوق</string>
     <string name="woopos_products_screen_title">المنتجات</string>
     <string name="woopos_product_image_description">صورة المنتج</string>
-    <string name="woo_pos_items_in_cart">%d من العناصر</string>
-    <string name="woo_pos_clear_cart_button">مسح الكل</string>
+    <string name="woopos_items_in_cart">%d من العناصر</string>
+    <string name="woopos_clear_cart_button">مسح الكل</string>
     <string name="more_menu_button_google_description">زيادة المبيعات وإنشاء مزيد من حركة المرور باستخدام Google Ads</string>
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="no_quantity_rules">لا توجد قواعد للكميات</string>
@@ -26,7 +34,6 @@ Language: ar
     <string name="woopos_exit_confirmation_confirm_button">إنهاء</string>
     <string name="woopos_exit_confirmation_message">هل تريد بالتأكيد إنهاء POS؟</string>
     <string name="woopos_exit_confirmation_title">إنهاء POS</string>
-    <string name="woopos_cart_title">عربة التسوق</string>
     <string name="woopos_remove_item_from_cart_content_description">إزالة عنصر من عربة التسوق</string>
     <string name="woopos_checkout_button">السداد</string>
     <string name="woopos_reader_unknown">حالة القارئ مجهولة</string>

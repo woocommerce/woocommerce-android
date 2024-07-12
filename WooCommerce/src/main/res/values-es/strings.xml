@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 17:54:03+0000
+Translation-Revision-Date: 2024-07-09 13:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">Conectar ahora</string>
+    <string name="woopos_cart_title">Carrito</string>
+    <string name="ai_product_creation_generate_details_button">Generar detalles del producto</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Texto que se lee en la foto del producto</string>
+    <string name="ai_product_creation_prompt_placeholder">Por ejemplo: camiseta de algodón negra, tejido suave, costuras duraderas, diseño único</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Háblanos de tu producto, qué es y qué lo hace único; después, deja que la IA haga su magia.</string>
+    <string name="ai_product_creation_product_prompt_title">Información inicial</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Permítenos generar los detalles del producto por ti</string>
     <string name="woopos_payment_collect_payment_label">Recibe pagos con tarjeta</string>
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_tax_label">Impuesto</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
-    <string name="woo_pos_new_transaction_button">Nueva transacción</string>
+    <string name="woopos_new_transaction_button">Nueva transacción</string>
     <string name="woopos_payment_successful_label">Pago correcto</string>
     <string name="woopos_payment_failed_please_try_again">Error de pago. Inténtalo de nuevo.</string>
-    <string name="woo_pos_cart_back_content_description">Icono de carrito</string>
+    <string name="woopos_cart_back_content_description">Icono de carrito</string>
     <string name="woopos_products_screen_title">Productos</string>
     <string name="woopos_product_image_description">Imagen del producto</string>
-    <string name="woo_pos_items_in_cart">%d elementos</string>
-    <string name="woo_pos_clear_cart_button">Borrar todo</string>
+    <string name="woopos_items_in_cart">%d elementos</string>
+    <string name="woopos_clear_cart_button">Borrar todo</string>
     <string name="more_menu_button_google_description">Dirige las ventas y genera más tráfico con Google Ads</string>
     <string name="more_menu_button_google">Google para WooCommerce</string>
     <string name="no_quantity_rules">No hay reglas de cantidad</string>
@@ -26,7 +34,6 @@ Language: es
     <string name="woopos_exit_confirmation_confirm_button">Salir</string>
     <string name="woopos_exit_confirmation_message">¿Estás seguro que quieres salir del punto de venta?</string>
     <string name="woopos_exit_confirmation_title">Salir del punto de venta</string>
-    <string name="woopos_cart_title">Carrito</string>
     <string name="woopos_remove_item_from_cart_content_description">Eliminar elemento del carrito</string>
     <string name="woopos_checkout_button">Finalizar compra</string>
     <string name="woopos_reader_unknown">Estado del lector desconocido</string>
