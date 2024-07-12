@@ -205,7 +205,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 urlToLoad = url,
                 urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
                 title = getString(R.string.more_menu_button_google),
-                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
             )
         )
     }
