@@ -122,7 +122,7 @@ private fun GoogleAdsLoading(
             modifier = Modifier
                 .border(
                     width = dimensionResource(id = R.dimen.minor_10),
-                    color = colorResource(id = R.color.woo_gray_5),
+                    color = colorResource(id = R.color.divider_color),
                     shape = roundedShape
                 )
                 .clip(roundedShape)
@@ -156,7 +156,7 @@ private fun GoogleAdsLoading(
         modifier = Modifier
             .border(
                 width = dimensionResource(id = R.dimen.minor_10),
-                color = colorResource(id = R.color.woo_gray_5),
+                color = colorResource(id = R.color.divider_color),
                 shape = roundedShape
             )
             .clip(roundedShape)
@@ -184,7 +184,7 @@ private fun GoogleAdsNoCampaigns(
             modifier = modifier
                 .border(
                     width = dimensionResource(id = R.dimen.minor_10),
-                    color = colorResource(id = R.color.woo_gray_5),
+                    color = colorResource(id = R.color.divider_color),
                     shape = roundedShape
                 )
                 .clip(roundedShape)
@@ -243,7 +243,7 @@ private fun GoogleAdsWithCampaigns(
             modifier = modifier
                 .border(
                     width = dimensionResource(id = R.dimen.minor_10),
-                    color = colorResource(id = R.color.woo_gray_5),
+                    color = colorResource(id = R.color.divider_color),
                     shape = roundedShape
                 )
                 .clip(roundedShape)
