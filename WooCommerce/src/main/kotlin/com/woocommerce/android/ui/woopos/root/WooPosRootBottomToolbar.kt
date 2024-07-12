@@ -1,12 +1,11 @@
 package com.woocommerce.android.ui.woopos.root
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,6 +19,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,12 +38,12 @@ import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardRe
 
 @Composable
 fun WooPosBottomToolbar(
+    modifier: Modifier = Modifier,
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .height(64.dp)
+        modifier = modifier
             .wrapContentSize(Alignment.Center),
         backgroundColor = MaterialTheme.colors.surface,
         elevation = 4.dp,
@@ -52,14 +52,15 @@ fun WooPosBottomToolbar(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 24.dp.toAdaptivePadding())
+            modifier = Modifier.padding(
+                horizontal = 24.dp.toAdaptivePadding(),
+                vertical = 8.dp.toAdaptivePadding()
+            )
         ) {
             ExitPosButton { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
-            Box(
-                Modifier
-                    .width(0.5.dp)
-                    .background(color = WooPosTheme.colors.loadingSkeleton)
-            )
+            Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+            DividerVertical()
+            Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
             CardReaderStatus(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
         }
     }
@@ -73,8 +74,8 @@ private fun ExitPosButton(onClick: () -> Unit) {
             contentDescription = null,
             tint = MaterialTheme.colors.secondaryVariant,
         )
+        Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
         Text(
-            modifier = Modifier.padding(8.dp.toAdaptivePadding()),
             text = stringResource(id = R.string.woopos_exit_pos),
             color = MaterialTheme.colors.secondaryVariant,
             style = MaterialTheme.typography.button
@@ -85,36 +86,57 @@ private fun ExitPosButton(onClick: () -> Unit) {
 @Composable
 private fun CardReaderStatus(
     state: State<WooPosRootScreenState>,
-    onReaderClick: () -> Unit
+    onClick: () -> Unit
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.clickable { onReaderClick() }
-    ) {
+    TextButton(onClick = onClick) {
         when (state.value.cardReaderStatus) {
             WooPosCardReaderStatus.Connected -> {
-                ReaderStatus(Color(0xFF03D479))
+                ReaderStatusIllustration(WooPosTheme.colors.success)
+                Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
+                ReaderStatusText(
+                    state.value.cardReaderStatus.title,
+                    MaterialTheme.colors.secondary
+                )
             }
 
             WooPosCardReaderStatus.NotConnected -> {
-                ReaderStatus(Color(0xFF03D479))
+                ReaderStatusIllustration(WooPosTheme.colors.error)
+                Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
+                ReaderStatusText(
+                    state.value.cardReaderStatus.title,
+                    MaterialTheme.colors.secondaryVariant
+                )
             }
         }
-        Text(
-            modifier = Modifier.padding(8.dp.toAdaptivePadding()),
-            text = stringResource(id = state.value.cardReaderStatus.title),
-            color = MaterialTheme.colors.secondary,
-            style = MaterialTheme.typography.button
-        )
     }
 }
 
 @Composable
-private fun ReaderStatus(color: Color) {
+private fun ReaderStatusText(textId: Int, color: Color) {
+    Text(
+        modifier = Modifier.padding(8.dp.toAdaptivePadding()),
+        text = stringResource(id = textId),
+        color = color,
+        style = MaterialTheme.typography.button
+    )
+}
+
+@Composable
+private fun ReaderStatusIllustration(color: Color) {
     Box(
         modifier = Modifier
             .size(12.dp)
             .background(color = color, shape = CircleShape)
+    )
+}
+
+@Composable
+private fun DividerVertical() {
+    Box(
+        Modifier
+            .width(0.5.dp)
+            .height(24.dp)
+            .background(color = WooPosTheme.colors.loadingSkeleton)
     )
 }
 
@@ -129,12 +151,7 @@ fun PreviewWooPosBottomToolbarStatusNotConnected() {
             )
         )
     }
-    WooPosTheme {
-        Column {
-            Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar(state) {}
-        }
-    }
+    Preview(state)
 }
 
 @WooPosPreview
@@ -148,10 +165,20 @@ fun PreviewWooPosBottomToolbarStatusConnected() {
             )
         )
     }
+    Preview(state)
+}
+
+@Composable
+private fun Preview(state: MutableState<WooPosRootScreenState>) {
     WooPosTheme {
-        Column {
-            Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar(state) {}
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            WooPosBottomToolbar(
+                modifier = Modifier.padding(24.dp.toAdaptivePadding()),
+                state
+            ) {}
         }
     }
 }

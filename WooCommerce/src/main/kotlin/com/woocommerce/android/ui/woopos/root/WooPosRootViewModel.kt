@@ -23,7 +23,7 @@ class WooPosRootViewModel @Inject constructor(
 ) : ViewModel() {
     private val _rootScreenState = MutableStateFlow(
         WooPosRootScreenState(
-            cardReaderStatus = WooPosRootScreenState.WooPosCardReaderStatus.Unknown,
+            cardReaderStatus = WooPosRootScreenState.WooPosCardReaderStatus.NotConnected,
             exitConfirmationDialog = null,
         )
     )
@@ -65,8 +65,7 @@ class WooPosRootViewModel @Inject constructor(
     private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosRootScreenState.WooPosCardReaderStatus {
         return when (status) {
             is Connected -> WooPosRootScreenState.WooPosCardReaderStatus.Connected
-            is Connecting -> WooPosRootScreenState.WooPosCardReaderStatus.Connecting
-            is NotConnected -> WooPosRootScreenState.WooPosCardReaderStatus.NotConnected
+            is NotConnected, Connecting -> WooPosRootScreenState.WooPosCardReaderStatus.NotConnected
         }
     }
 }

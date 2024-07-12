@@ -78,12 +78,12 @@ fun PreviewWooPosRootScreen() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
-                WooPosRootScreenState.WooPosCardReaderStatus.Unknown,
+                WooPosRootScreenState.WooPosCardReaderStatus.NotConnected,
                 null,
             )
         )
     }
     WooPosTheme {
-        WooPosRootScreen(state, {})
+        WooPosRootScreen(state) {}
     }
 }
