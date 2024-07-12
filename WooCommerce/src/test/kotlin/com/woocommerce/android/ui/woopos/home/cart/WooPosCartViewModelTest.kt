@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.WooPosBaseUnitTest
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
@@ -28,7 +27,7 @@ class WooPosCartViewModelTest : WooPosBaseUnitTest() {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
         on { events }.thenReturn(MutableSharedFlow())
     }
-    private val repository: WooPosCartRepository = mock()
+    private val getProductById: WooPosGetProductById = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(eq(R.string.woopos_items_in_cart), eq(1)) }.thenReturn("Items in cart: 1")
         on { getString(eq(R.string.woopos_items_in_cart), eq(2)) }.thenReturn("Items in cart: 2")
@@ -51,7 +50,7 @@ class WooPosCartViewModelTest : WooPosBaseUnitTest() {
 
         val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
         whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+        whenever(getProductById(eq(product.id.productId))).thenReturn(
             generateProductWithFirstImage(product.id.productId)
         )
         val sut = createSut()
@@ -81,7 +80,7 @@ class WooPosCartViewModelTest : WooPosBaseUnitTest() {
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+            whenever(getProductById(eq(product.id.productId))).thenReturn(
                 generateProductWithFirstImage(product.id.productId)
             )
             val sut = createSut()
@@ -126,7 +125,7 @@ class WooPosCartViewModelTest : WooPosBaseUnitTest() {
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+            whenever(getProductById(eq(product.id.productId))).thenReturn(
                 generateProductWithFirstImage(product.id.productId)
             )
 
@@ -158,7 +157,7 @@ class WooPosCartViewModelTest : WooPosBaseUnitTest() {
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+            whenever(getProductById(eq(product.id.productId))).thenReturn(
                 generateProductWithFirstImage(product.id.productId)
             )
 
@@ -189,13 +188,13 @@ class WooPosCartViewModelTest : WooPosBaseUnitTest() {
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product1Id))).thenReturn(
+            whenever(getProductById(eq(product1Id))).thenReturn(
                 generateProductWithFirstImage(product1Id)
             )
-            whenever(repository.getProductById(eq(product2Id))).thenReturn(
+            whenever(getProductById(eq(product2Id))).thenReturn(
                 generateProductWithFirstImage(product2Id)
             )
-            whenever(repository.getProductById(eq(product3Id))).thenReturn(
+            whenever(getProductById(eq(product3Id))).thenReturn(
                 generateProductWithFirstImage(product3Id)
             )
 
@@ -232,60 +231,11 @@ class WooPosCartViewModelTest : WooPosBaseUnitTest() {
             assertThat(itemsInCart[1].id.itemNumber).isEqualTo(3)
         }
 
-    @Test
-    fun `given checkout clicked, when order creation succeeds, then should update state and send event to parent`() =
-        testBlocking {
-            // GIVEN
-            val productIds = listOf(1L)
-            val orderId = 123L
-            val order = OrderTestUtils.generateTestOrder(orderId)
-            whenever(repository.createOrderWithProducts(productIds)).thenReturn(Result.success(order))
-            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
-            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(1L))).thenReturn(generateProductWithFirstImage(1L))
-
-            val sut = createSut()
-            val states = sut.state.captureValues()
-
-            // WHEN
-            parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.ItemClickedInProductSelector(1L))
-            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
-
-            // THEN
-            assertThat(states.last().cartStatus).isEqualTo(WooPosCartStatus.CHECKOUT)
-            verify(
-                childrenToParentEventSender
-            ).sendToParent(ChildToParentEvent.OrderCreation.OrderCreationSucceeded(orderId))
-        }
-
-    @Test
-    fun `given checkout clicked, when order creation fails, then should update state and send event to parent`() =
-        testBlocking {
-            // GIVEN
-            val productIds = listOf(1L)
-            val exception = Exception("Order failed")
-            whenever(repository.createOrderWithProducts(eq(productIds))).thenReturn(Result.failure(exception))
-            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
-            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(1L))).thenReturn(generateProductWithFirstImage(1L))
-
-            val sut = createSut()
-            val states = sut.state.captureValues()
-
-            // WHEN
-            parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.ItemClickedInProductSelector(1L))
-            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
-
-            // THEN
-            assertThat(states.last().isOrderCreationInProgress).isFalse
-            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OrderCreation.OrderCreationFailed)
-        }
-
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
             childrenToParentEventSender,
             parentToChildrenEventReceiver,
-            repository,
+            getProductById,
             resourceProvider,
             formatPrice,
             savedState

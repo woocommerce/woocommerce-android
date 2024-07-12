@@ -609,7 +609,7 @@ Language: sv_SE
     <string name="product_creation_ai_tone_casual">Avslappnad</string>
     <string name="product_creation_ai_tone_description">Ställ in ton och röst för att forma presentationen av din produkt så att den passar ditt varumärke.</string>
     <string name="product_creation_ai_tone_title">Ton och röst</string>
-    <string name="product_creation_ai_preview_subtitle">Du kan alltid ändra detaljerna nedan senare.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Du kan alltid ändra detaljerna nedan senare.</string>
     <string name="product_creation_ai_preview_title">Förhandsgranska</string>
     <string name="product_creation_ai_about_product_continue_button">Skapa produktdetaljer</string>
     <string name="product_creation_ai_about_product_set_tone">Ställ in ton och röst</string>

@@ -77,6 +77,19 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     getProductsFlow(forceRefresh = refreshEvent.isForced)
                 ) { blazeCampaignResult, productsResult ->
                     if (productsResult.isFailure || blazeCampaignResult.isFailure) {
+                        trackEventForBlazeCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_ERROR to
+                                    when {
+                                        productsResult.isFailure -> productsResult.exceptionOrNull()?.message
+                                            ?: "Loading products error"
+
+                                        else -> blazeCampaignResult.exceptionOrNull()?.message
+                                            ?: "Fetch Blaze campaign error"
+                                    }
+                            )
+                        )
                         return@combine DashboardBlazeCampaignState.Error(widgetMenu)
                     }
                     val products = productsResult.getOrThrow()
@@ -221,10 +234,10 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
-    private fun trackEventForBlazeCard(event: AnalyticsEvent) {
+    private fun trackEventForBlazeCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
             event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.BLAZE.trackingIdentifier)
+            properties + mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.BLAZE.trackingIdentifier)
         )
     }
 

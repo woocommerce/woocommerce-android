@@ -21,7 +21,7 @@ class WooPosHomeViewModelTest : WooPosBaseUnitTest() {
         runTest {
             // GIVEN
             whenever(childrenToParentEventReceiver.events).thenReturn(
-                flowOf(ChildToParentEvent.CheckoutClicked)
+                flowOf(ChildToParentEvent.CheckoutClicked(emptyList()))
             )
             val viewModel = createViewModel()
 

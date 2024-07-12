@@ -607,7 +607,7 @@ Language: nl
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_description_section">Productbeschrijving</string>
     <string name="product_creation_ai_preview_name_section">Productnaam</string>
-    <string name="product_creation_ai_preview_subtitle">Je kan de onderstaande gegevens later altijd wijzigen.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Je kan de onderstaande gegevens later altijd wijzigen.</string>
     <string name="product_creation_ai_preview_title">Voorbeeld</string>
     <string name="product_creation_ai_about_product_continue_button">Productgegevens aanmaken</string>
     <string name="product_creation_ai_about_product_set_tone">Toon instellen</string>

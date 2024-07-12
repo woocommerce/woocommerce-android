@@ -19,6 +19,7 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
@@ -31,6 +32,7 @@ import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardIte
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.hub.sync.BundlesState
 import com.woocommerce.android.ui.analytics.hub.sync.GiftCardsState
+import com.woocommerce.android.ui.analytics.hub.sync.GoogleAdsState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -73,6 +75,7 @@ import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.Loadin
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
 
 @HiltViewModel
+@SuppressWarnings("LargeClass")
 class AnalyticsHubViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
@@ -141,6 +144,9 @@ class AnalyticsHubViewModel @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var giftCardsObservationJob: Job? = null
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var googleAdsObservationJob: Job? = null
+
     init {
         observeConfigurationChanges()
         observeRangeSelectionChanges()
@@ -168,40 +174,9 @@ class AnalyticsHubViewModel @Inject constructor(
         launch {
             observeAnalyticsCardsConfiguration().collect { configuration ->
                 cancelCardsObservation()
-                val cardsState =
-                    configuration.filter { cardConfiguration -> cardConfiguration.isVisible }.map { cardConfiguration ->
-                        when (cardConfiguration.card) {
-                            AnalyticsCards.Revenue -> {
-                                observeRevenueChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.Orders -> {
-                                observeOrdersStatChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.Products -> {
-                                observeProductsChanges()
-                                LoadingListViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.Session -> {
-                                observeSessionChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.Bundles -> {
-                                observeBundlesChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-
-                            AnalyticsCards.GiftCards -> {
-                                observeGiftCardsChanges()
-                                LoadingViewState(cardConfiguration.card)
-                            }
-                        }
-                    }
+                val cardsState = configuration
+                    .filter { cardConfiguration -> cardConfiguration.isVisible }
+                    .map(::generateObservedLoadingState)
                 mutableState.update { viewState ->
                     viewState.copy(cards = AnalyticsHubCardViewState.CardsState(cardsState))
                 }
@@ -296,6 +271,44 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         }.launchIn(viewModelScope)
     }
+
+    private fun generateObservedLoadingState(config: AnalyticCardConfiguration) =
+        when (config.card) {
+            AnalyticsCards.Revenue -> {
+                observeRevenueChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.Orders -> {
+                observeOrdersStatChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.Products -> {
+                observeProductsChanges()
+                LoadingListViewState(config.card)
+            }
+
+            AnalyticsCards.Session -> {
+                observeSessionChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.Bundles -> {
+                observeBundlesChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.GiftCards -> {
+                observeGiftCardsChanges()
+                LoadingViewState(config.card)
+            }
+
+            AnalyticsCards.GoogleAds -> {
+                observeGoogleAdsChanges()
+                LoadingAdsViewState(config.card)
+            }
+        }
 
     private fun observeOrdersStatChanges() {
         ordersObservationJob = updateStats.ordersState.onEach { state ->
@@ -440,6 +453,26 @@ class AnalyticsHubViewModel @Inject constructor(
             }
         }
             .launchIn(viewModelScope)
+    }
+
+    private fun observeGoogleAdsChanges() {
+        googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
+            when (state) {
+                is GoogleAdsState.Available -> {
+                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState())
+                }
+
+                is GoogleAdsState.Error -> {
+                    val message = resourceProvider.getString(R.string.analytics_google_ads_no_data)
+                    val title = resourceProvider.getString(AnalyticsCards.GoogleAds.resId)
+                    updateCardStatus(AnalyticsCards.GoogleAds, NoDataState(AnalyticsCards.GoogleAds, title, message))
+                }
+
+                is GoogleAdsState.Loading -> {
+                    updateCardStatus(AnalyticsCards.GoogleAds, LoadingAdsViewState(AnalyticsCards.GoogleAds))
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun updateCardStatus(card: AnalyticsCards, newState: AnalyticsCardViewState) {
@@ -649,6 +682,11 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
+    private fun buildGoogleAdsDataViewState() =
+        AnalyticsHubCustomSelectionListViewState.DataViewState(
+            card = AnalyticsCards.GoogleAds
+        )
+
     private fun trackSelectedDateRange() {
         onTrackableUIInteraction()
         tracker.track(
@@ -712,7 +750,6 @@ class AnalyticsHubViewModel @Inject constructor(
         triggerEvent(AnalyticsViewEvent.OpenSettings)
     }
 }
-
 enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {

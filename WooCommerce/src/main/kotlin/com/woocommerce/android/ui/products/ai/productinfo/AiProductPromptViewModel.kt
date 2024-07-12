@@ -11,9 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.TextRecognitionEngine
-import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Remove
-import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Replace
-import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.View
+import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -127,9 +125,9 @@ class AiProductPromptViewModel @Inject constructor(
 
     fun onImageActionSelected(imageAction: ImageAction) {
         when (imageAction) {
-            View -> _state.value = _state.value.copy(showImageFullScreen = true)
-            Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
-            Remove -> _state.value = _state.value.copy(
+            ImageAction.View -> _state.value = _state.value.copy(showImageFullScreen = true)
+            ImageAction.Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
+            ImageAction.Remove -> _state.value = _state.value.copy(
                 selectedImage = null,
                 noTextDetectedMessage = false,
             )
@@ -161,12 +159,6 @@ class AiProductPromptViewModel @Inject constructor(
             fun fromString(source: String): Tone =
                 Tone.values().firstOrNull { it.slug == source } ?: Casual
         }
-    }
-
-    enum class ImageAction(@StringRes val displayName: Int) {
-        View(R.string.ai_product_creation_view_image),
-        Replace(R.string.ai_product_creation_replace_image),
-        Remove(R.string.ai_product_creation_remove_image)
     }
 
     data class ShowMediaDialog(val source: DataSource) : Event()
