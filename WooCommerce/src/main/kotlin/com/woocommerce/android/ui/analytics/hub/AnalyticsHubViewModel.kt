@@ -74,7 +74,6 @@ import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as Lis
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
 
-
 @HiltViewModel
 @SuppressWarnings("LargeClass")
 class AnalyticsHubViewModel @Inject constructor(
