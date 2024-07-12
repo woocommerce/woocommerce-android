@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.cardreader
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.woopos_card_reader_nav_host_fragment
