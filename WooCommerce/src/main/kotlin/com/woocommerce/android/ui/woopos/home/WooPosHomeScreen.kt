@@ -141,7 +141,7 @@ private fun WooPosHomeScreen(
             Spacer(modifier = Modifier.width(40.dp.toAdaptivePadding()))
             WooPosHomeScreenProducts(
                 modifier = Modifier
-                    .width(productsWidthDp - 56.dp.toAdaptivePadding())
+                    .width(productsWidthDp - 80.dp.toAdaptivePadding())
                     .padding(top = 36.dp.toAdaptivePadding())
             )
             Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
