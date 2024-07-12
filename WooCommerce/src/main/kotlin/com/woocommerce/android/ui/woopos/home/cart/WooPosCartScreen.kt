@@ -74,7 +74,7 @@ private fun WooPosCartScreen(
         modifier = modifier
     ) {
         Box(
-            Modifier.padding(16.dp.toAdaptivePadding()).background(MaterialTheme.colors.surface)
+            Modifier.padding(8.dp.toAdaptivePadding()).background(MaterialTheme.colors.surface)
         ) {
             Column {
                 CartToolbar(
