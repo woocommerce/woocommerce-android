@@ -219,6 +219,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                             ErrorType.Generic
                         },
                     )
+                    trackEventForTopPerformersCard(
+                        AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                        properties = mapOf(AnalyticsTracker.KEY_ERROR to topPerformersState.value?.error.toString())
+                    )
                 },
                 onSuccess = {
                     analyticsTrackerWrapper.track(
@@ -288,10 +292,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         }
     }
 
-    private fun trackEventForTopPerformersCard(event: AnalyticsEvent) {
+    private fun trackEventForTopPerformersCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
             event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
+            properties + mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
         )
     }
 

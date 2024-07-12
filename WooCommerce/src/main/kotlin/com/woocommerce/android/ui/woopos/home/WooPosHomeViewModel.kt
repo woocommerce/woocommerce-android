@@ -50,6 +50,7 @@ class WooPosHomeViewModel @Inject constructor(
                 when (event) {
                     is ChildToParentEvent.CheckoutClicked -> {
                         _state.value = WooPosHomeState.Checkout.NotPaid
+                        sendEventToChildren(ParentToChildrenEvent.CheckoutClicked(event.productIds))
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
@@ -60,26 +61,6 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(
                             ParentToChildrenEvent.ItemClickedInProductSelector(event.productId)
                         )
-                    }
-
-                    is ChildToParentEvent.OrderCreation -> {
-                        when (event) {
-                            ChildToParentEvent.OrderCreation.OrderCreationFailed -> {
-                                sendEventToChildren(ParentToChildrenEvent.OrderCreation.OrderCreationFailed)
-                            }
-
-                            ChildToParentEvent.OrderCreation.OrderCreationStarted -> {
-                                sendEventToChildren(ParentToChildrenEvent.OrderCreation.OrderCreationStarted)
-                            }
-
-                            is ChildToParentEvent.OrderCreation.OrderCreationSucceeded -> {
-                                sendEventToChildren(
-                                    ParentToChildrenEvent.OrderCreation.OrderCreationSucceeded(
-                                        event.orderId
-                                    )
-                                )
-                            }
-                        }
                     }
 
                     is ChildToParentEvent.NewTransactionClicked -> {

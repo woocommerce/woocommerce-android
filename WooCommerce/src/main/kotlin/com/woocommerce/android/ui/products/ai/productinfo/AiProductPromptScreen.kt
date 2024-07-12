@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,12 +31,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -50,9 +45,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -60,66 +53,43 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
 import com.woocommerce.android.mediapicker.MediaPickerDialog
-import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
+import com.woocommerce.android.ui.products.ai.components.ImageAction
+import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
-import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
-import kotlin.enums.EnumEntries
 
 @Composable
 fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
     BackHandler(onBack = viewModel::onBackButtonClick)
 
     viewModel.state.observeAsState().value?.let { state ->
-        if (state.showImageFullScreen) {
-            FullScreenImage(viewModel, state)
-        } else {
-            AiProductPromptScreen(
-                uiState = state,
-                onBackButtonClick = viewModel::onBackButtonClick,
-                onPromptUpdated = viewModel::onPromptUpdated,
-                onReadTextFromProductPhoto = viewModel::onAddImageForScanning,
-                onGenerateProductClicked = viewModel::onGenerateProductClicked,
-                onToneSelected = viewModel::onToneSelected,
-                onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
-                onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
-                onImageActionSelected = viewModel::onImageActionSelected
+        AiProductPromptScreen(
+            uiState = state,
+            onBackButtonClick = viewModel::onBackButtonClick,
+            onPromptUpdated = viewModel::onPromptUpdated,
+            onReadTextFromProductPhoto = viewModel::onAddImageForScanning,
+            onGenerateProductClicked = viewModel::onGenerateProductClicked,
+            onToneSelected = viewModel::onToneSelected,
+            onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+            onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
+            onImageActionSelected = viewModel::onImageActionSelected
+        )
+
+        if (state.showImageFullScreen && state.selectedImage != null) {
+            FullScreenImageViewer(
+                state.selectedImage,
+                viewModel::onImageFullScreenDismissed
             )
         }
-    }
-}
-
-@Composable
-private fun FullScreenImage(
-    viewModel: AiProductPromptViewModel,
-    state: AiProductPromptState
-) {
-    BackHandler(onBack = viewModel::onImageFullScreenDismissed)
-    Column {
-        Toolbar(
-            navigationIcon = Filled.Close,
-            onNavigationButtonClick = viewModel::onImageFullScreenDismissed
-        )
-        AsyncImage(
-            model = Builder(LocalContext.current)
-                .data(state.selectedImage?.uri)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Inside,
-            modifier = Modifier.fillMaxSize()
-        )
     }
 }
 
@@ -350,9 +320,10 @@ private fun ProductPromptTextField(
 
             when {
                 state.isScanningImage -> ImageScanning()
-                state.selectedImage != null -> SelectedImageRow(
-                    state.selectedImage.uri,
-                    onImageActionSelected
+                state.selectedImage != null -> SelectedImageSection(
+                    image = state.selectedImage,
+                    onImageActionSelected = onImageActionSelected,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 else -> {
@@ -421,83 +392,6 @@ private fun InformativeMessage(message: String) {
                     bottom = dimensionResource(id = R.dimen.major_100)
                 )
         )
-    }
-}
-
-@Composable
-private fun SelectedImageRow(
-    mediaUri: String,
-    onImageActionSelected: (ImageAction) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, top = 16.dp, bottom = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ProductThumbnail(
-            imageUrl = mediaUri,
-            contentDescription = stringResource(id = R.string.product_image_content_description),
-            modifier = Modifier.padding(end = 16.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.ai_product_creation_image_selected),
-            style = MaterialTheme.typography.subtitle1,
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        ImageActionsMenu(
-            ImageAction.entries,
-            onImageActionSelected
-        )
-    }
-}
-
-@Composable
-private fun ImageActionsMenu(
-    actions: EnumEntries<ImageAction>,
-    onImageActionSelected: (ImageAction) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    var showMenu by remember { mutableStateOf(false) }
-    Box(modifier = modifier) {
-        IconButton(onClick = { showMenu = !showMenu }) {
-            Icon(
-                imageVector = Outlined.MoreVert,
-                contentDescription = stringResource(R.string.more_menu),
-                tint = colorResource(id = R.color.color_on_surface_high)
-            )
-        }
-        DropdownMenu(
-            offset = DpOffset(
-                x = dimensionResource(id = R.dimen.major_100),
-                y = 0.dp
-            ),
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            actions.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    modifier = Modifier
-                        .height(dimensionResource(id = R.dimen.major_175))
-                        .width(200.dp),
-                    onClick = {
-                        showMenu = false
-                        onImageActionSelected(item)
-                    }
-                ) {
-                    Text(
-                        text = stringResource(id = item.displayName),
-                        color = when (item) {
-                            ImageAction.Remove -> MaterialTheme.colors.error
-                            else -> Color.Unspecified
-                        }
-                    )
-                }
-                if (index < actions.size - 1) {
-                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-                }
-            }
-        }
     }
 }
 

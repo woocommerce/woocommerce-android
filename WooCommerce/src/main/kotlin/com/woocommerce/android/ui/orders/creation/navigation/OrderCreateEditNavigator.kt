@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
-import com.woocommerce.android.util.FeatureFlag
 
 object OrderCreateEditNavigator {
     @Suppress("LongMethod", "ComplexMethod")
@@ -39,6 +38,7 @@ object OrderCreateEditNavigator {
                 val flow = when (target.mode) {
                     is OrderCreateEditViewModel.Mode.Creation ->
                         ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+
                     is OrderCreateEditViewModel.Mode.Edit -> ProductSelectorViewModel.ProductSelectorFlow.OrderEditing
                 }
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
@@ -59,15 +59,10 @@ object OrderCreateEditNavigator {
             }
 
             is EditShipping -> {
-                if (FeatureFlag.EOSL_M1.isEnabled()) {
-                    OrderCreateEditFormFragmentDirections
-                        .actionOrderCreationFragmentToOrderCreateEditUpdateShippingFragment(
-                            target.currentShippingLine
-                        )
-                } else {
-                    OrderCreateEditFormFragmentDirections
-                        .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
-                }
+                OrderCreateEditFormFragmentDirections
+                    .actionOrderCreationFragmentToOrderCreateEditUpdateShippingFragment(
+                        target.currentShippingLine
+                    )
             }
 
             is EditCoupon ->
@@ -123,6 +118,7 @@ object OrderCreateEditNavigator {
                     target.orderTotal
                 )
             }
+
             is OrderCreateEditNavigationTarget.EditOrderCreationProductConfiguration -> {
                 val flow = Flow.Edit(
                     itemId = target.itemId,
@@ -131,9 +127,11 @@ object OrderCreateEditNavigator {
                 )
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToEditConfiguration(flow)
             }
+
             is OrderCreateEditNavigationTarget.AddGiftCard -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment(giftCard = null)
             }
+
             is OrderCreateEditNavigationTarget.EditGiftCard -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment(target.giftCard)
             }

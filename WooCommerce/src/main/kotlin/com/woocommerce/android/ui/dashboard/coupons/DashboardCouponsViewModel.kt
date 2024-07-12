@@ -115,12 +115,17 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                                 State.Loaded(coupons)
                             },
                             onFailure = { error ->
-                                when {
+                                val errorState = when {
                                     error is WooException && error.error.type == WooErrorType.API_NOT_FOUND ->
                                         State.Error.WCAnalyticsInactive
 
                                     else -> State.Error.Generic
                                 }
+                                trackEventForCouponsCard(
+                                    AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                                    properties = mapOf(AnalyticsTracker.KEY_ERROR to errorState.toString())
+                                )
+                                errorState
                             }
                         )
                     }
@@ -271,10 +276,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         )
     }
 
-    private fun trackEventForCouponsCard(event: AnalyticsEvent) {
+    private fun trackEventForCouponsCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
             event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.COUPONS.trackingIdentifier)
+            properties + mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.COUPONS.trackingIdentifier)
         )
     }
 

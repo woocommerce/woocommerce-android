@@ -14,5 +14,6 @@ enum class AnalyticsCards(val resId: Int, val isPlugin: Boolean = false) {
     Products(R.string.analytics_products_card_title),
     Session(R.string.analytics_session_card_title, isPlugin = true),
     Bundles(R.string.analytics_bundles_card_title, isPlugin = true),
-    GiftCards(R.string.analytics_gift_cards_card_title, isPlugin = true)
+    GiftCards(R.string.analytics_gift_cards_card_title, isPlugin = true),
+    GoogleAds(R.string.analytics_google_ads_card_title, isPlugin = true),
 }

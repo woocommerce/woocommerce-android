@@ -1,52 +1,46 @@
-package com.woocommerce.android.ui.woopos.home.cart
+package com.woocommerce.android.ui.woopos.home.totals
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.mockito.kotlin.any
+import org.junit.Before
+import org.junit.Test
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.store.WCProductStore
-import java.util.Date
-import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
-class WooPosCartCartRepositoryTest {
-    private val mockedDate: Date = mock()
-    private val mockedOrder: Order = mock()
-    private val orderCreateEditRepository: OrderCreateEditRepository = mock {
-        onBlocking { createOrUpdateOrder(any(), any<String>()) }.thenReturn(
-            Result.success(mockedOrder)
+class WooPosTotalsRepositoryTest {
+    private val orderCreateEditRepository: OrderCreateEditRepository = mock()
+    private val dateUtils: DateUtils = mock()
+    private val getProductById: WooPosGetProductById = mock()
+
+    private lateinit var repository: WooPosTotalsRepository
+
+    @Before
+    fun setUp() {
+        repository = WooPosTotalsRepository(
+            orderCreateEditRepository,
+            dateUtils,
+            getProductById
         )
     }
-    private val dateUtils: DateUtils = mock {
-        on { getCurrentDateInSiteTimeZone() }.thenReturn(mockedDate)
-    }
 
-    private val productStore: WCProductStore = mock {
-        onBlocking { getProductByRemoteId(any(), any()) }.thenReturn(
-            WCProductModel().apply {
-                attributes = "[]"
-            }
-        )
-    }
-    private val site: SelectedSite = mock {
-        onBlocking { get() }.thenReturn(SiteModel())
-        onBlocking { getOrNull() }.thenReturn(SiteModel())
-    }
+    @Test
+    fun `given empty product list, when createOrderWithProducts called, then return error`() = runTest {
+        // GIVEN
+        val productIds = emptyList<Long>()
 
-    val repository = WooPosCartRepository(
-        orderCreateEditRepository = orderCreateEditRepository,
-        dateUtils = dateUtils,
-        store = productStore,
-        site = site
-    )
+        // WHEN
+        val result = runCatching { repository.createOrderWithProducts(productIds) }
+
+        // THEN
+        assertThat(result.exceptionOrNull()).isInstanceOf(IllegalStateException::class.java)
+    }
 
     @Test
     fun `given product ids without duplicates, when createOrderWithProducts, then items all quantity one`() = runTest {
@@ -84,5 +78,15 @@ class WooPosCartCartRepositoryTest {
 
         assertThat(orderCapture.lastValue.items.size).isEqualTo(3)
         assertThat(orderCapture.lastValue.items.map { it.quantity }).containsExactly(2f, 1f, 3f)
+    }
+
+    fun `given empty product id list, when createOrderWithProducts, then throw IllegalStateException`() = runTest {
+        // GIVEN
+        val productIds = emptyList<Long>()
+
+        // WHEN & THEN
+        assertFailsWith<IllegalStateException> {
+            repository.createOrderWithProducts(productIds)
+        }
     }
 }
