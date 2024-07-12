@@ -9,11 +9,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Image
+import com.woocommerce.android.ui.products.ai.TextRecognitionEngine
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Remove
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.Replace
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ImageAction.View
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AiProductPromptViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val tracker: AnalyticsTrackerWrapper
+    private val tracker: AnalyticsTrackerWrapper,
+    private val textRecognitionEngine: TextRecognitionEngine,
 ) : ScopedViewModel(savedState = savedStateHandle) {
     private val _state = savedStateHandle.getStateFlow(
         viewModelScope,
@@ -33,9 +37,10 @@ class AiProductPromptViewModel @Inject constructor(
             productPrompt = "",
             selectedTone = Tone.Casual,
             isMediaPickerDialogVisible = false,
-            mediaUri = null,
+            selectedImage = null,
             isScanningImage = false,
-            showImageFullScreen = false
+            showImageFullScreen = false,
+            noTextDetectedMessage = false
         )
     )
 
@@ -71,22 +76,63 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onGenerateProductClicked() {
-        // TODO()
+        triggerEvent(
+            ShowProductPreviewScreen(
+                productFeatures = _state.value.productPrompt,
+                image = _state.value.selectedImage
+            )
+        )
     }
 
     fun onToneSelected(tone: Tone) {
         _state.value = _state.value.copy(selectedTone = tone)
     }
 
-    fun onMediaSelected(mediaUri: String) {
-        _state.value = _state.value.copy(mediaUri = mediaUri)
+    fun onMediaSelected(image: Image) {
+        _state.value = _state.value.copy(isScanningImage = true)
+        launch {
+            textRecognitionEngine.processImage(image.uri)
+                .onSuccess { keywords ->
+                    tracker.track(
+                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_COMPLETED,
+                        mapOf(
+                            AnalyticsTracker.KEY_SCANNED_TEXT_COUNT to keywords.size
+                        )
+                    )
+                    if (keywords.isNotEmpty()) {
+                        _state.value = _state.value.copy(
+                            productPrompt = keywords.joinToString(separator = " "),
+                            noTextDetectedMessage = false
+                        )
+                    } else {
+                        _state.value = _state.value.copy(noTextDetectedMessage = true)
+                    }
+                }
+                .onFailure { error ->
+                    tracker.track(
+                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_FAILED,
+                        mapOf(
+                            AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                            AnalyticsTracker.KEY_ERROR_DESC to error.message,
+                        )
+                    )
+                    triggerEvent(ShowSnackbar(R.string.ai_product_creation_scanning_photo_error))
+                }
+            _state.value = _state.value.copy(
+                selectedImage = image,
+                isScanningImage = false,
+            )
+        }
     }
 
     fun onImageActionSelected(imageAction: ImageAction) {
         when (imageAction) {
             View -> _state.value = _state.value.copy(showImageFullScreen = true)
             Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
-            Remove -> _state.value = _state.value.copy(mediaUri = null)
+            Remove -> _state.value = _state.value.copy(
+                selectedImage = null,
+                noTextDetectedMessage = false,
+            )
         }
     }
 
@@ -99,9 +145,10 @@ class AiProductPromptViewModel @Inject constructor(
         val productPrompt: String,
         val selectedTone: Tone,
         val isMediaPickerDialogVisible: Boolean,
-        val mediaUri: String?,
+        val selectedImage: Image?,
         val isScanningImage: Boolean,
-        val showImageFullScreen: Boolean
+        val showImageFullScreen: Boolean,
+        val noTextDetectedMessage: Boolean,
     ) : Parcelable
 
     enum class Tone(@StringRes val displayName: Int, val slug: String) {
@@ -123,4 +170,8 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     data class ShowMediaDialog(val source: DataSource) : Event()
+    data class ShowProductPreviewScreen(
+        val productFeatures: String,
+        val image: Image?
+    ) : Event()
 }

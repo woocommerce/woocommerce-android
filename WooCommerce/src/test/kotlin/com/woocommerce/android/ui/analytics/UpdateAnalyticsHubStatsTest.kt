@@ -53,7 +53,13 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     @Before
     fun setUp() {
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(true)
+            onBlocking {
+                shouldUpdateAnalytics(
+                    rangeSelection = eq(testRangeSelection),
+                    analyticDataList = any(),
+                    maxOutdatedTime = any()
+                )
+            } doReturn flowOf(true)
         }
         repository = mock()
         sut = UpdateAnalyticsHubStats(
@@ -391,7 +397,13 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     fun `when data store does NOT allows net stats fetch, then request data with Saved strategy`() = testBlocking {
         // Given
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+            onBlocking {
+                shouldUpdateAnalytics(
+                    rangeSelection = eq(testRangeSelection),
+                    analyticDataList = any(),
+                    maxOutdatedTime = any()
+                )
+            } doReturn flowOf(false)
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,
@@ -413,7 +425,13 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         testBlocking {
             // Given
             analyticsDataStore = mock {
-                onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn flowOf(false)
+                onBlocking {
+                    shouldUpdateAnalytics(
+                        rangeSelection = eq(testCustomRangeSelection),
+                        analyticDataList = any(),
+                        maxOutdatedTime = any()
+                    )
+                } doReturn flowOf(false)
             }
             sut = UpdateAnalyticsHubStats(
                 analyticsUpdateDataStore = analyticsDataStore,
@@ -434,9 +452,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     fun `when syncing stats data starts with forceUpdate true, then trigger update with ForceNew Strategy`() =
         testBlocking {
             // Given
-            analyticsDataStore = mock {
-                onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
-            }
+            analyticsDataStore = mock()
             sut = UpdateAnalyticsHubStats(
                 analyticsUpdateDataStore = analyticsDataStore,
                 analyticsRepository = repository
@@ -451,14 +467,24 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
             verify(repository).fetchProductsData(testRangeSelection, ForceNew)
 
-            verify(analyticsDataStore, never()).shouldUpdateAnalytics(testRangeSelection)
+            verify(analyticsDataStore, never()).shouldUpdateAnalytics(
+                rangeSelection = eq(testRangeSelection),
+                analyticDataList = any(),
+                maxOutdatedTime = any()
+            )
         }
 
     @Test
     fun `when syncing stats data starts with forceUpdate false, then follow data store response`() = testBlocking {
         // Given
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+            onBlocking {
+                shouldUpdateAnalytics(
+                    rangeSelection = eq(testRangeSelection),
+                    analyticDataList = any(),
+                    maxOutdatedTime = any()
+                )
+            } doReturn flowOf(false)
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,
@@ -474,7 +500,11 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         verify(repository).fetchVisitorsData(testRangeSelection, Saved)
         verify(repository).fetchProductsData(testRangeSelection, Saved)
 
-        verify(analyticsDataStore).shouldUpdateAnalytics(testRangeSelection)
+        verify(analyticsDataStore).shouldUpdateAnalytics(
+            rangeSelection = eq(testRangeSelection),
+            analyticDataList = any(),
+            maxOutdatedTime = any()
+        )
     }
 
     @Test
@@ -486,7 +516,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testRangeSelection, this)
 
         // Then
-        verify(analyticsDataStore, atLeast(1)).storeLastAnalyticsUpdate(eq(testRangeSelection), any())
+        verify(analyticsDataStore, atLeast(1)).storeLastAnalyticsUpdate(
+            rangeSelection = eq(testRangeSelection),
+            analyticDataList = any()
+        )
     }
 
     @Test
@@ -494,7 +527,13 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         // Given
         configureSuccessResponseStub()
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+            onBlocking {
+                shouldUpdateAnalytics(
+                    rangeSelection = eq(testRangeSelection),
+                    analyticDataList = any(),
+                    maxOutdatedTime = any()
+                )
+            } doReturn flowOf(false)
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,
@@ -505,7 +544,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testRangeSelection, this)
 
         // Then
-        verify(analyticsDataStore, never()).storeLastAnalyticsUpdate(testRangeSelection)
+        verify(analyticsDataStore, never()).storeLastAnalyticsUpdate(
+            rangeSelection = eq(testRangeSelection),
+            analyticDataList = any()
+        )
     }
 
     @Test
@@ -513,7 +555,13 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         // Given
         configureSuccessResponseStub()
         analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn emptyFlow()
+            onBlocking {
+                shouldUpdateAnalytics(
+                    rangeSelection = eq(testRangeSelection),
+                    analyticDataList = any(),
+                    maxOutdatedTime = any()
+                )
+            } doReturn emptyFlow()
         }
         sut = UpdateAnalyticsHubStats(
             analyticsUpdateDataStore = analyticsDataStore,

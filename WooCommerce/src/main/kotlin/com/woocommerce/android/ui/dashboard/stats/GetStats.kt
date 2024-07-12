@@ -97,7 +97,7 @@ class GetStats @Inject constructor(
                         appPrefsWrapper.setV4StatsSupported(false)
                         PluginNotActive
                     } else {
-                        RevenueStatsError
+                        RevenueStatsError((it as StatsException).error?.message ?: "Unknown generic error")
                     }
                 }
             )
@@ -196,7 +196,7 @@ class GetStats @Inject constructor(
             val totalVisitorCount: Int?
         ) : LoadStatsResult()
 
-        data object RevenueStatsError : LoadStatsResult()
+        data class RevenueStatsError(val message: String) : LoadStatsResult()
         data object VisitorsStatsError : LoadStatsResult()
         data object PluginNotActive : LoadStatsResult()
         data object VisitorStatUnavailable : LoadStatsResult()

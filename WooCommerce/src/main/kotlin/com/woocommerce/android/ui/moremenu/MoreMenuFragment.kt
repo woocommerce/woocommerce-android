@@ -10,12 +10,15 @@ import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLif
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
@@ -28,6 +31,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.Start
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCouponsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewCustomersEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewGoogleForWooEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewInboxEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.ViewReviewsEvent
@@ -89,12 +93,14 @@ class MoreMenuFragment : TopLevelFragment() {
         viewModel.onViewResumed()
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
+                is ViewGoogleForWooEvent -> openGoogleForWooWebview(event.url, event.canAutoLogin)
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
@@ -172,6 +178,35 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun navigateToCustomers() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToCustomerListFragment()
+        )
+    }
+
+    private fun openGoogleForWooWebview(url: String, canAutoLogin: Boolean) {
+        when {
+            canAutoLogin -> openInAuthBrowser(url)
+            else -> openInExitAwareWebview(url)
+        }
+    }
+
+    private fun openInExitAwareWebview(url: String) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                title = getString(R.string.more_menu_button_google),
+                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+            )
+        )
+    }
+
+    private fun openInAuthBrowser(url: String) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                title = getString(R.string.more_menu_button_google),
+                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
+            )
         )
     }
 }
