@@ -181,11 +181,10 @@ class MoreMenuFragment : TopLevelFragment() {
     }
 
     private fun openGoogleForWooWebview(url: String, canAutoLogin: Boolean) {
-        if (canAutoLogin) {
-            openInAuthBrowser(url)
-        } else {
-            openInExitAwareWebview(url)
-        }
+when {
+    canAutoLogin -> openInAuthBrowser(url)
+    else -> openInExitAwareWebview(url)
+}
     }
 
     private fun openInExitAwareWebview(url: String) {
