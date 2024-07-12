@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -27,7 +28,7 @@ class WooPosProductsDataSourceTest {
     @Test
     fun `when force refreshing, then should wipe products table`() = runTest {
         createSut().loadSimpleProducts(forceRefreshProducts = true)
-        verify(productStore).deleteProductsForSite(any())
+        verify(productStore).deleteProductsForSite(anyOrNull())
     }
 
     private fun createSut() = WooPosProductsDataSource(handler, productStore, site)
