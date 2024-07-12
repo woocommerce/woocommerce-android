@@ -44,6 +44,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
+import org.wordpress.android.fluxc.store.WCGoogleStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -53,7 +54,6 @@ import java.util.TimeZone
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import org.wordpress.android.fluxc.store.WCGoogleStore
 
 @ExperimentalCoroutinesApi
 @Suppress("LargeClass")
