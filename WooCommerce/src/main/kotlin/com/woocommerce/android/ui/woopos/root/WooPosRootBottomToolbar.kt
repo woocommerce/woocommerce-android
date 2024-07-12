@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.root
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -85,10 +85,11 @@ private fun ExitPosButton(onClick: () -> Unit) {
 @Composable
 private fun CardReaderStatus(
     state: State<WooPosRootScreenState>,
-    onConnectToReaderClick: () -> Unit
+    onReaderClick: () -> Unit
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable { onReaderClick() }
     ) {
         when (state.value.cardReaderStatus) {
             WooPosCardReaderStatus.Connected -> {
@@ -96,11 +97,7 @@ private fun CardReaderStatus(
             }
 
             WooPosCardReaderStatus.NotConnected -> {
-                Icon(
-                    painter = painterResource(id = R.drawable.woopos_ic_reader_disconnected),
-                    contentDescription = null,
-                    tint = Color.Unspecified
-                )
+                ReaderStatus(Color(0xFF03D479))
             }
         }
         Text(
@@ -119,25 +116,6 @@ private fun ReaderStatus(color: Color) {
             .size(12.dp)
             .background(color = color, shape = CircleShape)
     )
-}
-
-@WooPosPreview
-@Composable
-fun PreviewWooPosBottomToolbarStatusConnecting() {
-    val state = remember {
-        mutableStateOf(
-            WooPosRootScreenState(
-                WooPosCardReaderStatus.Connected,
-                null
-            )
-        )
-    }
-    WooPosTheme {
-        Column {
-            Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar(state) {}
-        }
-    }
 }
 
 @WooPosPreview
@@ -165,7 +143,7 @@ fun PreviewWooPosBottomToolbarStatusConnected() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
-                WooPosCardReaderStatus.Connecting,
+                WooPosCardReaderStatus.Connected,
                 null
             )
         )
