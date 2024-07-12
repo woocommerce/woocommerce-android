@@ -22,7 +22,7 @@ class WooPosProductsViewModel @Inject constructor(
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading)
+    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
 
     init {
@@ -36,44 +36,70 @@ class WooPosProductsViewModel @Inject constructor(
                 .collect { _viewState.value = it }
         }
         viewModelScope.launch {
-            val result = productsDataSource.loadSimpleProducts()
+            val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = false)
             if (result.isFailure) {
-                _viewState.value = WooPosProductsViewState.Error
+                _viewState.value = WooPosProductsViewState.Error(reloadingProducts = false)
             }
         }
     }
 
     fun onUIEvent(event: WooPosProductsUIEvent) {
         when (event) {
-            is WooPosProductsUIEvent.EndOfProductsGridReached -> {
-                onEndOfProductsGridReached()
+            is WooPosProductsUIEvent.EndOfProductListReached -> {
+                onEndOfProductsListReached()
             }
 
             is WooPosProductsUIEvent.ItemClicked -> {
                 onItemClicked(event.item)
             }
+
+            WooPosProductsUIEvent.PullToRefreshTriggered -> {
+                reloadProducts()
+            }
         }
     }
 
-    private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState {
-        return if (products.isEmpty()) {
-            WooPosProductsViewState.Empty
-        } else {
-            WooPosProductsViewState.Content(
-                products = products.map { product ->
-                    WooPosProductsListItem(
-                        id = product.remoteId,
-                        name = product.name,
-                        price = priceFormat(product.price),
-                        imageUrl = product.firstImageUrl,
-                    )
-                },
-                loadingMore = false,
+    private fun reloadProducts() {
+        viewModelScope.launch {
+            updateProductsReloadingState(isReloading = true)
+            productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
+            updateProductsReloadingState(isReloading = false)
+        }
+    }
+
+    private fun updateProductsReloadingState(isReloading: Boolean) {
+        _viewState.value = when (val state = viewState.value) {
+            is WooPosProductsViewState.Content -> state.copy(reloadingProducts = isReloading)
+            is WooPosProductsViewState.Loading -> state.copy(reloadingProducts = isReloading)
+            is WooPosProductsViewState.Error -> state.copy(reloadingProducts = isReloading)
+            is WooPosProductsViewState.Empty -> state.copy(reloadingProducts = isReloading)
+        }
+    }
+
+    private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState =
+        when {
+            products.isEmpty() && !isReloadingProducts() -> WooPosProductsViewState.Empty()
+            products.isEmpty() && isReloadingProducts() ->
+                WooPosProductsViewState.Loading(reloadingProducts = true)
+            else -> products.toContentState()
+        }
+
+    private suspend fun List<Product>.toContentState() = WooPosProductsViewState.Content(
+        products = map { product ->
+            WooPosProductsListItem(
+                id = product.remoteId,
+                name = product.name,
+                price = priceFormat(product.price),
+                imageUrl = product.firstImageUrl,
             )
-        }
-    }
+        },
+        loadingMore = false,
+        reloadingProducts = false,
+    )
 
-    private fun onEndOfProductsGridReached() {
+    private fun isReloadingProducts(): Boolean = viewState.value.reloadingProducts
+
+    private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
         if (currentState !is WooPosProductsViewState.Content) {
             return

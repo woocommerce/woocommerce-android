@@ -609,7 +609,7 @@ Language: tr
     <string name="product_creation_ai_preview_details_section">Ayrıntılar</string>
     <string name="product_creation_ai_preview_description_section">Ürün açıklaması</string>
     <string name="product_creation_ai_preview_name_section">Ürün adı</string>
-    <string name="product_creation_ai_preview_subtitle">Aşağıdaki ayrıntıları daha sonra her zaman değiştirebilirsiniz.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Aşağıdaki ayrıntıları daha sonra her zaman değiştirebilirsiniz.</string>
     <string name="product_creation_ai_preview_title">Önizleme</string>
     <string name="product_creation_ai_about_product_continue_button">Ürünler Ayrıntıları Oluştur</string>
     <string name="product_creation_ai_about_product_set_tone">Ton ve sesi ayarla</string>

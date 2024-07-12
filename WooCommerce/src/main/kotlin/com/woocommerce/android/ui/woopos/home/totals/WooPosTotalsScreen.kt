@@ -244,9 +244,10 @@ private fun TotalsLoading() {
 
 @Composable
 @WooPosPreview
-fun WooPosTotalsScreenPreview() {
+fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
     WooPosTheme {
         WooPosTotalsScreen(
+            modifier = modifier,
             state = WooPosTotalsState.Totals(
                 orderSubtotalText = "$420.00",
                 orderTotalText = "$462.00",

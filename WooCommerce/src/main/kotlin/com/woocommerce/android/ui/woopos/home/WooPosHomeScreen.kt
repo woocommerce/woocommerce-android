@@ -29,10 +29,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenPreview
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreenPreview
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -135,7 +139,7 @@ private fun WooPosHomeScreen(
     ) {
         Row(modifier = Modifier.width(productsWidthDp)) {
             Spacer(modifier = Modifier.width(40.dp.toAdaptivePadding()))
-            WooPosProductsScreen(
+            WooPosHomeScreenProducts(
                 modifier = Modifier
                     .width(productsWidthDp - 56.dp.toAdaptivePadding())
                     .padding(top = 36.dp.toAdaptivePadding())
@@ -145,8 +149,8 @@ private fun WooPosHomeScreen(
         Row(modifier = Modifier.width(cartWidthDp)) {
             Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
             Box {
-                WooPosCartScreen(
-                    Modifier
+                WooPosHomeScreenCart(
+                    modifier = Modifier
                         .width(cartWidthDp - 48.dp.toAdaptivePadding())
                         .padding(vertical = 24.dp.toAdaptivePadding())
                 )
@@ -165,13 +169,40 @@ private fun WooPosHomeScreen(
         }
         Row(modifier = Modifier.width(totalsWidthDp)) {
             Spacer(modifier = Modifier.width(totalsStartPaddingDp))
-            WooPosTotalsScreen(
+            WooPosHomeScreenTotals(
                 modifier = Modifier
                     .width(totalsWidthDp - 24.dp.toAdaptivePadding() - totalsStartPaddingDp)
                     .padding(vertical = 24.dp.toAdaptivePadding())
             )
             Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
         }
+    }
+}
+
+@Composable
+private fun WooPosHomeScreenProducts(modifier: Modifier) {
+    if (isPreviewMode()) {
+        WooPosProductsScreenPreview(modifier)
+    } else {
+        WooPosProductsScreen(modifier)
+    }
+}
+
+@Composable
+private fun WooPosHomeScreenCart(modifier: Modifier) {
+    if (isPreviewMode()) {
+        WooPosCartScreenPreview(modifier)
+    } else {
+        WooPosCartScreen(modifier)
+    }
+}
+
+@Composable
+private fun WooPosHomeScreenTotals(modifier: Modifier) {
+    if (isPreviewMode()) {
+        WooPosTotalsScreenPreview(modifier)
+    } else {
+        WooPosTotalsScreen(modifier)
     }
 }
 
