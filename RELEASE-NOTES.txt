@@ -5,6 +5,7 @@
 -----
 - [**] Added support for themed app icons. [https://github.com/woocommerce/woocommerce-android/pull/11935]
 - [**] Customer Section in Hub Menu: Merchants now have a centralized location to access customer contact information and view analytics about their customers.  [https://github.com/woocommerce/woocommerce-android/pull/11944]
+- [Internal] The target SDK has been updated to be compatible with Android 14. [https://github.com/woocommerce/woocommerce-android/pull/11970]
 
 19.4
 -----
