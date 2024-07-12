@@ -161,10 +161,4 @@ class AiProductPreviewViewModel @Inject constructor(
         val image: Image?,
         val showImageFullScreen: Boolean = false
     ) : Parcelable
-
-    data class ProductPropertyCard(
-        @DrawableRes val icon: Int,
-        @StringRes val title: Int,
-        val content: String
-    )
 }

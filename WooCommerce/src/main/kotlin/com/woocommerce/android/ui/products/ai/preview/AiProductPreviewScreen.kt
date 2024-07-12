@@ -52,6 +52,7 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.AiFeedbackForm
+import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
@@ -325,7 +326,7 @@ private fun ProductImage(
 
 @Composable
 private fun ProductProperties(
-    properties: List<AiProductPreviewViewModel.ProductPropertyCard>,
+    properties: List<ProductPropertyCard>,
     modifier: Modifier
 ) {
     val borderWidth = dimensionResource(id = R.dimen.minor_10)
@@ -510,19 +511,19 @@ private fun ProductPreviewContentPreview() {
                 ),
                 propertyGroups = listOf(
                     listOf(
-                        AiProductPreviewViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_product,
                             title = R.string.product_type,
                             content = "Simple Product"
                         )
                     ),
                     listOf(
-                        AiProductPreviewViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_money,
                             title = R.string.product_price,
                             content = "Regular price: $45.00"
                         ),
-                        AiProductPreviewViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_list_checkmark,
                             title = R.string.product_inventory,
                             content = "In stock"
