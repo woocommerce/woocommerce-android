@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
+import com.woocommerce.android.model.Campaign
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.GiftCardsStat
+import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -32,6 +34,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
+import org.wordpress.android.fluxc.store.WCGoogleStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -41,6 +44,7 @@ import kotlin.math.round
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
+    private val googleAdsStore: WCGoogleStore,
     private val wooCommerceStore: WooCommerceStore
 ) {
     private val getCurrentRevenueMutex = Mutex()
@@ -459,6 +463,32 @@ class AnalyticsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchGoogleAdsStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
+        val currentPeriod = rangeSelection.currentRange
+        val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
+        val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val currentGoogleAdsStatsCall = async {
+            googleAdsStore.fetchAllPrograms(
+                site = selectedSite.get(),
+                startDate = currentStartDate,
+                endDate = currentEndDate,
+                metricType = WCGoogleStore.MetricType.SALES
+            )
+        }
+
+        currentGoogleAdsStatsCall.await()
+            .model?.campaigns?.let { campaigns ->
+                GoogleAdsResult.GoogleAdsData(
+                    GoogleAdsStat(
+                        campaigns = campaigns.map {
+                            Campaign(it.id ?: 0L)
+                        }
+                    )
+                )
+            } ?: GoogleAdsResult.GoogleAdsError
+    }
+
     companion object {
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
@@ -497,6 +527,11 @@ class AnalyticsRepository @Inject constructor(
     sealed class GiftCardResult {
         object GiftCardError : GiftCardResult()
         data class GiftCardData(val giftCardStat: GiftCardsStat) : GiftCardResult()
+    }
+
+    sealed class GoogleAdsResult {
+        data object GoogleAdsError : GoogleAdsResult()
+        data class GoogleAdsData(val googleAdsStat: GoogleAdsStat) : GoogleAdsResult()
     }
 
     sealed class FetchStrategy {

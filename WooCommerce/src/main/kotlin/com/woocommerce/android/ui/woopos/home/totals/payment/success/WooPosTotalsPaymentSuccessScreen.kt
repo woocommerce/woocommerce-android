@@ -31,10 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsState
 
 @Composable
@@ -49,7 +49,12 @@ fun WooPosPaymentSuccessScreen(
     ) {
         Column(
             modifier = Modifier
-                .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 0.dp)
+                .padding(
+                    top = 24.dp.toAdaptivePadding(),
+                    start = 24.dp.toAdaptivePadding(),
+                    end = 24.dp.toAdaptivePadding(),
+                    bottom = 0.dp
+                )
                 .weight(1f)
                 .fillMaxWidth()
                 .background(
@@ -76,29 +81,32 @@ fun WooPosPaymentSuccessScreen(
                 tint = Color.Unspecified,
                 contentDescription = null,
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp.toAdaptivePadding()))
             Text(
                 text = stringResource(R.string.woopos_payment_successful_label),
-                style = MaterialTheme.typography.h4.copy(
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF004D40)
-                ),
+                style = MaterialTheme.typography.h4,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
+                color = Color(0xFF004D40)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(32.dp.toAdaptivePadding()))
 
             TotalsSummary(state)
 
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp.toAdaptivePadding()))
 
         OutlinedButton(
             modifier = Modifier
-                .padding(top = 0.dp, start = 24.dp, end = 24.dp, bottom = 24.dp)
+                .padding(
+                    top = 0.dp.toAdaptivePadding(),
+                    start = 24.dp.toAdaptivePadding(),
+                    end = 24.dp.toAdaptivePadding(),
+                    bottom = 24.dp.toAdaptivePadding(),
+                )
                 .fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = MaterialTheme.colors.onSurface,
@@ -106,7 +114,7 @@ fun WooPosPaymentSuccessScreen(
             onClick = onNewTransactionClicked
         ) {
             Row(
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(8.dp.toAdaptivePadding()),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
@@ -114,7 +122,7 @@ fun WooPosPaymentSuccessScreen(
                     painter = painterResource(id = R.drawable.woo_pos_ic_return_home),
                     contentDescription = null
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(12.dp.toAdaptivePadding()))
                 Text(
                     text = stringResource(R.string.woopos_new_transaction_button),
                     style = MaterialTheme.typography.h4,
@@ -135,7 +143,7 @@ private fun TotalsSummary(state: WooPosTotalsState.PaymentSuccess) {
                 color = WooPosTheme.colors.border,
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(24.dp)
+            .padding(24.dp.toAdaptivePadding())
             .width(380.dp)
     ) {
         Row(
@@ -154,11 +162,11 @@ private fun TotalsSummary(state: WooPosTotalsState.PaymentSuccess) {
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
         Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -176,11 +184,11 @@ private fun TotalsSummary(state: WooPosTotalsState.PaymentSuccess) {
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
         Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
         Row(
             modifier = Modifier.fillMaxWidth(),

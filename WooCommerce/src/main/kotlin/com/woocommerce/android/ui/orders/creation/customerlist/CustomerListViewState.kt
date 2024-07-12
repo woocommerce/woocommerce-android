@@ -27,8 +27,7 @@ data class CustomerListViewState(
         data class Error(@StringRes val message: Int) : CustomerList()
         data class Loaded(
             val customers: List<Item>,
-            val shouldResetScrollPosition: Boolean,
-            val showGuestChip: Boolean
+            val shouldResetScrollPosition: Boolean
         ) : CustomerList()
 
         sealed class Item {
@@ -39,9 +38,6 @@ data class CustomerListViewState(
                 val username: Text,
                 val payload: WCCustomerModel,
             ) : Item() {
-
-                val isGuest
-                    get() = remoteId == 0L
 
                 sealed class Text {
                     data class Highlighted(val text: String, val start: Int, val end: Int) : Text()

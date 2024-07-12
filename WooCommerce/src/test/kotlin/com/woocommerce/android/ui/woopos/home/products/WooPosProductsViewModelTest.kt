@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -113,6 +114,120 @@ class WooPosProductsViewModelTest: BaseUnitTest() {
             // THEN
             verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = true)
         }
+
+    @Test
+    fun `given content state, when end of products grid reached and more pages available, then loading more products`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.hasMorePages).thenReturn(true)
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        assertThat(contentState.loadingMore).isTrue()
+    }
+
+    @Test
+    fun `given content state, when end of products grid reached and no more pages, then do not load more`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.hasMorePages).thenReturn(false)
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        assertThat(contentState.loadingMore).isFalse()
+    }
+
+    @Test
+    fun `when item clicked, then send event to parent`() = runTest {
+        // GIVEN
+        val product = WooPosProductsListItem(
+            id = 1,
+            name = "Product 1",
+            price = "$10.0",
+            imageUrl = "https://test.com"
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(product))
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ItemClickedInProductSelector(product.id))
+    }
+
+    @Test
+    fun `given load more products is called, when products source loads successfully then state is updated`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts()).thenReturn(Result.success(Unit))
+
+        val viewModel = createViewModel()
+
+        // Initial load
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        assertThat(contentState.loadingMore).isFalse()
+    }
 
     @Test
     fun `when loading without pull to refresh, then should not ask to remove products`() = runTest {

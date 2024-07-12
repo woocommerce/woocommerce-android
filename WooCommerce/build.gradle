@@ -233,7 +233,6 @@ dependencies {
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
-    api "androidx.navigation:navigation-dynamic-features-fragment:$gradle.ext.navigationVersion"
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 
@@ -354,11 +353,28 @@ dependencies {
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
-    androidTestImplementation('com.github.tomakehurst:wiremock:2.26.3') {
+    androidTestImplementation('com.github.tomakehurst:wiremock') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
+    }
+    constraints {
+        androidTestImplementation("com.github.tomakehurst:wiremock:2.26.3") {
+            because("newer versions of WireMock use Java APIs not available on Android")
+        }
+        androidTestImplementation('org.eclipse.jetty:jetty-webapp:9.4.51.v20230217') {
+            because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
+        }
+        androidTestImplementation('com.fasterxml.jackson.core:jackson-databind:2.12.7.1') {
+            because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
+        }
+        androidTestImplementation('com.jayway.jsonpath:json-path:2.9.0') {
+            because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
+        }
+        androidTestImplementation('commons-fileupload:commons-fileupload:1.5') {
+            because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
+        }
     }
     androidTestImplementation "org.apache.httpcomponents:httpclient-android:$httpClientAndroidVersion"
 

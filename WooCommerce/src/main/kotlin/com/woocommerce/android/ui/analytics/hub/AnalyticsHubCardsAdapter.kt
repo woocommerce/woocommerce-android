@@ -7,6 +7,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.analytics.hub.customlistcard.AnalyticsHubCustomSelectionCardView
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
 import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardView
@@ -15,6 +16,7 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
     companion object {
         private const val VIEW_TYPE_INFORMATION = 0
         private const val VIEW_TYPE_LIST = 1
+        private const val VIEW_TYPE_CUSTOM_SELECTION_LIST = 2
     }
 
     private val params = ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
@@ -51,6 +53,13 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
                 }
             )
 
+            VIEW_TYPE_CUSTOM_SELECTION_LIST -> AnalyticsHubCustomSelectionListViewHolder(
+                AnalyticsHubCustomSelectionCardView(parent.context).apply {
+                    layoutParams = params
+                    elevation = resources.getDimension(R.dimen.minor_25)
+                }
+            )
+
             else -> throw IllegalArgumentException("Unexpected viewType in AnalyticsHubCardsAdapter")
         }
     }
@@ -68,6 +77,11 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
                 val state = cardList[position] as AnalyticsHubListViewState
                 (holder as AnalyticsHubCardsListViewHolder).bind(state, onSeeReport)
             }
+
+            VIEW_TYPE_CUSTOM_SELECTION_LIST -> {
+                val state = cardList[position] as AnalyticsHubCustomSelectionListViewState
+                (holder as AnalyticsHubCustomSelectionListViewHolder).bind(state)
+            }
         }
     }
 
@@ -75,6 +89,7 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
         return when (cardList[position]) {
             is AnalyticsHubListViewState -> VIEW_TYPE_LIST
             is AnalyticsHubInformationViewState -> VIEW_TYPE_INFORMATION
+            is AnalyticsHubCustomSelectionListViewState -> VIEW_TYPE_CUSTOM_SELECTION_LIST
         }
     }
 
@@ -110,5 +125,12 @@ class AnalyticsHubCardsInformationViewHolder(private val cardView: AnalyticsHubI
     fun bind(state: AnalyticsHubInformationViewState, onSeeReport: SeeReportClickListener? = null) {
         cardView.updateInformation(state)
         cardView.onSeeReportClickListener = onSeeReport
+    }
+}
+
+class AnalyticsHubCustomSelectionListViewHolder(private val cardView: AnalyticsHubCustomSelectionCardView) :
+    AnalyticsHubCardsViewHolder(cardView) {
+    fun bind(state: AnalyticsHubCustomSelectionListViewState) {
+        cardView.updateInformation(state)
     }
 }

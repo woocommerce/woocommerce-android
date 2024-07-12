@@ -65,10 +65,15 @@ class DashboardProductStockViewModel @AssistedInject constructor(
                         trackEventForStockCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
                     },
                     onFailure = {
-                        when ((it as? WooException)?.error?.type) {
-                            WooErrorType.API_NOT_FOUND -> emit(ViewState.Error.WCAnalyticsDisabled)
-                            else -> emit(ViewState.Error.Generic)
+                        val errorState = when ((it as? WooException)?.error?.type) {
+                            WooErrorType.API_NOT_FOUND -> ViewState.Error.WCAnalyticsInactive
+                            else -> ViewState.Error.Generic
                         }
+                        emit(errorState)
+                        trackEventForStockCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to errorState.toString())
+                        )
                     }
                 )
         }.asLiveData()
@@ -92,10 +97,10 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         triggerEvent(OpenProductDetail(id))
     }
 
-    private fun trackEventForStockCard(event: AnalyticsEvent) {
+    private fun trackEventForStockCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
-            event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STOCK.trackingIdentifier)
+            stat = event,
+            properties = properties + (AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STOCK.trackingIdentifier),
         )
     }
 
@@ -107,7 +112,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         ) : ViewState
 
         enum class Error : ViewState {
-            Generic, WCAnalyticsDisabled
+            Generic, WCAnalyticsInactive
         }
     }
 

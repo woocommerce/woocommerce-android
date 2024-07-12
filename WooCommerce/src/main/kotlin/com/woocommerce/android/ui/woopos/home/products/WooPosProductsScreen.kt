@@ -315,7 +315,7 @@ private fun InfiniteListHandler(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
-fun WooPosHomeScreenPreview() {
+fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosProductsViewState.Content(
             products = listOf(
@@ -346,6 +346,7 @@ fun WooPosHomeScreenPreview() {
     )
     WooPosTheme {
         WooPosProductsScreen(
+            modifier = modifier,
             productsStateFlow = productState,
             onItemClicked = {},
             onEndOfProductListReached = {},

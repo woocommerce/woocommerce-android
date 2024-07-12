@@ -79,6 +79,10 @@ fun String.semverCompareTo(otherVersion: String): Int {
     }
 }
 
+fun String.isVersionAtLeast(minVersion: String): Boolean {
+    return this.semverCompareTo(minVersion) >= 0
+}
+
 /**
  * Returns this string if it's not empty or null otherwise.
  * Syntactic sugar for `string.ifEmpty { null }`.
