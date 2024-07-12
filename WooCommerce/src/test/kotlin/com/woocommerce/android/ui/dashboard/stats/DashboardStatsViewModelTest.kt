@@ -38,6 +38,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,6 +47,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         val DEFAULT_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.TODAY
         val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
         const val DEFAULT_LAST_UPDATE = 1690382344865L
+        val ANY_REVENUE_STATS = WCRevenueStatsModel()
     }
 
     private val getStats: GetStats = mock {
@@ -290,4 +292,132 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             .formatSelectedDate(eq("11"), argThat { selectionType == ANY_SELECTION_TYPE })
         Assertions.assertThat(state.selectedDateFormatted).isNull()
     }
+
+    @Test
+    fun `given several outdated visitor stats is returned then refreshing indicator is called only once`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(
+                        flowOf(
+                            GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
+                            GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 4, true),
+                            GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 4), 3, true)
+                        )
+                    )
+            }
+            verify(parentViewModel).displayRefreshingIndicator()
+        }
+
+    @Test
+    fun `given up to date visitor stats is returned after outdated stats then hide refreshing indicator`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(
+                        flowOf(
+                            GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
+                            GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 4, false)
+                        )
+                    )
+            }
+            verify(parentViewModel).displayRefreshingIndicator()
+            verify(parentViewModel).hideRefreshingIndicator()
+        }
+
+    @Test
+    fun `given an error is returned after outdated visitor stats then hide refreshing indicator`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(
+                        flowOf(
+                            GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
+                            GetStats.LoadStatsResult.VisitorsStatsError
+                        )
+                    )
+            }
+            verify(parentViewModel).displayRefreshingIndicator()
+            verify(parentViewModel).hideRefreshingIndicator()
+        }
+
+    @Test
+    fun `given a visitor stats unavailable is returned after outdated data then hide refreshing indicator`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(
+                        flowOf(
+                            GetStats.LoadStatsResult.VisitorsStatsSuccess(mapOf("test" to 3), 2, true),
+                            GetStats.LoadStatsResult.VisitorStatUnavailable
+                        )
+                    )
+            }
+            verify(parentViewModel).displayRefreshingIndicator()
+            verify(parentViewModel).hideRefreshingIndicator()
+        }
+
+    @Test
+    fun `given several outdated revenue stats is returned then refreshing indicator is called only once`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(
+                        flowOf(
+                            GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
+                            GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
+                            GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
+                        )
+                    )
+            }
+            verify(parentViewModel).displayRefreshingIndicator()
+        }
+
+    @Test
+    fun `given up to date revenue stats is returned after outdated stats then hide refreshing indicator`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(
+                        flowOf(
+                            GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
+                            GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, false)
+                        )
+                    )
+            }
+            verify(parentViewModel).displayRefreshingIndicator()
+            verify(parentViewModel).hideRefreshingIndicator()
+        }
+
+    @Test
+    fun `given revenue error is returned after outdated revenue stats then hide refreshing indicator`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(
+                        flowOf(
+                            GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
+                            GetStats.LoadStatsResult.RevenueStatsError
+                        )
+                    )
+            }
+            verify(parentViewModel).displayRefreshingIndicator()
+            verify(parentViewModel).hideRefreshingIndicator()
+        }
+
+    @Test
+    fun `given plugin not active error is returned after outdated revenue stats then hide refreshing indicator`() =
+        testBlocking {
+            setup {
+                whenever(getStats.invoke(any(), any()))
+                    .thenReturn(
+                        flowOf(
+                            GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
+                            GetStats.LoadStatsResult.PluginNotActive
+                        )
+                    )
+            }
+            verify(parentViewModel).displayRefreshingIndicator()
+            verify(parentViewModel).hideRefreshingIndicator()
+        }
 }
