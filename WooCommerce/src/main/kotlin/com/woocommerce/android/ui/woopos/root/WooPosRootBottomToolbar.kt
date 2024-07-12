@@ -102,12 +102,6 @@ private fun CardReaderStatus(
                     tint = Color.Unspecified
                 )
             }
-
-            WooPosCardReaderStatus.Connecting -> {
-                ReaderStatus(Color(0xFF999999))
-            }
-
-            else -> Unit
         }
         Text(
             modifier = Modifier.padding(8.dp.toAdaptivePadding()),
@@ -115,14 +109,6 @@ private fun CardReaderStatus(
             color = MaterialTheme.colors.secondary,
             style = MaterialTheme.typography.button
         )
-        when (state.value.cardReaderStatus) {
-            WooPosCardReaderStatus.NotConnected -> {
-                TextButton(onClick = onConnectToReaderClick) {
-                    Text(text = stringResource(R.string.woopos_reader_connect_now_button))
-                }
-            }
-            else -> Unit
-        }
     }
 }
 
