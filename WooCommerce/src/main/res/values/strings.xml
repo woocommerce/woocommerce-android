@@ -450,7 +450,11 @@
 
     <string name="dashboard_google_ads_card_no_campaign_heading">Drive sales and generate more traffic with Google Ads</string>
     <string name="dashboard_google_ads_card_no_campaign_description">Promote your products across Google Search, Shopping, Youtube, Gmail, and more.</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">Paid campaign performance</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">Impressions</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">Clicks</string>
     <string name="dashboard_google_ads_card_create_campaign_button">Create Campaign</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">View all campaigns</string>
 
     <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
     <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>

@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,11 +23,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
@@ -77,6 +81,33 @@ fun DashboardGoogleAdsCard(modifier: Modifier = Modifier) {
                 GoogleAdsNoCampaigns()
             }
         }
+
+        Spacer(modifier = modifier.height(32.dp))
+
+        WidgetCard(
+            titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
+            menu = DashboardWidgetMenu(
+                listOf(
+                    DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry { /* TODO */ }
+                )
+            ),
+            button = DashboardViewModel.DashboardWidgetAction(
+                titleResource = R.string.dashboard_google_ads_card_view_all_campaigns_button,
+                action = { /* TODO */ }
+            ),
+            isError = false,
+            modifier = modifier
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = dimensionResource(id = R.dimen.major_100),
+                    )
+            ) {
+                GoogleAdsWithCampaigns()
+            }
+        }
     }
 }
 
@@ -105,7 +136,7 @@ private fun GoogleAdsLoading(
             Image(
                 painter = painterResource(id = R.drawable.google_logo),
                 contentDescription = null,
-                modifier = Modifier.size(dimensionResource(id = R.dimen.major_300))
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_250))
             )
             Column(
                 modifier = Modifier
@@ -166,7 +197,7 @@ private fun GoogleAdsNoCampaigns(
             Image(
                 painter = painterResource(id = R.drawable.google_logo),
                 contentDescription = null,
-                modifier = Modifier.size(dimensionResource(id = R.dimen.major_300))
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_250))
             )
             Column(
                 modifier = Modifier
@@ -182,6 +213,100 @@ private fun GoogleAdsNoCampaigns(
                     text = stringResource(R.string.dashboard_google_ads_card_no_campaign_description),
                     style = MaterialTheme.typography.body1
                 )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        WCOutlinedButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = dimensionResource(id = R.dimen.minor_100),
+                    bottom = dimensionResource(id = R.dimen.major_100)
+                ),
+            onClick = { /* TODO */ },
+        ) {
+            Text(stringResource(R.string.dashboard_google_ads_card_create_campaign_button))
+        }
+    }
+}
+
+@Composable
+private fun GoogleAdsWithCampaigns(
+    modifier: Modifier = Modifier
+) {
+    val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+    Column {
+        Row(
+            verticalAlignment = Alignment.Top,
+            modifier = modifier
+                .border(
+                    width = dimensionResource(id = R.dimen.minor_10),
+                    color = colorResource(id = R.color.woo_gray_5),
+                    shape = roundedShape
+                )
+                .clip(roundedShape)
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_100),
+                    vertical = dimensionResource(id = R.dimen.major_100)
+                )
+                .background(MaterialTheme.colors.surface)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.google_logo),
+                contentDescription = null,
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_250))
+            )
+            Column(
+                modifier = Modifier
+                    .padding(start = dimensionResource(id = R.dimen.major_100))
+                    .weight(1f),
+            ) {
+                Row {
+                    Text(
+                        text = stringResource(R.string.dashboard_google_ads_card_has_campaign_heading),
+                        style = MaterialTheme.typography.body1,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                        contentDescription = null
+                    )
+                }
+                Spacer(modifier = Modifier.height(dimensionResource(R.dimen.major_100)))
+
+                Row {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.dashboard_google_ads_card_has_campaign_impressions),
+                            style = MaterialTheme.typography.body2
+                        )
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                        Text(
+                            text = "1234567890",
+                            style = MaterialTheme.typography.h5,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.dashboard_google_ads_card_has_campaign_clicks),
+                            style = MaterialTheme.typography.body2
+                        )
+                        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+                        Text(
+                            text = "25300",
+                            style = MaterialTheme.typography.h5,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
             }
         }
 
