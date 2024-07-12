@@ -609,7 +609,7 @@ Language: ru
     <string name="product_creation_ai_preview_details_section">Сведения</string>
     <string name="product_creation_ai_preview_description_section">Описание товара</string>
     <string name="product_creation_ai_preview_name_section">Название товара</string>
-    <string name="product_creation_ai_preview_subtitle">Приведённые ниже сведения можно будет отредактировать в любой момент.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Приведённые ниже сведения можно будет отредактировать в любой момент.</string>
     <string name="product_creation_ai_preview_title">Предварительный просмотр</string>
     <string name="product_creation_ai_about_product_continue_button">Создание сведений о товаре</string>
     <string name="product_creation_ai_about_product_set_tone">Задайте тон и стиль</string>

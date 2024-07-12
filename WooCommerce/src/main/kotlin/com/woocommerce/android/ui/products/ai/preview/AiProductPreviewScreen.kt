@@ -31,8 +31,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -41,6 +43,9 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.AiFeedbackForm
+import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
+import com.woocommerce.android.ui.products.ai.components.ImageAction
+import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 
 @Composable
 fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
@@ -48,7 +53,9 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
         AiProductPreviewScreen(
             state = state,
             onFeedbackReceived = viewModel::onFeedbackReceived,
-            onBackButtonClick = viewModel::onBackButtonClick
+            onBackButtonClick = viewModel::onBackButtonClick,
+            onImageActionSelected = viewModel::onImageActionSelected,
+            onFullScreenImageDismissed = viewModel::onFullScreenImageDismissed
         )
     }
 }
@@ -57,7 +64,9 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
 private fun AiProductPreviewScreen(
     state: AiProductPreviewViewModel.State,
     onFeedbackReceived: (Boolean) -> Unit,
-    onBackButtonClick: () -> Unit
+    onBackButtonClick: () -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit,
+    onFullScreenImageDismissed: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -102,6 +111,8 @@ private fun AiProductPreviewScreen(
                 is AiProductPreviewViewModel.State.Success -> ProductPreviewContent(
                     state = state,
                     onFeedbackReceived = onFeedbackReceived,
+                    onImageActionSelected = onImageActionSelected,
+                    onFullScreenImageDismissed = onFullScreenImageDismissed,
                     modifier = Modifier.fillMaxHeight()
                 )
             }
@@ -120,6 +131,8 @@ private fun AiProductPreviewScreen(
 private fun ProductPreviewContent(
     state: AiProductPreviewViewModel.State.Success,
     onFeedbackReceived: (Boolean) -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit,
+    onFullScreenImageDismissed: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -133,8 +146,9 @@ private fun ProductPreviewContent(
         )
 
         Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_name_section),
-            style = MaterialTheme.typography.body2
+            text = stringResource(id = R.string.product_creation_ai_preview_name_description_sections),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
         )
         Text(
             text = state.title,
@@ -144,12 +158,6 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        Spacer(Modifier)
-
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
-            style = MaterialTheme.typography.body2
-        )
         Text(
             text = state.shortDescription,
             modifier = Modifier
@@ -158,12 +166,6 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        Spacer(Modifier)
-
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_description_section),
-            style = MaterialTheme.typography.body2
-        )
         Text(
             text = state.description,
             modifier = Modifier
@@ -172,16 +174,26 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        Spacer(Modifier)
+        if (state.imageState.image != null) {
+            Spacer(Modifier.height(8.dp))
+            ProductImage(
+                state = state.imageState,
+                onImageActionSelected = onImageActionSelected,
+                onFullScreenImageDismissed = onFullScreenImageDismissed,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
 
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_details_section),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
         )
 
         state.propertyGroups.forEach { properties ->
             ProductProperties(properties = properties, modifier = Modifier.fillMaxWidth())
-            Spacer(Modifier)
         }
 
         AnimatedVisibility(
@@ -196,6 +208,35 @@ private fun ProductPreviewContent(
                 onFeedbackReceived = onFeedbackReceived,
             )
         }
+    }
+}
+
+@Composable
+private fun ProductImage(
+    state: AiProductPreviewViewModel.ImageState,
+    onFullScreenImageDismissed: () -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit,
+    modifier: Modifier
+) {
+    if (state.image == null) return
+
+    SelectedImageSection(
+        image = state.image,
+        subtitle = stringResource(id = R.string.ai_product_creation_image_selected_subtitle),
+        onImageActionSelected = onImageActionSelected,
+        dropDownActions = listOf(ImageAction.View, ImageAction.Remove),
+        modifier = modifier
+            .background(
+                color = colorResource(id = R.color.ai_generated_text_background),
+                shape = RoundedCornerShape(8.dp)
+            )
+    )
+
+    if (state.showImageFullScreen) {
+        FullScreenImageViewer(
+            image = state.image,
+            onDismiss = onFullScreenImageDismissed
+        )
     }
 }
 
@@ -286,8 +327,9 @@ private fun ProductPreviewLoading(modifier: Modifier) {
         )
 
         Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_name_section),
-            style = MaterialTheme.typography.body2
+            text = stringResource(id = R.string.product_creation_ai_preview_name_description_sections),
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
         )
         LoadingSkeleton(
             modifier = Modifier
@@ -295,24 +337,12 @@ private fun ProductPreviewLoading(modifier: Modifier) {
                 .then(sectionsBorder)
         )
 
-        Spacer(Modifier)
-
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_short_description_section),
-            style = MaterialTheme.typography.body2
-        )
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(sectionsBorder)
         )
 
-        Spacer(Modifier)
-
-        Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_description_section),
-            style = MaterialTheme.typography.body2
-        )
         LoadingSkeleton(
             lines = 3,
             modifier = Modifier
@@ -320,18 +350,18 @@ private fun ProductPreviewLoading(modifier: Modifier) {
                 .then(sectionsBorder)
         )
 
-        Spacer(Modifier)
+        Spacer(Modifier.height(8.dp))
 
         Text(
             text = stringResource(id = R.string.product_creation_ai_preview_details_section),
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.subtitle1,
+            fontWeight = FontWeight.SemiBold
         )
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(sectionsBorder)
         )
-        Spacer(Modifier)
         LoadingSkeleton(
             modifier = Modifier
                 .fillMaxWidth()
@@ -372,7 +402,9 @@ private fun ProductPreviewLoadingPreview() {
         AiProductPreviewScreen(
             state = AiProductPreviewViewModel.State.Loading,
             onFeedbackReceived = {},
-            onBackButtonClick = {}
+            onBackButtonClick = {},
+            onImageActionSelected = {},
+            onFullScreenImageDismissed = {}
         )
     }
 }
@@ -384,6 +416,7 @@ private fun ProductPreviewContentPreview() {
     WooThemeWithBackground {
         AiProductPreviewScreen(
             state = AiProductPreviewViewModel.State.Success(
+                selectedVariant = 0,
                 product = AIProductModel.buildDefault(
                     name = "Soft Black Tee: Elevate Your Everyday Style",
                     description = "Introducing our USA-Made Classic Organic Cotton Tee—a staple piece designed for" +
@@ -411,10 +444,12 @@ private fun ProductPreviewContentPreview() {
                         )
                     )
                 ),
-                selectedVariant = 0,
+                imageState = AiProductPreviewViewModel.ImageState(null)
             ),
             onFeedbackReceived = {},
-            onBackButtonClick = {}
+            onBackButtonClick = {},
+            onImageActionSelected = {},
+            onFullScreenImageDismissed = {}
         )
     }
 }

@@ -609,7 +609,7 @@ Language: ar
     <string name="product_creation_ai_preview_details_section">تفاصيل</string>
     <string name="product_creation_ai_preview_description_section">وصف المنتج</string>
     <string name="product_creation_ai_preview_name_section">اسم المنتج</string>
-    <string name="product_creation_ai_preview_subtitle">يمكنك دومًا تغيير التفاصيل أدناه لاحقًا.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">يمكنك دومًا تغيير التفاصيل أدناه لاحقًا.</string>
     <string name="product_creation_ai_preview_title">معاينة</string>
     <string name="product_creation_ai_about_product_continue_button">إنشاء تفاصيل المنتجات</string>
     <string name="product_creation_ai_about_product_set_tone">تعيين النغمة والصوت</string>
