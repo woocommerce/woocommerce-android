@@ -1,4 +1,4 @@
-Gerencie sua loja de onde você estiver
+Gerencie sua loja de qualquer lugar
 
 Gerencie seu negócio de onde você estiver, com o aplicativo móvel WooCommerce. Adicione produtos, crie pedidos, receba pagamentos rapidamente e fique de olho em novas vendas e estatísticas importantes em tempo real.
 
@@ -6,18 +6,21 @@ Adicione e edite produtos com apenas um toque
 Comece em poucos segundos! Crie, agrupe e publique produtos diretamente do seu dispositivo Android. Aproveite sua criatividade quando ela entrar em ação: transforme suas ideias em produtos imediatamente ou as salve como rascunho para mais tarde.
 
 Crie pedidos na hora
-Após criar alguns produtos, fica fácil. Escolha itens do seu catálogo, adicione taxa de envio e preencha os detalhes do cliente para criar rapidamente um pedido sincronizado com seu inventário.
+Depois de criar alguns produtos, é simples. Escolha itens do seu catálogo, adicione envio e preencha os dados do cliente para criar rapidamente um pedido que sincronize com seu inventário.
 
 Aceite pagamentos presenciais
-Receba pagamentos presencialmente usando um leitor de cartão e o WooCommerce In-Person Payments. Comece um novo pedido, ou encontre um existente que esteja com pagamento pendente, e receba o pagamento usando o leitor de cartão ou uma carteira digital, como o Google Pay.
+Receba pagamentos físicos usando o WooCommerce In-Person Payments e um leitor de cartão. Comece um novo pedido, ou encontre um existente que esteja com pagamento pendente, e receba o pagamento usando o leitor de cartão ou uma carteira digital, como o Google Pay.
 
 Receba notificações de todas as vendas
-Agora que você está ativo nas vendas, nunca perca um pedido ou uma avaliação. Mantenha-se informado ativando alertas em tempo real para ouvir o som de notificações para cada nova venda!
+Agora que você está ativo nas vendas, nunca perca um pedido ou uma avaliação. Fique por dentro do que está acontecendo. Ative os alertas em tempo real e ouça o som de notificações para cada nova venda!
 
 Monitore as vendas e os produtos mais vendidos
 Veja quais produtos são mais populares, em um piscar de olhos. Acompanhe sua receita geral, contagem de pedidos e dados semanais, mensais e anuais dos visitantes. Conhecimento é poder.
 
-O WooCommerce é a plataforma de comércio eletrônico open source mais personalizável do mundo. Esteja você lançando um negócio, trazendo sua loja física para a Web ou desenvolvendo sites para clientes, use o WooCommerce para ter uma loja que combine conteúdo e comércio com eficácia.
+WooCommerce na palma da sua mão
+Com o WooCommerce Wear OS App, você pode visualizar os dados da loja e rastrear seus pedidos de maneira simples do seu pulso. Com nossas complicações, você também pode acessar o aplicativo instantaneamente.
+
+O WooCommerce é a plataforma de comércio eletrônico open source mais personalizável do mundo. Não importa se você está abrindo um negócio, trocando o varejo físico pelo online ou criando sites para clientes: use o WooCommerce para ter uma loja que combina conteúdo e vendas de forma avançada.
 
 Requisitos: WooCommerce versão 3.5 ou superior.
 

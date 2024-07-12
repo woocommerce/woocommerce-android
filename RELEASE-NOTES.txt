@@ -1,4 +1,14 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+*** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+
+19.5
+-----
+- [**] Added support for themed app icons. [https://github.com/woocommerce/woocommerce-android/pull/11935]
+- [**] Customer Section in Hub Menu: Merchants now have a centralized location to access customer contact information and view analytics about their customers.  [https://github.com/woocommerce/woocommerce-android/pull/11944]
+
+19.4
+-----
+- [***] Inbox Notes have been enabled in both the Dynamic Dashboard and the Hub Menu, offering users a centralized and non-intrusive method for receiving important updates, feature announcements, and pertinent information. [https://github.com/woocommerce/woocommerce-android/pull/11900]
 
 19.3
 -----
@@ -9,7 +19,7 @@
 
 19.2
 -----
-- [***] Introduces the WearOS app with Store stats, Orders list and details. [https://github.com/woocommerce/woocommerce-android/pull/11557]
+- [***][WEAR] Introduces the WearOS app with Store stats, Orders list and details. [https://github.com/woocommerce/woocommerce-android/pull/11557]
 - [***] Add support for the app to support and sync with the WearOS app. [https://github.com/woocommerce/woocommerce-android/pull/11557]
 - [**] Adds edit support for the Min/Max Quantities extension in product details. [https://github.com/woocommerce/woocommerce-android/pull/11753]
 

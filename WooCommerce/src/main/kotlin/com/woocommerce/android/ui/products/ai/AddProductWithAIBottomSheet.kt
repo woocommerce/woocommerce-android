@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -48,6 +50,7 @@ import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
@@ -74,9 +77,13 @@ class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
 
     private fun showAICreationFlow() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_ENTRY_POINT_TAPPED)
-        findNavController().navigateSafely(
-            AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragment()
-        )
+        val action = when (FeatureFlag.PRODUCT_CREATION_WITH_AI_V2.isEnabled()) {
+            true ->
+                AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragmentV2()
+            else ->
+                AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragment()
+        }
+        findNavController().navigateSafely(action)
     }
 
     private fun showManualCreationFlow() {
@@ -120,9 +127,13 @@ private fun AddProductWithAIContent(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
             )
 
+            val subtitleId = when (FeatureFlag.PRODUCT_CREATION_WITH_AI_V2.isEnabled()) {
+                true -> R.string.product_creation_ai_entry_sheet_ai_option_subtitle_v2
+                else -> R.string.product_creation_ai_entry_sheet_ai_option_subtitle
+            }
             BottomSheetButton(
                 title = stringResource(id = R.string.product_creation_ai_entry_sheet_ai_option_title),
-                subtitle = stringResource(id = R.string.product_creation_ai_entry_sheet_ai_option_subtitle),
+                subtitle = stringResource(id = subtitleId),
                 icon = painterResource(id = R.drawable.ic_ai),
                 onClick = onAIClick,
                 iconTint = MaterialTheme.colors.primary
@@ -183,7 +194,10 @@ private fun BottomSheetButton(
 
         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
 
-        Column(Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.subtitle1,

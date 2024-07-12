@@ -1,19 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-24 22:48:03+0000
+Translation-Revision-Date: 2024-07-04 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="woopos_payment_total_label">Totalt</string>
+    <string name="woopos_payment_tax_label">Moms</string>
+    <string name="woopos_payment_subtotal_label">Delsumma</string>
+    <string name="woo_pos_new_transaction_button">Ny transaktion</string>
+    <string name="woopos_payment_successful_label">Betalning lyckades</string>
+    <string name="woopos_payment_failed_please_try_again">Betalning misslyckades. Försök igen.</string>
+    <string name="woo_pos_cart_back_content_description">Varukorgsikon</string>
+    <string name="woopos_products_screen_title">Produkter</string>
+    <string name="woopos_product_image_description">Produktbild</string>
+    <string name="woo_pos_clear_cart_button">Rensa allt</string>
+    <string name="more_menu_button_google">Google för WooCommerce</string>
+    <string name="no_quantity_rules">Inga regler för antal</string>
+    <string name="more_menu_button_google_description">Öka försäljningen och generera mer trafik med Google Ads</string>
+    <string name="woo_pos_items_in_cart">%d artiklar</string>
+    <string name="woopos_payment_collect_payment_label">Ta emot kortbetalning</string>
     <string name="blaze_campaign_preview_audience_section_title">Målgrupp</string>
     <string name="woopos_exit_confirmation_dismiss_button">Avbryt</string>
     <string name="woopos_exit_confirmation_confirm_button">Avsluta</string>
     <string name="woopos_exit_confirmation_message">Är du säker på att du vill avsluta POS?</string>
     <string name="woopos_exit_confirmation_title">Avsluta POS</string>
-    <string name="woo_pos_car_pane_title">Varukorg</string>
-    <string name="woo_pos_checkout_button">Kassa</string>
-    <string name="woo_pos_remove_item_from_cart_content_description">Ta bort vara från varukorg</string>
+    <string name="woopos_cart_title">Varukorg</string>
+    <string name="woopos_checkout_button">Kassa</string>
+    <string name="woopos_remove_item_from_cart_content_description">Ta bort vara från varukorg</string>
     <string name="dashboard_new_widgets_card_button">Lägg till nya sektioner</string>
     <string name="dashboard_product_stock_empty_products">Inga produkter hittades för den valda lagerstatusen</string>
     <string name="woopos_reader_disconnected">Läsare frånkopplad</string>

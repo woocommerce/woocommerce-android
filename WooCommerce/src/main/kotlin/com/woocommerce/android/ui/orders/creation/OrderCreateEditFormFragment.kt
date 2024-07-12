@@ -67,7 +67,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment
+import com.woocommerce.android.ui.orders.creation.customerlist.OrderCustomerListFragment
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardFragment.Companion.GIFT_CARD_RESULT
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
@@ -95,7 +95,6 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorSharedViewMod
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -413,9 +412,7 @@ class OrderCreateEditFormFragment :
 
         bindShippingLinesSection(binding)
 
-        if (FeatureFlag.EOSL_M3.isEnabled()) {
-            bindFeedbackSection(binding)
-        }
+        bindFeedbackSection(binding)
 
         observeViewStateChanges(binding)
 
@@ -1117,7 +1114,7 @@ class OrderCreateEditFormFragment :
         handleResult<GiftCardResult>(GIFT_CARD_RESULT) { result ->
             viewModel.onGiftCardSelected(result.selectedGiftCard)
         }
-        handleResult<Order.Customer>(CustomerListFragment.KEY_CUSTOMER_RESULT) {
+        handleResult<Order.Customer>(OrderCustomerListFragment.KEY_CUSTOMER_RESULT) {
             viewModel.onCustomerEdited(it)
         }
         handleResult<ShippingUpdateResult>(UPDATE_SHIPPING_RESULT) { result ->

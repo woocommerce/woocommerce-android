@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderDraftCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -19,6 +18,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,6 +38,10 @@ class WooPosCartViewModel @Inject constructor(
     )
 
     val state: LiveData<WooPosCartState> = _state
+        .scan(_state.value) { previousState, newState ->
+            updateParentCartStatusIfCartChanged(previousState, newState)
+            newState
+        }
         .asLiveData()
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
@@ -89,6 +93,10 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun createOrderDraft() {
         viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.OrderCreation.OrderCreationStarted
+            )
+
             val currentState = _state.value
             _state.value = currentState.copy(isOrderCreationInProgress = true)
 
@@ -100,9 +108,14 @@ class WooPosCartViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = { order ->
-                    childrenToParentEventSender.sendToParent(OrderDraftCreated(order.id))
+                    childrenToParentEventSender.sendToParent(
+                        ChildToParentEvent.OrderCreation.OrderCreationSucceeded(order.id)
+                    )
                 },
                 onFailure = { error ->
+                    childrenToParentEventSender.sendToParent(
+                        ChildToParentEvent.OrderCreation.OrderCreationFailed
+                    )
                     Log.e("WooPosCartViewModel", "Order creation failed - $error")
                 }
             )
@@ -135,6 +148,7 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
                         _state.value = WooPosCartState()
                     }
+
                     else -> Unit
                 }
             }
@@ -144,7 +158,7 @@ class WooPosCartViewModel @Inject constructor(
     private fun updateToolbarState(newState: WooPosCartState): WooPosCartState {
         val itemsCount = if (newState.itemsInCart.isNotEmpty()) {
             resourceProvider.getString(
-                R.string.woo_pos_items_in_cart,
+                R.string.woopos_items_in_cart,
                 newState.itemsInCart.size
             )
         } else {
@@ -175,7 +189,7 @@ class WooPosCartViewModel @Inject constructor(
             WooPosCartStatus.EDITABLE -> {
                 newState.copy(
                     areItemsRemovable = true,
-                    isCheckoutButtonVisible = true,
+                    isCheckoutButtonVisible = newState.itemsInCart.isNotEmpty(),
                 )
             }
 
@@ -186,6 +200,15 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
         }
+
+    private fun updateParentCartStatusIfCartChanged(previousState: WooPosCartState, newState: WooPosCartState) {
+        if (previousState.itemsInCart.size == newState.itemsInCart.size) return
+        if (newState.itemsInCart.isNotEmpty()) {
+            sendEventToParent(ChildToParentEvent.CartStatusChanged.NotEmpty)
+        } else {
+            sendEventToParent(ChildToParentEvent.CartStatusChanged.Empty)
+        }
+    }
 
     private fun sendEventToParent(event: ChildToParentEvent) {
         viewModelScope.launch {

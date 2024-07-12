@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.GiftCardsStat
+import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -62,5 +63,12 @@ sealed class GiftCardsState {
     data class Available(val giftCardStats: GiftCardsStat) : GiftCardsState()
     data object Loading : GiftCardsState()
     data object Error : GiftCardsState()
+    val isIdle get() = this !is Loading
+}
+
+sealed class GoogleAdsState {
+    data class Available(val googleAdsStat: GoogleAdsStat) : GoogleAdsState()
+    data object Loading : GoogleAdsState()
+    data object Error : GoogleAdsState()
     val isIdle get() = this !is Loading
 }

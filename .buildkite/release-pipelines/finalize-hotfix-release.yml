@@ -1,18 +1,20 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
 
-agents:
-  queue: "android"
-
 steps:
   - label: "Finalize Hotfix Release"
-    plugins:
-      - automattic/a8c-ci-toolkit#3.0.1
+    plugins: [$CI_TOOLKIT]
     command: |
-      .buildkite/commands/configure-environment.sh
+      echo '--- :robot_face: Use bot for git operations'
+      source use-bot-for-git
 
       echo '--- :git: Checkout Release Branch'
       .buildkite/commands/checkout-release-branch.sh
 
+      echo '--- :ruby: Setup Ruby Tools'
+      install_gems
+
       echo '--- :fire: Finalize Hotfix Release'
       bundle exec fastlane finalize_hotfix_release skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
+    agents:
+        queue: "tumblr-metal"
