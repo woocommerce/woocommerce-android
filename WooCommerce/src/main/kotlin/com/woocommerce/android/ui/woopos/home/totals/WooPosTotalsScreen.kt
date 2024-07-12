@@ -55,9 +55,6 @@ private fun WooPosTotalsScreen(
     ) {
         when (state) {
             is WooPosTotalsState.Totals -> {
-                Modifier
-                    .padding(8.dp.toAdaptivePadding())
-                    .background(MaterialTheme.colors.surface)
                 TotalsLoaded(
                     state = state,
                     onUIEvent = onUIEvent
