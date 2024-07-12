@@ -77,6 +77,12 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                             result is AnalyticsRepository.GiftCardResult.GiftCardData
                         }
                     }
+                    AnalyticsCards.GoogleAds -> {
+                        async {
+                            val result = analyticsRepository.fetchGoogleAdsStats(selectedRange)
+                            result is AnalyticsRepository.GoogleAdsResult.GoogleAdsData
+                        }
+                    }
                 }
             }
             asyncCalls.awaitAll().all { succeed -> succeed }
