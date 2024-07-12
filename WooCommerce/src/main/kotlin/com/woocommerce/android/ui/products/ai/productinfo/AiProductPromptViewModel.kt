@@ -76,7 +76,7 @@ class AiProductPromptViewModel @Inject constructor(
                 )
             }
 
-            wordCount < 11 -> {
+            wordCount < 8 -> {
                 PromptSuggestionBar(
                     progressBarColorRes = R.color.ai_linear_progress_background_more_red,
                     messageRes = R.string.ai_product_creation_prompt_suggestion_add_more_details,
@@ -84,7 +84,7 @@ class AiProductPromptViewModel @Inject constructor(
                 )
             }
 
-            wordCount < 20 -> {
+            wordCount < 17 -> {
                 PromptSuggestionBar(
                     progressBarColorRes = R.color.ai_linear_progress_background_orange,
                     messageRes = R.string.ai_product_creation_prompt_suggestion_getting_better,
@@ -92,7 +92,7 @@ class AiProductPromptViewModel @Inject constructor(
                 )
             }
 
-            wordCount < 30 -> {
+            wordCount < 27 -> {
                 PromptSuggestionBar(
                     progressBarColorRes = R.color.ai_linear_progress_background_yellow,
                     messageRes = R.string.ai_product_creation_prompt_suggestion_almost_there,
