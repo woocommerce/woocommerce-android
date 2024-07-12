@@ -113,18 +113,11 @@ class DashboardViewModel @Inject constructor(
 
     private val refreshingOnBackground = MutableStateFlow(-1)
 
-    val isRefreshingOnBackground = refreshingOnBackground.map {
-        it > -1
-    }.asLiveData()
-    fun displayRefreshingIndicator() {
-        refreshingOnBackground.value += 1
-        Log.d("isRefreshing", refreshingOnBackground.value.toString())
-    }
-
+    val isRefreshingOnBackground = refreshingOnBackground.map { it > -1 }.asLiveData()
+    fun displayRefreshingIndicator() { refreshingOnBackground.value += 1 }
     fun hideRefreshingIndicator() {
         val value = (refreshingOnBackground.value - 1).coerceAtLeast(-1)
         refreshingOnBackground.value = value
-        Log.d("isRefreshing", refreshingOnBackground.value.toString())
     }
 
     init {
