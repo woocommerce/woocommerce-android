@@ -9,6 +9,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -77,7 +79,7 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
     fun `given loading products is failure, when view model created, then view state is empty`() =
         runTest {
             // GIVEN
-            whenever(productsDataSource.loadSimpleProducts()).thenReturn(Result.failure(Exception()))
+            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(Result.failure(Exception()))
 
             // WHEN
             val viewModel = createViewModel()
@@ -213,7 +215,7 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
             ).copy(firstImageUrl = "https://test.com")
         )
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(productsDataSource.loadSimpleProducts()).thenReturn(Result.success(Unit))
+        whenever(productsDataSource.loadSimpleProducts(eq(false))).thenReturn(Result.success(Unit))
 
         val viewModel = createViewModel()
 
