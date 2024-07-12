@@ -147,8 +147,10 @@ private fun WooPosHomeScreen(
             Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         }
         Row(
-            modifier = Modifier.width(cartWidthDp).background(MaterialTheme.colors.surface)
-            ) {
+            modifier = Modifier
+                .width(cartWidthDp)
+                .background(MaterialTheme.colors.surface)
+        ) {
             Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
             Box {
                 WooPosHomeScreenCart(
