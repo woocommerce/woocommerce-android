@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -69,12 +70,14 @@ private fun WooPosCartScreen(
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit
 ) {
-    Column(
-        modifier = modifier
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 4.dp
     ) {
         Box(
-            Modifier
-                .padding(16.dp.toAdaptivePadding()).background(MaterialTheme.colors.surface)
+            Modifier.padding(16.dp.toAdaptivePadding()).background(MaterialTheme.colors.surface)
         ) {
             Column {
                 CartToolbar(
