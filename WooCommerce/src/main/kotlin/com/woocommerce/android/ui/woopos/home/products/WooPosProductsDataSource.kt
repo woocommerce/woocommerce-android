@@ -22,7 +22,7 @@ class WooPosProductsDataSource @Inject constructor(
     val products: Flow<List<Product>> = handler.productsFlow
         .map { it.filter { product -> product.price != null } }
 
-    suspend fun loadSimpleProducts(forceRefreshProducts: Boolean = false): Result<Unit> {
+    suspend fun loadSimpleProducts(forceRefreshProducts: Boolean): Result<Unit> {
         if (forceRefreshProducts) {
             productStore.deleteProductsForSite(site.get())
         }

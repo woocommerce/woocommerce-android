@@ -36,7 +36,7 @@ class WooPosProductsViewModel @Inject constructor(
                 .collect { _viewState.value = it }
         }
         viewModelScope.launch {
-            val result = productsDataSource.loadSimpleProducts()
+            val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = false)
             if (result.isFailure) {
                 _viewState.value = WooPosProductsViewState.Error(reloadingProducts = false)
             }
