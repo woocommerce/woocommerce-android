@@ -87,10 +87,16 @@ private fun AiProductPreviewScreen(
             Toolbar(
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
-                    WCTextButton(onClick = { TODO() }) {
+                    WCTextButton(
+                        enabled = state is AiProductPreviewViewModel.State.Success,
+                        onClick = { TODO() }
+                    ) {
                         Text(text = stringResource(id = R.string.product_detail_save_as_draft))
                     }
-                    WCTextButton(onClick = { TODO() }) {
+                    WCTextButton(
+                        enabled = state is AiProductPreviewViewModel.State.Success,
+                        onClick = { TODO() }
+                    ) {
                         Text(text = stringResource(id = R.string.product_detail_publish))
                     }
                 }
