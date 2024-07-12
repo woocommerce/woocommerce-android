@@ -15,18 +15,22 @@ import com.woocommerce.android.util.SystemVersionUtils
 import kotlinx.parcelize.Parcelize
 
 val Context.windowSizeClass: WindowSizeClass
-    get() = when (resources.configuration.screenWidthDp) {
-        in 0 until WindowSizeClass.Compact.maxWidth -> WindowSizeClass.Compact
-        in WindowSizeClass.Compact.maxWidth until WindowSizeClass.Medium.maxWidth -> WindowSizeClass.Medium
+    get() = determineWindowSizeClassByGivenSize(resources.configuration.screenWidthDp)
+
+private fun determineWindowSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
+    return when {
+        sizeDp < WindowSizeClass.Compact.maxWidthDp -> WindowSizeClass.Compact
+        sizeDp < WindowSizeClass.Medium.maxWidthDp -> WindowSizeClass.Medium
         else -> WindowSizeClass.ExpandedAndBigger
     }
+}
 
 /**
  * Window size class type based on Material Design
  * [guidelines](https://m3.material.io/foundations/layout/applying-layout/window-size-classes)
  */
 @Parcelize
-sealed class WindowSizeClass(val maxWidth: Int) : Parcelable {
+sealed class WindowSizeClass(val maxWidthDp: Int) : Parcelable, Comparable<WindowSizeClass> {
     /**
      * Phone in portrait
      */
@@ -40,11 +44,16 @@ sealed class WindowSizeClass(val maxWidth: Int) : Parcelable {
     /**
      * Phone in landscape, tablet in landscape, foldable in landscape, desktop and ultra-wide.
      */
-    data object ExpandedAndBigger : WindowSizeClass(Int.MAX_VALUE)
+    data object ExpandedAndBigger : WindowSizeClass(EXPANDED_SCREEN_MAX_WIDTH)
 
     companion object {
         private const val COMPACT_SCREEN_MAX_WIDTH = 600
         private const val MEDIUM_SCREEN_MAX_WIDTH = 840
+        private const val EXPANDED_SCREEN_MAX_WIDTH = 1200
+    }
+
+    override fun compareTo(other: WindowSizeClass): Int {
+        return this.maxWidthDp.compareTo(other.maxWidthDp)
     }
 }
 
