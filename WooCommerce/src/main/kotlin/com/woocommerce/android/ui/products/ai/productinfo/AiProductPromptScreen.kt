@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.products.ai.productinfo
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,6 +72,8 @@ import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 
 @Composable
@@ -110,6 +115,7 @@ fun AiProductPromptScreen(
     onImageActionSelected: (ImageAction) -> Unit
 ) {
     val orientation = LocalConfiguration.current.orientation
+    val scrollState = rememberScrollState()
 
     @Composable
     fun GenerateProductButton(modifier: Modifier = Modifier) {
@@ -141,7 +147,7 @@ fun AiProductPromptScreen(
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
             ) {
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
@@ -164,7 +170,8 @@ fun AiProductPromptScreen(
                     state = uiState,
                     onPromptUpdated = onPromptUpdated,
                     onReadTextFromProductPhoto = onReadTextFromProductPhoto,
-                    onImageActionSelected = onImageActionSelected
+                    onImageActionSelected = onImageActionSelected,
+                    scrollState = scrollState,
                 )
 
                 if (uiState.noTextDetectedMessage) {
@@ -172,13 +179,10 @@ fun AiProductPromptScreen(
                         stringResource(id = R.string.product_creation_package_photo_no_text_detected)
                     )
                 }
-                PromptSuggestions(
-                    promptSuggestionBarState = uiState.promptSuggestionBarState,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
                 ToneDropDown(
                     tone = uiState.selectedTone,
-                    onToneSelected = onToneSelected
+                    onToneSelected = onToneSelected,
+                    modifier = Modifier.padding(bottom = 56.dp)
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -216,7 +220,7 @@ fun PromptSuggestions(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
-            .background(colorResource(id = R.color.ai_product_suggestion_box_background))
+            .background(colorResource(id = R.color.ai_generated_text_background))
             .padding(16.dp)
     ) {
         LinearProgressIndicator(
@@ -309,8 +313,10 @@ private fun ProductPromptTextField(
     state: AiProductPromptState,
     onPromptUpdated: (String) -> Unit,
     onReadTextFromProductPhoto: () -> Unit,
-    onImageActionSelected: (ImageAction) -> Unit
+    onImageActionSelected: (ImageAction) -> Unit,
+    scrollState: ScrollState
 ) {
+    val coroutineScope = rememberCoroutineScope()
     var isFocused by remember { mutableStateOf(false) }
     Column {
         Column(
@@ -351,7 +357,15 @@ private fun ProductPromptTextField(
                         unfocusedBorderColor = Color.Transparent
                     ),
                     modifier = Modifier
-                        .onFocusChanged { focusState -> isFocused = focusState.isFocused }
+                        .onFocusChanged { focusState ->
+                            isFocused = focusState.isFocused
+                            if (isFocused) {
+                                coroutineScope.launch {
+                                    delay(300) // Delay to ensure advice box is shown before scrolling
+                                    scrollState.animateScrollTo(scrollState.maxValue)
+                                }
+                            }
+                        }
                 )
             }
 
@@ -364,7 +378,7 @@ private fun ProductPromptTextField(
                     onImageActionSelected = onImageActionSelected,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(color = colorResource(id = R.color.ai_generated_text_background),)
+                        .background(color = colorResource(id = R.color.ai_generated_text_background))
                 )
 
                 else -> {
@@ -379,6 +393,12 @@ private fun ProductPromptTextField(
                     )
                 }
             }
+        }
+        AnimatedVisibility(isFocused) {
+            PromptSuggestions(
+                promptSuggestionBarState = state.promptSuggestionBarState,
+                modifier = Modifier.padding(top = 16.dp)
+            )
         }
     }
 }
@@ -452,7 +472,7 @@ private fun AiProductPromptScreenPreview() {
                 progressBarColorRes = R.color.linear_progress_background_gray,
                 messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
                 progress = 0.1f
-            )
+            ),
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
@@ -481,7 +501,7 @@ private fun AiProductPromptScreenWithErrorPreview() {
                 progressBarColorRes = R.color.linear_progress_background_gray,
                 messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
                 progress = 0.1f
-            )
+            ),
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
