@@ -82,6 +82,7 @@ class AIRepository @Inject constructor(
             }
     }
 
+    @Suppress("LongParameterList")
     suspend fun generateProduct(
         productKeyWords: String,
         tone: String,

@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.AI
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -32,6 +31,7 @@ class GenerateProductWithAI @Inject constructor(
     private var isProductCategoriesFetched = false
     private var isProductTagsFetched = false
 
+    @Suppress("ReturnCount")
     suspend operator fun invoke(productFeatures: String): Result<AIProductModel> {
         val existingCategories = getCategories().getOrElse {
             WooLog.e(AI, "Failed to fetch product categories", it)
@@ -51,8 +51,6 @@ class GenerateProductWithAI @Inject constructor(
                 return Result.failure(it)
             }
         }
-
-        delay(1000)
 
         return aiRepository.generateProduct(
             productKeyWords = productFeatures,
