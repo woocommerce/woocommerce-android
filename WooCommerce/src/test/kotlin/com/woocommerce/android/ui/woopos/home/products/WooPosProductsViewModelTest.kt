@@ -16,7 +16,7 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosProductsViewModelTest: BaseUnitTest() {
+class WooPosProductsViewModelTest : BaseUnitTest() {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val priceFormat: WooPosFormatPrice = mock {
