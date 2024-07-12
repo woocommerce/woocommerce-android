@@ -53,6 +53,7 @@ import java.util.TimeZone
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.wordpress.android.fluxc.store.WCGoogleStore
 
 @ExperimentalCoroutinesApi
 @Suppress("LargeClass")
@@ -60,6 +61,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     private val statsRepository: StatsRepository = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val googleStore: WCGoogleStore = mock()
 
     private lateinit var testTimeZone: TimeZone
     private lateinit var testLocale: Locale
@@ -74,6 +76,7 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
     private val sut: AnalyticsRepository = AnalyticsRepository(
         statsRepository,
         selectedSite,
+        googleStore,
         wooCommerceStore
     )
 
