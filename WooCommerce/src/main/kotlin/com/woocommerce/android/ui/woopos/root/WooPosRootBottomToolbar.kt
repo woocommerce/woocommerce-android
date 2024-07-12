@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -23,9 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -40,11 +43,11 @@ fun WooPosBottomToolbar(
 ) {
     Card(
         modifier = Modifier
-            .height(60.dp)
-            .fillMaxWidth(),
+            .height(64.dp)
+            .wrapContentSize(Alignment.Center),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 8.dp,
-        shape = RectangleShape
+        elevation = 4.dp,
+        shape = RoundedCornerShape(8.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -52,6 +55,11 @@ fun WooPosBottomToolbar(
             modifier = Modifier.padding(horizontal = 24.dp.toAdaptivePadding())
         ) {
             ExitPosButton { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
+            Box(
+                Modifier
+                    .width(0.5.dp)
+                    .background(color = WooPosTheme.colors.loadingSkeleton)
+            )
             CardReaderStatus(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
         }
     }
@@ -61,9 +69,9 @@ fun WooPosBottomToolbar(
 private fun ExitPosButton(onClick: () -> Unit) {
     TextButton(onClick = onClick) {
         Icon(
-            painter = painterResource(id = R.drawable.woopos_ic_exit_pos),
+            imageVector = ImageVector.vectorResource(id = R.drawable.woopos_ic_exit_pos),
             contentDescription = null,
-            tint = Color.Unspecified
+            tint = MaterialTheme.colors.secondaryVariant,
         )
         Text(
             modifier = Modifier.padding(8.dp.toAdaptivePadding()),
@@ -129,7 +137,26 @@ private fun ReaderStatus(color: Color) {
 
 @WooPosPreview
 @Composable
-fun PreviewWooPosBottomToolbar() {
+fun PreviewWooPosBottomToolbarStatusConnecting() {
+    val state = remember {
+        mutableStateOf(
+            WooPosRootScreenState(
+                WooPosCardReaderStatus.Connected,
+                null
+            )
+        )
+    }
+    WooPosTheme {
+        Column {
+            Spacer(modifier = Modifier.weight(1f))
+            WooPosBottomToolbar(state) {}
+        }
+    }
+}
+
+@WooPosPreview
+@Composable
+fun PreviewWooPosBottomToolbarStatusNotConnected() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
@@ -148,7 +175,7 @@ fun PreviewWooPosBottomToolbar() {
 
 @WooPosPreview
 @Composable
-fun PreviewCardReaderStatusConnecting() {
+fun PreviewWooPosBottomToolbarStatusConnected() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
@@ -158,38 +185,9 @@ fun PreviewCardReaderStatusConnecting() {
         )
     }
     WooPosTheme {
-        CardReaderStatus(state) {}
-    }
-}
-
-@WooPosPreview
-@Composable
-fun PreviewCardReaderStatusNotConnected() {
-    val state = remember {
-        mutableStateOf(
-            WooPosRootScreenState(
-                WooPosCardReaderStatus.NotConnected,
-                null
-            )
-        )
-    }
-    WooPosTheme {
-        CardReaderStatus(state) {}
-    }
-}
-
-@WooPosPreview
-@Composable
-fun PreviewCardReaderStatusConnected() {
-    val state = remember {
-        mutableStateOf(
-            WooPosRootScreenState(
-                WooPosCardReaderStatus.Connected,
-                null
-            )
-        )
-    }
-    WooPosTheme {
-        CardReaderStatus(state) {}
+        Column {
+            Spacer(modifier = Modifier.weight(1f))
+            WooPosBottomToolbar(state) {}
+        }
     }
 }
