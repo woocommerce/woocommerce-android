@@ -477,9 +477,12 @@ class AnalyticsRepository @Inject constructor(
             )
         }
 
-        currentGoogleAdsStatsCall.await().model?.let { response ->
+        currentGoogleAdsStatsCall.await()
+            .model?.campaigns?.let { campaigns ->
             GoogleAdsResult.GoogleAdsData(
-                GoogleAdsStat(campaigns = response.campaigns.map { Campaign(it.id) })
+                GoogleAdsStat(campaigns = campaigns.map {
+                    Campaign(it.id ?: 0L) }
+                )
             )
         } ?: GoogleAdsResult.GoogleAdsError
     }

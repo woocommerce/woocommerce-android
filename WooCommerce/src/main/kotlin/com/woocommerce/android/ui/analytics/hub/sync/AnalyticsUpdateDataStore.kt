@@ -169,5 +169,6 @@ fun AnalyticsCards.toAnalyticData(): AnalyticsUpdateDataStore.AnalyticData {
         AnalyticsCards.Session -> AnalyticsUpdateDataStore.AnalyticData.VISITORS
         AnalyticsCards.Bundles -> AnalyticsUpdateDataStore.AnalyticData.BUNDLES
         AnalyticsCards.GiftCards -> AnalyticsUpdateDataStore.AnalyticData.GIFT_CARDS
+        AnalyticsCards.GoogleAds -> AnalyticsUpdateDataStore.AnalyticData.GOOGLE_ADS
     }
 }
