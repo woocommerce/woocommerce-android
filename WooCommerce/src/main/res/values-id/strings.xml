@@ -609,7 +609,7 @@ Language: id
     <string name="product_creation_ai_preview_details_section">Rincian</string>
     <string name="product_creation_ai_preview_description_section">Deskripsi produk</string>
     <string name="product_creation_ai_preview_name_section">Nama produk</string>
-    <string name="product_creation_ai_preview_subtitle">Anda bisa mengubah detail berikut kapan saja.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Anda bisa mengubah detail berikut kapan saja.</string>
     <string name="product_creation_ai_preview_title">Pratinjau</string>
     <string name="product_creation_ai_about_product_continue_button">Buat Info Produk</string>
     <string name="product_creation_ai_about_product_set_tone">Tentukan nada dan suara</string>
