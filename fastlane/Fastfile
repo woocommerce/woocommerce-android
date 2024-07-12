@@ -626,8 +626,8 @@ platform :android do
       package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
       track: track(app: app, track_name: 'production'),
-      release_status: 'completed',
-      rollout: '1.0', # Start the production rollout at 10%
+      release_status: 'inProgress',
+      rollout: '0.1', # Start the production rollout at 10%
       metadata_path: METADATA_DIR_PATH[app],
       # Skip uploading Play Store listing metadata for the Wear app, as these are shared with the Mobile app and
       # stored in its metadata folder. The Wear app only has separate changelogs.
