@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products.ai.preview
 
 import android.os.Parcelable
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -10,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
+import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -65,19 +64,16 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     private fun AIProductModel.prepareState() = flow {
-        val propertyGroups = buildProductPreviewProperties(
-            toProduct(
-                variant = 0,
-                existingCategories = emptyList(),
-                existingTags = emptyList()
-            )
-        )
-
         emitAll(
             combine(
                 imageState,
                 selectedVariant
             ) { imageState, selectedVariant ->
+                val propertyGroups = buildProductPreviewProperties(
+                    product = this@prepareState,
+                    variant = selectedVariant,
+                )
+
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,

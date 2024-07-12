@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.ai.preview
 
-import com.google.gson.Gson
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -27,8 +26,7 @@ class GenerateProductWithAI @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val categoriesRepository: ProductCategoriesRepository,
     private val tagsRepository: ProductTagsRepository,
-    private val parametersRepository: ParameterRepository,
-    private val gson: Gson
+    private val parametersRepository: ParameterRepository
 ) {
     private lateinit var languageISOCode: String
     private var isProductCategoriesFetched = false
@@ -67,7 +65,11 @@ class GenerateProductWithAI @Inject constructor(
             existingTags = existingTags,
             languageISOCode = languageISOCode,
         ).mapCatching {
-            gson.fromJson(it, AIProductModel::class.java)
+            AIProductModel.fromJson(
+                json = it,
+                existingCategories = existingCategories,
+                existingTags = existingTags,
+            )
         }
     }
 
