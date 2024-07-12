@@ -394,7 +394,7 @@ private fun ProductPromptTextField(
                 }
             }
         }
-        AnimatedVisibility(isFocused) {
+        AnimatedVisibility(isFocused || state.productPrompt.isNotEmpty()) {
             PromptSuggestions(
                 promptSuggestionBarState = state.promptSuggestionBarState,
                 modifier = Modifier.padding(top = 16.dp)
