@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
-import com.woocommerce.android.ui.woopos.WooPosFFEnabled
+import com.woocommerce.android.ui.woopos.WooPosIsFeatureFlagEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -87,7 +87,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
 
-    private val isWooPosFFEnabled: WooPosFFEnabled = mock {
+    private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
 
@@ -513,9 +513,13 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
         // THEN
         val items = states.first().menuSections.flatMap { it.items }
-        assertThat(items.first { it.title == R.string.more_menu_button_woo_pos }.state).isEqualTo(MoreMenuItemButton.State.Loading)
-        assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state).isEqualTo(MoreMenuItemButton.State.Loading)
-        assertThat(items.first { it.title == R.string.more_menu_button_google }.state).isEqualTo(MoreMenuItemButton.State.Loading)
-        assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state).isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_woo_pos }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_blaze }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_google }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
+        assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state)
+            .isEqualTo(MoreMenuItemButton.State.Loading)
     }
 }
