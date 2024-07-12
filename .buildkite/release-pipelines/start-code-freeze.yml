@@ -1,17 +1,14 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
 
+agents:
+  queue: "android"
+
 steps:
   - label: " Start Code Freeze"
     plugins: [$CI_TOOLKIT]
     command: |
-      echo '--- :robot_face: Use bot for git operations'
-      source use-bot-for-git
-
-      echo '--- :ruby: Setup Ruby Tools'
-      install_gems
+      .buildkite/commands/configure-environment.sh
 
       echo '--- :snowflake: Start Code Freeze'
       bundle exec fastlane start_code_freeze skip_confirm:true
-    agents:
-        queue: "tumblr-metal"
