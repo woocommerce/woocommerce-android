@@ -11,7 +11,6 @@ import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.ui.analytics.hub.GetAnalyticPluginsCardActive
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewModel.Companion.MARKETPLACE
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.FeatureFlag.GOOGLE_ADS_ANALYTICS_HUB_M1
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
