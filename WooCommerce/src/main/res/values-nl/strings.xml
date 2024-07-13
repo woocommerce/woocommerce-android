@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 09:54:03+0000
+Translation-Revision-Date: 2024-07-10 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">Nu koppelen</string>
+    <string name="woopos_cart_title">Winkelwagen</string>
+    <string name="ai_product_creation_generate_details_button">Productgegevens genereren</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Tekst lezen van productfoto</string>
+    <string name="ai_product_creation_prompt_placeholder">Bijvoorbeeld: zwart katoenen T-shirt, zachte stof, duurzaam stikwerk, uniek ontwerp</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Vertel ons over je product. Wat is het en wat maakt het uniek? Laat daarna de AI zijn werk doen.</string>
+    <string name="ai_product_creation_product_prompt_title">Gegevens om te beginnen</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Laat ons productgegevens voor je genereren</string>
     <string name="woopos_payment_collect_payment_label">Pinbetaling aannemen</string>
     <string name="woopos_payment_total_label">Totaal</string>
     <string name="woopos_payment_tax_label">Belasting</string>
     <string name="woopos_payment_subtotal_label">Subtotaal</string>
-    <string name="woo_pos_new_transaction_button">Nieuwe transactie</string>
+    <string name="woopos_new_transaction_button">Nieuwe transactie</string>
     <string name="woopos_payment_successful_label">Betaling gelukt</string>
     <string name="woopos_payment_failed_please_try_again">Betaling mislukt. Probeer het opnieuw.</string>
-    <string name="woo_pos_cart_back_content_description">Winkelwagenpictogram</string>
+    <string name="woopos_cart_back_content_description">Winkelwagenpictogram</string>
     <string name="woopos_products_screen_title">Producten</string>
     <string name="woopos_product_image_description">Productafbeelding</string>
-    <string name="woo_pos_items_in_cart">%d items</string>
-    <string name="woo_pos_clear_cart_button">Alles wissen</string>
+    <string name="woopos_items_in_cart">%d items</string>
+    <string name="woopos_clear_cart_button">Alles wissen</string>
     <string name="more_menu_button_google_description">Verkoop meer en genereer meer verkeer met Google Ads</string>
     <string name="more_menu_button_google">Google voor WooCommerce</string>
     <string name="no_quantity_rules">Geen regels voor hoeveelheid</string>
@@ -26,7 +34,6 @@ Language: nl
     <string name="woopos_exit_confirmation_confirm_button">Afsluiten</string>
     <string name="woopos_exit_confirmation_message">Weet je zeker dat je POS wilt afsluiten?</string>
     <string name="woopos_exit_confirmation_title">POS afsluiten</string>
-    <string name="woopos_cart_title">Winkelwagen</string>
     <string name="woopos_remove_item_from_cart_content_description">Artikel uit winkelwagen verwijderen</string>
     <string name="woopos_checkout_button">Afrekenen</string>
     <string name="woopos_reader_unknown">Status van lezer is onbekend</string>
@@ -607,7 +614,7 @@ Language: nl
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_description_section">Productbeschrijving</string>
     <string name="product_creation_ai_preview_name_section">Productnaam</string>
-    <string name="product_creation_ai_preview_subtitle">Je kan de onderstaande gegevens later altijd wijzigen.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Je kan de onderstaande gegevens later altijd wijzigen.</string>
     <string name="product_creation_ai_preview_title">Voorbeeld</string>
     <string name="product_creation_ai_about_product_continue_button">Productgegevens aanmaken</string>
     <string name="product_creation_ai_about_product_set_tone">Toon instellen</string>

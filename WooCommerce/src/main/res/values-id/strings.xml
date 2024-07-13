@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 09:54:04+0000
+Translation-Revision-Date: 2024-07-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">Hubungkan sekarang</string>
+    <string name="woopos_cart_title">Keranjang</string>
+    <string name="ai_product_creation_generate_details_button">Buat Detail Produk</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Baca teks dari foto produk</string>
+    <string name="ai_product_creation_prompt_placeholder">Misalnya: Kaus katun hitam, kain lembut, jahitan awet, desain unik.</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Ceritakan produk Anda, apa produk tersebut dan keunikannya, lalu tunggu keajaiban AI.</string>
+    <string name="ai_product_creation_product_prompt_title">Informasi awal</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Kami buatkan detail produk untuk Anda.</string>
     <string name="woopos_payment_collect_payment_label">Terima Pembayaran dengan Kartu</string>
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_tax_label">Pajak</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
-    <string name="woo_pos_new_transaction_button">Transaksi baru</string>
+    <string name="woopos_new_transaction_button">Transaksi baru</string>
     <string name="woopos_payment_successful_label">Pembayaran berhasil</string>
     <string name="woopos_payment_failed_please_try_again">Pembayaran gagal. Coba lagi.</string>
-    <string name="woo_pos_cart_back_content_description">Ikon keranjang</string>
+    <string name="woopos_cart_back_content_description">Ikon keranjang</string>
     <string name="woopos_products_screen_title">Produk</string>
     <string name="woopos_product_image_description">Gambar Produk</string>
-    <string name="woo_pos_items_in_cart">%d item</string>
-    <string name="woo_pos_clear_cart_button">Hapus semua</string>
-    <string name="more_menu_button_google_description">Tingkatkan penjualan dan hasilkan lebih banyak lalu lintas dengan Google Ads</string>
+    <string name="woopos_items_in_cart">%d item</string>
+    <string name="woopos_clear_cart_button">Hapus semua</string>
+    <string name="more_menu_button_google_description">Tingkatkan penjualan dan dorong lalu lintas dengan Google Ads</string>
     <string name="more_menu_button_google">Google untuk WooCommerce</string>
     <string name="no_quantity_rules">Tidak Ada Aturan Jumlah</string>
     <string name="blaze_campaign_preview_audience_section_title">Audiens</string>
@@ -26,7 +34,6 @@ Language: id
     <string name="woopos_exit_confirmation_confirm_button">Keluar</string>
     <string name="woopos_exit_confirmation_message">Anda yakin ingin keluar dari POS?</string>
     <string name="woopos_exit_confirmation_title">Keluar dari POS</string>
-    <string name="woopos_cart_title">Keranjang</string>
     <string name="woopos_remove_item_from_cart_content_description">Hapus item dari keranjang</string>
     <string name="woopos_checkout_button">Checkout</string>
     <string name="woopos_reader_unknown">Status Pembaca Tidak Diketahui</string>
@@ -609,7 +616,7 @@ Language: id
     <string name="product_creation_ai_preview_details_section">Rincian</string>
     <string name="product_creation_ai_preview_description_section">Deskripsi produk</string>
     <string name="product_creation_ai_preview_name_section">Nama produk</string>
-    <string name="product_creation_ai_preview_subtitle">Anda bisa mengubah detail berikut kapan saja.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Anda bisa mengubah detail berikut kapan saja.</string>
     <string name="product_creation_ai_preview_title">Pratinjau</string>
     <string name="product_creation_ai_about_product_continue_button">Buat Info Produk</string>
     <string name="product_creation_ai_about_product_set_tone">Tentukan nada dan suara</string>

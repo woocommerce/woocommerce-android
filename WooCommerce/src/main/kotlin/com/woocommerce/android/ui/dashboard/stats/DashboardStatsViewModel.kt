@@ -205,6 +205,10 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     is LoadStatsResult.RevenueStatsError -> {
                         _revenueStatsState.value = RevenueStatsViewState.GenericError
                         parentViewModel.hideRefreshingIndicator()
+                        trackEventForStatsCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
+                        )
                     }
                     is LoadStatsResult.VisitorStatsLoading -> {
                         _visitorStatsState.value = VisitorStatsViewState.NotLoaded
@@ -215,8 +219,14 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     }
 
                     LoadStatsResult.PluginNotActive -> {
-                        _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
+                        _revenueStatsState.value = RevenueStatsViewState.WCAnalyticsInactive
                         parentViewModel.hideRefreshingIndicator()
+                        trackEventForStatsCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(
+                                AnalyticsTracker.KEY_ERROR to RevenueStatsViewState.WCAnalyticsInactive.toString()
+                            )
+                        )
                     }
 
                     is LoadStatsResult.VisitorsStatsSuccess -> onVisitorsStatsSuccess(it)
@@ -224,15 +234,27 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     is LoadStatsResult.VisitorsStatsError -> {
                         _visitorStatsState.value = VisitorStatsViewState.Error
                         parentViewModel.hideRefreshingIndicator()
+                        trackEventForStatsCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
+                        )
                     }
                     is LoadStatsResult.VisitorStatUnavailable -> {
                         _visitorStatsState.value = VisitorStatsViewState.Unavailable
                         parentViewModel.hideRefreshingIndicator()
+                        trackEventForStatsCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
+                        )
                     }
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
             }
 
+        observeLastUpdate(selectedRange)
+    }
+
+    private fun observeLastUpdate(selectedRange: StatsTimeRangeSelection) {
         launch {
             observeLastUpdate(
                 selectedRange,
@@ -335,17 +357,17 @@ class DashboardStatsViewModel @AssistedInject constructor(
             )
         }
 
-    private fun trackEventForStatsCard(event: AnalyticsEvent) {
+    private fun trackEventForStatsCard(event: AnalyticsEvent, properties: Map<String, Any> = emptyMap()) {
         analyticsTrackerWrapper.track(
-            event,
-            mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier)
+            stat = event,
+            properties = properties + mapOf(AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier)
         )
     }
 
     sealed class RevenueStatsViewState {
         data class Loading(val isForced: Boolean) : RevenueStatsViewState()
         data object GenericError : RevenueStatsViewState()
-        data object PluginNotActiveError : RevenueStatsViewState()
+        data object WCAnalyticsInactive : RevenueStatsViewState()
         data class Content(
             val revenueStats: RevenueStatsUiModel?,
             val statsRangeSelection: StatsTimeRangeSelection,

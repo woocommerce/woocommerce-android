@@ -84,7 +84,7 @@ class GetStatsTest : BaseUnitTest() {
                 .filter { it is GetStats.LoadStatsResult.RevenueStatsError }
                 .last()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsError)
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.RevenueStatsError(GENERIC_ORDER_STATS_ERROR.message))
         }
 
     @Test

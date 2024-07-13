@@ -72,7 +72,7 @@ private fun ProductPreviewSubScreen(
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_subtitle),
+            text = stringResource(id = R.string.product_creation_ai_preview_subtitle_legacy),
             style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_on_surface_medium)
         )

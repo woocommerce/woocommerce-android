@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
 
 @Composable
@@ -48,7 +49,7 @@ fun WooPosBottomToolbar(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 24.dp)
+            modifier = Modifier.padding(horizontal = 24.dp.toAdaptivePadding())
         ) {
             ExitPosButton { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
             CardReaderStatus(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
@@ -65,7 +66,7 @@ private fun ExitPosButton(onClick: () -> Unit) {
             tint = Color.Unspecified
         )
         Text(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(8.dp.toAdaptivePadding()),
             text = stringResource(id = R.string.woopos_exit_pos),
             color = MaterialTheme.colors.secondaryVariant,
             style = MaterialTheme.typography.button
@@ -101,7 +102,7 @@ private fun CardReaderStatus(
             else -> Unit
         }
         Text(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(8.dp.toAdaptivePadding()),
             text = stringResource(id = state.value.cardReaderStatus.title),
             color = MaterialTheme.colors.secondary,
             style = MaterialTheme.typography.button
