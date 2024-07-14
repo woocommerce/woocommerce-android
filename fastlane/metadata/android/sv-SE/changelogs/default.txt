@@ -1,0 +1,2 @@
+19.4:
+Utforska vår senaste uppdatering med Inkorgsanteckningar, som nu finns tillgängligt i både den dynamiska adminpanelen och hubbmenyn. Den här nya funktionen erbjuder ett centraliserat, icke-påträngande sätt att hålla dig informerad om viktiga uppdateringar, meddelanden om funktioner och viktig information. Uppgradera idag för att hålla dig uppdaterad utan ansträngning.
