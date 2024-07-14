@@ -7,12 +7,18 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.automattic.android.experimentation.ExPlat
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.background.UpdateDataOnBackgroundWorker
 import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
@@ -40,6 +46,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
@@ -75,6 +82,7 @@ import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -242,6 +250,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Suppress("DEPRECATION")
     override fun onAppComesFromBackground() {
         trackApplicationOpened()
+        if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
+            clearRefreshDataPeriodically()
+        }
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
@@ -314,6 +325,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     override fun onAppGoesToBackground() {
         AnalyticsTracker.track(AnalyticsEvent.APPLICATION_CLOSED)
+        if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
+            refreshDataPeriodically()
+        }
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
@@ -458,5 +472,28 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             stat = AnalyticsEvent.APPLICATION_OPENED,
             properties = mapOf(AnalyticsTracker.KEY_WIDGETS to widgets)
         )
+    }
+
+    private fun refreshDataPeriodically() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val dataSyncWorkRequest = PeriodicWorkRequestBuilder<UpdateDataOnBackgroundWorker>(
+            UpdateDataOnBackgroundWorker.REFRESH_TIME,
+            TimeUnit.HOURS
+        )
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(application).enqueueUniquePeriodicWork(
+            UpdateDataOnBackgroundWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            dataSyncWorkRequest
+        )
+    }
+
+    private fun clearRefreshDataPeriodically() {
+        WorkManager.getInstance(application).cancelUniqueWork(UpdateDataOnBackgroundWorker.WORK_NAME)
     }
 }
