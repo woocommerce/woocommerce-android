@@ -55,7 +55,8 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
             onFeedbackReceived = viewModel::onFeedbackReceived,
             onBackButtonClick = viewModel::onBackButtonClick,
             onImageActionSelected = viewModel::onImageActionSelected,
-            onFullScreenImageDismissed = viewModel::onFullScreenImageDismissed
+            onFullScreenImageDismissed = viewModel::onFullScreenImageDismissed,
+            onSaveProductAsDraft = viewModel::onSaveProductAsDraft
         )
     }
 }
@@ -66,14 +67,15 @@ private fun AiProductPreviewScreen(
     onFeedbackReceived: (Boolean) -> Unit,
     onBackButtonClick: () -> Unit,
     onImageActionSelected: (ImageAction) -> Unit,
-    onFullScreenImageDismissed: () -> Unit
+    onFullScreenImageDismissed: () -> Unit,
+    onSaveProductAsDraft: () -> Unit,
 ) {
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
-                    WCTextButton(onClick = { TODO() }) {
+                    WCTextButton(onClick = onSaveProductAsDraft) {
                         Text(text = stringResource(id = R.string.product_detail_save_as_draft))
                     }
                     WCTextButton(onClick = { TODO() }) {
@@ -404,7 +406,8 @@ private fun ProductPreviewLoadingPreview() {
             onFeedbackReceived = {},
             onBackButtonClick = {},
             onImageActionSelected = {},
-            onFullScreenImageDismissed = {}
+            onFullScreenImageDismissed = {},
+            onSaveProductAsDraft = {}
         )
     }
 }
@@ -449,7 +452,8 @@ private fun ProductPreviewContentPreview() {
             onFeedbackReceived = {},
             onBackButtonClick = {},
             onImageActionSelected = {},
-            onFullScreenImageDismissed = {}
+            onFullScreenImageDismissed = {},
+            onSaveProductAsDraft = {}
         )
     }
 }

@@ -110,6 +110,12 @@ class AiProductPreviewViewModel @Inject constructor(
         imageState.value = imageState.value.copy(showImageFullScreen = false)
     }
 
+    fun onSaveProductAsDraft() {
+        // Upload image if any
+
+        // Save product as draft
+    }
+
     sealed interface State {
         data object Loading : State
         data class Success(
