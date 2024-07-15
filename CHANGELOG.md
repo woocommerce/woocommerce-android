@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 19.5
+We're excited to bring you the latest update for our WooCommerce mobile app! Customize your experience with themed app icons, and enjoy the new Customer Section in the Hub Menu, where merchants can effortlessly manage customer contacts and delve into customer analytics. Plus, under the hood, we've enhanced compatibility with Android 14. Discover these improvements and more in our latest release!
+
 ## 19.4
 Explore our latest update with Inbox Notes now available in both the Dynamic Dashboard and the Hub Menu. This new feature offers a centralized, non-intrusive way to keep you informed about important updates, feature announcements, and essential information. Upgrade today to stay in the loop effortlessly!
 
