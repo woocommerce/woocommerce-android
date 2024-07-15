@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,6 +39,25 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private val imageState = savedStateHandle.getStateFlow(viewModelScope, ImageState(navArgs.image))
     private val selectedVariant = savedStateHandle.getStateFlow(viewModelScope, 0)
+    private val userEditedName = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = String::class.java,
+        key = "name"
+    )
+    private val userEditedDescription = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = String::class.java,
+        key = "description"
+    )
+    private val userEditedShortDescription = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = String::class.java,
+        key = "shortDescription"
+    )
+
     private val generatedProduct = MutableStateFlow<Result<AIProductModel>?>(
         Result.success(AIProductModel.buildDefault("Name", navArgs.productFeatures))
     )
@@ -64,29 +85,34 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     private fun AIProductModel.prepareState() = flow {
+        val userEditedFields = combine(
+            userEditedName,
+            userEditedDescription,
+            userEditedShortDescription
+        ) { name, description, shortDescription ->
+            Triple(name, description, shortDescription)
+        }
+
         emitAll(
             combine(
                 imageState,
-                selectedVariant
-            ) { imageState, selectedVariant ->
-                val propertyGroups = buildProductPreviewProperties(
-                    product = this@prepareState,
-                    variant = selectedVariant,
-                )
-
+                selectedVariant,
+                selectedVariant.map {
+                    buildProductPreviewProperties(
+                        product = this@prepareState,
+                        variant = it,
+                    )
+                },
+                userEditedFields
+            ) { imageState, selectedVariant, propertyGroups, (editedName, editedDescription, editedShortDescription) ->
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,
-                    propertyGroups = propertyGroups.map { group ->
-                        group.map { property ->
-                            ProductPropertyCard(
-                                icon = property.icon,
-                                title = property.title,
-                                content = property.content
-                            )
-                        }
-                    },
-                    imageState = imageState
+                    propertyGroups = propertyGroups,
+                    imageState = imageState,
+                    userEditedName = editedName,
+                    userEditedDescription = editedDescription,
+                    userEditedShortDescription = editedShortDescription
                 )
             }
         )
@@ -126,6 +152,18 @@ class AiProductPreviewViewModel @Inject constructor(
         selectedVariant.update { it - 1 }
     }
 
+    fun onNameChanged(name: String?) {
+        userEditedName.value = name
+    }
+
+    fun onDescriptionChanged(description: String?) {
+        userEditedDescription.value = description
+    }
+
+    fun onShortDescriptionChanged(shortDescription: String?) {
+        userEditedShortDescription.value = shortDescription
+    }
+
     sealed interface State {
         data object Loading : State
         data class Success(
@@ -133,17 +171,26 @@ class AiProductPreviewViewModel @Inject constructor(
             private val product: AIProductModel,
             val propertyGroups: List<List<ProductPropertyCard>>,
             val imageState: ImageState,
-            val shouldShowFeedbackView: Boolean = true
+            val shouldShowFeedbackView: Boolean = true,
+            private val userEditedName: String? = null,
+            private val userEditedDescription: String? = null,
+            private val userEditedShortDescription: String? = null
         ) : State {
             val variantsCount = minOf(product.names.size, product.descriptions.size, product.shortDescriptions.size)
             val shouldShowVariantSelector = variantsCount > 1
 
-            val title: String
-                get() = product.names[selectedVariant]
-            val description: String
-                get() = product.descriptions[selectedVariant]
-            val shortDescription: String
-                get() = product.shortDescriptions[selectedVariant]
+            val name: TextFieldState = TextFieldState(
+                value = userEditedName ?: product.names[selectedVariant],
+                isValueEditedManually = userEditedName != null
+            )
+            val description: TextFieldState = TextFieldState(
+                value = userEditedDescription ?: product.descriptions[selectedVariant],
+                isValueEditedManually = userEditedDescription != null
+            )
+            val shortDescription: TextFieldState = TextFieldState(
+                value = userEditedShortDescription ?: product.shortDescriptions[selectedVariant],
+                isValueEditedManually = userEditedShortDescription != null
+            )
         }
 
         data class Error(
@@ -157,4 +204,9 @@ class AiProductPreviewViewModel @Inject constructor(
         val image: Image?,
         val showImageFullScreen: Boolean = false
     ) : Parcelable
+
+    data class TextFieldState(
+        val value: String,
+        val isValueEditedManually: Boolean
+    )
 }
