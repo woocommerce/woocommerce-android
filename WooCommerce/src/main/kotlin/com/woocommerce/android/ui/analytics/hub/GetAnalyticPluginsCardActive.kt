@@ -4,13 +4,13 @@ import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.util.FeatureFlag
-import org.wordpress.android.fluxc.store.WooCommerceStore
-import javax.inject.Inject
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.GOOGLE_ADS
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.JETPACK
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES
+import javax.inject.Inject
 
 class GetAnalyticPluginsCardActive @Inject constructor(
     private val selectedSite: SelectedSite,
