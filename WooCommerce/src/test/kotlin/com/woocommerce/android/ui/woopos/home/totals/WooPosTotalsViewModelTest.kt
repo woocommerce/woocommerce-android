@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.WooPosBaseUnitTest
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -20,7 +19,7 @@ import java.util.Date
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosTotalsViewModelTest : WooPosBaseUnitTest() {
+class WooPosTotalsViewModelTest {
     private fun createMockSavedStateHandle(): SavedStateHandle {
         return SavedStateHandle(
             mapOf(

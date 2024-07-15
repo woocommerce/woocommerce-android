@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.woopos.WooPosBaseUnitTest
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -18,7 +17,7 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosProductsViewModelTest : WooPosBaseUnitTest() {
+class WooPosProductsViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val priceFormat: WooPosFormatPrice = mock {

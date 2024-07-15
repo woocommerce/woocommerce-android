@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home
 
-import com.woocommerce.android.ui.woopos.WooPosBaseUnitTest
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -12,7 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosHomeViewModelTest : WooPosBaseUnitTest() {
+class WooPosHomeViewModelTest {
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
 
