@@ -98,8 +98,9 @@ private fun CardReaderStatus(
         label = "CardReaderStatusTransition"
     )
 
+    val animationDuration = 1000
     val illustrationColor by transition.animateColor(
-        transitionSpec = { tween(durationMillis = 300) },
+        transitionSpec = { tween(durationMillis = animationDuration) },
         label = "IllustrationColorTransition"
     ) { status ->
         when (status) {
@@ -109,7 +110,7 @@ private fun CardReaderStatus(
     }
 
     val textColor by transition.animateColor(
-        transitionSpec = { tween(durationMillis = 300) },
+        transitionSpec = { tween(durationMillis = animationDuration) },
         label = "TextColorTransition"
     ) { status ->
         when (status) {
