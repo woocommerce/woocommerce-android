@@ -28,9 +28,9 @@ class GetAnalyticPluginsCardActive @Inject constructor(
 
         val selectedSite = selectedSite.getOrNull() ?: return emptySet()
         return wooCommerceStore.getSitePlugins(selectedSite, analyticPlugins)
-            .filter { pluginModel ->
-                pluginModel.isActive || pluginModel.isValidGoogleAdsPlugin(isGoogleForWooEnabled)
-            }.mapNotNull { pluginModel ->
+            .filter { it.name != GOOGLE_ADS.pluginName || it.isValidGoogleAdsPlugin(isGoogleForWooEnabled) }
+            .filter { it.isActive }
+            .mapNotNull { pluginModel ->
                 when (pluginModel.name) {
                     WOO_PRODUCT_BUNDLES.pluginName -> AnalyticsCards.Bundles
                     WOO_GIFT_CARDS.pluginName -> AnalyticsCards.GiftCards
@@ -41,6 +41,9 @@ class GetAnalyticPluginsCardActive @Inject constructor(
             }.toSet()
     }
 
+    /***
+     * We need a different validation for Google Ads plugin, not only checking if it's active
+     */
     private fun SitePluginModel.isValidGoogleAdsPlugin(isGoogleForWooEnabled: Boolean) =
         name == GOOGLE_ADS.pluginName &&
             FeatureFlag.GOOGLE_ADS_ANALYTICS_HUB_M1.isEnabled() &&
