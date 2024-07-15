@@ -7,6 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.R
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
@@ -18,22 +21,34 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.MediaModel
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val buildProductPreviewProperties: BuildProductPreviewProperties
+    private val buildProductPreviewProperties: BuildProductPreviewProperties,
+    private val mediaFilesRepository: MediaFilesRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
 
-    private val imageState = savedStateHandle.getStateFlow(viewModelScope, ImageState(navArgs.image))
+    private val imageState = savedStateHandle.getStateFlow(
+        viewModelScope, ImageState(
+            navArgs.image,
+            uploadError = null
+        )
+    )
     private val selectedVariant = savedStateHandle.getStateFlow(viewModelScope, 0)
     private val generatedProduct = MutableStateFlow<Result<AIProductModel>?>(
         Result.success(AIProductModel.buildDefault("Name", navArgs.productFeatures))
@@ -49,7 +64,7 @@ class AiProductPreviewViewModel @Inject constructor(
             null -> emit(
                 State.Error(
                     onRetryClick = { TODO() },
-                    onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) }
+                    onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) },
                 )
             )
 
@@ -111,10 +126,50 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onSaveProductAsDraft() {
-        // Upload image if any
+        // Upload image if any selected image
+        launch {
+            val uploadedMediaModel = imageState.value.image
+                ?.let { uploadImage(it) }
+                ?.getOrElse {
+                    val uploadErrorMessageRes = when (it) {
+                        is MediaFilesRepository.MediaUploadException ->
+                            R.string.ai_product_creation_error_media_upload
 
-        // Save product as draft
+                        is OnChangedException ->
+                            R.string.ai_product_creation_error_media_fetch
+
+                        else -> R.string.ai_product_creation_error_media_upload
+                    }
+                    imageState.value = imageState.value.copy(uploadError = uploadErrorMessageRes)
+                    return@launch
+                }
+            // Save product as draft
+            saveProductAsDraft(uploadedMediaModel)
+        }
     }
+
+    private fun saveProductAsDraft(uploadedMediaModel: MediaModel?) {
+        //TODO()
+    }
+
+    private suspend fun uploadImage(selectedImage: Image): Result<MediaModel> =
+        when (selectedImage) {
+            is Image.LocalImage -> mediaFilesRepository.uploadFile(selectedImage.uri)
+                .transform {
+                    when (it) {
+                        is MediaFilesRepository.UploadResult.UploadSuccess -> emit(Result.success(it.media))
+                        is MediaFilesRepository.UploadResult.UploadFailure -> throw it.error
+                        else -> {
+                            /* Do nothing */
+                        }
+                    }
+                }
+                .retry(1)
+                .catch { emit(Result.failure(it)) }
+                .first()
+
+            is Image.WPMediaLibraryImage -> mediaFilesRepository.fetchWordPressMedia(selectedImage.content.id)
+        }
 
     sealed interface State {
         data object Loading : State
@@ -135,14 +190,15 @@ class AiProductPreviewViewModel @Inject constructor(
 
         data class Error(
             val onRetryClick: () -> Unit,
-            val onDismissClick: () -> Unit
+            val onDismissClick: () -> Unit,
         ) : State
     }
 
     @Parcelize
     data class ImageState(
         val image: Image?,
-        val showImageFullScreen: Boolean = false
+        val showImageFullScreen: Boolean = false,
+        @StringRes val uploadError: Int?
     ) : Parcelable
 
     data class ProductPropertyCard(
