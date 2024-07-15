@@ -60,7 +60,7 @@ class SettingsScreen : Screen {
         clickOn(R.id.btn_option_logout)
 
         // Confirm Log Out
-        waitForElementToBeDisplayed(android.R.id.button1) // sign out button is an android
+        waitForElementToBeDisplayed(android.R.id.button1) // sign out button is an Android system resources identifier
         clickButtonInDialogWithTitle(R.string.signout)
     }
 }
