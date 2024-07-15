@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
@@ -31,6 +32,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Replay
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -62,6 +64,9 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
     viewModel.state.observeAsState().value?.let { state ->
         AiProductPreviewScreen(
             state = state,
+            onNameChanged = viewModel::onNameChanged,
+            onDescriptionChanged = viewModel::onDescriptionChanged,
+            onShortDescriptionChanged = viewModel::onShortDescriptionChanged,
             onFeedbackReceived = viewModel::onFeedbackReceived,
             onBackButtonClick = viewModel::onBackButtonClick,
             onImageActionSelected = viewModel::onImageActionSelected,
@@ -75,6 +80,9 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
 @Composable
 private fun AiProductPreviewScreen(
     state: AiProductPreviewViewModel.State,
+    onNameChanged: (String?) -> Unit,
+    onDescriptionChanged: (String?) -> Unit,
+    onShortDescriptionChanged: (String?) -> Unit,
     onFeedbackReceived: (Boolean) -> Unit,
     onBackButtonClick: () -> Unit,
     onImageActionSelected: (ImageAction) -> Unit,
@@ -130,6 +138,9 @@ private fun AiProductPreviewScreen(
 
                 is AiProductPreviewViewModel.State.Success -> ProductPreviewContent(
                     state = state,
+                    onNameChanged = onNameChanged,
+                    onDescriptionChanged = onDescriptionChanged,
+                    onShortDescriptionChanged = onShortDescriptionChanged,
                     onFeedbackReceived = onFeedbackReceived,
                     onImageActionSelected = onImageActionSelected,
                     onFullScreenImageDismissed = onFullScreenImageDismissed,
@@ -152,6 +163,9 @@ private fun AiProductPreviewScreen(
 @Composable
 private fun ProductPreviewContent(
     state: AiProductPreviewViewModel.State.Success,
+    onNameChanged: (String?) -> Unit,
+    onDescriptionChanged: (String?) -> Unit,
+    onShortDescriptionChanged: (String?) -> Unit,
     onFeedbackReceived: (Boolean) -> Unit,
     onImageActionSelected: (ImageAction) -> Unit,
     onFullScreenImageDismissed: () -> Unit,
@@ -174,28 +188,28 @@ private fun ProductPreviewContent(
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.SemiBold
         )
-        Text(
-            text = state.title,
+        ProductTextField(
+            state = state.name,
+            onValueChange = onNameChanged,
             modifier = Modifier
                 .fillMaxWidth()
                 .then(sectionsBorder)
-                .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        Text(
-            text = state.shortDescription,
+        ProductTextField(
+            state = state.shortDescription,
+            onValueChange = onShortDescriptionChanged,
             modifier = Modifier
                 .fillMaxWidth()
                 .then(sectionsBorder)
-                .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        Text(
-            text = state.description,
+        ProductTextField(
+            state = state.description,
+            onValueChange = onDescriptionChanged,
             modifier = Modifier
                 .fillMaxWidth()
                 .then(sectionsBorder)
-                .padding(dimensionResource(id = R.dimen.major_100))
         )
 
         if (state.shouldShowVariantSelector) {
@@ -242,6 +256,32 @@ private fun ProductPreviewContent(
             AiFeedbackForm(
                 onFeedbackReceived = onFeedbackReceived,
             )
+        }
+    }
+}
+
+@Composable
+private fun ProductTextField(
+    state: AiProductPreviewViewModel.TextFieldState,
+    onValueChange: (String?) -> Unit,
+    modifier: Modifier
+) {
+    Column(modifier) {
+        BasicTextField(
+            value = state.value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        )
+
+        AnimatedVisibility(state.isValueEditedManually) {
+            Column {
+                Divider()
+                WCTextButton(
+                    onClick = { onValueChange(null) },
+                    text = stringResource(id = R.string.product_creation_ai_preview_undo_edits),
+                    icon = Icons.Default.Replay
+                )
+            }
         }
     }
 }
@@ -491,6 +531,9 @@ private fun ProductPreviewLoadingPreview() {
     WooThemeWithBackground {
         AiProductPreviewScreen(
             state = AiProductPreviewViewModel.State.Loading,
+            onNameChanged = {},
+            onDescriptionChanged = {},
+            onShortDescriptionChanged = {},
             onFeedbackReceived = {},
             onBackButtonClick = {},
             onImageActionSelected = {},
@@ -538,6 +581,9 @@ private fun ProductPreviewContentPreview() {
                 ),
                 imageState = AiProductPreviewViewModel.ImageState(null)
             ),
+            onNameChanged = {},
+            onDescriptionChanged = {},
+            onShortDescriptionChanged = {},
             onFeedbackReceived = {},
             onBackButtonClick = {},
             onImageActionSelected = {},
