@@ -24,7 +24,6 @@ import java.math.BigDecimal
 import java.util.Date
 import kotlin.test.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalCoroutinesApi
 @Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)

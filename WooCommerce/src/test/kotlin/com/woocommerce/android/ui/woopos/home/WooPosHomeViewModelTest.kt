@@ -16,7 +16,6 @@ import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertFalse
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalCoroutinesApi
 @Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)

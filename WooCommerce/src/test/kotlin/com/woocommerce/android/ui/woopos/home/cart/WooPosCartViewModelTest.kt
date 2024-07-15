@@ -26,7 +26,6 @@ import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalCoroutinesApi
 @Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)

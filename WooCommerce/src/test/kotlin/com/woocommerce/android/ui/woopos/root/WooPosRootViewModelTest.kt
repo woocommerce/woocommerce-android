@@ -27,7 +27,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @ExperimentalCoroutinesApi
 @Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
