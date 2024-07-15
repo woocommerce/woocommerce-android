@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -151,25 +150,20 @@ private fun WooPosHomeScreen(
                 .width(cartWidthDp)
                 .background(MaterialTheme.colors.surface)
         ) {
-            Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
             Box {
                 WooPosHomeScreenCart(
                     modifier = Modifier
-                        .width(cartWidthDp - 48.dp.toAdaptivePadding())
-                        .padding(vertical = 24.dp.toAdaptivePadding())
+                        .width(cartWidthDp)
                 )
                 Box(
                     modifier = Modifier
-                        .width(cartWidthDp - 48.dp.toAdaptivePadding())
-                        .padding(vertical = 24.dp.toAdaptivePadding())
+                        .width(cartWidthDp)
                         .fillMaxHeight()
                         .background(
                             color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                            shape = RoundedCornerShape(16.dp.toAdaptivePadding())
                         )
                 )
             }
-            Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
         }
         Row(modifier = Modifier.width(totalsWidthDp)) {
             Spacer(modifier = Modifier.width(totalsStartPaddingDp))
