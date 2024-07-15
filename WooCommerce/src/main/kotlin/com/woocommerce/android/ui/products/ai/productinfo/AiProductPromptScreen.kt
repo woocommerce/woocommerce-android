@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,6 +51,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -72,9 +75,9 @@ import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import kotlin.math.roundToInt
 
 @Composable
 fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
@@ -321,6 +324,8 @@ private fun ProductPromptTextField(
 ) {
     val coroutineScope = rememberCoroutineScope()
     var isFocused by remember { mutableStateOf(false) }
+    var scrollToPosition by remember { mutableFloatStateOf(0F) }
+
     Column {
         Column(
             modifier = Modifier
@@ -363,11 +368,11 @@ private fun ProductPromptTextField(
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
                             if (isFocused) {
-                                coroutineScope.launch {
-                                    delay(300) // Delay to ensure advice box is shown before scrolling
-                                    scrollState.animateScrollTo(scrollState.maxValue)
-                                }
+                                coroutineScope.launch { scrollState.animateScrollTo(scrollToPosition.roundToInt()) }
                             }
+                        }
+                        .onGloballyPositioned { coordinates ->
+                            scrollToPosition = coordinates.positionInRoot().y
                         }
                 )
             }
