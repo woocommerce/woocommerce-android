@@ -153,19 +153,21 @@ private fun CartToolbar(
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-            IconButton(
-                onClick = { onBackClicked() },
-                modifier = Modifier.constrainAs(backButton) {
-                    start.linkTo(parent.start)
-                    centerVerticallyTo(parent)
+            toolbar.icon?.let {
+                IconButton(
+                    onClick = { onBackClicked() },
+                    modifier = Modifier.constrainAs(backButton) {
+                        start.linkTo(parent.start)
+                        centerVerticallyTo(parent)
+                    }
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(toolbar.icon),
+                        contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                        tint = MaterialTheme.colors.onBackground,
+                        modifier = Modifier.size(28.dp)
+                    )
                 }
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(toolbar.icon),
-                    contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                    tint = MaterialTheme.colors.onBackground,
-                    modifier = Modifier.size(28.dp)
-                )
             }
 
             if (!isNarrowScreen) {
@@ -295,13 +297,13 @@ private fun ProductItem(
 
 @Composable
 @WooPosPreview
-fun WooPosCartScreenPreview(modifier: Modifier = Modifier) {
+fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
     WooPosTheme {
         WooPosCartScreen(
             modifier = modifier,
             state = WooPosCartState(
                 toolbar = WooPosCartToolbar(
-                    icon = R.drawable.ic_shopping_cart,
+                    icon = null,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
@@ -328,6 +330,46 @@ fun WooPosCartScreenPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = true,
                 isOrderCreationInProgress = true,
+                isCheckoutButtonVisible = true
+            )
+        ) {}
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
+    WooPosTheme {
+        WooPosCartScreen(
+            modifier = modifier,
+            state = WooPosCartState(
+                toolbar = WooPosCartToolbar(
+                    icon = R.drawable.ic_back_24dp,
+                    itemsCount = "3 items",
+                    isClearAllButtonVisible = true
+                ),
+                itemsInCart = listOf(
+                    WooPosCartListItem(
+                        id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
+                        imageUrl = "",
+                        name = "VW California",
+                        price = "€50,000"
+                    ),
+                    WooPosCartListItem(
+                        id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
+                        imageUrl = "",
+                        name = "VW California",
+                        price = "$150,000"
+                    ),
+                    WooPosCartListItem(
+                        id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
+                        imageUrl = "",
+                        name = "VW California",
+                        price = "€250,000"
+                    )
+                ),
+                areItemsRemovable = false,
+                isOrderCreationInProgress = false,
                 isCheckoutButtonVisible = true
             )
         ) {}
