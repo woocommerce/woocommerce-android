@@ -57,15 +57,10 @@ fun WooPosBottomToolbar(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(
-                horizontal = 24.dp.toAdaptivePadding(),
-                vertical = 8.dp.toAdaptivePadding()
-            )
+            modifier = Modifier.padding(8.dp.toAdaptivePadding())
         ) {
             ExitPosButton { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
-            Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
             DividerVertical()
-            Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
             CardReaderStatus(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
         }
     }
@@ -74,17 +69,21 @@ fun WooPosBottomToolbar(
 @Composable
 private fun ExitPosButton(onClick: () -> Unit) {
     TextButton(onClick = onClick) {
+        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         Icon(
             imageVector = ImageVector.vectorResource(id = R.drawable.woopos_ic_exit_pos),
             contentDescription = null,
             tint = MaterialTheme.colors.secondaryVariant,
+            modifier = Modifier.size(14.dp)
         )
-        Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
         Text(
+            modifier = Modifier.padding(8.dp.toAdaptivePadding()),
             text = stringResource(id = R.string.woopos_exit_pos),
             color = MaterialTheme.colors.secondaryVariant,
             style = MaterialTheme.typography.button
         )
+        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
     }
 }
 
@@ -129,6 +128,7 @@ private fun CardReaderStatus(
     )
 
     TextButton(onClick = onClick) {
+        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         ReaderStatusIllustration(illustrationColor)
         Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
         ReaderStatusText(
@@ -136,6 +136,7 @@ private fun CardReaderStatus(
             title = title,
             color = textColor,
         )
+        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
     }
 }
 
