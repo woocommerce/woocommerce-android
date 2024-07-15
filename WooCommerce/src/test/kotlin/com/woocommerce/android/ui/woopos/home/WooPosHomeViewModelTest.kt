@@ -27,9 +27,6 @@ class WooPosHomeViewModelTest {
             .invoke(null, false)
     }
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Rule

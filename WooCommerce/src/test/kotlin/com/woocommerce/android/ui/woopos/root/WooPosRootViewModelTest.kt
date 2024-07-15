@@ -42,10 +42,6 @@ class WooPosRootViewModelTest {
 
     @Rule
     @JvmField
-    val rule = InstantTaskExecutorRule()
-
-    @Rule
-    @JvmField
     val coroutinesTestRule = CoroutineTestRule(testDispatcher)
 
     @get:Rule

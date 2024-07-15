@@ -31,9 +31,6 @@ import kotlin.test.Test
 @RunWith(MockitoJUnitRunner::class)
 class WooPosCartViewModelTest {
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Rule
