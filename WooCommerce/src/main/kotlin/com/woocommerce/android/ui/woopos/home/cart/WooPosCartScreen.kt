@@ -195,8 +195,8 @@ private fun CartToolbar(
 
             Text(
                 text = toolbar.itemsCount,
-                style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.secondaryVariant,
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.6f),
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 modifier = Modifier.constrainAs(itemsCount) {
