@@ -27,7 +27,6 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-@Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
 class WooPosCartViewModelTest {
 

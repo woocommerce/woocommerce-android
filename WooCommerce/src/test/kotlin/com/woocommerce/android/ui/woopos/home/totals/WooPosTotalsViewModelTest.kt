@@ -25,7 +25,6 @@ import java.util.Date
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-@Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
 class WooPosTotalsViewModelTest {
 

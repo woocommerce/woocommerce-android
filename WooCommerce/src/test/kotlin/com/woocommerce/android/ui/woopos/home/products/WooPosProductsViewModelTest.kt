@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -23,7 +22,6 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-@Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
 class WooPosProductsViewModelTest {
 

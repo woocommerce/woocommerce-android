@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,7 +16,6 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
-@Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
 class WooPosHomeViewModelTest {
 

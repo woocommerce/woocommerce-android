@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.root
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
@@ -28,7 +27,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
 @ExperimentalCoroutinesApi
-@Suppress("UnnecessaryAbstractClass")
 @RunWith(MockitoJUnitRunner::class)
 class WooPosRootViewModelTest {
 
