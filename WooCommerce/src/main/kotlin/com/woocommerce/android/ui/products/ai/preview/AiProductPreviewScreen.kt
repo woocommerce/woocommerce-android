@@ -198,7 +198,7 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
-        if (true || state.shouldShowVariantSelector) {
+        if (state.shouldShowVariantSelector) {
             Spacer(Modifier)
             ProductVariantSelector(
                 selectedVariant = state.selectedVariant,
