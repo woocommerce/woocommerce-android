@@ -145,10 +145,12 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onSelectNextVariant() {
+        saveUserEditedFields()
         selectedVariant.update { it + 1 }
     }
 
     fun onSelectPreviousVariant() {
+        saveUserEditedFields()
         selectedVariant.update { it - 1 }
     }
 
@@ -162,6 +164,27 @@ class AiProductPreviewViewModel @Inject constructor(
 
     fun onShortDescriptionChanged(shortDescription: String?) {
         userEditedShortDescription.value = shortDescription
+    }
+
+    private fun saveUserEditedFields() {
+        generatedProduct.update { result ->
+            result?.map { product ->
+                product.copy(
+                    names = product.names.toMutableList().apply {
+                        set(selectedVariant.value, userEditedName.value ?: get(selectedVariant.value))
+                    },
+                    descriptions = product.descriptions.toMutableList().apply {
+                        set(selectedVariant.value, userEditedDescription.value ?: get(selectedVariant.value))
+                    },
+                    shortDescriptions = product.shortDescriptions.toMutableList().apply {
+                        set(selectedVariant.value, userEditedShortDescription.value ?: get(selectedVariant.value))
+                    }
+                )
+            }
+        }
+        userEditedName.value = null
+        userEditedDescription.value = null
+        userEditedShortDescription.value = null
     }
 
     sealed interface State {
