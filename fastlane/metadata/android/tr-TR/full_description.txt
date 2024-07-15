@@ -15,7 +15,7 @@ Her satıştan haberdar olun
 Artık aktif olarak satış yaptığınız için hiçbir siparişi veya yorumu kaçırmayın. Gerçek zamanlı uyarıları etkinleştirerek hiçbir şeyi kaçırmayın ve her yeni satışla birlikte duyacağınız o bağımlılık yaratan "yazarkasa" sesine odaklanın!
 
 Satışları ve en çok satan ürünleri takip edin
-Hangi ürünlerin en çok sattığını bir bakışta görün. Haftaya, aya ve yıla göre toplam gelirinizi, sipariş sayısını ve ziyaretçi verilerini takip edin. Bilgi = Güç.
+Hangi ürünlerin en çok sattığını bir bakışta görün. Haftaya, aya ve yıla göre toplam gelirinizi, sipariş sayısını ve ziyaretçi verilerini takip edin. Bilgi = güç.
 
 WooCommerce artık akıllı saatinizde
 WooCommerce Wear OS Uygulamamızla doğrudan bileğinizden bugünün mağaza verilerini görüntüleyebilir ve siparişlerinizi takip edebilirsiniz. Komplikasyonlarımızla uygulamaya da anında erişebilirsiniz.

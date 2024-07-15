@@ -1,11 +1,12 @@
 package com.woocommerce.android.ui.products.ai
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.capitalize
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.ai.ProductPreviewSubViewModel.ProductPropertyCard
 import com.woocommerce.android.ui.products.details.ProductDetailCardBuilder
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -47,6 +48,11 @@ class BuildProductPreviewProperties @Inject constructor(
             }
         )
     }
+
+    operator fun invoke(
+        product: AIProductModel,
+        variant: Int
+    ): List<List<ProductPropertyCard>> = invoke(product.toProduct(variant))
 
     private fun Product.productType(): ProductPropertyCard {
         fun Product.productTypeDisplayName(): String {
@@ -121,3 +127,9 @@ class BuildProductPreviewProperties @Inject constructor(
         )
     }
 }
+
+data class ProductPropertyCard(
+    @DrawableRes val icon: Int,
+    @StringRes val title: Int,
+    val content: String
+)

@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.products.ai
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
@@ -32,7 +30,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductError
 class ProductPreviewSubViewModel(
     private val aiRepository: AIRepository,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
-    private val generateProductWithAI: GenerateProductWithAI,
+    private val generateProductWithAI: GenerateProductWithAILegacy,
     private val tracker: AnalyticsTrackerWrapper,
     override val onDone: (Product) -> Unit,
 ) : AddProductWithAISubViewModel<Product> {
@@ -206,10 +204,4 @@ class ProductPreviewSubViewModel(
             val onDismissClick: () -> Unit
         ) : State
     }
-
-    data class ProductPropertyCard(
-        @DrawableRes val icon: Int,
-        @StringRes val title: Int,
-        val content: String
-    )
 }
