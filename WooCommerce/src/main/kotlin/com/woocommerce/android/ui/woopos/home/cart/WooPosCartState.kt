@@ -10,7 +10,6 @@ data class WooPosCartState(
     val toolbar: WooPosCartToolbar = WooPosCartToolbar(),
     val itemsInCart: List<WooPosCartListItem> = emptyList(),
     val areItemsRemovable: Boolean = true,
-    val isOrderCreationInProgress: Boolean = false,
     val isCheckoutButtonVisible: Boolean = true,
 ) : Parcelable
 

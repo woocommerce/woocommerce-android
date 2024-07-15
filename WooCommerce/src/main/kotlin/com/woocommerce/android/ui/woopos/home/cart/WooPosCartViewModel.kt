@@ -59,8 +59,6 @@ class WooPosCartViewModel @Inject constructor(
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
                 val currentState = _state.value
-                if (currentState.isOrderCreationInProgress) return
-
                 _state.value = currentState.copy(itemsInCart = currentState.itemsInCart - event.item)
             }
 
@@ -76,8 +74,6 @@ class WooPosCartViewModel @Inject constructor(
 
             WooPosCartUIEvent.ClearAllClicked -> {
                 val currentState = _state.value
-                if (currentState.isOrderCreationInProgress) return
-
                 _state.value = currentState.copy(
                     itemsInCart = emptyList()
                 )
@@ -100,8 +96,6 @@ class WooPosCartViewModel @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
-                        if (_state.value.isOrderCreationInProgress) return@collect
-
                         val itemClicked = viewModelScope.async {
                             val product = getProductById(event.productId)!!
                             val itemNumber = (_state.value.itemsInCart.maxOfOrNull { it.id.itemNumber } ?: 0) + 1

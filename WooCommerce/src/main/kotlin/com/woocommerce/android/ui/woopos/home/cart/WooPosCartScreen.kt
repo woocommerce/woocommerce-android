@@ -117,7 +117,6 @@ private fun WooPosCartScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth(),
-                    enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
                     text = stringResource(R.string.woopos_checkout_button),
                     onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
                 )
@@ -329,7 +328,6 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                     )
                 ),
                 areItemsRemovable = true,
-                isOrderCreationInProgress = true,
                 isCheckoutButtonVisible = true
             )
         ) {}
@@ -369,7 +367,6 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                     )
                 ),
                 areItemsRemovable = false,
-                isOrderCreationInProgress = false,
                 isCheckoutButtonVisible = true
             )
         ) {}
