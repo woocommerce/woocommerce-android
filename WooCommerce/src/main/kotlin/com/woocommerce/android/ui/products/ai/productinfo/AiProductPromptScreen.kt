@@ -118,7 +118,9 @@ fun AiProductPromptScreen(
     val scrollState = rememberScrollState()
 
     @Composable
-    fun GenerateProductButton(modifier: Modifier = Modifier) {
+    fun GenerateProductButton(
+        modifier: Modifier = Modifier
+    ) {
         WCColoredButton(
             enabled = uiState.productPrompt.isNotEmpty(),
             onClick = onGenerateProductClicked,
@@ -141,12 +143,12 @@ fun AiProductPromptScreen(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(padding)
-                .padding(16.dp)
                 .fillMaxSize()
         ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .padding(horizontal = 16.dp)
                     .verticalScroll(scrollState)
             ) {
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -184,17 +186,18 @@ fun AiProductPromptScreen(
                     onToneSelected = onToneSelected,
                     modifier = Modifier.padding(bottom = 56.dp)
                 )
-                Spacer(modifier = Modifier.weight(1f))
 
                 // Button will scroll with the rest of UI on landscape mode, or... (see below)
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    GenerateProductButton(Modifier.padding(top = 16.dp))
+                    Divider()
+                    GenerateProductButton(Modifier.padding(16.dp))
                 }
             }
 
             // Button will stick to the bottom on portrait mode
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                GenerateProductButton()
+                Divider()
+                GenerateProductButton(modifier = Modifier.padding(16.dp))
             }
         }
     }
@@ -207,7 +210,7 @@ fun AiProductPromptScreen(
 }
 
 @Composable
-fun PromptSuggestions(
+private fun PromptSuggestions(
     promptSuggestionBarState: PromptSuggestionBar,
     modifier: Modifier = Modifier
 ) {
