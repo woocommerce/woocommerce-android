@@ -65,7 +65,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     private val widgetMenu = DashboardWidgetMenu(
         items = listOf(
             DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry {
-                // todo
+                parentViewModel.onHideWidgetClicked(DashboardWidget.Type.GOOGLE_ADS)
             }
         )
     )
