@@ -34,9 +34,14 @@ import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -190,6 +195,7 @@ private fun ProductPreviewContent(
         )
         ProductTextField(
             state = state.name,
+            selectedVariant = state.selectedVariant,
             onValueChange = onNameChanged,
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,6 +204,7 @@ private fun ProductPreviewContent(
 
         ProductTextField(
             state = state.shortDescription,
+            selectedVariant = state.selectedVariant,
             onValueChange = onShortDescriptionChanged,
             modifier = Modifier
                 .fillMaxWidth()
@@ -206,6 +213,7 @@ private fun ProductPreviewContent(
 
         ProductTextField(
             state = state.description,
+            selectedVariant = state.selectedVariant,
             onValueChange = onDescriptionChanged,
             modifier = Modifier
                 .fillMaxWidth()
@@ -263,14 +271,27 @@ private fun ProductPreviewContent(
 @Composable
 private fun ProductTextField(
     state: AiProductPreviewViewModel.TextFieldState,
+    selectedVariant: Int,
     onValueChange: (String?) -> Unit,
     modifier: Modifier
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(selectedVariant) {
+        // Clear focus when the selected variant changes, otherwise the cursor will be at the wrong position
+        // depending on the previous variant's text length
+        focusManager.clearFocus()
+    }
+
     Column(modifier) {
         BasicTextField(
             value = state.value,
             onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .focusRequester(focusRequester)
         )
 
         AnimatedVisibility(state.isValueEditedManually) {
