@@ -24,7 +24,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -52,6 +51,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 
 @Composable
@@ -73,7 +73,9 @@ private fun WooPosCartScreen(
         modifier = modifier
     ) {
         Box(
-            Modifier.padding(8.dp.toAdaptivePadding()).background(MaterialTheme.colors.surface)
+            Modifier
+                .padding(8.dp.toAdaptivePadding())
+                .background(MaterialTheme.colors.surface)
         ) {
             Column {
                 CartToolbar(
@@ -208,25 +210,18 @@ private fun CartToolbar(
                         }
                     )
                     centerVerticallyTo(parent)
-                }
+                }.padding(end = 16.dp.toAdaptivePadding())
             )
 
             if (toolbar.isClearAllButtonVisible) {
-                TextButton(
+                WooPosOutlinedButton(
                     onClick = { onClearAllClicked() },
                     modifier = Modifier.constrainAs(clearAllButton) {
                         end.linkTo(parent.end)
                         centerVerticallyTo(parent)
-                    }
-                ) {
-                    Text(
-                        text = stringResource(R.string.woopos_clear_cart_button),
-                        style = MaterialTheme.typography.h6,
-                        color = MaterialTheme.colors.primary,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                    )
-                }
+                    },
+                    text = stringResource(R.string.woopos_clear_cart_button)
+                )
             }
         }
     }

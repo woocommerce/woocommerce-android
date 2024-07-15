@@ -4156,7 +4156,7 @@
     <string name="woopos_checkout_button">Check out</string>
     <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
     <string name="woopos_cart_title">Cart</string>
-    <string name="woopos_clear_cart_button">Clear all</string>
+    <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
