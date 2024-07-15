@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -31,7 +33,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -84,7 +85,7 @@ private fun WooPosCartScreen(
                     onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
                 )
 
-                Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
 
                 val listState = rememberLazyListState()
                 ScrollToBottomHandler(state, listState)
@@ -95,6 +96,7 @@ private fun WooPosCartScreen(
                     state = listState,
                     verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    contentPadding = PaddingValues(top = 4.dp.toAdaptivePadding()),
                 ) {
                     items(
                         state.itemsInCart,
@@ -201,16 +203,18 @@ private fun CartToolbar(
                 color = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.6f),
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
-                modifier = Modifier.constrainAs(itemsCount) {
-                    end.linkTo(
-                        if (toolbar.isClearAllButtonVisible) {
-                            clearAllButton.start
-                        } else {
-                            parent.end
-                        }
-                    )
-                    centerVerticallyTo(parent)
-                }.padding(end = 16.dp.toAdaptivePadding())
+                modifier = Modifier
+                    .constrainAs(itemsCount) {
+                        end.linkTo(
+                            if (toolbar.isClearAllButtonVisible) {
+                                clearAllButton.start
+                            } else {
+                                parent.end
+                            }
+                        )
+                        centerVerticallyTo(parent)
+                    }
+                    .padding(end = 16.dp.toAdaptivePadding())
             )
 
             if (toolbar.isClearAllButtonVisible) {
@@ -234,58 +238,62 @@ private fun ProductItem(
     canRemoveItems: Boolean,
     onRemoveClicked: (item: WooPosCartListItem) -> Unit
 ) {
-    Row(
+    Card(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colors.background)
             .height(64.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        elevation = 4.dp,
+        shape = RoundedCornerShape(8.dp),
     ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(item.imageUrl)
-                .crossfade(true)
-                .build(),
-            fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-            error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-            placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-            contentDescription = stringResource(R.string.woopos_product_image_description),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.size(64.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
-
-        Column(
-            modifier = Modifier.weight(1f)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = item.name,
-                style = MaterialTheme.typography.body1,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                contentDescription = stringResource(R.string.woopos_product_image_description),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(64.dp)
             )
-            Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-            Text(text = item.price, style = MaterialTheme.typography.body1)
-        }
 
-        if (canRemoveItems) {
-            Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
 
-            IconButton(
-                onClick = { onRemoveClicked(item) },
-                modifier = Modifier
-                    .size(24.dp)
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                    tint = MaterialTheme.colors.onBackground,
-                    contentDescription = "Remove item",
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
+                Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                Text(text = item.price, style = MaterialTheme.typography.body1)
             }
+
+            if (canRemoveItems) {
+                Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+
+                IconButton(
+                    onClick = { onRemoveClicked(item) },
+                    modifier = Modifier
+                        .size(24.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
+                        tint = MaterialTheme.colors.onBackground,
+                        contentDescription = "Remove item",
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         }
-        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
     }
 }
 
