@@ -2201,7 +2201,9 @@
     <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
     <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
     <string name="product_creation_ai_preview_title">Preview</string>
-    <string name="product_creation_ai_preview_subtitle">You can always change the below details later.</string>
+    <string name="product_creation_ai_preview_subtitle">You can edit or regenerate your product details before saving.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">You can always change the below details later.</string>
+    <string name="product_creation_ai_preview_name_description_sections">Name, Summary &amp; Description</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
     <string name="product_creation_ai_preview_short_description_section">Product short description</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
@@ -2230,6 +2232,7 @@
     <string name="ai_product_creation_replace_image">Replace photo</string>
     <string name="ai_product_creation_remove_image">Remove photo</string>
     <string name="ai_product_creation_image_selected">Photo selected</string>
+    <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
 

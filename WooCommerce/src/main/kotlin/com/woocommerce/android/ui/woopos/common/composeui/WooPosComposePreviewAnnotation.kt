@@ -20,7 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 @Preview(
     name = "Tablet Small",
     showSystemUi = true,
-    device = "spec:width=440dp,height=920dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape",
+    device = "spec:width=674dp,height=800dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape",
     uiMode = Configuration.UI_MODE_TYPE_NORMAL
 )
 annotation class WooPosPreview

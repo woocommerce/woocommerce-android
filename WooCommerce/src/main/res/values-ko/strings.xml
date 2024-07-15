@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 09:54:04+0000
+Translation-Revision-Date: 2024-07-09 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">지금 연결</string>
+    <string name="woopos_cart_title">장바구니</string>
+    <string name="ai_product_creation_generate_details_button">상품 상세 정보 만들기</string>
+    <string name="ai_product_creation_read_text_from_photo_button">제품 사진에서 텍스트 읽기</string>
+    <string name="ai_product_creation_prompt_placeholder">예: 검은색 면 티셔츠, 부드러운 원단, 튼튼한 바느질, 독특한 디자인</string>
+    <string name="ai_product_creation_product_prompt_subtitle">제품에 대해 이야기해 주세요. 어떤 제품이고 왜 독특한지 설명해 주시면 AI가 마법을 부리기 시작합니다.</string>
+    <string name="ai_product_creation_product_prompt_title">시작하기 위한 정보</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">AI가 제품의 상세 정보를 만듭니다.</string>
     <string name="woopos_payment_collect_payment_label">카드 결제 수령</string>
     <string name="woopos_payment_total_label">합계</string>
     <string name="woopos_payment_tax_label">세금</string>
     <string name="woopos_payment_subtotal_label">소계</string>
-    <string name="woo_pos_new_transaction_button">새로운 거래</string>
+    <string name="woopos_new_transaction_button">새로운 거래</string>
     <string name="woopos_payment_successful_label">결제 성공</string>
     <string name="woopos_payment_failed_please_try_again">결제에 실패했습니다. 다시 시도해 주세요.</string>
-    <string name="woo_pos_cart_back_content_description">장바구니 아이콘</string>
+    <string name="woopos_cart_back_content_description">장바구니 아이콘</string>
     <string name="woopos_products_screen_title">상품</string>
     <string name="woopos_product_image_description">상품 이미지</string>
-    <string name="woo_pos_items_in_cart">아이템 %d개</string>
-    <string name="woo_pos_clear_cart_button">모두 지우기</string>
+    <string name="woopos_items_in_cart">아이템 %d개</string>
+    <string name="woopos_clear_cart_button">모두 지우기</string>
     <string name="more_menu_button_google_description">Google Ads로 매출과 트래픽을 늘리세요</string>
     <string name="more_menu_button_google">우커머스용 Google</string>
     <string name="no_quantity_rules">수량 규칙 없음</string>
@@ -26,7 +34,6 @@ Language: ko_KR
     <string name="woopos_exit_confirmation_confirm_button">종료</string>
     <string name="woopos_exit_confirmation_message">POS를 종료하시겠어요?</string>
     <string name="woopos_exit_confirmation_title">POS 종료</string>
-    <string name="woopos_cart_title">장바구니</string>
     <string name="woopos_remove_item_from_cart_content_description">장바구니에서 아이템 빼기</string>
     <string name="woopos_checkout_button">체크아웃</string>
     <string name="woopos_reader_unknown">리더 상태 알 수 없음</string>
@@ -609,7 +616,7 @@ Language: ko_KR
     <string name="product_creation_ai_preview_details_section">상세 정보</string>
     <string name="product_creation_ai_preview_description_section">상품 설명</string>
     <string name="product_creation_ai_preview_name_section">상품 이름</string>
-    <string name="product_creation_ai_preview_subtitle">아래의 상세 정보는 나중에 언제든지 변경하실 수 있습니다.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">아래의 상세 정보는 나중에 언제든지 변경하실 수 있습니다.</string>
     <string name="product_creation_ai_preview_title">미리보기</string>
     <string name="product_creation_ai_about_product_continue_button">상품 상세 정보 생성</string>
     <string name="product_creation_ai_about_product_set_tone">어조 및 목소리 설정</string>

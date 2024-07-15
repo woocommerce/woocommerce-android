@@ -1,32 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 11:54:03+0000
+Translation-Revision-Date: 2024-07-10 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">Anslut nu</string>
+    <string name="woopos_cart_title">Varukorg</string>
+    <string name="ai_product_creation_generate_details_button">Generera produktdetaljer</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Läs text från produktfoto</string>
+    <string name="ai_product_creation_prompt_placeholder">Till exempel: Svart t-shirt i bomull, mjukt tyg, slitstarka sömmar, unik design</string>
+    <string name="ai_product_creation_product_prompt_title">Startinformation</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Låt oss generera produktinformation åt dig</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Berätta för oss om din produkt, vad det är och vad som gör produkten unik, och låt sedan AI:n göra sitt jobb.</string>
     <string name="woopos_payment_total_label">Totalt</string>
     <string name="woopos_payment_tax_label">Moms</string>
     <string name="woopos_payment_subtotal_label">Delsumma</string>
-    <string name="woo_pos_new_transaction_button">Ny transaktion</string>
+    <string name="woopos_new_transaction_button">Ny transaktion</string>
     <string name="woopos_payment_successful_label">Betalning lyckades</string>
     <string name="woopos_payment_failed_please_try_again">Betalning misslyckades. Försök igen.</string>
-    <string name="woo_pos_cart_back_content_description">Varukorgsikon</string>
+    <string name="woopos_cart_back_content_description">Varukorgsikon</string>
     <string name="woopos_products_screen_title">Produkter</string>
     <string name="woopos_product_image_description">Produktbild</string>
-    <string name="woo_pos_clear_cart_button">Rensa allt</string>
+    <string name="woopos_clear_cart_button">Rensa allt</string>
     <string name="more_menu_button_google">Google för WooCommerce</string>
     <string name="no_quantity_rules">Inga regler för antal</string>
     <string name="more_menu_button_google_description">Öka försäljningen och generera mer trafik med Google Ads</string>
-    <string name="woo_pos_items_in_cart">%d artiklar</string>
+    <string name="woopos_items_in_cart">%d artiklar</string>
     <string name="woopos_payment_collect_payment_label">Ta emot kortbetalning</string>
     <string name="blaze_campaign_preview_audience_section_title">Målgrupp</string>
     <string name="woopos_exit_confirmation_dismiss_button">Avbryt</string>
     <string name="woopos_exit_confirmation_confirm_button">Avsluta</string>
     <string name="woopos_exit_confirmation_message">Är du säker på att du vill avsluta POS?</string>
     <string name="woopos_exit_confirmation_title">Avsluta POS</string>
-    <string name="woopos_cart_title">Varukorg</string>
     <string name="woopos_checkout_button">Kassa</string>
     <string name="woopos_remove_item_from_cart_content_description">Ta bort vara från varukorg</string>
     <string name="dashboard_new_widgets_card_button">Lägg till nya sektioner</string>
@@ -609,7 +616,7 @@ Language: sv_SE
     <string name="product_creation_ai_tone_casual">Avslappnad</string>
     <string name="product_creation_ai_tone_description">Ställ in ton och röst för att forma presentationen av din produkt så att den passar ditt varumärke.</string>
     <string name="product_creation_ai_tone_title">Ton och röst</string>
-    <string name="product_creation_ai_preview_subtitle">Du kan alltid ändra detaljerna nedan senare.</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">Du kan alltid ändra detaljerna nedan senare.</string>
     <string name="product_creation_ai_preview_title">Förhandsgranska</string>
     <string name="product_creation_ai_about_product_continue_button">Skapa produktdetaljer</string>
     <string name="product_creation_ai_about_product_set_tone">Ställ in ton och röst</string>
