@@ -32,7 +32,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenPreview
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreenPreview
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
@@ -195,7 +194,7 @@ private fun WooPosHomeScreenProducts(modifier: Modifier) {
 @Composable
 private fun WooPosHomeScreenCart(modifier: Modifier) {
     if (isPreviewMode()) {
-        WooPosCartScreenPreview(modifier)
+        WooPosProductsScreenPreview(modifier)
     } else {
         WooPosCartScreen(modifier)
     }
