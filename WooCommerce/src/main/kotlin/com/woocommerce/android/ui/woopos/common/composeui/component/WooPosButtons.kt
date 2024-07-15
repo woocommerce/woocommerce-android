@@ -54,10 +54,17 @@ fun WooPosOutlinedButton(
         onClick = onClick,
         border = BorderStroke(1.dp, MaterialTheme.colors.primary),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.background,
+            backgroundColor = MaterialTheme.colors.surface,
             contentColor = MaterialTheme.colors.onBackground,
         ),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        elevation = ButtonDefaults.elevation(
+            defaultElevation = 0.dp,
+            pressedElevation = 0.dp,
+            disabledElevation = 0.dp,
+            hoveredElevation = 0.dp,
+            focusedElevation = 0.dp
+        )
     ) {
         Text(
             text = text,
