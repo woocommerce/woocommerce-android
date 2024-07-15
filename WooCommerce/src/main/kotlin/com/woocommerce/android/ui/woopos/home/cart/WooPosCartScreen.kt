@@ -6,7 +6,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -147,82 +146,78 @@ private fun CartToolbar(
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
 ) {
-    BoxWithConstraints {
-        val isNarrowScreen = maxWidth < 300.dp
-        ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-            val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
+    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+        val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-            toolbar.icon?.let {
-                IconButton(
-                    onClick = { onBackClicked() },
-                    modifier = Modifier.constrainAs(backButton) {
-                        start.linkTo(parent.start)
-                        centerVerticallyTo(parent)
-                    }
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(toolbar.icon),
-                        contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                        tint = MaterialTheme.colors.onBackground,
-                        modifier = Modifier.size(28.dp)
-                    )
+        toolbar.icon?.let {
+            IconButton(
+                onClick = { onBackClicked() },
+                modifier = Modifier.constrainAs(backButton) {
+                    start.linkTo(parent.start)
+                    centerVerticallyTo(parent)
                 }
-            }
-
-            if (!isNarrowScreen) {
-                val cartTitleEndMargin = 16.dp.toAdaptivePadding()
-                Text(
-                    text = stringResource(R.string.woopos_cart_title),
-                    style = MaterialTheme.typography.h4,
-                    color = MaterialTheme.colors.onBackground,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    modifier = Modifier.constrainAs(title) {
-                        start.linkTo(backButton.end, margin = cartTitleEndMargin)
-                        centerVerticallyTo(parent)
-                    }
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(toolbar.icon),
+                    contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                    tint = MaterialTheme.colors.onBackground,
+                    modifier = Modifier.size(28.dp)
                 )
             }
+        }
 
-            Spacer(
-                modifier = Modifier
-                    .constrainAs(spacer) {
-                        start.linkTo(title.end)
-                        end.linkTo(itemsCount.start)
-                        width = Dimension.fillToConstraints
-                    }
-            )
-
-            Text(
-                text = toolbar.itemsCount,
-                style = MaterialTheme.typography.body2,
-                color = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.6f),
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                modifier = Modifier
-                    .constrainAs(itemsCount) {
-                        end.linkTo(
-                            if (toolbar.isClearAllButtonVisible) {
-                                clearAllButton.start
-                            } else {
-                                parent.end
-                            }
-                        )
-                        centerVerticallyTo(parent)
-                    }
-                    .padding(end = 16.dp.toAdaptivePadding())
-            )
-
-            if (toolbar.isClearAllButtonVisible) {
-                WooPosOutlinedButton(
-                    onClick = { onClearAllClicked() },
-                    modifier = Modifier.constrainAs(clearAllButton) {
-                        end.linkTo(parent.end)
-                        centerVerticallyTo(parent)
-                    },
-                    text = stringResource(R.string.woopos_clear_cart_button)
-                )
+        val cartTitleEndMargin = 16.dp.toAdaptivePadding()
+        Text(
+            text = stringResource(R.string.woopos_cart_title),
+            style = MaterialTheme.typography.h4,
+            color = MaterialTheme.colors.onBackground,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            modifier = Modifier.constrainAs(title) {
+                start.linkTo(backButton.end, margin = cartTitleEndMargin)
+                centerVerticallyTo(parent)
             }
+        )
+
+        Spacer(
+            modifier = Modifier
+                .constrainAs(spacer) {
+                    start.linkTo(title.end)
+                    end.linkTo(itemsCount.start)
+                    width = Dimension.fillToConstraints
+                }
+        )
+
+        val itemsEndMargin = 16.dp.toAdaptivePadding()
+        Text(
+            text = toolbar.itemsCount,
+            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.6f),
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            modifier = Modifier
+                .constrainAs(itemsCount) {
+                    end.linkTo(
+                        if (toolbar.isClearAllButtonVisible) {
+                            clearAllButton.start
+                        } else {
+                            parent.end
+                        },
+                        margin = itemsEndMargin,
+                    )
+                    centerVerticallyTo(parent)
+                }
+        )
+
+        if (toolbar.isClearAllButtonVisible) {
+            WooPosOutlinedButton(
+                onClick = { onClearAllClicked() },
+                modifier = Modifier.constrainAs(clearAllButton) {
+                    end.linkTo(parent.end)
+                    centerVerticallyTo(parent)
+                },
+                text = stringResource(R.string.woopos_clear_cart_button)
+            )
         }
     }
 }
