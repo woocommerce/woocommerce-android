@@ -1,9 +1,15 @@
 package com.woocommerce.android.ui.woopos.home
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
+import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -11,7 +17,30 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
+@Suppress("UnnecessaryAbstractClass")
+@RunWith(MockitoJUnitRunner::class)
 class WooPosHomeViewModelTest {
+
+    init {
+        Class.forName("kotlinx.coroutines.test.TestScopeKt")
+            .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
+            .invoke(null, false)
+    }
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @Rule
+    @JvmField
+    val rule = InstantTaskExecutorRule()
+
+    @Rule
+    @JvmField
+    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
 

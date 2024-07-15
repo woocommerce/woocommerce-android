@@ -7,13 +7,18 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
+import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -21,10 +26,28 @@ import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
-import org.junit.Rule
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
+@Suppress("UnnecessaryAbstractClass")
+@RunWith(MockitoJUnitRunner::class)
 class WooPosRootViewModelTest {
+
+    init {
+        Class.forName("kotlinx.coroutines.test.TestScopeKt")
+            .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
+            .invoke(null, false)
+    }
+
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @Rule
+    @JvmField
+    val rule = InstantTaskExecutorRule()
+
+    @Rule
+    @JvmField
+    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -101,7 +124,9 @@ class WooPosRootViewModelTest {
     @Test
     fun `given reader status connecting, should update state to connecting`() = runTest {
         // GIVEN
-        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting))
+        whenever(
+            cardReaderFacade.readerStatus
+        ).thenReturn(flowOf(com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting))
 
         val sut = createSut()
         val job = launch {

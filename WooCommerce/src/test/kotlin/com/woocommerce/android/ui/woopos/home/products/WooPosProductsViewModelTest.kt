@@ -1,13 +1,19 @@
 package com.woocommerce.android.ui.woopos.home.products
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -17,7 +23,30 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@ExperimentalCoroutinesApi
+@Suppress("UnnecessaryAbstractClass")
+@RunWith(MockitoJUnitRunner::class)
 class WooPosProductsViewModelTest {
+
+    init {
+        Class.forName("kotlinx.coroutines.test.TestScopeKt")
+            .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
+            .invoke(null, false)
+    }
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @Rule
+    @JvmField
+    val rule = InstantTaskExecutorRule()
+
+    @Rule
+    @JvmField
+    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val priceFormat: WooPosFormatPrice = mock {
