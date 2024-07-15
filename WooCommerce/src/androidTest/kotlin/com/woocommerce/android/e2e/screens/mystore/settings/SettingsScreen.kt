@@ -57,9 +57,11 @@ class SettingsScreen : Screen {
             Espresso.onView(ViewMatchers.withId(R.id.btn_option_logout)).perform(NestedScrollViewExtension())
         }
 
+        waitForElementToBeDisplayed(R.id.btn_option_logout)
         clickOn(R.id.btn_option_logout)
 
         // Confirm Log Out
+        waitForElementToBeDisplayed(android.R.id.button1) // sign out button is an Android system resources identifier
         clickButtonInDialogWithTitle(R.string.signout)
     }
 }
