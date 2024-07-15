@@ -213,40 +213,6 @@ fun AiProductPromptScreen(
 }
 
 @Composable
-private fun PromptSuggestions(
-    promptSuggestionBarState: PromptSuggestionBar,
-    modifier: Modifier = Modifier
-) {
-    val animatedProgress = animateFloatAsState(
-        targetValue = promptSuggestionBarState.progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-        label = ""
-    ).value
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
-            .background(colorResource(id = R.color.ai_generated_text_background))
-            .padding(16.dp)
-    ) {
-        LinearProgressIndicator(
-            progress = animatedProgress,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(4.dp)
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
-            color = colorResource(id = promptSuggestionBarState.progressBarColorRes)
-        )
-        Text(
-            text = annotatedStringRes(promptSuggestionBarState.messageRes),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 8.dp),
-        )
-    }
-}
-
-@Composable
 private fun ToneDropDown(
     tone: Tone,
     onToneSelected: (Tone) -> Unit,
@@ -408,6 +374,40 @@ private fun ProductPromptTextField(
                 modifier = Modifier.padding(top = 16.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun PromptSuggestions(
+    promptSuggestionBarState: PromptSuggestionBar,
+    modifier: Modifier = Modifier
+) {
+    val animatedProgress = animateFloatAsState(
+        targetValue = promptSuggestionBarState.progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = ""
+    ).value
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(colorResource(id = R.color.ai_generated_text_background))
+            .padding(16.dp)
+    ) {
+        LinearProgressIndicator(
+            progress = animatedProgress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
+            color = colorResource(id = promptSuggestionBarState.progressBarColorRes)
+        )
+        Text(
+            text = annotatedStringRes(promptSuggestionBarState.messageRes),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 8.dp),
+        )
     }
 }
 
