@@ -51,7 +51,7 @@ fun WooPosBottomToolbar(
         modifier = modifier
             .wrapContentSize(Alignment.Center),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 4.dp,
+        elevation = 8.dp,
         shape = RoundedCornerShape(8.dp),
     ) {
         Row(
