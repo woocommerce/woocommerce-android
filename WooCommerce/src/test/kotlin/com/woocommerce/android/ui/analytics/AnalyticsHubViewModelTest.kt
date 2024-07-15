@@ -747,8 +747,11 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     @Test
     fun `when last update information changes, then update view state as expected`() = testBlocking {
         val lastUpdateTimestamp = 123456789L
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(lastUpdateTimestamp))
+        whenever(
+            observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())
+        ).thenReturn(flowOf(lastUpdateTimestamp))
         whenever(dateUtils.getDateOrTimeFromMillis(lastUpdateTimestamp)).thenReturn("9:35 AM")
+        configureVisibleCards()
         sut = givenAViewModel()
 
         assertThat(sut.viewState.value.lastUpdateTimestamp).isEqualTo("9:35 AM")
@@ -756,7 +759,6 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when last update information is not initialized, then update view state field is empty`() = testBlocking {
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
         sut = givenAViewModel()
 
         assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
@@ -764,7 +766,6 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when last update information is null, then update view state field is empty`() = testBlocking {
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
         sut = givenAViewModel()
 
         assertThat(sut.viewState.value.lastUpdateTimestamp).isEmpty()
@@ -811,7 +812,6 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 adminUrl = "https://report-url/wc-admin"
             }
         )
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
         configureSuccessfulStatsResponse()
         sut = givenAViewModel()
         // When the view is initialized we track some interactions
@@ -845,7 +845,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 isVisible = true
             )
         )
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        whenever(observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())).thenReturn(flowOf(null))
         configureVisibleCards(configuration)
         configureSuccessfulStatsResponse()
 
@@ -890,7 +890,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 isVisible = true
             )
         )
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        whenever(observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())).thenReturn(flowOf(null))
         configureVisibleCards(configuration)
         configureSuccessfulStatsResponse()
 
@@ -930,7 +930,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         val expectedVisibleCards = configuration.filter { it.isVisible }.map { it.card }
 
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+        whenever(observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())).thenReturn(flowOf(null))
         configureVisibleCards(configuration)
         configureSuccessfulStatsResponse()
 
@@ -972,7 +972,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
             val expectedVisibleCards = configuration.filter { it.isVisible }.map { it.card }
 
-            whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf(null))
+            whenever(observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())).thenReturn(flowOf(null))
             configureVisibleCards(configuration)
             configureSuccessfulStatsResponse()
 
@@ -991,9 +991,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when update analytics settings is pressed then the event is tracked`() = testBlocking {
-        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
         configureSuccessfulStatsResponse()
-
         sut = givenAViewModel()
 
         sut.onOpenSettings()

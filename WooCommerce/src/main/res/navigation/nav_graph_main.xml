@@ -513,6 +513,45 @@
     <action
         android:id="@+id/action_global_WPComWebViewFragment"
         app:destination="@id/WPComWebViewFragment" />
+    <fragment
+        android:id="@+id/ExitAwareWebViewFragment"
+        android:name="com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewFragment"
+        android:label="ExitAwareWebViewFragment"
+        tools:layout="@layout/fragment_exitaware_webview">
+        <argument
+            android:name="urlToLoad"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="urlsToTriggerExit"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="displayMode"
+            android:defaultValue="REGULAR"
+            app:argType="com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_ExitAwareWebViewFragment"
+        app:destination="@id/ExitAwareWebViewFragment" />
+
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"
         app:destination="@id/userEligibilityErrorFragment" />
