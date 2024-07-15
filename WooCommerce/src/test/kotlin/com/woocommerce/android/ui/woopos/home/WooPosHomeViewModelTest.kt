@@ -31,10 +31,6 @@ class WooPosHomeViewModelTest {
 
     @Rule
     @JvmField
-    val rule = InstantTaskExecutorRule()
-
-    @Rule
-    @JvmField
     val coroutinesTestRule = CoroutineTestRule(testDispatcher)
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()

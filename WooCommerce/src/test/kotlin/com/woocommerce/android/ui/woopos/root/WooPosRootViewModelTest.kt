@@ -44,9 +44,6 @@ class WooPosRootViewModelTest {
     @JvmField
     val coroutinesTestRule = CoroutineTestRule(testDispatcher)
 
-    @get:Rule
-    val instantTaskExecutorRule = InstantTaskExecutorRule()
-
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
 
     @Test

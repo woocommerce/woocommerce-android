@@ -37,10 +37,6 @@ class WooPosProductsViewModelTest {
 
     @Rule
     @JvmField
-    val rule = InstantTaskExecutorRule()
-
-    @Rule
-    @JvmField
     val coroutinesTestRule = CoroutineTestRule(testDispatcher)
 
     private val productsDataSource: WooPosProductsDataSource = mock()
