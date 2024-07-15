@@ -70,61 +70,57 @@ private fun WooPosCartScreen(
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit
 ) {
-    Column(
+    Box(
         modifier = modifier
+            .padding(8.dp.toAdaptivePadding())
+            .background(MaterialTheme.colors.surface)
     ) {
-        Box(
-            Modifier
-                .padding(8.dp.toAdaptivePadding())
-                .background(MaterialTheme.colors.surface)
-        ) {
-            Column {
-                CartToolbar(
-                    toolbar = state.toolbar,
-                    onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
-                    onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
-                )
+        Column {
+            CartToolbar(
+                toolbar = state.toolbar,
+                onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
+                onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
+            )
 
-                Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
 
-                val listState = rememberLazyListState()
-                ScrollToBottomHandler(state, listState)
+            val listState = rememberLazyListState()
+            ScrollToBottomHandler(state, listState)
 
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f),
-                    state = listState,
-                    verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    contentPadding = PaddingValues(top = 4.dp.toAdaptivePadding()),
-                ) {
-                    items(
-                        state.itemsInCart,
-                        key = { item -> item.id.itemNumber }
-                    ) { item ->
-                        ProductItem(
-                            modifier = Modifier.animateItemPlacement(),
-                            item,
-                            state.areItemsRemovable
-                        ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) }
-                    }
-                    if (state.isCheckoutButtonVisible) {
-                        item {
-                            Spacer(modifier = Modifier.height(72.dp))
-                        }
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f),
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                contentPadding = PaddingValues(top = 4.dp.toAdaptivePadding()),
+            ) {
+                items(
+                    state.itemsInCart,
+                    key = { item -> item.id.itemNumber }
+                ) { item ->
+                    ProductItem(
+                        modifier = Modifier.animateItemPlacement(),
+                        item,
+                        state.areItemsRemovable
+                    ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) }
+                }
+                if (state.isCheckoutButtonVisible) {
+                    item {
+                        Spacer(modifier = Modifier.height(72.dp))
                     }
                 }
             }
+        }
 
-            if (state.isCheckoutButtonVisible) {
-                WooPosButton(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth(),
-                    text = stringResource(R.string.woopos_checkout_button),
-                    onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
-                )
-            }
+        if (state.isCheckoutButtonVisible) {
+            WooPosButton(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(),
+                text = stringResource(R.string.woopos_checkout_button),
+                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+            )
         }
     }
 }
