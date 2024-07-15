@@ -65,15 +65,15 @@ private fun WooPosRootScreen(
     Box(modifier = modifier.background(MaterialTheme.colors.background)) {
         WooPosRootHost(
             modifier = Modifier.fillMaxSize(),
-                rootController = rootController,
-                onNavigationEvent = { event ->
-                    rootController.handleNavigationEvent(event, activity, onUIEvent)
-                }
-            )
-            WooPosBottomToolbar(
-                modifier = Modifier
-                    .padding(24.dp.toAdaptivePadding())
-                    .align(Alignment.BottomStart),
+            rootController = rootController,
+            onNavigationEvent = { event ->
+                rootController.handleNavigationEvent(event, activity, onUIEvent)
+            }
+        )
+        WooPosBottomToolbar(
+            modifier = Modifier
+                .padding(24.dp.toAdaptivePadding())
+                .align(Alignment.BottomStart),
             state,
             onUIEvent,
         )
