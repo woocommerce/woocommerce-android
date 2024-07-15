@@ -175,6 +175,7 @@ private fun ConfigurableWidgetCard(
         DashboardWidget.Type.GOOGLE_ADS -> {
             if (FeatureFlag.GOOGLE_ADS_M1.isEnabled()) {
                 DashboardGoogleAdsCard(
+                    parentViewModel = dashboardViewModel,
                     modifier = modifier
                 )
             }

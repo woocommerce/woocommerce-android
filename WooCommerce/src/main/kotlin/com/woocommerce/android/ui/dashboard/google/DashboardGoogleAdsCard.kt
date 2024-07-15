@@ -16,6 +16,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,15 +30,36 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsViewModel.DashboardGoogleAdsState
 
 @Composable
-fun DashboardGoogleAdsCard(modifier: Modifier = Modifier) {
-    // Displaying multiple states at once for testing purposes
-    Column {
+fun DashboardGoogleAdsCard(
+    parentViewModel: DashboardViewModel,
+    modifier: Modifier = Modifier,
+    viewModel: DashboardGoogleAdsViewModel = viewModelWithFactory { factory: DashboardGoogleAdsViewModel.Factory ->
+        factory.create(parentViewModel = parentViewModel)
+    }
+) {
+    viewModel.viewState.observeAsState().value?.let { state ->
+        DashboardGoogleAdsView(
+            viewState = state,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+fun DashboardGoogleAdsView(
+    viewState: DashboardGoogleAdsState,
+    modifier: Modifier
+
+) {
+    if (viewState is DashboardGoogleAdsState.Loading) {
         WidgetCard(
             titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
             menu = DashboardWidgetMenu(
@@ -58,54 +80,57 @@ fun DashboardGoogleAdsCard(modifier: Modifier = Modifier) {
                 GoogleAdsLoading()
             }
         }
+    } else {
+        // Displaying multiple states at once for testing purposes
+        Column {
+            Spacer(modifier = modifier.height(32.dp))
 
-        Spacer(modifier = modifier.height(32.dp))
-
-        WidgetCard(
-            titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
-            menu = DashboardWidgetMenu(
-                listOf(
-                    DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry { /* TODO */ }
-                )
-            ),
-            isError = false,
-            modifier = modifier
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = R.dimen.major_100),
+            WidgetCard(
+                titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
+                menu = DashboardWidgetMenu(
+                    listOf(
+                        DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry { /* TODO */ }
                     )
+                ),
+                isError = false,
+                modifier = modifier
             ) {
-                GoogleAdsNoCampaigns()
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.major_100),
+                        )
+                ) {
+                    GoogleAdsNoCampaigns()
+                }
             }
-        }
 
-        Spacer(modifier = modifier.height(32.dp))
+            Spacer(modifier = modifier.height(32.dp))
 
-        WidgetCard(
-            titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
-            menu = DashboardWidgetMenu(
-                listOf(
-                    DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry { /* TODO */ }
-                )
-            ),
-            button = DashboardViewModel.DashboardWidgetAction(
-                titleResource = R.string.dashboard_google_ads_card_view_all_campaigns_button,
-                action = { /* TODO */ }
-            ),
-            isError = false,
-            modifier = modifier
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = R.dimen.major_100),
+            WidgetCard(
+                titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
+                menu = DashboardWidgetMenu(
+                    listOf(
+                        DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry { /* TODO */ }
                     )
+                ),
+                button = DashboardViewModel.DashboardWidgetAction(
+                    titleResource = R.string.dashboard_google_ads_card_view_all_campaigns_button,
+                    action = { /* TODO */ }
+                ),
+                isError = false,
+                modifier = modifier
             ) {
-                GoogleAdsWithCampaigns()
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.major_100),
+                        )
+                ) {
+                    GoogleAdsWithCampaigns()
+                }
             }
         }
     }
