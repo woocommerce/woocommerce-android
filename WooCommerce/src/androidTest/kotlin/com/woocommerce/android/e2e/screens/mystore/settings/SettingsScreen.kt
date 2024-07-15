@@ -57,6 +57,7 @@ class SettingsScreen : Screen {
             Espresso.onView(ViewMatchers.withId(R.id.btn_option_logout)).perform(NestedScrollViewExtension())
         }
 
+        waitForElementToBeDisplayed(R.id.btn_option_logout)
         clickOn(R.id.btn_option_logout)
 
         // Confirm Log Out
