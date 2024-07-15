@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.products
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +19,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,13 +52,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductsGridReached
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductListReached
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.PullToRefreshTriggered
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WooPosProductsScreen(modifier: Modifier = Modifier) {
     val productsViewModel: WooPosProductsViewModel = hiltViewModel()
@@ -59,49 +68,62 @@ fun WooPosProductsScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
-        onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductsGridReached) },
+        onEndOfProductListReached = { productsViewModel.onUIEvent(EndOfProductListReached) },
+        onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) }
     )
 }
 
+@ExperimentalMaterialApi
 @Composable
 private fun WooPosProductsScreen(
     modifier: Modifier = Modifier,
     productsStateFlow: StateFlow<WooPosProductsViewState>,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
-    onEndOfProductsGridReached: () -> Unit,
+    onEndOfProductListReached: () -> Unit,
+    onPullToRefresh: () -> Unit,
 ) {
-    Column(
-        modifier
-            .fillMaxHeight()
-    ) {
-        Text(
-            text = stringResource(id = R.string.woopos_products_screen_title),
-            style = MaterialTheme.typography.h3,
-            fontWeight = FontWeight.Bold
-        )
+    val state = productsStateFlow.collectAsState()
+    val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
+    Box(modifier = modifier.fillMaxSize().pullRefresh(pullToRefreshState)) {
+        Column(
+            modifier.fillMaxHeight()
+        ) {
+            Text(
+                text = stringResource(id = R.string.woopos_products_screen_title),
+                style = MaterialTheme.typography.h3,
+                fontWeight = FontWeight.Bold
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+            when (val productsState = state.value) {
+                is WooPosProductsViewState.Content -> {
+                    ProductsList(
+                        productsState,
+                        onItemClicked,
+                        onEndOfProductListReached,
+                    )
+                }
 
-        val state = productsStateFlow.collectAsState()
+                is WooPosProductsViewState.Loading -> {
+                    ProductsLoadingIndicator()
+                }
 
-        when (val productsState = state.value) {
-            is WooPosProductsViewState.Content -> {
-                ProductsList(productsState, onItemClicked, onEndOfProductsGridReached)
+                is WooPosProductsViewState.Empty -> {
+                    ProductsEmptyList()
+                }
+
+                is WooPosProductsViewState.Error -> ProductsEmptyList()
             }
-
-            WooPosProductsViewState.Loading -> {
-                ProductsLoadingIndicator()
-            }
-
-            WooPosProductsViewState.Empty -> {
-                ProductsEmptyList()
-            }
-
-            WooPosProductsViewState.Error -> TODO()
         }
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = state.value.reloadingProducts,
+            state = pullToRefreshState
+        )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProductsList(
     state: WooPosProductsViewState.Content,
@@ -112,13 +134,17 @@ private fun ProductsList(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(2.dp),
-        state = listState
+        state = listState,
     ) {
         items(
             state.products,
             key = { product -> product.id }
         ) { product ->
-            ProductItem(item = product, onItemClicked = onItemClicked)
+            ProductItem(
+                modifier = Modifier.animateItemPlacement(),
+                item = product,
+                onItemClicked = onItemClicked
+            )
         }
 
         if (state.loadingMore) {
@@ -194,10 +220,12 @@ private fun ProductLoadingItem() {
 
 @Composable
 private fun ProductItem(
+    modifier: Modifier = Modifier,
     item: WooPosProductsListItem,
     onItemClicked: (item: WooPosProductsListItem) -> Unit
 ) {
     Card(
+        modifier = modifier,
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {
@@ -247,7 +275,7 @@ private fun ProductItem(
 @Composable
 fun ProductsEmptyList() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -284,6 +312,7 @@ private fun InfiniteListHandler(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
 fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
@@ -312,6 +341,7 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
                 ),
             ),
             loadingMore = true,
+            reloadingProducts = true,
         )
     )
     WooPosTheme {
@@ -319,33 +349,38 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             modifier = modifier,
             productsStateFlow = productState,
             onItemClicked = {},
-            onEndOfProductsGridReached = {}
+            onEndOfProductListReached = {},
+            onPullToRefresh = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
 fun WooPosHomeScreenLoadingPreview() {
-    val productState = MutableStateFlow(WooPosProductsViewState.Loading)
+    val productState = MutableStateFlow(WooPosProductsViewState.Loading(true))
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,
             onItemClicked = {},
-            onEndOfProductsGridReached = {}
+            onEndOfProductListReached = {},
+            onPullToRefresh = {},
         )
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
 fun WooPosHomeScreenEmptyListPreview() {
-    val productState = MutableStateFlow(WooPosProductsViewState.Empty)
+    val productState = MutableStateFlow(WooPosProductsViewState.Empty(true))
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,
             onItemClicked = {},
-            onEndOfProductsGridReached = {}
+            onEndOfProductListReached = {},
+            onPullToRefresh = {},
         )
     }
 }

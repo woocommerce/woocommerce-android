@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 09:54:04+0000
+Translation-Revision-Date: 2024-07-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">Se connecter maintenant</string>
+    <string name="woopos_cart_title">Panier</string>
+    <string name="ai_product_creation_generate_details_button">Générer les détails du produit</string>
+    <string name="ai_product_creation_read_text_from_photo_button">Lire le texte à partir de la photo du produit</string>
+    <string name="ai_product_creation_prompt_placeholder">Par exemple : t-shirt en coton noir, tissu doux, coutures solides, design unique</string>
+    <string name="ai_product_creation_product_prompt_subtitle">Parlez-nous de votre produit : de quoi s’agit-il, qu’est-ce qui le rend unique ? Et laissez l’IA exercer sa magie.</string>
+    <string name="ai_product_creation_product_prompt_title">Informations de base</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Laissez-nous générer les détails du produit à votre place</string>
     <string name="woopos_payment_collect_payment_label">Percevoir un paiement par carte</string>
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_tax_label">Taxe</string>
     <string name="woopos_payment_subtotal_label">Sous-total</string>
-    <string name="woo_pos_new_transaction_button">Nouvelle transaction</string>
+    <string name="woopos_new_transaction_button">Nouvelle transaction</string>
     <string name="woopos_payment_successful_label">Paiement réussi</string>
     <string name="woopos_payment_failed_please_try_again">Échec du paiement. Veuillez réessayer.</string>
-    <string name="woo_pos_cart_back_content_description">Icône du panier</string>
+    <string name="woopos_cart_back_content_description">Icône du panier</string>
     <string name="woopos_products_screen_title">Produits</string>
     <string name="woopos_product_image_description">Image produit</string>
-    <string name="woo_pos_items_in_cart">%d éléments</string>
-    <string name="woo_pos_clear_cart_button">Tout effacer</string>
+    <string name="woopos_items_in_cart">%d éléments</string>
+    <string name="woopos_clear_cart_button">Tout effacer</string>
     <string name="more_menu_button_google_description">Multiplier les ventes et générer plus de trafic avec Google Ads</string>
     <string name="more_menu_button_google">Google pour WooCommerce</string>
     <string name="no_quantity_rules">Pas de règles de quantité</string>
@@ -26,7 +34,6 @@ Language: fr
     <string name="woopos_exit_confirmation_confirm_button">Quitter</string>
     <string name="woopos_exit_confirmation_message">Voulez-vous vraiment quitter le PDV ?</string>
     <string name="woopos_exit_confirmation_title">Quitter le PDV</string>
-    <string name="woopos_cart_title">Panier</string>
     <string name="woopos_remove_item_from_cart_content_description">Retirer l’élément du panier</string>
     <string name="woopos_checkout_button">Validation de la commande</string>
     <string name="woopos_reader_unknown">État du lecteur inconnu</string>

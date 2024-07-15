@@ -27,43 +27,44 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 import com.woocommerce.android.ui.woopos.root.navigation.handleNavigationEvent
 
 @Composable
-fun WooPosRootScreen() {
+fun WooPosRootScreen(modifier: Modifier = Modifier) {
     val viewModel: WooPosRootViewModel = hiltViewModel()
     WooPosRootScreen(
-        viewModel.rootScreenState.collectAsState(),
-        viewModel::onUiEvent
+        modifier = modifier,
+        state = viewModel.rootScreenState.collectAsState(),
+        onUIEvent = viewModel::onUiEvent,
     )
 }
 
 @Composable
 private fun WooPosRootScreen(
+    modifier: Modifier = Modifier,
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit
 ) {
-    WooPosTheme {
-        val rootController = rememberNavController()
-        val activity = LocalContext.current as ComponentActivity
+    val rootController = rememberNavController()
+    val activity = LocalContext.current as ComponentActivity
 
-        state.value.exitConfirmationDialog?.let {
-            WooPosConfirmationDialog(
-                title = stringResource(id = it.title),
-                message = stringResource(id = it.message),
-                confirmButtonText = stringResource(id = it.confirmButton),
-                dismissButtonText = stringResource(id = it.dismissButton),
-                onDismiss = { onUIEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed) },
-                onConfirm = {
-                    rootController.handleNavigationEvent(
-                        WooPosNavigationEvent.ExitPosClicked,
-                        activity,
-                        onUIEvent
-                    )
-                }
-            )
-        }
+    state.value.exitConfirmationDialog?.let {
+        WooPosConfirmationDialog(
+            title = stringResource(id = it.title),
+            message = stringResource(id = it.message),
+            confirmButtonText = stringResource(id = it.confirmButton),
+            dismissButtonText = stringResource(id = it.dismissButton),
+            onDismiss = { onUIEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed) },
+            onConfirm = {
+                rootController.handleNavigationEvent(
+                    WooPosNavigationEvent.ExitPosClicked,
+                    activity,
+                    onUIEvent
+                )
+            }
+        )
+    }
 
-        Box(modifier = Modifier.background(MaterialTheme.colors.background)) {
-            WooPosRootHost(
-                modifier = Modifier.fillMaxSize(),
+    Box(modifier = modifier.background(MaterialTheme.colors.background)) {
+        WooPosRootHost(
+            modifier = Modifier.fillMaxSize(),
                 rootController = rootController,
                 onNavigationEvent = { event ->
                     rootController.handleNavigationEvent(event, activity, onUIEvent)
@@ -73,10 +74,9 @@ private fun WooPosRootScreen(
                 modifier = Modifier
                     .padding(24.dp.toAdaptivePadding())
                     .align(Alignment.BottomStart),
-                state,
-                onUIEvent,
-            )
-        }
+            state,
+            onUIEvent,
+        )
     }
 }
 
@@ -92,6 +92,9 @@ fun PreviewWooPosRootScreen() {
         )
     }
     WooPosTheme {
-        WooPosRootScreen(state) {}
+        WooPosRootScreen(
+            state = state,
+            onUIEvent = {}
+        )
     }
 }
