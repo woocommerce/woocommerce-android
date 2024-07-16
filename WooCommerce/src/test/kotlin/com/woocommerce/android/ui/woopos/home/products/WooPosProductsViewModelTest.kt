@@ -88,17 +88,17 @@ class WooPosProductsViewModelTest {
         }
 
     @Test
-    fun `given loading products is failure, when view model created, then view state is empty`() =
-        runTest {
-            // GIVEN
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(Result.failure(Exception()))
+    fun `given loading products is failure, when view model created, then view state is error`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.products).thenReturn(flowOf(emptyList()))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(Result.failure(Exception()))
 
-            // WHEN
-            val viewModel = createViewModel()
+        // WHEN
+        val viewModel = createViewModel()
 
-            // THEN
-            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error())
-        }
+        // THEN
+        assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error())
+    }
 
     @Test
     fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() =
@@ -194,6 +194,22 @@ class WooPosProductsViewModelTest {
     @Test
     fun `when item clicked, then send event to parent`() = runTest {
         // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+
         val product = WooPosProductsListItem(
             id = 1,
             name = "Product 1",
