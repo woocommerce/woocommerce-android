@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -74,3 +77,21 @@ data class Button(
     val text: String,
     val click: () -> Unit
 )
+
+@Preview
+@Composable
+fun WooPosErrorStatePreview() {
+    WooPosErrorState(
+        icon = Icons.Default.Error,
+        message = "An unexpected error occurred",
+        reason = "Unable to fetch data",
+        primaryButton = Button(
+            text = "Retry",
+            click = { /* Handle click */ }
+        ),
+        secondaryButton = Button(
+            text = "Cancel",
+            click = { /* Handle click */ }
+        )
+    )
+}
