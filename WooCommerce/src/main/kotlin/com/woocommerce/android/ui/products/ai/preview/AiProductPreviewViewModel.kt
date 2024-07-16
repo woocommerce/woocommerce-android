@@ -58,8 +58,7 @@ class AiProductPreviewViewModel @Inject constructor(
             null -> emit(
                 State.Error(
                     onRetryClick = { TODO() },
-                    onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) },
-                    messageRes = R.string.product_creation_ai_generation_failure_message
+                    onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) }
                 )
             )
 
@@ -149,7 +148,10 @@ class AiProductPreviewViewModel @Inject constructor(
                             is OnChangedException -> R.string.ai_product_creation_error_media_fetch
                             else -> R.string.ai_product_creation_error_media_upload
                         }
-                    saveProductState.value = SaveProductDraftState.Error(messageRes = uploadErrorMessageRes)
+                    saveProductState.value = SaveProductDraftState.Error(
+                        messageRes = uploadErrorMessageRes,
+                        onRetryClick = ::onSaveProductAsDraft
+                    )
                     return@launch
                 }
 
@@ -187,8 +189,7 @@ class AiProductPreviewViewModel @Inject constructor(
 
         data class Error(
             val onRetryClick: () -> Unit,
-            val onDismissClick: () -> Unit,
-            @StringRes val messageRes: Int
+            val onDismissClick: () -> Unit
         ) : State
     }
 
@@ -203,7 +204,10 @@ class AiProductPreviewViewModel @Inject constructor(
         data object Loading : SaveProductDraftState
 
         @Parcelize
-        data class Error(@StringRes val messageRes: Int) : SaveProductDraftState
+        data class Error(
+            val onRetryClick: () -> Unit,
+            @StringRes val messageRes: Int
+        ) : SaveProductDraftState
 
         @Parcelize
         data object Success : SaveProductDraftState

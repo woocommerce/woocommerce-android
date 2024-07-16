@@ -165,7 +165,7 @@ private fun AiProductPreviewScreen(
         ErrorDialog(
             onRetryClick = state.onRetryClick,
             onDismissClick = state.onDismissClick,
-            errorMessage = state.messageRes
+            errorMessage = R.string.product_creation_ai_generation_failure_message
         )
     }
 }
@@ -264,6 +264,13 @@ private fun ProductPreviewContent(
                 onFeedbackReceived = onFeedbackReceived,
             )
         }
+    }
+    if (state.saveProductState is AiProductPreviewViewModel.SaveProductDraftState.Error) {
+        ErrorDialog(
+            errorMessage = state.saveProductState.messageRes,
+            onRetryClick = state.saveProductState.onRetryClick,
+            onDismissClick = { }
+        )
     }
 }
 
