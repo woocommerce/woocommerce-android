@@ -148,6 +148,7 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun saveProductAsDraft(uploadedMediaModel: MediaModel?) {
         //TODO()
     }

@@ -447,7 +447,11 @@ private fun ProductPreviewContentPreview() {
                         )
                     )
                 ),
-                imageState = AiProductPreviewViewModel.ImageState(null)
+                imageState = AiProductPreviewViewModel.ImageState(
+                    image = null,
+                    showImageFullScreen = false,
+                    uploadError = null
+                )
             ),
             onFeedbackReceived = {},
             onBackButtonClick = {},
