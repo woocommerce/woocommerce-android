@@ -397,7 +397,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                     .thenReturn(
                         flowOf(
                             GetStats.LoadStatsResult.RevenueStatsSuccess(ANY_REVENUE_STATS, true),
-                            GetStats.LoadStatsResult.RevenueStatsError
+                            GetStats.LoadStatsResult.RevenueStatsError("This is an error")
                         )
                     )
             }
