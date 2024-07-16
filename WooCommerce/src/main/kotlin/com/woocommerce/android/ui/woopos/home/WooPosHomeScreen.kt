@@ -80,16 +80,6 @@ private fun WooPosHomeScreen(
         label = "totalsWidthAnimatedDp"
     )
 
-    val productsWidthAnimatedDp by animateDpAsState(
-        when (state) {
-            is WooPosHomeState.Cart.Empty -> productsWidthDp + cartWidthDp.times(.77f)
-            is WooPosHomeState.Checkout.Paid -> productsWidthDp - cartWidthDp
-            WooPosHomeState.Cart.NotEmpty,
-            WooPosHomeState.Checkout.NotPaid -> productsWidthDp
-        },
-        label = "productsWidthAnimatedDp"
-    )
-
     val cartOverlayIntensityAnimated by animateFloatAsState(
         when (state) {
             is WooPosHomeState.Cart.Empty -> .4f
@@ -102,8 +92,7 @@ private fun WooPosHomeScreen(
 
     val totalsStartPaddingAnimatedDp by animateDpAsState(
         when (state) {
-            WooPosHomeState.Cart.Empty,
-            WooPosHomeState.Cart.NotEmpty,
+            is WooPosHomeState.Cart,
             WooPosHomeState.Checkout.NotPaid -> 0.dp.toAdaptivePadding()
 
             WooPosHomeState.Checkout.Paid -> 24.dp.toAdaptivePadding()
@@ -114,7 +103,7 @@ private fun WooPosHomeScreen(
     val scrollState = buildScrollStateForNavigationBetweenState(state)
     WooPosHomeScreen(
         scrollState = scrollState,
-        productsWidthDp = productsWidthAnimatedDp,
+        productsWidthDp = productsWidthDp,
         cartWidthDp = cartWidthDp,
         cartOverlayIntensity = cartOverlayIntensityAnimated,
         totalsWidthDp = totalsWidthAnimatedDp,
