@@ -99,7 +99,6 @@ private fun WooPosCartScreen(
                     CartBodyWithItems(
                         items = state.body.itemsInCart,
                         areItemsRemovable = state.areItemsRemovable,
-                        isCheckoutButtonVisible = state.isCheckoutButtonVisible
                     ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(it)) }
                 }
             }
@@ -145,7 +144,6 @@ fun CartBodyEmpty() {
 private fun CartBodyWithItems(
     items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
-    isCheckoutButtonVisible: Boolean,
     onItemRemoved: (item: WooPosCartState.Body.WithItems.Item) -> Unit
 ) {
     Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
@@ -172,10 +170,8 @@ private fun CartBodyWithItems(
                 areItemsRemovable
             ) { onItemRemoved(item) }
         }
-        if (isCheckoutButtonVisible) {
-            item {
-                Spacer(modifier = Modifier.height(72.dp))
-            }
+        item {
+            Spacer(modifier = Modifier.height(72.dp))
         }
     }
 }
