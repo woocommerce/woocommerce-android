@@ -19,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -31,7 +33,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
@@ -250,29 +254,17 @@ private fun WooPosTotalsErrorScreen(
     errorMessage: String,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = errorMessage,
-            style = MaterialTheme.typography.body2
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        WooPosButton(
+    WooPosErrorState(
+        icon = Icons.Default.Error,  // TODO: error icon defined
+        message = stringResource(R.string.woopos_totals_main_error_label),
+        reason = errorMessage,
+        primaryButton = Button(
             text = stringResource(R.string.retry),
-            onClick = { onUIEvent(WooPosTotalsUIEvent.RetryClicked) },
-            modifier = Modifier.padding(top = 16.dp)
+            click = { onUIEvent(WooPosTotalsUIEvent.RetryClicked) }
         )
-    }
+    )
 }
+
 
 @Composable
 @WooPosPreview
