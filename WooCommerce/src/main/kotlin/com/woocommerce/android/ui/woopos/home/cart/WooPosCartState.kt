@@ -8,9 +8,16 @@ import kotlinx.parcelize.Parcelize
 data class WooPosCartState(
     val cartStatus: WooPosCartStatus = WooPosCartStatus.EDITABLE,
     val toolbar: WooPosCartToolbar = WooPosCartToolbar(),
-    val itemsInCart: List<WooPosCartListItem> = emptyList(),
+    val body: WooPosCartBody = WooPosCartBody(),
     val areItemsRemovable: Boolean = true,
     val isCheckoutButtonVisible: Boolean = true,
+) : Parcelable
+
+@Parcelize
+data class WooPosCartBody(
+    val itemsInCart: List<WooPosCartListItem> = emptyList(),
+    @DrawableRes val icon: Int? = null,
+    val text: String = "",
 ) : Parcelable
 
 @Parcelize
@@ -32,5 +39,5 @@ data class WooPosCartToolbar(
 ) : Parcelable
 
 enum class WooPosCartStatus {
-    EDITABLE, CHECKOUT
+    EDITABLE, CHECKOUT, EMPTY,
 }

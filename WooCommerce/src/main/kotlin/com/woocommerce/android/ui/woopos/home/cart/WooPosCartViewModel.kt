@@ -13,6 +13,9 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -59,15 +62,16 @@ class WooPosCartViewModel @Inject constructor(
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
                 val currentState = _state.value
-                _state.value = currentState.copy(itemsInCart = currentState.itemsInCart - event.item)
+                _state.value = currentState.copy(
+                    body = currentState.body.copy(itemsInCart = currentState.body.itemsInCart - event.item))
             }
 
             WooPosCartUIEvent.BackClicked -> {
                 val currentState = _state.value
-                if (currentState.cartStatus == WooPosCartStatus.EDITABLE) {
+                if (currentState.cartStatus == EDITABLE) {
                     return
                 }
-                _state.value = currentState.copy(cartStatus = WooPosCartStatus.EDITABLE)
+                _state.value = currentState.copy(cartStatus = EDITABLE)
 
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
             }
@@ -75,16 +79,16 @@ class WooPosCartViewModel @Inject constructor(
             WooPosCartUIEvent.ClearAllClicked -> {
                 val currentState = _state.value
                 _state.value = currentState.copy(
-                    itemsInCart = emptyList()
+                    body = currentState.body.copy(itemsInCart = emptyList())
                 )
             }
         }
     }
 
     private fun goToTotals() {
-        val productIds = _state.value.itemsInCart.map { it.id.productId }
+        val productIds = _state.value.body.itemsInCart.map { it.id.productId }
         sendEventToParent(ChildToParentEvent.CheckoutClicked(productIds))
-        _state.value = _state.value.copy(cartStatus = WooPosCartStatus.CHECKOUT)
+        _state.value = _state.value.copy(cartStatus = CHECKOUT)
     }
 
     private fun listenEventsFromParent() {
@@ -92,19 +96,21 @@ class WooPosCartViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = _state.value.copy(cartStatus = WooPosCartStatus.EDITABLE)
+                        _state.value = _state.value.copy(cartStatus = EDITABLE)
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
                         val itemClicked = viewModelScope.async {
                             val product = getProductById(event.productId)!!
-                            val itemNumber = (_state.value.itemsInCart.maxOfOrNull { it.id.itemNumber } ?: 0) + 1
+                            val itemNumber = (_state.value.body.itemsInCart.maxOfOrNull { it.id.itemNumber } ?: 0) + 1
                             product.toCartListItem(itemNumber)
                         }
 
                         val currentState = _state.value
                         _state.value = currentState.copy(
-                            itemsInCart = currentState.itemsInCart + itemClicked.await()
+                            body = currentState.body.copy(
+                                itemsInCart = currentState.body.itemsInCart + itemClicked.await()
+                            ),
                         )
                     }
 
@@ -121,44 +127,46 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun updateToolbarState(newState: WooPosCartState): WooPosCartState {
-        val itemsCount = if (newState.itemsInCart.isNotEmpty()) {
+        val itemsCount = if (newState.body.itemsInCart.isNotEmpty()) {
             resourceProvider.getString(
                 R.string.woopos_items_in_cart,
-                newState.itemsInCart.size
+                newState.body.itemsInCart.size
             )
         } else {
             ""
         }
         val newToolbar = when (newState.cartStatus) {
-            WooPosCartStatus.EDITABLE -> {
+            EDITABLE -> {
                 WooPosCartToolbar(
                     icon = null,
                     itemsCount = itemsCount,
-                    isClearAllButtonVisible = newState.itemsInCart.isNotEmpty()
+                    isClearAllButtonVisible = newState.body.itemsInCart.isNotEmpty()
                 )
             }
 
-            WooPosCartStatus.CHECKOUT -> {
+            CHECKOUT -> {
                 WooPosCartToolbar(
                     icon = R.drawable.ic_back_24dp,
                     itemsCount = itemsCount,
                     isClearAllButtonVisible = false
                 )
             }
+
+            EMPTY -> TODO()
         }
         return newState.copy(toolbar = newToolbar)
     }
 
     private fun updateStateDependingOnCartStatus(newState: WooPosCartState) =
         when (newState.cartStatus) {
-            WooPosCartStatus.EDITABLE -> {
+            EDITABLE -> {
                 newState.copy(
                     areItemsRemovable = true,
-                    isCheckoutButtonVisible = newState.itemsInCart.isNotEmpty(),
+                    isCheckoutButtonVisible = newState.body.itemsInCart.isNotEmpty(),
                 )
             }
 
-            WooPosCartStatus.CHECKOUT -> {
+            CHECKOUT, EMPTY -> {
                 newState.copy(
                     areItemsRemovable = false,
                     isCheckoutButtonVisible = false,
@@ -167,8 +175,8 @@ class WooPosCartViewModel @Inject constructor(
         }
 
     private fun updateParentCartStatusIfCartChanged(previousState: WooPosCartState, newState: WooPosCartState) {
-        if (previousState.itemsInCart.size == newState.itemsInCart.size) return
-        if (newState.itemsInCart.isNotEmpty()) {
+        if (previousState.body.itemsInCart.size == newState.body.itemsInCart.size) return
+        if (newState.body.itemsInCart.isNotEmpty()) {
             sendEventToParent(ChildToParentEvent.CartStatusChanged.NotEmpty)
         } else {
             sendEventToParent(ChildToParentEvent.CartStatusChanged.Empty)

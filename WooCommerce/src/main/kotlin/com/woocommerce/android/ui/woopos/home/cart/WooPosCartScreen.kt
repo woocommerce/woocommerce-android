@@ -103,7 +103,7 @@ private fun WooPosCartScreen(
                 contentPadding = PaddingValues(top = 4.dp.toAdaptivePadding()),
             ) {
                 items(
-                    state.itemsInCart,
+                    state.body.itemsInCart,
                     key = { item -> item.id.itemNumber }
                 ) { item ->
                     ProductItem(
@@ -138,7 +138,7 @@ private fun ScrollToBottomHandler(
     listState: LazyListState
 ) {
     val previousItemsCount = remember { mutableIntStateOf(0) }
-    val itemsInCartSize = state.itemsInCart.size
+    val itemsInCartSize = state.body.itemsInCart.size
     LaunchedEffect(itemsInCartSize) {
         if (itemsInCartSize > previousItemsCount.intValue) {
             listState.animateScrollToItem(itemsInCartSize - 1)
@@ -317,25 +317,27 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
-                itemsInCart = listOf(
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
-                        imageUrl = "",
-                        name = "VW California, VW California VW California, VW California VW California, " +
-                            "VW California VW California, VW California,VW California",
-                        price = "€50,000"
-                    ),
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
-                        imageUrl = "",
-                        name = "VW California",
-                        price = "$150,000"
-                    ),
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
-                        imageUrl = "",
-                        name = "VW California",
-                        price = "€250,000"
+                body = WooPosCartBody(
+                    itemsInCart = listOf(
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
+                            imageUrl = "",
+                            name = "VW California, VW California VW California, VW California VW California, " +
+                                "VW California VW California, VW California,VW California",
+                            price = "€50,000"
+                        ),
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
+                            imageUrl = "",
+                            name = "VW California",
+                            price = "$150,000"
+                        ),
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
+                            imageUrl = "",
+                            name = "VW California",
+                            price = "€250,000"
+                        )
                     )
                 ),
                 areItemsRemovable = true,
@@ -357,24 +359,26 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
-                itemsInCart = listOf(
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
-                        imageUrl = "",
-                        name = "VW California",
-                        price = "€50,000"
-                    ),
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
-                        imageUrl = "",
-                        name = "VW California",
-                        price = "$150,000"
-                    ),
-                    WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
-                        imageUrl = "",
-                        name = "VW California",
-                        price = "€250,000"
+                body = WooPosCartBody(
+                    itemsInCart = listOf(
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
+                            imageUrl = "",
+                            name = "VW California",
+                            price = "€50,000"
+                        ),
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
+                            imageUrl = "",
+                            name = "VW California",
+                            price = "$150,000"
+                        ),
+                        WooPosCartListItem(
+                            id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
+                            imageUrl = "",
+                            name = "VW California",
+                            price = "€250,000"
+                        )
                     )
                 ),
                 areItemsRemovable = false,
