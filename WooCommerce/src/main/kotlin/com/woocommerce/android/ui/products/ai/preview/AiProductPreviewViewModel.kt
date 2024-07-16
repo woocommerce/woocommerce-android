@@ -8,7 +8,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
-import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.MediaUploadException
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.AIProductModel
@@ -21,11 +20,7 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.retry
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -37,7 +32,7 @@ class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
     private val generateProductWithAI: GenerateProductWithAI,
-    private val mediaFilesRepository: MediaFilesRepository
+    private val uploadImage: UploadImage
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
 
@@ -162,25 +157,6 @@ class AiProductPreviewViewModel @Inject constructor(
     private fun createProductDraft(uploadedMediaModel: MediaModel?) {
         // TODO()
     }
-
-    private suspend fun uploadImage(selectedImage: Image): Result<MediaModel> =
-        when (selectedImage) {
-            is Image.LocalImage -> mediaFilesRepository.uploadFile(selectedImage.uri)
-                .transform {
-                    when (it) {
-                        is MediaFilesRepository.UploadResult.UploadSuccess -> emit(Result.success(it.media))
-                        is MediaFilesRepository.UploadResult.UploadFailure -> throw it.error
-                        else -> {
-                            /* Do nothing */
-                        }
-                    }
-                }
-                .retry(1)
-                .catch { emit(Result.failure(it)) }
-                .first()
-
-            is Image.WPMediaLibraryImage -> mediaFilesRepository.fetchWordPressMedia(selectedImage.content.id)
-        }
 
     sealed interface State {
         data object Loading : State
