@@ -92,8 +92,8 @@ private fun AiProductPreviewScreen(
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
                     when {
-                        state is AiProductPreviewViewModel.State.Success
-                            && state.saveProductState is AiProductPreviewViewModel.SaveProductDraftState.Loading -> {
+                        state is AiProductPreviewViewModel.State.Success &&
+                            state.saveProductState is AiProductPreviewViewModel.SaveProductDraftState.Loading -> {
                             CircularProgressIndicator(
                                 modifier = Modifier
                                     .size(
@@ -103,6 +103,7 @@ private fun AiProductPreviewScreen(
                                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                             )
                         }
+
                         else -> {
                             WCTextButton(
                                 enabled = state is AiProductPreviewViewModel.State.Success,

@@ -46,7 +46,8 @@ class AiProductPreviewViewModel @Inject constructor(
         Result.success(AIProductModel.buildDefault("Name", navArgs.productFeatures))
     )
     private val saveProductState = savedStateHandle.getStateFlow<SaveProductDraftState>(
-        viewModelScope, SaveProductDraftState.Idle
+        viewModelScope,
+        SaveProductDraftState.Idle
     )
 
     val state: LiveData<State> = combine(
@@ -161,7 +162,7 @@ class AiProductPreviewViewModel @Inject constructor(
 
     @Suppress("UNUSED_PARAMETER")
     private fun createProductDraft(uploadedMediaModel: MediaModel?) {
-        //TODO()
+        // TODO()
     }
 
     private suspend fun uploadImage(selectedImage: Image): Result<MediaModel> =
