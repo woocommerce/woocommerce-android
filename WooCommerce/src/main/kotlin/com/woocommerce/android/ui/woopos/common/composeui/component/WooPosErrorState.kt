@@ -15,8 +15,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
 fun WooPosErrorState(
@@ -78,19 +81,19 @@ data class Button(
     val click: () -> Unit
 )
 
-@Preview
+@WooPosPreview
 @Composable
 fun WooPosErrorStatePreview() {
     WooPosErrorState(
         icon = Icons.Default.Error,
-        message = "An unexpected error occurred",
-        reason = "Unable to fetch data",
+        message = stringResource(R.string.woopos_totals_main_error_label),
+        reason = "Reason",
         primaryButton = Button(
-            text = "Retry",
+            text = stringResource(R.string.retry),
             click = { /* Handle click */ }
         ),
         secondaryButton = Button(
-            text = "Cancel",
+            text = stringResource(R.string.cancel),
             click = { /* Handle click */ }
         )
     )
