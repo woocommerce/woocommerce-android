@@ -15,6 +15,7 @@ data class WooPosCartState(
     @Parcelize
     sealed class Body : Parcelable {
         abstract val amountOfItems: Int
+
         @Parcelize
         data object Empty : Body() {
             override val amountOfItems: Int
