@@ -104,4 +104,4 @@ steps:
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
         artifact_paths:
-          - "**/build/instrumented-tests-phone/**/*"
+          - "**/build/instrumented-tests/**/*"
