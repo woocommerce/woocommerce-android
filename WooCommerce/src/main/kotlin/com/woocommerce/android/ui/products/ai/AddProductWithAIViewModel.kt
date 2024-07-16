@@ -35,7 +35,7 @@ class AddProductWithAIViewModel @Inject constructor(
     aiRepository: AIRepository,
     private val productDetailRepository: ProductDetailRepository,
     buildProductPreviewProperties: BuildProductPreviewProperties,
-    generateProductWithAI: GenerateProductWithAI,
+    generateProductWithAI: GenerateProductWithAILegacy,
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val productTagsRepository: ProductTagsRepository,
     private val appsPrefsWrapper: AppPrefsWrapper,
