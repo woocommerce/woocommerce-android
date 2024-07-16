@@ -324,7 +324,7 @@ class SitePickerViewModel @Inject constructor(
                 loadAndDisplaySites()
             }
         )
-        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false, isPrimaryBtnVisible = true)
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
