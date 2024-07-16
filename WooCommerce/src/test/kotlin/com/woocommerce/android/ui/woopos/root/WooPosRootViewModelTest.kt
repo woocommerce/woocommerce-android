@@ -92,5 +92,37 @@ class WooPosRootViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() = testBlocking {
+        // GIVEN
+        val sut = createSut()
+
+        // WHEN
+        sut.onUiEvent(WooPosRootUIEvent.OnBackFromHomeClicked)
+
+        // THEN
+        assertThat(sut.rootScreenState.value.exitConfirmationDialog).isEqualTo(
+            WooPosRootScreenState.WooPosExitConfirmationDialog
+        )
+    }
+
+    @Test
+    fun `given reader status as not connected, should update state with not connected status`() = testBlocking {
+        // GIVEN
+        val notConnectedStatus = NotConnected()
+
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(notConnectedStatus))
+
+        val sut = createSut()
+        val job = launch {
+            sut.rootScreenState.drop(1).collect {
+                val state = it.cardReaderStatus as WooPosCardReaderStatus.NotConnected
+                assertThat(state.title).isEqualTo(R.string.woopos_reader_disconnected)
+            }
+        }
+
+        job.cancel()
+    }
+
     private fun createSut() = WooPosRootViewModel(cardReaderFacade)
 }

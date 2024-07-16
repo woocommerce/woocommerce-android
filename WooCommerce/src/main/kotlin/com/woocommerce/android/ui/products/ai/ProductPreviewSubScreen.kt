@@ -72,7 +72,7 @@ private fun ProductPreviewSubScreen(
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = R.string.product_creation_ai_preview_subtitle),
+            text = stringResource(id = R.string.product_creation_ai_preview_subtitle_legacy),
             style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
@@ -184,7 +184,7 @@ private fun ProductPreviewContent(
 
 @Composable
 private fun ProductProperties(
-    properties: List<ProductPreviewSubViewModel.ProductPropertyCard>,
+    properties: List<ProductPropertyCard>,
     modifier: Modifier
 ) {
     val borderWidth = dimensionResource(id = R.dimen.minor_10)
@@ -381,19 +381,19 @@ private fun ProductPreviewContentPreview() {
                 ),
                 propertyGroups = listOf(
                     listOf(
-                        ProductPreviewSubViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_product,
                             title = R.string.product_type,
                             content = "Simple Product"
                         )
                     ),
                     listOf(
-                        ProductPreviewSubViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_money,
                             title = R.string.product_price,
                             content = "Regular price: $45.00"
                         ),
-                        ProductPreviewSubViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_list_checkmark,
                             title = R.string.product_inventory,
                             content = "In stock"

@@ -18,7 +18,7 @@ Lacak penjualan dan produk terlaris
 Lihat produk mana yang paling laris. Pantau pendapatan keseluruhan, jumlah pesanan, dan data pengunjung Anda per minggu, bulan, dan tahun. Pengetahuan = kekuatan.
 
 WooCommerce di tangan Anda
-Dengan Aplikasi WooCommerce Wear OS, Anda dapat melihat data toko hari ini dan melacak pesanan secara langsung dari tangan Anda. Dengan pintasan kami, Anda juga bisa mendapatkan akses instan ke aplikasi.
+Dengan Aplikasi WooCommerce Wear OS, Anda dapat melihat data toko hari ini dan melacak pesanan langsung dari smartwatch Anda. Dengan pintasan kami, Anda juga bisa mengakses aplikasi secara instan.
 
 WooCommerce adalah platform eCommerce sumber terbuka yang paling fleksibel dalam kustomisasi. Untuk meluncurkan bisnis, mentransformasi toko fisik ke dunia online, maupun mengembangkan situs untuk klien, manfaatkan WooCommerce untuk membangun toko yang memadukan konten dan dagangan.
 

@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-04 09:54:04+0000
+Translation-Revision-Date: 2024-07-09 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="woopos_reader_connect_now_button">立即关联</string>
+    <string name="woopos_cart_title">购物车</string>
+    <string name="ai_product_creation_generate_details_button">生成产品详细信息</string>
+    <string name="ai_product_creation_read_text_from_photo_button">读取产品照片中的文本</string>
+    <string name="ai_product_creation_prompt_placeholder">例如：黑色棉质 T 恤、柔软的面料、结实的缝线、独特的设计</string>
+    <string name="ai_product_creation_product_prompt_subtitle">向我们介绍您的产品，包括它是什么以及它有哪些独特之处，然后静待 AI 施展魔力。</string>
+    <string name="ai_product_creation_product_prompt_title">起始信息</string>
+    <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">让我们为您生成产品详细信息</string>
     <string name="woopos_payment_collect_payment_label">收取银行卡付款</string>
     <string name="woopos_payment_total_label">总计</string>
     <string name="woopos_payment_tax_label">税费</string>
     <string name="woopos_payment_subtotal_label">小计</string>
-    <string name="woo_pos_new_transaction_button">新交易</string>
+    <string name="woopos_new_transaction_button">新交易</string>
     <string name="woopos_payment_successful_label">付款成功</string>
     <string name="woopos_payment_failed_please_try_again">付款失败。 请重试。</string>
-    <string name="woo_pos_cart_back_content_description">购物车图标</string>
+    <string name="woopos_cart_back_content_description">购物车图标</string>
     <string name="woopos_products_screen_title">产品</string>
     <string name="woopos_product_image_description">产品图片</string>
-    <string name="woo_pos_items_in_cart">%d 件商品</string>
-    <string name="woo_pos_clear_cart_button">全部清除</string>
+    <string name="woopos_items_in_cart">%d 件商品</string>
+    <string name="woopos_clear_cart_button">全部清除</string>
     <string name="more_menu_button_google_description">通过 Google Ads 推动销售并增加流量</string>
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="no_quantity_rules">无数量规则</string>
@@ -26,7 +34,6 @@ Language: zh_CN
     <string name="woopos_exit_confirmation_confirm_button">退出</string>
     <string name="woopos_exit_confirmation_message">是否确定要退出 POS 机？</string>
     <string name="woopos_exit_confirmation_title">退出 POS 机</string>
-    <string name="woopos_cart_title">购物车</string>
     <string name="woopos_remove_item_from_cart_content_description">将商品从购物车中移除</string>
     <string name="woopos_checkout_button">结账</string>
     <string name="woopos_reader_unknown">读卡器状态未知</string>
@@ -609,7 +616,7 @@ Language: zh_CN
     <string name="product_creation_ai_preview_details_section">详情</string>
     <string name="product_creation_ai_preview_description_section">产品描述</string>
     <string name="product_creation_ai_preview_name_section">产品名称</string>
-    <string name="product_creation_ai_preview_subtitle">您可以随时更改下方的详细信息。</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">您可以随时更改下方的详细信息。</string>
     <string name="product_creation_ai_preview_title">预览</string>
     <string name="product_creation_ai_about_product_continue_button">创建产品详情</string>
     <string name="product_creation_ai_about_product_set_tone">设置语调和声音</string>
