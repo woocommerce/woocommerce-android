@@ -2,6 +2,8 @@
 
 package com.woocommerce.android.ui.woopos.home.cart
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +29,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -151,6 +154,14 @@ private fun CartToolbar(
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
 ) {
+    val iconSize = 28.dp
+    val iconTitlePadding = 16.dp.toAdaptivePadding()
+    val titleOffset by animateDpAsState(
+        targetValue = if (toolbar.icon != null) iconSize + iconTitlePadding else 0.dp,
+        animationSpec = tween(durationMillis = 300),
+        label = "titleOffset"
+    )
+
     ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
@@ -163,25 +174,26 @@ private fun CartToolbar(
                 }
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(toolbar.icon),
+                    imageVector = ImageVector.vectorResource(it),
                     contentDescription = stringResource(R.string.woopos_cart_back_content_description),
                     tint = MaterialTheme.colors.onBackground,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(iconSize)
                 )
             }
         }
 
-        val cartTitleEndMargin = 16.dp.toAdaptivePadding()
         Text(
             text = stringResource(R.string.woopos_cart_title),
             style = MaterialTheme.typography.h4,
             color = MaterialTheme.colors.onBackground,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
-            modifier = Modifier.constrainAs(title) {
-                start.linkTo(backButton.end, margin = cartTitleEndMargin)
-                centerVerticallyTo(parent)
-            }.padding(vertical = 4.dp)
+            modifier = Modifier
+                .constrainAs(title) {
+                    start.linkTo(parent.start, margin = titleOffset)
+                    centerVerticallyTo(parent)
+                }
+                .padding(vertical = 4.dp)
         )
 
         Spacer(
