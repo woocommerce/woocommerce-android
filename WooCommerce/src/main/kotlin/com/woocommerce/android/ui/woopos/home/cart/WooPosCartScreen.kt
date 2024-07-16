@@ -78,8 +78,6 @@ private fun WooPosCartScreen(
     Box(
         modifier = modifier
             .padding(
-                start = 16.dp.toAdaptivePadding(),
-                end = 16.dp.toAdaptivePadding(),
                 top = 40.dp.toAdaptivePadding(),
                 bottom = 16.dp.toAdaptivePadding()
             )
@@ -111,7 +109,8 @@ private fun WooPosCartScreen(
             WooPosButton(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp.toAdaptivePadding()),
                 text = stringResource(R.string.woopos_checkout_button),
                 onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
             )
@@ -155,11 +154,13 @@ private fun CartBodyWithItems(
     ScrollToBottomHandler(items, listState)
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp.toAdaptivePadding()),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(top = 4.dp.toAdaptivePadding()),
+        contentPadding = PaddingValues(2.dp),
     ) {
         items(
             items,
@@ -215,10 +216,12 @@ private fun CartToolbar(
         toolbar.icon?.let {
             IconButton(
                 onClick = { onBackClicked() },
-                modifier = Modifier.constrainAs(backButton) {
-                    start.linkTo(parent.start)
-                    centerVerticallyTo(parent)
-                }
+                modifier = Modifier
+                    .constrainAs(backButton) {
+                        start.linkTo(parent.start)
+                        centerVerticallyTo(parent)
+                    }
+                    .padding(start = 8.dp.toAdaptivePadding())
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(it),
@@ -240,7 +243,10 @@ private fun CartToolbar(
                     start.linkTo(parent.start, margin = titleOffset)
                     centerVerticallyTo(parent)
                 }
-                .padding(vertical = 4.dp)
+                .padding(
+                    start = 16.dp.toAdaptivePadding(),
+                    end = 4.dp
+                )
         )
 
         Spacer(
@@ -278,10 +284,12 @@ private fun CartToolbar(
         if (toolbar.isClearAllButtonVisible) {
             WooPosOutlinedButton(
                 onClick = { onClearAllClicked() },
-                modifier = Modifier.constrainAs(clearAllButton) {
-                    end.linkTo(parent.end)
-                    centerVerticallyTo(parent)
-                },
+                modifier = Modifier
+                    .constrainAs(clearAllButton) {
+                        end.linkTo(parent.end)
+                        centerVerticallyTo(parent)
+                    }
+                    .padding(end = 16.dp.toAdaptivePadding()),
                 text = stringResource(R.string.woopos_clear_cart_button)
             )
         }
