@@ -133,7 +133,7 @@ fun CartBodyEmpty() {
         Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
         Text(
             text = stringResource(R.string.woopos_cart_empty_subtitle),
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.subtitle1,
             color = MaterialTheme.colors.secondaryVariant,
             textAlign = TextAlign.Center
         )
