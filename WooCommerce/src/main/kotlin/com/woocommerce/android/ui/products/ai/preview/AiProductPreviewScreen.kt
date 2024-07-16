@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -90,17 +91,32 @@ private fun AiProductPreviewScreen(
             Toolbar(
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
-                    WCTextButton(
-                        enabled = state is AiProductPreviewViewModel.State.Success,
-                        onClick = onSaveProductAsDraft
-                    ) {
-                        Text(text = stringResource(id = R.string.product_detail_save_as_draft))
-                    }
-                    WCTextButton(
-                        enabled = state is AiProductPreviewViewModel.State.Success,
-                        onClick = { TODO() }
-                    ) {
-                        Text(text = stringResource(id = R.string.product_detail_publish))
+                    when {
+                        state is AiProductPreviewViewModel.State.Success
+                            && state.saveProductState is AiProductPreviewViewModel.SaveProductDraftState.Loading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(
+                                        width = dimensionResource(id = R.dimen.major_325),
+                                        height = dimensionResource(id = R.dimen.major_100)
+                                    )
+                                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                            )
+                        }
+                        else -> {
+                            WCTextButton(
+                                enabled = state is AiProductPreviewViewModel.State.Success,
+                                onClick = onSaveProductAsDraft
+                            ) {
+                                Text(text = stringResource(id = R.string.product_detail_save_as_draft))
+                            }
+                            WCTextButton(
+                                enabled = state is AiProductPreviewViewModel.State.Success,
+                                onClick = { TODO() }
+                            ) {
+                                Text(text = stringResource(id = R.string.product_detail_publish))
+                            }
+                        }
                     }
                 }
             )
@@ -545,7 +561,8 @@ private fun ProductPreviewContentPreview() {
                 imageState = AiProductPreviewViewModel.ImageState(
                     image = null,
                     showImageFullScreen = false,
-                )
+                ),
+                saveProductState = AiProductPreviewViewModel.SaveProductDraftState.Idle,
             ),
             onFeedbackReceived = {},
             onBackButtonClick = {},

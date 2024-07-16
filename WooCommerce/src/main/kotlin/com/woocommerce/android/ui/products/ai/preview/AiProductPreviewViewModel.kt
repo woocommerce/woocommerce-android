@@ -88,7 +88,8 @@ class AiProductPreviewViewModel @Inject constructor(
                             )
                         }
                     },
-                    imageState = imageState
+                    imageState = imageState,
+                    saveProductState = saveProductState
                 )
             }
         }
@@ -133,8 +134,9 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onSaveProductAsDraft() {
-        // Upload image if any selected image
         launch {
+            saveProductState.value = SaveProductDraftState.Loading
+
             val uploadedMediaModel = imageState.value.image
                 ?.let { uploadImage(it) }
                 ?.getOrElse {
@@ -150,8 +152,10 @@ class AiProductPreviewViewModel @Inject constructor(
                     saveProductState.value = SaveProductDraftState.Error(messageRes = uploadErrorMessageRes)
                     return@launch
                 }
-            // Save product as draft
+
+            // Create product
             createProductDraft(uploadedMediaModel)
+            saveProductState.value = SaveProductDraftState.Success
         }
     }
 
@@ -186,7 +190,8 @@ class AiProductPreviewViewModel @Inject constructor(
             private val product: AIProductModel,
             val propertyGroups: List<List<ProductPropertyCard>>,
             val imageState: ImageState,
-            val shouldShowFeedbackView: Boolean = true
+            val shouldShowFeedbackView: Boolean = true,
+            val saveProductState: SaveProductDraftState,
         ) : State {
             val variantsCount = minOf(product.names.size, product.descriptions.size, product.shortDescriptions.size)
             val shouldShowVariantSelector = variantsCount > 1
