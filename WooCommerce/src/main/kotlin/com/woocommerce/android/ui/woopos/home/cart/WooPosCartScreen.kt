@@ -44,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -121,7 +122,7 @@ private fun WooPosCartScreen(
 fun CartBodyEmpty() {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(16.dp.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -135,9 +136,9 @@ fun CartBodyEmpty() {
             text = stringResource(R.string.woopos_cart_empty_subtitle),
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondaryVariant,
+            textAlign = TextAlign.Center
         )
     }
-
 }
 
 @Composable
