@@ -46,9 +46,9 @@ class WooPosCartViewModel @Inject constructor(
             newState
         }
         .asLiveData()
+        .map { updateCartStatusDependingOnItems(it) }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
-        .map { updateCartStatusDependingOnItems(it) }
 
     init {
         listenEventsFromParent()
@@ -166,7 +166,7 @@ class WooPosCartViewModel @Inject constructor(
             EMPTY -> {
                 WooPosCartState.Toolbar(
                     icon = null,
-                    itemsCount = "",
+                    itemsCount = null,
                     isClearAllButtonVisible = false
                 )
             }
