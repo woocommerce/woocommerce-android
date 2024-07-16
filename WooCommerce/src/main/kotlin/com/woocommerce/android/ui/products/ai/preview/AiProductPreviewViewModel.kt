@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
@@ -32,7 +35,8 @@ import javax.inject.Inject
 class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
-    private val generateProductWithAI: GenerateProductWithAI
+    private val generateProductWithAI: GenerateProductWithAI,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -40,6 +44,7 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
 
+    private val shouldShowFeedbackView = savedStateHandle.getStateFlow(viewModelScope, true)
     private val imageState = savedStateHandle.getStateFlow(viewModelScope, ImageState(navArgs.image))
     private val selectedVariant = savedStateHandle.getStateFlow(viewModelScope, 0)
     private val userEditedFields = savedStateHandle.getStateFlow(viewModelScope, UserEditedFields())
@@ -83,13 +88,15 @@ class AiProductPreviewViewModel @Inject constructor(
                         variant = it,
                     )
                 },
-                userEditedFields
-            ) { imageState, selectedVariant, propertyGroups, editedFields ->
+                userEditedFields,
+                shouldShowFeedbackView
+            ) { imageState, selectedVariant, propertyGroups, editedFields, shouldShowFeedbackView ->
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,
                     propertyGroups = propertyGroups,
                     imageState = imageState,
+                    shouldShowFeedbackView = shouldShowFeedbackView,
                     userEditedName = editedFields.names[selectedVariant],
                     userEditedDescription = editedFields.descriptions[selectedVariant],
                     userEditedShortDescription = editedFields.shortDescriptions[selectedVariant]
@@ -103,9 +110,16 @@ class AiProductPreviewViewModel @Inject constructor(
         generatedProduct.value = generateProductWithAI(navArgs.productFeatures)
     }
 
-    @Suppress("UNUSED_PARAMETER")
     fun onFeedbackReceived(positive: Boolean) {
-        TODO()
+        analyticsTracker.track(
+            stat = AnalyticsEvent.PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SOURCE to "product_creation",
+                AnalyticsTracker.KEY_IS_USEFUL to positive
+            )
+        )
+
+        shouldShowFeedbackView.value = false
     }
 
     fun onBackButtonClick() {
