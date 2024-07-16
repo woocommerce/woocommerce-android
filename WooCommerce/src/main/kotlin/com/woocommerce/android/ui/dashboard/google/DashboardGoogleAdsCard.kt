@@ -119,7 +119,7 @@ fun DashboardGoogleAdsView(
         titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
         menu = viewState.menu,
         button = viewState.mainButton,
-        isError = false,
+        isError = viewState is DashboardGoogleAdsState.Error,
         modifier = modifier
     ) {
         Column(
@@ -254,18 +254,7 @@ private fun GoogleAdsNoCampaigns(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-
-        WCOutlinedButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = dimensionResource(id = R.dimen.minor_100),
-                    bottom = dimensionResource(id = R.dimen.major_100)
-                ),
-            onClick = { onCreateCampaignClicked() },
-        ) {
-            Text(stringResource(R.string.dashboard_google_ads_card_create_campaign_button))
-        }
+        CreateCampaignButton(onClick = onCreateCampaignClicked)
     }
 }
 
@@ -355,17 +344,21 @@ private fun GoogleAdsHasCampaigns(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
+        CreateCampaignButton(onClick = onCreateCampaignClicked)
+    }
+}
 
-        WCOutlinedButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = dimensionResource(id = R.dimen.minor_100),
-                    bottom = dimensionResource(id = R.dimen.major_100)
-                ),
-            onClick = { onCreateCampaignClicked() },
-        ) {
-            Text(stringResource(R.string.dashboard_google_ads_card_create_campaign_button))
-        }
+@Composable
+private fun CreateCampaignButton(onClick: () -> Unit) {
+    WCOutlinedButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                top = dimensionResource(id = R.dimen.minor_100),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            ),
+        onClick = onClick
+    ) {
+        Text(stringResource(R.string.dashboard_google_ads_card_create_campaign_button))
     }
 }
