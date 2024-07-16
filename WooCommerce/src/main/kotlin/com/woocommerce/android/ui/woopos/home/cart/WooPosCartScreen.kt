@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -89,33 +90,17 @@ private fun WooPosCartScreen(
                 onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
             )
 
-            Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
-
-            val listState = rememberLazyListState()
-            ScrollToBottomHandler(state, listState)
-
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f),
-                state = listState,
-                verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                contentPadding = PaddingValues(top = 4.dp.toAdaptivePadding()),
-            ) {
-                items(
-                    state.body.itemsInCart,
-                    key = { item -> item.id.itemNumber }
-                ) { item ->
-                    ProductItem(
-                        modifier = Modifier.animateItemPlacement(),
-                        item,
-                        state.areItemsRemovable
-                    ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) }
+            when (state.body) {
+                WooPosCartBody.Empty -> {
+                    CartBodyEmpty()
                 }
-                if (state.isCheckoutButtonVisible) {
-                    item {
-                        Spacer(modifier = Modifier.height(72.dp))
-                    }
+
+                is WooPosCartBody.WithItems -> {
+                    CartBodyWithItems(
+                        items = state.body.itemsInCart,
+                        areItemsRemovable = state.areItemsRemovable,
+                        isCheckoutButtonVisible = state.isCheckoutButtonVisible
+                    ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(it)) }
                 }
             }
         }
@@ -133,12 +118,72 @@ private fun WooPosCartScreen(
 }
 
 @Composable
+fun CartBodyEmpty() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp.toAdaptivePadding()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.woo_pos_ic_empty_cart),
+            contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
+        )
+        Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
+        Text(
+            text = stringResource(R.string.woopos_cart_empty_subtitle),
+            style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.secondaryVariant,
+        )
+    }
+
+}
+
+@Composable
+private fun CartBodyWithItems(
+    items: List<WooPosCartListItem>,
+    areItemsRemovable: Boolean,
+    isCheckoutButtonVisible: Boolean,
+    onItemRemoved: (item: WooPosCartListItem) -> Unit
+) {
+    Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
+
+    val listState = rememberLazyListState()
+    ScrollToBottomHandler(items, listState)
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState,
+        verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(top = 4.dp.toAdaptivePadding()),
+    ) {
+        items(
+            items,
+            key = { item -> item.id.itemNumber }
+        ) { item ->
+            ProductItem(
+                modifier = Modifier.animateItemPlacement(),
+                item,
+                areItemsRemovable
+            ) { onItemRemoved(item) }
+        }
+        if (isCheckoutButtonVisible) {
+            item {
+                Spacer(modifier = Modifier.height(72.dp))
+            }
+        }
+    }
+}
+
+@Composable
 private fun ScrollToBottomHandler(
-    state: WooPosCartState,
+    items: List<WooPosCartListItem>,
     listState: LazyListState
 ) {
     val previousItemsCount = remember { mutableIntStateOf(0) }
-    val itemsInCartSize = state.body.itemsInCart.size
+    val itemsInCartSize = items.size
     LaunchedEffect(itemsInCartSize) {
         if (itemsInCartSize > previousItemsCount.intValue) {
             listState.animateScrollToItem(itemsInCartSize - 1)
@@ -317,7 +362,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
-                body = WooPosCartBody(
+                body = WooPosCartBody.WithItems(
                     itemsInCart = listOf(
                         WooPosCartListItem(
                             id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
@@ -359,7 +404,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
-                body = WooPosCartBody(
+                body = WooPosCartBody.WithItems(
                     itemsInCart = listOf(
                         WooPosCartListItem(
                             id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
@@ -383,6 +428,26 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = false,
                 isCheckoutButtonVisible = true
+            )
+        ) {}
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
+    WooPosTheme {
+        WooPosCartScreen(
+            modifier = modifier,
+            state = WooPosCartState(
+                toolbar = WooPosCartToolbar(
+                    icon = null,
+                    itemsCount = "0 items",
+                    isClearAllButtonVisible = false
+                ),
+                body = WooPosCartBody.Empty,
+                areItemsRemovable = false,
+                isCheckoutButtonVisible = false
             )
         ) {}
     }

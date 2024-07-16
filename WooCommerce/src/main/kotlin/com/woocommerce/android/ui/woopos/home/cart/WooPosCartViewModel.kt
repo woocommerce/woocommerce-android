@@ -63,7 +63,8 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
                 val currentState = _state.value
                 _state.value = currentState.copy(
-                    body = currentState.body.copy(itemsInCart = currentState.body.itemsInCart - event.item))
+                    body = currentState.body.copy(itemsInCart = currentState.body.itemsInCart - event.item)
+                )
             }
 
             WooPosCartUIEvent.BackClicked -> {
