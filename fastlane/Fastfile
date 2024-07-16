@@ -965,7 +965,9 @@ platform :android do
   #####################################################################################
   desc 'Build the application and instrumented tests, then run the tests in Firebase Test Lab'
   lane :build_and_instrumented_test do |options|
-    gradle(tasks: %w[assembleVanillaDebug assembleVanillaDebugAndroidTest :WooCommerce:runFlank])
+    gradle(tasks: %w[assembleVanillaDebug assembleVanillaDebugAndroidTest])
+    sh("find . -name '*.apk'")
+    gradle(tasks: %w[:WooCommerce:runFlank])
   end
 
   #####################################################################################
