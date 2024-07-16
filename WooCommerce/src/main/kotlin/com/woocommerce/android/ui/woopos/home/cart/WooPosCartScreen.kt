@@ -5,6 +5,7 @@ package com.woocommerce.android.ui.woopos.home.cart
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -127,7 +128,7 @@ fun CartBodyEmpty() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
+        Image(
             imageVector = ImageVector.vectorResource(R.drawable.woo_pos_ic_empty_cart),
             contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
         )
