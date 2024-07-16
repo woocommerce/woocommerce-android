@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.products.ai.preview
 
 import android.os.Parcelable
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -13,6 +11,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
+import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -29,6 +28,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
@@ -39,6 +40,7 @@ import javax.inject.Inject
 class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
+    private val generateProductWithAI: GenerateProductWithAI,
     private val mediaFilesRepository: MediaFilesRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
@@ -72,20 +74,21 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }.asLiveData()
 
-    private fun AIProductModel.prepareState() = flow {
-        val propertyGroups = buildProductPreviewProperties(
-            toProduct(
-                variant = 0,
-                existingCategories = emptyList(),
-                existingTags = emptyList()
-            )
-        )
+    init {
+        generateProduct()
+    }
 
+    private fun AIProductModel.prepareState() = flow {
         emitAll(
             combine(
                 imageState,
                 selectedVariant
             ) { imageState, selectedVariant ->
+                val propertyGroups = buildProductPreviewProperties(
+                    product = this@prepareState,
+                    variant = selectedVariant,
+                )
+
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,
@@ -102,6 +105,11 @@ class AiProductPreviewViewModel @Inject constructor(
                 )
             }
         )
+    }
+
+    private fun generateProduct() = launch {
+        generatedProduct.value = null
+        generatedProduct.value = generateProductWithAI(navArgs.productFeatures)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -123,6 +131,14 @@ class AiProductPreviewViewModel @Inject constructor(
 
     fun onFullScreenImageDismissed() {
         imageState.value = imageState.value.copy(showImageFullScreen = false)
+    }
+
+    fun onSelectNextVariant() {
+        selectedVariant.update { it + 1 }
+    }
+
+    fun onSelectPreviousVariant() {
+        selectedVariant.update { it - 1 }
     }
 
     fun onSaveProductAsDraft() {
@@ -175,12 +191,15 @@ class AiProductPreviewViewModel @Inject constructor(
     sealed interface State {
         data object Loading : State
         data class Success(
-            private val selectedVariant: Int,
+            val selectedVariant: Int,
             private val product: AIProductModel,
             val propertyGroups: List<List<ProductPropertyCard>>,
             val imageState: ImageState,
             val shouldShowFeedbackView: Boolean = true
         ) : State {
+            val variantsCount = minOf(product.names.size, product.descriptions.size, product.shortDescriptions.size)
+            val shouldShowVariantSelector = variantsCount > 1
+
             val title: String
                 get() = product.names[selectedVariant]
             val description: String
@@ -201,10 +220,4 @@ class AiProductPreviewViewModel @Inject constructor(
         val showImageFullScreen: Boolean = false,
         @StringRes val uploadError: Int?
     ) : Parcelable
-
-    data class ProductPropertyCard(
-        @DrawableRes val icon: Int,
-        @StringRes val title: Int,
-        val content: String
-    )
 }

@@ -19,13 +19,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -38,11 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.autoMirror
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.AiFeedbackForm
+import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
@@ -56,6 +66,8 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
             onBackButtonClick = viewModel::onBackButtonClick,
             onImageActionSelected = viewModel::onImageActionSelected,
             onFullScreenImageDismissed = viewModel::onFullScreenImageDismissed,
+            onSelectNextVariant = viewModel::onSelectNextVariant,
+            onSelectPreviousVariant = viewModel::onSelectPreviousVariant,
             onSaveProductAsDraft = viewModel::onSaveProductAsDraft
         )
     }
@@ -68,6 +80,8 @@ private fun AiProductPreviewScreen(
     onBackButtonClick: () -> Unit,
     onImageActionSelected: (ImageAction) -> Unit,
     onFullScreenImageDismissed: () -> Unit,
+    onSelectNextVariant: () -> Unit,
+    onSelectPreviousVariant: () -> Unit,
     onSaveProductAsDraft: () -> Unit,
 ) {
     Scaffold(
@@ -75,10 +89,16 @@ private fun AiProductPreviewScreen(
             Toolbar(
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
-                    WCTextButton(onClick = onSaveProductAsDraft) {
+                    WCTextButton(
+                        enabled = state is AiProductPreviewViewModel.State.Success,
+                        onClick = onSaveProductAsDraft
+                    ) {
                         Text(text = stringResource(id = R.string.product_detail_save_as_draft))
                     }
-                    WCTextButton(onClick = { TODO() }) {
+                    WCTextButton(
+                        enabled = state is AiProductPreviewViewModel.State.Success,
+                        onClick = { TODO() }
+                    ) {
                         Text(text = stringResource(id = R.string.product_detail_publish))
                     }
                 }
@@ -115,6 +135,8 @@ private fun AiProductPreviewScreen(
                     onFeedbackReceived = onFeedbackReceived,
                     onImageActionSelected = onImageActionSelected,
                     onFullScreenImageDismissed = onFullScreenImageDismissed,
+                    onSelectNextVariant = onSelectNextVariant,
+                    onSelectPreviousVariant = onSelectPreviousVariant,
                     modifier = Modifier.fillMaxHeight()
                 )
             }
@@ -135,6 +157,8 @@ private fun ProductPreviewContent(
     onFeedbackReceived: (Boolean) -> Unit,
     onImageActionSelected: (ImageAction) -> Unit,
     onFullScreenImageDismissed: () -> Unit,
+    onSelectNextVariant: () -> Unit,
+    onSelectPreviousVariant: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -176,6 +200,17 @@ private fun ProductPreviewContent(
                 .padding(dimensionResource(id = R.dimen.major_100))
         )
 
+        if (state.shouldShowVariantSelector) {
+            Spacer(Modifier)
+            ProductVariantSelector(
+                selectedVariant = state.selectedVariant,
+                totalVariants = state.variantsCount,
+                onSelectNextVariant = onSelectNextVariant,
+                onSelectPreviousVariant = onSelectPreviousVariant,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
         if (state.imageState.image != null) {
             Spacer(Modifier.height(8.dp))
             ProductImage(
@@ -214,6 +249,61 @@ private fun ProductPreviewContent(
 }
 
 @Composable
+private fun ProductVariantSelector(
+    selectedVariant: Int,
+    totalVariants: Int,
+    onSelectNextVariant: () -> Unit,
+    onSelectPreviousVariant: () -> Unit,
+    modifier: Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+    ) {
+        Text(
+            text = stringResource(
+                id = R.string.product_creation_ai_preview_variant_selector,
+                selectedVariant + 1,
+                totalVariants
+            ),
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(
+            onClick = onSelectPreviousVariant,
+            enabled = selectedVariant > 0,
+            modifier = Modifier
+                .border(ButtonDefaults.outlinedBorder, shape = RoundedCornerShape(8.dp))
+        ) {
+            Icon(
+                imageVector = Icons.Default.ChevronLeft,
+                contentDescription = stringResource(id = R.string.product_creation_ai_select_previous_option),
+                tint = MaterialTheme.colors.primary.copy(alpha = LocalContentAlpha.current),
+                modifier = Modifier
+                    .size(32.dp)
+                    .autoMirror()
+            )
+        }
+        IconButton(
+            onClick = onSelectNextVariant,
+            enabled = selectedVariant < totalVariants - 1,
+            modifier = Modifier
+                .border(ButtonDefaults.outlinedBorder, shape = RoundedCornerShape(8.dp))
+        ) {
+            Icon(
+                imageVector = Icons.Default.ChevronRight,
+                contentDescription = stringResource(id = R.string.product_creation_ai_select_next_option),
+                tint = MaterialTheme.colors.primary.copy(alpha = LocalContentAlpha.current),
+                modifier = Modifier
+                    .size(32.dp)
+                    .autoMirror()
+            )
+        }
+    }
+}
+
+@Composable
 private fun ProductImage(
     state: AiProductPreviewViewModel.ImageState,
     onFullScreenImageDismissed: () -> Unit,
@@ -244,7 +334,7 @@ private fun ProductImage(
 
 @Composable
 private fun ProductProperties(
-    properties: List<AiProductPreviewViewModel.ProductPropertyCard>,
+    properties: List<ProductPropertyCard>,
     modifier: Modifier
 ) {
     val borderWidth = dimensionResource(id = R.dimen.minor_10)
@@ -407,6 +497,8 @@ private fun ProductPreviewLoadingPreview() {
             onBackButtonClick = {},
             onImageActionSelected = {},
             onFullScreenImageDismissed = {},
+            onSelectNextVariant = {},
+            onSelectPreviousVariant = {},
             onSaveProductAsDraft = {}
         )
     }
@@ -428,19 +520,19 @@ private fun ProductPreviewContentPreview() {
                 ),
                 propertyGroups = listOf(
                     listOf(
-                        AiProductPreviewViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_product,
                             title = R.string.product_type,
                             content = "Simple Product"
                         )
                     ),
                     listOf(
-                        AiProductPreviewViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_money,
                             title = R.string.product_price,
                             content = "Regular price: $45.00"
                         ),
-                        AiProductPreviewViewModel.ProductPropertyCard(
+                        ProductPropertyCard(
                             icon = R.drawable.ic_gridicons_list_checkmark,
                             title = R.string.product_inventory,
                             content = "In stock"
@@ -457,6 +549,8 @@ private fun ProductPreviewContentPreview() {
             onBackButtonClick = {},
             onImageActionSelected = {},
             onFullScreenImageDismissed = {},
+            onSelectNextVariant = {},
+            onSelectPreviousVariant = {},
             onSaveProductAsDraft = {}
         )
     }
