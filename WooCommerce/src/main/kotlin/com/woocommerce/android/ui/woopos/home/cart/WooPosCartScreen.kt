@@ -91,11 +91,11 @@ private fun WooPosCartScreen(
             )
 
             when (state.body) {
-                WooPosCartBody.Empty -> {
+                WooPosCartState.Body.Empty -> {
                     CartBodyEmpty()
                 }
 
-                is WooPosCartBody.WithItems -> {
+                is WooPosCartState.Body.WithItems -> {
                     CartBodyWithItems(
                         items = state.body.itemsInCart,
                         areItemsRemovable = state.areItemsRemovable,
@@ -142,10 +142,10 @@ fun CartBodyEmpty() {
 
 @Composable
 private fun CartBodyWithItems(
-    items: List<WooPosCartListItem>,
+    items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
     isCheckoutButtonVisible: Boolean,
-    onItemRemoved: (item: WooPosCartListItem) -> Unit
+    onItemRemoved: (item: WooPosCartState.Body.WithItems.Item) -> Unit
 ) {
     Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
 
@@ -179,7 +179,7 @@ private fun CartBodyWithItems(
 
 @Composable
 private fun ScrollToBottomHandler(
-    items: List<WooPosCartListItem>,
+    items: List<WooPosCartState.Body.WithItems.Item>,
     listState: LazyListState
 ) {
     val previousItemsCount = remember { mutableIntStateOf(0) }
@@ -195,7 +195,7 @@ private fun ScrollToBottomHandler(
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun CartToolbar(
-    toolbar: WooPosCartToolbar,
+    toolbar: WooPosCartState.Toolbar,
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
 ) {
@@ -250,26 +250,28 @@ private fun CartToolbar(
                 }
         )
 
-        val itemsEndMargin = 16.dp.toAdaptivePadding()
-        Text(
-            text = toolbar.itemsCount,
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.6f),
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            modifier = Modifier
-                .constrainAs(itemsCount) {
-                    end.linkTo(
-                        if (toolbar.isClearAllButtonVisible) {
-                            clearAllButton.start
-                        } else {
-                            parent.end
-                        },
-                        margin = itemsEndMargin,
-                    )
-                    centerVerticallyTo(parent)
-                }
-        )
+        toolbar.itemsCount?.let {
+            val itemsEndMargin = 16.dp.toAdaptivePadding()
+            Text(
+                text = it,
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.6f),
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                modifier = Modifier
+                    .constrainAs(itemsCount) {
+                        end.linkTo(
+                            if (toolbar.isClearAllButtonVisible) {
+                                clearAllButton.start
+                            } else {
+                                parent.end
+                            },
+                            margin = itemsEndMargin,
+                        )
+                        centerVerticallyTo(parent)
+                    }
+            )
+        }
 
         if (toolbar.isClearAllButtonVisible) {
             WooPosOutlinedButton(
@@ -287,9 +289,9 @@ private fun CartToolbar(
 @Composable
 private fun ProductItem(
     modifier: Modifier = Modifier,
-    item: WooPosCartListItem,
+    item: WooPosCartState.Body.WithItems.Item,
     canRemoveItems: Boolean,
-    onRemoveClicked: (item: WooPosCartListItem) -> Unit
+    onRemoveClicked: (item: WooPosCartState.Body.WithItems.Item) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -357,28 +359,28 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
         WooPosCartScreen(
             modifier = modifier,
             state = WooPosCartState(
-                toolbar = WooPosCartToolbar(
+                toolbar = WooPosCartState.Toolbar(
                     icon = null,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
-                body = WooPosCartBody.WithItems(
+                body = WooPosCartState.Body.WithItems(
                     itemsInCart = listOf(
-                        WooPosCartListItem(
-                            id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
+                        WooPosCartState.Body.WithItems.Item(
+                            id = WooPosCartState.Body.WithItems.Item.Id(productId = 1L, itemNumber = 1),
                             imageUrl = "",
                             name = "VW California, VW California VW California, VW California VW California, " +
                                 "VW California VW California, VW California,VW California",
                             price = "€50,000"
                         ),
-                        WooPosCartListItem(
-                            id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
+                        WooPosCartState.Body.WithItems.Item(
+                            id = WooPosCartState.Body.WithItems.Item.Id(productId = 2L, itemNumber = 2),
                             imageUrl = "",
                             name = "VW California",
                             price = "$150,000"
                         ),
-                        WooPosCartListItem(
-                            id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
+                        WooPosCartState.Body.WithItems.Item(
+                            id = WooPosCartState.Body.WithItems.Item.Id(productId = 3L, itemNumber = 3),
                             imageUrl = "",
                             name = "VW California",
                             price = "€250,000"
@@ -399,27 +401,27 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
         WooPosCartScreen(
             modifier = modifier,
             state = WooPosCartState(
-                toolbar = WooPosCartToolbar(
+                toolbar = WooPosCartState.Toolbar(
                     icon = R.drawable.ic_back_24dp,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
-                body = WooPosCartBody.WithItems(
+                body = WooPosCartState.Body.WithItems(
                     itemsInCart = listOf(
-                        WooPosCartListItem(
-                            id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
+                        WooPosCartState.Body.WithItems.Item(
+                            id = WooPosCartState.Body.WithItems.Item.Id(productId = 1L, itemNumber = 1),
                             imageUrl = "",
                             name = "VW California",
                             price = "€50,000"
                         ),
-                        WooPosCartListItem(
-                            id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
+                        WooPosCartState.Body.WithItems.Item(
+                            id = WooPosCartState.Body.WithItems.Item.Id(productId = 2L, itemNumber = 2),
                             imageUrl = "",
                             name = "VW California",
                             price = "$150,000"
                         ),
-                        WooPosCartListItem(
-                            id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
+                        WooPosCartState.Body.WithItems.Item(
+                            id = WooPosCartState.Body.WithItems.Item.Id(productId = 3L, itemNumber = 3),
                             imageUrl = "",
                             name = "VW California",
                             price = "€250,000"
@@ -440,12 +442,12 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
         WooPosCartScreen(
             modifier = modifier,
             state = WooPosCartState(
-                toolbar = WooPosCartToolbar(
+                toolbar = WooPosCartState.Toolbar(
                     icon = null,
-                    itemsCount = "0 items",
+                    itemsCount = null,
                     isClearAllButtonVisible = false
                 ),
-                body = WooPosCartBody.Empty,
+                body = WooPosCartState.Body.Empty,
                 areItemsRemovable = false,
                 isCheckoutButtonVisible = false
             )
