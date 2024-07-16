@@ -16,26 +16,34 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
-import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsViewModel.DashboardGoogleAdsState
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
 fun DashboardGoogleAdsCard(
@@ -45,6 +53,8 @@ fun DashboardGoogleAdsCard(
         factory.create(parentViewModel = parentViewModel)
     }
 ) {
+    HandleEvents(event = viewModel.event)
+
     viewModel.viewState.observeAsState().value?.let { state ->
         DashboardGoogleAdsView(
             viewState = state,
@@ -54,83 +64,70 @@ fun DashboardGoogleAdsCard(
 }
 
 @Composable
+private fun HandleEvents(
+    event: LiveData<MultiLiveEvent.Event>
+) {
+    val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val webViewTitle = stringResource(id = R.string.more_menu_button_google)
+
+    DisposableEffect(event, navController, lifecycleOwner) {
+        val observer = Observer { event: MultiLiveEvent.Event ->
+            when (event) {
+                is DashboardGoogleAdsViewModel.ViewGoogleForWooEvent -> {
+                    val direction = if (event.canAutoLogin) {
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                            title = webViewTitle,
+                            urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
+                        )
+                    } else {
+                        NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+                            urlToLoad = event.url,
+                            urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                            title = webViewTitle,
+                            urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+                        )
+                    }
+
+                    navController.navigateSafely(direction)
+                }
+            }
+        }
+
+        event.observe(lifecycleOwner, observer)
+
+        onDispose {
+            event.removeObserver(observer)
+        }
+    }
+}
+
+@Composable
 fun DashboardGoogleAdsView(
     viewState: DashboardGoogleAdsState,
     modifier: Modifier
 
 ) {
-    if (viewState is DashboardGoogleAdsState.Loading) {
-        WidgetCard(
-            titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
-            menu = DashboardWidgetMenu(
-                listOf(
-                    DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry { /* TODO */ }
+    WidgetCard(
+        titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
+        menu = viewState.menu,
+        button = viewState.mainButton,
+        isError = false,
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.major_100),
                 )
-            ),
-            isError = false,
-            modifier = modifier
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = R.dimen.major_100),
-                    )
-            ) {
-                GoogleAdsLoading()
-            }
-        }
-    } else {
-        // Displaying multiple states at once for testing purposes
-        Column {
-            Spacer(modifier = modifier.height(32.dp))
-
-            WidgetCard(
-                titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
-                menu = DashboardWidgetMenu(
-                    listOf(
-                        DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry { /* TODO */ }
-                    )
-                ),
-                isError = false,
-                modifier = modifier
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.major_100),
-                        )
-                ) {
-                    GoogleAdsNoCampaigns()
-                }
-            }
-
-            Spacer(modifier = modifier.height(32.dp))
-
-            WidgetCard(
-                titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
-                menu = DashboardWidgetMenu(
-                    listOf(
-                        DashboardWidget.Type.GOOGLE_ADS.defaultHideMenuEntry { /* TODO */ }
-                    )
-                ),
-                button = DashboardViewModel.DashboardWidgetAction(
-                    titleResource = R.string.dashboard_google_ads_card_view_all_campaigns_button,
-                    action = { /* TODO */ }
-                ),
-                isError = false,
-                modifier = modifier
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.major_100),
-                        )
-                ) {
-                    GoogleAdsWithCampaigns()
-                }
+            when (viewState) {
+                is DashboardGoogleAdsState.Loading -> GoogleAdsLoading()
+                is DashboardGoogleAdsState.NoCampaigns -> GoogleAdsNoCampaigns(viewState.onCreateCampaignClicked)
+                is DashboardGoogleAdsState.HasCampaigns -> GoogleAdsWithCampaigns(viewState.onCreateCampaignClicked)
             }
         }
     }
@@ -200,6 +197,7 @@ private fun GoogleAdsLoading(
 
 @Composable
 private fun GoogleAdsNoCampaigns(
+    onCreateCampaignClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
@@ -250,7 +248,7 @@ private fun GoogleAdsNoCampaigns(
                     top = dimensionResource(id = R.dimen.minor_100),
                     bottom = dimensionResource(id = R.dimen.major_100)
                 ),
-            onClick = { /* TODO */ },
+            onClick = { onCreateCampaignClicked() },
         ) {
             Text(stringResource(R.string.dashboard_google_ads_card_create_campaign_button))
         }
@@ -259,6 +257,7 @@ private fun GoogleAdsNoCampaigns(
 
 @Composable
 private fun GoogleAdsWithCampaigns(
+    onCreateCampaignClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
@@ -324,7 +323,7 @@ private fun GoogleAdsWithCampaigns(
                             text = stringResource(R.string.dashboard_google_ads_card_has_campaign_clicks),
                             style = MaterialTheme.typography.body2
                         )
-                        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                         Text(
                             text = "25300",
                             style = MaterialTheme.typography.h5,
@@ -344,7 +343,7 @@ private fun GoogleAdsWithCampaigns(
                     top = dimensionResource(id = R.dimen.minor_100),
                     bottom = dimensionResource(id = R.dimen.major_100)
                 ),
-            onClick = { /* TODO */ },
+            onClick = { onCreateCampaignClicked() },
         ) {
             Text(stringResource(R.string.dashboard_google_ads_card_create_campaign_button))
         }

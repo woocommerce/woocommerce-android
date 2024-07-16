@@ -2,8 +2,13 @@ package com.woocommerce.android.ui.dashboard.google
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -27,12 +32,15 @@ import kotlinx.coroutines.withContext
 @HiltViewModel(assistedFactory = DashboardGoogleAdsViewModel.Factory::class)
 class DashboardGoogleAdsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
+    private val selectedSite: SelectedSite,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns
 ) : ScopedViewModel(savedStateHandle) {
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(_refreshTrigger, (parentViewModel.refreshTrigger))
         .onStart { emit(RefreshEvent()) }
+
+    private val canAutoLogin = selectedSite.get().connectionType == SiteConnectionType.Jetpack
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = refreshTrigger
@@ -46,15 +54,17 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
             emit(
                 if (hasCampaigns) {
                     DashboardGoogleAdsState.HasCampaigns(
-                        onCreateCampaignClicked = { },
+                        onCreateCampaignClicked = { launchCampaignCreation() },
                         showAllCampaignsButton = DashboardWidgetAction(
                             R.string.dashboard_google_ads_card_view_all_campaigns_button
-                        ) { },
+                        ) {
+                            launchCampaignDetails()
+                        },
                         menu = widgetMenu
                     )
                 } else {
                     DashboardGoogleAdsState.NoCampaigns(
-                        onCreateCampaignClicked = { },
+                        onCreateCampaignClicked = { launchCampaignCreation() },
                         menu = widgetMenu
                     )
                 }
@@ -69,6 +79,16 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
             }
         )
     )
+
+    private fun launchCampaignCreation() {
+        val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
+        triggerEvent(ViewGoogleForWooEvent(creationUrl, canAutoLogin))
+    }
+
+    private fun launchCampaignDetails() {
+        val adminUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
+        triggerEvent(ViewGoogleForWooEvent(adminUrl, canAutoLogin))
+    }
 
     sealed class DashboardGoogleAdsState(
         open val menu: DashboardWidgetMenu,
@@ -88,8 +108,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         ) : DashboardGoogleAdsState(menu, showAllCampaignsButton)
     }
 
-    object LaunchGoogleAdsCampaignCreation : MultiLiveEvent.Event()
-    object ShowAllCampaigns : MultiLiveEvent.Event()
+    data class ViewGoogleForWooEvent(val url: String, val canAutoLogin: Boolean) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
