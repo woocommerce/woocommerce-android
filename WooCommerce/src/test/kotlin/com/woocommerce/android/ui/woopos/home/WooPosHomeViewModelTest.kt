@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -45,17 +46,18 @@ class WooPosHomeViewModelTest {
         }
 
     @Test
-    fun `given state is Cart, when SystemBackClicked passed, then should propagate the event down`() =
-        runTest {
-            // GIVEN
-            val viewModel = createViewModel()
+    fun `given state is Cart, when SystemBackClicked passed, then should propagate the event down`() = runTest {
+        // GIVEN
+        val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
+        val viewModel = createViewModel()
 
-            // WHEN
-            val result = viewModel.onUIEvent(SystemBackClicked)
+        // WHEN
+        val result = viewModel.onUIEvent(SystemBackClicked)
 
-            // THEN
-            assertFalse(result)
-        }
+        // THEN
+        assertFalse(result)
+    }
 
     @Test
     fun `given state checkout is paid, when SystemBackClicked passed, then OrderSuccessfullyPaid event should be sent`() = runTest {
