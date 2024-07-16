@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.transform
+import org.wordpress.android.util.DateTimeUtils
 import javax.inject.Inject
 
 class UploadImage @Inject constructor(
@@ -32,7 +33,7 @@ class UploadImage @Inject constructor(
                         id = it.mediaId,
                         source = it.url,
                         name = it.fileName,
-                        dateCreated = null,
+                        dateCreated = DateTimeUtils.dateFromIso8601(it.uploadDate),
                     )
                 }
 

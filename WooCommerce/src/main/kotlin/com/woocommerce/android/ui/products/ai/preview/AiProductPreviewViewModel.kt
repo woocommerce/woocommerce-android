@@ -10,6 +10,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.media.MediaFilesRepository.MediaUploadException
 import com.woocommerce.android.model.Image
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
@@ -28,7 +29,6 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.MediaModel
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -163,7 +163,7 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun createProductDraft(uploadedMediaModel: MediaModel?) {
+    private fun createProductDraft(uploadedMediaModel: Product.Image?) {
         // TODO()
     }
 
