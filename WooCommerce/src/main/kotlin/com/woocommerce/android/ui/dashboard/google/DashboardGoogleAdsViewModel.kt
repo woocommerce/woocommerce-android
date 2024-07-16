@@ -51,11 +51,11 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                         if (hasCampaigns) {
                             DashboardGoogleAdsState.HasCampaigns(
                                 onCreateCampaignClicked = { launchCampaignCreation() },
+                                onPerformanceAreaClicked = { launchCampaignDetails() },
                                 showAllCampaignsButton = DashboardWidgetAction(
-                                    R.string.dashboard_google_ads_card_view_all_campaigns_button
-                                ) {
-                                    launchCampaignDetails()
-                                },
+                                    titleResource = R.string.dashboard_google_ads_card_view_all_campaigns_button,
+                                    action = { launchCampaignDetails() }
+                                ),
                                 menu = widgetMenu
                             )
                         } else {
@@ -111,6 +111,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
         data class HasCampaigns(
             val onCreateCampaignClicked: () -> Unit,
+            val onPerformanceAreaClicked: () -> Unit,
             val showAllCampaignsButton: DashboardWidgetAction,
             override val menu: DashboardWidgetMenu
         ) : DashboardGoogleAdsState(menu, showAllCampaignsButton)

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.dashboard.google
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -131,7 +132,10 @@ fun DashboardGoogleAdsView(
             when (viewState) {
                 is DashboardGoogleAdsState.Loading -> GoogleAdsLoading()
                 is DashboardGoogleAdsState.NoCampaigns -> GoogleAdsNoCampaigns(viewState.onCreateCampaignClicked)
-                is DashboardGoogleAdsState.HasCampaigns -> GoogleAdsWithCampaigns(viewState.onCreateCampaignClicked)
+                is DashboardGoogleAdsState.HasCampaigns -> GoogleAdsHasCampaigns(
+                    viewState.onCreateCampaignClicked,
+                    viewState.onPerformanceAreaClicked
+                )
                 is DashboardGoogleAdsState.Error -> {
                     WidgetError(
                         onContactSupportClicked = onContactSupportClicked,
@@ -266,8 +270,9 @@ private fun GoogleAdsNoCampaigns(
 }
 
 @Composable
-private fun GoogleAdsWithCampaigns(
+private fun GoogleAdsHasCampaigns(
     onCreateCampaignClicked: () -> Unit,
+    onPerformanceAreaClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
@@ -297,7 +302,12 @@ private fun GoogleAdsWithCampaigns(
                     .padding(start = dimensionResource(id = R.dimen.major_100))
                     .weight(1f),
             ) {
-                Row {
+                Row(
+                    modifier = Modifier
+                        .clickable {
+                            onPerformanceAreaClicked()
+                        }
+                ) {
                     Text(
                         text = stringResource(R.string.dashboard_google_ads_card_has_campaign_heading),
                         style = MaterialTheme.typography.body1,
