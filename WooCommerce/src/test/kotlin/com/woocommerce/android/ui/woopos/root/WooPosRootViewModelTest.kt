@@ -6,7 +6,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
-import com.woocommerce.android.util.CoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
@@ -30,17 +30,11 @@ import kotlin.test.assertNotEquals
 @RunWith(MockitoJUnitRunner::class)
 class WooPosRootViewModelTest {
 
-    init {
-        Class.forName("kotlinx.coroutines.test.TestScopeKt")
-            .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
-            .invoke(null, false)
-    }
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Rule
     @JvmField
-    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
 
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
 

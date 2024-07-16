@@ -19,12 +19,6 @@ import kotlin.test.assertFalse
 @RunWith(MockitoJUnitRunner::class)
 class WooPosHomeViewModelTest {
 
-    init {
-        Class.forName("kotlinx.coroutines.test.TestScopeKt")
-            .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
-            .invoke(null, false)
-    }
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Rule

@@ -28,12 +28,6 @@ import kotlin.test.Test
 @RunWith(MockitoJUnitRunner::class)
 class WooPosTotalsViewModelTest {
 
-    init {
-        Class.forName("kotlinx.coroutines.test.TestScopeKt")
-            .getDeclaredMethod("setCatchNonTestRelatedExceptions", Boolean::class.java)
-            .invoke(null, false)
-    }
-
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Rule
