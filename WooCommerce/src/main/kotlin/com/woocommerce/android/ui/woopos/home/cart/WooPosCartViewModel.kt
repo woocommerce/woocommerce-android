@@ -111,8 +111,8 @@ class WooPosCartViewModel @Inject constructor(
                             val product = getProductById(event.productId)!!
                             val itemNumber = when (val currentState = _state.value.body) {
                                 is WooPosCartState.Body.Empty -> 1
-                                is WooPosCartState.Body.WithItems -> (currentState.itemsInCart.maxOfOrNull { it.id.itemNumber }
-                                    ?: 0) + 1
+                                is WooPosCartState.Body.WithItems ->
+                                    (currentState.itemsInCart.maxOfOrNull { it.id.itemNumber } ?: 0) + 1
                             }
                             product.toCartListItem(itemNumber)
                         }
@@ -193,14 +193,13 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun updateParentCartStatusIfCartChanged(previousState: WooPosCartState, newState: WooPosCartState) {
         if (previousState.body.amountOfItems == newState.body.amountOfItems) return
-
-        when (newState.cartStatus) {
-            EDITABLE, CHECKOUT -> {
-                sendEventToParent(ChildToParentEvent.CartStatusChanged.NotEmpty)
+        when (newState.body) {
+            is WooPosCartState.Body.Empty -> {
+                sendEventToParent(ChildToParentEvent.CartStatusChanged.Empty)
             }
 
-            EMPTY -> {
-                sendEventToParent(ChildToParentEvent.CartStatusChanged.Empty)
+            is WooPosCartState.Body.WithItems -> {
+                sendEventToParent(ChildToParentEvent.CartStatusChanged.NotEmpty)
             }
         }
     }
