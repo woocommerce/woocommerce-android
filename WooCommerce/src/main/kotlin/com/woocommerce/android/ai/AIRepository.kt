@@ -82,9 +82,8 @@ class AIRepository @Inject constructor(
             }
     }
 
-    @Suppress("LongParameterList")
+    @Suppress("LongParameterList", "MagicNumber")
     suspend fun generateProduct(
-        productName: String,
         productKeyWords: String,
         tone: String,
         weightUnit: String,
@@ -96,6 +95,36 @@ class AIRepository @Inject constructor(
     ): Result<String> {
         return fetchJetpackAIQuery(
             prompt = AIPrompts.generateProductCreationPrompt(
+                keywords = productKeyWords,
+                tone = tone,
+                weightUnit = weightUnit,
+                dimensionUnit = dimensionUnit,
+                currency = currency,
+                existingCategories = existingCategories.map { it.name },
+                existingTags = existingTags.map { it.name },
+                languageISOCode = languageISOCode
+            ),
+            feature = PRODUCT_CREATION_FEATURE,
+            format = ResponseFormat.JSON,
+            maxTokens = 4000 // Specify a higher limit for max_tokens to avoid truncated responses, see pe5sF9-2UY-p2
+        )
+    }
+
+    // TODO remove this when cleaning up legacy code for product creation
+    @Suppress("LongParameterList")
+    suspend fun generateProductLegacy(
+        productName: String,
+        productKeyWords: String,
+        tone: String,
+        weightUnit: String,
+        dimensionUnit: String,
+        currency: String,
+        existingCategories: List<ProductCategory>,
+        existingTags: List<ProductTag>,
+        languageISOCode: String
+    ): Result<String> {
+        return fetchJetpackAIQuery(
+            prompt = AIPrompts.generateProductCreationPromptLegacy(
                 name = productName,
                 keywords = productKeyWords,
                 tone = tone,
@@ -135,13 +164,15 @@ class AIRepository @Inject constructor(
         prompt: String,
         feature: String,
         format: ResponseFormat = ResponseFormat.TEXT,
+        maxTokens: Int? = null
     ): Result<String> = withContext(Dispatchers.IO) {
         jetpackAIStore.fetchJetpackAIQuery(
             site = selectedSite.get(),
             question = prompt,
             feature = feature,
             format = format,
-            stream = false
+            stream = false,
+            maxTokens = maxTokens
         ).run {
             when (this) {
                 is JetpackAIQueryResponse.Success -> {
