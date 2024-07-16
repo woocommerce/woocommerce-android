@@ -514,7 +514,7 @@
     <string name="analytics_session_card_title">Sessions</string>
     <string name="analytics_bundles_card_title">Bundles</string>
     <string name="analytics_gift_cards_card_title">Gift Cards</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_card_title">Google Campaigns</string>
     <string name="analytics_google_ads_programs_card_title">Programs</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
@@ -2208,6 +2208,9 @@
     <string name="product_creation_ai_preview_short_description_section">Product short description</string>
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
+    <string name="product_creation_ai_preview_variant_selector">Option %1$d of %2$d</string>
+    <string name="product_creation_ai_select_previous_option">Select previous option</string>
+    <string name="product_creation_ai_select_next_option">Select next option</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>
     <string name="product_creation_ai_tone_description">Set the tone and voice to shape your product\'s presentation that aligns with your brand.</string>
     <string name="product_creation_ai_tone_casual">Casual</string>
@@ -4196,5 +4199,4 @@
 
     <string name="customers_details_no_phone_hint">No phone number</string>
     <string name="customers_details_none_hint">None</string>
-
 </resources>

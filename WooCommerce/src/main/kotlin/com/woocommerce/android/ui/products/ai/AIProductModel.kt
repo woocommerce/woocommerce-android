@@ -6,6 +6,8 @@ import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
+import org.json.JSONArray
+import org.json.JSONObject
 import java.math.BigDecimal
 
 data class AIProductModel(
@@ -15,43 +17,25 @@ data class AIProductModel(
     val isVirtual: Boolean,
     val price: BigDecimal,
     val shipping: Shipping,
-    val categories: List<String>? = null,
-    val tags: List<String>? = null
+    val categories: List<ProductCategory>? = null,
+    val tags: List<ProductTag>? = null
 ) {
     @Suppress("unused")
     fun toProduct(
-        variant: Int,
-        existingCategories: List<ProductCategory>,
-        existingTags: List<ProductTag>
+        variant: Int
     ): Product = ProductHelper.getDefaultNewProduct(SIMPLE, isVirtual).copy(
         name = names[variant],
         description = descriptions[variant],
         shortDescription = shortDescriptions[variant],
         regularPrice = price,
-        categories = getCategories(existingCategories),
-        tags = getTags(existingTags),
+        categories = categories.orEmpty(),
+        tags = tags.orEmpty(),
         weight = shipping.weight,
         height = shipping.height,
         length = shipping.length,
         width = shipping.width,
         status = DRAFT
     )
-
-    private fun getCategories(
-        existingCategories: List<ProductCategory>
-    ): List<ProductCategory> = categories.orEmpty().map { name ->
-        existingCategories.find { category ->
-            category.name == name
-        } ?: ProductCategory(name = name)
-    }
-
-    private fun getTags(
-        existingTags: List<ProductTag>
-    ): List<ProductTag> = tags.orEmpty().map { name ->
-        existingTags.find { tag ->
-            tag.name == name
-        } ?: ProductTag(name = name)
-    }
 
     data class Shipping(
         val weight: Float,
@@ -61,9 +45,33 @@ data class AIProductModel(
     )
 
     companion object {
-        @Suppress("UNUSED_PARAMETER")
-        fun fromJson(json: String): AIProductModel {
-            TODO()
+        fun fromJson(
+            json: String,
+            existingCategories: List<ProductCategory>,
+            existingTags: List<ProductTag>
+        ): AIProductModel {
+            val jsonModel = JSONObject(json)
+            return AIProductModel(
+                names = jsonModel.getJSONArray("names").toList(),
+                descriptions = jsonModel.getJSONArray("descriptions").toList(),
+                shortDescriptions = jsonModel.getJSONArray("short_descriptions").toList(),
+                isVirtual = jsonModel.getBoolean("virtual"),
+                price = BigDecimal(jsonModel.getString("price")),
+                shipping = jsonModel.getJSONObject("shipping").run {
+                    Shipping(
+                        weight = getDouble("weight").toFloat(),
+                        height = getDouble("height").toFloat(),
+                        length = getDouble("length").toFloat(),
+                        width = getDouble("width").toFloat()
+                    )
+                },
+                categories = jsonModel.getJSONArray("categories").toList().map { name ->
+                    existingCategories.firstOrNull { it.name == name } ?: ProductCategory(name = name)
+                },
+                tags = jsonModel.getJSONArray("tags").toList().map { name ->
+                    existingTags.firstOrNull { it.name == name } ?: ProductTag(name = name)
+                }
+            )
         }
 
         fun buildDefault(
@@ -78,6 +86,11 @@ data class AIProductModel(
                 price = BigDecimal.ZERO,
                 shipping = Shipping(0f, 0f, 0f, 0f)
             )
+        }
+
+        private fun JSONArray.toList(): List<String> {
+            return (0 until length())
+                .map { i -> getString(i) }
         }
     }
 }
