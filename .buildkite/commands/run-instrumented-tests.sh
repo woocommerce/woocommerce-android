@@ -28,6 +28,6 @@ else
 fi
 
 echo "--- 🧪 Copying test logs for test collector"
-mkdir WooCommerce/build/buildkite-test-analytics && cp build/instrumented-tests/*/*/*.xml WooCommerce/build/buildkite-test-analytics
+mkdir WooCommerce/build/buildkite-test-analytics && cp -r build/instrumented-tests/matrix_* WooCommerce/build/buildkite-test-analytics
 
 exit $TESTS_EXIT_STATUS
