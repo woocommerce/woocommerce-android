@@ -299,7 +299,7 @@ private fun GoogleAdsWithCampaigns(
                             text = stringResource(R.string.dashboard_google_ads_card_has_campaign_clicks),
                             style = MaterialTheme.typography.body2
                         )
-                        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                         Text(
                             text = "25300",
                             style = MaterialTheme.typography.h5,
