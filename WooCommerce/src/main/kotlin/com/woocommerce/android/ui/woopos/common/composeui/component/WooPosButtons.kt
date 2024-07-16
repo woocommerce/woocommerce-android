@@ -52,7 +52,7 @@ fun WooPosOutlinedButton(
     Button(
         modifier = modifier,
         onClick = onClick,
-        border = BorderStroke(1.dp, MaterialTheme.colors.primary),
+        border = BorderStroke(2.dp, MaterialTheme.colors.primary),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.surface,
             contentColor = MaterialTheme.colors.onBackground,
