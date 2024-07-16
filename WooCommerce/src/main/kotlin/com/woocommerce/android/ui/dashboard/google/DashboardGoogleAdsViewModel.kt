@@ -82,7 +82,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     )
 
     private fun launchCampaignCreation() {
-        val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
+        val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
         triggerEvent(ViewGoogleForWooEvent(creationUrl, canAutoLogin))
     }
 
