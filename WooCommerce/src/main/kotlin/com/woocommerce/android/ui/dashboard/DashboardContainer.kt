@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
-import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun DashboardContainer(
@@ -173,12 +172,10 @@ private fun ConfigurableWidgetCard(
         )
 
         DashboardWidget.Type.GOOGLE_ADS -> {
-            if (FeatureFlag.GOOGLE_ADS_M1.isEnabled()) {
-                DashboardGoogleAdsCard(
-                    parentViewModel = dashboardViewModel,
-                    modifier = modifier
-                )
-            }
+            DashboardGoogleAdsCard(
+                parentViewModel = dashboardViewModel,
+                modifier = modifier
+            )
         }
     }
 }
