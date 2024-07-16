@@ -64,161 +64,175 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given items in cart, when item remove button clicked in cart, then should remove item from cart`() = testBlocking {
-        // GIVEN
-        val product = ProductTestUtils.generateProduct(
-            productId = 23L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+    fun `given items in cart, when item remove button clicked in cart, then should remove item from cart`() =
+        testBlocking {
+            // GIVEN
+            val product = ProductTestUtils.generateProduct(
+                productId = 23L,
+                productName = "title",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
 
-        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
-        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
-        val sut = createSut()
-        val states = sut.state.captureValues()
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+            val sut = createSut()
+            val states = sut.state.captureValues()
 
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
-        )
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+            )
 
-        // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(WooPosCartState.Body.WithItems.Item(
-            id = WooPosCartState.Body.WithItems.Item.Id(productId = product.remoteId, itemNumber = 1),
-            name = product.name,
-            price = "10.0$",
-            imageUrl = product.firstImageUrl
-        )))
+            // WHEN
+            sut.onUIEvent(
+                WooPosCartUIEvent.ItemRemovedFromCart(
+                    WooPosCartState.Body.WithItems.Item(
+                        id = WooPosCartState.Body.WithItems.Item.Id(productId = product.remoteId, itemNumber = 1),
+                        name = product.name,
+                        price = "10.0$",
+                        imageUrl = product.firstImageUrl
+                    )
+                )
+            )
 
-        // THEN
-        val itemsInCartAfterRemoveClicked = (states.last().body as? WooPosCartState.Body.WithItems)?.itemsInCart ?: emptyList()
-        assertThat(itemsInCartAfterRemoveClicked).isEmpty()
-    }
-
-    @Test
-    fun `given empty cart in_progress, when vm created, then toolbar state should contain shopping cart empty itemsCart and no clear all button`() = testBlocking {
-        // WHEN
-        val sut = createSut()
-        val states = sut.state.captureValues()
-
-        // THEN
-        val toolbar = states.last().toolbar
-        assertThat(toolbar.icon).isNull()
-        assertThat(toolbar.itemsCount).isNull()
-        assertThat(toolbar.isClearAllButtonVisible).isFalse()
-    }
+            // THEN
+            val itemsInCartAfterRemoveClicked =
+                (states.last().body as? WooPosCartState.Body.WithItems)?.itemsInCart ?: emptyList()
+            assertThat(itemsInCartAfterRemoveClicked).isEmpty()
+        }
 
     @Test
-    fun `given non empty cart in_progress, when vm created, then toolbar state should contain shopping cart itemsCart title and no clear all`() = testBlocking {
-        // GIVEN
-        val product = ProductTestUtils.generateProduct(
-            productId = 23L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+    fun `given empty cart in_progress, when vm created, then toolbar state should contain shopping cart empty itemsCart and no clear all button`() =
+        testBlocking {
+            // WHEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
 
-        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
-        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
-
-        // WHEN
-        val sut = createSut()
-        val states = sut.state.captureValues()
-
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
-        )
-
-        // THEN
-        val toolbar = states.last().toolbar
-        assertThat(toolbar.icon).isNull()
-        assertThat(toolbar.itemsCount).isEqualTo("Items in cart: 1")
-        assertThat(toolbar.isClearAllButtonVisible).isTrue()
-    }
+            // THEN
+            val toolbar = states.last().toolbar
+            assertThat(toolbar.icon).isNull()
+            assertThat(toolbar.itemsCount).isNull()
+            assertThat(toolbar.isClearAllButtonVisible).isFalse()
+        }
 
     @Test
-    fun `given non empty cart checkout, when vm created, then toolbar state should contain back icon itemsCart title and no clear all`() = testBlocking {
-        // GIVEN
-        val product = ProductTestUtils.generateProduct(
-            productId = 23L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+    fun `given non empty cart in_progress, when vm created, then toolbar state should contain shopping cart itemsCart title and no clear all`() =
+        testBlocking {
+            // GIVEN
+            val product = ProductTestUtils.generateProduct(
+                productId = 23L,
+                productName = "title",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
 
-        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
-        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(getProductById(eq(product.remoteId))).thenReturn(product)
 
-        // WHEN
-        val sut = createSut()
-        val states = sut.state.captureValues()
+            // WHEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
 
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
-        )
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+            )
 
-        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
-
-        // THEN
-        val toolbar = states.last().toolbar
-        assertThat(toolbar.icon).isEqualTo(R.drawable.ic_back_24dp)
-        assertThat(toolbar.itemsCount).isEqualTo("Items in cart: 1")
-        assertThat(toolbar.isClearAllButtonVisible).isFalse()
-    }
+            // THEN
+            val toolbar = states.last().toolbar
+            assertThat(toolbar.icon).isNull()
+            assertThat(toolbar.itemsCount).isEqualTo("Items in cart: 1")
+            assertThat(toolbar.isClearAllButtonVisible).isTrue()
+        }
 
     @Test
-    fun `given non empty cart in process, when 2 items added and the first removed and third item added, then third will have item number 3`() = testBlocking {
-        // GIVEN
-        val product1 = ProductTestUtils.generateProduct(
-            productId = 1L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
-        val product2 = ProductTestUtils.generateProduct(
-            productId = 2L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
-        val product3 = ProductTestUtils.generateProduct(
-            productId = 3L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+    fun `given non empty cart checkout, when vm created, then toolbar state should contain back icon itemsCart title and no clear all`() =
+        testBlocking {
+            // GIVEN
+            val product = ProductTestUtils.generateProduct(
+                productId = 23L,
+                productName = "title",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
 
-        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
-        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(getProductById(eq(product1.remoteId))).thenReturn(product1)
-        whenever(getProductById(eq(product2.remoteId))).thenReturn(product2)
-        whenever(getProductById(eq(product3.remoteId))).thenReturn(product3)
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(getProductById(eq(product.remoteId))).thenReturn(product)
 
-        val sut = createSut()
-        val states = sut.state.captureValues()
+            // WHEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
 
-        // WHEN
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product1.remoteId)
-        )
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product2.remoteId)
-        )
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+            )
 
-        sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(WooPosCartState.Body.WithItems.Item(
-            id = WooPosCartState.Body.WithItems.Item.Id(productId = product1.remoteId, itemNumber = 1),
-            name = product1.name,
-            price = "10.0$",
-            imageUrl = product1.firstImageUrl
-        )))
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
 
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product3.remoteId)
-        )
+            // THEN
+            val toolbar = states.last().toolbar
+            assertThat(toolbar.icon).isEqualTo(R.drawable.ic_back_24dp)
+            assertThat(toolbar.itemsCount).isEqualTo("Items in cart: 1")
+            assertThat(toolbar.isClearAllButtonVisible).isFalse()
+        }
 
-        // THEN
-        val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
-        assertThat(itemsInCart).hasSize(2)
-        assertThat(itemsInCart[0].id.itemNumber).isEqualTo(2)
-        assertThat(itemsInCart[1].id.itemNumber).isEqualTo(3)
-    }
+    @Test
+    fun `given non empty cart in process, when 2 items added and the first removed and third item added, then third will have item number 3`() =
+        testBlocking {
+            // GIVEN
+            val product1 = ProductTestUtils.generateProduct(
+                productId = 1L,
+                productName = "title",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
+            val product2 = ProductTestUtils.generateProduct(
+                productId = 2L,
+                productName = "title",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
+            val product3 = ProductTestUtils.generateProduct(
+                productId = 3L,
+                productName = "title",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
+
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(getProductById(eq(product1.remoteId))).thenReturn(product1)
+            whenever(getProductById(eq(product2.remoteId))).thenReturn(product2)
+            whenever(getProductById(eq(product3.remoteId))).thenReturn(product3)
+
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            // WHEN
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product1.remoteId)
+            )
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product2.remoteId)
+            )
+
+            sut.onUIEvent(
+                WooPosCartUIEvent.ItemRemovedFromCart(
+                    WooPosCartState.Body.WithItems.Item(
+                        id = WooPosCartState.Body.WithItems.Item.Id(productId = product1.remoteId, itemNumber = 1),
+                        name = product1.name,
+                        price = "10.0$",
+                        imageUrl = product1.firstImageUrl
+                    )
+                )
+            )
+
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product3.remoteId)
+            )
+
+            // THEN
+            val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
+            assertThat(itemsInCart).hasSize(2)
+            assertThat(itemsInCart[0].id.itemNumber).isEqualTo(2)
+            assertThat(itemsInCart[1].id.itemNumber).isEqualTo(3)
+        }
 
     @Test
     fun `given empty cart, when created, then state should be empty`() = testBlocking {
@@ -281,12 +295,16 @@ class WooPosCartViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(WooPosCartState.Body.WithItems.Item(
-            id = WooPosCartState.Body.WithItems.Item.Id(productId = product.remoteId, itemNumber = 1),
-            name = product.name,
-            price = "10.0$",
-            imageUrl = product.firstImageUrl
-        )))
+        sut.onUIEvent(
+            WooPosCartUIEvent.ItemRemovedFromCart(
+                WooPosCartState.Body.WithItems.Item(
+                    id = WooPosCartState.Body.WithItems.Item.Id(productId = product.remoteId, itemNumber = 1),
+                    name = product.name,
+                    price = "10.0$",
+                    imageUrl = product.firstImageUrl
+                )
+            )
+        )
 
         // THEN
         assertThat(states).hasSizeGreaterThan(1)
@@ -296,34 +314,34 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given non-empty cart, when vm initialized and all items removed, then toolbar state should reflect empty cart`() = testBlocking {
-        // GIVEN
-        val product = ProductTestUtils.generateProduct(
-            productId = 23L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
+    fun `given non-empty cart, when vm initialized and all items removed, then toolbar state should reflect empty cart`() =
+        testBlocking {
+            // GIVEN
+            val product = ProductTestUtils.generateProduct(
+                productId = 23L,
+                productName = "title",
+                amount = "10.0"
+            ).copy(firstImageUrl = "url")
 
-        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
-        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
-        val sut = createSut()
-        val states = sut.state.captureValues()
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+            val sut = createSut()
+            val states = sut.state.captureValues()
 
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
-        )
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+            )
 
-        // WHEN
-        sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+            // WHEN
+            sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
 
-        // THEN
-        val toolbar = states.last().toolbar
-        assertThat(toolbar.icon).isNull()
-        assertThat(toolbar.itemsCount).isNull()
-        assertThat(toolbar.isClearAllButtonVisible).isFalse()
-    }
-
+            // THEN
+            val toolbar = states.last().toolbar
+            assertThat(toolbar.icon).isNull()
+            assertThat(toolbar.itemsCount).isNull()
+            assertThat(toolbar.isClearAllButtonVisible).isFalse()
+        }
 
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
