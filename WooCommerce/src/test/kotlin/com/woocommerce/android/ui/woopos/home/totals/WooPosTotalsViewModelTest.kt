@@ -53,35 +53,76 @@ class WooPosTotalsViewModelTest {
 
     @Test
     fun `initial state is loading`() = runTest {
-        // WHEN
+        // GIVEN
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(MutableStateFlow(ParentToChildrenEvent.BackFromCheckoutToCartClicked))
+        }
         val savedState = createMockSavedStateHandle()
-        val viewModel = createViewModel(savedState = savedState)
+
+        // WHEN
+        val viewModel = createViewModel(
+            savedState = savedState,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver
+        )
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
     }
 
+
+
     @Test
-    fun `given checkoutstarted, when vm created, then loading state is shown and order creation is started`() =
-        runTest {
-            // GIVEN
-            val productIds = listOf(1L, 2L, 3L)
-            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
-            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
-                on { events }.thenReturn(parentToChildrenEventFlow)
-            }
-            val totalsRepository: WooPosTotalsRepository = mock()
-
-            // WHEN
-            val viewModel = createViewModel(
-                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-                totalsRepository = totalsRepository,
-            )
-
-            // THEN
-            assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
-            verify(totalsRepository).createOrderWithProducts(productIds = productIds)
+    fun `given checkoutstarted, when vm created, then order creation is started`() = runTest {
+        // GIVEN
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
         }
+
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            id = 123L,
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                )
+            )
+        )
+
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds) }.thenReturn(Result.success(order))
+        }
+
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
+            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Totals(orderSubtotalText ="$3.00", orderTaxText="$2.00", orderTotalText="$5.00"))
+        verify(totalsRepository).createOrderWithProducts(productIds)
+    }
+
+
 
     @Test
     fun `given checkoutstarted and successfully created order, when vm created, then totals state correctly calculated`() =
