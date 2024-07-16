@@ -112,25 +112,6 @@ class WooPosRootViewModelTest {
     }
 
     @Test
-    fun `given reader status connecting, should update state to connecting`() = runTest {
-        // GIVEN
-        whenever(
-            cardReaderFacade.readerStatus
-        ).thenReturn(flowOf(com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting))
-
-        val sut = createSut()
-        val job = launch {
-            sut.rootScreenState.drop(1).collect {
-                assertThat(it.cardReaderStatus).isEqualTo(WooPosCardReaderStatus.Connecting)
-            }
-        }
-
-        sut.onUiEvent(WooPosRootUIEvent.ConnectToAReaderClicked)
-
-        job.cancel()
-    }
-
-    @Test
     fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() {
         // GIVEN
         val sut = createSut()

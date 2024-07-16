@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsCard
+import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsCard
 import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersCard
@@ -42,6 +43,7 @@ import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
+import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun DashboardContainer(
@@ -169,6 +171,14 @@ private fun ConfigurableWidgetCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )
+
+        DashboardWidget.Type.GOOGLE_ADS -> {
+            if (FeatureFlag.GOOGLE_ADS_M1.isEnabled()) {
+                DashboardGoogleAdsCard(
+                    modifier = modifier
+                )
+            }
+        }
     }
 }
 
