@@ -545,7 +545,6 @@ private fun ProductPreviewContentPreview() {
                 imageState = AiProductPreviewViewModel.ImageState(
                     image = null,
                     showImageFullScreen = false,
-                    uploadError = null
                 )
             ),
             onFeedbackReceived = {},

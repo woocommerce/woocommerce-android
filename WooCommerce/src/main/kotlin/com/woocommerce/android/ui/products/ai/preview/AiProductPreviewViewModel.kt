@@ -19,13 +19,10 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
@@ -55,7 +52,9 @@ class AiProductPreviewViewModel @Inject constructor(
     val state: LiveData<State> = combine(
         generatedProduct,
         saveProductState,
-    ) { generatedProduct, saveProductState ->
+        imageState,
+        selectedVariant
+    ) { generatedProduct, saveProductState, imageState, selectedVariant ->
         when {
             generatedProduct == null -> State.Loading
             generatedProduct.getOrNull() == null || generatedProduct.isFailure ->
@@ -71,52 +70,15 @@ class AiProductPreviewViewModel @Inject constructor(
                 messageRes = saveProductState.messageRes
             )
 
-            else ->
-                combine(
-                    imageState,
-                    selectedVariant
-                ) { imageState, selectedVariant ->
-                    val propertyGroups = buildProductPreviewProperties(
-                        product = generatedProduct.getOrThrow(),
-                        variant = selectedVariant,
-                    )
-
-                    State.Success(
-                        selectedVariant = selectedVariant,
-                        product = generatedProduct.getOrThrow(),
-                        propertyGroups = propertyGroups.map { group ->
-                            group.map { property ->
-                                ProductPropertyCard(
-                                    icon = property.icon,
-                                    title = property.title,
-                                    content = property.content
-                                )
-                            }
-                        },
-                        imageState = imageState
-                    )
-                }
-        }
-    }.asLiveData()
-
-    init {
-        generateProduct()
-    }
-
-    private fun AIProductModel.prepareState() = flow {
-        emitAll(
-            combine(
-                imageState,
-                selectedVariant
-            ) { imageState, selectedVariant ->
+            else -> {
                 val propertyGroups = buildProductPreviewProperties(
-                    product = this@prepareState,
+                    product = generatedProduct.getOrThrow(),
                     variant = selectedVariant,
                 )
 
                 State.Success(
                     selectedVariant = selectedVariant,
-                    product = this@prepareState,
+                    product = generatedProduct.getOrThrow(),
                     propertyGroups = propertyGroups.map { group ->
                         group.map { property ->
                             ProductPropertyCard(
@@ -129,7 +91,11 @@ class AiProductPreviewViewModel @Inject constructor(
                     imageState = imageState
                 )
             }
-        )
+        }
+    }.asLiveData()
+
+    init {
+        generateProduct()
     }
 
     private fun generateProduct() = launch {
@@ -246,10 +212,17 @@ class AiProductPreviewViewModel @Inject constructor(
         val showImageFullScreen: Boolean = false,
     ) : Parcelable
 
-    sealed interface SaveProductDraftState {
+    sealed interface SaveProductDraftState : Parcelable {
+        @Parcelize
         data object Loading : SaveProductDraftState
+
+        @Parcelize
         data class Error(@StringRes val messageRes: Int) : SaveProductDraftState
+
+        @Parcelize
         data object Success : SaveProductDraftState
+
+        @Parcelize
         data object Idle : SaveProductDraftState
     }
 }
