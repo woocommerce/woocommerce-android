@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai.preview
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -146,7 +147,8 @@ private fun AiProductPreviewScreen(
     if (state is AiProductPreviewViewModel.State.Error) {
         ErrorDialog(
             onRetryClick = state.onRetryClick,
-            onDismissClick = state.onDismissClick
+            onDismissClick = state.onDismissClick,
+            R.string.product_creation_ai_generation_failure_message
         )
     }
 }
@@ -465,13 +467,14 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 @Composable
 private fun ErrorDialog(
     onRetryClick: () -> Unit,
-    onDismissClick: () -> Unit
+    onDismissClick: () -> Unit,
+    @StringRes errorMessage: Int
 ) {
     AlertDialog(
         onDismissRequest = {},
         properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
         text = {
-            Text(text = stringResource(id = R.string.product_creation_ai_generation_failure_message))
+            Text(text = stringResource(id = errorMessage))
         },
         confirmButton = {
             WCTextButton(onClick = onRetryClick) {

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.ai.preview
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -27,15 +28,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import javax.inject.Inject
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -45,32 +43,59 @@ class AiProductPreviewViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
 
-    private val imageState = savedStateHandle.getStateFlow(
-        viewModelScope, ImageState(
-            navArgs.image,
-            uploadError = null
-        )
-    )
+    private val imageState = savedStateHandle.getStateFlow(viewModelScope, ImageState(navArgs.image))
     private val selectedVariant = savedStateHandle.getStateFlow(viewModelScope, 0)
     private val generatedProduct = MutableStateFlow<Result<AIProductModel>?>(
         Result.success(AIProductModel.buildDefault("Name", navArgs.productFeatures))
     )
+    private val saveProductState = savedStateHandle.getStateFlow<SaveProductDraftState>(
+        viewModelScope, SaveProductDraftState.Idle
+    )
 
-    val state: LiveData<State> = generatedProduct.transformLatest {
-        if (it == null) {
-            emit(State.Loading)
-            return@transformLatest
-        }
-
-        when (val product = it.getOrNull()) {
-            null -> emit(
+    val state: LiveData<State> = combine(
+        generatedProduct,
+        saveProductState,
+    ) { generatedProduct, saveProductState ->
+        when {
+            generatedProduct == null -> State.Loading
+            generatedProduct.getOrNull() == null || generatedProduct.isFailure ->
                 State.Error(
-                    onRetryClick = { TODO() },
+                    onRetryClick = { generateProduct() },
                     onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) },
+                    messageRes = R.string.product_creation_ai_generation_failure_message
                 )
+
+            saveProductState is SaveProductDraftState.Error -> State.Error(
+                onRetryClick = { generateProduct() },
+                onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) },
+                messageRes = saveProductState.messageRes
             )
 
-            else -> emitAll(product.prepareState())
+            else ->
+                combine(
+                    imageState,
+                    selectedVariant
+                ) { imageState, selectedVariant ->
+                    val propertyGroups = buildProductPreviewProperties(
+                        product = generatedProduct.getOrThrow(),
+                        variant = selectedVariant,
+                    )
+
+                    State.Success(
+                        selectedVariant = selectedVariant,
+                        product = generatedProduct.getOrThrow(),
+                        propertyGroups = propertyGroups.map { group ->
+                            group.map { property ->
+                                ProductPropertyCard(
+                                    icon = property.icon,
+                                    title = property.title,
+                                    content = property.content
+                                )
+                            }
+                        },
+                        imageState = imageState
+                    )
+                }
         }
     }.asLiveData()
 
@@ -156,16 +181,16 @@ class AiProductPreviewViewModel @Inject constructor(
 
                         else -> R.string.ai_product_creation_error_media_upload
                     }
-                    imageState.value = imageState.value.copy(uploadError = uploadErrorMessageRes)
+                    saveProductState.value = SaveProductDraftState.Error(messageRes = uploadErrorMessageRes)
                     return@launch
                 }
             // Save product as draft
-            saveProductAsDraft(uploadedMediaModel)
+            createProductDraft(uploadedMediaModel)
         }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun saveProductAsDraft(uploadedMediaModel: MediaModel?) {
+    private fun createProductDraft(uploadedMediaModel: MediaModel?) {
         //TODO()
     }
 
@@ -211,6 +236,7 @@ class AiProductPreviewViewModel @Inject constructor(
         data class Error(
             val onRetryClick: () -> Unit,
             val onDismissClick: () -> Unit,
+            @StringRes val messageRes: Int
         ) : State
     }
 
@@ -218,6 +244,12 @@ class AiProductPreviewViewModel @Inject constructor(
     data class ImageState(
         val image: Image?,
         val showImageFullScreen: Boolean = false,
-        @StringRes val uploadError: Int?
     ) : Parcelable
+
+    sealed interface SaveProductDraftState {
+        data object Loading : SaveProductDraftState
+        data class Error(@StringRes val messageRes: Int) : SaveProductDraftState
+        data object Success : SaveProductDraftState
+        data object Idle : SaveProductDraftState
+    }
 }
