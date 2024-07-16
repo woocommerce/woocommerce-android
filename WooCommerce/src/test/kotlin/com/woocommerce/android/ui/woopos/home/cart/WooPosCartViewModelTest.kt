@@ -220,6 +220,111 @@ class WooPosCartViewModelTest : BaseUnitTest() {
         assertThat(itemsInCart[1].id.itemNumber).isEqualTo(3)
     }
 
+    @Test
+    fun `given empty cart, when created, then state should be empty`() = testBlocking {
+        // WHEN
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        // THEN
+        assertThat(states).hasSize(2)
+        assertThat(states.last().body).isInstanceOf(WooPosCartState.Body.Empty::class.java)
+        assertThat(states.last().cartStatus).isEqualTo(WooPosCartStatus.EMPTY)
+    }
+
+    @Test
+    fun `given non-empty cart, when all items removed, then state should be empty`() = testBlocking {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+        )
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+
+        // THEN
+        assertThat(states).hasSizeGreaterThan(1)
+        val finalState = states.last()
+        assertThat(finalState.body).isInstanceOf(WooPosCartState.Body.Empty::class.java)
+        assertThat(finalState.cartStatus).isEqualTo(WooPosCartStatus.EMPTY)
+    }
+
+    @Test
+    fun `given non-empty cart, when all items removed individually, then state should be empty`() = testBlocking {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+        )
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(WooPosCartState.Body.WithItems.Item(
+            id = WooPosCartState.Body.WithItems.Item.Id(productId = product.remoteId, itemNumber = 1),
+            name = product.name,
+            price = "10.0$",
+            imageUrl = product.firstImageUrl
+        )))
+
+        // THEN
+        assertThat(states).hasSizeGreaterThan(1)
+        val finalState = states.last()
+        assertThat(finalState.body).isInstanceOf(WooPosCartState.Body.Empty::class.java)
+        assertThat(finalState.cartStatus).isEqualTo(WooPosCartStatus.EMPTY)
+    }
+
+    @Test
+    fun `given non-empty cart, when vm initialized and all items removed, then toolbar state should reflect empty cart`() = testBlocking {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+        )
+
+        // WHEN
+        sut.onUIEvent(WooPosCartUIEvent.ClearAllClicked)
+
+        // THEN
+        val toolbar = states.last().toolbar
+        assertThat(toolbar.icon).isNull()
+        assertThat(toolbar.itemsCount).isNull()
+        assertThat(toolbar.isClearAllButtonVisible).isFalse()
+    }
+
+
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
             childrenToParentEventSender,
