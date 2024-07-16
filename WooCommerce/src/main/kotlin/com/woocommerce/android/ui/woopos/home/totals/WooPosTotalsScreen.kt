@@ -40,15 +40,14 @@ import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPayme
 fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
     val viewModel: WooPosTotalsViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
-    WooPosTotalsScreen(modifier, state, viewModel::onUIEvent, viewModel::retryOrderCreation)
+    WooPosTotalsScreen(modifier, state, viewModel::onUIEvent)
 }
 
 @Composable
 private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     state: WooPosTotalsState,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit,
-    onRetryClick: () -> Unit
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -72,7 +71,7 @@ private fun WooPosTotalsScreen(
             is WooPosTotalsState.Error -> {
                 WooPosTotalsErrorScreen(
                     errorMessage = state.message,
-                    onRetryClick = onRetryClick
+                    onUIEvent = onUIEvent
                 )
             }
         }
@@ -247,9 +246,9 @@ private fun TotalsLoading() {
 }
 
 @Composable
-fun WooPosTotalsErrorScreen(
+private fun WooPosTotalsErrorScreen(
     errorMessage: String,
-    onRetryClick: () -> Unit
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -269,7 +268,7 @@ fun WooPosTotalsErrorScreen(
 
         WooPosButton(
             text = stringResource(R.string.retry),
-            onClick = onRetryClick,
+            onClick = { onUIEvent(WooPosTotalsUIEvent.RetryClicked) },
             modifier = Modifier.padding(top = 16.dp)
         )
     }
@@ -281,7 +280,7 @@ fun WooPosTotalsErrorScreenPreview() {
     WooPosTheme {
         WooPosTotalsErrorScreen(
             errorMessage = "An error occurred. Please try again.",
-            onRetryClick = {}
+            onUIEvent = {}
         )
     }
 }
@@ -297,8 +296,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                 orderTotalText = "$462.00",
                 orderTaxText = "$42.00",
             ),
-            onUIEvent = {},
-            onRetryClick = {}
+            onUIEvent = {}
         )
     }
 }
@@ -309,8 +307,7 @@ fun WooPosTotalsScreenLoadingPreview() {
     WooPosTheme {
         WooPosTotalsScreen(
             state = WooPosTotalsState.Loading,
-            onUIEvent = {},
-            onRetryClick = {}
+            onUIEvent = {}
         )
     }
 }
