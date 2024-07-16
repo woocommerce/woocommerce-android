@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
-import com.woocommerce.android.util.CoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -29,7 +29,7 @@ class WooPosHomeViewModelTest {
 
     @Rule
     @JvmField
-    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()

@@ -8,8 +8,8 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -42,7 +42,7 @@ class WooPosTotalsViewModelTest {
 
     @Rule
     @JvmField
-    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
 
     private fun createMockSavedStateHandle(): SavedStateHandle {
         return SavedStateHandle(

@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.woopos.home.products
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -35,7 +35,7 @@ class WooPosProductsViewModelTest {
 
     @Rule
     @JvmField
-    val coroutinesTestRule = CoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
 
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
