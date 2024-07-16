@@ -181,7 +181,7 @@ private fun CartToolbar(
             modifier = Modifier.constrainAs(title) {
                 start.linkTo(backButton.end, margin = cartTitleEndMargin)
                 centerVerticallyTo(parent)
-            }
+            }.padding(vertical = 4.dp)
         )
 
         Spacer(
