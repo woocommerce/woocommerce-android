@@ -25,7 +25,7 @@ import java.util.Date
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(MockitoJUnitRunner.Silent::class)
 class WooPosTotalsViewModelTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
