@@ -25,15 +25,24 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
+import org.wordpress.android.fluxc.store.WCGoogleStore
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @HiltViewModel(assistedFactory = DashboardGoogleAdsViewModel.Factory::class)
+@Suppress("MagicNumber")
 class DashboardGoogleAdsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    private val canUseAutoLoginWebview: CanUseAutoLoginWebview
+    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
+    private val googleAdsStore: WCGoogleStore,
 ) : ScopedViewModel(savedStateHandle) {
+    private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val distantPastDate: String = dateFormatter.format(LocalDateTime.of(1970, 1, 1, 0, 0))
+    private val currentDate: String = dateFormatter.format(LocalDateTime.now())
+
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(_refreshTrigger, (parentViewModel.refreshTrigger))
         .onStart { emit(RefreshEvent()) }
@@ -47,15 +56,34 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                 onSuccess = { hasCampaigns ->
                     emit(
                         if (hasCampaigns) {
-                            DashboardGoogleAdsState.HasCampaigns(
-                                onCreateCampaignClicked = { launchCampaignCreation() },
-                                onPerformanceAreaClicked = { launchCampaignDetails() },
-                                showAllCampaignsButton = DashboardWidgetAction(
-                                    titleResource = R.string.dashboard_google_ads_card_view_all_campaigns_button,
-                                    action = { launchCampaignDetails() }
-                                ),
-                                menu = widgetMenu
-                            )
+                            googleAdsStore.fetchImpressionsAndClicks(
+                                site = selectedSite.get(),
+                                startDate = distantPastDate,
+                                endDate = currentDate
+                            ).let { result ->
+
+                                when {
+                                    result.isError -> DashboardGoogleAdsState.Error(widgetMenu)
+                                    else -> {
+                                        val impressions = result.model?.first?.toInt()?.toString() ?: "0"
+                                        val clicks = result.model?.second?.toInt()?.toString() ?: "0"
+
+                                        val campaignButton = DashboardWidgetAction(
+                                            titleResource =
+                                            R.string.dashboard_google_ads_card_view_all_campaigns_button,
+                                            action = { launchCampaignDetails() }
+                                        )
+                                        DashboardGoogleAdsState.HasCampaigns(
+                                            impressions = impressions,
+                                            clicks = clicks,
+                                            onCreateCampaignClicked = { launchCampaignCreation() },
+                                            onPerformanceAreaClicked = { launchCampaignDetails() },
+                                            showAllCampaignsButton = campaignButton,
+                                            menu = widgetMenu
+                                        )
+                                    }
+                                }
+                            }
                         } else {
                             DashboardGoogleAdsState.NoCampaigns(
                                 onCreateCampaignClicked = { launchCampaignCreation() },
@@ -108,6 +136,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         ) : DashboardGoogleAdsState(menu)
 
         data class HasCampaigns(
+            val impressions: String,
+            val clicks: String,
             val onCreateCampaignClicked: () -> Unit,
             val onPerformanceAreaClicked: () -> Unit,
             val showAllCampaignsButton: DashboardWidgetAction,
