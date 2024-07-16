@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.media.MediaFilesRepository
+import com.woocommerce.android.media.MediaFilesRepository.MediaUploadException
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
@@ -66,7 +67,7 @@ class AiProductPreviewViewModel @Inject constructor(
                 )
 
             saveProductState is SaveProductDraftState.Error -> State.Error(
-                onRetryClick = { generateProduct() },
+                onRetryClick = { onSaveProductAsDraft() },
                 onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) },
                 messageRes = saveProductState.messageRes
             )
@@ -140,16 +141,13 @@ class AiProductPreviewViewModel @Inject constructor(
 
             val uploadedMediaModel = imageState.value.image
                 ?.let { uploadImage(it) }
-                ?.getOrElse {
-                    val uploadErrorMessageRes = when (it) {
-                        is MediaFilesRepository.MediaUploadException ->
-                            R.string.ai_product_creation_error_media_upload
-
-                        is OnChangedException ->
-                            R.string.ai_product_creation_error_media_fetch
-
-                        else -> R.string.ai_product_creation_error_media_upload
-                    }
+                ?.getOrElse { error ->
+                    val uploadErrorMessageRes =
+                        when (error) {
+                            is MediaUploadException -> R.string.ai_product_creation_error_media_upload
+                            is OnChangedException -> R.string.ai_product_creation_error_media_fetch
+                            else -> R.string.ai_product_creation_error_media_upload
+                        }
                     saveProductState.value = SaveProductDraftState.Error(messageRes = uploadErrorMessageRes)
                     return@launch
                 }

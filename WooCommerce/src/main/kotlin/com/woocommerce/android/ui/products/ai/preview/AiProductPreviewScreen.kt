@@ -165,7 +165,7 @@ private fun AiProductPreviewScreen(
         ErrorDialog(
             onRetryClick = state.onRetryClick,
             onDismissClick = state.onDismissClick,
-            R.string.product_creation_ai_generation_failure_message
+            errorMessage = state.messageRes
         )
     }
 }
