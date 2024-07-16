@@ -13,15 +13,12 @@ class HasGoogleAdsCampaigns @Inject constructor(
      *
      * @return Returns true if there are any Google Ads campaigns, otherwise returns false.
      */
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(): Boolean =
         googleRepository.fetchGoogleAdsCampaigns(excludeRemovedCampaigns = true).fold(
-            onSuccess = { campaigns ->
-                return campaigns.isNotEmpty()
-            },
+            onSuccess = { it.isNotEmpty() },
             onFailure = { error ->
-                WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to fetch Google Ads campaigns: ${error.message} ")
-                return false
+                WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to fetch Google Ads campaigns: ${error.message}")
+                false
             }
         )
-    }
 }

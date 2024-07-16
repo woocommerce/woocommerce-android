@@ -47,9 +47,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         .transformLatest {
             emit(DashboardGoogleAdsState.Loading)
 
-            val hasCampaigns = withContext(Dispatchers.IO) {
-                hasGoogleAdsCampaigns()
-            }
+            val hasCampaigns = hasGoogleAdsCampaigns()
 
             emit(
                 if (hasCampaigns) {
