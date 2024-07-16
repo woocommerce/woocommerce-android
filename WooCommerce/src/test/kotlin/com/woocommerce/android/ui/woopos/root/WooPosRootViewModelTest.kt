@@ -36,10 +36,11 @@ class WooPosRootViewModelTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
 
-    private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private lateinit var cardReaderFacade: WooPosCardReaderFacade
 
     @Test
     fun `given reader disconnected, when status button clicked, then should connect`() {
+        cardReaderFacade = mock()
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
         assertNotEquals(WooPosCardReaderStatus.Connected, sut.rootScreenState.value.cardReaderStatus)
@@ -51,6 +52,8 @@ class WooPosRootViewModelTest {
 
     @Test
     fun `given reader connected, when status button clicked, then should not connect`() = runTest {
+        cardReaderFacade = mock()
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val cardReader: CardReader = mock()
         whenever(cardReaderFacade.readerStatus).thenReturn(flow { emit(Connected(cardReader)) })
         val sut = createSut()
@@ -69,6 +72,8 @@ class WooPosRootViewModelTest {
     @Test
     fun `when exit confirmation dialog dismissed, then dialog should be null`() {
         // GIVEN
+        cardReaderFacade = mock()
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
         sut.onUiEvent(WooPosRootUIEvent.ExitPOSClicked)
 
@@ -82,6 +87,8 @@ class WooPosRootViewModelTest {
     @Test
     fun `when exit confirmation dialog clicked, then dialog should be shown`() {
         // GIVEN
+        cardReaderFacade = mock()
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
 
         // WHEN
@@ -108,6 +115,8 @@ class WooPosRootViewModelTest {
     @Test
     fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() {
         // GIVEN
+        cardReaderFacade = mock()
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
 
         // WHEN
@@ -122,6 +131,8 @@ class WooPosRootViewModelTest {
     @Test
     fun `given reader status as not connected, should update state with not connected status`() = runTest {
         // GIVEN
+        cardReaderFacade = mock()
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val notConnectedStatus = NotConnected()
 
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(notConnectedStatus))
