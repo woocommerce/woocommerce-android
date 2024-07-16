@@ -82,7 +82,7 @@ private fun WooPosHomeScreen(
 
     val cartOverlayIntensityAnimated by animateFloatAsState(
         when (state) {
-            is WooPosHomeState.Cart.Empty -> .4f
+            is WooPosHomeState.Cart.Empty -> .6f
             WooPosHomeState.Cart.NotEmpty,
             WooPosHomeState.Checkout.NotPaid,
             WooPosHomeState.Checkout.Paid -> 0f
