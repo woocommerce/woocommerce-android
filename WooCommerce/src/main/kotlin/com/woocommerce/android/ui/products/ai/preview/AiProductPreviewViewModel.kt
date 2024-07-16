@@ -19,14 +19,19 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -41,41 +46,46 @@ class AiProductPreviewViewModel @Inject constructor(
     private val generatedProduct = MutableStateFlow<Result<AIProductModel>?>(
         Result.success(AIProductModel.buildDefault("Name", navArgs.productFeatures))
     )
-    private val saveProductState = savedStateHandle.getStateFlow<SaveProductDraftState>(
-        viewModelScope,
-        SaveProductDraftState.Idle
-    )
+    private val saveProductState = MutableStateFlow<SaveProductDraftState>(SaveProductDraftState.Idle)
 
-    val state: LiveData<State> = combine(
-        generatedProduct,
-        saveProductState,
-        imageState,
-        selectedVariant
-    ) { generatedProduct, saveProductState, imageState, selectedVariant ->
-        when {
-            generatedProduct == null -> State.Loading
-            generatedProduct.getOrNull() == null || generatedProduct.isFailure ->
+    val state: LiveData<State> = generatedProduct.transformLatest {
+        if (it == null) {
+            emit(State.Loading)
+            return@transformLatest
+        }
+
+        when (val product = it.getOrNull()) {
+            null -> emit(
                 State.Error(
-                    onRetryClick = { generateProduct() },
+                    onRetryClick = { TODO() },
                     onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) },
                     messageRes = R.string.product_creation_ai_generation_failure_message
                 )
-
-            saveProductState is SaveProductDraftState.Error -> State.Error(
-                onRetryClick = { onSaveProductAsDraft() },
-                onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) },
-                messageRes = saveProductState.messageRes
             )
 
-            else -> {
+            else -> emitAll(product.prepareState())
+        }
+    }.asLiveData()
+
+    init {
+        generateProduct()
+    }
+
+    private fun AIProductModel.prepareState() = flow {
+        emitAll(
+            combine(
+                imageState,
+                selectedVariant,
+                saveProductState
+            ) { imageState, selectedVariant, saveProductState ->
                 val propertyGroups = buildProductPreviewProperties(
-                    product = generatedProduct.getOrThrow(),
+                    product = this@prepareState,
                     variant = selectedVariant,
                 )
 
                 State.Success(
                     selectedVariant = selectedVariant,
-                    product = generatedProduct.getOrThrow(),
+                    product = this@prepareState,
                     propertyGroups = propertyGroups.map { group ->
                         group.map { property ->
                             ProductPropertyCard(
@@ -89,11 +99,7 @@ class AiProductPreviewViewModel @Inject constructor(
                     saveProductState = saveProductState
                 )
             }
-        }
-    }.asLiveData()
-
-    init {
-        generateProduct()
+        )
     }
 
     private fun generateProduct() = launch {
