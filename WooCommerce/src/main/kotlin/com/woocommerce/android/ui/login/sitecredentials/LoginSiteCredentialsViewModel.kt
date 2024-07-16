@@ -270,7 +270,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
                 if (FeatureFlag.APP_PASSWORD_TUTORIAL.isEnabled()) {
                     when (authenticationError?.errorType) {
-                        GENERIC_ERROR,
                         INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
                         else -> {
                             fetchSiteForTutorial(
