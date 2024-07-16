@@ -158,6 +158,12 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onGenerateAgainClicked() {
+        userEditedFields.value = UserEditedFields()
+        selectedVariant.value = 0
+        generateProduct()
+    }
+
     sealed interface State {
         data object Loading : State
         data class Success(
