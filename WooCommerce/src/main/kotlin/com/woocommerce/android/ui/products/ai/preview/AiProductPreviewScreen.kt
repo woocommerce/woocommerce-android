@@ -269,7 +269,7 @@ private fun ProductPreviewContent(
         ErrorDialog(
             errorMessage = state.saveProductState.messageRes,
             onRetryClick = state.saveProductState.onRetryClick,
-            onDismissClick = { }
+            onDismissClick = state.saveProductState.onDismissClick
         )
     }
 }

@@ -150,7 +150,8 @@ class AiProductPreviewViewModel @Inject constructor(
                         }
                     saveProductState.value = SaveProductDraftState.Error(
                         messageRes = uploadErrorMessageRes,
-                        onRetryClick = ::onSaveProductAsDraft
+                        onRetryClick = ::onSaveProductAsDraft,
+                        onDismissClick = { saveProductState.value = SaveProductDraftState.Idle }
                     )
                     return@launch
                 }
@@ -206,6 +207,7 @@ class AiProductPreviewViewModel @Inject constructor(
         @Parcelize
         data class Error(
             val onRetryClick: () -> Unit,
+            val onDismissClick: () -> Unit,
             @StringRes val messageRes: Int
         ) : SaveProductDraftState
 
