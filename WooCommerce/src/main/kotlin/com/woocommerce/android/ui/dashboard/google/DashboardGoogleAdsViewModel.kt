@@ -21,13 +21,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
-import kotlinx.coroutines.withContext
 
 @HiltViewModel(assistedFactory = DashboardGoogleAdsViewModel.Factory::class)
 class DashboardGoogleAdsViewModel @AssistedInject constructor(
@@ -47,24 +45,29 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         .transformLatest {
             emit(DashboardGoogleAdsState.Loading)
 
-            val hasCampaigns = hasGoogleAdsCampaigns()
-
-            emit(
-                if (hasCampaigns) {
-                    DashboardGoogleAdsState.HasCampaigns(
-                        onCreateCampaignClicked = { launchCampaignCreation() },
-                        showAllCampaignsButton = DashboardWidgetAction(
-                            R.string.dashboard_google_ads_card_view_all_campaigns_button
-                        ) {
-                            launchCampaignDetails()
-                        },
-                        menu = widgetMenu
+            hasGoogleAdsCampaigns().fold(
+                onSuccess = { hasCampaigns ->
+                    emit(
+                        if (hasCampaigns) {
+                            DashboardGoogleAdsState.HasCampaigns(
+                                onCreateCampaignClicked = { launchCampaignCreation() },
+                                showAllCampaignsButton = DashboardWidgetAction(
+                                    R.string.dashboard_google_ads_card_view_all_campaigns_button
+                                ) {
+                                    launchCampaignDetails()
+                                },
+                                menu = widgetMenu
+                            )
+                        } else {
+                            DashboardGoogleAdsState.NoCampaigns(
+                                onCreateCampaignClicked = { launchCampaignCreation() },
+                                menu = widgetMenu
+                            )
+                        }
                     )
-                } else {
-                    DashboardGoogleAdsState.NoCampaigns(
-                        onCreateCampaignClicked = { launchCampaignCreation() },
-                        menu = widgetMenu
-                    )
+                },
+                onFailure = {
+                    emit(DashboardGoogleAdsState.Error(widgetMenu))
                 }
             )
         }
@@ -88,11 +91,18 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         triggerEvent(ViewGoogleForWooEvent(adminUrl, canAutoLogin))
     }
 
+    fun onRefresh() {
+        _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
     sealed class DashboardGoogleAdsState(
         open val menu: DashboardWidgetMenu,
         val mainButton: DashboardWidgetAction? = null
     ) {
         data object Loading : DashboardGoogleAdsState(DashboardWidgetMenu(emptyList()))
+        data class Error(
+            override val menu: DashboardWidgetMenu
+        ) : DashboardGoogleAdsState(menu)
 
         data class NoCampaigns(
             val onCreateCampaignClicked: () -> Unit,

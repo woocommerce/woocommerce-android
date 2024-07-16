@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsViewModel.DashboardGoogleAdsState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
@@ -58,6 +59,8 @@ fun DashboardGoogleAdsCard(
     viewModel.viewState.observeAsState().value?.let { state ->
         DashboardGoogleAdsView(
             viewState = state,
+            onContactSupportClicked = parentViewModel::onContactSupportClicked,
+            onRetryOnErrorButtonClicked = viewModel::onRefresh,
             modifier = modifier
         )
     }
@@ -107,8 +110,9 @@ private fun HandleEvents(
 @Composable
 fun DashboardGoogleAdsView(
     viewState: DashboardGoogleAdsState,
+    onContactSupportClicked: () -> Unit,
+    onRetryOnErrorButtonClicked: () -> Unit,
     modifier: Modifier
-
 ) {
     WidgetCard(
         titleResource = DashboardWidget.Type.GOOGLE_ADS.titleResource,
@@ -128,6 +132,12 @@ fun DashboardGoogleAdsView(
                 is DashboardGoogleAdsState.Loading -> GoogleAdsLoading()
                 is DashboardGoogleAdsState.NoCampaigns -> GoogleAdsNoCampaigns(viewState.onCreateCampaignClicked)
                 is DashboardGoogleAdsState.HasCampaigns -> GoogleAdsWithCampaigns(viewState.onCreateCampaignClicked)
+                is DashboardGoogleAdsState.Error -> {
+                    WidgetError(
+                        onContactSupportClicked = onContactSupportClicked,
+                        onRetryClicked = onRetryOnErrorButtonClicked
+                    )
+                }
             }
         }
     }

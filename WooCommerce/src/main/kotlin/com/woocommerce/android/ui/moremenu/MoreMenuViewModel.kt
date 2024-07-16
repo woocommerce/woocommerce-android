@@ -279,19 +279,7 @@ class MoreMenuViewModel @Inject constructor(
         WooLog.d(WooLog.T.GOOGLE_ADS, "onPromoteProductsWithGoogle")
 
         launch {
-            val urlToOpen = when {
-                hasCreatedGoogleAdsCampaign || hasGoogleAdsCampaigns() -> {
-                    selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
-                }
-                else -> {
-                    selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-                }
-            }
-
-            // Sites using Jetpack will use the `WPComWebView` component so it can auto-login.
-            // Other types will use the `ExitAwareWebView` component, which does not support auto-login.
-            // Although technically Jetpack Connection Package sites can auto-login, it redirects incorrectly to
-            // wordpress.com after login, so `WPComWebView` can't be used.
+            val urlToOpen = determineUrlToOpen()
             val canAutoLogin = selectedSite.get().connectionType == SiteConnectionType.Jetpack
 
             triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canAutoLogin))
@@ -302,6 +290,24 @@ class MoreMenuViewModel @Inject constructor(
                 hasCreatedGoogleAdsCampaign = true
             }
         }
+    }
+
+    private suspend fun determineUrlToOpen(): String {
+        val baseUrl = selectedSite.get().adminUrlOrDefault
+        return hasGoogleAdsCampaigns().fold(
+            onSuccess = { hasCampaigns ->
+                if (hasCreatedGoogleAdsCampaign || hasCampaigns) {
+                    baseUrl + AppUrls.GOOGLE_ADMIN_DASHBOARD
+                } else {
+                    baseUrl + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+                }
+            },
+            onFailure = { error ->
+                WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to check for Google Ads campaigns: ${error.message}")
+                // Fallback to campaign creation URL in case of error
+                baseUrl + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+            }
+        )
     }
 
     private fun onPromoteProductsWithBlaze() {
