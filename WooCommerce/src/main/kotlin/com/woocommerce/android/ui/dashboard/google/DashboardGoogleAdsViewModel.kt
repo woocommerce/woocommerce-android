@@ -7,13 +7,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -32,13 +31,12 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     @Assisted private val parentViewModel: DashboardViewModel,
-    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns
+    private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
+    private val canUseAutoLoginWebview: CanUseAutoLoginWebview
 ) : ScopedViewModel(savedStateHandle) {
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(_refreshTrigger, (parentViewModel.refreshTrigger))
         .onStart { emit(RefreshEvent()) }
-
-    private val canAutoLogin = selectedSite.get().connectionType == SiteConnectionType.Jetpack
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = refreshTrigger
@@ -83,12 +81,12 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
     private fun launchCampaignCreation() {
         val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-        triggerEvent(ViewGoogleForWooEvent(creationUrl, canAutoLogin))
+        triggerEvent(ViewGoogleForWooEvent(creationUrl, canUseAutoLoginWebview()))
     }
 
     private fun launchCampaignDetails() {
         val adminUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
-        triggerEvent(ViewGoogleForWooEvent(adminUrl, canAutoLogin))
+        triggerEvent(ViewGoogleForWooEvent(adminUrl, canUseAutoLoginWebview()))
     }
 
     fun onRefresh() {

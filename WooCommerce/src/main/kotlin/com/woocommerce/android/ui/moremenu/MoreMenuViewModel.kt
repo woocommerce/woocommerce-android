@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -51,6 +52,7 @@ import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("TooManyFunctions", "LongParameterList")
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
@@ -65,6 +67,7 @@ class MoreMenuViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
+    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val isWooPosEnabled: WooPosIsEnabled,
 ) : ScopedViewModel(savedState) {
     private var hasCreatedGoogleAdsCampaign = false
@@ -280,9 +283,8 @@ class MoreMenuViewModel @Inject constructor(
 
         launch {
             val urlToOpen = determineUrlToOpen()
-            val canAutoLogin = selectedSite.get().connectionType == SiteConnectionType.Jetpack
 
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canAutoLogin))
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canUseAutoLoginWebview()))
 
             // todo-11917: This is just temporary to test this function,
             //  in practice we want to set this to true if a campaign is successfully created in webview.
