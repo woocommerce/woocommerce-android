@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
-
 @Composable
 fun WooPosErrorState(
     modifier: Modifier = Modifier,
@@ -75,4 +74,3 @@ data class Button(
     val text: String,
     val click: () -> Unit
 )
-
