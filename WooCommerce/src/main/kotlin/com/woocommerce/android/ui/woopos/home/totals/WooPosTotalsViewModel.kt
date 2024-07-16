@@ -83,6 +83,8 @@ class WooPosTotalsViewModel @Inject constructor(
                     _state.value = InitialState
                 }
             }
+
+            WooPosTotalsUIEvent.RetryClicked -> TODO()
         }
     }
 

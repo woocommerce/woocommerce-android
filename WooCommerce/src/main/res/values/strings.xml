@@ -4187,6 +4187,7 @@
     <string name="woopos_payment_collect_payment_label">Collect card payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
+    <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
