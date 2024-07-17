@@ -235,7 +235,10 @@ class AiProductPreviewViewModel @Inject constructor(
             if (!success) {
                 savingProductState.value = SavingProductState.Error(
                     messageRes = R.string.error_generic,
-                    onRetryClick = ::onSaveProductAsDraft,
+                    onRetryClick = when {
+                        publishProduct -> ::onPublishProduct
+                        else -> ::onSaveProductAsDraft
+                    },
                     onDismissClick = { savingProductState.value = SavingProductState.Idle }
                 )
                 analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
