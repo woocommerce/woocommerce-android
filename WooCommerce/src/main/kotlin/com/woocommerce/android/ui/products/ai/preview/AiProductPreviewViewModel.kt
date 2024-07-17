@@ -90,7 +90,7 @@ class AiProductPreviewViewModel @Inject constructor(
                 },
                 userEditedFields,
                 savingProductState
-            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState->
+            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState ->
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,
