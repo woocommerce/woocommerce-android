@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -31,7 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -40,6 +43,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.Menu.MenuItem
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
 
 @Composable
@@ -47,6 +51,65 @@ fun WooPosBottomToolbar(
     modifier: Modifier = Modifier,
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit,
+) {
+    val value = state.value
+    when (val menu = value.menu) {
+        WooPosRootScreenState.Menu.Hidden -> ToolbarWithHiddenMenu(
+            modifier = modifier,
+            cardReaderStatus = value.cardReaderStatus,
+            onUIEvent = onUIEvent
+        )
+
+        is WooPosRootScreenState.Menu.Visible -> ToolbarWithVisibleMenu(
+            modifier = modifier,
+            cardReaderStatus = value.cardReaderStatus,
+            menu = menu,
+            onUIEvent = onUIEvent
+        )
+    }
+}
+
+@Composable
+fun ToolbarWithVisibleMenu(
+    modifier: Modifier,
+    cardReaderStatus: WooPosCardReaderStatus,
+    menu: WooPosRootScreenState.Menu.Visible,
+    onUIEvent: (WooPosRootUIEvent) -> Unit
+) {
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.background.copy(alpha = 0.9f))
+    ) {
+        val (toolbar, popupMenu) = createRefs()
+
+        ToolbarWithHiddenMenu(
+            modifier = Modifier.constrainAs(toolbar) {
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+            },
+            cardReaderStatus = cardReaderStatus,
+            onUIEvent = onUIEvent
+        )
+
+        PopUpMenu(
+            modifier = Modifier.constrainAs(popupMenu) {
+                bottom.linkTo(toolbar.top, margin = 8.dp)
+                start.linkTo(toolbar.start)
+            },
+            menuItems = menu.items,
+            onClick = { menuItem ->
+                onUIEvent(WooPosRootUIEvent.MenuItemSelected(menuItem))
+            }
+        )
+    }
+}
+
+@Composable
+private fun ToolbarWithHiddenMenu(
+    modifier: Modifier,
+    cardReaderStatus: WooPosCardReaderStatus,
+    onUIEvent: (WooPosRootUIEvent) -> Unit
 ) {
     ConstraintLayout(modifier = modifier) {
         val (menuCard, cardReaderStatusCard) = createRefs()
@@ -60,7 +123,7 @@ fun WooPosBottomToolbar(
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 },
-            state = state,
+            state = cardReaderStatus,
         ) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
 
         MenuCard(
@@ -105,33 +168,56 @@ private fun MenuCard(
     }
 }
 
-//@Composable
-//private fun PopUpMenuButton(onClick: () -> Unit) {
-//    Spacer(modifier = Modifier.width(20.dp.toAdaptivePadding()))
-//    Icon(
-//        imageVector = ImageVector.vectorResource(id = R.drawable.woopos_ic_exit_pos),
-//        contentDescription = null,
-//        tint = MaterialTheme.colors.secondaryVariant,
-//        modifier = Modifier.size(14.dp)
-//    )
-//    Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
-//    Text(
-//        modifier = Modifier.padding(8.dp.toAdaptivePadding()),
-//        text = stringResource(id = R.string.woopos_exit_pos),
-//        color = MaterialTheme.colors.secondaryVariant,
-//        style = MaterialTheme.typography.button
-//    )
-//    Spacer(modifier = Modifier.width(20.dp.toAdaptivePadding()))
-//}
+@Composable
+private fun PopUpMenu(
+    modifier: Modifier,
+    menuItems: List<MenuItem>,
+    onClick: (MenuItem) -> Unit
+) {
+    Card(
+        modifier = modifier,
+        elevation = 8.dp,
+    ) {
+        Column {
+            menuItems.forEach { menuItem ->
+                PopUpMenuItem(menuItem, onClick)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PopUpMenuItem(
+    menuItem: MenuItem,
+    onClick: (MenuItem) -> Unit
+) {
+    TextButton(onClick = { onClick(menuItem) }) {
+        Spacer(modifier = Modifier.width(20.dp.toAdaptivePadding()))
+        Icon(
+            imageVector = ImageVector.vectorResource(id = menuItem.icon),
+            contentDescription = null,
+            tint = MaterialTheme.colors.onSurface,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
+        Text(
+            modifier = Modifier.padding(8.dp.toAdaptivePadding()),
+            text = stringResource(id = menuItem.title),
+            color = MaterialTheme.colors.onSurface,
+            style = MaterialTheme.typography.body1
+        )
+        Spacer(modifier = Modifier.width(20.dp.toAdaptivePadding()))
+    }
+}
 
 @Composable
 private fun CardReaderStatusCard(
     modifier: Modifier,
-    state: State<WooPosRootScreenState>,
+    state: WooPosCardReaderStatus,
     onClick: () -> Unit
 ) {
     val transition = updateTransition(
-        targetState = state.value.cardReaderStatus,
+        targetState = state,
         label = "CardReaderStatusTransition"
     )
 
@@ -159,7 +245,7 @@ private fun CardReaderStatusCard(
     }
 
     val title = stringResource(
-        id = when (state.value.cardReaderStatus) {
+        id = when (state) {
             WooPosCardReaderStatus.Connected -> WooPosCardReaderStatus.Connected.title
             WooPosCardReaderStatus.NotConnected -> WooPosCardReaderStatus.NotConnected.title
         }
@@ -229,7 +315,7 @@ fun PreviewWooPosBottomToolbarStatusNotConnected() {
 
 @WooPosPreview
 @Composable
-fun PreviewWooPosBottomToolbarStatusConnected() {
+fun PreviewWooPosBottomToolbarStatusConnectedWithMenu() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
