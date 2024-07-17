@@ -142,9 +142,11 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun updateToolbarState(newState: WooPosCartState): WooPosCartState {
-        val itemsCount = resourceProvider.getString(
-            R.string.woopos_items_in_cart,
-            newState.body.amountOfItems
+        val itemsCount = resourceProvider.getQuantityString(
+            newState.body.amountOfItems,
+            default = R.string.woopos_items_in_cart_multiple,
+            zero = R.string.woopos_items_in_cart_multiple,
+            one = R.string.woopos_items_in_cart,
         )
         val newToolbar = when (newState.cartStatus) {
             EDITABLE -> {
