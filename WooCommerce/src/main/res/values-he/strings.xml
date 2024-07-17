@@ -5,7 +5,7 @@ Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="customers_details_none_hint">ללא</string>
     <string name="customers_details_no_phone_hint">אין מספר טלפון</string>
     <string name="customers_details_postal_code_value_title">מיקוד</string>
@@ -1629,7 +1629,7 @@ Language: he_IL
     <string name="card_reader_interac_refund_refund_failed_fraud">יש לנסות אמצעי אחר לביצוע ההחזר הכספי</string>
     <string name="card_reader_interac_refund_refund_failed_unknown">ההחזר הכספי נדחה מסיבה לא ידועה</string>
     <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">מצטערים, לא ניתן היה לעבד את ההחזר הכספי הזה</string>
-    <string name="copy">להעתיק</string>
+    <string name="copy" tools:override="true">להעתיק</string>
     <string name="card_reader_interac_refund_refund_completed_header">ההחזר הכספי הונפק בהצלחה</string>
     <string name="card_reader_interac_refund_refund_processing_state">מעבד את ההחזר הכספי</string>
     <string name="card_reader_interac_refund_refund_payment">להנפיק החזר כספי על תשלום</string>
@@ -3031,7 +3031,7 @@ Language: he_IL
     <string name="country_mapping_JM">ג\'מייקה</string>
     <string name="country_mapping_CI">חוף שנהב</string>
     <string name="country_mapping_IT">איטליה</string>
-    <string name="enter_email_for_site">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
     <string name="country_mapping_IL">ישראל</string>
     <string name="country_mapping_IM">האי מאן</string>
     <string name="country_mapping_IE">אירלנד</string>
@@ -3496,7 +3496,7 @@ Language: he_IL
     <string name="login_avatar_content_description">תמונת הפרופיל שלך</string>
     <string name="login_connected_store">חנות מחוברת</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
-    <string name="enter_email_wordpress_com">עליך להתחבר באמצעות כתובת האימייל של החשבון שלך ב-WordPress.com כדי לנהל את החנויות שלך ב-WooCommerce.</string>
+    <string name="enter_email_wordpress_com" content_override="true">עליך להתחבר באמצעות כתובת האימייל של החשבון שלך ב-WordPress.com כדי לנהל את החנויות שלך ב-WooCommerce.</string>
     <string name="error_no_sms_app">לא נמצאה אפליקציה של הודעות טקסט</string>
     <string name="error_no_email_app">לא נמצאה אפליקציה של אימייל</string>
     <string name="error_no_phone_app">לא נמצאה אפליקציה של טלפון</string>
@@ -3528,7 +3528,7 @@ Language: he_IL
     <string name="my_store">החנות שלי</string>
     <string name="all">הכול</string>
     <string name="settings_footer">נוצר באהבה על ידי Automattic. %1$s</string>
-    <string name="enter_site_address">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>
+    <string name="enter_site_address" content_override="true">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>
     <string name="orderdetail_note_private">פרטי</string>
     <string name="connect_site">לחבר את האתר</string>
     <string name="dashboard_top_performers_empty">אין פעילות בפרק זמן זה</string>

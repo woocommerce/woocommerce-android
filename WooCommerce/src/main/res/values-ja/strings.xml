@@ -5,7 +5,7 @@ Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="customers_details_none_hint">なし</string>
     <string name="customers_details_no_phone_hint">電話番号がありません</string>
     <string name="customers_details_postal_code_value_title">郵便番号</string>
@@ -1634,7 +1634,7 @@ Language: ja_JP
     <string name="card_reader_interac_refund_refund_payment">支払いを返金</string>
     <string name="card_reader_interac_refund_refund_failed_header">返金に失敗しました</string>
     <string name="card_reader_interac_refund_refund_loading_header">支払いを返金する準備をしています</string>
-    <string name="copy">コピー</string>
+    <string name="copy" tools:override="true">コピー</string>
     <string name="coupons_list_search_hint">クーポンを検索</string>
     <string name="coupon_details_share_formatting_failure">クーポンコードの共有メッセージを生成できません</string>
     <string name="coupon_details_share_coupon_error">クーポンコードを共有する際にエラーが発生しました。</string>
@@ -2895,7 +2895,7 @@ Language: ja_JP
     <string name="orderdetail_empty_address">住所が指定されていません</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
-    <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>
+    <string name="enter_email_for_site" content_override="true">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>
     <string name="country_mapping_ZW">ジンバブエ</string>
     <string name="country_mapping_ZM">ザンビア</string>
     <string name="country_mapping_YE">イエメン</string>
@@ -3491,8 +3491,8 @@ Language: ja_JP
     <string name="login_configure_link">%1$s設定に関する指示%2$sを参照してください。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
-    <string name="enter_email_wordpress_com">WooCommerce ストアを管理するには、WordPress.com アカウントのメールアドレスを使用してログインします。</string>
+    <string name="enter_site_address" content_override="true">連携させる WooCommerce ストアのアドレスを入力してください。</string>
+    <string name="enter_email_wordpress_com" content_override="true">WooCommerce ストアを管理するには、WordPress.com アカウントのメールアドレスを使用してログインします。</string>
     <string name="already_logged_in_wpcom">すでに WordPress.com アカウントにログインしています。別のアカウントに結び付いている WordPress.com サイトを追加することはできません。</string>
     <string name="cant_open_url">リンクを開けません</string>
     <string name="error_no_sms_app">SMS アプリが見つかりませんでした</string>
@@ -3538,17 +3538,17 @@ Language: ja_JP
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>処理中</item>

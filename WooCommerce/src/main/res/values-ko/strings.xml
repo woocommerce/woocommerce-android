@@ -5,7 +5,7 @@ Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="customers_details_none_hint">해당 없음</string>
     <string name="customers_details_no_phone_hint">전화번호 없음</string>
     <string name="customers_details_postal_code_value_title">우편번호</string>
@@ -1634,7 +1634,7 @@ Language: ko_KR
     <string name="card_reader_interac_refund_refund_payment">결제 환불</string>
     <string name="card_reader_interac_refund_refund_failed_header">환불 실패</string>
     <string name="card_reader_interac_refund_refund_loading_header">결제 환불 준비하기</string>
-    <string name="copy">복사</string>
+    <string name="copy" tools:override="true">복사</string>
     <string name="coupons_list_search_hint">쿠폰 검색</string>
     <string name="coupon_details_share_formatting_failure">쿠폰 코드 공유 메시지를 생성할 수 없음</string>
     <string name="coupon_details_share_coupon_error">쿠폰 코드 공유 오류.</string>
@@ -2895,7 +2895,7 @@ Language: ko_KR
     <string name="orderdetail_empty_address">지정된 주소 없음</string>
     <string name="login_need_help_finding_connected_email">연결한 이메일을 찾는 데 도움이 필요하신가요?</string>
     <string name="enter_wordpress_site">이 주소의 웹사이트는 워드프레스 사이트가 아닙니다. 워드프레스에서 연결하려면 사이트에 워드프레스가 설치되어 있어야 합니다.</string>
-    <string name="enter_email_for_site">워드프레스닷컴으로 로그인하여 &lt;b&gt;%1$s&lt;/b&gt;에 연결</string>
+    <string name="enter_email_for_site" content_override="true">워드프레스닷컴으로 로그인하여 &lt;b&gt;%1$s&lt;/b&gt;에 연결</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -3491,8 +3491,8 @@ Language: ko_KR
     <string name="login_configure_link">%1$s구성 지침%2$s을 읽어보세요.</string>
     <string name="login_jetpack_required">이 앱에서 회원님의 스토어에 연결하려면 젯팩이 있어야 합니다.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">연결하려는 WooCommerce 스토어의 주소를 입력합니다.</string>
-    <string name="enter_email_wordpress_com">워드프레스닷컴 계정 이메일 주소로 로그인하여 우커머스 스토어를 관리하세요.</string>
+    <string name="enter_site_address" content_override="true">연결하려는 WooCommerce 스토어의 주소를 입력합니다.</string>
+    <string name="enter_email_wordpress_com" content_override="true">워드프레스닷컴 계정 이메일 주소로 로그인하여 우커머스 스토어를 관리하세요.</string>
     <string name="already_logged_in_wpcom">이미 워드프레스닷컴 계정에 로그인되어 있으므로 다른 계정에 연결된 워드프레스닷컴 사이트를 추가할 수 없습니다.</string>
     <string name="cant_open_url">링크를 열 수 없습니다</string>
     <string name="error_no_sms_app">SMS 앱이 없음</string>
@@ -3538,17 +3538,17 @@ Language: ko_KR
     <string name="notification_channel_general_title">일반</string>
     <string name="app_name">우커머스</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>처리 중</item>
