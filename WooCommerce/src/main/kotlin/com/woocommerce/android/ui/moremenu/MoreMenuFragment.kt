@@ -123,10 +123,12 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun setupResultHandlers() {
         handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
             navigateToGoogleAdsCreationSuccess()
+            viewModel.handleSuccessfulGoogleAdsCreation()
         }
 
         handleNotice(ExitAwareWebViewFragment.WEBVIEW_RESULT) {
             navigateToGoogleAdsCreationSuccess()
+            viewModel.handleSuccessfulGoogleAdsCreation()
         }
     }
 

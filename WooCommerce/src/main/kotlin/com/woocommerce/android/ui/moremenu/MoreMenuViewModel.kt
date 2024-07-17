@@ -290,13 +290,11 @@ class MoreMenuViewModel @Inject constructor(
             )
 
             triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, successUrlTriggers, canUseAutoLoginWebview()))
-
-            // todo-11917: This is just temporary to test this function,
-            //  in practice we want to set this to true if a campaign is successfully created in webview.
-            if (!hasCreatedGoogleAdsCampaign) {
-                hasCreatedGoogleAdsCampaign = true
-            }
         }
+    }
+
+    fun handleSuccessfulGoogleAdsCreation() {
+        hasCreatedGoogleAdsCampaign = true
     }
 
     private suspend fun determineUrlToOpen(): String {
