@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.products.ai.preview
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.toAppModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.flow.transform
-import org.wordpress.android.util.DateTimeUtils
 import javax.inject.Inject
 
 class UploadImage @Inject constructor(
@@ -28,14 +28,7 @@ class UploadImage @Inject constructor(
                 .retry(1)
                 .catch { emit(Result.failure(it)) }
                 .first()
-                .map {
-                    Product.Image(
-                        id = it.mediaId,
-                        source = it.url,
-                        name = it.fileName,
-                        dateCreated = DateTimeUtils.dateFromIso8601(it.uploadDate),
-                    )
-                }
+                .map { it.toAppModel() }
 
             is Image.WPMediaLibraryImage -> Result.success(selectedImage.content)
         }
