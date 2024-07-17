@@ -93,7 +93,7 @@ private fun AiProductPreviewScreen(
                 actions = {
                     when {
                         state is AiProductPreviewViewModel.State.Success &&
-                            state.saveProductState is AiProductPreviewViewModel.SaveProductDraftState.Loading -> {
+                            state.savingProductState is AiProductPreviewViewModel.SavingProductState.Loading -> {
                             CircularProgressIndicator(
                                 modifier = Modifier
                                     .size(
@@ -265,11 +265,11 @@ private fun ProductPreviewContent(
             )
         }
     }
-    if (state.saveProductState is AiProductPreviewViewModel.SaveProductDraftState.Error) {
+    if (state.savingProductState is AiProductPreviewViewModel.SavingProductState.Error) {
         ErrorDialog(
-            errorMessage = state.saveProductState.messageRes,
-            onRetryClick = state.saveProductState.onRetryClick,
-            onDismissClick = state.saveProductState.onDismissClick
+            errorMessage = state.savingProductState.messageRes,
+            onRetryClick = state.savingProductState.onRetryClick,
+            onDismissClick = state.savingProductState.onDismissClick
         )
     }
 }
@@ -570,7 +570,7 @@ private fun ProductPreviewContentPreview() {
                     image = null,
                     showImageFullScreen = false,
                 ),
-                saveProductState = AiProductPreviewViewModel.SaveProductDraftState.Idle,
+                savingProductState = AiProductPreviewViewModel.SavingProductState.Idle,
             ),
             onFeedbackReceived = {},
             onBackButtonClick = {},

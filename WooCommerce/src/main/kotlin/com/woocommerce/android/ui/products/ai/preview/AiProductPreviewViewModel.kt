@@ -44,7 +44,7 @@ class AiProductPreviewViewModel @Inject constructor(
     private val generatedProduct = MutableStateFlow<Result<AIProductModel>?>(
         Result.success(AIProductModel.buildDefault("Name", navArgs.productFeatures))
     )
-    private val saveProductState = MutableStateFlow<SaveProductDraftState>(SaveProductDraftState.Idle)
+    private val savingProductState = MutableStateFlow<SavingProductState>(SavingProductState.Idle)
 
     val state: LiveData<State> = generatedProduct.transformLatest {
         if (it == null) {
@@ -73,7 +73,7 @@ class AiProductPreviewViewModel @Inject constructor(
             combine(
                 imageState,
                 selectedVariant,
-                saveProductState
+                savingProductState
             ) { imageState, selectedVariant, saveProductState ->
                 val propertyGroups = buildProductPreviewProperties(
                     product = this@prepareState,
@@ -93,7 +93,7 @@ class AiProductPreviewViewModel @Inject constructor(
                         }
                     },
                     imageState = imageState,
-                    saveProductState = saveProductState
+                    savingProductState = saveProductState
                 )
             }
         )
@@ -135,22 +135,22 @@ class AiProductPreviewViewModel @Inject constructor(
 
     fun onSaveProductAsDraft() {
         launch {
-            saveProductState.value = SaveProductDraftState.Loading
+            savingProductState.value = SavingProductState.Loading
 
             val uploadedMediaModel = imageState.value.image
                 ?.let { uploadImage(it) }
                 ?.getOrElse {
-                    saveProductState.value = SaveProductDraftState.Error(
+                    savingProductState.value = SavingProductState.Error(
                         messageRes = R.string.ai_product_creation_error_media_upload,
                         onRetryClick = ::onSaveProductAsDraft,
-                        onDismissClick = { saveProductState.value = SaveProductDraftState.Idle }
+                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
                     )
                     return@launch
                 }
 
             // Create product
             createProductDraft(uploadedMediaModel)
-            saveProductState.value = SaveProductDraftState.Success
+            savingProductState.value = SavingProductState.Success
         }
     }
 
@@ -167,7 +167,7 @@ class AiProductPreviewViewModel @Inject constructor(
             val propertyGroups: List<List<ProductPropertyCard>>,
             val imageState: ImageState,
             val shouldShowFeedbackView: Boolean = true,
-            val saveProductState: SaveProductDraftState,
+            val savingProductState: SavingProductState,
         ) : State {
             val variantsCount = minOf(product.names.size, product.descriptions.size, product.shortDescriptions.size)
             val shouldShowVariantSelector = variantsCount > 1
@@ -192,21 +192,21 @@ class AiProductPreviewViewModel @Inject constructor(
         val showImageFullScreen: Boolean = false,
     ) : Parcelable
 
-    sealed interface SaveProductDraftState : Parcelable {
+    sealed interface SavingProductState : Parcelable {
         @Parcelize
-        data object Loading : SaveProductDraftState
+        data object Loading : SavingProductState
 
         @Parcelize
         data class Error(
             val onRetryClick: () -> Unit,
             val onDismissClick: () -> Unit,
             @StringRes val messageRes: Int
-        ) : SaveProductDraftState
+        ) : SavingProductState
 
         @Parcelize
-        data object Success : SaveProductDraftState
+        data object Success : SavingProductState
 
         @Parcelize
-        data object Idle : SaveProductDraftState
+        data object Idle : SavingProductState
     }
 }
