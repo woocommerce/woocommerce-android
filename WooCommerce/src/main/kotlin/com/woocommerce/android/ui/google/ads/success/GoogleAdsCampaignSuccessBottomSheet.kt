@@ -51,14 +51,14 @@ fun GoogleAdsCampaignSuccessBottomSheet(
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = stringResource(id = string.blaze_campaign_created_success_title),
+                text = stringResource(id = string.google_ads_campaign_created_success_title),
                 style = MaterialTheme.typography.h6,
                 color = MaterialTheme.colors.onSurface
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 modifier = Modifier.padding(horizontal = 20.dp),
-                text = stringResource(id = string.blaze_campaign_created_success_description),
+                text = stringResource(id = string.google_ads_campaign_created_success_description),
                 style = MaterialTheme.typography.body1,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colors.onSurface
