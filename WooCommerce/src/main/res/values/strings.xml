@@ -2219,6 +2219,7 @@
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_variant_selector">Option %1$d of %2$d</string>
+    <string name="product_creation_ai_preview_undo_edits">Undo edits</string>
     <string name="product_creation_ai_select_previous_option">Select previous option</string>
     <string name="product_creation_ai_select_next_option">Select next option</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>
@@ -2248,6 +2249,12 @@
     <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">Add your product\'s name and key features, benefits, or details to help it get found online.</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details"><![CDATA[<b>Add more details.</b> The more details you provide, the better your generated details will be.]]></string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better"><![CDATA[<b>Getting better.</b> Can you describe the fit and any distinctive features of the item?]]></string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there"><![CDATA[<b>Great prompt!</b> Where was it made?]]></string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt"><![CDATA[<b>Great prompt!</b> You\'ve given us enough to work with, but you may add more detail to make it even better.]]></string>
+    <string name="ai_product_creation_error_media_upload">Failed to upload the selected product image.</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -4187,12 +4194,9 @@
     <string name="woopos_payment_collect_payment_label">Collect card payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
+    <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
-
-    <!--
-    Customers details
-    -->
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
