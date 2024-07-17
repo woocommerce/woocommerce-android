@@ -1,7 +1,8 @@
 package com.woocommerce.android.ui.woopos.root
 
 sealed class WooPosRootUIEvent {
-    data object ExitPOSClicked : WooPosRootUIEvent()
+    data object OnToolbarMenuClicked : WooPosRootUIEvent()
+    data object OnOutsideOfToolbarMenuClicked : WooPosRootUIEvent()
     data object ConnectToAReaderClicked : WooPosRootUIEvent()
     data object ExitConfirmationDialogDismissed : WooPosRootUIEvent()
     data object OnBackFromHomeClicked : WooPosRootUIEvent()

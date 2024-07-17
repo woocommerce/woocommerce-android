@@ -57,7 +57,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     fun `when exit confirmation dialog dismissed, then dialog should be null`() {
         // GIVEN
         val sut = createSut()
-        sut.onUiEvent(WooPosRootUIEvent.ExitPOSClicked)
+        sut.onUiEvent(WooPosRootUIEvent.OnToolbarMenuClicked)
 
         // WHEN
         sut.onUiEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed)
@@ -72,7 +72,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
         val sut = createSut()
 
         // WHEN
-        sut.onUiEvent(WooPosRootUIEvent.ExitPOSClicked)
+        sut.onUiEvent(WooPosRootUIEvent.OnToolbarMenuClicked)
 
         // THEN
         assertThat(sut.rootScreenState.value.exitConfirmationDialog).isEqualTo(

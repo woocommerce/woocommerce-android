@@ -79,7 +79,7 @@ fun ToolbarWithVisibleMenu(
     ConstraintLayout(
         modifier = modifier
             .fillMaxSize()
-            .background(color = MaterialTheme.colors.background.copy(alpha = 0.9f))
+            .background(color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f))
     ) {
         val (toolbar, popupMenu) = createRefs()
 
@@ -134,7 +134,7 @@ private fun ToolbarWithHiddenMenu(
                     bottom.linkTo(cardReaderStatusCard.bottom)
                     height = Dimension.fillToConstraints
                 }
-        ) { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
+        ) { onUIEvent(WooPosRootUIEvent.OnToolbarMenuClicked) }
     }
 }
 
@@ -322,15 +322,15 @@ fun PreviewWooPosBottomToolbarStatusConnectedWithMenu() {
                 WooPosCardReaderStatus.Connected,
                 menu = WooPosRootScreenState.Menu.Visible(
                     listOf(
-                        WooPosRootScreenState.Menu.MenuItem(
+                        MenuItem(
                             id = 0,
                             title = R.string.woopos_exit_confirmation_title,
                             icon = R.drawable.woopos_ic_exit_pos,
                         ),
-                        WooPosRootScreenState.Menu.MenuItem(
+                        MenuItem(
                             id = 1,
-                            title = R.string.woopos_exit_confirmation_title,
-                            icon = R.drawable.woopos_ic_exit_pos,
+                            title = R.string.woopos_get_support_title,
+                            icon = R.drawable.woopos_ic_get_support,
                         )
                     )
                 ),
