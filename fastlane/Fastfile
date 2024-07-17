@@ -964,7 +964,7 @@ platform :android do
   #
   #####################################################################################
   desc 'Build the application and instrumented tests, then run the tests in Firebase Test Lab'
-  lane :build_and_instrumented_test do |options|
+  lane :build_and_instrumented_test do |_options|
     gradle(tasks: %w[assembleVanillaDebug assembleVanillaDebugAndroidTest])
 
     gradle(task: 'runFlank')
