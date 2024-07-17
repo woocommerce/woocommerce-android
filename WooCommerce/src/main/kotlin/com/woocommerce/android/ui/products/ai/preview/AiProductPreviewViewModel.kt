@@ -181,15 +181,11 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onSaveProductAsDraft() {
-        savingProductState.value = SavingProductState.Loading
         addAiGeneratedProduct(publishProduct = false)
-        savingProductState.value = SavingProductState.Success
     }
 
     fun onPublishProduct() {
-        savingProductState.value = SavingProductState.Loading
         addAiGeneratedProduct(publishProduct = true)
-        savingProductState.value = SavingProductState.Success
     }
 
     private suspend fun AiProductPreviewViewModel.uploadSelectedImage() {
@@ -213,7 +209,7 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private fun addAiGeneratedProduct(publishProduct: Boolean) {
         analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
-
+        savingProductState.value = SavingProductState.Loading
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         viewModelScope.launch {
             savingProductState.value = SavingProductState.Loading
@@ -241,8 +237,8 @@ class AiProductPreviewViewModel @Inject constructor(
             } else {
                 analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
                 triggerEvent(NavigateToProductDetailScreen(productId))
+                savingProductState.value = SavingProductState.Success
             }
-            savingProductState.value = SavingProductState.Idle
         }
     }
 
