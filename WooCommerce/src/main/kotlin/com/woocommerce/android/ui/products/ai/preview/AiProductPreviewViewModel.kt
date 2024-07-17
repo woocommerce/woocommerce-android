@@ -11,16 +11,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
-import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
+import com.woocommerce.android.ui.products.ai.SaveAiGeneratedProduct
 import com.woocommerce.android.ui.products.ai.components.ImageAction
-import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.details.ProductDetailRepository
-import com.woocommerce.android.ui.products.tags.ProductTagsRepository
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -46,9 +41,7 @@ class AiProductPreviewViewModel @Inject constructor(
     private val generateProductWithAI: GenerateProductWithAI,
     private val uploadImage: UploadImage,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val productCategoriesRepository: ProductCategoriesRepository,
-    private val productTagsRepository: ProductTagsRepository,
-    private val productDetailRepository: ProductDetailRepository
+    private val saveAiGeneratedProduct: SaveAiGeneratedProduct
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -190,8 +183,8 @@ class AiProductPreviewViewModel @Inject constructor(
     fun onSaveProductAsDraft() {
         launch {
             savingProductState.value = SavingProductState.Loading
-            saveSelectedImage()
-            addProduct(publishProduct = false)
+            uploadSelectedImage()
+            addAiGeneratedProduct(publishProduct = false)
             savingProductState.value = SavingProductState.Success
         }
     }
@@ -199,13 +192,13 @@ class AiProductPreviewViewModel @Inject constructor(
     fun onPublishProduct() {
         launch {
             savingProductState.value = SavingProductState.Loading
-            saveSelectedImage()
-            addProduct(publishProduct = true)
+            uploadSelectedImage()
+            addAiGeneratedProduct(publishProduct = true)
             savingProductState.value = SavingProductState.Success
         }
     }
 
-    private suspend fun AiProductPreviewViewModel.saveSelectedImage() {
+    private suspend fun AiProductPreviewViewModel.uploadSelectedImage() {
         imageState.value.image
             ?.let { uploadImage(it) }
             ?.fold(
@@ -224,13 +217,16 @@ class AiProductPreviewViewModel @Inject constructor(
             )
     }
 
-    private fun addProduct(publishProduct: Boolean) {
+    private fun addAiGeneratedProduct(publishProduct: Boolean) {
         analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
-
         viewModelScope.launch {
             savingProductState.value = SavingProductState.Loading
-            val (success, productId) = saveProduct(product, publishProduct)
+            val (success, productId) = saveAiGeneratedProduct(
+                product,
+                publishProduct,
+                getSelectedProductImage()
+            )
             if (!success) {
                 savingProductState.value = SavingProductState.Error(
                     messageRes = R.string.error_generic,
@@ -242,53 +238,14 @@ class AiProductPreviewViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
                 triggerEvent(NavigateToProductDetailScreen(productId))
             }
+            savingProductState.value = SavingProductState.Idle
         }
     }
 
-    private suspend fun saveProduct(product: Product, publishProduct: Boolean): Pair<Boolean, Long> {
-        // Create missing categories
-        val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
-        val createdCategories = missingCategories
-            .takeIf { it.isNotEmpty() }?.let { productCategories ->
-                WooLog.d(
-                    tag = WooLog.T.PRODUCTS,
-                    message = "Create the missing product categories ${productCategories.map { it.name }}"
-                )
-                productCategoriesRepository.addProductCategories(productCategories)
-            }?.getOrElse {
-                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
-                return Pair(false, 0L)
-            }
-
-        // Create missing tags
-        val missingTags = product.tags.filter { it.remoteTagId == 0L }
-        val createdTags = missingTags
-            .takeIf { it.isNotEmpty() }?.let { productTags ->
-                WooLog.d(
-                    tag = WooLog.T.PRODUCTS,
-                    message = "Create the missing product tags ${productTags.map { it.name }}"
-                )
-                productTagsRepository.addProductTags(productTags.map { it.name })
-            }?.getOrElse {
-                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
-                return Pair(false, 0L)
-            }
-
-        // Add image if any selected
-        val selectedProductImage = if (imageState.value.image is WPMediaLibraryImage) {
-            (imageState.value.image as WPMediaLibraryImage).content
-        } else {
-            null
-        }
-
-        val updatedProduct = product.copy(
-            categories = product.categories - missingCategories.toSet() + createdCategories.orEmpty(),
-            tags = product.tags - missingTags.toSet() + createdTags.orEmpty(),
-            images = listOfNotNull(selectedProductImage),
-            status = if (publishProduct) ProductStatus.PUBLISH else ProductStatus.DRAFT
-        )
-
-        return productDetailRepository.addProduct(updatedProduct)
+    private fun getSelectedProductImage() = if (imageState.value.image is WPMediaLibraryImage) {
+        (imageState.value.image as WPMediaLibraryImage).content
+    } else {
+        null
     }
 
     sealed interface State {
@@ -369,5 +326,4 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
-
 }
