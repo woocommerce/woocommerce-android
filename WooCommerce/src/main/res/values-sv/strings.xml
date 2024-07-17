@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-10 16:54:03+0000
+Translation-Revision-Date: 2024-07-16 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="customers_details_no_phone_hint">Inget telefonnummer</string>
+    <string name="customers_details_postal_code_value_title">Postnummer</string>
+    <string name="customers_details_city_value_title">Ort</string>
+    <string name="customers_details_region_value_title">Region</string>
+    <string name="customers_details_country_value_title">Land</string>
+    <string name="customers_details_date_registered_value_title">Registreringsdatum</string>
+    <string name="customers_details_username_value_title">Användarnamn</string>
+    <string name="customers_details_average_order_value_title">Genomsnittligt beställningsvärde</string>
+    <string name="customers_details_orders_value_title">Beställningar</string>
+    <string name="customers_details_last_active_value_title">Senast aktiv</string>
+    <string name="customers_details_shipping_location_section">Plats</string>
+    <string name="customers_details_shipping_address_section">Leveransadress</string>
+    <string name="customers_details_billing_address_section">Faktureringsadress</string>
+    <string name="customers_details_registration_section">Registrering</string>
+    <string name="customers_details_orders_section">Beställningar</string>
+    <string name="woopos_products_empty_list">Inga produkter</string>
+    <string name="more_menu_customers_title">Kunder</string>
+    <string name="more_menu_button_customers_description">Få kundinsikter</string>
+    <string name="more_menu_button_customers">Kunder</string>
+    <string name="ai_product_creation_scanning_image">Skannar bild</string>
+    <string name="ai_product_creation_image_selected">Foto valt</string>
+    <string name="customers_details_none_hint">Inget</string>
+    <string name="customers_details_total_spend_value_title">Totalt spenderat belopp</string>
+    <string name="customers_details_customer_section">Kund</string>
+    <string name="ai_product_creation_scanning_photo_error">Det gick inte att skanna texten från fotot. Försök igen</string>
+    <string name="ai_product_creation_image_selected_subtitle">Fotot kommer att läggas till för produkten</string>
+    <string name="ai_product_creation_remove_image">Ta bort foto</string>
+    <string name="ai_product_creation_replace_image">Byt ut foto</string>
+    <string name="ai_product_creation_view_image">Visa foto</string>
+    <string name="product_creation_ai_preview_name_description_sections">Namn, sammanfattning och beskrivning</string>
+    <string name="product_detail_publish">Publicera</string>
+    <string name="analytics_google_ads_programs_card_title">Program</string>
+    <string name="product_creation_ai_preview_subtitle">Du kan redigera eller återskapa din produktinformation innan du sparar.</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">Inga program under den här perioden</string>
     <string name="woopos_reader_connect_now_button">Anslut nu</string>
     <string name="woopos_cart_title">Varukorg</string>
     <string name="ai_product_creation_generate_details_button">Generera produktdetaljer</string>

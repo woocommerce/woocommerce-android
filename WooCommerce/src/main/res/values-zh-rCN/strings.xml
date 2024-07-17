@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-09 09:54:03+0000
+Translation-Revision-Date: 2024-07-16 09:54:17+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="customers_details_none_hint">无</string>
+    <string name="customers_details_no_phone_hint">无电话号码</string>
+    <string name="customers_details_postal_code_value_title">邮政编码</string>
+    <string name="customers_details_city_value_title">城市</string>
+    <string name="customers_details_region_value_title">地区</string>
+    <string name="customers_details_country_value_title">国家</string>
+    <string name="customers_details_date_registered_value_title">注册日期</string>
+    <string name="customers_details_username_value_title">用户名</string>
+    <string name="customers_details_average_order_value_title">平均订单价值</string>
+    <string name="customers_details_total_spend_value_title">总支出</string>
+    <string name="customers_details_orders_value_title">订单</string>
+    <string name="customers_details_last_active_value_title">最后活动</string>
+    <string name="customers_details_shipping_location_section">位置</string>
+    <string name="customers_details_shipping_address_section">配送地址</string>
+    <string name="customers_details_billing_address_section">账单地址</string>
+    <string name="customers_details_registration_section">注册</string>
+    <string name="customers_details_orders_section">订单</string>
+    <string name="customers_details_customer_section">客户</string>
+    <string name="woopos_products_empty_list">无任何产品</string>
+    <string name="more_menu_customers_title">客户</string>
+    <string name="more_menu_button_customers_description">获得客户见解</string>
+    <string name="more_menu_button_customers">客户</string>
+    <string name="ai_product_creation_scanning_photo_error">尝试扫描照片上的文本时出错。 请重试</string>
+    <string name="ai_product_creation_scanning_image">正在扫描图片</string>
+    <string name="ai_product_creation_image_selected_subtitle">照片将添加到产品中</string>
+    <string name="ai_product_creation_image_selected">照片已选择</string>
+    <string name="ai_product_creation_remove_image">删除照片</string>
+    <string name="ai_product_creation_replace_image">替换照片</string>
+    <string name="ai_product_creation_view_image">查看照片</string>
+    <string name="product_creation_ai_preview_name_description_sections">名称、概要和描述</string>
+    <string name="product_creation_ai_preview_subtitle">在保存之前，您可以编辑或重新生成产品详细信息。</string>
+    <string name="product_detail_publish">发布</string>
+    <string name="analytics_google_ads_programs_card_title">节目</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">此时段内无节目</string>
     <string name="woopos_reader_connect_now_button">立即关联</string>
     <string name="woopos_cart_title">购物车</string>
     <string name="ai_product_creation_generate_details_button">生成产品详细信息</string>

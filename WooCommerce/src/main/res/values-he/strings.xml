@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-10 14:54:07+0000
+Translation-Revision-Date: 2024-07-16 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="customers_details_none_hint">ללא</string>
+    <string name="customers_details_no_phone_hint">אין מספר טלפון</string>
+    <string name="customers_details_postal_code_value_title">מיקוד</string>
+    <string name="customers_details_city_value_title">עיר</string>
+    <string name="customers_details_region_value_title">אזור</string>
+    <string name="customers_details_country_value_title">מדינה</string>
+    <string name="customers_details_date_registered_value_title">תאריך הרישום</string>
+    <string name="customers_details_username_value_title">שם משתמש</string>
+    <string name="customers_details_average_order_value_title">ערך הזמנה ממוצע</string>
+    <string name="customers_details_total_spend_value_title">הוצאה כוללת</string>
+    <string name="customers_details_orders_value_title">הזמנות</string>
+    <string name="customers_details_last_active_value_title">מועד פעילות אחרון</string>
+    <string name="customers_details_shipping_location_section">מיקום</string>
+    <string name="customers_details_shipping_address_section">כתובת משלוח</string>
+    <string name="customers_details_billing_address_section">כתובת לחיוב</string>
+    <string name="customers_details_registration_section">רישום</string>
+    <string name="customers_details_orders_section">הזמנות</string>
+    <string name="customers_details_customer_section">לקוח</string>
+    <string name="woopos_products_empty_list">אין מוצרים</string>
+    <string name="more_menu_customers_title">לקוחות</string>
+    <string name="more_menu_button_customers_description">לקבל תובנות על הלקוח</string>
+    <string name="more_menu_button_customers">לקוחות</string>
+    <string name="ai_product_creation_scanning_photo_error">אירעה שגיאה במהלך הניסיון לסרוק את הטקסט מהתמונה. יש לנסות שוב</string>
+    <string name="ai_product_creation_scanning_image">סורק את התמונה</string>
+    <string name="ai_product_creation_image_selected_subtitle">התמונה תתווסף למוצר</string>
+    <string name="ai_product_creation_image_selected">התמונה נבחרה</string>
+    <string name="ai_product_creation_remove_image">להסיר את התמונה</string>
+    <string name="ai_product_creation_replace_image">להחליף את התמונה</string>
+    <string name="ai_product_creation_view_image">להציג את התמונה</string>
+    <string name="product_creation_ai_preview_name_description_sections">שם, סיכום ותיאור</string>
+    <string name="product_creation_ai_preview_subtitle">אפשר לערוך את פרטי המוצר או ליצור אותם מחדש לפני השמירה.</string>
+    <string name="product_detail_publish">לפרסם</string>
+    <string name="analytics_google_ads_programs_card_title">תוכניות</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">אין תוכניות בתקופה הזאת</string>
     <string name="woopos_reader_connect_now_button">להתחבר כעת</string>
     <string name="woopos_cart_title">עגלת קניות</string>
     <string name="ai_product_creation_generate_details_button">ליצור את פרטי המוצר</string>
