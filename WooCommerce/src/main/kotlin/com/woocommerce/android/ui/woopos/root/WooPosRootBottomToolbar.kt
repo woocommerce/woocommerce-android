@@ -59,15 +59,15 @@ fun WooPosBottomToolbar(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(8.dp.toAdaptivePadding())
         ) {
-            ExitPosButton { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
+            MenuCard { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
             DividerVertical()
-            CardReaderStatus(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
+            CardReaderStatusCard(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
         }
     }
 }
 
 @Composable
-private fun ExitPosButton(onClick: () -> Unit) {
+private fun MenuCard(onClick: () -> Unit) {
     TextButton(onClick = onClick) {
         Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         Icon(
@@ -88,7 +88,7 @@ private fun ExitPosButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun CardReaderStatus(
+private fun CardReaderStatusCard(
     state: State<WooPosRootScreenState>,
     onClick: () -> Unit
 ) {
