@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -58,6 +59,7 @@ fun WooPosBottomToolbar(
         WooPosRootScreenState.Menu.Hidden -> ToolbarWithHiddenMenu(
             modifier = modifier,
             cardReaderStatus = value.cardReaderStatus,
+            menuCardDisabled = false,
             onUIEvent = onUIEvent
         )
 
@@ -91,6 +93,7 @@ fun ToolbarWithVisibleMenu(
                     start.linkTo(parent.start)
                 },
                 cardReaderStatus = cardReaderStatus,
+                menuCardDisabled = true,
                 onUIEvent = onUIEvent
             )
 
@@ -111,6 +114,7 @@ fun ToolbarWithVisibleMenu(
 @Composable
 private fun ToolbarWithHiddenMenu(
     modifier: Modifier,
+    menuCardDisabled: Boolean,
     cardReaderStatus: WooPosCardReaderStatus,
     onUIEvent: (WooPosRootUIEvent) -> Unit
 ) {
@@ -136,7 +140,8 @@ private fun ToolbarWithHiddenMenu(
                     top.linkTo(cardReaderStatusCard.top)
                     bottom.linkTo(cardReaderStatusCard.bottom)
                     height = Dimension.fillToConstraints
-                }
+                },
+            menuCardDisabled = menuCardDisabled,
         ) { onUIEvent(WooPosRootUIEvent.OnToolbarMenuClicked) }
     }
 }
@@ -144,6 +149,7 @@ private fun ToolbarWithHiddenMenu(
 @Composable
 private fun MenuCard(
     modifier: Modifier,
+    menuCardDisabled: Boolean,
     onClick: () -> Unit
 ) {
     Card(
@@ -154,7 +160,14 @@ private fun MenuCard(
     ) {
         TextButton(
             onClick = onClick,
-            contentPadding = PaddingValues(0.dp)
+            contentPadding = PaddingValues(0.dp),
+            colors = ButtonDefaults.textButtonColors(
+                backgroundColor = if (menuCardDisabled) {
+                    WooPosTheme.colors.border
+                } else {
+                    MaterialTheme.colors.surface
+                }
+            )
         ) {
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -178,7 +191,8 @@ private fun PopUpMenu(
     onClick: (MenuItem) -> Unit
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .padding(vertical = 8.dp.toAdaptivePadding()),
         elevation = 8.dp,
     ) {
         Column {

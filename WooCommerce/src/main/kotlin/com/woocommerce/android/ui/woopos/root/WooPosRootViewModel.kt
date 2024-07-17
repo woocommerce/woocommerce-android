@@ -46,6 +46,7 @@ class WooPosRootViewModel @Inject constructor(
 
     fun onUiEvent(event: WooPosRootUIEvent) {
         hideMenu()
+
         when (event) {
             ConnectToAReaderClicked -> handleConnectToReaderButtonClicked()
             ExitConfirmationDialogDismissed -> {
