@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.root
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 
@@ -26,8 +27,8 @@ data class WooPosRootScreenState(
 
         data class MenuItem(
             val id: Int,
-            val title: Int,
-            val icon: Int,
+            @StringRes val title: Int,
+            @DrawableRes val icon: Int,
         )
     }
 }
