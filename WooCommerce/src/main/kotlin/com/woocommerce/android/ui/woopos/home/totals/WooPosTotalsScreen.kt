@@ -58,13 +58,10 @@ private fun WooPosTotalsScreen(
     ) {
         when (state) {
             is WooPosTotalsState.Totals -> {
-//                TODO: Remove this comment and below testing code
-                // TotalsLoaded(
-//                    state = state,
-//                    onUIEvent = onUIEvent
-//                )
-
-                handleErrorState(WooPosTotalsState.Error("An error occurred. Please try again."), onUIEvent)
+                TotalsLoaded(
+                    state = state,
+                    onUIEvent = onUIEvent
+                )
             }
 
             is WooPosTotalsState.PaymentSuccess -> {
