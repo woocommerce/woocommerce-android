@@ -58,10 +58,13 @@ private fun WooPosTotalsScreen(
     ) {
         when (state) {
             is WooPosTotalsState.Totals -> {
-                TotalsLoaded(
-                    state = state,
-                    onUIEvent = onUIEvent
-                )
+//                TODO: Remove this comment and below testing code
+                // TotalsLoaded(
+//                    state = state,
+//                    onUIEvent = onUIEvent
+//                )
+
+                handleErrorState(WooPosTotalsState.Error("An error occurred. Please try again."), onUIEvent)
             }
 
             is WooPosTotalsState.PaymentSuccess -> {
@@ -73,13 +76,21 @@ private fun WooPosTotalsScreen(
             }
 
             is WooPosTotalsState.Error -> {
-                WooPosTotalsErrorScreen(
-                    errorMessage = state.message,
-                    onUIEvent = onUIEvent
-                )
+                handleErrorState(state, onUIEvent)
             }
         }
     }
+}
+
+@Composable
+private fun handleErrorState(
+    state: WooPosTotalsState.Error,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+) {
+    WooPosTotalsErrorScreen(
+        errorMessage = state.message,
+        onUIEvent = onUIEvent
+    )
 }
 
 @Composable
