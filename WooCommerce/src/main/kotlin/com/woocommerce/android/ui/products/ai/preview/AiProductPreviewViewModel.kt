@@ -181,21 +181,15 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onSaveProductAsDraft() {
-        launch {
-            savingProductState.value = SavingProductState.Loading
-            uploadSelectedImage()
-            addAiGeneratedProduct(publishProduct = false)
-            savingProductState.value = SavingProductState.Success
-        }
+        savingProductState.value = SavingProductState.Loading
+        addAiGeneratedProduct(publishProduct = false)
+        savingProductState.value = SavingProductState.Success
     }
 
     fun onPublishProduct() {
-        launch {
-            savingProductState.value = SavingProductState.Loading
-            uploadSelectedImage()
-            addAiGeneratedProduct(publishProduct = true)
-            savingProductState.value = SavingProductState.Success
-        }
+        savingProductState.value = SavingProductState.Loading
+        addAiGeneratedProduct(publishProduct = true)
+        savingProductState.value = SavingProductState.Success
     }
 
     private suspend fun AiProductPreviewViewModel.uploadSelectedImage() {
@@ -219,9 +213,11 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private fun addAiGeneratedProduct(publishProduct: Boolean) {
         analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
+
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         viewModelScope.launch {
             savingProductState.value = SavingProductState.Loading
+            uploadSelectedImage()
             val editedFields = userEditedFields.value
             val (success, productId) = saveAiGeneratedProduct(
                 product.copy(
