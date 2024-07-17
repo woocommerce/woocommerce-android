@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,43 +46,43 @@ fun WooPosBottomToolbar(
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit,
 ) {
-    Card(
-        modifier = modifier
-            .wrapContentSize(Alignment.Center),
-        backgroundColor = MaterialTheme.colors.surface,
-        elevation = 8.dp,
-        shape = RoundedCornerShape(8.dp),
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.padding(8.dp.toAdaptivePadding())
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(8.dp.toAdaptivePadding())
-        ) {
-            MenuCard { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
-            DividerVertical()
-            CardReaderStatusCard(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
-        }
+        MenuCard { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }
+        Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+        CardReaderStatusCard(state) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
     }
 }
 
 @Composable
 private fun MenuCard(onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
-        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
-        Icon(
-            imageVector = ImageVector.vectorResource(id = R.drawable.woopos_ic_exit_pos),
-            contentDescription = null,
-            tint = MaterialTheme.colors.secondaryVariant,
-            modifier = Modifier.size(14.dp)
-        )
-        Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
-        Text(
-            modifier = Modifier.padding(8.dp.toAdaptivePadding()),
-            text = stringResource(id = R.string.woopos_exit_pos),
-            color = MaterialTheme.colors.secondaryVariant,
-            style = MaterialTheme.typography.button
-        )
-        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+    Card(
+        modifier = Modifier
+            .wrapContentSize(Alignment.Center),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 8.dp,
+        shape = RoundedCornerShape(8.dp),
+    ) {
+        TextButton(onClick = onClick) {
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.woopos_ic_exit_pos),
+                contentDescription = null,
+                tint = MaterialTheme.colors.secondaryVariant,
+                modifier = Modifier.size(14.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
+            Text(
+                modifier = Modifier.padding(8.dp.toAdaptivePadding()),
+                text = stringResource(id = R.string.woopos_exit_pos),
+                color = MaterialTheme.colors.secondaryVariant,
+                style = MaterialTheme.typography.button
+            )
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+        }
     }
 }
 
@@ -127,16 +126,24 @@ private fun CardReaderStatusCard(
         }
     )
 
-    TextButton(onClick = onClick) {
-        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
-        ReaderStatusIllustration(illustrationColor)
-        Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
-        ReaderStatusText(
-            modifier = Modifier.animateContentSize(),
-            title = title,
-            color = textColor,
-        )
-        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+    Card(
+        modifier = Modifier
+            .wrapContentSize(Alignment.Center),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 8.dp,
+        shape = RoundedCornerShape(8.dp),
+    ) {
+        TextButton(onClick = onClick) {
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+            ReaderStatusIllustration(illustrationColor)
+            Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
+            ReaderStatusText(
+                modifier = Modifier.animateContentSize(),
+                title = title,
+                color = textColor,
+            )
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+        }
     }
 }
 
@@ -160,16 +167,6 @@ private fun ReaderStatusIllustration(color: Color) {
         modifier = Modifier
             .size(12.dp)
             .background(color = color, shape = CircleShape)
-    )
-}
-
-@Composable
-private fun DividerVertical() {
-    Box(
-        Modifier
-            .width(0.5.dp)
-            .height(24.dp)
-            .background(color = WooPosTheme.colors.loadingSkeleton)
     )
 }
 
