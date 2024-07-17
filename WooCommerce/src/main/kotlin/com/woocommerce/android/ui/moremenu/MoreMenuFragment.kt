@@ -12,12 +12,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewFragment
 import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -85,6 +88,7 @@ class MoreMenuFragment : TopLevelFragment() {
         super.onViewCreated(view, savedInstanceState)
         blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.MORE_MENU_ITEM)
         setupObservers()
+        setupResultHandlers()
     }
 
     override fun onResume() {
@@ -100,7 +104,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
-                is ViewGoogleForWooEvent -> openGoogleForWooWebview(event.url, event.canAutoLogin)
+                is ViewGoogleForWooEvent -> openGoogleForWooWebview(event.url, event.successUrl, event.canAutoLogin)
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
@@ -112,6 +116,16 @@ class MoreMenuFragment : TopLevelFragment() {
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
                 is NavigateToWooPosEvent -> openWooPos()
             }
+        }
+    }
+
+    private fun setupResultHandlers() {
+        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+            navigateToGoogleAdsCreationSuccess()
+        }
+
+        handleNotice(ExitAwareWebViewFragment.WEBVIEW_RESULT) {
+            navigateToGoogleAdsCreationSuccess()
         }
     }
 
@@ -149,6 +163,12 @@ class MoreMenuFragment : TopLevelFragment() {
         )
     }
 
+    private fun navigateToGoogleAdsCreationSuccess() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToGoogleAdsCampaignSuccessBottomSheet()
+        )
+    }
+
     private fun startSitePicker() {
         (requireActivity() as MainActivity).startSitePicker()
     }
@@ -181,29 +201,29 @@ class MoreMenuFragment : TopLevelFragment() {
         )
     }
 
-    private fun openGoogleForWooWebview(url: String, canAutoLogin: Boolean) {
+    private fun openGoogleForWooWebview(url: String, successUrl: String, canAutoLogin: Boolean) {
         when {
-            canAutoLogin -> openInAuthBrowser(url)
-            else -> openInExitAwareWebview(url)
+            canAutoLogin -> openInAuthBrowser(url, successUrl)
+            else -> openInExitAwareWebview(url, successUrl)
         }
     }
 
-    private fun openInExitAwareWebview(url: String) {
+    private fun openInExitAwareWebview(url: String, successUrl: String) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
                 urlToLoad = url,
-                urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                urlsToTriggerExit = arrayOf(successUrl),
                 title = getString(R.string.more_menu_button_google),
                 urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
             )
         )
     }
 
-    private fun openInAuthBrowser(url: String) {
+    private fun openInAuthBrowser(url: String, successUrl: String) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = url,
-                urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                urlsToTriggerExit = arrayOf(successUrl),
                 title = getString(R.string.more_menu_button_google),
                 urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
             )

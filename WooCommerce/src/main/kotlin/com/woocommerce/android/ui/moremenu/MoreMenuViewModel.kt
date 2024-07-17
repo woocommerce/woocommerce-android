@@ -284,7 +284,9 @@ class MoreMenuViewModel @Inject constructor(
         launch {
             val urlToOpen = determineUrlToOpen()
 
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canUseAutoLoginWebview()))
+            val successUrlTrigger = AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUCCESS_SUFFIX
+
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, successUrlTrigger, canUseAutoLoginWebview()))
 
             // todo-11917: This is just temporary to test this function,
             //  in practice we want to set this to true if a campaign is successfully created in webview.
@@ -407,7 +409,11 @@ class MoreMenuViewModel @Inject constructor(
         object ViewPayments : MoreMenuEvent()
         object OpenBlazeCampaignListEvent : MoreMenuEvent()
         data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
-        data class ViewGoogleForWooEvent(val url: String, val canAutoLogin: Boolean) : MoreMenuEvent()
+        data class ViewGoogleForWooEvent(
+            val url: String,
+            val successUrl: String,
+            val canAutoLogin: Boolean
+        ) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()

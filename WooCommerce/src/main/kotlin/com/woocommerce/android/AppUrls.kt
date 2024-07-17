@@ -138,7 +138,7 @@ object AppUrls {
         "admin.php?page=wc-admin&path=%2Fgoogle%2Fsetup-ads"
 
     const val GOOGLE_ADMIN_CAMPAIGN_CREATION_SUCCESS_SUFFIX =
-        "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard&campaign=saved"
+        "campaign=saved"
 
     const val GOOGLE_ADMIN_DASHBOARD =
         "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard"
