@@ -105,7 +105,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
-                is ViewGoogleForWooEvent -> openGoogleForWooWebview(event.url, event.successUrl, event.canAutoLogin)
+                is ViewGoogleForWooEvent -> openGoogleForWooWebview(event.url, event.successUrls, event.canAutoLogin)
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
@@ -202,29 +202,29 @@ class MoreMenuFragment : TopLevelFragment() {
         )
     }
 
-    private fun openGoogleForWooWebview(url: String, successUrl: String, canAutoLogin: Boolean) {
+    private fun openGoogleForWooWebview(url: String, successUrls: List<String>, canAutoLogin: Boolean) {
         when {
-            canAutoLogin -> openInAuthBrowser(url, successUrl)
-            else -> openInExitAwareWebview(url, successUrl)
+            canAutoLogin -> openInAuthBrowser(url, successUrls)
+            else -> openInExitAwareWebview(url, successUrls)
         }
     }
 
-    private fun openInExitAwareWebview(url: String, successUrl: String) {
+    private fun openInExitAwareWebview(url: String, successUrls: List<String>) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
                 urlToLoad = url,
-                urlsToTriggerExit = arrayOf(successUrl),
+                urlsToTriggerExit = successUrls.toTypedArray(),
                 title = getString(R.string.more_menu_button_google),
                 urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
             )
         )
     }
 
-    private fun openInAuthBrowser(url: String, successUrl: String) {
+    private fun openInAuthBrowser(url: String, successUrls: List<String>) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = url,
-                urlsToTriggerExit = arrayOf(successUrl),
+                urlsToTriggerExit = successUrls.toTypedArray(),
                 title = getString(R.string.more_menu_button_google),
                 urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
             )
