@@ -133,26 +133,36 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onNameChanged(name: String?) {
+        val generatedName = generatedProduct.value?.getOrNull()?.names?.get(selectedVariant.value)
+        val actualValue = if (name == generatedName) null else name
+
         userEditedFields.update {
-            it.copy(names = it.names.toMutableList().apply { set(selectedVariant.value, name) })
+            it.copy(names = it.names.toMutableList().apply { set(selectedVariant.value, actualValue) })
         }
     }
 
     fun onDescriptionChanged(description: String?) {
+        val generatedDescription = generatedProduct.value?.getOrNull()?.descriptions?.get(selectedVariant.value)
+        val actualValue = if (description == generatedDescription) null else description
+
         userEditedFields.update {
             it.copy(
                 descriptions = it.descriptions.toMutableList().apply {
-                    set(selectedVariant.value, description)
+                    set(selectedVariant.value, actualValue)
                 }
             )
         }
     }
 
     fun onShortDescriptionChanged(shortDescription: String?) {
+        val generatedShortDescription = generatedProduct.value?.getOrNull()?.shortDescriptions
+            ?.get(selectedVariant.value)
+        val actualValue = if (shortDescription == generatedShortDescription) null else shortDescription
+
         userEditedFields.update {
             it.copy(
                 shortDescriptions = it.shortDescriptions.toMutableList().apply {
-                    set(selectedVariant.value, shortDescription)
+                    set(selectedVariant.value, actualValue)
                 }
             )
         }
