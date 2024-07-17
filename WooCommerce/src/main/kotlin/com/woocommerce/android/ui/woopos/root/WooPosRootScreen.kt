@@ -87,6 +87,7 @@ fun PreviewWooPosRootScreen() {
         mutableStateOf(
             WooPosRootScreenState(
                 WooPosRootScreenState.WooPosCardReaderStatus.NotConnected,
+                menu = WooPosRootScreenState.Menu.Hidden,
                 null,
             )
         )

@@ -24,6 +24,7 @@ class WooPosRootViewModel @Inject constructor(
     private val _rootScreenState = MutableStateFlow(
         WooPosRootScreenState(
             cardReaderStatus = WooPosRootScreenState.WooPosCardReaderStatus.NotConnected,
+            menu = WooPosRootScreenState.Menu.Hidden,
             exitConfirmationDialog = null,
         )
     )
