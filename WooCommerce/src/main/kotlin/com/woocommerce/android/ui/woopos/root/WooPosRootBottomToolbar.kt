@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.woopos.root
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -54,66 +57,69 @@ fun WooPosBottomToolbar(
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit,
 ) {
-    val value = state.value
-    when (val menu = value.menu) {
-        WooPosRootScreenState.Menu.Hidden -> ToolbarWithHiddenMenu(
-            modifier = modifier,
-            cardReaderStatus = value.cardReaderStatus,
-            menuCardDisabled = false,
-            onUIEvent = onUIEvent
+    val cardReaderStatus = state.value.cardReaderStatus
+    val menu = state.value.menu
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        MenuOverlay(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
+                .clickable { onUIEvent(WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked) },
+            isVisible = menu is WooPosRootScreenState.Menu.Visible,
         )
 
-        is WooPosRootScreenState.Menu.Visible -> ToolbarWithVisibleMenu(
-            modifier = modifier,
-            cardReaderStatus = value.cardReaderStatus,
-            menu = menu,
-            onUIEvent = onUIEvent
-        )
-    }
-}
-
-@Composable
-fun ToolbarWithVisibleMenu(
-    modifier: Modifier,
-    cardReaderStatus: WooPosCardReaderStatus,
-    menu: WooPosRootScreenState.Menu.Visible,
-    onUIEvent: (WooPosRootUIEvent) -> Unit
-) {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
-        .clickable { onUIEvent(WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked) })
-    {
         ConstraintLayout(modifier = modifier) {
             val (toolbar, popupMenu) = createRefs()
 
-            ToolbarWithHiddenMenu(
+            Toolbar(
                 modifier = Modifier.constrainAs(toolbar) {
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                 },
                 cardReaderStatus = cardReaderStatus,
-                menuCardDisabled = true,
+                menuCardDisabled = menu is WooPosRootScreenState.Menu.Visible,
                 onUIEvent = onUIEvent
             )
 
-            val marginBetweenCards = 8.dp.toAdaptivePadding()
-            PopUpMenu(
-                modifier = Modifier.constrainAs(popupMenu) {
-                    bottom.linkTo(toolbar.top, margin = marginBetweenCards)
-                    start.linkTo(toolbar.start)
-                },
-                menuItems = menu.items,
-                onClick = { menuItem ->
-                    onUIEvent(WooPosRootUIEvent.MenuItemSelected(menuItem))
+            when (menu) {
+                is WooPosRootScreenState.Menu.Hidden -> {
+                    // show nothing
                 }
-            )
+                is WooPosRootScreenState.Menu.Visible -> {
+                    val marginBetweenCards = 8.dp.toAdaptivePadding()
+                    PopUpMenu(
+                        modifier = Modifier.constrainAs(popupMenu) {
+                            bottom.linkTo(toolbar.top, margin = marginBetweenCards)
+                            start.linkTo(toolbar.start)
+                        },
+                        menuItems = menu.items,
+                        onClick = { menuItem ->
+                            onUIEvent(WooPosRootUIEvent.MenuItemSelected(menuItem))
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun ToolbarWithHiddenMenu(
+private fun MenuOverlay(
+    modifier: Modifier,
+    isVisible: Boolean,
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(initialAlpha = 0.3f),
+        exit = fadeOut(targetAlpha = 0.0f)
+    ) {
+        Box(modifier = modifier)
+    }
+}
+
+@Composable
+private fun Toolbar(
     modifier: Modifier,
     menuCardDisabled: Boolean,
     cardReaderStatus: WooPosCardReaderStatus,
@@ -164,7 +170,7 @@ private fun MenuButton(
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.textButtonColors(
                 backgroundColor = if (menuCardDisabled) {
-                    WooPosTheme.colors.border
+                    MaterialTheme.colors.onSurface.copy(alpha = 0.2f)
                 } else {
                     MaterialTheme.colors.surface
                 }
@@ -220,7 +226,8 @@ private fun PopUpMenuItem(
         )
         Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         Text(
-            modifier = Modifier.padding(vertical = 8.dp.toAdaptivePadding())
+            modifier = Modifier
+                .padding(vertical = 8.dp.toAdaptivePadding())
                 .weight(1f),
             text = stringResource(id = menuItem.title),
             color = MaterialTheme.colors.onSurface,
