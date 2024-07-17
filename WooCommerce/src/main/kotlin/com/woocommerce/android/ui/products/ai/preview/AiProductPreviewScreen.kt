@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai.preview
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -21,6 +22,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -79,6 +81,7 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
             onFullScreenImageDismissed = viewModel::onFullScreenImageDismissed,
             onSelectNextVariant = viewModel::onSelectNextVariant,
             onSelectPreviousVariant = viewModel::onSelectPreviousVariant,
+            onSaveProductAsDraft = viewModel::onSaveProductAsDraft,
             onGenerateAgainClick = viewModel::onGenerateAgainClicked
         )
     }
@@ -96,6 +99,7 @@ private fun AiProductPreviewScreen(
     onFullScreenImageDismissed: () -> Unit,
     onSelectNextVariant: () -> Unit,
     onSelectPreviousVariant: () -> Unit,
+    onSaveProductAsDraft: () -> Unit,
     onGenerateAgainClick: () -> Unit
 ) {
     Scaffold(
@@ -103,17 +107,33 @@ private fun AiProductPreviewScreen(
             Toolbar(
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
-                    WCTextButton(
-                        enabled = state is AiProductPreviewViewModel.State.Success,
-                        onClick = { TODO() }
-                    ) {
-                        Text(text = stringResource(id = R.string.product_detail_save_as_draft))
-                    }
-                    WCTextButton(
-                        enabled = state is AiProductPreviewViewModel.State.Success,
-                        onClick = { TODO() }
-                    ) {
-                        Text(text = stringResource(id = R.string.product_detail_publish))
+                    when {
+                        state is AiProductPreviewViewModel.State.Success &&
+                            state.savingProductState is AiProductPreviewViewModel.SavingProductState.Loading -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(
+                                        width = dimensionResource(id = R.dimen.major_325),
+                                        height = dimensionResource(id = R.dimen.major_100)
+                                    )
+                                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                            )
+                        }
+
+                        else -> {
+                            WCTextButton(
+                                enabled = state is AiProductPreviewViewModel.State.Success,
+                                onClick = onSaveProductAsDraft
+                            ) {
+                                Text(text = stringResource(id = R.string.product_detail_save_as_draft))
+                            }
+                            WCTextButton(
+                                enabled = state is AiProductPreviewViewModel.State.Success,
+                                onClick = { TODO() }
+                            ) {
+                                Text(text = stringResource(id = R.string.product_detail_publish))
+                            }
+                        }
                     }
                 }
             )
@@ -164,7 +184,8 @@ private fun AiProductPreviewScreen(
     if (state is AiProductPreviewViewModel.State.Error) {
         ErrorDialog(
             onRetryClick = state.onRetryClick,
-            onDismissClick = state.onDismissClick
+            onDismissClick = state.onDismissClick,
+            errorMessage = R.string.product_creation_ai_generation_failure_message
         )
     }
 }
@@ -279,6 +300,13 @@ private fun ProductPreviewContent(
             Text(text = stringResource(id = R.string.product_creation_ai_preview_generate_again))
         }
     }
+    if (state.savingProductState is AiProductPreviewViewModel.SavingProductState.Error) {
+        ErrorDialog(
+            errorMessage = state.savingProductState.messageRes,
+            onRetryClick = state.savingProductState.onRetryClick,
+            onDismissClick = state.savingProductState.onDismissClick
+        )
+    }
 }
 
 @Composable
@@ -313,7 +341,8 @@ private fun ProductTextField(
                 WCTextButton(
                     onClick = { onValueChange(null) },
                     text = stringResource(id = R.string.product_creation_ai_preview_undo_edits),
-                    icon = Icons.Default.Replay
+                    icon = Icons.Default.Replay,
+                    allCaps = false
                 )
             }
         }
@@ -537,13 +566,14 @@ private fun ProductPreviewLoading(modifier: Modifier) {
 @Composable
 private fun ErrorDialog(
     onRetryClick: () -> Unit,
-    onDismissClick: () -> Unit
+    onDismissClick: () -> Unit,
+    @StringRes errorMessage: Int
 ) {
     AlertDialog(
         onDismissRequest = {},
         properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
         text = {
-            Text(text = stringResource(id = R.string.product_creation_ai_generation_failure_message))
+            Text(text = stringResource(id = errorMessage))
         },
         confirmButton = {
             WCTextButton(onClick = onRetryClick) {
@@ -574,6 +604,7 @@ private fun ProductPreviewLoadingPreview() {
             onFullScreenImageDismissed = {},
             onSelectNextVariant = {},
             onSelectPreviousVariant = {},
+            onSaveProductAsDraft = {},
             onGenerateAgainClick = {}
         )
     }
@@ -614,7 +645,11 @@ private fun ProductPreviewContentPreview() {
                         )
                     )
                 ),
-                imageState = AiProductPreviewViewModel.ImageState(null)
+                imageState = AiProductPreviewViewModel.ImageState(
+                    image = null,
+                    showImageFullScreen = false,
+                ),
+                savingProductState = AiProductPreviewViewModel.SavingProductState.Idle,
             ),
             onNameChanged = {},
             onDescriptionChanged = {},
@@ -625,6 +660,7 @@ private fun ProductPreviewContentPreview() {
             onFullScreenImageDismissed = {},
             onSelectNextVariant = {},
             onSelectPreviousVariant = {},
+            onSaveProductAsDraft = {},
             onGenerateAgainClick = {}
         )
     }
