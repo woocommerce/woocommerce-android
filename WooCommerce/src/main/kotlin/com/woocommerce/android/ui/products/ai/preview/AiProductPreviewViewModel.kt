@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.products.ai.preview
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Image
+import com.woocommerce.android.model.Image.WPMediaLibraryImage
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
@@ -32,7 +35,8 @@ import javax.inject.Inject
 class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
-    private val generateProductWithAI: GenerateProductWithAI
+    private val generateProductWithAI: GenerateProductWithAI,
+    private val uploadImage: UploadImage
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -47,6 +51,7 @@ class AiProductPreviewViewModel @Inject constructor(
     private val generatedProduct = MutableStateFlow<Result<AIProductModel>?>(
         Result.success(AIProductModel.buildDefault("Name", navArgs.productFeatures))
     )
+    private val savingProductState = MutableStateFlow<SavingProductState>(SavingProductState.Idle)
 
     val state: LiveData<State> = generatedProduct.transformLatest {
         if (it == null) {
@@ -83,13 +88,15 @@ class AiProductPreviewViewModel @Inject constructor(
                         variant = it,
                     )
                 },
-                userEditedFields
-            ) { imageState, selectedVariant, propertyGroups, editedFields ->
+                userEditedFields,
+                savingProductState
+            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState ->
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,
                     propertyGroups = propertyGroups,
                     imageState = imageState,
+                    savingProductState = savingProductState,
                     userEditedName = editedFields.names[selectedVariant],
                     userEditedDescription = editedFields.descriptions[selectedVariant],
                     userEditedShortDescription = editedFields.shortDescriptions[selectedVariant]
@@ -168,6 +175,38 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onSaveProductAsDraft() {
+        launch {
+            savingProductState.value = SavingProductState.Loading
+
+            imageState.value.image
+                ?.let { uploadImage(it) }
+                ?.fold(
+                    onSuccess = {
+                        imageState.value = imageState.value.copy(
+                            image = WPMediaLibraryImage(content = it)
+                        )
+                    },
+                    onFailure = {
+                        savingProductState.value = SavingProductState.Error(
+                            messageRes = R.string.ai_product_creation_error_media_upload,
+                            onRetryClick = ::onSaveProductAsDraft,
+                            onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                        )
+                    }
+                )
+
+            // Create product
+            createProductDraft()
+            savingProductState.value = SavingProductState.Success
+        }
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    private fun createProductDraft() {
+        // TODO()
+    }
+
     sealed interface State {
         data object Loading : State
         data class Success(
@@ -175,6 +214,7 @@ class AiProductPreviewViewModel @Inject constructor(
             private val product: AIProductModel,
             val propertyGroups: List<List<ProductPropertyCard>>,
             val imageState: ImageState,
+            val savingProductState: SavingProductState,
             val shouldShowFeedbackView: Boolean = true,
             private val userEditedName: String? = null,
             private val userEditedDescription: String? = null,
@@ -211,7 +251,7 @@ class AiProductPreviewViewModel @Inject constructor(
     @Parcelize
     data class ImageState(
         val image: Image?,
-        val showImageFullScreen: Boolean = false
+        val showImageFullScreen: Boolean = false,
     ) : Parcelable
 
     data class TextFieldState(
@@ -225,4 +265,22 @@ class AiProductPreviewViewModel @Inject constructor(
         val descriptions: List<String?> = List(DEFAULT_COUNT_OF_VARIANTS) { null },
         val shortDescriptions: List<String?> = List(DEFAULT_COUNT_OF_VARIANTS) { null }
     ) : Parcelable
+
+    sealed interface SavingProductState : Parcelable {
+        @Parcelize
+        data object Loading : SavingProductState
+
+        @Parcelize
+        data class Error(
+            val onRetryClick: () -> Unit,
+            val onDismissClick: () -> Unit,
+            @StringRes val messageRes: Int
+        ) : SavingProductState
+
+        @Parcelize
+        data object Success : SavingProductState
+
+        @Parcelize
+        data object Idle : SavingProductState
+    }
 }

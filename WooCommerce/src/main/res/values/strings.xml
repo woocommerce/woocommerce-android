@@ -2254,6 +2254,7 @@
     <string name="ai_product_creation_prompt_suggestion_getting_better"><![CDATA[<b>Getting better.</b> Can you describe the fit and any distinctive features of the item?]]></string>
     <string name="ai_product_creation_prompt_suggestion_almost_there"><![CDATA[<b>Great prompt!</b> Where was it made?]]></string>
     <string name="ai_product_creation_prompt_suggestion_great_prompt"><![CDATA[<b>Great prompt!</b> You\'ve given us enough to work with, but you may add more detail to make it even better.]]></string>
+    <string name="ai_product_creation_error_media_upload">Failed to upload the selected product image.</string>
 
     <!--
         Product Add more details Bottom sheet
