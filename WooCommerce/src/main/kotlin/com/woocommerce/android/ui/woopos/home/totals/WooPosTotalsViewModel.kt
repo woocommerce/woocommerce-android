@@ -118,6 +118,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         Log.e("WooPosCartViewModel", "Order creation failed - $error")
+                        _state.value = WooPosTotalsState.Error(error.message ?: "Unknown error")
                     }
                 )
         }
