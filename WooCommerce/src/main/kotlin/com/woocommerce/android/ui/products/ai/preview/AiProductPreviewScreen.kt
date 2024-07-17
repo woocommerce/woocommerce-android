@@ -300,7 +300,8 @@ private fun ProductTextField(
                 WCTextButton(
                     onClick = { onValueChange(null) },
                     text = stringResource(id = R.string.product_creation_ai_preview_undo_edits),
-                    icon = Icons.Default.Replay
+                    icon = Icons.Default.Replay,
+                    allCaps = false
                 )
             }
         }
