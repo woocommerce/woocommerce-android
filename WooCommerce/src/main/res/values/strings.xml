@@ -2239,7 +2239,6 @@
     <string name="ai_product_creation_scanning_image">Scanning image</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
     <string name="ai_product_creation_error_media_upload">Failed to upload the selected product image.</string>
-    <string name="ai_product_creation_error_media_fetch">Failed to fetch the selected image details from WordPress media library</string>
 
     <!--
         Product Add more details Bottom sheet

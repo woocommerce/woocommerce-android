@@ -6,9 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
-import com.woocommerce.android.media.MediaFilesRepository.MediaUploadException
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AIProductModel
@@ -141,15 +139,9 @@ class AiProductPreviewViewModel @Inject constructor(
 
             val uploadedMediaModel = imageState.value.image
                 ?.let { uploadImage(it) }
-                ?.getOrElse { error ->
-                    val uploadErrorMessageRes =
-                        when (error) {
-                            is MediaUploadException -> R.string.ai_product_creation_error_media_upload
-                            is OnChangedException -> R.string.ai_product_creation_error_media_fetch
-                            else -> R.string.ai_product_creation_error_media_upload
-                        }
+                ?.getOrElse {
                     saveProductState.value = SaveProductDraftState.Error(
-                        messageRes = uploadErrorMessageRes,
+                        messageRes = R.string.ai_product_creation_error_media_upload,
                         onRetryClick = ::onSaveProductAsDraft,
                         onDismissClick = { saveProductState.value = SaveProductDraftState.Idle }
                     )
