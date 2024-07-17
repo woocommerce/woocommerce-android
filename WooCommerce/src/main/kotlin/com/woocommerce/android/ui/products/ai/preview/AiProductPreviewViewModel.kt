@@ -7,12 +7,19 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.ImageAction
+import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.ui.products.tags.ProductTagsRepository
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -36,7 +43,11 @@ class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
     private val generateProductWithAI: GenerateProductWithAI,
-    private val uploadImage: UploadImage
+    private val uploadImage: UploadImage,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val productCategoriesRepository: ProductCategoriesRepository,
+    private val productTagsRepository: ProductTagsRepository,
+    private val productDetailRepository: ProductDetailRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -195,16 +206,75 @@ class AiProductPreviewViewModel @Inject constructor(
                         )
                     }
                 )
-
-            // Create product
             createProductDraft()
             savingProductState.value = SavingProductState.Success
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
     private fun createProductDraft() {
-        // TODO()
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
+        val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
+
+        viewModelScope.launch {
+            savingProductState.value = SavingProductState.Loading
+            val (success, productId) = saveProduct(product)
+            if (!success) {
+                savingProductState.value = SavingProductState.Error(
+                    messageRes = R.string.error_generic,
+                    onRetryClick = ::onSaveProductAsDraft,
+                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                )
+                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
+            } else {
+                triggerEvent(NavigateToProductDetailScreen(productId))
+                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
+            }
+        }
+    }
+
+    private suspend fun saveProduct(product: Product): Pair<Boolean, Long> {
+        // Create missing categories
+        val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
+        val createdCategories = missingCategories
+            .takeIf { it.isNotEmpty() }?.let { productCategories ->
+                WooLog.d(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Create the missing product categories ${productCategories.map { it.name }}"
+                )
+                productCategoriesRepository.addProductCategories(productCategories)
+            }?.getOrElse {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
+                return Pair(false, 0L)
+            }
+
+        // Create missing tags
+        val missingTags = product.tags.filter { it.remoteTagId == 0L }
+        val createdTags = missingTags
+            .takeIf { it.isNotEmpty() }?.let { productTags ->
+                WooLog.d(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Create the missing product tags ${productTags.map { it.name }}"
+                )
+                productTagsRepository.addProductTags(productTags.map { it.name })
+            }?.getOrElse {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
+                return Pair(false, 0L)
+            }
+
+        // Add image if any selected
+        val selectedProductImage = if (imageState.value.image is WPMediaLibraryImage) {
+            (imageState.value.image as WPMediaLibraryImage).content
+        } else {
+            null
+        }
+
+        val updatedProduct = product.copy(
+            categories = product.categories - missingCategories.toSet() + createdCategories.orEmpty(),
+            tags = product.tags - missingTags.toSet() + createdTags.orEmpty(),
+            images = listOfNotNull(selectedProductImage)
+        )
+
+        return productDetailRepository.addProduct(updatedProduct)
     }
 
     sealed interface State {
@@ -283,4 +353,7 @@ class AiProductPreviewViewModel @Inject constructor(
         @Parcelize
         data object Idle : SavingProductState
     }
+
+    data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
+
 }
