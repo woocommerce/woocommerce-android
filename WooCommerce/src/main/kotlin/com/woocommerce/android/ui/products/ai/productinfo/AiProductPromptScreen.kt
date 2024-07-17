@@ -52,7 +52,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -292,7 +292,11 @@ private fun ProductPromptTextField(
     var isFocused by remember { mutableStateOf(false) }
     var scrollToPosition by remember { mutableFloatStateOf(0F) }
 
-    Column {
+    Column(
+        modifier = Modifier.onGloballyPositioned {
+            scrollToPosition = it.positionInParent().y
+        }
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -336,9 +340,6 @@ private fun ProductPromptTextField(
                             if (isFocused) {
                                 coroutineScope.launch { scrollState.animateScrollTo(scrollToPosition.roundToInt()) }
                             }
-                        }
-                        .onGloballyPositioned { coordinates ->
-                            scrollToPosition = coordinates.positionInRoot().y
                         }
                 )
             }
