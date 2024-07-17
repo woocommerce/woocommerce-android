@@ -81,7 +81,7 @@ fun ToolbarWithVisibleMenu(
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f))
+        .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
         .clickable { onUIEvent(WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked) })
     {
         ConstraintLayout(modifier = modifier) {
@@ -97,9 +97,10 @@ fun ToolbarWithVisibleMenu(
                 onUIEvent = onUIEvent
             )
 
+            val marginBetweenCards = 8.dp.toAdaptivePadding()
             PopUpMenu(
                 modifier = Modifier.constrainAs(popupMenu) {
-                    bottom.linkTo(toolbar.top, margin = 8.dp)
+                    bottom.linkTo(toolbar.top, margin = marginBetweenCards)
                     start.linkTo(toolbar.start)
                 },
                 menuItems = menu.items,
@@ -122,7 +123,7 @@ private fun ToolbarWithHiddenMenu(
         val (menuCard, cardReaderStatusCard) = createRefs()
         val marginBetweenCards = 8.dp.toAdaptivePadding()
 
-        CardReaderStatusCard(
+        CardReaderStatusButton(
             modifier = Modifier
                 .constrainAs(cardReaderStatusCard) {
                     start.linkTo(menuCard.end, margin = marginBetweenCards)
@@ -133,7 +134,7 @@ private fun ToolbarWithHiddenMenu(
             state = cardReaderStatus,
         ) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
 
-        MenuCard(
+        MenuButton(
             modifier = Modifier
                 .constrainAs(menuCard) {
                     start.linkTo(parent.start)
@@ -147,7 +148,7 @@ private fun ToolbarWithHiddenMenu(
 }
 
 @Composable
-private fun MenuCard(
+private fun MenuButton(
     modifier: Modifier,
     menuCardDisabled: Boolean,
     onClick: () -> Unit
@@ -191,14 +192,15 @@ private fun PopUpMenu(
     onClick: (MenuItem) -> Unit
 ) {
     Card(
-        modifier = modifier
-            .padding(vertical = 8.dp.toAdaptivePadding()),
+        modifier = modifier.width(214.dp),
         elevation = 8.dp,
     ) {
         Column {
+            Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
             menuItems.forEach { menuItem ->
                 PopUpMenuItem(menuItem, onClick)
             }
+            Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
         }
     }
 }
@@ -216,19 +218,21 @@ private fun PopUpMenuItem(
             tint = MaterialTheme.colors.onSurface,
             modifier = Modifier.size(24.dp)
         )
-        Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         Text(
-            modifier = Modifier.padding(8.dp.toAdaptivePadding()),
+            modifier = Modifier.padding(vertical = 8.dp.toAdaptivePadding())
+                .weight(1f),
             text = stringResource(id = menuItem.title),
             color = MaterialTheme.colors.onSurface,
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.body1,
+            maxLines = 1,
         )
         Spacer(modifier = Modifier.width(20.dp.toAdaptivePadding()))
     }
 }
 
 @Composable
-private fun CardReaderStatusCard(
+private fun CardReaderStatusButton(
     modifier: Modifier,
     state: WooPosCardReaderStatus,
     onClick: () -> Unit
@@ -366,7 +370,9 @@ private fun Preview(state: MutableState<WooPosRootScreenState>) {
             contentAlignment = Alignment.BottomStart
         ) {
             WooPosBottomToolbar(
-                modifier = Modifier.padding(24.dp.toAdaptivePadding()),
+                modifier = Modifier
+                    .padding(24.dp.toAdaptivePadding())
+                    .align(Alignment.BottomStart),
                 state
             ) {}
         }
