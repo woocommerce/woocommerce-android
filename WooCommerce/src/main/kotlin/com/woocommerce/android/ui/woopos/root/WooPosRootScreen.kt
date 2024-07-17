@@ -2,21 +2,26 @@ package com.woocommerce.android.ui.woopos.root
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConfirmationDialog
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 import com.woocommerce.android.ui.woopos.root.navigation.handleNavigationEvent
@@ -57,15 +62,18 @@ private fun WooPosRootScreen(
         )
     }
 
-    Column(modifier = modifier.background(MaterialTheme.colors.background)) {
+    Box(modifier = modifier.background(MaterialTheme.colors.background)) {
         WooPosRootHost(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxSize(),
             rootController = rootController,
             onNavigationEvent = { event ->
                 rootController.handleNavigationEvent(event, activity, onUIEvent)
             }
         )
         WooPosBottomToolbar(
+            modifier = Modifier
+                .padding(24.dp.toAdaptivePadding())
+                .align(Alignment.BottomStart),
             state,
             onUIEvent,
         )
@@ -78,7 +86,7 @@ fun PreviewWooPosRootScreen() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
-                WooPosRootScreenState.WooPosCardReaderStatus.Unknown,
+                WooPosRootScreenState.WooPosCardReaderStatus.NotConnected,
                 null,
             )
         )

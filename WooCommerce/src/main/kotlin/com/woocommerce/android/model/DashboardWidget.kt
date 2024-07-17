@@ -63,6 +63,10 @@ data class DashboardWidget(
         ORDERS(
             titleResource = R.string.my_store_widget_orders_title,
             trackingIdentifier = "orders",
+        ),
+        GOOGLE_ADS(
+            titleResource = R.string.my_store_widget_google_ads_title,
+            trackingIdentifier = "google_ads",
         );
 
         companion object {
