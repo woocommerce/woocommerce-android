@@ -181,6 +181,7 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onSaveProductAsDraft() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
         addAiGeneratedProduct(publishProduct = false)
     }
 
@@ -208,7 +209,6 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     private fun addAiGeneratedProduct(publishProduct: Boolean) {
-        analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
         savingProductState.value = SavingProductState.Loading
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         viewModelScope.launch {
