@@ -328,9 +328,6 @@
         <action
             android:id="@+id/action_moreMenu_to_customerListFragment"
             app:destination="@id/menuCustomerListFragment" />
-        <action
-            android:id="@+id/action_moreMenu_to_googleAdsCampaignSuccessBottomSheet"
-            app:destination="@id/googleAdsCampaignSuccessBottomSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -870,7 +867,10 @@
             android:name="customer"
             app:argType="com.woocommerce.android.model.CustomerWithAnalytics" />
     </fragment>
-    <fragment
+    <action
+        android:id="@+id/action_global_googleAdsCampaignSuccessBottomSheet"
+        app:destination="@id/googleAdsCampaignSuccessBottomSheetFragment" />
+    <dialog
         android:id="@+id/googleAdsCampaignSuccessBottomSheetFragment"
         android:name="com.woocommerce.android.ui.google.ads.success.GoogleAdsCampaignSuccessBottomSheetFragment"
         android:label="GoogleAdsCampaignSuccessBottomSheetFragment" />

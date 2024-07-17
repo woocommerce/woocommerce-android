@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
+@Suppress("TooManyFunctions")
 class MoreMenuFragment : TopLevelFragment() {
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -165,7 +166,7 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private fun navigateToGoogleAdsCreationSuccess() {
         findNavController().navigateSafely(
-            MoreMenuFragmentDirections.actionMoreMenuToGoogleAdsCampaignSuccessBottomSheet()
+            NavGraphMainDirections.actionGlobalGoogleAdsCampaignSuccessBottomSheet()
         )
     }
 
