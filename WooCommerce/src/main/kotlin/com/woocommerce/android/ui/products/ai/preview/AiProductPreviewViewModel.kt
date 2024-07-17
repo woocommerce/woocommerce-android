@@ -222,8 +222,13 @@ class AiProductPreviewViewModel @Inject constructor(
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         viewModelScope.launch {
             savingProductState.value = SavingProductState.Loading
+            val editedFields = userEditedFields.value
             val (success, productId) = saveAiGeneratedProduct(
-                product,
+                product.copy(
+                    name = editedFields.names[selectedVariant.value] ?: product.name,
+                    description = editedFields.descriptions[selectedVariant.value] ?: product.description,
+                    shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
+                ),
                 publishProduct,
                 getSelectedProductImage()
             )
