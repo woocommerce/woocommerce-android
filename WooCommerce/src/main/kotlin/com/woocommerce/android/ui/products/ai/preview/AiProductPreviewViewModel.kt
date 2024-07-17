@@ -8,7 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Image
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Image.WPMediaLibraryImage
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
@@ -137,25 +137,31 @@ class AiProductPreviewViewModel @Inject constructor(
         launch {
             savingProductState.value = SavingProductState.Loading
 
-            val uploadedMediaModel = imageState.value.image
+            imageState.value.image
                 ?.let { uploadImage(it) }
-                ?.getOrElse {
-                    savingProductState.value = SavingProductState.Error(
-                        messageRes = R.string.ai_product_creation_error_media_upload,
-                        onRetryClick = ::onSaveProductAsDraft,
-                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                    )
-                    return@launch
-                }
+                ?.fold(
+                    onSuccess = {
+                        imageState.value = imageState.value.copy(
+                            image = WPMediaLibraryImage(content = it)
+                        )
+                    },
+                    onFailure = {
+                        savingProductState.value = SavingProductState.Error(
+                            messageRes = R.string.ai_product_creation_error_media_upload,
+                            onRetryClick = ::onSaveProductAsDraft,
+                            onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                        )
+                    }
+                )
 
             // Create product
-            createProductDraft(uploadedMediaModel)
+            createProductDraft()
             savingProductState.value = SavingProductState.Success
         }
     }
 
     @Suppress("UNUSED_PARAMETER")
-    private fun createProductDraft(uploadedMediaModel: Product.Image?) {
+    private fun createProductDraft() {
         // TODO()
     }
 
