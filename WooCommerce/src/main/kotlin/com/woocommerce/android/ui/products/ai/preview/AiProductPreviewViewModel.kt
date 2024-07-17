@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
@@ -189,35 +190,47 @@ class AiProductPreviewViewModel @Inject constructor(
     fun onSaveProductAsDraft() {
         launch {
             savingProductState.value = SavingProductState.Loading
-
-            imageState.value.image
-                ?.let { uploadImage(it) }
-                ?.fold(
-                    onSuccess = {
-                        imageState.value = imageState.value.copy(
-                            image = WPMediaLibraryImage(content = it)
-                        )
-                    },
-                    onFailure = {
-                        savingProductState.value = SavingProductState.Error(
-                            messageRes = R.string.ai_product_creation_error_media_upload,
-                            onRetryClick = ::onSaveProductAsDraft,
-                            onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                        )
-                    }
-                )
-            createProductDraft()
+            saveSelectedImage()
+            addProduct(publishProduct = false)
             savingProductState.value = SavingProductState.Success
         }
     }
 
-    private fun createProductDraft() {
+    fun onPublishProduct() {
+        launch {
+            savingProductState.value = SavingProductState.Loading
+            saveSelectedImage()
+            addProduct(publishProduct = true)
+            savingProductState.value = SavingProductState.Success
+        }
+    }
+
+    private suspend fun AiProductPreviewViewModel.saveSelectedImage() {
+        imageState.value.image
+            ?.let { uploadImage(it) }
+            ?.fold(
+                onSuccess = {
+                    imageState.value = imageState.value.copy(
+                        image = WPMediaLibraryImage(content = it)
+                    )
+                },
+                onFailure = {
+                    savingProductState.value = SavingProductState.Error(
+                        messageRes = R.string.ai_product_creation_error_media_upload,
+                        onRetryClick = ::onSaveProductAsDraft,
+                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                    )
+                }
+            )
+    }
+
+    private fun addProduct(publishProduct: Boolean) {
         analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
 
         viewModelScope.launch {
             savingProductState.value = SavingProductState.Loading
-            val (success, productId) = saveProduct(product)
+            val (success, productId) = saveProduct(product, publishProduct)
             if (!success) {
                 savingProductState.value = SavingProductState.Error(
                     messageRes = R.string.error_generic,
@@ -226,13 +239,13 @@ class AiProductPreviewViewModel @Inject constructor(
                 )
                 analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
             } else {
-                triggerEvent(NavigateToProductDetailScreen(productId))
                 analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
+                triggerEvent(NavigateToProductDetailScreen(productId))
             }
         }
     }
 
-    private suspend fun saveProduct(product: Product): Pair<Boolean, Long> {
+    private suspend fun saveProduct(product: Product, publishProduct: Boolean): Pair<Boolean, Long> {
         // Create missing categories
         val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
         val createdCategories = missingCategories
@@ -271,7 +284,8 @@ class AiProductPreviewViewModel @Inject constructor(
         val updatedProduct = product.copy(
             categories = product.categories - missingCategories.toSet() + createdCategories.orEmpty(),
             tags = product.tags - missingTags.toSet() + createdTags.orEmpty(),
-            images = listOfNotNull(selectedProductImage)
+            images = listOfNotNull(selectedProductImage),
+            status = if (publishProduct) ProductStatus.PUBLISH else ProductStatus.DRAFT
         )
 
         return productDetailRepository.addProduct(updatedProduct)
