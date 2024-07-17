@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,32 +77,34 @@ fun ToolbarWithVisibleMenu(
     menu: WooPosRootScreenState.Menu.Visible,
     onUIEvent: (WooPosRootUIEvent) -> Unit
 ) {
-    ConstraintLayout(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colors.onBackground.copy(alpha = 0.5f))
-    ) {
-        val (toolbar, popupMenu) = createRefs()
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f))
+        .clickable { onUIEvent(WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked) })
+    {
+        ConstraintLayout(modifier = modifier) {
+            val (toolbar, popupMenu) = createRefs()
 
-        ToolbarWithHiddenMenu(
-            modifier = Modifier.constrainAs(toolbar) {
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start)
-            },
-            cardReaderStatus = cardReaderStatus,
-            onUIEvent = onUIEvent
-        )
+            ToolbarWithHiddenMenu(
+                modifier = Modifier.constrainAs(toolbar) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                },
+                cardReaderStatus = cardReaderStatus,
+                onUIEvent = onUIEvent
+            )
 
-        PopUpMenu(
-            modifier = Modifier.constrainAs(popupMenu) {
-                bottom.linkTo(toolbar.top, margin = 8.dp)
-                start.linkTo(toolbar.start)
-            },
-            menuItems = menu.items,
-            onClick = { menuItem ->
-                onUIEvent(WooPosRootUIEvent.MenuItemSelected(menuItem))
-            }
-        )
+            PopUpMenu(
+                modifier = Modifier.constrainAs(popupMenu) {
+                    bottom.linkTo(toolbar.top, margin = 8.dp)
+                    start.linkTo(toolbar.start)
+                },
+                menuItems = menu.items,
+                onClick = { menuItem ->
+                    onUIEvent(WooPosRootUIEvent.MenuItemSelected(menuItem))
+                }
+            )
+        }
     }
 }
 
