@@ -1,5 +1,5 @@
 pluginManagement {
-    gradle.ext.agpVersion = '8.1.0'
+    gradle.ext.agpVersion = '8.5.0'
     gradle.ext.googleServicesVersion = '4.4.0'
     gradle.ext.daggerVersion = '2.50'
     gradle.ext.detektVersion = '1.23.5'
