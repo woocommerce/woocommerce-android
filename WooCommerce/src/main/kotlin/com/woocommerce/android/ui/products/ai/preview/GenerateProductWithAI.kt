@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai.preview
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
 import com.woocommerce.android.ai.AIRepository
@@ -12,7 +13,6 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ai.AIProductModel
-import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -28,7 +28,8 @@ class GenerateProductWithAI @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val categoriesRepository: ProductCategoriesRepository,
     private val tagsRepository: ProductTagsRepository,
-    private val parametersRepository: ParameterRepository
+    private val parametersRepository: ParameterRepository,
+    private val appPrefs: AppPrefsWrapper
 ) {
     private lateinit var languageISOCode: String
     private var isProductCategoriesFetched = false
@@ -57,8 +58,7 @@ class GenerateProductWithAI @Inject constructor(
 
         return aiRepository.generateProduct(
             productKeyWords = productFeatures,
-            // TODO pass the tone to use
-            tone = AiTone.Casual.name,
+            tone = appPrefs.aiContentGenerationTone.name,
             weightUnit = siteParameters.weightUnit!!,
             dimensionUnit = siteParameters.dimensionUnit!!,
             currency = siteParameters.currencyCode!!,
