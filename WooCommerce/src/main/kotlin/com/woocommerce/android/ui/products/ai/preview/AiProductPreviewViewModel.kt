@@ -67,16 +67,16 @@ class AiProductPreviewViewModel @Inject constructor(
         }
 
         when (val product = it.getOrNull()) {
-            null -> emit(
-                State.Error(
-                    onRetryClick = { TODO() },
-                    onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) }
+            null -> {
+                emit(
+                    State.Error(
+                        onRetryClick = { TODO() },
+                        onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) }
+                    )
                 )
-            )
-
-            else -> {
-                emitAll(product.prepareState())
             }
+
+            else -> emitAll(product.prepareState())
         }
     }.asLiveData()
 

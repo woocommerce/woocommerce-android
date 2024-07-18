@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products.ai.preview
 
+import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.WooException
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -18,6 +20,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.AI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 class GenerateProductWithAI @Inject constructor(
@@ -67,6 +70,23 @@ class GenerateProductWithAI @Inject constructor(
                 json = it,
                 existingCategories = existingCategories,
                 existingTags = existingTags,
+            )
+        }.onSuccess {
+            analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS)
+        }.onFailure {
+            val errorType = when (it) {
+                is JetpackAICompletionsException -> it.errorType
+                is OnChangedException -> (it.error as? WCProductStore.ProductError)?.type?.name
+                is WooException -> it.error.type.name
+                else -> null
+            }
+            analyticsTracker.track(
+                AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_FAILED,
+                mapOf(
+                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                    AnalyticsTracker.KEY_ERROR_TYPE to errorType,
+                    AnalyticsTracker.KEY_ERROR_DESC to it.message
+                )
             )
         }
     }
