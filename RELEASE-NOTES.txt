@@ -6,7 +6,8 @@
 
 19.6
 -----
-
+- [*] [Login] Improved login reliability by addressing some edge-case issues [https://github.com/woocommerce/woocommerce-android/pull/12033]
+- [**] Product Creation AI V2: Milestone 1 which simplifies package photo flow and revamps UI. [https://github.com/woocommerce/woocommerce-android/issues/11800]
 
 19.5
 -----

@@ -6,11 +6,13 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Image
+import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.products.ai.TextRecognitionEngine
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -26,20 +28,27 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AiProductPromptViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val tracker: AnalyticsTrackerWrapper,
     private val textRecognitionEngine: TextRecognitionEngine,
+    private val prefs: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     companion object {
         private const val SUGGESTIONS_BAR_INITIAL_PROGRESS = 0.05F
         private const val DEFAULT_PROMPT_DELIMITER = " "
     }
 
+    private var isFirstAttempt: Boolean
+        get() = savedStateHandle["isFirstAttempt"] ?: true
+        set(value) {
+            savedStateHandle["isFirstAttempt"] = value
+        }
+
     private val _state = savedStateHandle.getStateFlow(
         viewModelScope,
         AiProductPromptState(
             productPrompt = "",
-            selectedTone = Tone.Casual,
+            selectedTone = prefs.aiContentGenerationTone,
             isMediaPickerDialogVisible = false,
             selectedImage = null,
             isScanningImage = false,
@@ -112,12 +121,7 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onAddImageForScanning() {
-        tracker.track(
-            AnalyticsEvent.PRODUCT_NAME_AI_PACKAGE_IMAGE_BUTTON_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_AI
-            )
-        )
+        tracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_STARTED_PACKAGE_PHOTO_SELECTION_FLOW)
         _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
     }
 
@@ -133,6 +137,13 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onGenerateProductClicked() {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to isFirstAttempt
+            )
+        )
+        isFirstAttempt = false
         triggerEvent(
             ShowProductPreviewScreen(
                 productFeatures = _state.value.productPrompt,
@@ -141,7 +152,14 @@ class AiProductPromptViewModel @Inject constructor(
         )
     }
 
-    fun onToneSelected(tone: Tone) {
+    fun onToneSelected(tone: AiTone) {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_TONE_SELECTED,
+            mapOf(
+                AnalyticsTracker.KEY_TONE to tone.slug
+            )
+        )
+        prefs.aiContentGenerationTone = tone
         _state.value = _state.value.copy(selectedTone = tone)
     }
 
@@ -151,9 +169,9 @@ class AiProductPromptViewModel @Inject constructor(
             textRecognitionEngine.processImage(image.uri)
                 .onSuccess { keywords ->
                     tracker.track(
-                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_COMPLETED,
+                        AnalyticsEvent.PRODUCT_CREATION_AI_TEXT_DETECTED,
                         mapOf(
-                            AnalyticsTracker.KEY_SCANNED_TEXT_COUNT to keywords.size
+                            "number_of_texts" to keywords.size
                         )
                     )
                     if (keywords.isNotEmpty()) {
@@ -165,7 +183,7 @@ class AiProductPromptViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     tracker.track(
-                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_FAILED,
+                        AnalyticsEvent.PRODUCT_CREATION_AI_TEXT_DETECTION_FAILED,
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                             AnalyticsTracker.KEY_ERROR_DESC to error.message,
@@ -183,7 +201,10 @@ class AiProductPromptViewModel @Inject constructor(
     fun onImageActionSelected(imageAction: ImageAction) {
         when (imageAction) {
             ImageAction.View -> _state.value = _state.value.copy(showImageFullScreen = true)
-            ImageAction.Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
+            ImageAction.Replace -> {
+                tracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_STARTED_PACKAGE_PHOTO_SELECTION_FLOW)
+                _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
+            }
             ImageAction.Remove -> _state.value = _state.value.copy(
                 selectedImage = null,
                 noTextDetectedMessage = false,
@@ -198,7 +219,7 @@ class AiProductPromptViewModel @Inject constructor(
     @Parcelize
     data class AiProductPromptState(
         val productPrompt: String,
-        val selectedTone: Tone,
+        val selectedTone: AiTone,
         val isMediaPickerDialogVisible: Boolean,
         val selectedImage: Image?,
         val isScanningImage: Boolean,
@@ -213,18 +234,6 @@ class AiProductPromptViewModel @Inject constructor(
         @StringRes val messageRes: Int,
         val progress: Float,
     ) : Parcelable
-
-    enum class Tone(@StringRes val displayName: Int, val slug: String) {
-        Casual(R.string.product_creation_ai_tone_casual, "Casual"),
-        Formal(R.string.product_creation_ai_tone_formal, "Formal"),
-        Flowery(R.string.product_creation_ai_tone_flowery, "Flowery"),
-        Convincing(R.string.product_creation_ai_tone_convincing, "Convincing");
-
-        companion object {
-            fun fromString(source: String): Tone =
-                Tone.values().firstOrNull { it.slug == source } ?: Casual
-        }
-    }
 
     data class ShowMediaDialog(val source: DataSource) : Event()
     data class ShowProductPreviewScreen(
