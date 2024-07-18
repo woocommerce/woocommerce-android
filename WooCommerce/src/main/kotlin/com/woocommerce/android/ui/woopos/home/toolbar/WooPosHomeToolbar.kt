@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.root
+package com.woocommerce.android.ui.woopos.home.toolbar
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
@@ -50,14 +50,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.Menu.MenuItem
-import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
 
 @Composable
 fun WooPosFloatingToolbar(
     modifier: Modifier = Modifier,
-    state: State<WooPosRootScreenState>,
-    onUIEvent: (WooPosRootUIEvent) -> Unit,
+    state: State<WooPosHomeToolbarScreenState>,
+    onUIEvent: (WooPosHomeToolbarUIEvent) -> Unit,
 ) {
     val cardReaderStatus = state.value.cardReaderStatus
     val menu = state.value.menu
@@ -70,15 +68,15 @@ fun WooPosFloatingToolbar(
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ) { onUIEvent(WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked) },
-            isVisible = menu is WooPosRootScreenState.Menu.Visible,
+                ) { onUIEvent(WooPosHomeToolbarUIEvent.OnOutsideOfToolbarMenuClicked) },
+            isVisible = menu is WooPosHomeToolbarScreenState.Menu.Visible,
         )
 
         ConstraintLayout(modifier = modifier) {
             val (toolbar, popupMenu) = createRefs()
 
             when (menu) {
-                is WooPosRootScreenState.Menu.Hidden -> {
+                is WooPosHomeToolbarScreenState.Menu.Hidden -> {
                     Toolbar(
                         modifier = Modifier.constrainAs(toolbar) {
                             bottom.linkTo(parent.bottom)
@@ -90,7 +88,7 @@ fun WooPosFloatingToolbar(
                     )
                 }
 
-                is WooPosRootScreenState.Menu.Visible -> {
+                is WooPosHomeToolbarScreenState.Menu.Visible -> {
                     Toolbar(
                         modifier = Modifier.constrainAs(toolbar) {
                             bottom.linkTo(parent.bottom)
@@ -109,7 +107,7 @@ fun WooPosFloatingToolbar(
                         },
                         menuItems = menu.items,
                         onClick = { menuItem ->
-                            onUIEvent(WooPosRootUIEvent.MenuItemClicked(menuItem))
+                            onUIEvent(WooPosHomeToolbarUIEvent.MenuItemClicked(menuItem))
                         }
                     )
                 }
@@ -137,7 +135,7 @@ private fun Toolbar(
     modifier: Modifier,
     menuCardDisabled: Boolean,
     cardReaderStatus: WooPosCardReaderStatus,
-    onUIEvent: (WooPosRootUIEvent) -> Unit
+    onUIEvent: (WooPosHomeToolbarUIEvent) -> Unit
 ) {
     ConstraintLayout(modifier = modifier) {
         val (menuCard, cardReaderStatusCard) = createRefs()
@@ -152,7 +150,7 @@ private fun Toolbar(
                     bottom.linkTo(parent.bottom)
                 },
             state = cardReaderStatus,
-        ) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
+        ) { onUIEvent(WooPosHomeToolbarUIEvent.ConnectToAReaderClicked) }
 
         MenuButtonWithPopUpMenu(
             modifier = Modifier
@@ -163,7 +161,7 @@ private fun Toolbar(
                     height = Dimension.fillToConstraints
                 },
             menuCardDisabled = menuCardDisabled,
-        ) { onUIEvent(WooPosRootUIEvent.OnToolbarMenuClicked) }
+        ) { onUIEvent(WooPosHomeToolbarUIEvent.OnToolbarMenuClicked) }
     }
 }
 
@@ -346,9 +344,9 @@ private fun Circle(
 fun PreviewWooPosFloatingToolbarStatusNotConnected() {
     val state = remember {
         mutableStateOf(
-            WooPosRootScreenState(
+            WooPosHomeToolbarScreenState(
                 WooPosCardReaderStatus.NotConnected,
-                menu = WooPosRootScreenState.Menu.Hidden,
+                menu = WooPosHomeToolbarScreenState.Menu.Hidden,
                 null
             )
         )
@@ -361,9 +359,9 @@ fun PreviewWooPosFloatingToolbarStatusNotConnected() {
 fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
     val state = remember {
         mutableStateOf(
-            WooPosRootScreenState(
+            WooPosHomeToolbarScreenState(
                 WooPosCardReaderStatus.Connected,
-                menu = WooPosRootScreenState.Menu.Visible(
+                menu = WooPosHomeToolbarScreenState.Menu.Visible(
                     listOf(
                         MenuItem(
                             title = R.string.woopos_exit_confirmation_message,
@@ -383,7 +381,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
 }
 
 @Composable
-private fun Preview(state: MutableState<WooPosRootScreenState>) {
+private fun Preview(state: MutableState<WooPosHomeToolbarScreenState>) {
     WooPosTheme {
         Box(
             modifier = Modifier.fillMaxSize(),
