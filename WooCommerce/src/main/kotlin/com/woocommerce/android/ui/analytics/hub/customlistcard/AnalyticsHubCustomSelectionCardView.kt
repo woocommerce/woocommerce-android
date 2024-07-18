@@ -34,7 +34,15 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
     }
 
     private fun setNoAdsViewState(viewState: NoAdsState) {
-        viewState.apply { }
+        skeletonView.hide()
+        binding.analyticsCardTitle.visibility = GONE
+        binding.analyticsItemsTitle.visibility = GONE
+        binding.analyticsItemsValue.visibility = GONE
+        binding.analyticsListLeftHeader.visibility = GONE
+        binding.analyticsListRightHeader.visibility = GONE
+        binding.analyticsItemsTag.visibility = View.GONE
+        binding.noDataText.visibility = VISIBLE
+        binding.noDataText.text = viewState.message
     }
 
     private fun setSkeleton() {
