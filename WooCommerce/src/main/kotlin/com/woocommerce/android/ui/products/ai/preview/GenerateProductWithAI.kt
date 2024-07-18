@@ -71,32 +71,7 @@ class GenerateProductWithAI @Inject constructor(
                 existingCategories = existingCategories,
                 existingTags = existingTags,
             )
-        }.onSuccess {
-            analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS)
-            analyticsTracker.track(
-                AnalyticsEvent.PRODUCT_CREATION_AI_GENERATED_NAME_DESCRIPTION_OPTIONS,
-                mapOf(
-                    "name" to it.names.size,
-                    "short_description" to it.shortDescriptions.size,
-                    "description" to it.descriptions.size
-                )
-            )
-        }.onFailure {
-            val errorType = when (it) {
-                is JetpackAICompletionsException -> it.errorType
-                is OnChangedException -> (it.error as? WCProductStore.ProductError)?.type?.name
-                is WooException -> it.error.type.name
-                else -> null
-            }
-            analyticsTracker.track(
-                AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_FAILED,
-                mapOf(
-                    AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                    AnalyticsTracker.KEY_ERROR_TYPE to errorType,
-                    AnalyticsTracker.KEY_ERROR_DESC to it.message
-                )
-            )
-        }
+        }.handleTracking()
     }
 
     private suspend fun getCategories(): Result<List<ProductCategory>> {
@@ -161,5 +136,32 @@ class GenerateProductWithAI @Inject constructor(
                     )
                 )
             }
+    }
+
+    private fun Result<AIProductModel>.handleTracking() = onSuccess {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS)
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATED_NAME_DESCRIPTION_OPTIONS,
+            mapOf(
+                "name" to it.names.size,
+                "short_description" to it.shortDescriptions.size,
+                "description" to it.descriptions.size
+            )
+        )
+    }.onFailure {
+        val errorType = when (it) {
+            is JetpackAICompletionsException -> it.errorType
+            is OnChangedException -> (it.error as? WCProductStore.ProductError)?.type?.name
+            is WooException -> it.error.type.name
+            else -> null
+        }
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                AnalyticsTracker.KEY_ERROR_TYPE to errorType,
+                AnalyticsTracker.KEY_ERROR_DESC to it.message
+            )
+        )
     }
 }
