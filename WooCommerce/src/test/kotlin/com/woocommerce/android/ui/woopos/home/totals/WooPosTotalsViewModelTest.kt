@@ -69,7 +69,6 @@ class WooPosTotalsViewModelTest {
         assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
     }
 
-
     @Test
     fun `given checkoutstarted, when vm created, then order creation is started`() = runTest {
         // GIVEN
@@ -126,7 +125,6 @@ class WooPosTotalsViewModelTest {
         )
         verify(totalsRepository).createOrderWithProducts(productIds)
     }
-
 
     @Test
     fun `given checkoutstarted and successfully created order, when vm created, then totals state correctly calculated`() =
