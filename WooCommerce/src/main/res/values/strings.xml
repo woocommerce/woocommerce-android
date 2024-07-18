@@ -2220,6 +2220,7 @@
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_variant_selector">Option %1$d of %2$d</string>
     <string name="product_creation_ai_preview_undo_edits">Undo edits</string>
+    <string name="product_creation_ai_preview_generate_again">Generate Again</string>
     <string name="product_creation_ai_select_previous_option">Select previous option</string>
     <string name="product_creation_ai_select_next_option">Select next option</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>

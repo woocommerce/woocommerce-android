@@ -7,6 +7,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
 import com.woocommerce.android.ui.products.ai.AIProductModel
@@ -20,7 +24,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -36,7 +39,8 @@ class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
     private val generateProductWithAI: GenerateProductWithAI,
-    private val uploadImage: UploadImage
+    private val uploadImage: UploadImage,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -44,6 +48,7 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
 
+    private val shouldShowFeedbackView = savedStateHandle.getStateFlow(viewModelScope, true)
     private val imageState = savedStateHandle.getStateFlow(viewModelScope, ImageState(navArgs.image))
     private val selectedVariant = savedStateHandle.getStateFlow(viewModelScope, 0)
     private val userEditedFields = savedStateHandle.getStateFlow(viewModelScope, UserEditedFields())
@@ -89,14 +94,16 @@ class AiProductPreviewViewModel @Inject constructor(
                     )
                 },
                 userEditedFields,
-                savingProductState
-            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState ->
+                savingProductState,
+                shouldShowFeedbackView
+            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState, shouldShowFeedbackView ->
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,
                     propertyGroups = propertyGroups,
                     imageState = imageState,
                     savingProductState = savingProductState,
+                    shouldShowFeedbackView = shouldShowFeedbackView,
                     userEditedName = editedFields.names[selectedVariant],
                     userEditedDescription = editedFields.descriptions[selectedVariant],
                     userEditedShortDescription = editedFields.shortDescriptions[selectedVariant]
@@ -110,9 +117,16 @@ class AiProductPreviewViewModel @Inject constructor(
         generatedProduct.value = generateProductWithAI(navArgs.productFeatures)
     }
 
-    @Suppress("UNUSED_PARAMETER")
     fun onFeedbackReceived(positive: Boolean) {
-        TODO()
+        analyticsTracker.track(
+            stat = AnalyticsEvent.PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SOURCE to "product_creation",
+                AnalyticsTracker.KEY_IS_USEFUL to positive
+            )
+        )
+
+        shouldShowFeedbackView.value = false
     }
 
     fun onBackButtonClick() {
@@ -205,6 +219,12 @@ class AiProductPreviewViewModel @Inject constructor(
     @Suppress("UNUSED_PARAMETER")
     private fun createProductDraft() {
         // TODO()
+    }
+
+    fun onGenerateAgainClicked() {
+        userEditedFields.value = UserEditedFields()
+        selectedVariant.value = 0
+        generateProduct()
     }
 
     sealed interface State {
