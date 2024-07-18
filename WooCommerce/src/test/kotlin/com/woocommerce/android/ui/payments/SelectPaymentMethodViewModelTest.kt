@@ -430,7 +430,14 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
             whenever(gatewayStore.getGateway(any(), any())).thenReturn(
                 WCGatewayModel(
-                    CASH_ON_DELIVERY_PAYMENT_TYPE, "", "", 0, true, CUSTOM_PAYMENT_METHOD_TITLE, "", listOf()
+                    CASH_ON_DELIVERY_PAYMENT_TYPE,
+                    "",
+                    "",
+                    0,
+                    true,
+                    CUSTOM_PAYMENT_METHOD_TITLE,
+                    "",
+                    listOf()
                 )
             )
             whenever(orderStore.updateOrderStatusAndPaymentMethod(any(), any(), any(), any(), any())).thenReturn(
