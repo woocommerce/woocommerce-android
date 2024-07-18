@@ -69,12 +69,12 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
-import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import kotlin.math.roundToInt
@@ -112,7 +112,7 @@ fun AiProductPromptScreen(
     onPromptUpdated: (String) -> Unit,
     onReadTextFromProductPhoto: () -> Unit,
     onGenerateProductClicked: () -> Unit,
-    onToneSelected: (Tone) -> Unit,
+    onToneSelected: (AiTone) -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
     onMediaLibraryRequested: (DataSource) -> Unit,
     onImageActionSelected: (ImageAction) -> Unit
@@ -214,8 +214,8 @@ fun AiProductPromptScreen(
 
 @Composable
 private fun ToneDropDown(
-    tone: Tone,
-    onToneSelected: (Tone) -> Unit,
+    tone: AiTone,
+    onToneSelected: (AiTone) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -251,7 +251,7 @@ private fun ToneDropDown(
                 modifier = Modifier
                     .defaultMinSize(minWidth = 250.dp)
             ) {
-                Tone.entries.forEach {
+                AiTone.entries.forEach {
                     DropdownMenuItem(
                         onClick = {
                             onToneSelected(it)
@@ -471,7 +471,7 @@ private fun AiProductPromptScreenPreview() {
     AiProductPromptScreen(
         uiState = AiProductPromptState(
             productPrompt = "Product prompt test",
-            selectedTone = Tone.Casual,
+            selectedTone = AiTone.Casual,
             isMediaPickerDialogVisible = false,
             selectedImage = null,
             isScanningImage = false,
@@ -500,7 +500,7 @@ private fun AiProductPromptScreenWithErrorPreview() {
     AiProductPromptScreen(
         uiState = AiProductPromptState(
             productPrompt = "Product prompt test",
-            selectedTone = Tone.Casual,
+            selectedTone = AiTone.Casual,
             isMediaPickerDialogVisible = false,
             selectedImage = null,
             isScanningImage = false,

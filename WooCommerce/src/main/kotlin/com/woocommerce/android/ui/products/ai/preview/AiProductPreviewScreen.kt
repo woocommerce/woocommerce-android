@@ -28,6 +28,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -48,6 +49,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -288,7 +290,8 @@ private fun ProductPreviewContent(
 
         WCOutlinedButton(
             onClick = onGenerateAgainClick,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
             Text(text = stringResource(id = R.string.product_creation_ai_preview_generate_again))
@@ -323,6 +326,9 @@ private fun ProductTextField(
         BasicTextField(
             value = state.value,
             onValueChange = onValueChange,
+            textStyle = TextStyle.Default.copy(
+                color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
