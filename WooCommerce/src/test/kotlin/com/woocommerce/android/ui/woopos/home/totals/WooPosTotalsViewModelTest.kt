@@ -44,7 +44,10 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
         val mockLogRule: TestRule = object : TestRule {
             private lateinit var mockedLog: MockedStatic<Log>
 
-            override fun apply(base: org.junit.runners.model.Statement, description: org.junit.runner.Description): org.junit.runners.model.Statement {
+            override fun apply(
+                base: org.junit.runners.model.Statement,
+                description: org.junit.runner.Description
+            ): org.junit.runners.model.Statement {
                 return object : org.junit.runners.model.Statement() {
                     override fun evaluate() {
                         mockedLog = Mockito.mockStatic(Log::class.java)
