@@ -75,6 +75,7 @@ import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import kotlin.math.roundToInt
@@ -337,7 +338,7 @@ private fun ProductPromptTextField(
                     modifier = Modifier
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
-                            if (isFocused) {
+                            if (isFocused && FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()) {
                                 coroutineScope.launch { scrollState.animateScrollTo(scrollToPosition.roundToInt()) }
                             }
                         }
@@ -369,7 +370,10 @@ private fun ProductPromptTextField(
                 }
             }
         }
-        AnimatedVisibility(isFocused || state.productPrompt.isNotEmpty()) {
+        AnimatedVisibility(
+            (isFocused || state.productPrompt.isNotEmpty()) &&
+                FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()
+        ) {
             PromptSuggestions(
                 promptSuggestionBarState = state.promptSuggestionBarState,
                 modifier = Modifier.padding(top = 16.dp)

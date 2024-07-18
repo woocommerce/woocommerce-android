@@ -18,6 +18,7 @@ enum class FeatureFlag {
     GOOGLE_ADS_M1,
     GOOGLE_ADS_ANALYTICS_HUB_M1,
     PRODUCT_CREATION_WITH_AI_V2,
+    PRODUCT_CREATION_WITH_AI_V2_M3,
     SHOW_INBOX_CTA,
     BACKGROUND_TASKS;
 
@@ -33,7 +34,8 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             GOOGLE_ADS_M1,
             BACKGROUND_TASKS,
-            GOOGLE_ADS_ANALYTICS_HUB_M1 -> PackageUtils.isDebugBuild()
+            GOOGLE_ADS_ANALYTICS_HUB_M1,
+            PRODUCT_CREATION_WITH_AI_V2_M3 -> PackageUtils.isDebugBuild()
 
             PRODUCT_CREATION_WITH_AI_V2,
             CONNECTIVITY_TOOL,
