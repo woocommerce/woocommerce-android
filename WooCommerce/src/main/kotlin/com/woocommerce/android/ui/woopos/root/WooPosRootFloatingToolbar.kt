@@ -52,7 +52,7 @@ import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.Menu.MenuIte
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
 
 @Composable
-fun WooPosBottomToolbar(
+fun WooPosFloatingToolbar(
     modifier: Modifier = Modifier,
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit,
@@ -72,21 +72,29 @@ fun WooPosBottomToolbar(
         ConstraintLayout(modifier = modifier) {
             val (toolbar, popupMenu) = createRefs()
 
-            Toolbar(
-                modifier = Modifier.constrainAs(toolbar) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                },
-                cardReaderStatus = cardReaderStatus,
-                menuCardDisabled = menu is WooPosRootScreenState.Menu.Visible,
-                onUIEvent = onUIEvent
-            )
-
             when (menu) {
                 is WooPosRootScreenState.Menu.Hidden -> {
-                    // show nothing
+                    Toolbar(
+                        modifier = Modifier.constrainAs(toolbar) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                        },
+                        cardReaderStatus = cardReaderStatus,
+                        menuCardDisabled = false,
+                        onUIEvent = onUIEvent
+                    )
                 }
                 is WooPosRootScreenState.Menu.Visible -> {
+                    Toolbar(
+                        modifier = Modifier.constrainAs(toolbar) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                        },
+                        cardReaderStatus = cardReaderStatus,
+                        menuCardDisabled = true,
+                        onUIEvent = onUIEvent
+                    )
+
                     val marginBetweenCards = 8.dp.toAdaptivePadding()
                     PopUpMenu(
                         modifier = Modifier.constrainAs(popupMenu) {
@@ -140,7 +148,7 @@ private fun Toolbar(
             state = cardReaderStatus,
         ) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
 
-        MenuButton(
+        MenuButtonWithPopUpMenu(
             modifier = Modifier
                 .constrainAs(menuCard) {
                     start.linkTo(parent.start)
@@ -154,7 +162,7 @@ private fun Toolbar(
 }
 
 @Composable
-private fun MenuButton(
+private fun MenuButtonWithPopUpMenu(
     modifier: Modifier,
     menuCardDisabled: Boolean,
     onClick: () -> Unit
@@ -328,7 +336,7 @@ private fun Circle(
 
 @WooPosPreview
 @Composable
-fun PreviewWooPosBottomToolbarStatusNotConnected() {
+fun PreviewWooPosFloatingToolbarStatusNotConnected() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
@@ -343,7 +351,7 @@ fun PreviewWooPosBottomToolbarStatusNotConnected() {
 
 @WooPosPreview
 @Composable
-fun PreviewWooPosBottomToolbarStatusConnectedWithMenu() {
+fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
@@ -376,7 +384,7 @@ private fun Preview(state: MutableState<WooPosRootScreenState>) {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomStart
         ) {
-            WooPosBottomToolbar(
+            WooPosFloatingToolbar(
                 modifier = Modifier
                     .padding(24.dp.toAdaptivePadding())
                     .align(Alignment.BottomStart),
