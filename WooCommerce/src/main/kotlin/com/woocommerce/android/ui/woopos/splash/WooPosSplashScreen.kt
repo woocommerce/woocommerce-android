@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.splash
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -14,6 +15,11 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val viewModel: WooPosHomeViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState()
+
+    BackHandler {
+        onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
+    }
+
     when (state.value) {
         is WooPosSplashState.Loading -> Loading()
         is WooPosSplashState.Loaded -> onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
