@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
@@ -38,6 +41,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val googleAdsStore: WCGoogleStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val distantPastDate: String = dateFormatter.format(LocalDateTime.of(1970, 1, 1, 0, 0))
@@ -59,6 +63,14 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
             hasGoogleAdsCampaigns().fold(
                 onSuccess = { hasCampaigns ->
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                                to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+                        )
+                    )
+
                     emit(
                         if (hasCampaigns) {
                             googleAdsStore.fetchImpressionsAndClicks(
