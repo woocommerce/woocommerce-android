@@ -7,6 +7,7 @@ import com.woocommerce.android.model.GoogleAdsCampaign
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsStat
+import com.woocommerce.android.model.GoogleAdsTotals
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -478,11 +479,26 @@ class AnalyticsRepository @Inject constructor(
         }
 
         currentGoogleAdsStatsCall.await()
-            .model?.campaigns?.let { campaigns ->
+            .model?.let { response ->
                 GoogleAdsResult.GoogleAdsData(
                     GoogleAdsStat(
-                        googleAdsCampaigns = campaigns.map {
-                            GoogleAdsCampaign(it.id ?: 0L)
+                        googleAdsCampaigns = response.campaigns?.map {
+                            GoogleAdsCampaign(
+                                id = it.id ?: 0L,
+                                name = it.name,
+                                subtotal = it.subtotal.let { subtotal ->
+                                    GoogleAdsTotals(
+                                        sales = subtotal.sales,
+                                        spend = subtotal.spend
+                                    )
+                                }
+                            )
+                        } ?: emptyList(),
+                        totals = response.totals.let {
+                            GoogleAdsTotals(
+                                sales = it?.sales ?: 0.0,
+                                spend = it?.spend ?: 0.0
+                            )
                         }
                     )
                 )
