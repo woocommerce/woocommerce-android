@@ -73,6 +73,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
+import com.woocommerce.android.model.GoogleAdsStat
 
 @HiltViewModel
 @SuppressWarnings("LargeClass")
@@ -459,7 +460,7 @@ class AnalyticsHubViewModel @Inject constructor(
         googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
             when (state) {
                 is GoogleAdsState.Available -> {
-                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState())
+                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
                 }
 
                 is GoogleAdsState.Error -> {
@@ -682,9 +683,11 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
-    private fun buildGoogleAdsDataViewState() =
+    private fun buildGoogleAdsDataViewState(googleAdsStats: GoogleAdsStat) =
         AnalyticsHubCustomSelectionListViewState.DataViewState(
-            card = AnalyticsCards.GoogleAds
+            card = AnalyticsCards.GoogleAds,
+            campaigns = googleAdsStats.googleAdsCampaigns,
+            totals = googleAdsStats.totals
         )
 
     private fun trackSelectedDateRange() {
