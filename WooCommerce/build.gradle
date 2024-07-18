@@ -220,6 +220,35 @@ android {
     }
 }
 
+task mergeJUnitReports {
+    doLast {
+        File reportsDir = file("${buildDir}/test-results/testJalapenoDebugUnitTest")
+        File outputFile = file("${buildDir}/test-results/merged-test-results.xml")
+
+        String mergedXmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites>\n'
+
+        reportsDir.listFiles(new FilenameFilter() {
+            @Override
+            boolean accept(File dir, String name) {
+                return name.endsWith(".xml")
+            }
+        }).each { File report ->
+            def reportContent = report.text
+            def matcher = (reportContent =~ /(?s)<testsuite.*?<\/testsuite>/)
+            while (matcher.find()) {
+                mergedXmlContent += matcher.group() + "\n"
+            }
+        }
+
+        mergedXmlContent += '</testsuites>'
+
+        outputFile.withPrintWriter { out ->
+            out.println(mergedXmlContent)
+        }
+        println "Merged XML reports into ${outputFile}"
+    }
+}
+
 dependencies {
     implementation("org.wordpress:libaddressinput.common:$libaddressinputVersion") {
         exclude group: "org.json", module: "json"
