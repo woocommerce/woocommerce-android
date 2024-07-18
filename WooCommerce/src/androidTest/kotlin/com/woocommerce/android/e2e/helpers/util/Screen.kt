@@ -170,6 +170,10 @@ open class Screen {
 
     fun clickOn(elementID: Int) {
         waitForElementToBeDisplayed(elementID)
+        onView(withId(elementID))
+            .check(matches(isDisplayed()))
+            .check(matches(isEnabled())) // check that element is clickable
+
         clickOn(onView(withId(elementID)))
         idleFor(500) // allow for transitions
     }
