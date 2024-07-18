@@ -57,6 +57,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.autoMirror
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AIProductModel
@@ -81,7 +82,8 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
             onSelectNextVariant = viewModel::onSelectNextVariant,
             onSelectPreviousVariant = viewModel::onSelectPreviousVariant,
             onSaveProductAsDraft = viewModel::onSaveProductAsDraft,
-            onPublishProduct = viewModel::onPublishProduct
+            onPublishProduct = viewModel::onPublishProduct,
+            onGenerateAgainClick = viewModel::onGenerateAgainClicked
         )
     }
 }
@@ -99,7 +101,8 @@ private fun AiProductPreviewScreen(
     onSelectNextVariant: () -> Unit,
     onSelectPreviousVariant: () -> Unit,
     onSaveProductAsDraft: () -> Unit,
-    onPublishProduct: () -> Unit
+    onPublishProduct: () -> Unit,
+    onGenerateAgainClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -173,6 +176,7 @@ private fun AiProductPreviewScreen(
                     onFullScreenImageDismissed = onFullScreenImageDismissed,
                     onSelectNextVariant = onSelectNextVariant,
                     onSelectPreviousVariant = onSelectPreviousVariant,
+                    onGenerateAgainClick = onGenerateAgainClick,
                     modifier = Modifier.fillMaxHeight()
                 )
             }
@@ -199,6 +203,7 @@ private fun ProductPreviewContent(
     onFullScreenImageDismissed: () -> Unit,
     onSelectNextVariant: () -> Unit,
     onSelectPreviousVariant: () -> Unit,
+    onGenerateAgainClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -282,11 +287,19 @@ private fun ProductPreviewContent(
             exit = fadeOut(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = dimensionResource(id = R.dimen.major_100))
+                .padding(top = 16.dp)
         ) {
             AiFeedbackForm(
                 onFeedbackReceived = onFeedbackReceived,
             )
+        }
+
+        WCOutlinedButton(
+            onClick = onGenerateAgainClick,
+            modifier = Modifier.fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            Text(text = stringResource(id = R.string.product_creation_ai_preview_generate_again))
         }
     }
     if (state.savingProductState is AiProductPreviewViewModel.SavingProductState.Error) {
@@ -594,7 +607,8 @@ private fun ProductPreviewLoadingPreview() {
             onSelectNextVariant = {},
             onSelectPreviousVariant = {},
             onSaveProductAsDraft = {},
-            onPublishProduct = {}
+            onPublishProduct = {},
+            onGenerateAgainClick = {}
         )
     }
 }
@@ -650,7 +664,8 @@ private fun ProductPreviewContentPreview() {
             onSelectNextVariant = {},
             onSelectPreviousVariant = {},
             onSaveProductAsDraft = {},
-            onPublishProduct = {}
+            onPublishProduct = {},
+            onGenerateAgainClick = {}
         )
     }
 }

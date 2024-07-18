@@ -8,7 +8,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
 import com.woocommerce.android.ui.products.ai.AIProductModel
@@ -23,7 +25,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -40,7 +41,7 @@ class AiProductPreviewViewModel @Inject constructor(
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
     private val generateProductWithAI: GenerateProductWithAI,
     private val uploadImage: UploadImage,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     private val saveAiGeneratedProduct: SaveAiGeneratedProduct
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -49,6 +50,7 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
 
+    private val shouldShowFeedbackView = savedStateHandle.getStateFlow(viewModelScope, true)
     private val imageState = savedStateHandle.getStateFlow(viewModelScope, ImageState(navArgs.image))
     private val selectedVariant = savedStateHandle.getStateFlow(viewModelScope, 0)
     private val userEditedFields = savedStateHandle.getStateFlow(viewModelScope, UserEditedFields())
@@ -94,14 +96,16 @@ class AiProductPreviewViewModel @Inject constructor(
                     )
                 },
                 userEditedFields,
-                savingProductState
-            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState ->
+                savingProductState,
+                shouldShowFeedbackView
+            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState, shouldShowFeedbackView ->
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,
                     propertyGroups = propertyGroups,
                     imageState = imageState,
                     savingProductState = savingProductState,
+                    shouldShowFeedbackView = shouldShowFeedbackView,
                     userEditedName = editedFields.names[selectedVariant],
                     userEditedDescription = editedFields.descriptions[selectedVariant],
                     userEditedShortDescription = editedFields.shortDescriptions[selectedVariant]
@@ -115,9 +119,16 @@ class AiProductPreviewViewModel @Inject constructor(
         generatedProduct.value = generateProductWithAI(navArgs.productFeatures)
     }
 
-    @Suppress("UNUSED_PARAMETER")
     fun onFeedbackReceived(positive: Boolean) {
-        TODO()
+        analyticsTracker.track(
+            stat = AnalyticsEvent.PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SOURCE to "product_creation",
+                AnalyticsTracker.KEY_IS_USEFUL to positive
+            )
+        )
+
+        shouldShowFeedbackView.value = false
     }
 
     fun onBackButtonClick() {
@@ -214,9 +225,9 @@ class AiProductPreviewViewModel @Inject constructor(
                     },
                     onDismissClick = { savingProductState.value = SavingProductState.Idle }
                 )
-                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
+                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
             } else {
-                analyticsTrackerWrapper.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
+                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
                 triggerEvent(NavigateToProductDetailScreen(productId))
                 savingProductState.value = SavingProductState.Success
             }
@@ -243,6 +254,12 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
+
+    fun onGenerateAgainClicked() {
+        userEditedFields.value = UserEditedFields()
+        selectedVariant.value = 0
+        generateProduct()
+    }
 
     sealed interface State {
         data object Loading : State

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -84,13 +85,23 @@ private fun WooPosProductsScreen(
 ) {
     val state = productsStateFlow.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
-    Box(modifier = modifier.fillMaxSize().pullRefresh(pullToRefreshState)) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .pullRefresh(pullToRefreshState)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 40.dp,
+                bottom = 0.dp
+            )
+    ) {
         Column(
             modifier.fillMaxHeight()
         ) {
             Text(
                 text = stringResource(id = R.string.woopos_products_screen_title),
-                style = MaterialTheme.typography.h3,
+                style = MaterialTheme.typography.h4,
                 fontWeight = FontWeight.Bold
             )
 
@@ -275,7 +286,9 @@ private fun ProductItem(
 @Composable
 fun ProductsEmptyList() {
     Box(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
         Text(
