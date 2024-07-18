@@ -28,7 +28,6 @@ class WooPosRootViewModelTest : BaseUnitTest() {
         onBlocking { readerStatus }.thenReturn(flowOf(NotConnected()))
     }
 
-
     @Test
     fun `given reader disconnected, when status button clicked, then should connect`() = testBlocking {
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))

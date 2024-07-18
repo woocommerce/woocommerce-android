@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ConnectToAReader
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ExitConfirmationDialogDismissed
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.MenuItemClicked
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.OnBackFromHomeClicked
-import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.OnSuccessfulPayment
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.OnToolbarMenuClicked
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,7 +67,6 @@ class WooPosRootViewModel @Inject constructor(
                 exitConfirmationDialog = WooPosRootScreenState.WooPosExitConfirmationDialog
             )
 
-            is OnSuccessfulPayment -> TODO()
             is MenuItemClicked -> handleMenuItemClicked(event)
 
             is WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked -> {

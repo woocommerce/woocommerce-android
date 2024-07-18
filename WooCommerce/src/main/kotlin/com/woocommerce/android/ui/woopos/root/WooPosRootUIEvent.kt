@@ -6,6 +6,5 @@ sealed class WooPosRootUIEvent {
     data object ConnectToAReaderClicked : WooPosRootUIEvent()
     data object ExitConfirmationDialogDismissed : WooPosRootUIEvent()
     data object OnBackFromHomeClicked : WooPosRootUIEvent()
-    data class OnSuccessfulPayment(val orderId: Long) : WooPosRootUIEvent()
     data class MenuItemClicked(val menuItem: WooPosRootScreenState.Menu.MenuItem) : WooPosRootUIEvent()
 }
