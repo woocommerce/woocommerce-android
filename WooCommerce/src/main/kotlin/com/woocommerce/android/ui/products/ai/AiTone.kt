@@ -11,6 +11,6 @@ enum class AiTone(@StringRes val displayName: Int, val slug: String) {
 
     companion object {
         fun fromString(source: String): AiTone =
-            AiTone.values().firstOrNull { it.slug == source } ?: Casual
+            AiTone.entries.firstOrNull { it.slug == source } ?: Casual
     }
 }
