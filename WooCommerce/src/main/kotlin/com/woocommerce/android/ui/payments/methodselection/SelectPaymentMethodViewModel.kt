@@ -413,7 +413,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private suspend fun updateOrderStatus(statusKey: String): Flow<WCOrderStore.UpdateOrderResult> =
         updateOrderStatusAndPaymentMethod(statusKey = statusKey, paymentMethod = null, paymentMethodTitle = null)
 
-
     private suspend fun updateOrderStatusAndPaymentMethod(
         statusKey: String,
         paymentMethod: String?,
