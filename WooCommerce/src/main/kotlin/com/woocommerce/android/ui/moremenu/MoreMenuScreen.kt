@@ -63,8 +63,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @Composable
 fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
@@ -292,9 +292,50 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
 
         Column {
             section.items.forEach { item ->
-                MoreMenuButton(item)
+                when (item.state) {
+                    MoreMenuItemButton.State.Loading -> MoreMenuLoading()
+                    MoreMenuItemButton.State.Visible -> MoreMenuButton(item)
+                    MoreMenuItemButton.State.Hidden -> Unit
+                }
                 Spacer(modifier = Modifier.height(8.dp))
             }
+        }
+    }
+}
+
+@Composable
+fun MoreMenuLoading() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = colorResource(id = R.color.more_menu_button_background),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+            )
+            .padding(all = 12.dp)
+    ) {
+        SkeletonView(
+            modifier = Modifier
+                .clip(CircleShape),
+            height = 40.dp,
+            width = 40.dp
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column {
+            SkeletonView(
+                modifier = Modifier
+                    .height(16.dp)
+                    .width(120.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            SkeletonView(
+                modifier = Modifier
+                    .height(14.dp)
+                    .width(200.dp)
+            )
         }
     }
 }
@@ -480,6 +521,19 @@ private fun MoreMenuPreview() {
                             title = R.string.more_menu_button_coupons,
                             description = R.string.more_menu_button_coupons_description,
                             icon = R.drawable.ic_more_menu_coupons,
+                        ),
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_reviews,
+                            description = R.string.more_menu_button_reviews_description,
+                            icon = R.drawable.ic_more_menu_reviews,
+                            badgeState = BadgeState(
+                                badgeSize = R.dimen.major_150,
+                                backgroundColor = R.color.color_primary,
+                                textColor = R.color.color_on_primary,
+                                textState = TextState("3", R.dimen.text_minor_80),
+                                animateAppearance = false
+                            ),
+                            state = MoreMenuItemButton.State.Loading
                         ),
                     ),
                 )

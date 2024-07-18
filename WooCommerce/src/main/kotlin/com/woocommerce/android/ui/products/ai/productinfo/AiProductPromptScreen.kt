@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.products.ai.productinfo
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,13 +23,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -36,8 +40,10 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +51,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -56,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -64,8 +73,12 @@ import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
+import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.Tone
+import com.woocommerce.android.util.FeatureFlag
+import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
+import kotlin.math.roundToInt
 
 @Composable
 fun AiProductPromptScreen(viewModel: AiProductPromptViewModel) {
@@ -106,9 +119,12 @@ fun AiProductPromptScreen(
     onImageActionSelected: (ImageAction) -> Unit
 ) {
     val orientation = LocalConfiguration.current.orientation
+    val scrollState = rememberScrollState()
 
     @Composable
-    fun GenerateProductButton(modifier: Modifier = Modifier) {
+    fun GenerateProductButton(
+        modifier: Modifier = Modifier
+    ) {
         WCColoredButton(
             enabled = uiState.productPrompt.isNotEmpty(),
             onClick = onGenerateProductClicked,
@@ -131,13 +147,13 @@ fun AiProductPromptScreen(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(padding)
-                .padding(16.dp)
                 .fillMaxSize()
         ) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(scrollState)
             ) {
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
@@ -160,7 +176,8 @@ fun AiProductPromptScreen(
                     state = uiState,
                     onPromptUpdated = onPromptUpdated,
                     onReadTextFromProductPhoto = onReadTextFromProductPhoto,
-                    onImageActionSelected = onImageActionSelected
+                    onImageActionSelected = onImageActionSelected,
+                    scrollState = scrollState,
                 )
 
                 if (uiState.noTextDetectedMessage) {
@@ -168,23 +185,23 @@ fun AiProductPromptScreen(
                         stringResource(id = R.string.product_creation_package_photo_no_text_detected)
                     )
                 }
-
                 ToneDropDown(
                     tone = uiState.selectedTone,
-                    onToneSelected = onToneSelected
+                    onToneSelected = onToneSelected,
+                    modifier = Modifier.padding(bottom = 56.dp)
                 )
-
-                Spacer(modifier = Modifier.weight(1f))
 
                 // Button will scroll with the rest of UI on landscape mode, or... (see below)
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    GenerateProductButton(Modifier.padding(top = 16.dp))
+                    Divider()
+                    GenerateProductButton(Modifier.padding(16.dp))
                 }
             }
 
             // Button will stick to the bottom on portrait mode
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                GenerateProductButton()
+                Divider()
+                GenerateProductButton(modifier = Modifier.padding(16.dp))
             }
         }
     }
@@ -209,7 +226,6 @@ private fun ToneDropDown(
         Text(
             text = stringResource(id = R.string.product_creation_ai_tone_title),
             style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
@@ -270,10 +286,18 @@ private fun ProductPromptTextField(
     state: AiProductPromptState,
     onPromptUpdated: (String) -> Unit,
     onReadTextFromProductPhoto: () -> Unit,
-    onImageActionSelected: (ImageAction) -> Unit
+    onImageActionSelected: (ImageAction) -> Unit,
+    scrollState: ScrollState
 ) {
+    val coroutineScope = rememberCoroutineScope()
     var isFocused by remember { mutableStateOf(false) }
-    Column {
+    var scrollToPosition by remember { mutableFloatStateOf(0F) }
+
+    Column(
+        modifier = Modifier.onGloballyPositioned {
+            scrollToPosition = it.positionInParent().y
+        }
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -312,7 +336,12 @@ private fun ProductPromptTextField(
                         unfocusedBorderColor = Color.Transparent
                     ),
                     modifier = Modifier
-                        .onFocusChanged { focusState -> isFocused = focusState.isFocused }
+                        .onFocusChanged { focusState ->
+                            isFocused = focusState.isFocused
+                            if (isFocused && FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()) {
+                                coroutineScope.launch { scrollState.animateScrollTo(scrollToPosition.roundToInt()) }
+                            }
+                        }
                 )
             }
 
@@ -323,7 +352,9 @@ private fun ProductPromptTextField(
                 state.selectedImage != null -> SelectedImageSection(
                     image = state.selectedImage,
                     onImageActionSelected = onImageActionSelected,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = colorResource(id = R.color.ai_generated_text_background))
                 )
 
                 else -> {
@@ -339,6 +370,49 @@ private fun ProductPromptTextField(
                 }
             }
         }
+        AnimatedVisibility(
+            (isFocused || state.productPrompt.isNotEmpty()) &&
+                FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()
+        ) {
+            PromptSuggestions(
+                promptSuggestionBarState = state.promptSuggestionBarState,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun PromptSuggestions(
+    promptSuggestionBarState: PromptSuggestionBar,
+    modifier: Modifier = Modifier
+) {
+    val animatedProgress = animateFloatAsState(
+        targetValue = promptSuggestionBarState.progress,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = ""
+    ).value
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .background(colorResource(id = R.color.ai_generated_text_background))
+            .padding(16.dp)
+    ) {
+        LinearProgressIndicator(
+            progress = animatedProgress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))),
+            color = colorResource(id = promptSuggestionBarState.progressBarColorRes)
+        )
+        Text(
+            text = annotatedStringRes(promptSuggestionBarState.messageRes),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 8.dp),
+        )
     }
 }
 
@@ -406,7 +480,12 @@ private fun AiProductPromptScreenPreview() {
             selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false,
-            noTextDetectedMessage = false
+            noTextDetectedMessage = false,
+            promptSuggestionBarState = PromptSuggestionBar(
+                progressBarColorRes = R.color.linear_progress_background_gray,
+                messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
+                progress = 0.1f
+            ),
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
@@ -430,7 +509,12 @@ private fun AiProductPromptScreenWithErrorPreview() {
             selectedImage = null,
             isScanningImage = false,
             showImageFullScreen = false,
-            noTextDetectedMessage = true
+            noTextDetectedMessage = true,
+            promptSuggestionBarState = PromptSuggestionBar(
+                progressBarColorRes = R.color.linear_progress_background_gray,
+                messageRes = R.string.ai_product_creation_prompt_suggestion_initial,
+                progress = 0.1f
+            ),
         ),
         onBackButtonClick = {},
         onPromptUpdated = {},
