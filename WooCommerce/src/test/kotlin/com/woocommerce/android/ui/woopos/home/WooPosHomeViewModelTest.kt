@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -20,11 +19,9 @@ import kotlin.test.assertFalse
 @RunWith(MockitoJUnitRunner::class)
 class WooPosHomeViewModelTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
-
     @Rule
     @JvmField
-    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()

@@ -14,7 +14,6 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -30,15 +29,13 @@ import kotlin.test.Test
 @RunWith(MockitoJUnitRunner::class)
 class WooPosCartViewModelTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
-
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
 
     @Rule
     @JvmField
-    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {

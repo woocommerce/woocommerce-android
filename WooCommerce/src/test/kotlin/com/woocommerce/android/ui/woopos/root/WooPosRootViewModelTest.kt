@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -30,11 +29,9 @@ import kotlin.test.assertNotEquals
 @RunWith(MockitoJUnitRunner::class)
 class WooPosRootViewModelTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
-
     @Rule
     @JvmField
-    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private lateinit var cardReaderFacade: WooPosCardReaderFacade
 

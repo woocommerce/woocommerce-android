@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -28,15 +27,13 @@ import kotlin.test.Test
 @RunWith(MockitoJUnitRunner.Silent::class)
 class WooPosTotalsViewModelTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
-
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
 
     @Rule
     @JvmField
-    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private fun createMockSavedStateHandle(): SavedStateHandle {
         return SavedStateHandle(

@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -25,11 +24,9 @@ import kotlin.test.Test
 @RunWith(MockitoJUnitRunner::class)
 class WooPosProductsViewModelTest {
 
-    private val testDispatcher = UnconfinedTestDispatcher()
-
     @Rule
     @JvmField
-    val coroutinesTestRule = WooPosCoroutineTestRule(testDispatcher)
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
