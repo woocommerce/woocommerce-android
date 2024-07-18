@@ -193,10 +193,6 @@ class AiProductPreviewViewModel @Inject constructor(
 
     fun onSaveProductAsDraft() {
         analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
-        addAiGeneratedProduct(publishProduct = false)
-    }
-
-    private fun addAiGeneratedProduct(publishProduct: Boolean) {
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         savingProductState.value = SavingProductState.Loading
         viewModelScope.launch {
@@ -208,15 +204,12 @@ class AiProductPreviewViewModel @Inject constructor(
                     description = editedFields.descriptions[selectedVariant.value] ?: product.description,
                     shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
                 ),
-                publishProduct,
                 imageState.value.getImage()
             )
             if (!success) {
                 savingProductState.value = SavingProductState.Error(
                     messageRes = R.string.error_generic,
-                    onRetryClick = when {
-                        else -> ::onSaveProductAsDraft
-                    },
+                    onRetryClick = ::onSaveProductAsDraft,
                     onDismissClick = { savingProductState.value = SavingProductState.Idle }
                 )
                 analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
