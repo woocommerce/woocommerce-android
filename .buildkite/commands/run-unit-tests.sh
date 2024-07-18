@@ -15,19 +15,13 @@ fi
 
 
 echo "--- 🚦 Report Tests Status"
-path_pattern="*/build/test-results/*/*.xml"
-results_files=()
-while IFS= read -r -d '' file; do
-  results_files+=("$file")
-done < <(find . -path "$path_pattern" -type f -name "*.xml" -print0)
+results_file="*/build/test-results/merged-test-results.xml"
 
-for file in "${results_files[@]}"; do
-  if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
-    annotate_test_failures "$file" --slack "build-and-ship"
-  else
-    annotate_test_failures "$file"
-  fi
-done
+if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
+    annotate_test_failures "$results_file" --slack "build-and-ship"
+else
+    annotate_test_failures "$results_file"
+fi
 
 echo "--- ⚒️ Generating and uploading code coverage"
 ./gradlew jacocoTestReport
