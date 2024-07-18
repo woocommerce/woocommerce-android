@@ -189,7 +189,7 @@ class AiProductPreviewViewModel @Inject constructor(
         addAiGeneratedProduct(publishProduct = true)
     }
 
-    private suspend fun AiProductPreviewViewModel.uploadSelectedImage() {
+    private suspend fun uploadSelectedImage() {
         imageState.value.image
             ?.let { uploadImage(it) }
             ?.fold(
