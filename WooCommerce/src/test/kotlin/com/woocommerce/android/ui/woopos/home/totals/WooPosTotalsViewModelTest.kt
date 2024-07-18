@@ -70,7 +70,6 @@ class WooPosTotalsViewModelTest {
     }
 
 
-
     @Test
     fun `given checkoutstarted, when vm created, then order creation is started`() = runTest {
         // GIVEN
@@ -118,10 +117,15 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Totals(orderSubtotalText ="$3.00", orderTaxText="$2.00", orderTotalText="$5.00"))
+        assertThat(viewModel.state.value).isEqualTo(
+            WooPosTotalsState.Totals(
+                orderSubtotalText = "$3.00",
+                orderTaxText = "$2.00",
+                orderTotalText = "$5.00"
+            )
+        )
         verify(totalsRepository).createOrderWithProducts(productIds)
     }
-
 
 
     @Test
