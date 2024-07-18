@@ -675,6 +675,8 @@ class AnalyticsTracker private constructor(
         const val KEY_GOOGLEADS_HAS_CAMPAIGNS = "has_campaigns"
         const val VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE = "my_store"
         const val VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU = "more_menu"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION = "creation"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_DASHBOARD = "dashboard"
 
         var sendUsageStats: Boolean = true
             set(value) {
