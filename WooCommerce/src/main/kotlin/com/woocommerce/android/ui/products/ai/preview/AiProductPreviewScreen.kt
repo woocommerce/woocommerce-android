@@ -82,7 +82,6 @@ fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
             onSelectNextVariant = viewModel::onSelectNextVariant,
             onSelectPreviousVariant = viewModel::onSelectPreviousVariant,
             onSaveProductAsDraft = viewModel::onSaveProductAsDraft,
-            onPublishProduct = viewModel::onPublishProduct,
             onGenerateAgainClick = viewModel::onGenerateAgainClicked
         )
     }
@@ -101,7 +100,6 @@ private fun AiProductPreviewScreen(
     onSelectNextVariant: () -> Unit,
     onSelectPreviousVariant: () -> Unit,
     onSaveProductAsDraft: () -> Unit,
-    onPublishProduct: () -> Unit,
     onGenerateAgainClick: () -> Unit
 ) {
     Scaffold(
@@ -128,12 +126,6 @@ private fun AiProductPreviewScreen(
                                 onClick = onSaveProductAsDraft
                             ) {
                                 Text(text = stringResource(id = R.string.product_detail_save_as_draft))
-                            }
-                            WCTextButton(
-                                enabled = state is AiProductPreviewViewModel.State.Success,
-                                onClick = onPublishProduct
-                            ) {
-                                Text(text = stringResource(id = R.string.product_detail_publish))
                             }
                         }
                     }
@@ -607,7 +599,6 @@ private fun ProductPreviewLoadingPreview() {
             onSelectNextVariant = {},
             onSelectPreviousVariant = {},
             onSaveProductAsDraft = {},
-            onPublishProduct = {},
             onGenerateAgainClick = {}
         )
     }
@@ -664,7 +655,6 @@ private fun ProductPreviewContentPreview() {
             onSelectNextVariant = {},
             onSelectPreviousVariant = {},
             onSaveProductAsDraft = {},
-            onPublishProduct = {},
             onGenerateAgainClick = {}
         )
     }

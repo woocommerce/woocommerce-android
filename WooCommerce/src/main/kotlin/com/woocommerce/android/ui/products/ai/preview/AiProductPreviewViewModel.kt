@@ -191,16 +191,14 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onGenerateAgainClicked() {
+        userEditedFields.value = UserEditedFields()
+        selectedVariant.value = 0
+        generateProduct()
+    }
+
     fun onSaveProductAsDraft() {
         analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
-        addAiGeneratedProduct(publishProduct = false)
-    }
-
-    fun onPublishProduct() {
-        addAiGeneratedProduct(publishProduct = true)
-    }
-
-    private fun addAiGeneratedProduct(publishProduct: Boolean) {
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         savingProductState.value = SavingProductState.Loading
         viewModelScope.launch {
@@ -212,16 +210,12 @@ class AiProductPreviewViewModel @Inject constructor(
                     description = editedFields.descriptions[selectedVariant.value] ?: product.description,
                     shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
                 ),
-                publishProduct,
                 imageState.value.getImage()
             )
             if (!success) {
                 savingProductState.value = SavingProductState.Error(
                     messageRes = R.string.error_generic,
-                    onRetryClick = when {
-                        publishProduct -> ::onPublishProduct
-                        else -> ::onSaveProductAsDraft
-                    },
+                    onRetryClick = ::onSaveProductAsDraft,
                     onDismissClick = { savingProductState.value = SavingProductState.Idle }
                 )
                 analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
@@ -253,12 +247,6 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
-
-    fun onGenerateAgainClicked() {
-        userEditedFields.value = UserEditedFields()
-        selectedVariant.value = 0
-        generateProduct()
-    }
 
     sealed interface State {
         data object Loading : State
