@@ -196,10 +196,6 @@ class AiProductPreviewViewModel @Inject constructor(
         addAiGeneratedProduct(publishProduct = false)
     }
 
-    fun onPublishProduct() {
-        addAiGeneratedProduct(publishProduct = true)
-    }
-
     private fun addAiGeneratedProduct(publishProduct: Boolean) {
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         savingProductState.value = SavingProductState.Loading
@@ -219,7 +215,6 @@ class AiProductPreviewViewModel @Inject constructor(
                 savingProductState.value = SavingProductState.Error(
                     messageRes = R.string.error_generic,
                     onRetryClick = when {
-                        publishProduct -> ::onPublishProduct
                         else -> ::onSaveProductAsDraft
                     },
                     onDismissClick = { savingProductState.value = SavingProductState.Idle }
