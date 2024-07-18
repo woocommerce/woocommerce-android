@@ -75,5 +75,4 @@ class AboutProductSubViewModel(
         val productFeatures: String,
         val selectedAiTone: AiTone
     ) : Parcelable
-
 }
