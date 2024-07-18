@@ -28,6 +28,6 @@ echo "--- ⚒️ Generating and uploading code coverage"
 .buildkite/commands/upload-code-coverage.sh
 
 echo "--- 🧪 Copying test logs for test collector"
-mkdir WooCommerce/build/buildkite-test-analytics && cp WooCommerce/build/test-results/*/*.xml WooCommerce/build/buildkite-test-analytics
+mkdir WooCommerce/build/buildkite-test-analytics && cp WooCommerce/build/test-results/*.xml WooCommerce/build/buildkite-test-analytics
 
 exit $TESTS_EXIT_STATUS
