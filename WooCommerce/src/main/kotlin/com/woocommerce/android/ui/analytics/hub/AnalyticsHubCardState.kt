@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.analytics.hub
 import com.woocommerce.android.model.AnalyticsCards
-import com.woocommerce.android.model.GoogleAdsCampaign
 import com.woocommerce.android.model.GoogleAdsTotals
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState

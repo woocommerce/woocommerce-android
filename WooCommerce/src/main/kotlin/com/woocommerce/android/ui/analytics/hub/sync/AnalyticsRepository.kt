@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
-import com.woocommerce.android.model.GoogleAdsCampaign
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.GiftCardsStat
+import com.woocommerce.android.model.GoogleAdsCampaign
 import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.GoogleAdsTotals
 import com.woocommerce.android.model.OrdersStat
@@ -34,13 +34,13 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.google.WCGoogleAdsPrograms
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCGoogleStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
-import org.wordpress.android.fluxc.model.google.WCGoogleAdsPrograms
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
