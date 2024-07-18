@@ -277,7 +277,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         updateOrderStatusAndPaymentMethod(
             Order.Status.Completed.value,
             CASH_ON_DELIVERY_PAYMENT_TYPE,
-            codGateway?.methodTitle ?: "Pay in Person",
+            codGateway?.title ?: "Pay in Person",
         ).handleOrderUpdateResultBeforeExit()
     }
 

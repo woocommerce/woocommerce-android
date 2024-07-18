@@ -431,11 +431,11 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             whenever(gatewayStore.getGateway(any(), any())).thenReturn(
                 WCGatewayModel(
                     CASH_ON_DELIVERY_PAYMENT_TYPE,
-                    "",
+                    CUSTOM_PAYMENT_METHOD_TITLE,
                     "",
                     0,
                     true,
-                    CUSTOM_PAYMENT_METHOD_TITLE,
+                    "",
                     "",
                     listOf()
                 )
