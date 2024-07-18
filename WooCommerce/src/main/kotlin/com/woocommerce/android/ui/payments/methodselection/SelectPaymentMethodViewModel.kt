@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
+import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -54,6 +55,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -64,6 +66,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
+    private val gatewayStore: WCGatewayStore,
     private val dispatchers: CoroutineDispatchers,
     private val networkStatus: NetworkStatus,
     private val currencyFormatter: CurrencyFormatter,
@@ -261,11 +264,21 @@ class SelectPaymentMethodViewModel @Inject constructor(
         if (networkStatus.isConnected()) {
             launch {
                 trackPaymentMethodCompletion(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
-                updateOrderStatus(Order.Status.Completed.value).handleOrderUpdateResultBeforeExit()
+
+                markAsCompletedAndUpdatePaymentMethod()
             }
         } else {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
         }
+    }
+
+    private suspend fun SelectPaymentMethodViewModel.markAsCompletedAndUpdatePaymentMethod() {
+        val codGateway = gatewayStore.getGateway(selectedSite.get(), CASH_ON_DELIVERY_PAYMENT_TYPE)
+        updateOrderStatusAndPaymentMethod(
+            Order.Status.Completed.value,
+            CASH_ON_DELIVERY_PAYMENT_TYPE,
+            codGateway?.methodTitle ?: "Pay in Person",
+        ).handleOrderUpdateResultBeforeExit()
     }
 
     fun onSharePaymentUrlClicked() {
@@ -397,19 +410,39 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private suspend fun updateOrderStatus(statusKey: String): Flow<WCOrderStore.UpdateOrderResult> {
-        val statusModel = withContext(dispatchers.io) {
-            orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)
-                ?: WCOrderStatusModel(statusKey = statusKey).apply {
-                    label = statusKey
-                }
-        }
+    private suspend fun updateOrderStatus(statusKey: String): Flow<WCOrderStore.UpdateOrderResult> =
+        updateOrderStatusAndPaymentMethod(statusKey = statusKey, paymentMethod = null, paymentMethodTitle = null)
 
-        return orderStore.updateOrderStatus(
-            cardReaderPaymentFlowParam.orderId,
-            selectedSite.get(),
-            statusModel
-        )
+
+    private suspend fun updateOrderStatusAndPaymentMethod(
+        statusKey: String,
+        paymentMethod: String?,
+        paymentMethodTitle: String?
+    ): Flow<WCOrderStore.UpdateOrderResult> {
+        val statusModel = getStatusModel(statusKey)
+
+        return if (paymentMethod == null && paymentMethodTitle == null) {
+            orderStore.updateOrderStatus(
+                cardReaderPaymentFlowParam.orderId,
+                selectedSite.get(),
+                statusModel,
+            )
+        } else {
+            orderStore.updateOrderStatusAndPaymentMethod(
+                cardReaderPaymentFlowParam.orderId,
+                selectedSite.get(),
+                statusModel,
+                paymentMethod,
+                paymentMethodTitle
+            )
+        }
+    }
+
+    private suspend fun getStatusModel(statusKey: String) = withContext(dispatchers.io) {
+        orderStore.getOrderStatusForSiteAndKey(selectedSite.get(), statusKey)
+            ?: WCOrderStatusModel(statusKey = statusKey).apply {
+                label = statusKey
+            }
     }
 
     private suspend fun Flow<WCOrderStore.UpdateOrderResult>.handleOrderUpdateResultBeforeExit() {
