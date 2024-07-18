@@ -6,11 +6,13 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Image
+import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.products.ai.TextRecognitionEngine
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -29,6 +31,7 @@ class AiProductPromptViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val tracker: AnalyticsTrackerWrapper,
     private val textRecognitionEngine: TextRecognitionEngine,
+    private val prefs: AppPrefsWrapper
 ) : ScopedViewModel(savedState = savedStateHandle) {
     companion object {
         private const val SUGGESTIONS_BAR_INITIAL_PROGRESS = 0.05F
@@ -45,7 +48,7 @@ class AiProductPromptViewModel @Inject constructor(
         viewModelScope,
         AiProductPromptState(
             productPrompt = "",
-            selectedTone = Tone.Casual,
+            selectedTone = prefs.aiContentGenerationTone,
             isMediaPickerDialogVisible = false,
             selectedImage = null,
             isScanningImage = false,
@@ -149,14 +152,14 @@ class AiProductPromptViewModel @Inject constructor(
         )
     }
 
-    // TODO handle saving the selected tone to the app preferences
-    fun onToneSelected(tone: Tone) {
+    fun onToneSelected(tone: AiTone) {
         tracker.track(
             AnalyticsEvent.PRODUCT_CREATION_AI_TONE_SELECTED,
             mapOf(
                 AnalyticsTracker.KEY_TONE to tone.slug
             )
         )
+        prefs.aiContentGenerationTone = tone
         _state.value = _state.value.copy(selectedTone = tone)
     }
 
@@ -216,7 +219,7 @@ class AiProductPromptViewModel @Inject constructor(
     @Parcelize
     data class AiProductPromptState(
         val productPrompt: String,
-        val selectedTone: Tone,
+        val selectedTone: AiTone,
         val isMediaPickerDialogVisible: Boolean,
         val selectedImage: Image?,
         val isScanningImage: Boolean,
@@ -231,18 +234,6 @@ class AiProductPromptViewModel @Inject constructor(
         @StringRes val messageRes: Int,
         val progress: Float,
     ) : Parcelable
-
-    enum class Tone(@StringRes val displayName: Int, val slug: String) {
-        Casual(R.string.product_creation_ai_tone_casual, "Casual"),
-        Formal(R.string.product_creation_ai_tone_formal, "Formal"),
-        Flowery(R.string.product_creation_ai_tone_flowery, "Flowery"),
-        Convincing(R.string.product_creation_ai_tone_convincing, "Convincing");
-
-        companion object {
-            fun fromString(source: String): Tone =
-                Tone.values().firstOrNull { it.slug == source } ?: Casual
-        }
-    }
 
     data class ShowMediaDialog(val source: DataSource) : Event()
     data class ShowProductPreviewScreen(
