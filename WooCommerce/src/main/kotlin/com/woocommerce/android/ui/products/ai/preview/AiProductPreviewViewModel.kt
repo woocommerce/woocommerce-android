@@ -191,6 +191,12 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onGenerateAgainClicked() {
+        userEditedFields.value = UserEditedFields()
+        selectedVariant.value = 0
+        generateProduct()
+    }
+
     fun onSaveProductAsDraft() {
         analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
@@ -241,12 +247,6 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
-
-    fun onGenerateAgainClicked() {
-        userEditedFields.value = UserEditedFields()
-        selectedVariant.value = 0
-        generateProduct()
-    }
 
     sealed interface State {
         data object Loading : State
