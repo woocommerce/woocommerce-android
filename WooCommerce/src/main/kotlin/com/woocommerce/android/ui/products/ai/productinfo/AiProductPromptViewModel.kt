@@ -118,12 +118,7 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onAddImageForScanning() {
-        tracker.track(
-            AnalyticsEvent.PRODUCT_NAME_AI_PACKAGE_IMAGE_BUTTON_TAPPED,
-            mapOf(
-                AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CREATION_AI
-            )
-        )
+        tracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_STARTED_PACKAGE_PHOTO_SELECTION_FLOW)
         _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
     }
 
@@ -171,9 +166,9 @@ class AiProductPromptViewModel @Inject constructor(
             textRecognitionEngine.processImage(image.uri)
                 .onSuccess { keywords ->
                     tracker.track(
-                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_COMPLETED,
+                        AnalyticsEvent.PRODUCT_CREATION_AI_TEXT_DETECTED,
                         mapOf(
-                            AnalyticsTracker.KEY_SCANNED_TEXT_COUNT to keywords.size
+                            "number_of_texts" to keywords.size
                         )
                     )
                     if (keywords.isNotEmpty()) {
@@ -185,7 +180,7 @@ class AiProductPromptViewModel @Inject constructor(
                 }
                 .onFailure { error ->
                     tracker.track(
-                        AnalyticsEvent.ADD_PRODUCT_FROM_IMAGE_SCAN_FAILED,
+                        AnalyticsEvent.PRODUCT_CREATION_AI_TEXT_DETECTION_FAILED,
                         mapOf(
                             AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
                             AnalyticsTracker.KEY_ERROR_DESC to error.message,
@@ -203,7 +198,10 @@ class AiProductPromptViewModel @Inject constructor(
     fun onImageActionSelected(imageAction: ImageAction) {
         when (imageAction) {
             ImageAction.View -> _state.value = _state.value.copy(showImageFullScreen = true)
-            ImageAction.Replace -> _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
+            ImageAction.Replace -> {
+                tracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_STARTED_PACKAGE_PHOTO_SELECTION_FLOW)
+                _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
+            }
             ImageAction.Remove -> _state.value = _state.value.copy(
                 selectedImage = null,
                 noTextDetectedMessage = false,
