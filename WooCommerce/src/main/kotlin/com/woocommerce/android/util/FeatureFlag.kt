@@ -33,11 +33,11 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             GOOGLE_ADS_M1,
-            PRODUCT_CREATION_WITH_AI_V2,
             BACKGROUND_TASKS,
             GOOGLE_ADS_ANALYTICS_HUB_M1,
             PRODUCT_CREATION_WITH_AI_V2_M3 -> PackageUtils.isDebugBuild()
 
+            PRODUCT_CREATION_WITH_AI_V2,
             CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
