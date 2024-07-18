@@ -28,8 +28,14 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     }
     private val getProductById: WooPosGetProductById = mock()
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(eq(R.string.woopos_items_in_cart), eq(1)) }.thenReturn("Items in cart: 1")
-        on { getString(eq(R.string.woopos_items_in_cart), eq(2)) }.thenReturn("Items in cart: 2")
+        on {
+            getQuantityString(
+                quantity = eq(1),
+                default = eq(R.string.woopos_items_in_cart_multiple),
+                zero = eq(R.string.woopos_items_in_cart_multiple),
+                one = eq(R.string.woopos_items_in_cart),
+            )
+        }.thenReturn("Item in cart: 1")
     }
     private val formatPrice: WooPosFormatPrice = mock {
         onBlocking { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")
@@ -140,7 +146,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             // THEN
             val toolbar = states.last().toolbar
             assertThat(toolbar.icon).isNull()
-            assertThat(toolbar.itemsCount).isEqualTo("Items in cart: 1")
+            assertThat(toolbar.itemsCount).isEqualTo("Item in cart: 1")
             assertThat(toolbar.isClearAllButtonVisible).isTrue()
         }
 
@@ -171,7 +177,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             // THEN
             val toolbar = states.last().toolbar
             assertThat(toolbar.icon).isEqualTo(R.drawable.ic_back_24dp)
-            assertThat(toolbar.itemsCount).isEqualTo("Items in cart: 1")
+            assertThat(toolbar.itemsCount).isEqualTo("Item in cart: 1")
             assertThat(toolbar.isClearAllButtonVisible).isFalse()
         }
 
