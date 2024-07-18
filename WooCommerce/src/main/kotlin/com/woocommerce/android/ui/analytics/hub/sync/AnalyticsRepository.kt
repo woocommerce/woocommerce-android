@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
-import com.woocommerce.android.model.Campaign
+import com.woocommerce.android.model.GoogleAdsCampaign
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsStat
@@ -481,8 +481,8 @@ class AnalyticsRepository @Inject constructor(
             .model?.campaigns?.let { campaigns ->
                 GoogleAdsResult.GoogleAdsData(
                     GoogleAdsStat(
-                        campaigns = campaigns.map {
-                            Campaign(it.id ?: 0L)
+                        googleAdsCampaigns = campaigns.map {
+                            GoogleAdsCampaign(it.id ?: 0L)
                         }
                     )
                 )
