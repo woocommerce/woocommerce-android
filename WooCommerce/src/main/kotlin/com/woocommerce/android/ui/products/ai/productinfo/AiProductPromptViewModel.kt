@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AiProductPromptViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val tracker: AnalyticsTrackerWrapper,
     private val textRecognitionEngine: TextRecognitionEngine,
 ) : ScopedViewModel(savedState = savedStateHandle) {
@@ -34,6 +34,12 @@ class AiProductPromptViewModel @Inject constructor(
         private const val SUGGESTIONS_BAR_INITIAL_PROGRESS = 0.05F
         private const val DEFAULT_PROMPT_DELIMITER = " "
     }
+
+    private var isFirstAttempt: Boolean
+        get() = savedStateHandle["isFirstAttempt"] ?: true
+        set(value) {
+            savedStateHandle["isFirstAttempt"] = value
+        }
 
     private val _state = savedStateHandle.getStateFlow(
         viewModelScope,
@@ -133,6 +139,13 @@ class AiProductPromptViewModel @Inject constructor(
     }
 
     fun onGenerateProductClicked() {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to isFirstAttempt
+            )
+        )
+        isFirstAttempt = false
         triggerEvent(
             ShowProductPreviewScreen(
                 productFeatures = _state.value.productPrompt,

@@ -194,6 +194,12 @@ class AiProductPreviewViewModel @Inject constructor(
     fun onGenerateAgainClicked() {
         userEditedFields.value = UserEditedFields()
         selectedVariant.value = 0
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to false
+            )
+        )
         generateProduct()
     }
 
