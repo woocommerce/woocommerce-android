@@ -64,7 +64,21 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
     ) : AnalyticsHubCustomSelectionListViewState()
     data class DataViewState(
         override val card: AnalyticsCards,
-        val campaigns: List<GoogleAdsCampaign>,
+        val title: String,
+        val subTitle: String,
+        val listLeftHeader: String,
+        val listRightHeader: String,
+        val delta: Int?,
+        val items: List<AnalyticsHubListCardItemViewState>,
+        val reportUrl: String?,
         val totals: GoogleAdsTotals
-    ) : AnalyticsHubCustomSelectionListViewState()
+    ) : AnalyticsHubCustomSelectionListViewState() {
+        val sign: String
+            get() = when {
+                delta == null -> ""
+                delta == 0 -> ""
+                delta > 0 -> "+"
+                else -> "-"
+            }
+    }
 }
