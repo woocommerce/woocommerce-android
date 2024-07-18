@@ -16,6 +16,7 @@ import com.woocommerce.android.model.Image.WPMediaLibraryImage
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
+import com.woocommerce.android.ui.products.ai.SaveAiGeneratedProduct
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -40,7 +41,8 @@ class AiProductPreviewViewModel @Inject constructor(
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
     private val generateProductWithAI: GenerateProductWithAI,
     private val uploadImage: UploadImage,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val saveAiGeneratedProduct: SaveAiGeneratedProduct
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -190,36 +192,67 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onSaveProductAsDraft() {
-        launch {
-            savingProductState.value = SavingProductState.Loading
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
+        addAiGeneratedProduct(publishProduct = false)
+    }
 
-            imageState.value.image
-                ?.let { uploadImage(it) }
-                ?.fold(
-                    onSuccess = {
-                        imageState.value = imageState.value.copy(
-                            image = WPMediaLibraryImage(content = it)
-                        )
+    fun onPublishProduct() {
+        addAiGeneratedProduct(publishProduct = true)
+    }
+
+    private fun addAiGeneratedProduct(publishProduct: Boolean) {
+        val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
+        savingProductState.value = SavingProductState.Loading
+        viewModelScope.launch {
+            uploadSelectedImage()
+            val editedFields = userEditedFields.value
+            val (success, productId) = saveAiGeneratedProduct(
+                product.copy(
+                    name = editedFields.names[selectedVariant.value] ?: product.name,
+                    description = editedFields.descriptions[selectedVariant.value] ?: product.description,
+                    shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
+                ),
+                publishProduct,
+                imageState.value.getImage()
+            )
+            if (!success) {
+                savingProductState.value = SavingProductState.Error(
+                    messageRes = R.string.error_generic,
+                    onRetryClick = when {
+                        publishProduct -> ::onPublishProduct
+                        else -> ::onSaveProductAsDraft
                     },
-                    onFailure = {
-                        savingProductState.value = SavingProductState.Error(
-                            messageRes = R.string.ai_product_creation_error_media_upload,
-                            onRetryClick = ::onSaveProductAsDraft,
-                            onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                        )
-                    }
+                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
                 )
-
-            // Create product
-            createProductDraft()
-            savingProductState.value = SavingProductState.Success
+                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
+            } else {
+                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
+                triggerEvent(NavigateToProductDetailScreen(productId))
+                savingProductState.value = SavingProductState.Success
+            }
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    private fun createProductDraft() {
-        // TODO()
+    private suspend fun uploadSelectedImage() {
+        imageState.value.image
+            ?.let { uploadImage(it) }
+            ?.fold(
+                onSuccess = {
+                    imageState.value = imageState.value.copy(
+                        image = WPMediaLibraryImage(content = it)
+                    )
+                },
+                onFailure = {
+                    savingProductState.value = SavingProductState.Error(
+                        messageRes = R.string.ai_product_creation_error_media_upload,
+                        onRetryClick = ::onSaveProductAsDraft,
+                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                    )
+                }
+            )
     }
+
+    private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
 
     fun onGenerateAgainClicked() {
         userEditedFields.value = UserEditedFields()
@@ -303,4 +336,6 @@ class AiProductPreviewViewModel @Inject constructor(
         @Parcelize
         data object Idle : SavingProductState
     }
+
+    data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
 }
