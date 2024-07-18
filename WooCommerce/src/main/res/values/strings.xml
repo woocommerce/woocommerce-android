@@ -4175,14 +4175,15 @@
     <string name="woopos_checkout_button">Check out</string>
     <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
     <string name="woopos_cart_title">Cart</string>
-    <string name="woopos_clear_cart_button">Clear all</string>
+    <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
-    <string name="woopos_items_in_cart">%d items</string>
+    <string name="woopos_items_in_cart">%d item</string>
+    <string name="woopos_items_in_cart_multiple">%d items</string>
     <string name="woopos_product_image_description">Product Image</string>
     <string name="woopos_products_screen_title">Products</string>
     <string name="woopos_cart_back_content_description">Cart icon</string>
@@ -4196,6 +4197,8 @@
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
+    <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
+    <string name="woopos_cart_empty_content_description">Cart is empty</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
