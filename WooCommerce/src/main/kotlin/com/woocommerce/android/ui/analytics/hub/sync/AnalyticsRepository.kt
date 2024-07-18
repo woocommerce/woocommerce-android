@@ -40,6 +40,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
+import org.wordpress.android.fluxc.model.google.WCGoogleAdsPrograms
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
@@ -479,31 +480,33 @@ class AnalyticsRepository @Inject constructor(
         }
 
         currentGoogleAdsStatsCall.await()
-            .model?.let { response ->
-                GoogleAdsResult.GoogleAdsData(
-                    GoogleAdsStat(
-                        googleAdsCampaigns = response.campaigns?.map {
-                            GoogleAdsCampaign(
-                                id = it.id ?: 0L,
-                                name = it.name,
-                                subtotal = it.subtotal.let { subtotal ->
-                                    GoogleAdsTotals(
-                                        sales = subtotal.sales,
-                                        spend = subtotal.spend
-                                    )
-                                }
-                            )
-                        } ?: emptyList(),
-                        totals = response.totals.let {
+            .model?.let { response -> mapGoogleAdsResponse(response) }
+            ?: GoogleAdsResult.GoogleAdsError
+    }
+
+    private fun mapGoogleAdsResponse(response: WCGoogleAdsPrograms) =
+        GoogleAdsResult.GoogleAdsData(
+            GoogleAdsStat(
+                googleAdsCampaigns = response.campaigns?.map {
+                    GoogleAdsCampaign(
+                        id = it.id ?: 0L,
+                        name = it.name,
+                        subtotal = it.subtotal.let { subtotal ->
                             GoogleAdsTotals(
-                                sales = it?.sales ?: 0.0,
-                                spend = it?.spend ?: 0.0
+                                sales = subtotal.sales,
+                                spend = subtotal.spend
                             )
                         }
                     )
-                )
-            } ?: GoogleAdsResult.GoogleAdsError
-    }
+                } ?: emptyList(),
+                totals = response.totals.let {
+                    GoogleAdsTotals(
+                        sales = it?.sales ?: 0.0,
+                        spend = it?.spend ?: 0.0
+                    )
+                }
+            )
+        )
 
     companion object {
         const val ZERO_VALUE = 0.0
