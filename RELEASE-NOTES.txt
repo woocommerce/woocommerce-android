@@ -6,7 +6,7 @@
 
 19.6
 -----
-
+- [*] [Login] Improved login reliability by addressing some edge-case issues [https://github.com/woocommerce/woocommerce-android/pull/12033]
 
 19.5
 -----
