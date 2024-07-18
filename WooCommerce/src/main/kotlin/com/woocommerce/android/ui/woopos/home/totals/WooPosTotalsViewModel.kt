@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +11,8 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -117,7 +118,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         _state.value = buildTotalsState(order)
                     },
                     onFailure = { error ->
-                        Log.e("WooPosCartViewModel", "Order creation failed - $error")
+                        WooLog.e(T.ORDERS, "Order creation failed - $error")
                         _state.value = WooPosTotalsState.Error(error.message ?: "Unknown error")
                     }
                 )
