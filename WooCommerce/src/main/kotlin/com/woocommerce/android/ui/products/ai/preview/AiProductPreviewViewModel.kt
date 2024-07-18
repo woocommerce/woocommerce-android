@@ -7,11 +7,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
+import com.woocommerce.android.ui.products.ai.SaveAiGeneratedProduct
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -20,7 +25,6 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -36,7 +40,9 @@ class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
     private val generateProductWithAI: GenerateProductWithAI,
-    private val uploadImage: UploadImage
+    private val uploadImage: UploadImage,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val saveAiGeneratedProduct: SaveAiGeneratedProduct
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -44,6 +50,7 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private val navArgs by savedStateHandle.navArgs<AiProductPreviewFragmentArgs>()
 
+    private val shouldShowFeedbackView = savedStateHandle.getStateFlow(viewModelScope, true)
     private val imageState = savedStateHandle.getStateFlow(viewModelScope, ImageState(navArgs.image))
     private val selectedVariant = savedStateHandle.getStateFlow(viewModelScope, 0)
     private val userEditedFields = savedStateHandle.getStateFlow(viewModelScope, UserEditedFields())
@@ -62,14 +69,12 @@ class AiProductPreviewViewModel @Inject constructor(
         when (val product = it.getOrNull()) {
             null -> emit(
                 State.Error(
-                    onRetryClick = { TODO() },
+                    onRetryClick = { generateProduct() },
                     onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) }
                 )
             )
 
-            else -> {
-                emitAll(product.prepareState())
-            }
+            else -> emitAll(product.prepareState())
         }
     }.asLiveData()
 
@@ -89,14 +94,16 @@ class AiProductPreviewViewModel @Inject constructor(
                     )
                 },
                 userEditedFields,
-                savingProductState
-            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState ->
+                savingProductState,
+                shouldShowFeedbackView
+            ) { imageState, selectedVariant, propertyGroups, editedFields, savingProductState, shouldShowFeedbackView ->
                 State.Success(
                     selectedVariant = selectedVariant,
                     product = this@prepareState,
                     propertyGroups = propertyGroups,
                     imageState = imageState,
                     savingProductState = savingProductState,
+                    shouldShowFeedbackView = shouldShowFeedbackView,
                     userEditedName = editedFields.names[selectedVariant],
                     userEditedDescription = editedFields.descriptions[selectedVariant],
                     userEditedShortDescription = editedFields.shortDescriptions[selectedVariant]
@@ -110,9 +117,16 @@ class AiProductPreviewViewModel @Inject constructor(
         generatedProduct.value = generateProductWithAI(navArgs.productFeatures)
     }
 
-    @Suppress("UNUSED_PARAMETER")
     fun onFeedbackReceived(positive: Boolean) {
-        TODO()
+        analyticsTracker.track(
+            stat = AnalyticsEvent.PRODUCT_AI_FEEDBACK,
+            properties = mapOf(
+                AnalyticsTracker.KEY_SOURCE to "product_creation",
+                AnalyticsTracker.KEY_IS_USEFUL to positive
+            )
+        )
+
+        shouldShowFeedbackView.value = false
     }
 
     fun onBackButtonClick() {
@@ -140,6 +154,9 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onNameChanged(name: String?) {
+        if (name == null) {
+            trackUndoEditClick("name")
+        }
         val generatedName = generatedProduct.value?.getOrNull()?.names?.get(selectedVariant.value)
         val actualValue = if (name == generatedName) null else name
 
@@ -149,6 +166,9 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onDescriptionChanged(description: String?) {
+        if (description == null) {
+            trackUndoEditClick("description")
+        }
         val generatedDescription = generatedProduct.value?.getOrNull()?.descriptions?.get(selectedVariant.value)
         val actualValue = if (description == generatedDescription) null else description
 
@@ -162,6 +182,9 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onShortDescriptionChanged(shortDescription: String?) {
+        if (shortDescription == null) {
+            trackUndoEditClick("short_description")
+        }
         val generatedShortDescription = generatedProduct.value?.getOrNull()?.shortDescriptions
             ?.get(selectedVariant.value)
         val actualValue = if (shortDescription == generatedShortDescription) null else shortDescription
@@ -175,36 +198,76 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onGenerateAgainClicked() {
+        userEditedFields.value = UserEditedFields()
+        selectedVariant.value = 0
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to false
+            )
+        )
+        generateProduct()
+    }
+
     fun onSaveProductAsDraft() {
-        launch {
-            savingProductState.value = SavingProductState.Loading
-
-            imageState.value.image
-                ?.let { uploadImage(it) }
-                ?.fold(
-                    onSuccess = {
-                        imageState.value = imageState.value.copy(
-                            image = WPMediaLibraryImage(content = it)
-                        )
-                    },
-                    onFailure = {
-                        savingProductState.value = SavingProductState.Error(
-                            messageRes = R.string.ai_product_creation_error_media_upload,
-                            onRetryClick = ::onSaveProductAsDraft,
-                            onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                        )
-                    }
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
+        val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
+        savingProductState.value = SavingProductState.Loading
+        viewModelScope.launch {
+            uploadSelectedImage()
+            val editedFields = userEditedFields.value
+            val (success, productId) = saveAiGeneratedProduct(
+                product.copy(
+                    name = editedFields.names[selectedVariant.value] ?: product.name,
+                    description = editedFields.descriptions[selectedVariant.value] ?: product.description,
+                    shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
+                ),
+                imageState.value.getImage()
+            )
+            if (!success) {
+                savingProductState.value = SavingProductState.Error(
+                    messageRes = R.string.error_generic,
+                    onRetryClick = ::onSaveProductAsDraft,
+                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
                 )
-
-            // Create product
-            createProductDraft()
-            savingProductState.value = SavingProductState.Success
+                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
+            } else {
+                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
+                triggerEvent(NavigateToProductDetailScreen(productId))
+                savingProductState.value = SavingProductState.Success
+            }
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    private fun createProductDraft() {
-        // TODO()
+    private suspend fun uploadSelectedImage() {
+        imageState.value.image
+            ?.let { uploadImage(it) }
+            ?.fold(
+                onSuccess = {
+                    imageState.value = imageState.value.copy(
+                        image = WPMediaLibraryImage(content = it)
+                    )
+                },
+                onFailure = {
+                    savingProductState.value = SavingProductState.Error(
+                        messageRes = R.string.ai_product_creation_error_media_upload,
+                        onRetryClick = ::onSaveProductAsDraft,
+                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                    )
+                }
+            )
+    }
+
+    private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
+
+    private fun trackUndoEditClick(field: String) {
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_UNDO_EDIT_TAPPED,
+            mapOf(
+                "field" to field
+            )
+        )
     }
 
     sealed interface State {
@@ -283,4 +346,6 @@ class AiProductPreviewViewModel @Inject constructor(
         @Parcelize
         data object Idle : SavingProductState
     }
+
+    data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
 }
