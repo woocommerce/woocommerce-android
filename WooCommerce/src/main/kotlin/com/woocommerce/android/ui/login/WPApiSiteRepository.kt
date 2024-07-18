@@ -150,9 +150,9 @@ class WPApiSiteRepository @Inject constructor(
         siteStore.getSiteByLocalId(id)
     }
 
-    suspend fun saveApplicationPassword(localSiteId: Int, username: String, password: String) {
+    suspend fun saveApplicationPassword(localSiteId: Int, username: String, password: String, uuid: String? = null) {
         val site = requireNotNull(getSiteByLocalId(localSiteId))
-        val credentials = ApplicationPasswordCredentials(username, password)
+        val credentials = ApplicationPasswordCredentials(username, password, uuid)
 
         applicationPasswordsStore.saveCredentials(site, credentials)
 
