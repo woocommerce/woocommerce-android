@@ -111,8 +111,6 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
     init {
-        _revenueStatsState.value = RevenueStatsViewState.Loading(isForced = false)
-        _visitorStatsState.value = VisitorStatsViewState.NotLoaded
         viewModelScope.launch {
             selectedDateRange.flatMapLatest { selectedRange ->
                 merge(refreshTrigger, parentViewModel.refreshTrigger).onStart { emit(RefreshEvent()) }.map {
