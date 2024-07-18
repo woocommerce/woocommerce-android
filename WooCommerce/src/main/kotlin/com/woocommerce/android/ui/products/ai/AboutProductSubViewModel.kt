@@ -1,15 +1,12 @@
 package com.woocommerce.android.ui.products.ai
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
 import com.woocommerce.android.viewmodel.getStateFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -79,15 +76,4 @@ class AboutProductSubViewModel(
         val selectedAiTone: AiTone
     ) : Parcelable
 
-    enum class AiTone(@StringRes val displayName: Int, val slug: String) {
-        Casual(R.string.product_creation_ai_tone_casual, "Casual"),
-        Formal(R.string.product_creation_ai_tone_formal, "Formal"),
-        Flowery(R.string.product_creation_ai_tone_flowery, "Flowery"),
-        Convincing(R.string.product_creation_ai_tone_convincing, "Convincing");
-
-        companion object {
-            fun fromString(source: String): AiTone =
-                AiTone.values().firstOrNull { it.slug == source } ?: Casual
-        }
-    }
 }

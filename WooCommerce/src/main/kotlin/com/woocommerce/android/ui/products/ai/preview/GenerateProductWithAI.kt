@@ -12,7 +12,7 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ai.AIProductModel
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel
+import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -58,7 +58,7 @@ class GenerateProductWithAI @Inject constructor(
         return aiRepository.generateProduct(
             productKeyWords = productFeatures,
             // TODO pass the tone to use
-            tone = AboutProductSubViewModel.AiTone.Casual.name,
+            tone = AiTone.Casual.name,
             weightUnit = siteParameters.weightUnit!!,
             dimensionUnit = siteParameters.dimensionUnit!!,
             currency = siteParameters.currencyCode!!,
