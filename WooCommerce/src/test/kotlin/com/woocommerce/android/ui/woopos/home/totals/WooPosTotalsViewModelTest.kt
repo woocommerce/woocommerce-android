@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
@@ -14,11 +13,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.ClassRule
-import org.junit.rules.TestRule
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.MockedStatic
-import org.mockito.Mockito
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import java.math.BigDecimal
@@ -38,29 +32,6 @@ class WooPosTotalsViewModelTest : BaseUnitTest() {
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
-
-        @ClassRule
-        @JvmField
-        val mockLogRule: TestRule = object : TestRule {
-            private lateinit var mockedLog: MockedStatic<Log>
-
-            override fun apply(
-                base: org.junit.runners.model.Statement,
-                description: org.junit.runner.Description
-            ): org.junit.runners.model.Statement {
-                return object : org.junit.runners.model.Statement() {
-                    override fun evaluate() {
-                        mockedLog = Mockito.mockStatic(Log::class.java)
-                        mockedLog.`when`<Int> { Log.e(anyString(), anyString()) }.thenReturn(0)
-                        try {
-                            base.evaluate()
-                        } finally {
-                            mockedLog.close()
-                        }
-                    }
-                }
-            }
-        }
     }
 
     @Test
