@@ -338,7 +338,7 @@ private fun ProductPromptTextField(
                     modifier = Modifier
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
-                            if (isFocused) {
+                            if (isFocused && FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()) {
                                 coroutineScope.launch { scrollState.animateScrollTo(scrollToPosition.roundToInt()) }
                             }
                         }
