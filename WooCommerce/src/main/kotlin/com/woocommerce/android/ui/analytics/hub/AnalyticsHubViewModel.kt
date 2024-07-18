@@ -686,8 +686,25 @@ class AnalyticsHubViewModel @Inject constructor(
     private fun buildGoogleAdsDataViewState(googleAdsStats: GoogleAdsStat) =
         AnalyticsHubCustomSelectionListViewState.DataViewState(
             card = AnalyticsCards.GoogleAds,
-            campaigns = googleAdsStats.googleAdsCampaigns,
-            totals = googleAdsStats.totals
+            title = resourceProvider.getString(R.string.analytics_google_ads_card_title),
+            subTitle = resourceProvider.getString(R.string.analytics_total_sales_title),
+            listLeftHeader = resourceProvider.getString(R.string.analytics_google_ads_programs_card_title),
+            listRightHeader = resourceProvider.getString(R.string.analytics_total_sales_title),
+            totals = googleAdsStats.totals,
+            delta = null,
+            reportUrl = null,
+            items = googleAdsStats.googleAdsCampaigns.map {
+                AnalyticsHubListCardItemViewState(
+                    title = it.name.orEmpty(),
+                    showDivider = true,
+                    imageUri = null,
+                    value = (it.subtotal?.sales ?: 0).toString(),
+                    description = resourceProvider.getString(
+                        R.string.analytics_spend_value,
+                        (it.subtotal?.spend ?: 0).toString()
+                    )
+                )
+            }
         )
 
     private fun trackSelectedDateRange() {
@@ -753,6 +770,7 @@ class AnalyticsHubViewModel @Inject constructor(
         triggerEvent(AnalyticsViewEvent.OpenSettings)
     }
 }
+
 enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
