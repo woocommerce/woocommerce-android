@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,7 +67,10 @@ fun WooPosFloatingToolbar(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
-                .clickable { onUIEvent(WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked) },
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { onUIEvent(WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked) },
             isVisible = menu is WooPosRootScreenState.Menu.Visible,
         )
 
@@ -85,6 +89,7 @@ fun WooPosFloatingToolbar(
                         onUIEvent = onUIEvent
                     )
                 }
+
                 is WooPosRootScreenState.Menu.Visible -> {
                     Toolbar(
                         modifier = Modifier.constrainAs(toolbar) {
@@ -104,7 +109,7 @@ fun WooPosFloatingToolbar(
                         },
                         menuItems = menu.items,
                         onClick = { menuItem ->
-                            onUIEvent(WooPosRootUIEvent.MenuItemSelected(menuItem))
+                            onUIEvent(WooPosRootUIEvent.MenuItemClicked(menuItem))
                         }
                     )
                 }
@@ -361,12 +366,10 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                 menu = WooPosRootScreenState.Menu.Visible(
                     listOf(
                         MenuItem(
-                            id = 0,
                             title = R.string.woopos_exit_confirmation_message,
                             icon = R.drawable.woopos_ic_exit_pos,
                         ),
                         MenuItem(
-                            id = 1,
                             title = R.string.woopos_get_support_title,
                             icon = R.drawable.woopos_ic_get_support,
                         )

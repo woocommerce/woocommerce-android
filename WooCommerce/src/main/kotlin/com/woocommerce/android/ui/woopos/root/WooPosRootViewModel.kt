@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.Menu.MenuItem
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ConnectToAReaderClicked
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ExitConfirmationDialogDismissed
-import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.MenuItemSelected
+import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.MenuItemClicked
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.OnBackFromHomeClicked
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.OnSuccessfulPayment
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.OnToolbarMenuClicked
@@ -45,43 +45,52 @@ class WooPosRootViewModel @Inject constructor(
     }
 
     fun onUiEvent(event: WooPosRootUIEvent) {
-        hideMenu()
+        val currentState = _rootScreenState.value
+        if (currentState.menu is WooPosRootScreenState.Menu.Visible && event !is MenuItemClicked) {
+            hideMenu()
+            return
+        }
 
         when (event) {
-            ConnectToAReaderClicked -> handleConnectToReaderButtonClicked()
-            ExitConfirmationDialogDismissed -> {
-                _rootScreenState.value = _rootScreenState.value.copy(exitConfirmationDialog = null)
-            }
-
-            OnBackFromHomeClicked -> {
-                _rootScreenState.value = _rootScreenState.value.copy(
-                    exitConfirmationDialog = WooPosRootScreenState.WooPosExitConfirmationDialog
+            is OnToolbarMenuClicked -> {
+                _rootScreenState.value = currentState.copy(
+                    menu = WooPosRootScreenState.Menu.Visible(toolbarMenuItems)
                 )
             }
+
+            ConnectToAReaderClicked -> handleConnectToReaderButtonClicked()
+
+            ExitConfirmationDialogDismissed -> _rootScreenState.value = currentState.copy(
+                exitConfirmationDialog = null
+            )
+
+            OnBackFromHomeClicked -> _rootScreenState.value = currentState.copy(
+                exitConfirmationDialog = WooPosRootScreenState.WooPosExitConfirmationDialog
+            )
 
             is OnSuccessfulPayment -> TODO()
-
-            is MenuItemSelected -> {
-            }
-
-            is OnToolbarMenuClicked -> {
-                _rootScreenState.value = _rootScreenState.value.copy(
-                    menu = WooPosRootScreenState.Menu.Visible(items = toolbarMenuItems)
-                )
-            }
+            is MenuItemClicked -> handleMenuItemClicked(event)
 
             is WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked -> {
-                // Do nothing as the menu is already hidden by any UI event
+                // Do nothing as the menu is hidden already, but we need to pass the event here anyway
             }
         }
     }
 
-    private fun hideMenu() {
-        if (_rootScreenState.value.menu !is WooPosRootScreenState.Menu.Visible) return
+    private fun handleMenuItemClicked(event: MenuItemClicked) {
+        hideMenu()
 
-        _rootScreenState.value = _rootScreenState.value.copy(
-            menu = WooPosRootScreenState.Menu.Hidden
-        )
+        when (event.menuItem.title) {
+            R.string.woopos_get_support_title -> TODO()
+            R.string.woopos_exit_confirmation_title ->
+                _rootScreenState.value = _rootScreenState.value.copy(
+                    exitConfirmationDialog = WooPosRootScreenState.WooPosExitConfirmationDialog
+                )
+        }
+    }
+
+    private fun hideMenu() {
+        _rootScreenState.value = _rootScreenState.value.copy(menu = WooPosRootScreenState.Menu.Hidden)
     }
 
     private fun handleConnectToReaderButtonClicked() {
@@ -100,12 +109,10 @@ class WooPosRootViewModel @Inject constructor(
     private companion object {
         val toolbarMenuItems = listOf(
             MenuItem(
-                id = 0,
                 title = R.string.woopos_get_support_title,
                 icon = R.drawable.woopos_ic_get_support,
             ),
             MenuItem(
-                id = 1,
                 title = R.string.woopos_exit_confirmation_title,
                 icon = R.drawable.woopos_ic_exit_pos,
             ),

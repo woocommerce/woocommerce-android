@@ -26,7 +26,6 @@ data class WooPosRootScreenState(
         data class Visible(val items: List<MenuItem>) : Menu()
 
         data class MenuItem(
-            val id: Int,
             @StringRes val title: Int,
             @DrawableRes val icon: Int,
         )
