@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -241,6 +242,7 @@ private fun PopUpMenuItem(
             color = MaterialTheme.colors.onSurface,
             style = MaterialTheme.typography.body1,
             maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         Spacer(modifier = Modifier.width(20.dp.toAdaptivePadding()))
     }
@@ -360,7 +362,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                     listOf(
                         MenuItem(
                             id = 0,
-                            title = R.string.woopos_exit_confirmation_title,
+                            title = R.string.woopos_exit_confirmation_message,
                             icon = R.drawable.woopos_ic_exit_pos,
                         ),
                         MenuItem(
