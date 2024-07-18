@@ -141,7 +141,14 @@ class AiProductPromptViewModel @Inject constructor(
         )
     }
 
+    // TODO handle saving the selected tone to the app preferences
     fun onToneSelected(tone: Tone) {
+        tracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_TONE_SELECTED,
+            mapOf(
+                AnalyticsTracker.KEY_TONE to tone.slug
+            )
+        )
         _state.value = _state.value.copy(selectedTone = tone)
     }
 
