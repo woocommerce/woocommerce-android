@@ -73,21 +73,13 @@ private fun WooPosTotalsScreen(
             }
 
             is WooPosTotalsState.Error -> {
-                HandleErrorState(state, onUIEvent)
+                WooPosTotalsErrorScreen(
+                    errorMessage = state.message,
+                    onUIEvent = onUIEvent
+                )
             }
         }
     }
-}
-
-@Composable
-private fun HandleErrorState(
-    state: WooPosTotalsState.Error,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit
-) {
-    WooPosTotalsErrorScreen(
-        errorMessage = state.message,
-        onUIEvent = onUIEvent
-    )
 }
 
 @Composable
