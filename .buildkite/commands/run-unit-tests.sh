@@ -15,7 +15,7 @@ fi
 
 
 echo "--- 🚦 Report Tests Status"
-results_file="*/build/test-results/merged-test-results.xml"
+results_file="WooCommerce/build/test-results/merged-test-results.xml"
 
 if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
     annotate_test_failures "$results_file" --slack "build-and-ship"
