@@ -189,25 +189,6 @@ class AiProductPreviewViewModel @Inject constructor(
         addAiGeneratedProduct(publishProduct = true)
     }
 
-    private suspend fun uploadSelectedImage() {
-        imageState.value.image
-            ?.let { uploadImage(it) }
-            ?.fold(
-                onSuccess = {
-                    imageState.value = imageState.value.copy(
-                        image = WPMediaLibraryImage(content = it)
-                    )
-                },
-                onFailure = {
-                    savingProductState.value = SavingProductState.Error(
-                        messageRes = R.string.ai_product_creation_error_media_upload,
-                        onRetryClick = ::onSaveProductAsDraft,
-                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                    )
-                }
-            )
-    }
-
     private fun addAiGeneratedProduct(publishProduct: Boolean) {
         savingProductState.value = SavingProductState.Loading
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
@@ -222,7 +203,7 @@ class AiProductPreviewViewModel @Inject constructor(
                     shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
                 ),
                 publishProduct,
-                getSelectedProductImage()
+                imageState.value.getImage()
             )
             if (!success) {
                 savingProductState.value = SavingProductState.Error(
@@ -242,11 +223,26 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
-    private fun getSelectedProductImage() = if (imageState.value.image is WPMediaLibraryImage) {
-        (imageState.value.image as WPMediaLibraryImage).content
-    } else {
-        null
+    private suspend fun uploadSelectedImage() {
+        imageState.value.image
+            ?.let { uploadImage(it) }
+            ?.fold(
+                onSuccess = {
+                    imageState.value = imageState.value.copy(
+                        image = WPMediaLibraryImage(content = it)
+                    )
+                },
+                onFailure = {
+                    savingProductState.value = SavingProductState.Error(
+                        messageRes = R.string.ai_product_creation_error_media_upload,
+                        onRetryClick = ::onSaveProductAsDraft,
+                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                    )
+                }
+            )
     }
+
+    private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
 
     sealed interface State {
         data object Loading : State
