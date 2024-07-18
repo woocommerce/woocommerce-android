@@ -23,7 +23,8 @@ fladle {
             "notPackage com.woocommerce.android.e2e.tests.screenshot"
     ]
     devices = [
-            [ "model": "Pixel2.arm", "version": "30" ]
+            [ "model": "Pixel2.arm", "version": "30" ],
+            [ "model": "MediumTablet.arm", "version": "30", orientation: "landscape" ]
     ]
     localResultsDir = "$rootDir/build/instrumented-tests"
 
