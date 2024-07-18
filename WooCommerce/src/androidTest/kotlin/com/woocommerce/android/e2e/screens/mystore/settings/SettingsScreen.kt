@@ -65,27 +65,31 @@ class SettingsScreen : Screen {
             clickOn(R.id.btn_option_logout)
 
             // confirm log out action
-            waitForElementToBeDisplayed(android.R.id.button1) // sign out button is an Android system resources identifier
+            // sign out button is an Android system resources identifier
+            waitForElementToBeDisplayed(android.R.id.button1)
             clickOn(android.R.id.button1)
         })
 
-        waitForElementToBeDisplayed((R.id.button_login_store)) // login screen should be displayed after logging out
+        // login screen should be displayed after logging out
+        waitForElementToBeDisplayed((R.id.button_login_store))
     }
 
     private fun retryAction(action: () -> Unit, maxAttempts: Int = 3) {
         var attempts = 0
         var success = false
+        var lastError: AssertionError? = null
         while (!success && attempts < maxAttempts) {
             try {
                 action()
                 success = true
-            } catch (e: Exception) {
+            } catch (e: AssertionError) {
+                lastError = e // Capture the last AssertionError
                 Thread.sleep(1000) // Wait for 1 second before retrying
                 attempts++
             }
         }
         if (!success) {
-            Assert.fail("Failed to perform action after $maxAttempts attempts")
+            Assert.fail("Failed to perform action after $maxAttempts attempts with error $lastError")
         }
     }
 }
