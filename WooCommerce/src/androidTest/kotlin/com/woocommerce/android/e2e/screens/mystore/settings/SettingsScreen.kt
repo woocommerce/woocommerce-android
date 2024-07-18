@@ -63,5 +63,6 @@ class SettingsScreen : Screen {
         // Confirm Log Out
         waitForElementToBeDisplayed(android.R.id.button1) // sign out button is an Android system resources identifier
         clickOn(android.R.id.button1)
+        waitForElementToBeDisplayed((R.id.button_login_store)) // login screen should be displayed after logging out
     }
 }
