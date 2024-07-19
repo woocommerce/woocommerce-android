@@ -272,7 +272,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
-    private suspend fun SelectPaymentMethodViewModel.markAsCompletedAndUpdatePaymentMethod() {
+    private suspend fun markAsCompletedAndUpdatePaymentMethod() {
         val codGateway = gatewayStore.getGateway(selectedSite.get(), CASH_ON_DELIVERY_PAYMENT_TYPE)
         updateOrderStatusAndPaymentMethod(
             Order.Status.Completed.value,
