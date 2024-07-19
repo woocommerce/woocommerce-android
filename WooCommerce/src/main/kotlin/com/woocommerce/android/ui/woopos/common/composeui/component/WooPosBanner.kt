@@ -39,6 +39,7 @@ fun WooPosBanner(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(bottom = 8.dp)
     ) {
         Card(
             shape = RoundedCornerShape(8.dp),
