@@ -693,7 +693,10 @@ class AnalyticsHubViewModel @Inject constructor(
             itemTitleValue = googleAdsStats.totals.formatSales(currencyFormatter).orEmpty(),
             delta = googleAdsStats.deltaPercentage
                 .run { this as? DeltaPercentage.Value }?.value,
-            reportUrl = null,
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.GoogleAds
+            ),
             items = googleAdsStats.googleAdsCampaigns.map {
                 AnalyticsHubListCardItemViewState(
                     title = it.name.orEmpty(),
@@ -773,7 +776,7 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 }
 
-enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard }
+enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard, GoogleAds }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {
@@ -782,6 +785,7 @@ fun AnalyticsCards.toReportCard(): ReportCard? {
         AnalyticsCards.Products -> ReportCard.Products
         AnalyticsCards.Bundles -> ReportCard.Bundles
         AnalyticsCards.GiftCards -> ReportCard.GiftCard
+        AnalyticsCards.GoogleAds -> ReportCard.GoogleAds
         else -> null
     }
 }
