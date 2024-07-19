@@ -36,12 +36,15 @@ class AnalyticsHubListCardItemView @JvmOverloads constructor(
             value = viewState.value
         )
 
-        Glide
-            .with(binding.root.context)
-            .load(PhotonUtils.getPhotonImageUrl(viewState.imageUri, imageSize, imageSize))
-            .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
-            .placeholder(R.drawable.ic_product)
-            .into(binding.analyticsCardListItemImage)
+        if (viewState.showImage) {
+            Glide.with(binding.root.context)
+                .load(PhotonUtils.getPhotonImageUrl(viewState.imageUri, imageSize, imageSize))
+                .transform(CenterCrop(), RoundedCorners(imageCornerRadius))
+                .placeholder(R.drawable.ic_product)
+                .into(binding.analyticsCardListItemImage)
+        } else {
+            binding.analyticsCardListItemImage.visibility = GONE
+        }
     }
 
     private fun getViewContentDescription(context: Context, title: String, description: String, value: String): String {

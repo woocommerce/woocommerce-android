@@ -703,7 +703,8 @@ class AnalyticsHubViewModel @Inject constructor(
                     description = resourceProvider.getString(
                         R.string.analytics_spend_value,
                         it.subtotal?.formatSpend(currencyFormatter).orEmpty()
-                    )
+                    ),
+                    showImage = false
                 )
             }
         )
