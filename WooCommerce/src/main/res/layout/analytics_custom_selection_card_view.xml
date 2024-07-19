@@ -31,12 +31,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
-            android:textSize="@dimen/text_minor_80"
+            android:textSize="@dimen/text_minor_125"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:lineHeight="@dimen/text_major_50"
-            tools:text="GOOGLE: PROGRAMS"/>
+            tools:text="Google Campaigns"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/analyticsItems"
