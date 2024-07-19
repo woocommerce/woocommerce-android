@@ -28,6 +28,10 @@ class ExitAwareWebViewViewModel @Inject constructor(
     // so this flag is used to ensure that the event is only emitted once.
     private var isUrlToLoadFinishedOnce = false
 
+    // `WebView`s onPageFinished callback is still called even if the url failed to load.
+    // This flag is used to ensure it is not emitted on failure.
+    private var isUrlLoadingFailed = false
+
     val viewState = navArgs.let {
         ViewState(
             urlToLoad = it.urlToLoad,
@@ -52,6 +56,11 @@ class ExitAwareWebViewViewModel @Inject constructor(
     }
 
     fun onPageFinished(url: String) {
+        if (isUrlLoadingFailed) {
+            isUrlLoadingFailed = false
+            return
+        }
+
         if (url == viewState.urlToLoad && !isUrlToLoadFinishedOnce) {
             isUrlToLoadFinishedOnce = true
             launch {
@@ -65,6 +74,13 @@ class ExitAwareWebViewViewModel @Inject constructor(
             sharedWebViewFlow.emitEvent(WebViewEvent.onWebViewClosed)
         }
         triggerEvent(Exit)
+    }
+
+    fun onUrlFailed(url: String, errorCode: Int?) {
+        isUrlLoadingFailed = true
+        launch {
+            sharedWebViewFlow.emitEvent(WebViewEvent.onUrlFailed(url, errorCode))
+        }
     }
 
     data class ViewState(

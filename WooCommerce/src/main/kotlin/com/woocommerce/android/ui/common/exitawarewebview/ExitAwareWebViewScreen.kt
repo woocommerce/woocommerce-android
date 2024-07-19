@@ -24,6 +24,7 @@ fun ExitAwareWebViewScreen(viewViewModel: ExitAwareWebViewViewModel) {
         userAgent = viewViewModel.userAgent,
         onUrlLoaded = viewViewModel::onUrlLoaded,
         onPageFinished = viewViewModel::onPageFinished,
+        onUrlFailed = viewViewModel::onUrlFailed,
         onClose = viewViewModel::onClose
     )
 }
@@ -34,6 +35,7 @@ fun ExitAwareWebViewScreen(
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
     onPageFinished: (String) -> Unit,
+    onUrlFailed: (String, Int?) -> Unit,
     onClose: () -> Unit,
     clearCache: Boolean = false
 ) {
@@ -55,6 +57,7 @@ fun ExitAwareWebViewScreen(
             userAgent = userAgent,
             onUrlLoaded = onUrlLoaded,
             onPageFinished = onPageFinished,
+            onUrlFailed = onUrlFailed,
             captureBackPresses = viewState.captureBackButton,
             clearCache = clearCache,
             modifier = Modifier
