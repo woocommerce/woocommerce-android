@@ -21,7 +21,9 @@ enum class AnalyticsCards(
     GoogleAds(R.string.analytics_google_ads_card_title, isPlugin = true);
 
     /**
-     * Changing the AnalyticsCard name can cause crashes due to the attachment of the name with the Data Store.
+     * Changing the AnalyticsCard name can cause crashes due to the attachment of the name with
+     * the Analytics Hub Settings Data Store.
+     *
      * To allow us to update the tracked name without causing issues to the Hub settings storage,
      * this field separates the AnalyticsCard definition from the tracked information.
      */
