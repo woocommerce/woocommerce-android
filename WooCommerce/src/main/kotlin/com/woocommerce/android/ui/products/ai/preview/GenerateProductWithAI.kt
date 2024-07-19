@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.products.ai.preview
 
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.WooException
 import com.woocommerce.android.ai.AIRepository
 import com.woocommerce.android.ai.AIRepository.JetpackAICompletionsException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -10,7 +13,6 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ai.AIProductModel
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -18,6 +20,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.AI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 class GenerateProductWithAI @Inject constructor(
@@ -25,7 +28,8 @@ class GenerateProductWithAI @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val categoriesRepository: ProductCategoriesRepository,
     private val tagsRepository: ProductTagsRepository,
-    private val parametersRepository: ParameterRepository
+    private val parametersRepository: ParameterRepository,
+    private val appPrefs: AppPrefsWrapper
 ) {
     private lateinit var languageISOCode: String
     private var isProductCategoriesFetched = false
@@ -54,8 +58,7 @@ class GenerateProductWithAI @Inject constructor(
 
         return aiRepository.generateProduct(
             productKeyWords = productFeatures,
-            // TODO pass the tone to use
-            tone = AboutProductSubViewModel.AiTone.Casual.name,
+            tone = appPrefs.aiContentGenerationTone.name,
             weightUnit = siteParameters.weightUnit!!,
             dimensionUnit = siteParameters.dimensionUnit!!,
             currency = siteParameters.currencyCode!!,
@@ -68,7 +71,7 @@ class GenerateProductWithAI @Inject constructor(
                 existingCategories = existingCategories,
                 existingTags = existingTags,
             )
-        }
+        }.handleTracking()
     }
 
     private suspend fun getCategories(): Result<List<ProductCategory>> {
@@ -133,5 +136,32 @@ class GenerateProductWithAI @Inject constructor(
                     )
                 )
             }
+    }
+
+    private fun Result<AIProductModel>.handleTracking() = onSuccess {
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS)
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATED_NAME_DESCRIPTION_OPTIONS,
+            mapOf(
+                "name" to it.names.size,
+                "short_description" to it.shortDescriptions.size,
+                "description" to it.descriptions.size
+            )
+        )
+    }.onFailure {
+        val errorType = when (it) {
+            is JetpackAICompletionsException -> it.errorType
+            is OnChangedException -> (it.error as? WCProductStore.ProductError)?.type?.name
+            is WooException -> it.error.type.name
+            else -> null
+        }
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_FAILED,
+            mapOf(
+                AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                AnalyticsTracker.KEY_ERROR_TYPE to errorType,
+                AnalyticsTracker.KEY_ERROR_DESC to it.message
+            )
+        )
     }
 }
