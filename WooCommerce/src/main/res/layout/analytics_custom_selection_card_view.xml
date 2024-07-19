@@ -128,7 +128,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/analyticsListLeftHeader"
             tools:itemCount="6"
-            tools:listitem="@layout/analytics_custom_list_card_item_view"/>
+            tools:listitem="@layout/analytics_list_card_item_view"/>
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/reportDivider"
