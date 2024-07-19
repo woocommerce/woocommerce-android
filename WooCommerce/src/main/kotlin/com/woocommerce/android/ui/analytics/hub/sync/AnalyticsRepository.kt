@@ -508,31 +508,31 @@ class AnalyticsRepository @Inject constructor(
         currentRangeResponse: WCGoogleAdsPrograms,
         previousRangeResponse: WCGoogleAdsPrograms?
     ) = GoogleAdsResult.GoogleAdsData(
-            GoogleAdsStat(
-                googleAdsCampaigns = currentRangeResponse.campaigns?.map {
-                    GoogleAdsCampaign(
-                        id = it.id ?: 0L,
-                        name = it.name,
-                        subtotal = it.subtotal.let { subtotal ->
-                            GoogleAdsTotals(
-                                sales = subtotal.sales,
-                                spend = subtotal.spend
-                            )
-                        }
-                    )
-                } ?: emptyList(),
-                totals = currentRangeResponse.totals.let {
-                    GoogleAdsTotals(
-                        sales = it?.sales ?: 0.0,
-                        spend = it?.spend ?: 0.0
-                    )
-                },
-                deltaPercentage = calculateDeltaPercentage(
-                    previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
-                    currentVal = currentRangeResponse.totals?.sales ?: 0.0
+        GoogleAdsStat(
+            googleAdsCampaigns = currentRangeResponse.campaigns?.map {
+                GoogleAdsCampaign(
+                    id = it.id ?: 0L,
+                    name = it.name,
+                    subtotal = it.subtotal.let { subtotal ->
+                        GoogleAdsTotals(
+                            sales = subtotal.sales,
+                            spend = subtotal.spend
+                        )
+                    }
                 )
+            } ?: emptyList(),
+            totals = currentRangeResponse.totals.let {
+                GoogleAdsTotals(
+                    sales = it?.sales ?: 0.0,
+                    spend = it?.spend ?: 0.0
+                )
+            },
+            deltaPercentage = calculateDeltaPercentage(
+                previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
+                currentVal = currentRangeResponse.totals?.sales ?: 0.0
             )
         )
+    )
 
     companion object {
         const val ZERO_VALUE = 0.0
