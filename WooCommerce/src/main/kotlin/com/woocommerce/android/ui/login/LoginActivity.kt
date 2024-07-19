@@ -69,6 +69,7 @@ import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.network.MemorizingTrustManager
 import org.wordpress.android.fluxc.store.AccountStore.AuthEmailPayloadScheme.WOOCOMMERCE
 import org.wordpress.android.fluxc.store.SiteStore
@@ -351,6 +352,8 @@ class LoginActivity :
         val isMagicLinkEnabled =
             getLoginMode() != LoginMode.WPCOM_LOGIN_DEEPLINK && getLoginMode() != LoginMode.SHARE_INTENT
         email?.let { appPrefsWrapper.setLoginEmail(it) }
+        clearCachedSites()
+
         if (authOptions != null) {
             if (authOptions.isPasswordless) {
                 showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
@@ -582,6 +585,8 @@ class LoginActivity :
         org.wordpress.android.util.ActivityUtils.hideKeyboard(this)
 
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_CREDS)
+
+        clearCachedSites()
         showUsernamePasswordScreen(inputSiteAddress, null, null, null)
     }
 
@@ -952,6 +957,13 @@ class LoginActivity :
             )
         )
         openQrCodeScannerFragment()
+    }
+
+    private fun clearCachedSites() {
+        // Clear all sites from the DB to avoid any conflicts with the new login
+        // Sometimes, the same website could be fetched from different APIs (WPCom or WPApi), and if cached twice
+        // during successive login attempts, it leads to some issues later
+        dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
     }
 
     private fun handleAppLoginUri(uri: Uri) {

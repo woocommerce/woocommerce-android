@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
+import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.NetworkStatus
@@ -50,7 +51,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
+import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderChanged
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -58,6 +61,8 @@ import java.math.BigDecimal
 
 private const val PAYMENT_URL = "paymentUrl"
 private const val ORDER_TOTAL = "100$"
+private const val DEFAULT_PAYMENT_METHOD_TITLE = "Pay in Person"
+private const val CUSTOM_PAYMENT_METHOD_TITLE = "Custom title"
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SelectPaymentMethodViewModelTest : BaseUnitTest() {
@@ -78,8 +83,18 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock {
         onBlocking { getOrderByIdAndSite(any(), any()) }.thenReturn(orderEntity)
         on { getOrderStatusForSiteAndKey(any(), any()) }.thenReturn(mock())
+        onBlocking { updateOrderStatusAndPaymentMethod(any(), any(), any(), any(), any()) }.thenReturn(
+            flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+        )
+        onBlocking { updateOrderStatus(any(), any(), any()) }.thenReturn(
+            flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+        )
     }
-    private val networkStatus: NetworkStatus = mock()
+
+    private val gatewayStore: WCGatewayStore = mock()
+    private val networkStatus: NetworkStatus = mock {
+        on { isConnected() }.thenReturn(true)
+    }
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(any<BigDecimal>(), any(), any()) }.thenReturn(ORDER_TOTAL)
     }
@@ -404,6 +419,54 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 paymentMethod = "cash",
                 cardReaderType = null,
                 timeElapsed = null,
+            )
+        }
+
+    @Test
+    fun `given gateway cached, when cash payment confirmed, then custom payment title used`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
+            whenever(gatewayStore.getGateway(any(), any())).thenReturn(
+                generatePaymentGateway(
+                    id = CASH_ON_DELIVERY_PAYMENT_TYPE,
+                    title = CUSTOM_PAYMENT_METHOD_TITLE,
+                )
+            )
+            whenever(orderStore.updateOrderStatusAndPaymentMethod(any(), any(), any(), any(), any())).thenReturn(
+                flowOf(WCOrderStore.UpdateOrderResult.RemoteUpdateResult(OnOrderChanged()))
+            )
+
+            // WHEN
+            viewModel.handleIsOrderPaid(true)
+
+            // THEN
+            verify(orderStore).updateOrderStatusAndPaymentMethod(
+                any(),
+                any(),
+                any(),
+                eq(CASH_ON_DELIVERY_PAYMENT_TYPE),
+                eq(CUSTOM_PAYMENT_METHOD_TITLE),
+            )
+        }
+
+    @Test
+    fun `given gateway NOT cached, when cash payment confirmed, then default payment title used`() =
+        testBlocking {
+            // GIVEN
+            val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
+            whenever(gatewayStore.getGateway(any(), any())).thenReturn(null)
+
+            // WHEN
+            viewModel.handleIsOrderPaid(true)
+
+            // THEN
+            verify(orderStore).updateOrderStatusAndPaymentMethod(
+                any(),
+                any(),
+                any(),
+                eq(CASH_ON_DELIVERY_PAYMENT_TYPE),
+                eq(DEFAULT_PAYMENT_METHOD_TITLE),
             )
         }
 
@@ -1125,6 +1188,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             SelectPaymentMethodFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).toSavedStateHandle(),
             selectedSite,
             orderStore,
+            gatewayStore,
             coroutinesTestRule.testDispatchers,
             networkStatus,
             currencyFormatter,
@@ -1138,5 +1202,18 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             appPrefs,
             paymentsUtils,
         )
+    }
+
+    private fun generatePaymentGateway(
+        id: String = "",
+        title: String = "",
+        description: String = "",
+        order: Int = 0,
+        isEnabled: Boolean = true,
+        methodTitle: String = "",
+        methodDescription: String = "",
+        features: List<String> = listOf()
+    ): WCGatewayModel {
+        return WCGatewayModel(id, title, description, order, isEnabled, methodTitle, methodDescription, features)
     }
 }
