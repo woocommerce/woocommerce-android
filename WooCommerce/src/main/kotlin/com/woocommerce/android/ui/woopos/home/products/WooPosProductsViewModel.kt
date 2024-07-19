@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -19,6 +20,7 @@ class WooPosProductsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val priceFormat: WooPosFormatPrice,
+    private val appPrefsWrapper: AppPrefsWrapper,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
@@ -56,7 +58,18 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
                 reloadProducts()
             }
+
+            WooPosProductsUIEvent.SimpleProductsOnlyBannerClosed -> {
+                onBannerClosed()
+            }
         }
+    }
+
+    private fun onBannerClosed() {
+        appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown = true
+        _viewState.value = (_viewState.value as? WooPosProductsViewState.Content)?.copy(
+            isSimpleProductsOnlyBannerShown = true
+        )!!
     }
 
     private fun reloadProducts() {
@@ -93,6 +106,7 @@ class WooPosProductsViewModel @Inject constructor(
                 imageUrl = product.firstImageUrl,
             )
         },
+        isSimpleProductsOnlyBannerShown = appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown,
         loadingMore = false,
         reloadingProducts = false,
     )
@@ -123,5 +137,9 @@ class WooPosProductsViewModel @Inject constructor(
                 ChildToParentEvent.ItemClickedInProductSelector(item.id)
             )
         }
+    }
+
+    private fun shouldShowProductsOnlyBanner(): Boolean {
+        return appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown
     }
 }
