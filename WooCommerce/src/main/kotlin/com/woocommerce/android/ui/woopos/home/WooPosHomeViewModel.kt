@@ -111,6 +111,12 @@ class WooPosHomeViewModel @Inject constructor(
                             }
                         }
                     }
+
+                    ChildToParentEvent.ExitPosClicked -> {
+                        _state.value = _state.value.copy(
+                            exitConfirmationDialog = WooPosExitConfirmationDialog
+                        )
+                    }
                 }
             }
         }

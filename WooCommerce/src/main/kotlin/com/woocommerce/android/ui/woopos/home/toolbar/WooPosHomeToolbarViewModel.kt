@@ -8,6 +8,12 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarUIEvent.ConnectToAReaderClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarUIEvent.MenuItemClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarUIEvent.OnOutsideOfToolbarMenuClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarUIEvent.OnToolbarMenuClicked
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosHomeToolbarViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosHomeToolbarState(
@@ -38,37 +45,37 @@ class WooPosHomeToolbarViewModel @Inject constructor(
 
     fun onUiEvent(event: WooPosHomeToolbarUIEvent) {
         val currentState = _state.value
-        if (currentState.menu is WooPosHomeToolbarState.Menu.Visible && event !is WooPosHomeToolbarUIEvent.MenuItemClicked) {
+        if (currentState.menu is WooPosHomeToolbarState.Menu.Visible && event !is MenuItemClicked) {
             hideMenu()
             return
         }
 
         when (event) {
-            is WooPosHomeToolbarUIEvent.OnToolbarMenuClicked -> {
+            is OnToolbarMenuClicked -> {
                 _state.value = currentState.copy(
                     menu = WooPosHomeToolbarState.Menu.Visible(toolbarMenuItems)
                 )
             }
 
-            WooPosHomeToolbarUIEvent.ConnectToAReaderClicked -> handleConnectToReaderButtonClicked()
+            ConnectToAReaderClicked -> handleConnectToReaderButtonClicked()
 
-            is WooPosHomeToolbarUIEvent.MenuItemClicked -> handleMenuItemClicked(event)
+            is MenuItemClicked -> handleMenuItemClicked(event)
 
-            is WooPosHomeToolbarUIEvent.OnOutsideOfToolbarMenuClicked -> {
+            is OnOutsideOfToolbarMenuClicked -> {
                 // Do nothing as the menu is hidden already, but we need to pass the event here anyway
             }
         }
     }
 
-    private fun handleMenuItemClicked(event: WooPosHomeToolbarUIEvent.MenuItemClicked) {
+    private fun handleMenuItemClicked(event: MenuItemClicked) {
         hideMenu()
 
         when (event.menuItem.title) {
             R.string.woopos_get_support_title -> TODO()
             R.string.woopos_exit_confirmation_title ->
-                _state.value = _state.value.copy(
-                    exitConfirmationDialog = WooPosHomeToolbarState.WooPosExitConfirmationDialog
-                )
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
+                }
         }
     }
 
