@@ -9,6 +9,7 @@ sealed class WooPosProductsViewState(
     data class Content(
         val products: List<WooPosProductsListItem>,
         val loadingMore: Boolean,
+        val isSimpleProductsOnlyBannerShown: Boolean,
         override val reloadingProducts: Boolean = false,
     ) : WooPosProductsViewState(reloadingProducts)
 
