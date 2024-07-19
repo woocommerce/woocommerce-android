@@ -11,6 +11,7 @@ import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.ui.analytics.hub.GetAnalyticPluginsCardActive
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewModel.Companion.MARKETPLACE
+import com.woocommerce.android.util.FeatureFlag.GOOGLE_ADS_ANALYTICS_HUB_M1
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -50,6 +51,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
             activePluginCards = getAnalyticPluginsCardActive()
             observeAnalyticsCardsConfiguration().first().let { configuration ->
                 currentConfiguration = configuration
+                    .filterNot { it.card == AnalyticsCards.GoogleAds && GOOGLE_ADS_ANALYTICS_HUB_M1.isEnabled().not() }
                     .map { it.toConfigurationUI(activePluginCards) }
                     .sortedByDescending { it is AnalyticCardConfigurationUI.SelectableCardConfigurationUI }
                 draftConfiguration = currentConfiguration
@@ -104,7 +106,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         val enabledCards = mutableListOf<String>()
         val disabledCards = mutableListOf<String>()
         configuration.forEach { cardConfiguration ->
-            val cardName = cardConfiguration.card.name.lowercase()
+            val cardName = cardConfiguration.card.trackName
             if (cardConfiguration.isVisible) {
                 enabledCards.add(cardName)
             } else {
@@ -218,6 +220,7 @@ fun AnalyticCardConfiguration.toConfigurationUI(activePluginCards: Set<Analytics
             AnalyticsCards.Bundles -> PluginUrls.BUNDLES_URL
             AnalyticsCards.GiftCards -> PluginUrls.GIFT_CARDS_URL
             AnalyticsCards.Session -> PluginUrls.JETPACK_URL
+            AnalyticsCards.GoogleAds -> PluginUrls.GOOGLE_ADS_URL
             else -> MARKETPLACE
         }
         AnalyticCardConfigurationUI.ExploreCardConfigurationUI(

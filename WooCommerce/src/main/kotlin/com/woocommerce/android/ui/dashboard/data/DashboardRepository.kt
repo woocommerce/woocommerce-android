@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.data
 
 import com.woocommerce.android.R
 import com.woocommerce.android.di.SiteComponentEntryPoint
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
@@ -10,20 +11,21 @@ import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @ActivityRetainedScoped
+@Suppress("LongParameterList")
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
     observeSiteOrdersState: ObserveSiteOrdersState,
     observeBlazeWidgetStatus: ObserveBlazeWidgetStatus,
     observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus,
-    observeStockWidgetStatus: ObserveStockWidgetStatus
+    observeStockWidgetStatus: ObserveStockWidgetStatus,
+    observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus
 ) {
     private val siteCoroutineScope = EntryPoints.get(
         selectedSite.siteComponent!!,
@@ -58,18 +60,27 @@ class DashboardRepository @Inject constructor(
             initialValue = DashboardWidget.Status.Hidden
         )
 
+    private val googleAdsWidgetStatus = observeGoogleAdsWidgetStatus()
+        .stateIn(
+            scope = siteCoroutineScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = DashboardWidget.Status.Hidden
+        )
+
     val widgets = combine(
         dashboardDataStore.widgets,
         siteOrdersState,
         blazeWidgetStatus,
         onboardingWidgetStatus,
-        stockWidgetStatus
-    ) { widgets, siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus, stockWidgetStatus ->
+        stockWidgetStatus,
+        googleAdsWidgetStatus
+    ) { widgets, siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus, stockWidgetStatus, googleAdsWidgetStatus ->
         widgets.toDomainModel(
             siteOrdersState,
             blazeWidgetStatus,
             onboardingWidgetStatus,
-            stockWidgetStatus
+            stockWidgetStatus,
+            googleAdsWidgetStatus
         )
     }
 
@@ -113,7 +124,8 @@ class DashboardRepository @Inject constructor(
         siteOrdersState: DashboardWidget.Status,
         blazeWidgetStatus: DashboardWidget.Status,
         onboardingWidgetStatus: DashboardWidget.Status,
-        stockWidgetStatus: DashboardWidget.Status
+        stockWidgetStatus: DashboardWidget.Status,
+        googleAdsWidgetStatus: DashboardWidget.Status
     ): List<DashboardWidget> {
         return map { widget ->
             val type = DashboardWidget.Type.valueOf(widget.type)
@@ -128,6 +140,7 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
                     DashboardWidget.Type.STOCK -> stockWidgetStatus
+                    DashboardWidget.Type.GOOGLE_ADS -> googleAdsWidgetStatus
 
                     else -> DashboardWidget.Status.Available
                 }

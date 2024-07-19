@@ -15,14 +15,16 @@ import com.woocommerce.android.ui.compose.theme.WooTypography
 
 data class CustomColors(
     val loadingSkeleton: Color,
-    val border: Color
+    val border: Color,
+    val success: Color,
+    val error: Color,
 )
 
 private val DarkColorPalette = darkColors(
     primary = Color(0xFF9C70D3),
     primaryVariant = Color(0xFF3700B3),
     onPrimary = Color.White,
-    secondary = Color(0xFF03DAC5),
+    secondary = Color(0xFF0A9400),
     secondaryVariant = Color(0xFF8D8D8D),
     surface = Color(0xFF121212),
     onSurface = Color.White,
@@ -44,12 +46,16 @@ private val LightColorPalette = lightColors(
 
 private val DarkCustomColors = CustomColors(
     loadingSkeleton = Color(0xFF616161),
-    border = Color(0xFF8D8D8D)
+    border = Color(0xFF8D8D8D),
+    success = Color(0xFF06B166),
+    error = Color(0xFFBE4400),
 )
 
 private val LightCustomColors = CustomColors(
     loadingSkeleton = Color(0xFFE1E1E1),
-    border = Color(0xFFC6C6C8)
+    border = Color(0xFFC6C6C8),
+    success = Color(0xFF03D479),
+    error = Color(0xFFF16618),
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {

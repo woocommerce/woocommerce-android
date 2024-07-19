@@ -11,8 +11,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone.Casual
+import com.woocommerce.android.ui.products.ai.AiTone.Casual
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -23,7 +22,8 @@ import kotlinx.coroutines.withContext
 import java.math.BigDecimal
 import javax.inject.Inject
 
-class GenerateProductWithAI @Inject constructor(
+// TODO remove this when cleaning up legacy code for product creation
+class GenerateProductWithAILegacy @Inject constructor(
     private val aiRepository: AIRepository,
     private val categoriesRepository: ProductCategoriesRepository,
     private val tagsRepository: ProductTagsRepository,
@@ -67,7 +67,7 @@ class GenerateProductWithAI @Inject constructor(
             return Result.failure(it)
         }
 
-        return aiRepository.generateProduct(
+        return aiRepository.generateProductLegacy(
             productName = productName,
             productKeyWords = productKeyWords,
             tone = tone.slug,
