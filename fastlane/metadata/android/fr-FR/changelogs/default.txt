@@ -1,0 +1,2 @@
+19.5 :
+Nous sommes heureux de vous présenter la dernière mise à jour de notre application mobile WooCommerce ! Personnalisez votre expérience avec des icônes d’application à thème et profitez de la nouvelle section Client dans le menu principal, où les commerçants peuvent gérer sans effort les contacts client et se plonger dans les statistiques clients. Par ailleurs, nous avons amélioré la compatibilité avec Android 14. Découvrez ces améliorations et plus encore dans cette nouvelle version !
