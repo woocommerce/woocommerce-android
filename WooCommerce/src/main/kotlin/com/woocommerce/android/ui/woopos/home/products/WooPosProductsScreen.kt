@@ -52,10 +52,12 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBanner
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductListReached
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.PullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.SimpleProductsOnlyBannerClosed
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -70,7 +72,8 @@ fun WooPosProductsScreen(modifier: Modifier = Modifier) {
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
         onEndOfProductListReached = { productsViewModel.onUIEvent(EndOfProductListReached) },
-        onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) }
+        onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) },
+        onBannerClosed = { productsViewModel.onUIEvent(SimpleProductsOnlyBannerClosed) }
     )
 }
 
@@ -82,6 +85,7 @@ private fun WooPosProductsScreen(
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
+    onBannerClosed: () -> Unit,
 ) {
     val state = productsStateFlow.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
@@ -108,11 +112,25 @@ private fun WooPosProductsScreen(
             Spacer(modifier = Modifier.height(24.dp))
             when (val productsState = state.value) {
                 is WooPosProductsViewState.Content -> {
-                    ProductsList(
-                        productsState,
-                        onItemClicked,
-                        onEndOfProductListReached,
-                    )
+                    Column {
+                        if (!productsState.isSimpleProductsOnlyBannerShown) {
+                            WooPosBanner(
+                                title = stringResource(id = R.string.woopos_banner_simple_products_only_title),
+                                message = stringResource(id = R.string.woopos_banner_simple_products_only_message),
+                                onClose = {
+                                    onBannerClosed()
+                                },
+                                onLearnMore = {
+
+                                }
+                            )
+                        }
+                        ProductsList(
+                            productsState,
+                            onItemClicked,
+                            onEndOfProductListReached,
+                        )
+                    }
                 }
 
                 is WooPosProductsViewState.Loading -> {
@@ -355,6 +373,7 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             ),
             loadingMore = true,
             reloadingProducts = true,
+            isSimpleProductsOnlyBannerShown = false
         )
     )
     WooPosTheme {
@@ -364,6 +383,7 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
+            onBannerClosed = {}
         )
     }
 }
@@ -379,6 +399,7 @@ fun WooPosHomeScreenLoadingPreview() {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
+            onBannerClosed = {}
         )
     }
 }
@@ -394,6 +415,7 @@ fun WooPosHomeScreenEmptyListPreview() {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
+            onBannerClosed = {}
         )
     }
 }
