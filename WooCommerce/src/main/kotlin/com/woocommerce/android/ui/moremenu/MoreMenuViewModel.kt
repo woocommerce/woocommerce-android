@@ -48,6 +48,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.net.URL
 import javax.inject.Inject
 
@@ -299,9 +300,9 @@ class MoreMenuViewModel @Inject constructor(
         return hasGoogleAdsCampaigns().fold(
             onSuccess = { hasCampaigns ->
                 if (hasCreatedGoogleAdsCampaign || hasCampaigns) {
-                    baseUrl + AppUrls.GOOGLE_ADMIN_DASHBOARD
+                    baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_DASHBOARD)
                 } else {
-                    baseUrl + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+                    baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)
                 }
             },
             onFailure = { error ->
