@@ -1,13 +1,14 @@
 package com.woocommerce.android.ui.dashboard.domain
 
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import kotlinx.coroutines.flow.Flow
+import com.woocommerce.android.util.ResultWithOutdatedFlag
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import javax.inject.Inject
 
@@ -20,16 +21,58 @@ class GetTopPerformers @Inject constructor(
         const val NUM_TOP_PERFORMERS = 5
     }
 
-    fun observeTopPerformers(selectedRange: StatsTimeRangeSelection): Flow<List<TopPerformerProduct>> {
-        return statsRepository.observeTopPerformers(selectedRange.currentRange)
-            .map { topPerformersProductEntities ->
-                topPerformersProductEntities
-                    .map { it.toTopPerformerProduct() }
-                    .sortDescByQuantityAndTotal()
-            }.flowOn(coroutineDispatchers.computation)
-    }
+    suspend operator fun invoke(
+        selectedRange: StatsTimeRangeSelection,
+        refresh: Boolean = false
+    ) = flow {
+        val isForcedRefresh = shouldUpdateStats(selectedRange, refresh)
+        val startDate = selectedRange.currentRange.start.formatToYYYYmmDDhhmmss()
+        val endDate = selectedRange.currentRange.end.formatToYYYYmmDDhhmmss()
 
-    suspend fun fetchTopPerformers(
+        val cachedTopPerformers =
+            statsRepository.getTopPerformers(startDate, endDate).map { topPerformersProductEntity ->
+                topPerformersProductEntity.toTopPerformerProduct()
+            }.sortDescByQuantityAndTotal()
+
+        emit(
+            when {
+                cachedTopPerformers.isEmpty() && isForcedRefresh.not() ->
+                    TopPerformerResult.Success(
+                        ResultWithOutdatedFlag(cachedTopPerformers, false)
+                    )
+                cachedTopPerformers.isEmpty() && isForcedRefresh && refresh.not() -> TopPerformerResult.Loading
+                else -> TopPerformerResult.Success(ResultWithOutdatedFlag(cachedTopPerformers, isForcedRefresh))
+            }
+        )
+
+        if (isForcedRefresh.not()) return@flow
+
+        fetchTopPerformers(
+            selectedRange = selectedRange,
+            refresh = refresh
+        ).fold(
+            onFailure = { e -> emit(TopPerformerResult.Error(e)) },
+            onSuccess = {
+                statsRepository.getTopPerformers(startDate, endDate)
+                    .map { topPerformersProductEntity ->
+                        topPerformersProductEntity.toTopPerformerProduct()
+                    }
+                    .sortDescByQuantityAndTotal()
+                    .let {
+                        emit(
+                            TopPerformerResult.Success(
+                                ResultWithOutdatedFlag(
+                                    value = it,
+                                    isOutdated = false
+                                )
+                            )
+                        )
+                    }
+            }
+        )
+    }.flowOn(coroutineDispatchers.computation)
+
+    private suspend fun fetchTopPerformers(
         selectedRange: StatsTimeRangeSelection,
         refresh: Boolean = false,
         topPerformersCount: Int = NUM_TOP_PERFORMERS,
@@ -88,4 +131,10 @@ class GetTopPerformers @Inject constructor(
         val total: Double,
         val imageUrl: String?
     )
+
+    sealed class TopPerformerResult {
+        data object Loading : TopPerformerResult()
+        data class Error(val exception: Throwable) : TopPerformerResult()
+        data class Success(val topPerformers: ResultWithOutdatedFlag<List<TopPerformerProduct>>) : TopPerformerResult()
+    }
 }
