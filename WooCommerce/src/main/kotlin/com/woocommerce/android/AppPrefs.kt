@@ -123,6 +123,7 @@ object AppPrefs {
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
         AI_PRODUCT_CREATION_SURVEY_DISMISSED,
+        WOO_POS_SIMPLE_PRODUCTS_ONLY_BANNER_SHOWN,
     }
 
     /**
@@ -1040,6 +1041,16 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.AI_PRODUCT_CREATION_SURVEY_DISMISSED,
+            value = value
+        )
+
+    var isWooPosSimpleProductsOnlyShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.WOO_POS_SIMPLE_PRODUCTS_ONLY_BANNER_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.WOO_POS_SIMPLE_PRODUCTS_ONLY_BANNER_SHOWN,
             value = value
         )
 
