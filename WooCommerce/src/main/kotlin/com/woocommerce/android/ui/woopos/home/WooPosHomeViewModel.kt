@@ -89,7 +89,6 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.Paid
                         )
-
                     }
 
                     is ChildToParentEvent.CartStatusChanged -> {
