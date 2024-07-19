@@ -6,9 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
+import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +38,17 @@ class AiProductPreviewFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is AiProductPreviewViewModel.NavigateToProductDetailScreen -> findNavController().navigateSafely(
+                    directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
+                        mode = ProductDetailFragment.Mode.ShowProduct(
+                            remoteProductId = event.productId,
+                            afterGeneratedWithAi = true,
+                        )
+                    ),
+                    navOptions = navOptions {
+                        popUpTo(R.id.AiProductPromptFragment) { inclusive = true }
+                    }
+                )
             }
         }
     }

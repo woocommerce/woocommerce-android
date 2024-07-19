@@ -7,13 +7,15 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.Menu.MenuItem
 import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
-import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -22,11 +24,17 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class WooPosRootViewModelTest : BaseUnitTest() {
+@ExperimentalCoroutinesApi
+class WooPosRootViewModelTest {
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
         onBlocking { readerStatus }.thenReturn(flowOf(NotConnected()))
     }
+
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
+
+    private lateinit var cardReaderFacade: WooPosCardReaderFacade
 
     @Test
     fun `given reader disconnected, when status button clicked, then should connect`() = testBlocking {
@@ -40,7 +48,8 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given reader connected, when status button clicked, then should not connect`() = testBlocking {
+    fun `given reader connected, when status button clicked, then should not connect`() = runTest {
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val cardReader: CardReader = mock()
         whenever(cardReaderFacade.readerStatus).thenReturn(flow { emit(Connected(cardReader)) })
         val sut = createSut()
@@ -59,6 +68,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     @Test
     fun `when exit confirmation dialog dismissed, then dialog should be null`() = testBlocking {
         // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
         sut.onUiEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed)
 
@@ -69,6 +79,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     @Test
     fun `when exit confirmation dialog clicked, then dialog should be shown`() = testBlocking {
         // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
 
         // WHEN
@@ -93,8 +104,9 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() = testBlocking {
+    fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() {
         // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
 
         // WHEN
@@ -107,8 +119,9 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given reader status as not connected, should update state with not connected status`() = testBlocking {
+    fun `given reader status as not connected, should update state with not connected status`() = runTest {
         // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val notConnectedStatus = NotConnected()
 
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(notConnectedStatus))

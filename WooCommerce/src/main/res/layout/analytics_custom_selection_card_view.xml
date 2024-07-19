@@ -31,12 +31,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_00"
-            android:textSize="@dimen/text_minor_80"
+            android:textSize="@dimen/text_minor_125"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:lineHeight="@dimen/text_major_50"
-            tools:text="GOOGLE: PROGRAMS"/>
+            tools:text="Google Campaigns"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/analyticsItems"
@@ -57,7 +57,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/major_100"
                 android:focusable="false"
-                android:text="@string/analytics_total_sales_title"
                 android:textSize="@dimen/text_minor_125"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -72,7 +71,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/minor_00"
                 android:focusable="false"
-                android:text="@string/analytics_total_sales_title"
                 android:textSize="@dimen/text_major_50"
                 app:layout_constraintStart_toStartOf="@+id/analyticsItemsTitle"
                 app:layout_constraintTop_toBottomOf="@+id/analyticsItemsTitle"
@@ -101,7 +99,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/analytics_google_ads_programs_card_title"
             android:textSize="@dimen/text_minor_125"
             app:layout_constraintStart_toStartOf="@+id/analyticsItems"
             app:layout_constraintTop_toBottomOf="@+id/analyticsItems"
@@ -112,7 +109,6 @@
             android:id="@+id/analyticsListRightHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/analytics_total_sales_title"
             android:textSize="@dimen/text_minor_125"
             android:layout_marginEnd="@dimen/major_100"
             app:layout_constraintBottom_toBottomOf="@+id/analyticsListLeftHeader"
@@ -132,7 +128,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/analyticsListLeftHeader"
             tools:itemCount="6"
-            tools:listitem="@layout/analytics_custom_list_card_item_view"/>
+            tools:listitem="@layout/analytics_list_card_item_view"/>
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/reportDivider"
