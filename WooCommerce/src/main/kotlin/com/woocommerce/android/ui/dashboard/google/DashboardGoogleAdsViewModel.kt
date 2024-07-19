@@ -143,15 +143,25 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         launch {
             sharedWebViewFlow.webViewEventFlow.collect { event ->
                 when (event) {
-                    is WebViewEvent.onPageFinished -> onEntryPointUrlFinished()
+                    is WebViewEvent.onPageFinished -> onGoogleAdsFlowStarted()
+                    is WebViewEvent.onWebViewClosed -> onGoogleAdsFlowCanceled()
                 }
             }
         }
     }
 
-    private fun onEntryPointUrlFinished() {
+    private fun onGoogleAdsFlowStarted() {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.GOOGLEADS_FLOW_STARTED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+            )
+        )
+    }
+
+    private fun onGoogleAdsFlowCanceled() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_FLOW_CANCELED,
             properties = mapOf(
                 AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
             )

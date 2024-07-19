@@ -23,6 +23,7 @@ class ExitAwareWebViewViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: ExitAwareWebViewFragmentArgs by savedStateHandle.navArgs()
     private var isExiting = false
+
     // `WebView`'s onPageFinished callback is called multiple times when loading the same URL once,
     // so this flag is used to ensure that the event is only emitted once.
     private var isUrlToLoadFinishedOnce = false
@@ -60,6 +61,9 @@ class ExitAwareWebViewViewModel @Inject constructor(
     }
 
     fun onClose() {
+        launch {
+            sharedWebViewFlow.emitEvent(WebViewEvent.onWebViewClosed)
+        }
         triggerEvent(Exit)
     }
 

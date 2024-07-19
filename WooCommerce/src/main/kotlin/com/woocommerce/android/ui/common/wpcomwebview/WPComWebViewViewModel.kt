@@ -62,6 +62,9 @@ class WPComWebViewViewModel @Inject constructor(
     }
 
     fun onClose() {
+        launch {
+            sharedWebViewFlow.emitEvent(WebViewEvent.onWebViewClosed)
+        }
         triggerEvent(Exit)
     }
 
