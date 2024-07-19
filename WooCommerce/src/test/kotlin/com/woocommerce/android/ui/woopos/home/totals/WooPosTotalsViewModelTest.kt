@@ -19,6 +19,7 @@ import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
 import kotlin.test.Test
@@ -221,6 +222,42 @@ class WooPosTotalsViewModelTest {
         // THEN
         val state = viewModel.state.value as WooPosTotalsState.Error
         assertThat(state.message).isEqualTo(errorMessage)
+    }
+
+    @Test
+    fun `when RetryClicked event is triggered, should retry creating order and show loading state`() = runTest {
+        // GIVEN
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val totalsRepository: WooPosTotalsRepository = mock()
+        whenever(totalsRepository.createOrderWithProducts(productIds)).thenReturn(
+            Result.failure(Exception("Order creation failed"))
+        )
+
+        val savedState = createMockSavedStateHandle()
+        val viewModel = createViewModel(
+            savedState = savedState,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        viewModel.onUIEvent(WooPosTotalsUIEvent.RetryClicked)
+
+        // THEN
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsState.Error::class.java)
+
+        // Change repository to simulate success on retry
+        whenever(totalsRepository.createOrderWithProducts(productIds)).thenReturn(
+            Result.success(Order.getEmptyOrder(dateCreated = Date(), dateModified = Date()))
+        )
+
+        viewModel.onUIEvent(WooPosTotalsUIEvent.RetryClicked)
+
+        // THEN
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsState.Loading::class.java)
     }
 
     private fun createViewModel(
