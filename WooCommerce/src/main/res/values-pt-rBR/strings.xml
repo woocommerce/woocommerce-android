@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-10 16:54:03+0000
+Translation-Revision-Date: 2024-07-16 15:54:07+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="customers_details_none_hint">Nenhum</string>
+    <string name="customers_details_no_phone_hint">Não há números de telefone</string>
+    <string name="customers_details_postal_code_value_title">CEP</string>
+    <string name="customers_details_city_value_title">Cidade</string>
+    <string name="customers_details_region_value_title">Região</string>
+    <string name="customers_details_country_value_title">País</string>
+    <string name="customers_details_date_registered_value_title">Data de cadastro</string>
+    <string name="customers_details_username_value_title">Nome de usuário</string>
+    <string name="customers_details_average_order_value_title">Valor médio por pedido</string>
+    <string name="customers_details_total_spend_value_title">Total gasto</string>
+    <string name="customers_details_orders_value_title">Pedidos</string>
+    <string name="customers_details_last_active_value_title">Última atividade</string>
+    <string name="customers_details_shipping_location_section">Localização</string>
+    <string name="customers_details_registration_section">Registro</string>
+    <string name="customers_details_orders_section">Pedidos</string>
+    <string name="customers_details_customer_section">Cliente</string>
+    <string name="more_menu_customers_title">Clientes</string>
+    <string name="more_menu_button_customers_description">Receba insights dos clientes</string>
+    <string name="more_menu_button_customers">Clientes</string>
+    <string name="ai_product_creation_image_selected">Foto selecionada</string>
+    <string name="customers_details_shipping_address_section">Endereço de entrega</string>
+    <string name="customers_details_billing_address_section">Endereço de cobrança</string>
+    <string name="woopos_products_empty_list">Nenhum produto</string>
+    <string name="ai_product_creation_scanning_photo_error">Erro ao tentar escanear o texto da foto. Tente novamente</string>
+    <string name="ai_product_creation_scanning_image">Escaneando imagem</string>
+    <string name="ai_product_creation_image_selected_subtitle">A foto será adicionada ao produto</string>
+    <string name="ai_product_creation_remove_image">Remover foto</string>
+    <string name="ai_product_creation_replace_image">Substituir foto</string>
+    <string name="ai_product_creation_view_image">Visualizar foto</string>
+    <string name="product_creation_ai_preview_name_description_sections">Nome, resumo e descrição</string>
+    <string name="product_creation_ai_preview_subtitle">Você pode editar ou gerar novamente os detalhes do produto antes de salvar.</string>
+    <string name="product_detail_publish">Publicar</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_programs_card_title">Programas</string>
+    <string name="analytics_google_ads_no_data">Nenhum programa neste período</string>
     <string name="woopos_reader_connect_now_button">Conectar agora</string>
     <string name="woopos_cart_title">Carrinho</string>
     <string name="ai_product_creation_generate_details_button">Gerar detalhes do produto</string>

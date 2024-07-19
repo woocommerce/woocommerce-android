@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-09 09:54:03+0000
+Translation-Revision-Date: 2024-07-16 09:54:20+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="customers_details_none_hint">Tidak ada</string>
+    <string name="customers_details_no_phone_hint">Tidak ada nomor telepon</string>
+    <string name="customers_details_postal_code_value_title">Kode pos</string>
+    <string name="customers_details_city_value_title">Kota</string>
+    <string name="customers_details_region_value_title">Wilayah</string>
+    <string name="customers_details_country_value_title">Negara</string>
+    <string name="customers_details_date_registered_value_title">Tanggal terdaftar</string>
+    <string name="customers_details_username_value_title">Nama pengguna</string>
+    <string name="customers_details_average_order_value_title">Nilai pesanan rata-rata</string>
+    <string name="customers_details_total_spend_value_title">Total pengeluaran</string>
+    <string name="customers_details_orders_value_title">Pesanan</string>
+    <string name="customers_details_last_active_value_title">Terakhir aktif</string>
+    <string name="customers_details_shipping_location_section">Lokasi</string>
+    <string name="customers_details_shipping_address_section">Alamat Pengiriman</string>
+    <string name="customers_details_billing_address_section">Alamat Penagihan</string>
+    <string name="customers_details_registration_section">Pendaftaran</string>
+    <string name="customers_details_orders_section">Pesanan</string>
+    <string name="customers_details_customer_section">Pelanggan</string>
+    <string name="woopos_products_empty_list">Tidak ada produk</string>
+    <string name="more_menu_customers_title">Pelanggan</string>
+    <string name="more_menu_button_customers_description">Dapatkan wawasan pelanggan</string>
+    <string name="more_menu_button_customers">Pelanggan</string>
+    <string name="ai_product_creation_scanning_photo_error">Terjadi error saat mencoba untuk memindai teks dari foto. Silakan coba lagi</string>
+    <string name="ai_product_creation_scanning_image">Memindai gambar</string>
+    <string name="ai_product_creation_image_selected_subtitle">Foto akan ditambahkan ke produk</string>
+    <string name="ai_product_creation_image_selected">Foto dipilih</string>
+    <string name="ai_product_creation_remove_image">Hapus foto</string>
+    <string name="ai_product_creation_replace_image">Ganti foto</string>
+    <string name="ai_product_creation_view_image">Lihat Foto</string>
+    <string name="product_creation_ai_preview_name_description_sections">Nama, Ringkasan, &amp; Deskripsi</string>
+    <string name="product_creation_ai_preview_subtitle">Anda dapat menyunting atau membuat ulang detail produk sebelum menyimpan.</string>
+    <string name="product_detail_publish">Publikasikan</string>
+    <string name="analytics_google_ads_programs_card_title">Program</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">Tidak ada program pada periode ini</string>
     <string name="woopos_reader_connect_now_button">Hubungkan sekarang</string>
     <string name="woopos_cart_title">Keranjang</string>
     <string name="ai_product_creation_generate_details_button">Buat Detail Produk</string>
