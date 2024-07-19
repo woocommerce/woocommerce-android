@@ -1,1 +1,6 @@
-We're excited to bring you the latest update for our WooCommerce mobile app! Customize your experience with themed app icons, and enjoy the new Customer Section in the Hub Menu, where merchants can effortlessly manage customer contacts and delve into customer analytics. Plus, under the hood, we've enhanced compatibility with Android 14. Discover these improvements and more in our latest release!
+- [**] Stats: The Analytics Hub (accessed by tapping "View all store analytics" on the My Store dashboard) now includes analytics for Google Ads campaigns, when the Google Listings & Ads extension is active and connected to Google. [https://github.com/woocommerce/woocommerce-android/pull/12084]
+- [**] Payment Method is correctly assigned to orders marked as paid with cash [https://github.com/wordpress-mobile/WordPress-FluxC-Android/pull/3054]
+- [**] Product Creation AI V2: Milestone 1 which simplifies package photo flow and revamps UI. [https://github.com/woocommerce/woocommerce-android/issues/11800]
+- [*] The more screen shows proper loading button statuses [https://github.com/woocommerce/woocommerce-android/pull/11968]
+- [*] [Login] Improved login reliability by addressing some edge-case issues [https://github.com/woocommerce/woocommerce-android/pull/12033]
+
