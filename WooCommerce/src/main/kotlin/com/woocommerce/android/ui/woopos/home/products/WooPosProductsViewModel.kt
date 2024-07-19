@@ -106,7 +106,7 @@ class WooPosProductsViewModel @Inject constructor(
                 imageUrl = product.firstImageUrl,
             )
         },
-        isSimpleProductsOnlyBannerShown = appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown,
+        isSimpleProductsOnlyBannerShown = shouldShowProductsOnlyBanner(),
         loadingMore = false,
         reloadingProducts = false,
     )
