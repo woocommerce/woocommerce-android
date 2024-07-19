@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
 fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
-    val viewModel: WooPosHomeViewModel = hiltViewModel()
+    val viewModel: WooPosSplashViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState()
 
     BackHandler {

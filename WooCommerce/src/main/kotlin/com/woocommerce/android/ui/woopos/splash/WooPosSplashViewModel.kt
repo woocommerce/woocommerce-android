@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosHomeViewModel @Inject constructor(
+class WooPosSplashViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
