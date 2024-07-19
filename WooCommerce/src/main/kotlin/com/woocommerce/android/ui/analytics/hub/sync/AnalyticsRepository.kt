@@ -470,7 +470,11 @@ class AnalyticsRepository @Inject constructor(
         val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
 
-        val currentGoogleAdsStatsCall = async {
+        val previousPeriod = rangeSelection.previousRange
+        val previousStartDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
+        val previousEndDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val currentRangeGoogleAdsStatsCall = async {
             googleAdsStore.fetchAllPrograms(
                 site = selectedSite.get(),
                 startDate = currentStartDate,
@@ -479,15 +483,33 @@ class AnalyticsRepository @Inject constructor(
             )
         }
 
-        currentGoogleAdsStatsCall.await()
-            .model?.let { response -> mapGoogleAdsResponse(response) }
-            ?: GoogleAdsResult.GoogleAdsError
+        val previousRangeGoogleAdsStatsCall = async {
+            googleAdsStore.fetchAllPrograms(
+                site = selectedSite.get(),
+                startDate = previousStartDate,
+                endDate = previousEndDate,
+                metricType = WCGoogleStore.MetricType.SALES
+            )
+        }
+
+        val currentRangeStatsResult = currentRangeGoogleAdsStatsCall.await()
+        val previousRangeStatsResult = previousRangeGoogleAdsStatsCall.await()
+
+        currentRangeStatsResult
+            .model?.let {
+                mapGoogleAdsResponse(
+                    currentRangeResponse = it,
+                    previousRangeResponse = previousRangeStatsResult.model
+                )
+            } ?: GoogleAdsResult.GoogleAdsError
     }
 
-    private fun mapGoogleAdsResponse(response: WCGoogleAdsPrograms) =
-        GoogleAdsResult.GoogleAdsData(
+    private fun mapGoogleAdsResponse(
+        currentRangeResponse: WCGoogleAdsPrograms,
+        previousRangeResponse: WCGoogleAdsPrograms?
+    ) = GoogleAdsResult.GoogleAdsData(
             GoogleAdsStat(
-                googleAdsCampaigns = response.campaigns?.map {
+                googleAdsCampaigns = currentRangeResponse.campaigns?.map {
                     GoogleAdsCampaign(
                         id = it.id ?: 0L,
                         name = it.name,
@@ -499,12 +521,16 @@ class AnalyticsRepository @Inject constructor(
                         }
                     )
                 } ?: emptyList(),
-                totals = response.totals.let {
+                totals = currentRangeResponse.totals.let {
                     GoogleAdsTotals(
                         sales = it?.sales ?: 0.0,
                         spend = it?.spend ?: 0.0
                     )
-                }
+                },
+                deltaPercentage = calculateDeltaPercentage(
+                    previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
+                    currentVal = currentRangeResponse.totals?.sales ?: 0.0
+                )
             )
         )
 

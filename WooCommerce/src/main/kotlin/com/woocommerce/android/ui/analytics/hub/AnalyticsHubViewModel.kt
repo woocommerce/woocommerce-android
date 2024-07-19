@@ -691,7 +691,8 @@ class AnalyticsHubViewModel @Inject constructor(
             listLeftHeader = resourceProvider.getString(R.string.analytics_google_ads_programs_card_title),
             listRightHeader = resourceProvider.getString(R.string.analytics_total_sales_title),
             itemTitleValue = googleAdsStats.totals.formatSales(currencyFormatter).orEmpty(),
-            delta = null,
+            delta = googleAdsStats.deltaPercentage
+                .run { this as? DeltaPercentage.Value }?.value,
             reportUrl = null,
             items = googleAdsStats.googleAdsCampaigns.map {
                 AnalyticsHubListCardItemViewState(
