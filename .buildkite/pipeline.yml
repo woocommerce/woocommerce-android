@@ -97,7 +97,7 @@ steps:
         plugins: [$CI_TOOLKIT]
 
       - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh "Pixel2.arm" "30" "portrait"
+        command: .buildkite/commands/run-instrumented-tests.sh
         plugins:
           - $CI_TOOLKIT
           - $TEST_COLLECTOR :

@@ -38,6 +38,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -109,6 +110,15 @@ class DashboardViewModel @Inject constructor(
     }.asLiveData()
 
     val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
+
+    private val refreshingOnBackground = MutableStateFlow(-1)
+
+    val isRefreshingOnBackground = refreshingOnBackground.map { it > -1 }.asLiveData()
+    fun displayRefreshingIndicator() { refreshingOnBackground.value += 1 }
+    fun hideRefreshingIndicator() {
+        val value = (refreshingOnBackground.value - 1).coerceAtLeast(-1)
+        refreshingOnBackground.value = value
+    }
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
