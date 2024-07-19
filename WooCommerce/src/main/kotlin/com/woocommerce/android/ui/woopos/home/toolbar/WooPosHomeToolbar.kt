@@ -56,7 +56,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarState.Men
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarState.WooPosCardReaderStatus
 
 @Composable
-private fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
+fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
     val viewModel: WooPosHomeToolbarViewModel = hiltViewModel()
     WooPosFloatingToolbar(
         modifier = modifier,

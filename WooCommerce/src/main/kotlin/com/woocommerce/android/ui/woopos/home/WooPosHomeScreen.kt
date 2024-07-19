@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -21,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -36,6 +38,8 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreenPreview
+import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolbarStatusConnectedWithMenu
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -130,46 +134,54 @@ private fun WooPosHomeScreen(
     totalsWidthDp: Dp,
     totalsStartPaddingDp: Dp,
 ) {
-    Row(
-        modifier = Modifier
-            .horizontalScroll(scrollState, enabled = false)
-            .fillMaxWidth(),
-    ) {
-        Row(modifier = Modifier.width(productsWidthDp)) {
-            WooPosHomeScreenProducts(
-                modifier = Modifier
-                    .width(productsWidthDp)
-            )
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
-                .width(cartWidthDp)
-                .background(MaterialTheme.colors.surface)
+                .horizontalScroll(scrollState, enabled = false)
+                .fillMaxWidth(),
         ) {
-            Box {
-                WooPosHomeScreenCart(
+            Row(modifier = Modifier.width(productsWidthDp)) {
+                WooPosHomeScreenProducts(
                     modifier = Modifier
-                        .width(cartWidthDp)
-                )
-                Box(
-                    modifier = Modifier
-                        .width(cartWidthDp)
-                        .fillMaxHeight()
-                        .background(
-                            color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                        )
+                        .width(productsWidthDp)
                 )
             }
-        }
-        Row(modifier = Modifier.width(totalsWidthDp)) {
-            Spacer(modifier = Modifier.width(totalsStartPaddingDp))
-            WooPosHomeScreenTotals(
+            Row(
                 modifier = Modifier
-                    .width(totalsWidthDp - 24.dp.toAdaptivePadding() - totalsStartPaddingDp)
-                    .padding(vertical = 24.dp.toAdaptivePadding())
-            )
-            Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
+                    .width(cartWidthDp)
+                    .background(MaterialTheme.colors.surface)
+            ) {
+                Box {
+                    WooPosHomeScreenCart(
+                        modifier = Modifier
+                            .width(cartWidthDp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(cartWidthDp)
+                            .fillMaxHeight()
+                            .background(
+                                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
+                            )
+                    )
+                }
+            }
+            Row(modifier = Modifier.width(totalsWidthDp)) {
+                Spacer(modifier = Modifier.width(totalsStartPaddingDp))
+                WooPosHomeScreenTotals(
+                    modifier = Modifier
+                        .width(totalsWidthDp - 24.dp.toAdaptivePadding() - totalsStartPaddingDp)
+                        .padding(vertical = 24.dp.toAdaptivePadding())
+                )
+                Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
+            }
         }
+
+        WooPosHomeScreenToolbar(
+            modifier = Modifier
+                .padding(24.dp.toAdaptivePadding())
+                .align(Alignment.BottomStart),
+        )
     }
 }
 
@@ -197,6 +209,15 @@ private fun WooPosHomeScreenTotals(modifier: Modifier) {
         WooPosTotalsScreenPreview(modifier)
     } else {
         WooPosTotalsScreen(modifier)
+    }
+}
+
+@Composable
+private fun WooPosHomeScreenToolbar(modifier: Modifier) {
+    if (isPreviewMode()) {
+        PreviewWooPosFloatingToolbarStatusConnectedWithMenu()
+    } else {
+        WooPosFloatingToolbar(modifier = modifier)
     }
 }
 
