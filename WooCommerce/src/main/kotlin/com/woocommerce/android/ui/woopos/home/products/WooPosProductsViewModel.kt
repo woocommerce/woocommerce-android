@@ -8,11 +8,13 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -60,16 +62,20 @@ class WooPosProductsViewModel @Inject constructor(
             }
 
             WooPosProductsUIEvent.SimpleProductsOnlyBannerClosed -> {
-                onBannerClosed()
+                onSimpleProductsOnlyBannerClosed()
             }
         }
     }
 
-    private fun onBannerClosed() {
-        appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown = true
-        _viewState.value = (_viewState.value as? WooPosProductsViewState.Content)?.copy(
-            isSimpleProductsOnlyBannerShown = true
-        )!!
+    private fun onSimpleProductsOnlyBannerClosed() {
+        viewModelScope.launch {
+            appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown = true
+            withContext(Dispatchers.Main) {
+                _viewState.value = (_viewState.value as? WooPosProductsViewState.Content)?.copy(
+                    isSimpleProductsOnlyBannerShown = true
+                )!!
+            }
+        }
     }
 
     private fun reloadProducts() {
