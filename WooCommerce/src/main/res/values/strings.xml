@@ -417,7 +417,7 @@
     <string name="my_store_widget_reviews_title">Most recent reviews</string>
     <string name="my_store_widget_coupons_title">Most active coupons</string>
     <string name="my_store_widget_product_stock_title">Stock</string>
-    <string name="my_store_widget_google_ads_title">Google Ads Campaigns</string>
+    <string name="my_store_widget_google_ads_title">Google Ads campaigns</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>

@@ -197,6 +197,32 @@ class WooPosTotalsViewModelTest {
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NewTransactionClicked)
         }
 
+    @Test
+    fun `given order creation fails, when vm created, then error state is shown`() = runTest {
+        // GIVEN
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val errorMessage = "Order creation failed"
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
+                Result.failure(Exception(errorMessage))
+            )
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsState.Error
+        assertThat(state.message).isEqualTo(errorMessage)
+    }
+
     private fun createViewModel(
         parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock(),
         childrenToParentEventSender: WooPosChildrenToParentEventSender = mock(),
