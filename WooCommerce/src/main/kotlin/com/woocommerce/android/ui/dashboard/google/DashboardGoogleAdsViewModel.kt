@@ -146,6 +146,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                     is WebViewEvent.onPageFinished -> onGoogleAdsFlowStarted()
                     is WebViewEvent.onWebViewClosed -> onGoogleAdsFlowCanceled()
                     is WebViewEvent.onUrlFailed -> onGoogleAdsFlowError(event.url, event.errorCode)
+                    is WebViewEvent.onTriggerUrlLoaded -> onGoogleAdsFlowCompleted()
                 }
             }
         }
@@ -178,6 +179,16 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                 AnalyticsTracker.KEY_ERROR to errorCode
             )
         )
+    }
+
+    private fun onGoogleAdsFlowCompleted() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_CAMPAIGN_CREATION_SUCCESS,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+            )
+        )
+        triggerEvent(NavigateToGoogleAdsSuccessEvent)
     }
 
     private fun launchCampaignCreation() {
@@ -247,6 +258,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         val successUrls: List<String>,
         val canAutoLogin: Boolean
     ) : MultiLiveEvent.Event()
+
+    object NavigateToGoogleAdsSuccessEvent : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

@@ -53,6 +53,9 @@ class WPComWebViewViewModel @Inject constructor(
         if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true && !isExiting) {
             isExiting = true
             triggerEvent(ExitWithResult(Unit))
+            launch {
+                sharedWebViewFlow.emitEvent(WebViewEvent.onTriggerUrlLoaded(url))
+            }
         }
     }
 

@@ -19,4 +19,5 @@ sealed class WebViewEvent {
     object onWebViewClosed : WebViewEvent()
     data class onPageFinished(val url: String) : WebViewEvent()
     data class onUrlFailed(val url: String, val errorCode: Int?) : WebViewEvent()
+    data class onTriggerUrlLoaded(val url: String) : WebViewEvent()
 }
