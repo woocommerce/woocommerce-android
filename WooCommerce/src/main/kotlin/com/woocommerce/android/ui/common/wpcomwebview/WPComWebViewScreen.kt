@@ -24,6 +24,7 @@ fun WPComWebViewScreen(viewViewModel: WPComWebViewViewModel) {
         wpcomWebViewAuthenticator = viewViewModel.wpComWebViewAuthenticator,
         userAgent = viewViewModel.userAgent,
         onUrlLoaded = viewViewModel::onUrlLoaded,
+        onPageFinished = viewViewModel::onPageFinished,
         onClose = viewViewModel::onClose
     )
 }
@@ -34,6 +35,7 @@ fun WPComWebViewScreen(
     wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
+    onPageFinished: (String) -> Unit,
     onClose: () -> Unit,
     clearCache: Boolean = false
 ) {
@@ -55,6 +57,7 @@ fun WPComWebViewScreen(
             userAgent = userAgent,
             wpComAuthenticator = wpcomWebViewAuthenticator,
             onUrlLoaded = onUrlLoaded,
+            onPageFinished = onPageFinished,
             captureBackPresses = viewState.captureBackButton,
             clearCache = clearCache,
             modifier = Modifier
