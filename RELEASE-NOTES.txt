@@ -2,6 +2,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 19.6
 -----
+- [**] Stats: The Analytics Hub (accessed by tapping "View all store analytics" on the My Store dashboard) now includes analytics for Google Ads campaigns, when the Google Listings & Ads extension is active and connected to Google. [https://github.com/woocommerce/woocommerce-android/pull/12084]
 - [*] The more screen shows proper loading button statuses [https://github.com/woocommerce/woocommerce-android/pull/11968]
 
 19.6
