@@ -5,13 +5,15 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -20,14 +22,18 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class WooPosRootViewModelTest : BaseUnitTest() {
+@ExperimentalCoroutinesApi
+class WooPosRootViewModelTest {
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
         onBlocking { readerStatus }.thenReturn(flowOf(NotConnected()))
     }
 
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
+
     @Test
-    fun `given reader disconnected, when status button clicked, then should connect`() = testBlocking {
+    fun `given reader disconnected, when status button clicked, then should connect`() = runTest {
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
         assertNotEquals(WooPosCardReaderStatus.Connected, sut.rootScreenState.value.cardReaderStatus)
@@ -38,7 +44,8 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given reader connected, when status button clicked, then should not connect`() = testBlocking {
+    fun `given reader connected, when status button clicked, then should not connect`() = runTest {
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val cardReader: CardReader = mock()
         whenever(cardReaderFacade.readerStatus).thenReturn(flow { emit(Connected(cardReader)) })
         val sut = createSut()
@@ -55,8 +62,9 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when exit confirmation dialog dismissed, then dialog should be null`() = testBlocking {
+    fun `when exit confirmation dialog dismissed, then dialog should be null`() = runTest {
         // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
         sut.onUiEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed)
 
@@ -65,8 +73,9 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when exit confirmation dialog clicked, then dialog should be shown`() = testBlocking {
+    fun `when exit confirmation dialog clicked, then dialog should be shown`() = runTest {
         // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
 
         // WHEN
@@ -91,8 +100,9 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() = testBlocking {
+    fun `given OnBackFromHomeClicked, should update exit confirmation dialog`() {
         // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
 
         // WHEN
@@ -105,8 +115,9 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given reader status as not connected, should update state with not connected status`() = testBlocking {
+    fun `given reader status as not connected, should update state with not connected status`() = runTest {
         // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val notConnectedStatus = NotConnected()
 
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(notConnectedStatus))
@@ -123,7 +134,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given reader status as connected, should update state with connected status`() = testBlocking {
+    fun `given reader status as connected, should update state with connected status`() = runTest {
         // GIVEN
         val cardReader: CardReader = mock()
         val connectedStatus = Connected(cardReader)
@@ -141,7 +152,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when toolbar menu clicked, should show menu`() = testBlocking {
+    fun `when toolbar menu clicked, should show menu`() = runTest {
         // GIVEN
         val sut = createSut()
 
@@ -166,7 +177,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when menu item clicked, should handle accordingly`() = testBlocking {
+    fun `when menu item clicked, should handle accordingly`() = runTest {
         // GIVEN
         val sut = createSut()
 
@@ -185,7 +196,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when OnOutsideOfToolbarMenuClicked, should hide menu if visible`() = testBlocking {
+    fun `when OnOutsideOfToolbarMenuClicked, should hide menu if visible`() = runTest {
         // GIVEN
         val sut = createSut()
         sut.onUiEvent(WooPosRootUIEvent.OnToolbarMenuClicked)
@@ -212,7 +223,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when OnOutsideOfToolbarMenuClicked, should do nothing if menu already hidden`() = testBlocking {
+    fun `when OnOutsideOfToolbarMenuClicked, should do nothing if menu already hidden`() = runTest {
         // GIVEN
         val sut = createSut()
         assertThat(sut.rootScreenState.value.menu).isEqualTo(WooPosRootScreenState.Menu.Hidden)
@@ -225,7 +236,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when ExitConfirmationDialogDismissed, should set exitConfirmationDialog to null`() = testBlocking {
+    fun `when ExitConfirmationDialogDismissed, should set exitConfirmationDialog to null`() = runTest {
         // GIVEN
         val sut = createSut()
         sut.onUiEvent(WooPosRootUIEvent.OnBackFromHomeClicked)

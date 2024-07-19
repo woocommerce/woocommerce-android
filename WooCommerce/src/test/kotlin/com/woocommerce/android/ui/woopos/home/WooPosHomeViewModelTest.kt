@@ -1,17 +1,27 @@
 package com.woocommerce.android.ui.woopos.home
 
-import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertFalse
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class WooPosHomeViewModelTest : BaseUnitTest() {
+@ExperimentalCoroutinesApi
+@RunWith(MockitoJUnitRunner::class)
+class WooPosHomeViewModelTest {
+
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
+
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
 
@@ -32,17 +42,18 @@ class WooPosHomeViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given state is Cart, when SystemBackClicked passed, then should propagate the event down`() =
-        runTest {
-            // GIVEN
-            val viewModel = createViewModel()
+    fun `given state is Cart, when SystemBackClicked passed, then should propagate the event down`() = runTest {
+        // GIVEN
+        val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
+        val viewModel = createViewModel()
 
-            // WHEN
-            val result = viewModel.onUIEvent(SystemBackClicked)
+        // WHEN
+        val result = viewModel.onUIEvent(SystemBackClicked)
 
-            // THEN
-            assertFalse(result)
-        }
+        // THEN
+        assertFalse(result)
+    }
 
     @Test
     fun `given state checkout is paid, when SystemBackClicked passed, then OrderSuccessfullyPaid event should be sent`() = runTest {

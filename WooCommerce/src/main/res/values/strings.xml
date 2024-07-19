@@ -507,6 +507,7 @@
     <string name="analytics_session_no_available">Session data unavailable</string>
     <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_spend_value">Spend: %1$s</string>
     <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
@@ -2149,7 +2150,6 @@
     <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
-    <string name="product_detail_publish">Publish</string>
     <string name="product_detail_linked_products">Linked products</string>
     <string name="upsells_label">Upsells</string>
     <string name="upsells_desc">Products promoted instead of the currently viewed product (ie: more profitable products)</string>
@@ -4200,6 +4200,8 @@
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
+    <string name="woopos_splash_title">Starting up</string>
+    <string name="woopos_splash_message">Let’s serve some customers</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>

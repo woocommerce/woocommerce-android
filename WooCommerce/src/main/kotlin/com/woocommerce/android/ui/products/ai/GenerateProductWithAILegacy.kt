@@ -11,8 +11,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone.Casual
+import com.woocommerce.android.ui.products.ai.AiTone.Casual
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository

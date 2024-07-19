@@ -43,9 +43,8 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone.Casual
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.UiState
+import com.woocommerce.android.ui.products.ai.AiTone.Casual
 import kotlinx.coroutines.launch
 
 @Composable

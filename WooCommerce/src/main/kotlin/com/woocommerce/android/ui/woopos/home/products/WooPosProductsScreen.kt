@@ -53,6 +53,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductListReached
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.PullToRefreshTriggered
@@ -90,10 +91,10 @@ private fun WooPosProductsScreen(
             .fillMaxSize()
             .pullRefresh(pullToRefreshState)
             .padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 40.dp,
-                bottom = 0.dp
+                start = 16.dp.toAdaptivePadding(),
+                end = 16.dp.toAdaptivePadding(),
+                top = 40.dp.toAdaptivePadding(),
+                bottom = 0.dp.toAdaptivePadding(),
             )
     ) {
         Column(

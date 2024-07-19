@@ -3,12 +3,15 @@ package com.woocommerce.android.ui.woopos.home.products
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Rule
+import org.junit.runner.RunWith
+import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -17,8 +20,14 @@ import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class WooPosProductsViewModelTest : BaseUnitTest() {
+@ExperimentalCoroutinesApi
+@RunWith(MockitoJUnitRunner::class)
+class WooPosProductsViewModelTest {
+
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
+
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val priceFormat: WooPosFormatPrice = mock {
@@ -76,17 +85,17 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given loading products is failure, when view model created, then view state is empty`() =
-        runTest {
-            // GIVEN
-            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(Result.failure(Exception()))
+    fun `given loading products is failure, when view model created, then view state is error`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.products).thenReturn(flowOf(emptyList()))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(Result.failure(Exception()))
 
-            // WHEN
-            val viewModel = createViewModel()
+        // WHEN
+        val viewModel = createViewModel()
 
-            // THEN
-            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error())
-        }
+        // THEN
+        assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Error())
+    }
 
     @Test
     fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() =
@@ -182,6 +191,22 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
     @Test
     fun `when item clicked, then send event to parent`() = runTest {
         // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+
         val product = WooPosProductsListItem(
             id = 1,
             name = "Product 1",
