@@ -9,6 +9,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
 fun WooPosCircularLoadingIndicator(modifier: Modifier = Modifier) {
@@ -33,17 +35,18 @@ fun WooPosCircularLoadingIndicator(modifier: Modifier = Modifier) {
         label = "RotationAnimation"
     )
 
+    val backgroundColor = MaterialTheme.colors.primary
     Canvas(modifier = modifier) {
         val radius = size.width / 2
 
         drawCircle(
-            color = Color(0xFFD1C4E9),
+            color = backgroundColor.copy(alpha = 0.5f),
             radius = radius,
         )
 
         rotate(animatedRotation) {
             drawArc(
-                color = Color(0xFF7E57C2),
+                color = backgroundColor,
                 startAngle = 0f,
                 sweepAngle = 110f,
                 useCenter = true,
@@ -61,25 +64,29 @@ fun WooPosCircularLoadingIndicator(modifier: Modifier = Modifier) {
 @Composable
 @WooPosPreview
 fun PreviewCircularLoadingIndicatorBig() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosCircularLoadingIndicator(
-            modifier = Modifier.size(156.dp)
-        )
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            WooPosCircularLoadingIndicator(
+                modifier = Modifier.size(156.dp)
+            )
+        }
     }
 }
 
 @Composable
 @WooPosPreview
 fun PreviewCircularLoadingIndicatorSmall() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        WooPosCircularLoadingIndicator(
-            modifier = Modifier.size(64.dp)
-        )
+    WooPosTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            WooPosCircularLoadingIndicator(
+                modifier = Modifier.size(64.dp)
+            )
+        }
     }
 }
