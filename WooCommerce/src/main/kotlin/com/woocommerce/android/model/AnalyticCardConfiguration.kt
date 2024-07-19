@@ -20,6 +20,11 @@ enum class AnalyticsCards(
     GiftCards(R.string.analytics_gift_cards_card_title, isPlugin = true),
     GoogleAds(R.string.analytics_google_ads_card_title, isPlugin = true);
 
+    /**
+     * Changing the AnalyticsCard name can cause crashes due to the attachment of the name with the Data Store.
+     * To allow us to update the tracked name without causing issues to the Hub settings storage,
+     * this field separates the AnalyticsCard definition from the tracked information.
+     */
     val trackName: String
         get() = when (this) {
             Revenue -> "revenue"
@@ -27,7 +32,7 @@ enum class AnalyticsCards(
             Products -> "products"
             Session -> "session"
             Bundles -> "bundles"
-            GiftCards -> "giftCards"
+            GiftCards -> "giftcards"
             GoogleAds -> "googleCampaigns"
         }
 }
