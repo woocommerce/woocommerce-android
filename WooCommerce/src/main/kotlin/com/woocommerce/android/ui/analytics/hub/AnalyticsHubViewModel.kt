@@ -690,7 +690,7 @@ class AnalyticsHubViewModel @Inject constructor(
             subTitle = resourceProvider.getString(R.string.analytics_total_sales_title),
             listLeftHeader = resourceProvider.getString(R.string.analytics_google_ads_programs_card_title),
             listRightHeader = resourceProvider.getString(R.string.analytics_total_sales_title),
-            totals = googleAdsStats.totals,
+            itemTitleValue = googleAdsStats.totals.formatSales(currencyFormatter).orEmpty(),
             delta = null,
             reportUrl = null,
             items = googleAdsStats.googleAdsCampaigns.map {
@@ -698,10 +698,10 @@ class AnalyticsHubViewModel @Inject constructor(
                     title = it.name.orEmpty(),
                     showDivider = true,
                     imageUri = null,
-                    value = (it.subtotal?.sales ?: 0).toString(),
+                    value = it.subtotal?.formatSales(currencyFormatter).orEmpty(),
                     description = resourceProvider.getString(
                         R.string.analytics_spend_value,
-                        (it.subtotal?.spend ?: 0).toString()
+                        it.subtotal?.formatSpend(currencyFormatter).orEmpty()
                     )
                 )
             }
