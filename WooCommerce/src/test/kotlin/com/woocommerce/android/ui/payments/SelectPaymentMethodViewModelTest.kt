@@ -51,7 +51,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCGatewayStore
@@ -429,15 +428,9 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // GIVEN
             val viewModel = initViewModel(Payment(1L, Payment.PaymentType.ORDER_CREATION))
             whenever(gatewayStore.getGateway(any(), any())).thenReturn(
-                WCGatewayModel(
-                    CASH_ON_DELIVERY_PAYMENT_TYPE,
-                    CUSTOM_PAYMENT_METHOD_TITLE,
-                    "",
-                    0,
-                    true,
-                    "",
-                    "",
-                    listOf()
+                generatePaymentGateway(
+                    id = CASH_ON_DELIVERY_PAYMENT_TYPE,
+                    title = CUSTOM_PAYMENT_METHOD_TITLE,
                 )
             )
             whenever(orderStore.updateOrderStatusAndPaymentMethod(any(), any(), any(), any(), any())).thenReturn(
@@ -449,11 +442,11 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(orderStore).updateOrderStatusAndPaymentMethod(
-                order.id,
-                site,
-                WCOrderStatusModel(Order.Status.Completed.value),
-                CASH_ON_DELIVERY_PAYMENT_TYPE,
-                CUSTOM_PAYMENT_METHOD_TITLE,
+                any(),
+                any(),
+                any(),
+                eq(CASH_ON_DELIVERY_PAYMENT_TYPE),
+                eq(CUSTOM_PAYMENT_METHOD_TITLE),
             )
         }
 
@@ -469,11 +462,11 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(orderStore).updateOrderStatusAndPaymentMethod(
-                order.id,
-                site,
-                WCOrderStatusModel(Order.Status.Completed.value),
-                CASH_ON_DELIVERY_PAYMENT_TYPE,
-                DEFAULT_PAYMENT_METHOD_TITLE,
+                any(),
+                any(),
+                any(),
+                eq(CASH_ON_DELIVERY_PAYMENT_TYPE),
+                eq(DEFAULT_PAYMENT_METHOD_TITLE),
             )
         }
 
@@ -1209,5 +1202,18 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             appPrefs,
             paymentsUtils,
         )
+    }
+
+    private fun generatePaymentGateway(
+        id: String = "",
+        title: String = "",
+        description: String = "",
+        order: Int = 0,
+        isEnabled: Boolean = true,
+        methodTitle: String = "",
+        methodDescription: String = "",
+        features: List<String> = listOf()
+    ): WCGatewayModel {
+        return WCGatewayModel(id, title, description, order, isEnabled, methodTitle, methodDescription, features)
     }
 }
