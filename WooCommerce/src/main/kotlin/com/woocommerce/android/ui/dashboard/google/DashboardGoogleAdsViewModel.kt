@@ -27,7 +27,6 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
@@ -143,10 +142,10 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         launch {
             sharedWebViewFlow.webViewEventFlow.collect { event ->
                 when (event) {
-                    is WebViewEvent.onPageFinished -> onGoogleAdsFlowStarted()
-                    is WebViewEvent.onWebViewClosed -> onGoogleAdsFlowCanceled()
-                    is WebViewEvent.onUrlFailed -> onGoogleAdsFlowError(event.url, event.errorCode)
-                    is WebViewEvent.onTriggerUrlLoaded -> onGoogleAdsFlowCompleted()
+                    is WebViewEvent.OnPageFinished -> onGoogleAdsFlowStarted()
+                    is WebViewEvent.OnWebViewClosed -> onGoogleAdsFlowCanceled()
+                    is WebViewEvent.OnUrlFailed -> onGoogleAdsFlowError(event.url, event.errorCode)
+                    is WebViewEvent.OnTriggerUrlLoaded -> onGoogleAdsFlowCompleted()
                 }
             }
         }

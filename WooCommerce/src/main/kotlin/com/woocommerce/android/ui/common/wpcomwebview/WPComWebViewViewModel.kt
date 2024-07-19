@@ -54,7 +54,7 @@ class WPComWebViewViewModel @Inject constructor(
             isExiting = true
             triggerEvent(ExitWithResult(Unit))
             launch {
-                sharedWebViewFlow.emitEvent(WebViewEvent.onTriggerUrlLoaded(url))
+                sharedWebViewFlow.emitEvent(WebViewEvent.OnTriggerUrlLoaded(url))
             }
         }
     }
@@ -68,14 +68,14 @@ class WPComWebViewViewModel @Inject constructor(
         if (url == viewState.urlToLoad && !isUrlToLoadFinishedOnce) {
             isUrlToLoadFinishedOnce = true
             launch {
-                sharedWebViewFlow.emitEvent(WebViewEvent.onPageFinished(url))
+                sharedWebViewFlow.emitEvent(WebViewEvent.OnPageFinished(url))
             }
         }
     }
 
     fun onClose() {
         launch {
-            sharedWebViewFlow.emitEvent(WebViewEvent.onWebViewClosed)
+            sharedWebViewFlow.emitEvent(WebViewEvent.OnWebViewClosed)
         }
         triggerEvent(Exit)
     }
@@ -83,7 +83,7 @@ class WPComWebViewViewModel @Inject constructor(
     fun onUrlFailed(url: String, errorCode: Int?) {
         isUrlLoadingFailed = true
         launch {
-            sharedWebViewFlow.emitEvent(WebViewEvent.onUrlFailed(url, errorCode))
+            sharedWebViewFlow.emitEvent(WebViewEvent.OnUrlFailed(url, errorCode))
         }
     }
 
