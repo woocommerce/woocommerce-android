@@ -106,7 +106,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         val enabledCards = mutableListOf<String>()
         val disabledCards = mutableListOf<String>()
         configuration.forEach { cardConfiguration ->
-            val cardName = cardConfiguration.card.name.lowercase()
+            val cardName = cardConfiguration.card.trackName
             if (cardConfiguration.isVisible) {
                 enabledCards.add(cardName)
             } else {
