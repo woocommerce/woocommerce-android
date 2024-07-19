@@ -543,4 +543,9 @@ class AppPrefsTest {
 
         assertThat(AppPrefs.isWooPosSimpleProductsOnlyShown).isTrue()
     }
+
+    @Test
+    fun givenWooPosSimpleProductsOnlyBannerIsNotClosedThenGetterReturnsFalse() {
+        assertThat(AppPrefs.isWooPosSimpleProductsOnlyShown).isFalse()
+    }
 }
