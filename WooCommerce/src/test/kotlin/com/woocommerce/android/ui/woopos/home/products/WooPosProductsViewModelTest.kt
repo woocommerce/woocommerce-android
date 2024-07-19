@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.products
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -21,6 +22,7 @@ import kotlin.test.Test
 class WooPosProductsViewModelTest : BaseUnitTest() {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val priceFormat: WooPosFormatPrice = mock {
         onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
         onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
@@ -262,6 +264,7 @@ class WooPosProductsViewModelTest : BaseUnitTest() {
         WooPosProductsViewModel(
             productsDataSource,
             fromChildToParentEventSender,
-            priceFormat
+            priceFormat,
+            appPrefsWrapper
         )
 }
