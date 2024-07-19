@@ -1,0 +1,2 @@
+19.5:
+We zijn heel enthousiast over de nieuwste updates voor de mobiele WooCommerce-app. Customize your experience with themed app icons, and enjoy the new Customer Section in the Hub Menu, where merchants can effortlessly manage customer contacts and delve into customer analytics. Plus, under the hood, we've enhanced compatibility with Android 14. Discover these improvements and more in our latest release!

@@ -1,0 +1,2 @@
+19.5:
+Vi är glada att kunna presentera den senaste uppdateringen för vår WooCommerce-mobilapp. Anpassa din upplevelse med temabaserade appikoner och ta del av den nya kundsektionen i hubbmenyn, där handlare enkelt kan hantera kundkontakter och fördjupa sig i kundanalyser. Under huven har vi dessutom förbättrat kompatibiliteten med Android 14. Upptäck dessa förbättringar och mycket mer i vår senaste version.
