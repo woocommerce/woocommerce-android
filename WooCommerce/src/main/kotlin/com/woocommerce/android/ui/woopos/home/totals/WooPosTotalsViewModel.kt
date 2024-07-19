@@ -48,6 +48,8 @@ class WooPosTotalsViewModel @Inject constructor(
         key = "orderId",
     )
 
+    private lateinit var productIds: List<Long>
+
     init {
         listenUpEvents()
     }
@@ -76,7 +78,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
 
-            WooPosTotalsUIEvent.OnNewTransactionClicked -> {
+            is WooPosTotalsUIEvent.OnNewTransactionClicked -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(
                         ChildToParentEvent.NewTransactionClicked
@@ -85,7 +87,12 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
 
-            WooPosTotalsUIEvent.RetryClicked -> TODO()
+            is WooPosTotalsUIEvent.RetryClicked -> {
+                viewModelScope.launch {
+                    _state.value = WooPosTotalsState.Loading
+                    attemptCreateOrderAgain()
+                }
+            }
         }
     }
 
@@ -94,7 +101,8 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.CheckoutClicked -> {
-                        createOrderDraft(event.productIds)
+                        productIds = event.productIds
+                        createOrderDraft(productIds)
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
@@ -105,6 +113,10 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun attemptCreateOrderAgain() {
+        createOrderDraft(productIds)
     }
 
     private fun createOrderDraft(productIds: List<Long>) {
