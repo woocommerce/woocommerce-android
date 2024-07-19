@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.analytics.hub
 import com.woocommerce.android.model.AnalyticsCards
-import com.woocommerce.android.model.GoogleAdsTotals
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 
@@ -65,12 +64,12 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
         override val card: AnalyticsCards,
         val title: String,
         val subTitle: String,
+        val itemTitleValue: String,
         val listLeftHeader: String,
         val listRightHeader: String,
         val delta: Int?,
         val items: List<AnalyticsHubListCardItemViewState>,
-        val reportUrl: String?,
-        val totals: GoogleAdsTotals
+        val reportUrl: String?
     ) : AnalyticsHubCustomSelectionListViewState() {
         val sign: String
             get() = when {
