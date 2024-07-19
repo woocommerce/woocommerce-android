@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.Visit
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsError
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.ResultWithOutdatedFlag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
@@ -237,9 +238,4 @@ class GetStats @Inject constructor(
         data object RevenueStatsLoading : LoadStatsResult()
         data object VisitorStatsLoading : LoadStatsResult()
     }
-
-    data class ResultWithOutdatedFlag<T>(
-        val value: T,
-        val isOutdated: Boolean = false
-    )
 }

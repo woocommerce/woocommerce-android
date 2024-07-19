@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -49,10 +50,12 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
+@Suppress("TooManyFunctions", "LongParameterList")
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
@@ -67,6 +70,7 @@ class MoreMenuViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
+    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val isWooPosEnabled: WooPosIsEnabled,
     private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled,
 ) : ScopedViewModel(savedState) {
@@ -300,23 +304,9 @@ class MoreMenuViewModel @Inject constructor(
         WooLog.d(WooLog.T.GOOGLE_ADS, "onPromoteProductsWithGoogle")
 
         launch {
-            val urlToOpen = when {
-                hasCreatedGoogleAdsCampaign || hasGoogleAdsCampaigns() -> {
-                    selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
-                }
+            val urlToOpen = determineUrlToOpen()
 
-                else -> {
-                    selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-                }
-            }
-
-            // Sites using Jetpack will use the `WPComWebView` component so it can auto-login.
-            // Other types will use the `ExitAwareWebView` component, which does not support auto-login.
-            // Although technically Jetpack Connection Package sites can auto-login, it redirects incorrectly to
-            // wordpress.com after login, so `WPComWebView` can't be used.
-            val canAutoLogin = selectedSite.get().connectionType == SiteConnectionType.Jetpack
-
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canAutoLogin))
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canUseAutoLoginWebview()))
 
             // todo-11917: This is just temporary to test this function,
             //  in practice we want to set this to true if a campaign is successfully created in webview.
@@ -324,6 +314,24 @@ class MoreMenuViewModel @Inject constructor(
                 hasCreatedGoogleAdsCampaign = true
             }
         }
+    }
+
+    private suspend fun determineUrlToOpen(): String {
+        val baseUrl = selectedSite.get().adminUrlOrDefault
+        return hasGoogleAdsCampaigns().fold(
+            onSuccess = { hasCampaigns ->
+                if (hasCreatedGoogleAdsCampaign || hasCampaigns) {
+                    baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_DASHBOARD)
+                } else {
+                    baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)
+                }
+            },
+            onFailure = { error ->
+                WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to check for Google Ads campaigns: ${error.message}")
+                // Fallback to campaign creation URL in case of error
+                baseUrl + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+            }
+        )
     }
 
     private fun onPromoteProductsWithBlaze() {

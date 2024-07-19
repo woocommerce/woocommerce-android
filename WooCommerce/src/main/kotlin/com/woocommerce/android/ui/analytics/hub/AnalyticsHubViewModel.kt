@@ -14,6 +14,7 @@ import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.GiftCardsStat
+import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -459,7 +460,7 @@ class AnalyticsHubViewModel @Inject constructor(
         googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
             when (state) {
                 is GoogleAdsState.Available -> {
-                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState())
+                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
                 }
 
                 is GoogleAdsState.Error -> {
@@ -682,9 +683,33 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
-    private fun buildGoogleAdsDataViewState() =
+    private fun buildGoogleAdsDataViewState(googleAdsStats: GoogleAdsStat) =
         AnalyticsHubCustomSelectionListViewState.DataViewState(
-            card = AnalyticsCards.GoogleAds
+            card = AnalyticsCards.GoogleAds,
+            title = resourceProvider.getString(R.string.analytics_google_ads_card_title),
+            subTitle = resourceProvider.getString(R.string.analytics_total_sales_title),
+            listLeftHeader = resourceProvider.getString(R.string.analytics_google_ads_programs_card_title),
+            listRightHeader = resourceProvider.getString(R.string.analytics_total_sales_title),
+            itemTitleValue = googleAdsStats.totals.formatSales(currencyFormatter).orEmpty(),
+            delta = googleAdsStats.deltaPercentage
+                .run { this as? DeltaPercentage.Value }?.value,
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.GoogleCampaigns
+            ),
+            items = googleAdsStats.googleAdsCampaigns.map {
+                AnalyticsHubListCardItemViewState(
+                    title = it.name.orEmpty(),
+                    showDivider = true,
+                    imageUri = null,
+                    value = it.subtotal?.formatSales(currencyFormatter).orEmpty(),
+                    description = resourceProvider.getString(
+                        R.string.analytics_spend_value,
+                        it.subtotal?.formatSpend(currencyFormatter).orEmpty()
+                    ),
+                    showImage = false
+                )
+            }
         )
 
     private fun trackSelectedDateRange() {
@@ -750,7 +775,8 @@ class AnalyticsHubViewModel @Inject constructor(
         triggerEvent(AnalyticsViewEvent.OpenSettings)
     }
 }
-enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard }
+
+enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard, GoogleCampaigns }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {
@@ -759,6 +785,7 @@ fun AnalyticsCards.toReportCard(): ReportCard? {
         AnalyticsCards.Products -> ReportCard.Products
         AnalyticsCards.Bundles -> ReportCard.Bundles
         AnalyticsCards.GiftCards -> ReportCard.GiftCard
+        AnalyticsCards.GoogleAds -> ReportCard.GoogleCampaigns
         else -> null
     }
 }
