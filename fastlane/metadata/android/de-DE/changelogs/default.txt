@@ -1,2 +1,0 @@
-19.5:
-Wir freuen uns, dir das neueste Update für unsere WooCommerce-Mobil-App präsentieren zu können! Passe dein Erlebnis mit thematisch gestalteten App-Icons an und wirf einen Blick auf den neuen Abschnitt „Kunden“ im Hub-Menü. Dort können Händler mühelos Kundenkontakte verwalten und Kundenanalysen untersuchen. Außerdem haben wir die Kompatibilität mit Android 14 verbessert. Diese Verbesserungen und noch mehr stehen dir in der neuesten Version zur Verfügung!
