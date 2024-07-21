@@ -1,5 +1,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -33,9 +34,22 @@
             android:layout_marginEnd="@dimen/major_100"
             android:text="@string/product_list_filters"
             app:backgroundTint="@color/button_outlined_bg_selector"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/last_update"
+            style="@style/Woo.Card.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginBottom="@dimen/minor_100"
+            app:layout_constraintStart_toStartOf="@+id/filtersTitle"
+            app:layout_constraintTop_toBottomOf="@+id/btn_order_filter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
