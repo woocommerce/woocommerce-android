@@ -316,8 +316,8 @@ private fun CardReaderStatusButton(
     }
 
     Card(
-        modifier = modifier.
-        height(56.dp),
+        modifier = modifier
+            .height(56.dp),
         backgroundColor = MaterialTheme.colors.surface,
         elevation = 8.dp,
         shape = RoundedCornerShape(8.dp),
