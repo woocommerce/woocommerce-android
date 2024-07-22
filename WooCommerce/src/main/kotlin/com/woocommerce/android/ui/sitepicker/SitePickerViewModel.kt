@@ -140,6 +140,8 @@ class SitePickerViewModel @Inject constructor(
         val result = repository.fetchWooCommerceSites()
         val duration = System.currentTimeMillis() - startTime
 
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
+
         when {
             result.isError -> triggerEvent(ShowSnackbar(string.site_picker_error))
             result.model != null -> {
@@ -152,7 +154,6 @@ class SitePickerViewModel @Inject constructor(
                 onSitesLoaded(repository.getSites())
             }
         }
-        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
     }
 
     private suspend fun getSitesFromDb(): List<SiteModel> {
@@ -324,7 +325,7 @@ class SitePickerViewModel @Inject constructor(
                 loadAndDisplaySites()
             }
         )
-        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false, isPrimaryBtnVisible = true)
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {
