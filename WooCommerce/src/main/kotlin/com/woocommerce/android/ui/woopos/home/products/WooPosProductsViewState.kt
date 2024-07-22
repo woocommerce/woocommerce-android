@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import android.os.Parcelable
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import kotlinx.parcelize.Parcelize
 
@@ -17,6 +18,7 @@ sealed class WooPosProductsViewState(
             val isSimpleProductsOnlyBannerShown: Boolean,
             @StringRes val title: Int,
             @StringRes val message: Int,
+            @DrawableRes val icon: Int,
             val onBannerClosed: () -> Unit,
             val onLearnMoreClicked: () -> Unit,
         )
