@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.woopos.root
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 
 data class WooPosRootScreenState(
     val cardReaderStatus: WooPosCardReaderStatus,
+    val menu: Menu,
     val exitConfirmationDialog: WooPosExitConfirmationDialog?,
 ) {
     sealed class WooPosCardReaderStatus(@StringRes val title: Int) {
@@ -17,5 +19,15 @@ data class WooPosRootScreenState(
         val message: Int = R.string.woopos_exit_confirmation_message
         val confirmButton: Int = R.string.woopos_exit_confirmation_confirm_button
         val dismissButton: Int = R.string.woopos_exit_confirmation_dismiss_button
+    }
+
+    sealed class Menu {
+        data object Hidden : Menu()
+        data class Visible(val items: List<MenuItem>) : Menu()
+
+        data class MenuItem(
+            @StringRes val title: Int,
+            @DrawableRes val icon: Int,
+        )
     }
 }
