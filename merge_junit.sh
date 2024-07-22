@@ -28,7 +28,9 @@ fi
 echo '<?xml version="1.0" encoding="UTF-8"?>' > "$output_file"
 echo '<testsuites>' >> "$output_file"
 
-# Iterate over the XML files in the directory, merging their content
+# Merge the content of all input JUnit files in the directory.
+# (Note that in the case of Unit Tests, the JUnit XML files produced by Gradle
+# don't have a parent `<testsuites>` root tag, so there's no need to try and remove it)
 sed '/<\?xml .*\?>/d' "$reports_dir"/*.xml >> "$output_file"
 
 # Close the testsuites tag
