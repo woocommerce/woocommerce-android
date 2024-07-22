@@ -20,7 +20,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -308,12 +307,43 @@ class WooPosProductsViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsOnlyBannerClosed)
-
-        // THEN
         assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
-        assertTrue(contentState.isSimpleProductsOnlyBannerShown)
+        contentState.bannerState?.onBannerClosed?.invoke()
+
+
+        // THEN
+        assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == true)
+    }
+
+    @Test
+    fun `given simple products only banner is already shown, when view model init, then state is updated with simple products value to true`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModel()
+        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+
+
+        // THEN
+        assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == true)
     }
 
     private fun createViewModel() =
