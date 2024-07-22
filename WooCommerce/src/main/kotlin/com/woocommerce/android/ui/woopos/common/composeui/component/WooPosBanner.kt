@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 fun WooPosBanner(
     title: String,
     message: String,
+    bannerIcon: Int,
     onClose: () -> Unit,
     onLearnMore: () -> Unit
 ) {
@@ -71,7 +72,7 @@ fun WooPosBanner(
                             }
                     ) {
                         Icon(
-                            painterResource(id = R.drawable.info),
+                            painterResource(id = bannerIcon),
                             contentDescription = "Info",
                             tint = colorResource(id = R.color.woo_purple_50),
                             modifier = Modifier.align(Alignment.Center)
@@ -146,6 +147,7 @@ fun PreviewWooPosBannerScreen() {
                 title = "Showing simple products only",
                 message = "Only simple physical products are compatible with POS right now. Other product types," +
                     " such as variable and virtual, will become available in future updates. ",
+                bannerIcon = R.drawable.info,
                 onClose = { },
                 onLearnMore = { }
             )
