@@ -89,7 +89,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
 
-            is WooPosTotalsUIEvent.RetryClicked -> {
+            is WooPosTotalsUIEvent.RetryOrderCreationClicked -> {
                 viewModelScope.launch {
                     _state.value = WooPosTotalsState.Loading
                     attemptCreateOrderAgain()
