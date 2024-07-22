@@ -56,6 +56,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
     )
 
+    private var storeHasCampaigns = false
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = refreshTrigger
         .transformLatest {
@@ -73,6 +75,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
                     emit(
                         if (hasCampaigns) {
+                            storeHasCampaigns = true
+
                             googleAdsStore.fetchImpressionsAndClicks(
                                 site = selectedSite.get(),
                                 startDate = distantPastDate,
@@ -102,6 +106,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                                 }
                             }
                         } else {
+                            storeHasCampaigns = false
+
                             DashboardGoogleAdsState.NoCampaigns(
                                 onCreateCampaignClicked = { launchCampaignCreation() },
                                 menu = widgetMenu
@@ -125,11 +131,35 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     )
 
     private fun launchCampaignCreation() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasCampaigns
+            )
+        )
+
         val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
         triggerEvent(ViewGoogleForWooEvent(creationUrl, successUrlTriggers, canUseAutoLoginWebview()))
     }
 
     private fun launchCampaignDetails() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_DASHBOARD,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasCampaigns
+            )
+        )
+
         val adminUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
         triggerEvent(ViewGoogleForWooEvent(adminUrl, successUrlTriggers, canUseAutoLoginWebview()))
     }
