@@ -38,7 +38,7 @@ class AppInitializerTest : BaseUnitTest() {
         )
 
         // then
-        verify(analyticsTrackerMock).sendUsageStats = true
+        verify(analyticsTrackerMock).sendUsageStats = false
     }
 
     @Test
