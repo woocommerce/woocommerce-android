@@ -37,7 +37,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @HiltViewModel(assistedFactory = DashboardGoogleAdsViewModel.Factory::class)
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "LongParameterList")
 class DashboardGoogleAdsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
@@ -142,7 +142,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                     is WebViewEvent.OnPageFinished -> onEntryPointUrlFinished()
                     is WebViewEvent.OnWebViewClosed -> onGoogleAdsFlowCanceled()
                     is WebViewEvent.OnUrlFailed -> onGoogleAdsFlowError(event.url, event.errorCode)
-                    else -> { /* no-op */ }
+                    is WebViewEvent.OnTriggerUrlLoaded -> onGoogleAdsFlowCompleted()
                 }
             }
         }
@@ -175,6 +175,16 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                 AnalyticsTracker.KEY_ERROR to errorCode
             )
         )
+    }
+
+    private fun onGoogleAdsFlowCompleted() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_CAMPAIGN_CREATION_SUCCESS,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+            )
+        )
+        triggerEvent(NavigateToGoogleAdsSuccessEvent)
     }
 
     private fun launchCampaignCreation() {
@@ -244,6 +254,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         val successUrls: List<String>,
         val canAutoLogin: Boolean
     ) : MultiLiveEvent.Event()
+
+    object NavigateToGoogleAdsSuccessEvent : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

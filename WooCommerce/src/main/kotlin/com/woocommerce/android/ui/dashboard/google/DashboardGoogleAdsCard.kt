@@ -88,6 +88,12 @@ private fun HandleEvents(
 
                     navController.navigateSafely(direction)
                 }
+
+                is DashboardGoogleAdsViewModel.NavigateToGoogleAdsSuccessEvent -> {
+                    navController.navigateSafely(
+                        NavGraphMainDirections.actionGlobalGoogleAdsCampaignSuccessBottomSheet()
+                    )
+                }
             }
         }
 
