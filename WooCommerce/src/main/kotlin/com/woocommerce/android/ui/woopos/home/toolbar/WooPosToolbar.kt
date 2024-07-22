@@ -8,6 +8,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -294,9 +294,7 @@ private fun CardReaderStatusButton(
     ) { status ->
         when (status) {
             WooPosCardReaderStatus.Connected -> MaterialTheme.colors.secondary
-            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.secondaryVariant.copy(
-                alpha = 0.8f
-            )
+            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.primary
         }
     }
 
@@ -307,14 +305,34 @@ private fun CardReaderStatusButton(
         }
     )
 
+    val borderColor by transition.animateColor(
+        transitionSpec = { tween(durationMillis = animationDuration) },
+        label = "BorderColorTransition"
+    ) { status ->
+        when (status) {
+            WooPosCardReaderStatus.Connected -> Color.Transparent
+            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.primary
+        }
+    }
+
     Card(
-        modifier = modifier
-            .wrapContentSize(Alignment.Center),
+        modifier = modifier.
+        height(56.dp),
         backgroundColor = MaterialTheme.colors.surface,
         elevation = 8.dp,
         shape = RoundedCornerShape(8.dp),
     ) {
-        TextButton(onClick = onClick) {
+        TextButton(
+            onClick = onClick,
+            modifier = Modifier
+                .padding(8.dp.toAdaptivePadding())
+                .border(
+                    width = 2.dp,
+                    color = borderColor,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .height(40.dp),
+        ) {
             Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
             Circle(size = 12.dp, color = illustrationColor)
             Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
@@ -335,7 +353,7 @@ private fun ReaderStatusText(
     color: Color
 ) {
     Text(
-        modifier = modifier.padding(8.dp.toAdaptivePadding()),
+        modifier = modifier.padding(horizontal = 8.dp.toAdaptivePadding()),
         text = title,
         color = color,
         style = MaterialTheme.typography.button
