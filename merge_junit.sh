@@ -29,7 +29,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' > "$output_file"
 echo '<testsuites>' >> "$output_file"
 
 # Iterate over the XML files in the directory, merging their content
-sed '/<\?xml version="1.0" encoding="UTF-8"\?>/d' "$reports_dir"/*.xml >> "$output_file"
+sed '/<\?xml*/d' "$reports_dir"/*.xml >> "$output_file"
 
 # Close the testsuites tag
 echo '</testsuites>' >> "$output_file"
