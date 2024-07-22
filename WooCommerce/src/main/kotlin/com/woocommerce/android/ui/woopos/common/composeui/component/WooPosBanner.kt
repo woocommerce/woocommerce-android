@@ -73,7 +73,7 @@ fun WooPosBanner(
                         Icon(
                             painterResource(id = R.drawable.info),
                             contentDescription = "Info",
-                            tint = colorResource(id = R.color.woo_purple_30),
+                            tint = colorResource(id = R.color.woo_purple_50),
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
