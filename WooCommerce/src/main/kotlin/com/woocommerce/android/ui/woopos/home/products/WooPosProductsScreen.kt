@@ -61,7 +61,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimme
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductListReached
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.PullToRefreshTriggered
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.SimpleProductsOnlyBannerClosed
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -77,7 +76,6 @@ fun WooPosProductsScreen(modifier: Modifier = Modifier) {
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
         onEndOfProductListReached = { productsViewModel.onUIEvent(EndOfProductListReached) },
         onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) },
-        onBannerClosed = { productsViewModel.onUIEvent(SimpleProductsOnlyBannerClosed) }
     )
 }
 
@@ -89,7 +87,6 @@ private fun WooPosProductsScreen(
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
-    onBannerClosed: () -> Unit,
 ) {
     val state = productsStateFlow.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
@@ -119,19 +116,21 @@ private fun WooPosProductsScreen(
             when (val productsState = state.value) {
                 is WooPosProductsViewState.Content -> {
                     Column {
-                        if (!productsState.isSimpleProductsOnlyBannerShown) {
+                        if (productsState.bannerState?.isSimpleProductsOnlyBannerShown == false) {
                             AnimatedVisibility(
                                 visibleState = animVisibleState,
                                 exit = fadeOut() + shrinkVertically(),
                             ) {
                                 WooPosBanner(
-                                    title = stringResource(id = R.string.woopos_banner_simple_products_only_title),
-                                    message = stringResource(id = R.string.woopos_banner_simple_products_only_message),
+                                    title = stringResource(id = productsState.bannerState.title),
+                                    message = stringResource(id = productsState.bannerState.message),
                                     onClose = {
                                         // Start exiting the animation
                                         animVisibleState.targetState = false
                                     },
-                                    onLearnMore = {}
+                                    onLearnMore = {
+                                        productsState.bannerState.onLearnMoreClicked()
+                                    }
                                 )
                             }
                             // Check the animation state and call onBannerClosed when the banner is invisible
@@ -139,7 +138,7 @@ private fun WooPosProductsScreen(
                                 snapshotFlow { animVisibleState.isIdle && !animVisibleState.currentState }
                                     .collect { isBannerInvisible ->
                                         if (isBannerInvisible) {
-                                            onBannerClosed()
+                                            productsState.bannerState.onBannerClosed()
                                         }
                                     }
                             }
@@ -394,7 +393,6 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             ),
             loadingMore = true,
             reloadingProducts = true,
-            isSimpleProductsOnlyBannerShown = false
         )
     )
     WooPosTheme {
@@ -404,7 +402,6 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
-            onBannerClosed = {}
         )
     }
 }
@@ -420,7 +417,6 @@ fun WooPosHomeScreenLoadingPreview() {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
-            onBannerClosed = {}
         )
     }
 }
@@ -436,7 +432,6 @@ fun WooPosHomeScreenEmptyListPreview() {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
-            onBannerClosed = {}
         )
     }
 }
