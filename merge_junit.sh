@@ -30,8 +30,7 @@ echo '<testsuites>' >> "$output_file"
 
 # Iterate over the XML files in the directory, merging their content
 for report in "$reports_dir"/*.xml; do
-    # Strip the outer <testsuites> tags and append the content to the merged file
-    sed 's/^<.*testsuites>//; s/<.*\/testsuites>$//' "$report" >> "$output_file"
+    sed '/<\?xml version="1.0" encoding="UTF-8"\?>/d' "$report" >> "$output_file"
 done
 
 # Close the testsuites tag
