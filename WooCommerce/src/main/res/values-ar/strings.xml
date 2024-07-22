@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-08 14:54:04+0000
+Translation-Revision-Date: 2024-07-15 14:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="customers_details_none_hint">لا شيء</string>
+    <string name="customers_details_no_phone_hint">لا يوجد رقم هاتف</string>
+    <string name="customers_details_postal_code_value_title">الرمز البريدي</string>
+    <string name="customers_details_city_value_title">المدينة</string>
+    <string name="customers_details_region_value_title">المنطقة</string>
+    <string name="customers_details_country_value_title">البلد</string>
+    <string name="customers_details_date_registered_value_title">تاريخ التسجيل</string>
+    <string name="customers_details_username_value_title">اسم المستخدم</string>
+    <string name="customers_details_average_order_value_title">متوسط قيمة الطلب</string>
+    <string name="customers_details_total_spend_value_title">إجمالي الإنفاق</string>
+    <string name="customers_details_orders_value_title">الطلبات</string>
+    <string name="customers_details_last_active_value_title">آخر ظهور</string>
+    <string name="customers_details_shipping_location_section">الموقع</string>
+    <string name="customers_details_shipping_address_section">عنوان الشحن</string>
+    <string name="customers_details_billing_address_section">عنوان الفوترة</string>
+    <string name="customers_details_registration_section">التسجيل</string>
+    <string name="customers_details_orders_section">الطلبات</string>
+    <string name="customers_details_customer_section">العميل</string>
+    <string name="woopos_products_empty_list">لا توجد منتجات</string>
+    <string name="more_menu_customers_title">العملاء</string>
+    <string name="more_menu_button_customers_description">الحصول على رؤى العملاء</string>
+    <string name="more_menu_button_customers">العملاء</string>
+    <string name="ai_product_creation_scanning_photo_error">خطأ في أثناء محاولة مسح النص ضوئيًا من الصورة. يرجى المحاولة مجددًا</string>
+    <string name="ai_product_creation_scanning_image">مسح الصورة ضوئيًا</string>
+    <string name="ai_product_creation_image_selected_subtitle">ستتم إضافة الصورة إلى المنتج</string>
+    <string name="ai_product_creation_image_selected">تم تحديد الصورة</string>
+    <string name="ai_product_creation_remove_image">إزالة صورة</string>
+    <string name="ai_product_creation_replace_image">استبدال صورة</string>
+    <string name="ai_product_creation_view_image">عرض الصورة</string>
+    <string name="product_creation_ai_preview_name_description_sections">الاسم والملخص والوصف</string>
+    <string name="product_creation_ai_preview_subtitle">يمكنك تحرير تفاصيل منتجاتك أو إعادة إنشائها قبل الحفظ.</string>
+    <string name="product_detail_publish">نشر</string>
+    <string name="analytics_google_ads_programs_card_title">البرامج</string>
+    <string name="analytics_google_ads_card_title">إعلانات غوغل</string>
+    <string name="analytics_google_ads_no_data">لا توجد برامج في هذه الفترة</string>
     <string name="woopos_reader_connect_now_button">الاتصال الآن</string>
     <string name="woopos_cart_title">عربة التسوق</string>
     <string name="ai_product_creation_generate_details_button">إنشاء تفاصيل المنتج</string>

@@ -417,7 +417,7 @@
     <string name="my_store_widget_reviews_title">Most recent reviews</string>
     <string name="my_store_widget_coupons_title">Most active coupons</string>
     <string name="my_store_widget_product_stock_title">Stock</string>
-    <string name="my_store_widget_google_ads_title">Google Ads Campaigns</string>
+    <string name="my_store_widget_google_ads_title">Google Ads campaigns</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
@@ -507,6 +507,7 @@
     <string name="analytics_session_no_available">Session data unavailable</string>
     <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_spend_value">Spend: %1$s</string>
     <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
@@ -2149,7 +2150,6 @@
     <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
-    <string name="product_detail_publish">Publish</string>
     <string name="product_detail_linked_products">Linked products</string>
     <string name="upsells_label">Upsells</string>
     <string name="upsells_desc">Products promoted instead of the currently viewed product (ie: more profitable products)</string>
@@ -4179,6 +4179,7 @@
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
+    <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>

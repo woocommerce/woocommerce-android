@@ -16,7 +16,6 @@ class SaveAiGeneratedProduct @Inject constructor(
     @Suppress("ReturnCount")
     suspend operator fun invoke(
         product: Product,
-        publishProduct: Boolean,
         selectedImage: Product.Image?
     ): Pair<Boolean, Long> {
         // Create missing categories
@@ -51,7 +50,7 @@ class SaveAiGeneratedProduct @Inject constructor(
             categories = product.categories - missingCategories.toSet() + createdCategories.orEmpty(),
             tags = product.tags - missingTags.toSet() + createdTags.orEmpty(),
             images = listOfNotNull(selectedImage),
-            status = if (publishProduct) ProductStatus.PUBLISH else ProductStatus.DRAFT
+            status = ProductStatus.DRAFT
         )
 
         return productDetailRepository.addProduct(updatedProduct)

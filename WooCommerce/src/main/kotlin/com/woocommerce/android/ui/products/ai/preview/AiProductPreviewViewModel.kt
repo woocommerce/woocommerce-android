@@ -69,14 +69,12 @@ class AiProductPreviewViewModel @Inject constructor(
         when (val product = it.getOrNull()) {
             null -> emit(
                 State.Error(
-                    onRetryClick = { TODO() },
+                    onRetryClick = { generateProduct() },
                     onDismissClick = { triggerEvent(MultiLiveEvent.Event.Exit) }
                 )
             )
 
-            else -> {
-                emitAll(product.prepareState())
-            }
+            else -> emitAll(product.prepareState())
         }
     }.asLiveData()
 
@@ -156,6 +154,9 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onNameChanged(name: String?) {
+        if (name == null) {
+            trackUndoEditClick("name")
+        }
         val generatedName = generatedProduct.value?.getOrNull()?.names?.get(selectedVariant.value)
         val actualValue = if (name == generatedName) null else name
 
@@ -165,6 +166,9 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onDescriptionChanged(description: String?) {
+        if (description == null) {
+            trackUndoEditClick("description")
+        }
         val generatedDescription = generatedProduct.value?.getOrNull()?.descriptions?.get(selectedVariant.value)
         val actualValue = if (description == generatedDescription) null else description
 
@@ -178,6 +182,9 @@ class AiProductPreviewViewModel @Inject constructor(
     }
 
     fun onShortDescriptionChanged(shortDescription: String?) {
+        if (shortDescription == null) {
+            trackUndoEditClick("short_description")
+        }
         val generatedShortDescription = generatedProduct.value?.getOrNull()?.shortDescriptions
             ?.get(selectedVariant.value)
         val actualValue = if (shortDescription == generatedShortDescription) null else shortDescription
@@ -191,16 +198,20 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onGenerateAgainClicked() {
+        userEditedFields.value = UserEditedFields()
+        selectedVariant.value = 0
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to false
+            )
+        )
+        generateProduct()
+    }
+
     fun onSaveProductAsDraft() {
         analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_BUTTON_TAPPED)
-        addAiGeneratedProduct(publishProduct = false)
-    }
-
-    fun onPublishProduct() {
-        addAiGeneratedProduct(publishProduct = true)
-    }
-
-    private fun addAiGeneratedProduct(publishProduct: Boolean) {
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         savingProductState.value = SavingProductState.Loading
         viewModelScope.launch {
@@ -212,16 +223,12 @@ class AiProductPreviewViewModel @Inject constructor(
                     description = editedFields.descriptions[selectedVariant.value] ?: product.description,
                     shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
                 ),
-                publishProduct,
                 imageState.value.getImage()
             )
             if (!success) {
                 savingProductState.value = SavingProductState.Error(
                     messageRes = R.string.error_generic,
-                    onRetryClick = when {
-                        publishProduct -> ::onPublishProduct
-                        else -> ::onSaveProductAsDraft
-                    },
+                    onRetryClick = ::onSaveProductAsDraft,
                     onDismissClick = { savingProductState.value = SavingProductState.Idle }
                 )
                 analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
@@ -254,10 +261,13 @@ class AiProductPreviewViewModel @Inject constructor(
 
     private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
 
-    fun onGenerateAgainClicked() {
-        userEditedFields.value = UserEditedFields()
-        selectedVariant.value = 0
-        generateProduct()
+    private fun trackUndoEditClick(field: String) {
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_CREATION_AI_UNDO_EDIT_TAPPED,
+            mapOf(
+                "field" to field
+            )
+        )
     }
 
     sealed interface State {
