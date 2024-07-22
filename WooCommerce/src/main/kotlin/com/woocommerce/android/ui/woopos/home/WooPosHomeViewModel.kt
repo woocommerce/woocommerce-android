@@ -51,7 +51,9 @@ class WooPosHomeViewModel @Inject constructor(
                 }
             }
 
-            else -> {}
+            WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
+                _state.value = _state.value.copy(exitConfirmationDialog = null)
+            }
         }
     }
 
