@@ -40,7 +40,7 @@ fun WooPosBanner(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 8.dp)
+            .padding(bottom = 16.dp)
     ) {
         Card(
             shape = RoundedCornerShape(8.dp),
@@ -94,13 +94,14 @@ fun WooPosBanner(
                     val annotatedText = buildAnnotatedString {
                         append(message)
                         withStyle(style = SpanStyle(color = colorResource(id = R.color.woo_purple_50))) {
-                            append("Learn more")
+                            append(" Learn more")
                         }
                     }
 
                     Text(
                         text = annotatedText,
                         style = MaterialTheme.typography.body1,
+                        fontWeight = FontWeight.Medium,
                         color = colorResource(id = R.color.color_on_surface_high),
                         modifier = Modifier
                             .clickable { onLearnMore() }
