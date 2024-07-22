@@ -120,6 +120,7 @@ class WooPosProductsViewModel @Inject constructor(
             isSimpleProductsOnlyBannerShown = shouldShowProductsOnlyBanner(),
             title = R.string.woopos_banner_simple_products_only_title,
             message = R.string.woopos_banner_simple_products_only_message,
+            icon = R.drawable.info,
             onBannerClosed = { onSimpleProductsOnlyBannerClosed() },
             onLearnMoreClicked = {}
         )
