@@ -9,7 +9,13 @@ import java.lang.IllegalStateException
 import kotlin.reflect.KProperty
 
 /**
- *  A wrapper around [MutableLiveData], that creates an entry in the [SavedStateHandle] to preserve the data.
+ *  A wrapper around [MutableLiveData], that emits previous and new values on update.
+ *
+ *  When the provided SavedStateHandle is not null, it creates an entry in the [SavedStateHandle] to preserve the data.
+ *
+ *  !BEWARE! that only data that can't be easily recovered should be stored - e.g. user's input. Storing complete
+ *  viewStates wastes device resources and often leads to issue such as TransactionTooLarge crashes.
+ *
  *  An initial value is required during the initialization.
  *
  *  This delegate can then be used as a proxy to access and modify the LiveData, which looks like a simple
@@ -19,13 +25,26 @@ import kotlin.reflect.KProperty
  *  being updated. If there is more than one, an [IllegalStateException] is thrown.
  *
  */
-class LiveDataDelegate<T : Parcelable>(
-    savedState: SavedStateHandle,
+class LiveDataDelegate<T : Parcelable>
+@Deprecated(
+    message = "Use the provided factory methods or secondary constructors instead.",
+    level = DeprecationLevel.WARNING
+)
+constructor(
+    savedState: SavedStateHandle? = null,
     private val initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
     private val onChange: (T?, T) -> Unit = { _, _ -> }
 ) {
-    private val _liveData: MutableLiveData<T> = savedState.getLiveData(savedStateKey, initialValue)
+    // This is a whitelisted usage of the primary constructor.
+    @Suppress("DEPRECATION")
+    constructor(
+        initialValue: T,
+        onChange: (T?, T) -> Unit = { _, _ -> }
+    ) : this(savedState = null, initialValue = initialValue, onChange = onChange)
+
+    private val _liveData: MutableLiveData<T> =
+        savedState?.getLiveData(savedStateKey, initialValue) ?: MutableLiveData<T>()
     val liveData: LiveData<T> = _liveData
 
     private var previousValue: T? = null
@@ -35,7 +54,7 @@ class LiveDataDelegate<T : Parcelable>(
 
     fun observe(owner: LifecycleOwner, observer: (T?, T) -> Unit) {
         if (_liveData.hasActiveObservers()) {
-            throw(IllegalStateException("Multiple observers registered but only one is supported."))
+            throw (IllegalStateException("Multiple observers registered but only one is supported."))
         }
 
         previousValue = null
@@ -59,4 +78,22 @@ class LiveDataDelegate<T : Parcelable>(
     }
 
     operator fun getValue(ref: Any, p: KProperty<*>): T = _liveData.value!!
+}
+
+/**
+ * !BEWARE! that only data that can't be easily recovered should be stored - e.g. user's input. Storing complete
+ *  viewStates wastes device resources and often leads to issue such as TransactionTooLarge crashes.
+ *
+ *  Note: This method is technically not necessary, we could use the primary constructor. However, we are
+ *  misusing the savedState in tons of places in the codebase. This approach will hopefully at least increase
+ *  awareness of the associated risks and ensure developers who are using the saved state consider other options.
+ */
+fun <T : Parcelable> createLiveDataDelegateWithSavedState(
+    savedState: SavedStateHandle,
+    initialValue: T,
+    savedStateKey: String = initialValue.javaClass.name,
+    onChange: (T?, T) -> Unit = { _, _ -> }
+): LiveDataDelegate<T> {
+    @Suppress("DEPRECATION") // This is a whitelisted usage of the primary constructor.
+    return LiveDataDelegate(savedState, initialValue, savedStateKey, onChange)
 }
