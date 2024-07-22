@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-09 09:54:03+0000
+Translation-Revision-Date: 2024-07-16 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="customers_details_none_hint">無</string>
+    <string name="customers_details_no_phone_hint">沒有電話號碼</string>
+    <string name="customers_details_postal_code_value_title">郵遞區號</string>
+    <string name="customers_details_city_value_title">城市</string>
+    <string name="customers_details_region_value_title">區域</string>
+    <string name="customers_details_country_value_title">國家/地區</string>
+    <string name="customers_details_date_registered_value_title">註冊日期</string>
+    <string name="customers_details_username_value_title">使用者名稱</string>
+    <string name="customers_details_average_order_value_title">平均訂單金額</string>
+    <string name="customers_details_total_spend_value_title">消費總額</string>
+    <string name="customers_details_orders_value_title">訂單</string>
+    <string name="customers_details_last_active_value_title">上次活動時間</string>
+    <string name="customers_details_shipping_location_section">地點</string>
+    <string name="customers_details_shipping_address_section">運送地址</string>
+    <string name="customers_details_billing_address_section">帳單地址</string>
+    <string name="customers_details_registration_section">註冊</string>
+    <string name="customers_details_orders_section">訂單</string>
+    <string name="customers_details_customer_section">顧客</string>
+    <string name="woopos_products_empty_list">沒有商品</string>
+    <string name="more_menu_customers_title">顧客</string>
+    <string name="more_menu_button_customers_description">取得顧客洞察報告</string>
+    <string name="more_menu_button_customers">顧客</string>
+    <string name="ai_product_creation_scanning_photo_error">嘗試從照片掃描文字時發生錯誤。 請再試一次</string>
+    <string name="ai_product_creation_scanning_image">正在掃描圖片</string>
+    <string name="ai_product_creation_image_selected_subtitle">照片將新增到商品</string>
+    <string name="ai_product_creation_image_selected">已選取照片</string>
+    <string name="ai_product_creation_remove_image">移除照片</string>
+    <string name="ai_product_creation_replace_image">替換照片</string>
+    <string name="ai_product_creation_view_image">檢視照片</string>
+    <string name="product_creation_ai_preview_name_description_sections">名稱、摘要和說明</string>
+    <string name="product_creation_ai_preview_subtitle">你可以在儲存前編輯或重新產生商品詳細資料。</string>
+    <string name="product_detail_publish">發表</string>
+    <string name="analytics_google_ads_programs_card_title">計畫</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">此期間沒有計畫</string>
     <string name="woopos_reader_connect_now_button">立即連結</string>
     <string name="woopos_cart_title">購物車</string>
     <string name="ai_product_creation_generate_details_button">產生商品詳細資料</string>
@@ -616,7 +651,7 @@ Language: zh_TW
     <string name="product_creation_ai_preview_details_section">詳細資料</string>
     <string name="product_creation_ai_preview_description_section">產品說明</string>
     <string name="product_creation_ai_preview_name_section">產品名稱</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">稍後也可隨時變更下方詳細資訊。</string>
+    <string name="product_creation_ai_preview_subtitle_legacy">稍後也可隨時變更下方詳細資料。</string>
     <string name="product_creation_ai_preview_title">預覽</string>
     <string name="product_creation_ai_about_product_continue_button">建立產品詳細資料</string>
     <string name="product_creation_ai_about_product_set_tone">設定語氣和風格</string>
