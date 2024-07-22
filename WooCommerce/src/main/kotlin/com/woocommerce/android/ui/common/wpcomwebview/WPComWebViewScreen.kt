@@ -53,7 +53,7 @@ fun WPComWebViewScreen(
         WCWebView(
             url = viewState.urlToLoad,
             userAgent = userAgent,
-            wpComAuthenticator = wpcomWebViewAuthenticator,
+            wpComAuthenticator = if (viewState.skipAutoAuth) null else wpcomWebViewAuthenticator,
             onUrlLoaded = onUrlLoaded,
             captureBackPresses = viewState.captureBackButton,
             clearCache = clearCache,

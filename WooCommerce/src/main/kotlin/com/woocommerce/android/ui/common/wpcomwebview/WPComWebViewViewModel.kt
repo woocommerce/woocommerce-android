@@ -26,6 +26,7 @@ class WPComWebViewViewModel @Inject constructor(
             urlToLoad = it.urlToLoad,
             title = it.title,
             displayMode = it.displayMode,
+            skipAutoAuth = it.skipAutoAuth,
             captureBackButton = it.captureBackButton,
             clearCache = it.clearCache
         )
@@ -52,6 +53,7 @@ class WPComWebViewViewModel @Inject constructor(
         val urlToLoad: String,
         val title: String?,
         val displayMode: DisplayMode,
+        val skipAutoAuth: Boolean,
         val captureBackButton: Boolean,
         val clearCache: Boolean = false
     )
