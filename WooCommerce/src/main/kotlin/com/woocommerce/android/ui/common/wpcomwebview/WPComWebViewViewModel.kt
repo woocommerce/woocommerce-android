@@ -9,8 +9,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
@@ -19,7 +17,8 @@ import javax.inject.Inject
 class WPComWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
-    val userAgent: UserAgent
+    val userAgent: UserAgent,
+    private val sharedWebViewFlow: SharedWebViewFlow
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: WPComWebViewFragmentArgs by savedStateHandle.navArgs()
     private var isExiting = false
@@ -31,9 +30,6 @@ class WPComWebViewViewModel @Inject constructor(
     // `WebView`s onPageFinished callback is still called even if the url failed to load.
     // This flag is used to ensure it is not emitted on failure.
     private var isUrlLoadingFailed = false
-
-    private val _eventFlow = MutableSharedFlow<WebViewEvent>()
-    val eventFlow = _eventFlow.asSharedFlow()
 
     val viewState = navArgs.let {
         ViewState(
@@ -56,7 +52,7 @@ class WPComWebViewViewModel @Inject constructor(
         if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true && !isExiting) {
             isExiting = true
             launch {
-                emitEvent(WebViewEvent.OnTriggerUrlLoaded(url))
+                sharedWebViewFlow.emitEvent(WebViewEvent.OnTriggerUrlLoaded(url))
             }
             triggerEvent(ExitWithResult(Unit))
         }
@@ -71,14 +67,14 @@ class WPComWebViewViewModel @Inject constructor(
         if (url == viewState.urlToLoad && !isUrlToLoadFinishedOnce) {
             isUrlToLoadFinishedOnce = true
             launch {
-                emitEvent(WebViewEvent.OnPageFinished(url))
+                sharedWebViewFlow.emitEvent(WebViewEvent.OnPageFinished(url))
             }
         }
     }
 
     fun onClose() {
         launch {
-            emitEvent(WebViewEvent.OnWebViewClosed)
+            sharedWebViewFlow.emitEvent(WebViewEvent.OnWebViewClosed)
         }
         triggerEvent(Exit)
     }
@@ -86,12 +82,8 @@ class WPComWebViewViewModel @Inject constructor(
     fun onUrlFailed(url: String, errorCode: Int?) {
         isUrlLoadingFailed = true
         launch {
-            emitEvent(WebViewEvent.OnUrlFailed(url, errorCode))
+            sharedWebViewFlow.emitEvent(WebViewEvent.OnUrlFailed(url, errorCode))
         }
-    }
-
-    suspend fun emitEvent(event: WebViewEvent) {
-        _eventFlow.emit(event)
     }
 
     data class ViewState(
@@ -110,11 +102,4 @@ class WPComWebViewViewModel @Inject constructor(
     enum class DisplayMode {
         REGULAR, MODAL
     }
-}
-
-sealed class WebViewEvent {
-    object OnWebViewClosed : WebViewEvent()
-    data class OnPageFinished(val url: String) : WebViewEvent()
-    data class OnUrlFailed(val url: String, val errorCode: Int?) : WebViewEvent()
-    data class OnTriggerUrlLoaded(val url: String) : WebViewEvent()
 }
