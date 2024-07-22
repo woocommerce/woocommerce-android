@@ -6,18 +6,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
-import kotlin.test.assertFalse
+import org.assertj.core.api.Assertions.assertThat
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
 class WooPosHomeViewModelTest {
-
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -35,24 +31,26 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            viewModel.onUIEvent(SystemBackClicked)
+            viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
 
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+            assertThat(viewModel.state.value.screenPositionState)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.NotEmpty)
         }
 
     @Test
-    fun `given state is Cart, when SystemBackClicked passed, then should propagate the event down`() = runTest {
+    fun `given state is Cart, when SystemBackClicked passed, then should show exit confirmation dialog`() = runTest {
         // GIVEN
         val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
         whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
         val viewModel = createViewModel()
 
         // WHEN
-        val result = viewModel.onUIEvent(SystemBackClicked)
+        viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
 
         // THEN
-        assertFalse(result)
+        assertThat(viewModel.state.value.exitConfirmationDialog).isEqualTo(WooPosExitConfirmationDialog)
     }
 
     @Test
@@ -64,10 +62,12 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUIEvent(SystemBackClicked)
+        viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
 
         // THEN
         verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
+        assertThat(viewModel.state.value.screenPositionState)
+            .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Empty)
     }
 
     private fun createViewModel() = WooPosHomeViewModel(
