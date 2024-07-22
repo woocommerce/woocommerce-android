@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import kotlinx.parcelize.Parcelize
 
 sealed class WooPosProductsViewState(
@@ -9,9 +10,17 @@ sealed class WooPosProductsViewState(
     data class Content(
         val products: List<WooPosProductsListItem>,
         val loadingMore: Boolean,
-        val isSimpleProductsOnlyBannerShown: Boolean,
+        val bannerState: BannerState? = null,
         override val reloadingProducts: Boolean = false,
-    ) : WooPosProductsViewState(reloadingProducts)
+    ) : WooPosProductsViewState(reloadingProducts) {
+        data class BannerState(
+            val isSimpleProductsOnlyBannerShown: Boolean,
+            @StringRes val title: Int,
+            @StringRes val message: Int,
+            val onBannerClosed: () -> Unit,
+            val onLearnMoreClicked: () -> Unit,
+        )
+    }
 
     data class Loading(override val reloadingProducts: Boolean = false) :
         WooPosProductsViewState(reloadingProducts)
