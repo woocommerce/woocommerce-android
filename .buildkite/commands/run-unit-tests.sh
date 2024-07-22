@@ -3,7 +3,7 @@
 echo "--- 🧪 Testing"
 set +e
 cp gradle.properties-example gradle.properties
-./gradlew testJalapenoDebugUnitTest lib:cardreader:testDebugUnitTest lib:iap:testDebugUnitTest mergeJUnitReports
+./gradlew testJalapenoDebugUnitTest lib:cardreader:testDebugUnitTest lib:iap:testDebugUnitTest
 TESTS_EXIT_STATUS=$?
 set -e
 
@@ -16,6 +16,7 @@ fi
 
 echo "--- 🚦 Report Tests Status"
 results_file="WooCommerce/build/test-results/merged-test-results.xml"
+./merge_junit.sh -d WooCommerce/build/test-results/testJalapenoDebugUnitTest -o $results_file
 
 if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
     annotate_test_failures "$results_file" --slack "build-and-ship"
