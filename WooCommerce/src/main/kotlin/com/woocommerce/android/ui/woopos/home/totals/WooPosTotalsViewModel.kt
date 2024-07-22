@@ -27,10 +27,11 @@ class WooPosTotalsViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val totalsRepository: WooPosTotalsRepository,
     private val priceFormat: WooPosFormatPrice,
-    savedState: SavedStateHandle,
+    private val savedState: SavedStateHandle,
 ) : ViewModel() {
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
+        private const val KEY_PRODUCT_IDS = "productIds"
         private val InitialState = WooPosTotalsState.Loading
     }
 
@@ -48,8 +49,9 @@ class WooPosTotalsViewModel @Inject constructor(
         key = "orderId",
     )
 
-    private lateinit var productIds: List<Long>
-
+    private var productIds: List<Long>
+        get() = savedState.get<List<Long>>(KEY_PRODUCT_IDS) ?: emptyList()
+        set(value) = savedState.set(KEY_PRODUCT_IDS, value)
     init {
         listenUpEvents()
     }
