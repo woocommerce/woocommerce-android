@@ -17,7 +17,7 @@ class SaveAiGeneratedProduct @Inject constructor(
     suspend operator fun invoke(
         product: Product,
         selectedImage: Product.Image?
-    ): Pair<Boolean, Long> {
+    ): Result<Long> {
         // Create missing categories
         val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
         val createdCategories = missingCategories
@@ -27,10 +27,13 @@ class SaveAiGeneratedProduct @Inject constructor(
                     message = "Create the missing product categories ${productCategories.map { it.name }}"
                 )
                 productCategoriesRepository.addProductCategories(productCategories)
-            }?.getOrElse {
-                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
-                return Pair(false, 0L)
-            }
+            }?.fold(
+                onSuccess = { it },
+                onFailure = {
+                    WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
+                    return Result.failure(it)
+                }
+            )
 
         // Create missing tags
         val missingTags = product.tags.filter { it.remoteTagId == 0L }
@@ -41,10 +44,13 @@ class SaveAiGeneratedProduct @Inject constructor(
                     message = "Create the missing product tags ${productTags.map { it.name }}"
                 )
                 productTagsRepository.addProductTags(productTags.map { it.name })
-            }?.getOrElse {
-                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
-                return Pair(false, 0L)
-            }
+            }?.fold(
+                onSuccess = { it },
+                onFailure = {
+                    WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
+                    return Result.failure(it)
+                }
+            )
 
         val updatedProduct = product.copy(
             categories = product.categories - missingCategories.toSet() + createdCategories.orEmpty(),
@@ -53,6 +59,12 @@ class SaveAiGeneratedProduct @Inject constructor(
             status = ProductStatus.DRAFT
         )
 
-        return productDetailRepository.addProduct(updatedProduct)
+        return productDetailRepository.addProduct(updatedProduct).let { (success, productId) ->
+            if (success) {
+                Result.success(productId)
+            } else {
+                Result.failure(Exception("Failed to save the AI generated product"))
+            }
+        }
     }
 }

@@ -229,26 +229,28 @@ class AiProductPreviewViewModel @Inject constructor(
         viewModelScope.launch {
             uploadSelectedImage()
             val editedFields = userEditedFields.value
-            val (success, productId) = saveAiGeneratedProduct(
+            saveAiGeneratedProduct(
                 product.copy(
                     name = editedFields.names[selectedVariant.value] ?: product.name,
                     description = editedFields.descriptions[selectedVariant.value] ?: product.description,
                     shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
                 ),
                 imageState.value.getImage()
+            ).fold(
+                onSuccess = { productId ->
+                    savingProductState.value = SavingProductState.Success
+                    triggerEvent(NavigateToProductDetailScreen(productId))
+                    analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
+                },
+                onFailure = {
+                    savingProductState.value = SavingProductState.Error(
+                        messageRes = R.string.error_generic,
+                        onRetryClick = ::onSaveProductAsDraft,
+                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                    )
+                    analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
+                }
             )
-            if (!success) {
-                savingProductState.value = SavingProductState.Error(
-                    messageRes = R.string.error_generic,
-                    onRetryClick = ::onSaveProductAsDraft,
-                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                )
-                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
-            } else {
-                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
-                triggerEvent(NavigateToProductDetailScreen(productId))
-                savingProductState.value = SavingProductState.Success
-            }
         }
     }
 
