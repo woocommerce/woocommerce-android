@@ -260,7 +260,7 @@ private fun WooPosTotalsErrorScreen(
         reason = errorMessage,
         primaryButton = Button(
             text = stringResource(R.string.retry),
-            click = { onUIEvent(WooPosTotalsUIEvent.RetryClicked) }
+            click = { onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked) }
         )
     )
 }
