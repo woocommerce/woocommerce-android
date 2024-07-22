@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
@@ -227,15 +228,19 @@ class AiProductPreviewViewModel @Inject constructor(
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         savingProductState.value = SavingProductState.Loading
         viewModelScope.launch {
-            uploadSelectedImage()
+            val image = uploadSelectedImage().onFailure {
+                return@launch
+            }.getOrNull()
             val editedFields = userEditedFields.value
+
             saveAiGeneratedProduct(
                 product.copy(
                     name = editedFields.names[selectedVariant.value] ?: product.name,
                     description = editedFields.descriptions[selectedVariant.value] ?: product.description,
-                    shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
+                    shortDescription = editedFields.shortDescriptions[selectedVariant.value]
+                        ?: product.shortDescription
                 ),
-                imageState.value.getImage()
+                image
             ).fold(
                 onSuccess = { productId ->
                     savingProductState.value = SavingProductState.Success
@@ -254,26 +259,22 @@ class AiProductPreviewViewModel @Inject constructor(
         }
     }
 
-    private suspend fun uploadSelectedImage() {
-        imageState.value.image
-            ?.let { uploadImage(it) }
-            ?.fold(
-                onSuccess = {
-                    imageState.value = imageState.value.copy(
-                        image = WPMediaLibraryImage(content = it)
-                    )
-                },
-                onFailure = {
-                    savingProductState.value = SavingProductState.Error(
-                        messageRes = R.string.ai_product_creation_error_media_upload,
-                        onRetryClick = ::onSaveProductAsDraft,
-                        onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                    )
-                }
-            )
+    private suspend fun uploadSelectedImage(): Result<Product.Image?> {
+        val image = imageState.value.image ?: return Result.success(null)
+        return uploadImage(image)
+            .onSuccess {
+                imageState.value = imageState.value.copy(
+                    image = WPMediaLibraryImage(content = it)
+                )
+            }
+            .onFailure {
+                savingProductState.value = SavingProductState.Error(
+                    messageRes = R.string.ai_product_creation_error_media_upload,
+                    onRetryClick = ::onSaveProductAsDraft,
+                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                )
+            }
     }
-
-    private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
 
     private fun trackUndoEditClick(field: String) {
         analyticsTracker.track(
