@@ -101,7 +101,7 @@ fun WooPosBanner(
                     Text(
                         text = annotatedText,
                         style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.SemiBold,
                         color = colorResource(id = R.color.color_on_surface_high),
                         modifier = Modifier
                             .clickable { onLearnMore() }
