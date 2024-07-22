@@ -10,10 +10,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarUIEvent.ConnectToAReaderClicked
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarUIEvent.MenuItemClicked
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarUIEvent.OnOutsideOfToolbarMenuClicked
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeToolbarUIEvent.OnToolbarMenuClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.ConnectToAReaderClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.MenuItemClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,17 +21,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosHomeToolbarViewModel @Inject constructor(
+class WooPosToolbarViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
-        WooPosHomeToolbarState(
-            cardReaderStatus = WooPosHomeToolbarState.WooPosCardReaderStatus.NotConnected,
-            menu = WooPosHomeToolbarState.Menu.Hidden,
+        WooPosToolbarState(
+            cardReaderStatus = WooPosToolbarState.WooPosCardReaderStatus.NotConnected,
+            menu = WooPosToolbarState.Menu.Hidden,
         )
     )
-    val state: StateFlow<WooPosHomeToolbarState> = _state
+    val state: StateFlow<WooPosToolbarState> = _state
 
     init {
         viewModelScope.launch {
@@ -43,9 +43,9 @@ class WooPosHomeToolbarViewModel @Inject constructor(
         }
     }
 
-    fun onUiEvent(event: WooPosHomeToolbarUIEvent) {
+    fun onUiEvent(event: WooPosToolbarUIEvent) {
         val currentState = _state.value
-        if (currentState.menu is WooPosHomeToolbarState.Menu.Visible && event !is MenuItemClicked) {
+        if (currentState.menu is WooPosToolbarState.Menu.Visible && event !is MenuItemClicked) {
             hideMenu()
             return
         }
@@ -53,7 +53,7 @@ class WooPosHomeToolbarViewModel @Inject constructor(
         when (event) {
             is OnToolbarMenuClicked -> {
                 _state.value = currentState.copy(
-                    menu = WooPosHomeToolbarState.Menu.Visible(toolbarMenuItems)
+                    menu = WooPosToolbarState.Menu.Visible(toolbarMenuItems)
                 )
             }
 
@@ -80,29 +80,29 @@ class WooPosHomeToolbarViewModel @Inject constructor(
     }
 
     private fun hideMenu() {
-        _state.value = _state.value.copy(menu = WooPosHomeToolbarState.Menu.Hidden)
+        _state.value = _state.value.copy(menu = WooPosToolbarState.Menu.Hidden)
     }
 
     private fun handleConnectToReaderButtonClicked() {
-        if (_state.value.cardReaderStatus != WooPosHomeToolbarState.WooPosCardReaderStatus.Connected) {
+        if (_state.value.cardReaderStatus != WooPosToolbarState.WooPosCardReaderStatus.Connected) {
             cardReaderFacade.connectToReader()
         }
     }
 
-    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosHomeToolbarState.WooPosCardReaderStatus {
+    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosToolbarState.WooPosCardReaderStatus {
         return when (status) {
-            is Connected -> WooPosHomeToolbarState.WooPosCardReaderStatus.Connected
-            is NotConnected, Connecting -> WooPosHomeToolbarState.WooPosCardReaderStatus.NotConnected
+            is Connected -> WooPosToolbarState.WooPosCardReaderStatus.Connected
+            is NotConnected, Connecting -> WooPosToolbarState.WooPosCardReaderStatus.NotConnected
         }
     }
 
     private companion object {
         val toolbarMenuItems = listOf(
-            WooPosHomeToolbarState.Menu.MenuItem(
+            WooPosToolbarState.Menu.MenuItem(
                 title = R.string.woopos_get_support_title,
                 icon = R.drawable.woopos_ic_get_support,
             ),
-            WooPosHomeToolbarState.Menu.MenuItem(
+            WooPosToolbarState.Menu.MenuItem(
                 title = R.string.woopos_exit_confirmation_title,
                 icon = R.drawable.woopos_ic_exit_pos,
             ),
