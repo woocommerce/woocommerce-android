@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -60,10 +61,6 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
                 reloadProducts()
             }
-
-            WooPosProductsUIEvent.SimpleProductsOnlyBannerClosed -> {
-                onSimpleProductsOnlyBannerClosed()
-            }
         }
     }
 
@@ -71,9 +68,14 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch {
             appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown = true
             withContext(Dispatchers.Main) {
-                _viewState.value = (_viewState.value as? WooPosProductsViewState.Content)?.copy(
-                    isSimpleProductsOnlyBannerShown = true
-                )!!
+                val currentState = _viewState.value
+                if (currentState is WooPosProductsViewState.Content) {
+                    _viewState.value = currentState.copy(
+                        bannerState = currentState.bannerState?.copy(
+                            isSimpleProductsOnlyBannerShown = true
+                        )
+                    )
+                }
             }
         }
     }
@@ -112,9 +114,15 @@ class WooPosProductsViewModel @Inject constructor(
                 imageUrl = product.firstImageUrl,
             )
         },
-        isSimpleProductsOnlyBannerShown = shouldShowProductsOnlyBanner(),
         loadingMore = false,
         reloadingProducts = false,
+        bannerState = WooPosProductsViewState.Content.BannerState(
+            isSimpleProductsOnlyBannerShown = shouldShowProductsOnlyBanner(),
+            title = R.string.woopos_banner_simple_products_only_title,
+            message = R.string.woopos_banner_simple_products_only_message,
+            onBannerClosed = { onSimpleProductsOnlyBannerClosed() },
+            onLearnMoreClicked = {}
+        )
     )
 
     private fun isReloadingProducts(): Boolean = viewState.value.reloadingProducts
