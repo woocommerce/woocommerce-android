@@ -40,8 +40,11 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val googleAdsStore: WCGoogleStore,
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val EPOCH_DATE = "1970-01-01"
+    }
+
     private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val distantPastDate: String = dateFormatter.format(LocalDateTime.of(1970, 1, 1, 0, 0))
     private val currentDate: String = dateFormatter.format(LocalDateTime.now())
 
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
@@ -59,7 +62,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                         if (hasCampaigns) {
                             googleAdsStore.fetchImpressionsAndClicks(
                                 site = selectedSite.get(),
-                                startDate = distantPastDate,
+                                startDate = EPOCH_DATE, // To get all time data
                                 endDate = currentDate
                             ).let { result ->
 
