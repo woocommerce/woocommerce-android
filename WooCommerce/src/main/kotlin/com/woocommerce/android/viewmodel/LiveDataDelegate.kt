@@ -54,7 +54,7 @@ constructor(
 
     fun observe(owner: LifecycleOwner, observer: (T?, T) -> Unit) {
         if (_liveData.hasActiveObservers()) {
-            throw (IllegalStateException("Multiple observers registered but only one is supported."))
+            error("Multiple observers registered but only one is supported.")
         }
 
         previousValue = null
