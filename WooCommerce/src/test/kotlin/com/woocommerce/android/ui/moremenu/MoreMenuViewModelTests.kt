@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.common.wpcomwebview.SharedWebViewFlow
 import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
@@ -89,6 +91,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
 
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val sharedWebViewFlow: SharedWebViewFlow = mock()
+
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
@@ -112,6 +117,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             canUseAutoLoginWebview = canUseAutoLoginWebview,
             isWooPosEnabled = isWooPosEnabled,
+            analyticsTrackerWrapper = analyticsTrackerWrapper, 
+            sharedWebViewFlow = sharedWebViewFlow
         )
     }
 

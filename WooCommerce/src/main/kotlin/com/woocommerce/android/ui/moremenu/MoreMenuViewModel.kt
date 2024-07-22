@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -25,6 +26,8 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.common.wpcomwebview.SharedWebViewFlow
+import com.woocommerce.android.ui.common.wpcomwebview.WebViewEvent
 import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
@@ -48,6 +51,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import java.net.URL
 import javax.inject.Inject
 
@@ -69,8 +73,10 @@ class MoreMenuViewModel @Inject constructor(
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val isWooPosEnabled: WooPosIsEnabled,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val sharedWebViewFlow: SharedWebViewFlow
 ) : ScopedViewModel(savedState) {
-    private var hasCreatedGoogleAdsCampaign = false
+    private var storeHasGoogleAdsCampaigns = false
 
     val moreMenuViewState =
         combine(
@@ -99,6 +105,24 @@ class MoreMenuViewModel @Inject constructor(
                 isStoreSwitcherEnabled = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords,
             )
         }.asLiveData()
+
+    init {
+        launch {
+            hasGoogleAdsCampaigns().fold(
+                onSuccess = { storeHasGoogleAdsCampaigns = it },
+                onFailure = { WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to fetch Google Ads campaigns: $it") }
+            )
+
+            sharedWebViewFlow.webViewEventFlow.collect { event ->
+                when (event) {
+                    is WebViewEvent.OnPageFinished -> onGoogleAdsEntryPointUrlFinished()
+                    is WebViewEvent.OnWebViewClosed -> onGoogleAdsFlowCanceled()
+                    is WebViewEvent.OnUrlFailed -> onGoogleAdsFlowError(event.url, event.errorCode)
+                    is WebViewEvent.OnTriggerUrlLoaded -> handleSuccessfulGoogleAdsCreation()
+                }
+            }
+        }
+    }
 
     fun onViewResumed() {
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
@@ -279,40 +303,99 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun onPromoteProductsWithGoogle() {
-        WooLog.d(WooLog.T.GOOGLE_ADS, "onPromoteProductsWithGoogle")
-
         launch {
             val urlToOpen = determineUrlToOpen()
 
-            val successUrlTriggers = listOf(
-                AppUrls.GOOGLE_ADMIN_FIRST_CAMPAIGN_CREATION_SUCCESS_TRIGGER,
-                AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
-            )
-
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, successUrlTriggers, canUseAutoLoginWebview()))
+            if (urlToOpen.contains(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)) {
+                launchGoogleAdsCampaignCreation(urlToOpen)
+            } else {
+                launchGoogleAdsCampaignDetails(urlToOpen)
+            }
         }
-    }
-
-    fun handleSuccessfulGoogleAdsCreation() {
-        hasCreatedGoogleAdsCampaign = true
     }
 
     private suspend fun determineUrlToOpen(): String {
         val baseUrl = selectedSite.get().adminUrlOrDefault
-        return hasGoogleAdsCampaigns().fold(
-            onSuccess = { hasCampaigns ->
-                if (hasCreatedGoogleAdsCampaign || hasCampaigns) {
-                    baseUrl + AppUrls.GOOGLE_ADMIN_DASHBOARD
-                } else {
-                    baseUrl + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-                }
-            },
-            onFailure = { error ->
-                WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to check for Google Ads campaigns: ${error.message}")
-                // Fallback to campaign creation URL in case of error
-                baseUrl + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-            }
+        return if (storeHasGoogleAdsCampaigns) {
+            baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_DASHBOARD)
+        } else {
+            baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)
+        }
+    }
+
+    private fun launchGoogleAdsCampaignCreation(url: String) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasGoogleAdsCampaigns
+            )
         )
+        val successUrlTriggers = listOf(
+            AppUrls.GOOGLE_ADMIN_FIRST_CAMPAIGN_CREATION_SUCCESS_TRIGGER,
+            AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
+        )
+
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, successUrlTriggers, canUseAutoLoginWebview()))
+    }
+
+    private fun launchGoogleAdsCampaignDetails(url: String) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasGoogleAdsCampaigns
+            )
+        )
+
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, listOf(), canUseAutoLoginWebview()))
+    }
+
+    private fun onGoogleAdsEntryPointUrlFinished() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_FLOW_STARTED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
+            )
+        )
+    }
+
+    private fun onGoogleAdsFlowCanceled() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_FLOW_CANCELED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
+            )
+        )
+    }
+
+    private fun onGoogleAdsFlowError(url: String, errorCode: Int?) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_FLOW_ERROR,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU,
+                AnalyticsTracker.KEY_URL to url,
+                AnalyticsTracker.KEY_ERROR to errorCode
+            )
+        )
+    }
+
+    fun handleSuccessfulGoogleAdsCreation() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_CAMPAIGN_CREATION_SUCCESS,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
+            )
+        )
+        storeHasGoogleAdsCampaigns = true
     }
 
     private fun onPromoteProductsWithBlaze() {
