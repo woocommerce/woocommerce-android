@@ -10,6 +10,8 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.common.wpcomwebview.SharedWebViewFlow
+import com.woocommerce.android.ui.common.wpcomwebview.WebViewEvent
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -25,9 +27,11 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCGoogleStore
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -41,7 +45,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val googleAdsStore: WCGoogleStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val sharedWebViewFlow: SharedWebViewFlow
 ) : ScopedViewModel(savedStateHandle) {
     private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val distantPastDate: String = dateFormatter.format(LocalDateTime.of(1970, 1, 1, 0, 0))
@@ -129,6 +134,26 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
             }
         )
     )
+
+    init {
+        launch {
+            sharedWebViewFlow.webViewEventFlow.collect { event ->
+                when (event) {
+                    is WebViewEvent.OnPageFinished -> onEntryPointUrlFinished()
+                    else -> { /* no-op */ }
+                }
+            }
+        }
+    }
+
+    private fun onEntryPointUrlFinished() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_FLOW_STARTED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+            )
+        )
+    }
 
     private fun launchCampaignCreation() {
         analyticsTrackerWrapper.track(
