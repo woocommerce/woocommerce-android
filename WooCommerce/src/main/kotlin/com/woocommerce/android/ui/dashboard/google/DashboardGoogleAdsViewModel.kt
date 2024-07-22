@@ -141,6 +141,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                 when (event) {
                     is WebViewEvent.OnPageFinished -> onEntryPointUrlFinished()
                     is WebViewEvent.OnWebViewClosed -> onGoogleAdsFlowCanceled()
+                    is WebViewEvent.OnUrlFailed -> onGoogleAdsFlowError(event.url, event.errorCode)
                     else -> { /* no-op */ }
                 }
             }
@@ -161,6 +162,17 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
             stat = AnalyticsEvent.GOOGLEADS_FLOW_CANCELED,
             properties = mapOf(
                 AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+            )
+        )
+    }
+
+    private fun onGoogleAdsFlowError(url: String, errorCode: Int?) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_FLOW_ERROR,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE,
+                AnalyticsTracker.KEY_URL to url,
+                AnalyticsTracker.KEY_ERROR to errorCode
             )
         )
     }
