@@ -87,6 +87,9 @@ constructor(
  *  Note: This method is technically not necessary, we could use the primary constructor. However, we are
  *  misusing the savedState in tons of places in the codebase. This approach will hopefully at least increase
  *  awareness of the associated risks and ensure developers who are using the saved state consider other options.
+ *
+ *  Note 2: We are intentionally not changing all the existing location to use this factory method as all these
+ *  locations should be changed only after considering whether they truly store the minimal required data.
  */
 fun <T : Parcelable> createLiveDataDelegateWithSavedState(
     savedState: SavedStateHandle,
