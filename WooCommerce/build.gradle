@@ -25,6 +25,7 @@ fladle {
     devices = [
             [ "model": "Pixel2.arm", "version": "30" ]
     ]
+    testTimeout = "4m"
     localResultsDir = "$rootDir/build/instrumented-tests"
 
     maxTestShards = 50
