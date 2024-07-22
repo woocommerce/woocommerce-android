@@ -127,9 +127,7 @@ class LastUpdateDataStoreTest : BaseUnitTest() {
             on { currentDate() } doReturn mockDate
         }
 
-        val selectedSite: SelectedSite = mock {
-            on { getSelectedSiteId() } doReturn 1
-        }
+        val selectedSite: SelectedSite = mock()
 
         sut = LastUpdateDataStore(
             dataStore = dataStore,
