@@ -25,26 +25,19 @@ import kotlin.reflect.KProperty
  *  being updated. If there is more than one, an [IllegalStateException] is thrown.
  *
  */
-class LiveDataDelegate<T : Parcelable>
-@Deprecated(
-    message = "Use the provided factory methods or secondary constructors instead.",
-    level = DeprecationLevel.WARNING
-)
-constructor(
+class LiveDataDelegate<T : Parcelable> (
     savedState: SavedStateHandle? = null,
     private val initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
     private val onChange: (T?, T) -> Unit = { _, _ -> }
 ) {
-    // This is a whitelisted usage of the primary constructor.
-    @Suppress("DEPRECATION")
     constructor(
         initialValue: T,
         onChange: (T?, T) -> Unit = { _, _ -> }
     ) : this(savedState = null, initialValue = initialValue, onChange = onChange)
 
     private val _liveData: MutableLiveData<T> =
-        savedState?.getLiveData(savedStateKey, initialValue) ?: MutableLiveData<T>()
+        savedState?.getLiveData(savedStateKey, initialValue) ?: MutableLiveData<T>(initialValue)
     val liveData: LiveData<T> = _liveData
 
     private var previousValue: T? = null
@@ -97,6 +90,5 @@ fun <T : Parcelable> createLiveDataDelegateWithSavedState(
     savedStateKey: String = initialValue.javaClass.name,
     onChange: (T?, T) -> Unit = { _, _ -> }
 ): LiveDataDelegate<T> {
-    @Suppress("DEPRECATION") // This is a whitelisted usage of the primary constructor.
     return LiveDataDelegate(savedState, initialValue, savedStateKey, onChange)
 }
