@@ -250,6 +250,22 @@ private fun TotalsLoading() {
 }
 
 @Composable
+private fun WooPosTotalsErrorScreen(
+    errorMessage: String,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+) {
+    WooPosErrorState(
+        icon = Icons.Default.Error, // TODO
+        message = stringResource(R.string.woopos_totals_main_error_label),
+        reason = errorMessage,
+        primaryButton = Button(
+            text = stringResource(R.string.retry),
+            click = { onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked) }
+        )
+    )
+}
+
+@Composable
 @WooPosPreview
 fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
     WooPosTheme {
@@ -274,22 +290,6 @@ fun WooPosTotalsScreenLoadingPreview() {
             onUIEvent = {}
         )
     }
-}
-
-@Composable
-private fun WooPosTotalsErrorScreen(
-    errorMessage: String,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit
-) {
-    WooPosErrorState(
-        icon = Icons.Default.Error, // TODO
-        message = stringResource(R.string.woopos_totals_main_error_label),
-        reason = errorMessage,
-        primaryButton = Button(
-            text = stringResource(R.string.retry),
-            click = { onUIEvent(WooPosTotalsUIEvent.RetryClicked) }
-        )
-    )
 }
 
 @Composable

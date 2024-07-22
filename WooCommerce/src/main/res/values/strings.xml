@@ -4179,6 +4179,7 @@
     <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
+    <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
