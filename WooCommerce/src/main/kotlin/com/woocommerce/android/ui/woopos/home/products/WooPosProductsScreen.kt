@@ -124,6 +124,7 @@ private fun WooPosProductsScreen(
                                 WooPosBanner(
                                     title = stringResource(id = productsState.bannerState.title),
                                     message = stringResource(id = productsState.bannerState.message),
+                                    bannerIcon = R.drawable.info,
                                     onClose = {
                                         // Start exiting the animation
                                         animVisibleState.targetState = false
