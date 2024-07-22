@@ -312,7 +312,6 @@ class WooPosProductsViewModelTest {
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
         contentState.bannerState?.onBannerClosed?.invoke()
 
-
         // THEN
         assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == true)
     }
@@ -341,7 +340,6 @@ class WooPosProductsViewModelTest {
         // WHEN
         val viewModel = createViewModel()
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
-
 
         // THEN
         assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == true)
@@ -372,7 +370,6 @@ class WooPosProductsViewModelTest {
         val viewModel = createViewModel()
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
-
         // THEN
         assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == false)
     }
@@ -401,7 +398,6 @@ class WooPosProductsViewModelTest {
         // WHEN
         val viewModel = createViewModel()
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
-
 
         // THEN
         assertThat(contentState.bannerState?.title).isEqualTo(R.string.woopos_banner_simple_products_only_title)
@@ -432,7 +428,6 @@ class WooPosProductsViewModelTest {
         val viewModel = createViewModel()
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
-
         // THEN
         assertThat(contentState.bannerState?.message).isEqualTo(R.string.woopos_banner_simple_products_only_message)
     }
@@ -461,7 +456,6 @@ class WooPosProductsViewModelTest {
         // WHEN
         val viewModel = createViewModel()
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
-
 
         // THEN
         assertThat(contentState.bannerState?.icon).isEqualTo(R.drawable.info)
