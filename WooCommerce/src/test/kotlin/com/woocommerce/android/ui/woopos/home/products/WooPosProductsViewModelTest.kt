@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -374,6 +375,36 @@ class WooPosProductsViewModelTest {
 
         // THEN
         assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == false)
+    }
+
+    @Test
+    fun `given simple products only banner is shown, then correct title is displayed`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown).thenReturn(false)
+
+        // WHEN
+        val viewModel = createViewModel()
+        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+
+
+        // THEN
+        assertThat(contentState.bannerState?.title).isEqualTo(R.string.woopos_banner_simple_products_only_title)
     }
 
     private fun createViewModel() =
