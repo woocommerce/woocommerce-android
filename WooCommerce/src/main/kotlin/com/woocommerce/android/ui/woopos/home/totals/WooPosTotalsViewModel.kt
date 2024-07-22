@@ -90,7 +90,7 @@ class WooPosTotalsViewModel @Inject constructor(
             }
 
             is WooPosTotalsUIEvent.RetryOrderCreationClicked -> {
-                attemptCreateOrderAgain()
+                createOrderDraft(productIds)
             }
         }
     }
@@ -112,10 +112,6 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    private fun attemptCreateOrderAgain() {
-        createOrderDraft(productIds)
     }
 
     private fun createOrderDraft(productIds: List<Long>) {
