@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.Visit
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsError
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.ResultWithOutdatedFlag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
@@ -49,13 +50,13 @@ class GetStats @Inject constructor(
             revenueStats(selectedRange, shouldRefreshRevenue),
             visitorStats(selectedRange, shouldRefreshVisitors)
         ).onEach { result ->
-            if (result is RevenueStatsSuccess && shouldRefreshRevenue) {
+            if (result is RevenueStatsSuccess && shouldRefreshRevenue && result.isOutdated.not()) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
                     rangeSelection = selectedRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
                 )
             }
-            if (result is VisitorsStatsSuccess && shouldRefreshVisitors) {
+            if (result is VisitorsStatsSuccess && shouldRefreshVisitors && result.isOutdated.not()) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
                     rangeSelection = selectedRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
@@ -72,14 +73,22 @@ class GetStats @Inject constructor(
             startDate = rangeSelection.currentRange.start,
             endDate = rangeSelection.currentRange.end
         )
-        if (forceRefresh.not()) {
-            statsRepository.getRevenueStatsById(revenueRangeId)
-                .takeIf { it.isSuccess && it.getOrNull() != null }
-                ?.let {
+
+        statsRepository.getRevenueStatsById(revenueRangeId)
+            .takeIf { it.isSuccess && it.getOrNull() != null }
+            ?.let {
+                if (forceRefresh.not()) {
                     emit(RevenueStatsSuccess(it.getOrNull()))
                     return@flow
+                } else {
+                    emit(
+                        RevenueStatsSuccess(
+                            stats = it.getOrNull(),
+                            isOutdated = true
+                        )
+                    )
                 }
-        }
+            } ?: run { emit(LoadStatsResult.RevenueStatsLoading) }
 
         val revenueStatsResult = statsRepository.fetchRevenueStats(
             range = rangeSelection.currentRange,
@@ -118,7 +127,19 @@ class GetStats @Inject constructor(
                 if (total.isFailure || individual.isFailure) {
                     VisitorsStatsError
                 } else {
-                    VisitorsStatsSuccess(individual.getOrThrow(), total.getOrThrow())
+                    val individualStats = individual.getOrThrow()
+                    val totalStats = total.getOrThrow()
+                    val noIndividualStatsdData = individualStats.isOutdated && individualStats.value.isEmpty()
+                    val noTotalStatsData = totalStats.isOutdated && totalStats.value == null
+                    if (noIndividualStatsdData && noTotalStatsData) {
+                        LoadStatsResult.VisitorStatsLoading
+                    } else {
+                        VisitorsStatsSuccess(
+                            stats = individualStats.value,
+                            totalVisitorCount = totalStats.value,
+                            isOutdated = individualStats.isOutdated || totalStats.isOutdated
+                        )
+                    }
                 }
             }
 
@@ -131,33 +152,43 @@ class GetStats @Inject constructor(
     private fun individualVisitorStats(
         rangeSelection: StatsTimeRangeSelection,
         forceRefresh: Boolean
-    ): Flow<Result<Map<String, Int>>> = flow {
+    ): Flow<Result<ResultWithOutdatedFlag<Map<String, Int>>>> = flow {
+        statsRepository.getNewVisitorStats(
+            range = rangeSelection.currentRange,
+            granularity = rangeSelection.visitorStatsGranularity,
+            site = selectedSite.get()
+        ).map { result ->
+            emit(Result.success(ResultWithOutdatedFlag(value = result, isOutdated = forceRefresh)))
+        }
+
         emit(
             statsRepository.fetchVisitorStats(
                 range = rangeSelection.currentRange,
                 granularity = rangeSelection.visitorStatsGranularity,
                 forced = forceRefresh
-            )
+            ).map {
+                ResultWithOutdatedFlag(value = it, isOutdated = false)
+            }
         )
     }
 
     private fun totalVisitorStats(
         rangeSelection: StatsTimeRangeSelection,
         forceRefresh: Boolean
-    ): Flow<Result<Int?>> = flow {
+    ): Flow<Result<ResultWithOutdatedFlag<Int?>>> = flow {
         if (rangeSelection.selectionType == SelectionType.CUSTOM &&
             rangeSelection.currentRange.end.time - rangeSelection.currentRange.start.time > 1.days.inWholeMilliseconds
         ) {
             // Total visitor stats are not available for custom ranges
-            emit(Result.success(null))
+            emit(Result.success(ResultWithOutdatedFlag(value = null)))
             return@flow
         }
 
-        if (!forceRefresh) {
-            statsRepository.getTotalVisitorStats(
-                date = rangeSelection.currentRange.end,
-                granularity = rangeSelection.visitorSummaryStatsGranularity
-            )?.let { emit(Result.success(it)) }
+        statsRepository.getTotalVisitorStats(
+            date = rangeSelection.currentRange.end,
+            granularity = rangeSelection.visitorSummaryStatsGranularity
+        ).let {
+            emit(Result.success(ResultWithOutdatedFlag(value = it, isOutdated = forceRefresh)))
         }
 
         emit(
@@ -165,7 +196,9 @@ class GetStats @Inject constructor(
                 date = rangeSelection.currentRange.end,
                 granularity = rangeSelection.visitorSummaryStatsGranularity,
                 forced = forceRefresh
-            )
+            ).map {
+                ResultWithOutdatedFlag(value = it, isOutdated = false)
+            }
         )
     }
 
@@ -188,17 +221,21 @@ class GetStats @Inject constructor(
 
     sealed class LoadStatsResult {
         data class RevenueStatsSuccess(
-            val stats: WCRevenueStatsModel?
+            val stats: WCRevenueStatsModel?,
+            val isOutdated: Boolean = false
         ) : LoadStatsResult()
 
         data class VisitorsStatsSuccess(
             val stats: Map<String, Int>,
-            val totalVisitorCount: Int?
+            val totalVisitorCount: Int?,
+            val isOutdated: Boolean = false
         ) : LoadStatsResult()
 
         data class RevenueStatsError(val message: String) : LoadStatsResult()
         data object VisitorsStatsError : LoadStatsResult()
         data object PluginNotActive : LoadStatsResult()
         data object VisitorStatUnavailable : LoadStatsResult()
+        data object RevenueStatsLoading : LoadStatsResult()
+        data object VisitorStatsLoading : LoadStatsResult()
     }
 }
