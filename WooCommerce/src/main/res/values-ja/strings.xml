@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-09 09:54:03+0000
+Translation-Revision-Date: 2024-07-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="customers_details_none_hint">なし</string>
+    <string name="customers_details_no_phone_hint">電話番号がありません</string>
+    <string name="customers_details_postal_code_value_title">郵便番号</string>
+    <string name="customers_details_city_value_title">市区町村</string>
+    <string name="customers_details_region_value_title">地域</string>
+    <string name="customers_details_country_value_title">国</string>
+    <string name="customers_details_date_registered_value_title">登録日</string>
+    <string name="customers_details_username_value_title">ユーザー名</string>
+    <string name="customers_details_average_order_value_title">平均注文金額</string>
+    <string name="customers_details_total_spend_value_title">総支出</string>
+    <string name="customers_details_orders_value_title">注文</string>
+    <string name="customers_details_last_active_value_title">最後にアクティブだった日</string>
+    <string name="customers_details_shipping_location_section">場所</string>
+    <string name="customers_details_shipping_address_section">配送先住所</string>
+    <string name="customers_details_billing_address_section">請求先住所</string>
+    <string name="customers_details_registration_section">登録</string>
+    <string name="customers_details_orders_section">注文</string>
+    <string name="customers_details_customer_section">顧客</string>
+    <string name="woopos_products_empty_list">商品なし</string>
+    <string name="more_menu_customers_title">顧客</string>
+    <string name="more_menu_button_customers_description">顧客の統計概要の取得</string>
+    <string name="more_menu_button_customers">顧客</string>
+    <string name="ai_product_creation_scanning_photo_error">写真からテキストを読み取ろうとしてエラーが発生しました。 もう一度お試しください</string>
+    <string name="ai_product_creation_scanning_image">画像をスキャンしています</string>
+    <string name="ai_product_creation_image_selected_subtitle">写真が商品に追加されます</string>
+    <string name="ai_product_creation_image_selected">写真が選択されました</string>
+    <string name="ai_product_creation_remove_image">写真を削除</string>
+    <string name="ai_product_creation_replace_image">写真を置換</string>
+    <string name="ai_product_creation_view_image">写真を表示</string>
+    <string name="product_creation_ai_preview_name_description_sections">名前、概要、説明</string>
+    <string name="product_creation_ai_preview_subtitle">保存する前に商品詳細を編集または再生成できます。</string>
+    <string name="product_detail_publish">公開</string>
+    <string name="analytics_google_ads_programs_card_title">プログラム</string>
+    <string name="analytics_google_ads_card_title">Google 広告</string>
+    <string name="analytics_google_ads_no_data">この期間のプログラムはありません</string>
     <string name="woopos_reader_connect_now_button">いますぐ連携</string>
     <string name="woopos_cart_title">お買い物カゴ</string>
     <string name="ai_product_creation_generate_details_button">商品詳細を生成</string>
