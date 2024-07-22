@@ -131,9 +131,7 @@ private fun WooPosProductsScreen(
                                         // Start exiting the animation
                                         animVisibleState.targetState = false
                                     },
-                                    onLearnMore = {
-
-                                    }
+                                    onLearnMore = {}
                                 )
                             }
                             // Check the animation state and call onBannerClosed when the banner is invisible

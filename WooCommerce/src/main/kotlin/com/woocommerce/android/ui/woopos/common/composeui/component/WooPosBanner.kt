@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 fun WooPosBanner(
     title: String,
     message: String,
@@ -142,7 +143,8 @@ fun PreviewWooPosBannerScreen() {
         ) {
             WooPosBanner(
                 title = "Showing simple products only",
-                message = "Only simple physical products are compatible with POS right now. Other product types, such as variable and virtual, will become available in future updates. ",
+                message = "Only simple physical products are compatible with POS right now. Other product types," +
+                    " such as variable and virtual, will become available in future updates. ",
                 onClose = { },
                 onLearnMore = { }
             )
