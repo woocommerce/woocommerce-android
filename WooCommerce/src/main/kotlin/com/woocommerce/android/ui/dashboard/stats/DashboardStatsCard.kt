@@ -49,7 +49,7 @@ fun DashboardStatsCard(
         }
     )
 ) {
-    val dateRange by viewModel.dateRangeState.observeAsState()
+    val dateRange = viewModel.dateRangeState.observeAsState().value ?: return
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
@@ -115,7 +115,7 @@ fun DashboardStatsCard(
 
 @Composable
 private fun DashboardStatsContent(
-    dateRange: DashboardStatsViewModel.DateRangeState?,
+    dateRange: DashboardStatsViewModel.DateRangeState,
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
@@ -127,15 +127,13 @@ private fun DashboardStatsContent(
     onChartDateSelected: (String?) -> Unit,
 ) {
     Column {
-        dateRange?.let {
-            DashboardDateRangeHeader(
-                rangeSelection = it.rangeSelection,
-                dateFormatted = dateRange.selectedDateFormatted ?: dateRange.rangeFormatted,
-                onCustomRangeClick = onAddCustomRangeClick,
-                onTabSelected = onTabSelected,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        DashboardDateRangeHeader(
+            rangeSelection = dateRange.rangeSelection,
+            dateFormatted = dateRange.selectedDateFormatted ?: dateRange.rangeFormatted,
+            onCustomRangeClick = onAddCustomRangeClick,
+            onTabSelected = onTabSelected,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Divider()
         StatsChart(
@@ -155,7 +153,7 @@ private fun DashboardStatsContent(
 
 @Composable
 private fun StatsChart(
-    dateRange: DashboardStatsViewModel.DateRangeState?,
+    dateRange: DashboardStatsViewModel.DateRangeState,
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
@@ -197,8 +195,8 @@ private fun StatsChart(
     // is applying all properties on each composition (even the unchanged ones) which creates issues with the legacy
     // view.
 
-    LaunchedEffect(dateRange?.rangeSelection) {
-        dateRange?.rangeSelection?.let { statsView.loadDashboardStats(it) }
+    LaunchedEffect(dateRange.rangeSelection) {
+        statsView.loadDashboardStats(dateRange.rangeSelection)
     }
 
     LaunchedEffect(lastUpdateState) {
