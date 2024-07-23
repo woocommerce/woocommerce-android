@@ -35,6 +35,8 @@ class StoreStatsViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTracker,
     savedState: SavedStateHandle
 ) : WearViewModel() {
+    // TODO: Storing complete ViewState into SavedState can lead to TransactionTooLarge crashes. Only data that can't
+    //  be easily recovered, such as user input, should be stored.
     private val _viewState = savedState.getStateFlow(
         scope = this,
         initialValue = ViewState()
