@@ -52,7 +52,7 @@ class OrderFulfillViewModel @Inject constructor(
 
     private val navArgs: OrderFulfillFragmentArgs by savedState.navArgs()
 
-    final /**
+    /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
