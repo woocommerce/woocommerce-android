@@ -13,6 +13,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
@@ -227,51 +228,53 @@ class AiProductPreviewViewModel @Inject constructor(
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         savingProductState.value = SavingProductState.Loading
         viewModelScope.launch {
-            uploadSelectedImage()
+            val image = uploadSelectedImage().onFailure {
+                return@launch
+            }.getOrNull()
             val editedFields = userEditedFields.value
-            val (success, productId) = saveAiGeneratedProduct(
+
+            saveAiGeneratedProduct(
                 product.copy(
                     name = editedFields.names[selectedVariant.value] ?: product.name,
                     description = editedFields.descriptions[selectedVariant.value] ?: product.description,
-                    shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
+                    shortDescription = editedFields.shortDescriptions[selectedVariant.value]
+                        ?: product.shortDescription
                 ),
-                imageState.value.getImage()
-            )
-            if (!success) {
-                savingProductState.value = SavingProductState.Error(
-                    messageRes = R.string.error_generic,
-                    onRetryClick = ::onSaveProductAsDraft,
-                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                )
-                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
-            } else {
-                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
-                triggerEvent(NavigateToProductDetailScreen(productId))
-                savingProductState.value = SavingProductState.Success
-            }
-        }
-    }
-
-    private suspend fun uploadSelectedImage() {
-        imageState.value.image
-            ?.let { uploadImage(it) }
-            ?.fold(
-                onSuccess = {
-                    imageState.value = imageState.value.copy(
-                        image = WPMediaLibraryImage(content = it)
-                    )
+                image
+            ).fold(
+                onSuccess = { productId ->
+                    savingProductState.value = SavingProductState.Success
+                    triggerEvent(NavigateToProductDetailScreen(productId))
+                    analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
                 },
                 onFailure = {
                     savingProductState.value = SavingProductState.Error(
-                        messageRes = R.string.ai_product_creation_error_media_upload,
+                        messageRes = R.string.error_generic,
                         onRetryClick = ::onSaveProductAsDraft,
                         onDismissClick = { savingProductState.value = SavingProductState.Idle }
                     )
+                    analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
                 }
             )
+        }
     }
 
-    private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
+    private suspend fun uploadSelectedImage(): Result<Product.Image?> {
+        val image = imageState.value.image ?: return Result.success(null)
+        return uploadImage(image)
+            .onSuccess {
+                imageState.value = imageState.value.copy(
+                    image = WPMediaLibraryImage(content = it)
+                )
+            }
+            .onFailure {
+                savingProductState.value = SavingProductState.Error(
+                    messageRes = R.string.ai_product_creation_error_media_upload,
+                    onRetryClick = ::onSaveProductAsDraft,
+                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                )
+            }
+    }
 
     private fun trackUndoEditClick(field: String) {
         analyticsTracker.track(
