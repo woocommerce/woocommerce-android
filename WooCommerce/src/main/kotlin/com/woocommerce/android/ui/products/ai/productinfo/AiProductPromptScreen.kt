@@ -75,6 +75,7 @@ import com.woocommerce.android.ui.products.ai.components.SelectImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
 import com.woocommerce.android.util.FeatureFlag
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import kotlin.math.roundToInt
@@ -335,7 +336,11 @@ private fun ProductPromptTextField(
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
                             if (isFocused && FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()) {
-                                coroutineScope.launch { scrollState.animateScrollTo(scrollToPosition.roundToInt()) }
+                                coroutineScope.launch {
+                                    @Suppress("MagicNumber")
+                                    delay(200) // Delay to ensure advice box is shown before scrolling.
+                                    scrollState.animateScrollTo(scrollToPosition.roundToInt())
+                                }
                             }
                         }
                 )
