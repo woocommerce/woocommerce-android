@@ -103,25 +103,31 @@ private fun WooPosProductsScreen(
         Column(
             modifier.fillMaxHeight()
         ) {
+            val titleColor = when (state.value) {
+                is WooPosProductsViewState.Loading,
+                is WooPosProductsViewState.Empty,
+                is WooPosProductsViewState.Error -> MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+
+                is WooPosProductsViewState.Content -> MaterialTheme.colors.onSurface
+            }
             Text(
                 text = stringResource(id = R.string.woopos_products_screen_title),
                 style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = titleColor
             )
 
             Spacer(modifier = Modifier.height(24.dp))
+
             when (val productsState = state.value) {
-                is WooPosProductsViewState.Content -> {
+                is WooPosProductsViewState.Content ->
                     ProductsList(
                         productsState,
                         onItemClicked,
                         onEndOfProductListReached,
                     )
-                }
 
-                is WooPosProductsViewState.Loading -> {
-                    ProductsLoadingIndicator()
-                }
+                is WooPosProductsViewState.Loading -> ProductsLoadingIndicator()
 
                 is WooPosProductsViewState.Empty -> ProductsEmptyList()
 
