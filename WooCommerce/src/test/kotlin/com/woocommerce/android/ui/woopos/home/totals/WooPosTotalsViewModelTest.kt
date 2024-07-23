@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
@@ -282,6 +283,7 @@ class WooPosTotalsViewModelTest {
     }
 
     private fun createViewModel(
+        resourceProvider: ResourceProvider = mock(),
         parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock(),
         childrenToParentEventSender: WooPosChildrenToParentEventSender = mock(),
         cardReaderFacade: WooPosCardReaderFacade = mock(),
@@ -289,6 +291,7 @@ class WooPosTotalsViewModelTest {
         priceFormat: WooPosFormatPrice = mock(),
         savedState: SavedStateHandle = SavedStateHandle(),
     ) = WooPosTotalsViewModel(
+        resourceProvider,
         parentToChildrenEventReceiver,
         childrenToParentEventSender,
         cardReaderFacade,
