@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,9 +41,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -120,9 +123,7 @@ private fun WooPosProductsScreen(
                     ProductsLoadingIndicator()
                 }
 
-                is WooPosProductsViewState.Empty -> {
-                    ProductsEmptyList()
-                }
+                is WooPosProductsViewState.Empty -> ProductsEmptyList()
 
                 is WooPosProductsViewState.Error -> ProductsEmptyList()
             }
@@ -292,11 +293,41 @@ fun ProductsEmptyList() {
             .verticalScroll(rememberScrollState()),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = stringResource(id = R.string.woopos_products_empty_list),
-            style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold,
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                modifier = Modifier.size(104.dp),
+                imageVector = ImageVector.vectorResource(id = R.drawable.woo_pos_ic_empty_products),
+                contentDescription = stringResource(id = R.string.woopos_products_empty_list_image_description),
+            )
+
+            Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
+
+            Text(
+                text = stringResource(id = R.string.woopos_products_empty_list_title),
+                style = MaterialTheme.typography.h4,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
+
+            Text(
+                text = stringResource(id = R.string.woopos_products_empty_list_message),
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
+
+            Text(
+                text = stringResource(id = R.string.woopos_products_empty_list_message_two),
+                style = MaterialTheme.typography.body1,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+            )
+        }
     }
 }
 
