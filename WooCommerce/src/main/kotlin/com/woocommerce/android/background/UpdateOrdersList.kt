@@ -15,7 +15,7 @@ class UpdateOrdersList @Inject constructor(
         val response = ordersStore.fetchOrdersListFirstPage(listDescriptor)
         val orders = response.model
 
-        if (response.isError || orders.isNullOrEmpty()) return false
+        if (response.isError || orders == null) return false
 
         orders.map { it.orderId }.let { remoteIds ->
             listStore.saveListFetched(
