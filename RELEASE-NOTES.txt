@@ -1,5 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+19.7
+-----
+- [*] Improve stability of the OrderDetail screen [https://github.com/woocommerce/woocommerce-android/pull/12106]
+
 19.6
 -----
 - [**] Stats: The Analytics Hub (accessed by tapping "View all store analytics" on the My Store dashboard) now includes analytics for Google Ads campaigns, when the Google Listings & Ads extension is active and connected to Google. [https://github.com/woocommerce/woocommerce-android/pull/12084]
