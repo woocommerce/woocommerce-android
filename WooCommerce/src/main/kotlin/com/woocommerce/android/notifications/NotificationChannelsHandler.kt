@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.NotificationChannelType.BACKGROUND_WORKS
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
@@ -101,6 +102,7 @@ class NotificationChannelsHandler @Inject constructor(
                 NEW_ORDER -> R.string.notification_channel_order_id
                 REVIEW -> R.string.notification_channel_review_id
                 OTHER -> R.string.notification_channel_general_id
+                BACKGROUND_WORKS -> R.string.notification_channel_background_works_id
             }
         )
         val suffix = appPrefsWrapper.getNotificationChannelTypeSuffix(this)
@@ -114,6 +116,7 @@ class NotificationChannelsHandler @Inject constructor(
                 NEW_ORDER -> R.string.notification_channel_order_title
                 REVIEW -> R.string.notification_channel_review_title
                 OTHER -> R.string.notification_channel_general_title
+                BACKGROUND_WORKS -> R.string.notification_channel_background_works_title
             }
         )
     }
