@@ -4203,9 +4203,12 @@
     <string name="woopos_splash_title">Starting up</string>
     <string name="woopos_splash_message">Let’s serve some customers</string>
     <string name="woopos_products_empty_list_image_description">No products</string>
-    <string name="woopos_products_empty_list_title">No products found</string>
-    <string name="woopos_products_empty_list_message">Add simple products to your store to get started</string>
+    <string name="woopos_products_empty_list_title">No supported products found</string>
+    <string name="woopos_products_empty_list_message">POS currently only supports simple products – \ncreate one to get started.</string>
     <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
+    <string name="woopos_products_loading_error_title">Error loading products</string>
+    <string name="woopos_products_loading_error_message">Give it another go?</string>
+    <string name="woopos_error_icon_content_description">Error indication icon</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4227,4 +4230,5 @@
 
     <string name="customers_details_no_phone_hint">No phone number</string>
     <string name="customers_details_none_hint">None</string>
+    <string name="woopos_products_loading_error_retry_button">Rerty</string>
 </resources>

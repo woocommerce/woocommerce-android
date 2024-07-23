@@ -58,14 +58,18 @@ class WooPosProductsViewModel @Inject constructor(
             }
 
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
-                reloadProducts()
+                reloadProducts(true)
+            }
+
+            WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
+                reloadProducts(false)
             }
         }
     }
 
-    private fun reloadProducts() {
+    private fun reloadProducts(withPullToRefresh: Boolean) {
         viewModelScope.launch {
-            updateProductsReloadingState(isReloading = true)
+            updateProductsReloadingState(isReloading = withPullToRefresh)
             productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
             updateProductsReloadingState(isReloading = false)
         }

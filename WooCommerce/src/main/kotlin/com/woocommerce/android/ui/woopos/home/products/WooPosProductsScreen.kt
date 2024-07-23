@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,10 +56,13 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductListReached
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.PullToRefreshTriggered
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -74,7 +78,8 @@ fun WooPosProductsScreen(modifier: Modifier = Modifier) {
         productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
         onEndOfProductListReached = { productsViewModel.onUIEvent(EndOfProductListReached) },
-        onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) }
+        onPullToRefresh = { productsViewModel.onUIEvent(PullToRefreshTriggered) },
+        onRetryClicked = { productsViewModel.onUIEvent(ProductsLoadingErrorRetryButtonClicked) },
     )
 }
 
@@ -86,6 +91,7 @@ private fun WooPosProductsScreen(
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductListReached: () -> Unit,
     onPullToRefresh: () -> Unit,
+    onRetryClicked: () -> Unit,
 ) {
     val state = productsStateFlow.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
@@ -131,7 +137,7 @@ private fun WooPosProductsScreen(
 
                 is WooPosProductsViewState.Empty -> ProductsEmptyList()
 
-                is WooPosProductsViewState.Error -> ProductsEmptyList()
+                is WooPosProductsViewState.Error -> ProductsError { onRetryClicked() }
             }
         }
         PullRefreshIndicator(
@@ -314,27 +320,34 @@ fun ProductsEmptyList() {
             Text(
                 text = stringResource(id = R.string.woopos_products_empty_list_title),
                 style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
             )
 
             Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
             Text(
                 text = stringResource(id = R.string.woopos_products_empty_list_message),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.h5,
                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
-
-            Text(
-                text = stringResource(id = R.string.woopos_products_empty_list_message_two),
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-            )
         }
     }
+}
+
+@Composable
+fun ProductsError(onRetryClicked: () -> Unit) {
+    WooPosErrorState(
+        message = stringResource(id = R.string.woopos_products_loading_error_title),
+        reason = stringResource(id = R.string.woopos_products_loading_error_message),
+        primaryButton = Button(
+            text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
+            click = onRetryClicked
+        )
+    )
 }
 
 @Composable
@@ -402,6 +415,7 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
+            onRetryClicked = {},
         )
     }
 }
@@ -409,7 +423,7 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
-fun WooPosHomeScreenLoadingPreview() {
+fun WooPosProductsScreenLoadingPreview() {
     val productState = MutableStateFlow(WooPosProductsViewState.Loading(true))
     WooPosTheme {
         WooPosProductsScreen(
@@ -417,6 +431,7 @@ fun WooPosHomeScreenLoadingPreview() {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
+            onRetryClicked = {},
         )
     }
 }
@@ -424,7 +439,7 @@ fun WooPosHomeScreenLoadingPreview() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
-fun WooPosHomeScreenEmptyListPreview() {
+fun WooPosProductsScreenEmptyListPreview() {
     val productState = MutableStateFlow(WooPosProductsViewState.Empty(true))
     WooPosTheme {
         WooPosProductsScreen(
@@ -432,6 +447,23 @@ fun WooPosHomeScreenEmptyListPreview() {
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
+            onRetryClicked = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+@WooPosPreview
+fun WooPosProductsScreenErrorPreview() {
+    val productState = MutableStateFlow(WooPosProductsViewState.Error())
+    WooPosTheme {
+        WooPosProductsScreen(
+            productsStateFlow = productState,
+            onItemClicked = {},
+            onEndOfProductListReached = {},
+            onPullToRefresh = {},
+            onRetryClicked = {},
         )
     }
 }
