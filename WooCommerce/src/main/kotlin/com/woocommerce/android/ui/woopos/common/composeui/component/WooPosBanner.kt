@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -73,7 +74,9 @@ fun WooPosBanner(
                     ) {
                         Icon(
                             painterResource(id = bannerIcon),
-                            contentDescription = "Info",
+                            contentDescription = stringResource(
+                                id = R.string.woopos_banner_simple_products_info_content_description
+                            ),
                             tint = colorResource(id = R.color.woo_purple_50),
                             modifier = Modifier.align(Alignment.Center)
                         )
@@ -122,7 +125,9 @@ fun WooPosBanner(
                     Icon(
                         imageVector = Icons.Default.Close,
                         tint = MaterialTheme.colors.onSurface,
-                        contentDescription = "Close",
+                        contentDescription = stringResource(
+                            id = R.string.woopos_banner_simple_products_close_content_description
+                        ),
                         modifier = Modifier
                             .size(32.dp)
                             .clickable { onClose() }
