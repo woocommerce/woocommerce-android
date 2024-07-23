@@ -38,7 +38,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
@@ -210,10 +209,6 @@ class DashboardFragment :
     }
 
     private fun setupResultHandlers() {
-        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
-            navigateToGoogleAdsCreationSuccess()
-        }
-
         handleNotice(GoogleAdsWebViewFragment.WEBVIEW_RESULT) {
             navigateToGoogleAdsCreationSuccess()
         }

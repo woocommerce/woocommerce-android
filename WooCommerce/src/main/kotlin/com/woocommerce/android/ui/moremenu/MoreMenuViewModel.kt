@@ -25,7 +25,6 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -67,7 +66,6 @@ class MoreMenuViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val isWooPosEnabled: WooPosIsEnabled,
 ) : ScopedViewModel(savedState) {
     private var hasCreatedGoogleAdsCampaign = false
@@ -289,7 +287,7 @@ class MoreMenuViewModel @Inject constructor(
                 AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
             )
 
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, successUrlTriggers, canUseAutoLoginWebview()))
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, successUrlTriggers))
         }
     }
 
@@ -412,8 +410,7 @@ class MoreMenuViewModel @Inject constructor(
         data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewGoogleForWooEvent(
             val url: String,
-            val successUrls: List<String>,
-            val canAutoLogin: Boolean
+            val successUrls: List<String>
         ) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
