@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -122,21 +123,24 @@ fun WooPosBanner(
                             )
                     )
 
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        tint = MaterialTheme.colors.onSurface,
-                        contentDescription = stringResource(
-                            id = R.string.woopos_banner_simple_products_close_content_description
-                        ),
+                    IconButton(
                         modifier = Modifier
                             .size(32.dp)
-                            .clickable { onClose() }
                             .constrainAs(close) {
                                 top.linkTo(header.top)
                                 bottom.linkTo(header.bottom)
                                 end.linkTo(parent.end)
-                            }
-                    )
+                            },
+                        onClick = { onClose() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            tint = MaterialTheme.colors.onSurface,
+                            contentDescription = stringResource(
+                                id = R.string.woopos_banner_simple_products_close_content_description
+                            ),
+                        )
+                    }
                 }
             }
         }
