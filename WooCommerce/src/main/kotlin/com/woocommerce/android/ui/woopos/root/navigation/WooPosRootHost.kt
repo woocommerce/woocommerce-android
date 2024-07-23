@@ -15,10 +15,6 @@ fun WooPosRootHost(
         modifier = modifier,
         navController = rootController,
         startDestination = MAIN_GRAPH_ROUTE,
-        enterTransition = { screenSlideIn() },
-        exitTransition = { screenFadeOut() },
-        popEnterTransition = { screenFadeIn() },
-        popExitTransition = { screenSlideOut() },
     ) {
         mainGraph(onNavigationEvent = onNavigationEvent)
     }

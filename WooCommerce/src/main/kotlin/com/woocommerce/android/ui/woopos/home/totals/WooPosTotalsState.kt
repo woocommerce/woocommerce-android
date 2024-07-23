@@ -18,4 +18,6 @@ sealed class WooPosTotalsState : Parcelable {
         var orderTaxText: String,
         var orderTotalText: String
     ) : WooPosTotalsState()
+
+    data class Error(val message: String) : WooPosTotalsState()
 }

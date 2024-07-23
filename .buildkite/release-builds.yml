@@ -7,9 +7,6 @@
 agents:
   queue: "android"
 
-agents:
-  queue: "android"
-
 steps:
   - label: "Gradle Wrapper Validation"
     command: |

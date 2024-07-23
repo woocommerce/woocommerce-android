@@ -71,6 +71,12 @@ class SitePickerViewModel @Inject constructor(
 
     private val navArgs: SitePickerFragmentArgs by savedState.navArgs()
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val sitePickerViewStateData = LiveDataDelegate(savedState, SitePickerViewState())
     private var sitePickerViewState by sitePickerViewStateData
 
@@ -140,6 +146,8 @@ class SitePickerViewModel @Inject constructor(
         val result = repository.fetchWooCommerceSites()
         val duration = System.currentTimeMillis() - startTime
 
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
+
         when {
             result.isError -> triggerEvent(ShowSnackbar(string.site_picker_error))
             result.model != null -> {
@@ -152,7 +160,6 @@ class SitePickerViewModel @Inject constructor(
                 onSitesLoaded(repository.getSites())
             }
         }
-        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
     }
 
     private suspend fun getSitesFromDb(): List<SiteModel> {
@@ -324,7 +331,7 @@ class SitePickerViewModel @Inject constructor(
                 loadAndDisplaySites()
             }
         )
-        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false)
+        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = false, isPrimaryBtnVisible = true)
     }
 
     private fun loadWooNotFoundView(site: SiteModel) {

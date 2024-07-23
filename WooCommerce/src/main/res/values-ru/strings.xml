@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-10 16:54:03+0000
+Translation-Revision-Date: 2024-07-16 13:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="customers_details_none_hint">Нет</string>
+    <string name="customers_details_no_phone_hint">Отсутствует номер телефона</string>
+    <string name="customers_details_postal_code_value_title">Почтовый индекс</string>
+    <string name="customers_details_city_value_title">Город</string>
+    <string name="customers_details_region_value_title">Область или штат</string>
+    <string name="customers_details_country_value_title">Страна</string>
+    <string name="customers_details_date_registered_value_title">Дата регистрации</string>
+    <string name="customers_details_username_value_title">Имя пользователя</string>
+    <string name="customers_details_average_order_value_title">Средняя стоимость заказа</string>
+    <string name="customers_details_total_spend_value_title">Общие расходы</string>
+    <string name="customers_details_orders_value_title">Заказы</string>
+    <string name="customers_details_last_active_value_title">Последнее действие</string>
+    <string name="customers_details_shipping_location_section">Расположение</string>
+    <string name="customers_details_shipping_address_section">Адрес доставки</string>
+    <string name="customers_details_billing_address_section">Платёжный адрес</string>
+    <string name="customers_details_registration_section">Регистрация</string>
+    <string name="customers_details_orders_section">Заказы</string>
+    <string name="customers_details_customer_section">Клиент</string>
+    <string name="woopos_products_empty_list">Товаров нет</string>
+    <string name="more_menu_customers_title">Клиенты</string>
+    <string name="more_menu_button_customers_description">Аналитика по клиентам</string>
+    <string name="more_menu_button_customers">Клиенты</string>
+    <string name="ai_product_creation_scanning_photo_error">Ошибка при попытке сканирования текста на фотографии. Повторите попытку</string>
+    <string name="ai_product_creation_scanning_image">Сканирование изображения</string>
+    <string name="ai_product_creation_image_selected_subtitle">Фотография будет добавлена к товару</string>
+    <string name="ai_product_creation_image_selected">Выбранная фотография</string>
+    <string name="ai_product_creation_remove_image">Удалить фотографию</string>
+    <string name="ai_product_creation_replace_image">Заменить фотографию</string>
+    <string name="ai_product_creation_view_image">Просмотреть фотографию</string>
+    <string name="product_creation_ai_preview_name_description_sections">Имя, содержание и описание</string>
+    <string name="product_creation_ai_preview_subtitle">Можно отредактировать или восстановить сведения о товаре перед сохранением.</string>
+    <string name="product_detail_publish">Опубликовать</string>
+    <string name="analytics_google_ads_programs_card_title">Программы</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">Нет программ за этот период</string>
     <string name="woopos_reader_connect_now_button">Подключить</string>
     <string name="woopos_cart_title">Корзина</string>
     <string name="ai_product_creation_generate_details_button">Создание сведений о товаре</string>

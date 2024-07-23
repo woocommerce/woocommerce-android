@@ -80,7 +80,7 @@ class AnalyticsHubCardsAdapter : RecyclerView.Adapter<AnalyticsHubCardsViewHolde
 
             VIEW_TYPE_CUSTOM_SELECTION_LIST -> {
                 val state = cardList[position] as AnalyticsHubCustomSelectionListViewState
-                (holder as AnalyticsHubCustomSelectionListViewHolder).bind(state)
+                (holder as AnalyticsHubCustomSelectionListViewHolder).bind(state, onSeeReport)
             }
         }
     }
@@ -130,7 +130,8 @@ class AnalyticsHubCardsInformationViewHolder(private val cardView: AnalyticsHubI
 
 class AnalyticsHubCustomSelectionListViewHolder(private val cardView: AnalyticsHubCustomSelectionCardView) :
     AnalyticsHubCardsViewHolder(cardView) {
-    fun bind(state: AnalyticsHubCustomSelectionListViewState) {
+    fun bind(state: AnalyticsHubCustomSelectionListViewState, onSeeReport: SeeReportClickListener? = null) {
         cardView.updateInformation(state)
+        cardView.onSeeReportClickListener = onSeeReport
     }
 }
