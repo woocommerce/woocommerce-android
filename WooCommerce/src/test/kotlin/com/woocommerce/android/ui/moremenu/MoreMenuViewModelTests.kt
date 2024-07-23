@@ -83,8 +83,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns = mock()
 
-    private val canUseAutoLoginWebview: CanUseAutoLoginWebview = mock()
-
     private val isWooPosEnabled: WooPosIsEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
@@ -110,7 +108,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             isBlazeEnabled = isBlazeEnabled,
             isGoogleForWooEnabled = isGoogleForWooEnabled,
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
-            canUseAutoLoginWebview = canUseAutoLoginWebview,
             isWooPosEnabled = isWooPosEnabled,
         )
     }
