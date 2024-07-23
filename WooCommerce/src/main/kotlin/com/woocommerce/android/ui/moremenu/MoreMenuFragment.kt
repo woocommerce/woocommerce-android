@@ -18,11 +18,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewFragment
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.NavigateToSettingsEvent
@@ -126,7 +126,7 @@ class MoreMenuFragment : TopLevelFragment() {
             viewModel.handleSuccessfulGoogleAdsCreation()
         }
 
-        handleNotice(ExitAwareWebViewFragment.WEBVIEW_RESULT) {
+        handleNotice(GoogleAdsWebViewFragment.WEBVIEW_RESULT) {
             navigateToGoogleAdsCreationSuccess()
             viewModel.handleSuccessfulGoogleAdsCreation()
         }
@@ -213,11 +213,11 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private fun openInExitAwareWebview(url: String, successUrls: List<String>) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+            NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
                 urlToLoad = url,
                 urlsToTriggerExit = successUrls.toTypedArray(),
                 title = getString(R.string.more_menu_button_google),
-                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+                urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
             )
         )
     }

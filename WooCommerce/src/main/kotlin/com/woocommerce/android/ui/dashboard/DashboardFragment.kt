@@ -38,7 +38,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
@@ -50,6 +49,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Sh
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -214,7 +214,7 @@ class DashboardFragment :
             navigateToGoogleAdsCreationSuccess()
         }
 
-        handleNotice(ExitAwareWebViewFragment.WEBVIEW_RESULT) {
+        handleNotice(GoogleAdsWebViewFragment.WEBVIEW_RESULT) {
             navigateToGoogleAdsCreationSuccess()
         }
     }

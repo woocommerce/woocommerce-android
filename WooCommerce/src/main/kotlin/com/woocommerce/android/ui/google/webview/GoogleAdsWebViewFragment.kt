@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.common.exitawarewebview
+package com.woocommerce.android.ui.google.webview
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,7 +17,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ExitAwareWebViewFragment : BaseFragment(R.layout.fragment_exitaware_webview) {
+class GoogleAdsWebViewFragment : BaseFragment(R.layout.fragment_googleads_webview) {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
         const val WEBVIEW_DISMISSED = "webview-dismissed"
@@ -26,7 +26,7 @@ class ExitAwareWebViewFragment : BaseFragment(R.layout.fragment_exitaware_webvie
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private val viewModel: ExitAwareWebViewViewModel by viewModels()
+    private val viewModel: GoogleAdsWebViewViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -34,7 +34,7 @@ class ExitAwareWebViewFragment : BaseFragment(R.layout.fragment_exitaware_webvie
 
             setContent {
                 WooThemeWithBackground {
-                    ExitAwareWebViewScreen(viewModel)
+                    GoogleAdsWebViewScreen(viewModel)
                 }
             }
         }

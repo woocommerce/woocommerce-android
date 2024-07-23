@@ -35,7 +35,6 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -45,6 +44,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsViewModel.DashboardGoogleAdsState
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
@@ -87,11 +87,11 @@ private fun HandleEvents(
                             urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
                         )
                     } else {
-                        NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+                        NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
                             urlToLoad = event.url,
                             urlsToTriggerExit = event.successUrls.toTypedArray(),
                             title = webViewTitle,
-                            urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+                            urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
                         )
                     }
 

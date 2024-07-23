@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.common.exitawarewebview
+package com.woocommerce.android.ui.google.webview
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,15 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.DisplayMode.MODAL
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.DisplayMode.REGULAR
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.DisplayMode.MODAL
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.DisplayMode.REGULAR
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
-fun ExitAwareWebViewScreen(viewViewModel: ExitAwareWebViewViewModel) {
-    ExitAwareWebViewScreen(
+fun GoogleAdsWebViewScreen(viewViewModel: GoogleAdsWebViewViewModel) {
+    GoogleAdsWebViewScreen(
         viewState = viewViewModel.viewState,
         userAgent = viewViewModel.userAgent,
         onUrlLoaded = viewViewModel::onUrlLoaded,
@@ -28,8 +28,8 @@ fun ExitAwareWebViewScreen(viewViewModel: ExitAwareWebViewViewModel) {
 }
 
 @Composable
-fun ExitAwareWebViewScreen(
-    viewState: ExitAwareWebViewViewModel.ViewState,
+fun GoogleAdsWebViewScreen(
+    viewState: GoogleAdsWebViewViewModel.ViewState,
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
     onClose: () -> Unit,

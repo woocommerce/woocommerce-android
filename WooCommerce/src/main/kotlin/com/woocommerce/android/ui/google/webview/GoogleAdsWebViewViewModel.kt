@@ -1,9 +1,9 @@
-package com.woocommerce.android.ui.common.exitawarewebview
+package com.woocommerce.android.ui.google.webview
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.UrlComparisonMode.EQUALITY
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.UrlComparisonMode.STARTS_WITH
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.EQUALITY
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.STARTS_WITH
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -13,11 +13,11 @@ import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @HiltViewModel
-class ExitAwareWebViewViewModel @Inject constructor(
+class GoogleAdsWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val userAgent: UserAgent
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: ExitAwareWebViewFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: GoogleAdsWebViewFragmentArgs by savedStateHandle.navArgs()
     private var isExiting = false
 
     val viewState = navArgs.let {
