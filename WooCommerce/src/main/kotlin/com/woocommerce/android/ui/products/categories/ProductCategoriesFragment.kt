@@ -162,6 +162,7 @@ class ProductCategoriesFragment :
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productCategoriesViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
