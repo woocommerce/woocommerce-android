@@ -71,39 +71,42 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun loadProducts(withPullToRefresh: Boolean) {
         viewModelScope.launch {
-            if (withPullToRefresh) {
-                updateProductsReloadingState(isReloading = true)
+            _viewState.value = if (withPullToRefresh) {
+                buildProductsReloadingState(isReloading = true)
             } else {
-                _viewState.value = WooPosProductsViewState.Loading()
+                WooPosProductsViewState.Loading()
             }
             val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
 
-            if (result.isFailure) {
-                _viewState.value = WooPosProductsViewState.Error()
+            _viewState.value = if (result.isFailure) {
+                WooPosProductsViewState.Error()
             } else {
                 if (withPullToRefresh) {
-                    updateProductsReloadingState(isReloading = false)
+                    buildProductsReloadingState(isReloading = false)
+                } else {
+                    _viewState.value
                 }
             }
         }
     }
 
-    private fun updateProductsReloadingState(isReloading: Boolean) {
-        _viewState.value = when (val state = viewState.value) {
-            is WooPosProductsViewState.Content -> state.copy(reloadingProducts = isReloading)
-            is WooPosProductsViewState.Loading -> state.copy(reloadingProducts = isReloading)
-            is WooPosProductsViewState.Error -> state.copy(reloadingProducts = isReloading)
-            is WooPosProductsViewState.Empty -> state.copy(reloadingProducts = isReloading)
+    private fun buildProductsReloadingState(isReloading: Boolean) =
+        when (val state = viewState.value) {
+            is WooPosProductsViewState.Content -> state.copy(reloadingProductsWithPullToRefresh = isReloading)
+            is WooPosProductsViewState.Loading -> state.copy(reloadingProductsWithPullToRefresh = isReloading)
+            is WooPosProductsViewState.Error -> state.copy(reloadingProductsWithPullToRefresh = isReloading)
+            is WooPosProductsViewState.Empty -> state.copy(reloadingProductsWithPullToRefresh = isReloading)
         }
-    }
 
     private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState =
-        when {
-            products.isEmpty() && !isReloadingProducts() -> WooPosProductsViewState.Empty()
-            products.isEmpty() && isReloadingProducts() ->
-                WooPosProductsViewState.Loading(reloadingProducts = true)
-
-            else -> products.toContentState()
+        if (products.isEmpty()) {
+            when (val currentState = viewState.value) {
+                is WooPosProductsViewState.Loading,
+                is WooPosProductsViewState.Content -> currentState
+                else -> WooPosProductsViewState.Empty()
+            }
+        } else {
+            products.toContentState()
         }
 
     private suspend fun List<Product>.toContentState() = WooPosProductsViewState.Content(
@@ -116,10 +119,8 @@ class WooPosProductsViewModel @Inject constructor(
             )
         },
         loadingMore = false,
-        reloadingProducts = false,
+        reloadingProductsWithPullToRefresh = false,
     )
-
-    private fun isReloadingProducts(): Boolean = viewState.value.reloadingProducts
 
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value

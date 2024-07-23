@@ -94,7 +94,7 @@ private fun WooPosProductsScreen(
     onRetryClicked: () -> Unit,
 ) {
     val state = productsStateFlow.collectAsState()
-    val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
+    val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProductsWithPullToRefresh, onPullToRefresh)
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -142,7 +142,7 @@ private fun WooPosProductsScreen(
         }
         PullRefreshIndicator(
             modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = state.value.reloadingProducts,
+            refreshing = state.value.reloadingProductsWithPullToRefresh,
             state = pullToRefreshState
         )
     }
@@ -405,7 +405,7 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
                 ),
             ),
             loadingMore = true,
-            reloadingProducts = true,
+            reloadingProductsWithPullToRefresh = true,
         )
     )
     WooPosTheme {
