@@ -244,7 +244,7 @@ class WooPosTotalsViewModelTest {
             totalsRepository = totalsRepository,
         )
 
-        viewModel.onUIEvent(WooPosTotalsUIEvent.RetryClicked)
+        viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
         // THEN
         assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsState.Error::class.java)
@@ -254,7 +254,7 @@ class WooPosTotalsViewModelTest {
             Result.success(Order.getEmptyOrder(dateCreated = Date(), dateModified = Date()))
         )
 
-        viewModel.onUIEvent(WooPosTotalsUIEvent.RetryClicked)
+        viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
         // THEN
         assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsState.Loading::class.java)
