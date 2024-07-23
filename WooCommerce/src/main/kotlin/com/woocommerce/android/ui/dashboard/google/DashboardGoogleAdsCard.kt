@@ -35,7 +35,6 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.rememberNavController
@@ -44,6 +43,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsViewModel.DashboardGoogleAdsState
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
@@ -78,12 +78,11 @@ private fun HandleEvents(
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
                 is DashboardGoogleAdsViewModel.ViewGoogleForWooEvent -> {
-                    val direction = NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                    val direction = NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
                         urlToLoad = event.url,
                         urlsToTriggerExit = event.successUrls.toTypedArray(),
-                        skipAutoAuth = !event.canAutoLogin,
                         title = webViewTitle,
-                        urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
+                        urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
                     )
 
                     navController.navigateSafely(direction)

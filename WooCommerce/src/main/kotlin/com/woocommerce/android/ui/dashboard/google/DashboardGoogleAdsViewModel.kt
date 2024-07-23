@@ -10,14 +10,11 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.wpcomwebview.SharedWebViewFlow
-import com.woocommerce.android.ui.common.wpcomwebview.WebViewEvent
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
-import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -27,26 +24,22 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
-import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCGoogleStore
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @HiltViewModel(assistedFactory = DashboardGoogleAdsViewModel.Factory::class)
-@Suppress("MagicNumber", "LongParameterList")
+@Suppress("MagicNumber", "LongParameterList", "UnusedPrivateMember")
 class DashboardGoogleAdsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val googleAdsStore: WCGoogleStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val sharedWebViewFlow: SharedWebViewFlow
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val distantPastDate: String = dateFormatter.format(LocalDateTime.of(1970, 1, 1, 0, 0))
@@ -135,19 +128,6 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         )
     )
 
-    init {
-        launch {
-            sharedWebViewFlow.webViewEventFlow.collect { event ->
-                when (event) {
-                    is WebViewEvent.OnPageFinished -> onEntryPointUrlFinished()
-                    is WebViewEvent.OnWebViewClosed -> onGoogleAdsFlowCanceled()
-                    is WebViewEvent.OnUrlFailed -> onGoogleAdsFlowError(event.url, event.errorCode)
-                    is WebViewEvent.OnTriggerUrlLoaded -> onGoogleAdsFlowCompleted()
-                }
-            }
-        }
-    }
-
     private fun onEntryPointUrlFinished() {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.GOOGLEADS_FLOW_STARTED,
@@ -201,7 +181,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         )
 
         val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-        triggerEvent(ViewGoogleForWooEvent(creationUrl, successUrlTriggers, canUseAutoLoginWebview()))
+        triggerEvent(ViewGoogleForWooEvent(creationUrl, successUrlTriggers))
     }
 
     private fun launchCampaignDetails() {
@@ -218,7 +198,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         )
 
         val adminUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
-        triggerEvent(ViewGoogleForWooEvent(adminUrl, successUrlTriggers, canUseAutoLoginWebview()))
+        triggerEvent(ViewGoogleForWooEvent(adminUrl, successUrlTriggers))
     }
 
     fun onRefresh() {
@@ -251,8 +231,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
     data class ViewGoogleForWooEvent(
         val url: String,
-        val successUrls: List<String>,
-        val canAutoLogin: Boolean
+        val successUrls: List<String>
     ) : MultiLiveEvent.Event()
 
     object NavigateToGoogleAdsSuccessEvent : MultiLiveEvent.Event()

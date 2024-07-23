@@ -494,10 +494,6 @@
             app:argType="string[]"
             app:nullable="true" />
         <argument
-            android:name="skipAutoAuth"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
             android:name="captureBackButton"
             android:defaultValue="true"
             app:argType="boolean" />
@@ -517,6 +513,44 @@
     <action
         android:id="@+id/action_global_WPComWebViewFragment"
         app:destination="@id/WPComWebViewFragment" />
+    <fragment
+        android:id="@+id/GoogleAdsWebViewFragment"
+        android:name="com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment"
+        android:label="GoogleAdsWebViewFragment"
+        tools:layout="@layout/fragment_googleads_webview">
+        <argument
+            android:name="urlToLoad"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="urlsToTriggerExit"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="captureBackButton"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="displayMode"
+            android:defaultValue="REGULAR"
+            app:argType="com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel$DisplayMode" />
+        <argument
+            android:name="urlComparisonMode"
+            android:defaultValue="PARTIAL"
+            app:argType="com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel$UrlComparisonMode" />
+        <argument
+            android:name="clearCache"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_googleAdsWebViewFragment"
+        app:destination="@id/GoogleAdsWebViewFragment" />
 
     <action
         android:id="@+id/action_global_userEligibilityErrorFragment"

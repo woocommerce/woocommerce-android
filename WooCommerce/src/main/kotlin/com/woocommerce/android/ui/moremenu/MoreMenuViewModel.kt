@@ -26,9 +26,6 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.common.wpcomwebview.SharedWebViewFlow
-import com.woocommerce.android.ui.common.wpcomwebview.WebViewEvent
-import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -56,7 +53,7 @@ import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("TooManyFunctions", "LongParameterList")
+@Suppress("TooManyFunctions", "LongParameterList", "UnusedPrivateMember")
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
@@ -71,10 +68,8 @@ class MoreMenuViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val isWooPosEnabled: WooPosIsEnabled,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val sharedWebViewFlow: SharedWebViewFlow
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
 
@@ -112,15 +107,6 @@ class MoreMenuViewModel @Inject constructor(
                 onSuccess = { storeHasGoogleAdsCampaigns = it },
                 onFailure = { WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to fetch Google Ads campaigns: $it") }
             )
-
-            sharedWebViewFlow.webViewEventFlow.collect { event ->
-                when (event) {
-                    is WebViewEvent.OnPageFinished -> onGoogleAdsEntryPointUrlFinished()
-                    is WebViewEvent.OnWebViewClosed -> onGoogleAdsFlowCanceled()
-                    is WebViewEvent.OnUrlFailed -> onGoogleAdsFlowError(event.url, event.errorCode)
-                    is WebViewEvent.OnTriggerUrlLoaded -> handleSuccessfulGoogleAdsCreation()
-                }
-            }
         }
     }
 
@@ -340,7 +326,7 @@ class MoreMenuViewModel @Inject constructor(
             AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
         )
 
-        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, successUrlTriggers, canUseAutoLoginWebview()))
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, successUrlTriggers))
     }
 
     private fun launchGoogleAdsCampaignDetails(url: String) {
@@ -356,7 +342,7 @@ class MoreMenuViewModel @Inject constructor(
             )
         )
 
-        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, listOf(), canUseAutoLoginWebview()))
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, listOf()))
     }
 
     private fun onGoogleAdsEntryPointUrlFinished() {
@@ -495,8 +481,7 @@ class MoreMenuViewModel @Inject constructor(
         data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewGoogleForWooEvent(
             val url: String,
-            val successUrls: List<String>,
-            val canAutoLogin: Boolean
+            val successUrls: List<String>
         ) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()

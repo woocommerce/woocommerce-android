@@ -117,7 +117,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             canUseAutoLoginWebview = canUseAutoLoginWebview,
             isWooPosEnabled = isWooPosEnabled,
-            analyticsTrackerWrapper = analyticsTrackerWrapper, 
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
             sharedWebViewFlow = sharedWebViewFlow
         )
     }
