@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -14,7 +16,13 @@ fun NavController.navigateToHomeScreen() {
 fun NavGraphBuilder.homeScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    composable(HOME_ROUTE) {
+    composable(
+        route = HOME_ROUTE,
+        enterTransition = { slideInVertically(initialOffsetY = { -it }) },
+        exitTransition = { fadeOut() },
+        popEnterTransition = { slideInVertically(initialOffsetY = { -it }) },
+        popExitTransition = { fadeOut() }
+    ) {
         WooPosHomeScreen(onNavigationEvent)
     }
 }

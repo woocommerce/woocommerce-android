@@ -33,6 +33,9 @@ fun <T, R> Flow<T>.combineWithTimeout(
  * A helper function to create a [MutableStateFlow] that creates an entry in [SavedStateHandle] to persist value
  * through process-death.
  *
+ * !BEWARE! that only data that can't be easily recovered should be stored - e.g. user's input. Storing complete
+ * viewStates wastes device resources and often leads to issues such as TransactionTooLarge crashes.
+ *
  * Based on https://gist.github.com/marcellogalhardo/2a1ec56b7d00ba9af1ec9fd3583d53dc
  *
  * @param scope The scope used to synchronize the [StateFlow] and [SavedStateHandle]
