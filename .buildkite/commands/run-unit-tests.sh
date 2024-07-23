@@ -15,25 +15,22 @@ fi
 
 
 echo "--- 🚦 Report Tests Status"
-path_pattern="*/build/test-results/*/*.xml"
-results_files=()
-while IFS= read -r -d '' file; do
-  results_files+=("$file")
-done < <(find . -path "$path_pattern" -type f -name "*.xml" -print0)
+results_file="WooCommerce/build/test-results/merged-test-results.xml"
+# Merge JUnit results into a single file (for performance reasons with reporting)
+# See https://github.com/woocommerce/woocommerce-android/pull/12064
+./merge_junit.sh -d WooCommerce/build/test-results/testJalapenoDebugUnitTest -o $results_file
 
-for file in "${results_files[@]}"; do
-  if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
-    annotate_test_failures "$file" --slack "build-and-ship"
-  else
-    annotate_test_failures "$file"
-  fi
-done
+if [[ $BUILDKITE_BRANCH == trunk ]] || [[ $BUILDKITE_BRANCH == release/* ]]; then
+    annotate_test_failures "$results_file" --slack "build-and-ship"
+else
+    annotate_test_failures "$results_file"
+fi
 
 echo "--- ⚒️ Generating and uploading code coverage"
 ./gradlew jacocoTestReport
 .buildkite/commands/upload-code-coverage.sh
 
 echo "--- 🧪 Copying test logs for test collector"
-mkdir WooCommerce/build/buildkite-test-analytics && cp WooCommerce/build/test-results/*/*.xml WooCommerce/build/buildkite-test-analytics
+mkdir WooCommerce/build/buildkite-test-analytics && cp WooCommerce/build/test-results/*.xml WooCommerce/build/buildkite-test-analytics
 
 exit $TESTS_EXIT_STATUS
