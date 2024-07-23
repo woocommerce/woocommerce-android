@@ -30,6 +30,7 @@ class LoginViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
     savedState: SavedStateHandle
 ) : WearViewModel() {
+    @Suppress("ForbiddenComment")
     // TODO: Storing complete ViewState into SavedState can lead to TransactionTooLarge crashes. Only data that can't
     //  be easily recovered, such as user input, should be stored.
     private val _viewState = savedState.getStateFlow(

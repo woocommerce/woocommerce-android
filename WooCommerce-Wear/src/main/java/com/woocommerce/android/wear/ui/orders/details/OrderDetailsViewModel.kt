@@ -41,6 +41,7 @@ class OrderDetailsViewModel @Inject constructor(
 ) : WearViewModel() {
     private val orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
 
+    @Suppress("ForbiddenComment")
     // TODO: Storing complete ViewState into SavedState can lead to TransactionTooLarge crashes. Only data that can't
     //  be easily recovered, such as user input, should be stored.
     private val _viewState = savedState.getStateFlow(
