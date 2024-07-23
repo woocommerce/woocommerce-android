@@ -133,6 +133,8 @@ fun DashboardGoogleAdsView(
                 is DashboardGoogleAdsState.Loading -> GoogleAdsLoading()
                 is DashboardGoogleAdsState.NoCampaigns -> GoogleAdsNoCampaigns(viewState.onCreateCampaignClicked)
                 is DashboardGoogleAdsState.HasCampaigns -> GoogleAdsHasCampaigns(
+                    viewState.impressions,
+                    viewState.clicks,
                     viewState.onCreateCampaignClicked,
                     viewState.onPerformanceAreaClicked
                 )
@@ -260,6 +262,8 @@ private fun GoogleAdsNoCampaigns(
 
 @Composable
 private fun GoogleAdsHasCampaigns(
+    impressions: String,
+    clicks: String,
     onCreateCampaignClicked: () -> Unit,
     onPerformanceAreaClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -319,7 +323,7 @@ private fun GoogleAdsHasCampaigns(
                         )
                         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                         Text(
-                            text = "1234567890",
+                            text = impressions,
                             style = MaterialTheme.typography.h5,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -334,7 +338,7 @@ private fun GoogleAdsHasCampaigns(
                         )
                         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                         Text(
-                            text = "25300",
+                            text = clicks,
                             style = MaterialTheme.typography.h5,
                             fontWeight = FontWeight.SemiBold
                         )
