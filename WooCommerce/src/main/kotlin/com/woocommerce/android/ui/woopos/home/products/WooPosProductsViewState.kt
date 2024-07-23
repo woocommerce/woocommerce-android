@@ -20,6 +20,8 @@ sealed class WooPosProductsViewState(
 
     data class Empty(override val reloadingProductsWithPullToRefresh: Boolean = false) :
         WooPosProductsViewState(reloadingProductsWithPullToRefresh)
+
+    data object Unknown : WooPosProductsViewState(false)
 }
 
 @Parcelize

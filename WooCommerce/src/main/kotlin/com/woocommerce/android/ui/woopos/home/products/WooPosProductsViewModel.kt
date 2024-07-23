@@ -76,6 +76,7 @@ class WooPosProductsViewModel @Inject constructor(
             } else {
                 WooPosProductsViewState.Loading()
             }
+
             val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
 
             _viewState.value = if (result.isFailure) {
@@ -84,7 +85,7 @@ class WooPosProductsViewModel @Inject constructor(
                 if (withPullToRefresh) {
                     buildProductsReloadingState(isReloading = false)
                 } else {
-                    _viewState.value
+                    WooPosProductsViewState.Unknown
                 }
             }
         }
@@ -96,17 +97,17 @@ class WooPosProductsViewModel @Inject constructor(
             is WooPosProductsViewState.Loading -> state.copy(reloadingProductsWithPullToRefresh = isReloading)
             is WooPosProductsViewState.Error -> state.copy(reloadingProductsWithPullToRefresh = isReloading)
             is WooPosProductsViewState.Empty -> state.copy(reloadingProductsWithPullToRefresh = isReloading)
+            WooPosProductsViewState.Unknown -> WooPosProductsViewState.Unknown
         }
 
     private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState =
-        if (products.isEmpty()) {
-            when (val currentState = viewState.value) {
-                is WooPosProductsViewState.Loading,
-                is WooPosProductsViewState.Content -> currentState
+        when {
+            products.isEmpty() -> when {
+                viewState.value is WooPosProductsViewState.Loading -> viewState.value
+                viewState.value.reloadingProductsWithPullToRefresh -> viewState.value
                 else -> WooPosProductsViewState.Empty()
             }
-        } else {
-            products.toContentState()
+            else -> products.toContentState()
         }
 
     private suspend fun List<Product>.toContentState() = WooPosProductsViewState.Content(
@@ -145,6 +146,7 @@ class WooPosProductsViewModel @Inject constructor(
             when (newState) {
                 is WooPosProductsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart
 
+                WooPosProductsViewState.Unknown,
                 is WooPosProductsViewState.Empty,
                 is WooPosProductsViewState.Error,
                 is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.FullScreen

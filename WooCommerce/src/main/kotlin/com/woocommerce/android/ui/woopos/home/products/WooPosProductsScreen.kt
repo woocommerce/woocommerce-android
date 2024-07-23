@@ -112,6 +112,7 @@ private fun WooPosProductsScreen(
             val titleColor = when (state.value) {
                 is WooPosProductsViewState.Loading,
                 is WooPosProductsViewState.Empty,
+                is WooPosProductsViewState.Unknown,
                 is WooPosProductsViewState.Error -> MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
 
                 is WooPosProductsViewState.Content -> MaterialTheme.colors.onSurface
@@ -138,6 +139,8 @@ private fun WooPosProductsScreen(
                 is WooPosProductsViewState.Empty -> ProductsEmptyList()
 
                 is WooPosProductsViewState.Error -> ProductsError { onRetryClicked() }
+
+                is WooPosProductsViewState.Unknown -> {}
             }
         }
         PullRefreshIndicator(
