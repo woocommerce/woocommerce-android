@@ -89,6 +89,12 @@ class VariationDetailViewModel @Inject constructor(
         parameterRepository.getParameters(KEY_VARIATION_PARAMETERS, savedState)
     }
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     // view state for the variation detail screen
     val variationViewStateData = LiveDataDelegate(savedState, VariationViewState()) { old, new ->
         new.variation?.takeIf { it != old?.variation }

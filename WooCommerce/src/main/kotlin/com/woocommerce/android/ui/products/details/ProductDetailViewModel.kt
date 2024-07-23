@@ -172,6 +172,12 @@ class ProductDetailViewModel @Inject constructor(
         parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
     }
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(
         savedState = savedState,
@@ -194,14 +200,32 @@ class ProductDetailViewModel @Inject constructor(
 
     private val storedProduct = MutableStateFlow<Product?>(null)
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     // view state for the product categories screen
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     // view state for the product tags screen
     val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
 
+        /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     // view state for the product downloads screen
     val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
     private var productDownloadsViewState by productDownloadsViewStateData
@@ -218,9 +242,21 @@ class ProductDetailViewModel @Inject constructor(
     private val _attributeList = MutableLiveData<List<ProductAttribute>>()
     val attributeList: LiveData<List<ProductAttribute>> = _attributeList
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val globalAttributeViewStateData = LiveDataDelegate(savedState, GlobalAttributesViewState())
     private var globalAttributesViewState by globalAttributeViewStateData
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val attributeListViewStateData = LiveDataDelegate(savedState, AttributeListViewState())
     private var attributeListViewState by attributeListViewStateData
 

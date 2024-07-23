@@ -63,6 +63,12 @@ class OrderFilterCategoriesViewModel @Inject constructor(
     private var oldFilterSelection: List<OrderFilterCategoryUiModel> =
         savedState[OLD_FILTER_SELECTION_KEY] ?: emptyList()
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val categories = LiveDataDelegate(
         savedState,
         OrderFilterCategories(emptyList())

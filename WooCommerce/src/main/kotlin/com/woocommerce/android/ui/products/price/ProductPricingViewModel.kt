@@ -55,6 +55,12 @@ class ProductPricingViewModel @Inject constructor(
         parameterRepository.getParameters(KEY_PRODUCT_PARAMETERS, savedState)
     }
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState(pricingData = navArgs.pricingData))
     private var viewState by viewStateData
 

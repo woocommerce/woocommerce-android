@@ -113,8 +113,26 @@ class IssueRefundViewModel @Inject constructor(
     private val areAllItemsSelected: Boolean
         get() = refundItems.value?.all { it.quantity == it.availableRefundQuantity } ?: false
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val refundByItemsStateLiveData = LiveDataDelegate(
         savedState,
         RefundByItemsViewState(),
@@ -122,6 +140,12 @@ class IssueRefundViewModel @Inject constructor(
             updateRefundTotal(new.grandTotalRefund)
         }
     )
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val refundByAmountStateLiveData = LiveDataDelegate(
         savedState,
         RefundByAmountViewState(),
@@ -129,6 +153,12 @@ class IssueRefundViewModel @Inject constructor(
             updateRefundTotal(new.enteredAmount)
         }
     )
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     private val productsRefundLiveData = LiveDataDelegate(savedState, ProductsRefundViewState())
 
     private var commonState by commonStateLiveData

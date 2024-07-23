@@ -43,6 +43,12 @@ class OrderFilterOptionsViewModel @Inject constructor(
     private val arguments: OrderFilterOptionsFragmentArgs by savedState.navArgs()
     private val categoryKey = arguments.filterCategory.categoryKey
 
+    /**
+     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can
+     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewState = LiveDataDelegate(
         savedState,
         ViewState(
