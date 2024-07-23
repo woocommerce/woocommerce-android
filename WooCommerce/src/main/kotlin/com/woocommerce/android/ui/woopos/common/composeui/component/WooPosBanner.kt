@@ -28,6 +28,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
@@ -41,19 +42,19 @@ fun WooPosBanner(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp)
+            .padding(bottom = 16.dp.toAdaptivePadding())
     ) {
         Card(
-            shape = RoundedCornerShape(8.dp),
+            shape = RoundedCornerShape(8.dp.toAdaptivePadding()),
             backgroundColor = MaterialTheme.colors.surface,
-            elevation = 4.dp,
+            elevation = 4.dp.toAdaptivePadding(),
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
+                    .padding(24.dp.toAdaptivePadding())
             ) {
                 ConstraintLayout(
                     modifier = Modifier
@@ -63,8 +64,8 @@ fun WooPosBanner(
 
                     Box(
                         modifier = Modifier
-                            .size(48.dp)
-                            .padding(8.dp)
+                            .size(48.dp.toAdaptivePadding())
+                            .padding(8.dp.toAdaptivePadding())
                             .constrainAs(icon) {
                                 top.linkTo(parent.top)
                                 start.linkTo(parent.start)
@@ -112,14 +113,14 @@ fun WooPosBanner(
                                 end.linkTo(close.start)
                                 width = Dimension.fillToConstraints
                             }
-                            .padding(end = 8.dp)
+                            .padding(end = 8.dp.toAdaptivePadding())
                     )
 
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Close",
                         modifier = Modifier
-                            .size(32.dp)
+                            .size(32.dp.toAdaptivePadding())
                             .clickable { onClose() }
                             .constrainAs(close) {
                                 top.linkTo(header.top)
@@ -140,7 +141,7 @@ fun PreviewWooPosBannerScreen() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(32.dp.toAdaptivePadding()),
             contentAlignment = Alignment.Center
         ) {
             WooPosBanner(
