@@ -1,16 +1,17 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.datastore.PosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
@@ -32,10 +33,17 @@ class WooPosProductsViewModelTest {
 
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val posPreferencesRepository: PosPreferencesRepository = mock()
     private val priceFormat: WooPosFormatPrice = mock {
         onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
         onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
+    }
+
+    @Before
+    fun setup() {
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+            flowOf(false)
+        )
     }
 
     @Test
@@ -335,7 +343,9 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown).thenReturn(true)
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+            flowOf(true)
+        )
 
         // WHEN
         val viewModel = createViewModel()
@@ -364,7 +374,9 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown).thenReturn(false)
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+            flowOf(false)
+        )
 
         // WHEN
         val viewModel = createViewModel()
@@ -393,7 +405,9 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown).thenReturn(false)
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+            flowOf(false)
+        )
 
         // WHEN
         val viewModel = createViewModel()
@@ -422,7 +436,9 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown).thenReturn(false)
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+            flowOf(false)
+        )
 
         // WHEN
         val viewModel = createViewModel()
@@ -451,7 +467,9 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(appPrefsWrapper.isWooPosSimpleProductsOnlyBannerShown).thenReturn(false)
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+            flowOf(false)
+        )
 
         // WHEN
         val viewModel = createViewModel()
@@ -466,6 +484,6 @@ class WooPosProductsViewModelTest {
             productsDataSource,
             fromChildToParentEventSender,
             priceFormat,
-            appPrefsWrapper
+            posPreferencesRepository
         )
 }
