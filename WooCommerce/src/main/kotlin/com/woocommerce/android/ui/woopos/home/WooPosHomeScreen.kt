@@ -96,10 +96,11 @@ private fun WooPosHomeScreen(
 
     val cartOverlayIntensityAnimated by animateFloatAsState(
         when (state.screenPositionState) {
-            is WooPosHomeState.ScreenPositionState.Cart.Empty -> .6f
-            WooPosHomeState.ScreenPositionState.Cart.NotEmpty,
+            is WooPosHomeState.ScreenPositionState.Cart.Visible.Empty -> .6f
+            WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
             WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-            WooPosHomeState.ScreenPositionState.Checkout.Paid -> 0f
+            WooPosHomeState.ScreenPositionState.Checkout.Paid,
+            WooPosHomeState.ScreenPositionState.Cart.Hidden-> 0f
         },
         label = "cartOverlayAnimated"
     )
@@ -247,7 +248,7 @@ private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState.Scr
 fun WooPosHomeCartScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
-            state = WooPosHomeState(screenPositionState = WooPosHomeState.ScreenPositionState.Cart.NotEmpty),
+            state = WooPosHomeState(screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty),
             onHomeUIEvent = { },
             onNavigationEvent = {},
         )
@@ -260,7 +261,7 @@ fun WooPosHomeCartEmptyScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
             state = WooPosHomeState(
-                screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Empty
+                screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},
