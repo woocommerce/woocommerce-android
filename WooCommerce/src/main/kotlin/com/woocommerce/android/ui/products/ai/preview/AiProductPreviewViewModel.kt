@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.SaveAiGeneratedProduct
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -42,7 +43,8 @@ class AiProductPreviewViewModel @Inject constructor(
     private val generateProductWithAI: GenerateProductWithAI,
     private val uploadImage: UploadImage,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val saveAiGeneratedProduct: SaveAiGeneratedProduct
+    private val saveAiGeneratedProduct: SaveAiGeneratedProduct,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -136,7 +138,17 @@ class AiProductPreviewViewModel @Inject constructor(
     fun onImageActionSelected(action: ImageAction) {
         when (action) {
             ImageAction.View -> imageState.value = imageState.value.copy(showImageFullScreen = true)
-            ImageAction.Remove -> imageState.value = imageState.value.copy(image = null)
+            ImageAction.Remove -> {
+                val previousState = imageState.value
+                imageState.value = imageState.value.copy(image = null)
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowUndoSnackbar(
+                        message = resourceProvider.getString(R.string.ai_product_creation_photo_removed),
+                        undoAction = { imageState.value = previousState }
+                    )
+                )
+            }
+
             else -> error("Unsupported action: $action")
         }
     }
