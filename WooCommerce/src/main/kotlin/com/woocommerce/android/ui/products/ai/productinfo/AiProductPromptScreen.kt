@@ -186,7 +186,7 @@ fun AiProductPromptScreen(
                 ToneDropDown(
                     tone = uiState.selectedTone,
                     onToneSelected = onToneSelected,
-                    modifier = Modifier.padding(bottom = 56.dp)
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 // Button will scroll with the rest of UI on landscape mode, or... (see below)
@@ -199,7 +199,12 @@ fun AiProductPromptScreen(
             // Button will stick to the bottom on portrait mode
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 Divider()
-                GenerateProductButton(modifier = Modifier.padding(16.dp))
+                GenerateProductButton(
+                    modifier = Modifier.padding(
+                        vertical = 8.dp,
+                        horizontal = 16.dp
+                    )
+                )
             }
         }
     }
