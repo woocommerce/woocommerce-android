@@ -238,10 +238,17 @@ class WooPosTotalsViewModelTest {
         )
 
         val savedState = createMockSavedStateHandle()
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
+            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
+        }
         val viewModel = createViewModel(
             savedState = savedState,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
         )
 
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
@@ -250,14 +257,28 @@ class WooPosTotalsViewModelTest {
         assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsState.Error::class.java)
 
         // Change repository to simulate success on retry
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
+                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
+                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00"))
+            )
+        )
         whenever(totalsRepository.createOrderWithProducts(productIds)).thenReturn(
-            Result.success(Order.getEmptyOrder(dateCreated = Date(), dateModified = Date()))
+            Result.success(order)
         )
 
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
         // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsState.Loading::class.java)
+        val state = viewModel.state.value as WooPosTotalsState.Totals
+        assertThat(state.orderTotalText).isEqualTo("$5.00")
+        assertThat(state.orderTaxText).isEqualTo("$2.00")
+        assertThat(state.orderSubtotalText).isEqualTo("$3.00")
     }
 
     private fun createViewModel(
