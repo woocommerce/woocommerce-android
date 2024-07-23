@@ -123,14 +123,15 @@ class WooPosProductsViewModel @Inject constructor(
     }
 
     private fun notifyParentAboutStatusChange(newState: WooPosProductsViewState) {
-        when (newState) {
-            is WooPosProductsViewState.Content ->
-                sendEventToParent(ChildToParentEvent.ProductsStatusChanged.WithCart)
+        sendEventToParent(
+            when (newState) {
+                is WooPosProductsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart
 
-            is WooPosProductsViewState.Empty,
-            is WooPosProductsViewState.Error,
-            is WooPosProductsViewState.Loading -> sendEventToParent(ChildToParentEvent.ProductsStatusChanged.FullScreen)
-        }
+                is WooPosProductsViewState.Empty,
+                is WooPosProductsViewState.Error,
+                is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.FullScreen
+            }
+        )
     }
 
     private fun onItemClicked(item: WooPosProductsListItem) {
