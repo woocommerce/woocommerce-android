@@ -47,7 +47,7 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
 
     @Test
     fun `when there are two different range selected then update data for both ranges`() = runTest {
-        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue, AnalyticsCards.Session)
+        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue)
 
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(yesterday))
@@ -78,7 +78,7 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
 
     @Test
     fun `when the same range is selected then update for the selected ranges once`() = runTest {
-        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue, AnalyticsCards.Session)
+        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue)
 
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(today))
@@ -100,7 +100,7 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
 
     @Test
     fun `when one update fails then return false`() = runTest {
-        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue, AnalyticsCards.Session)
+        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue)
 
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(yesterday))
@@ -126,7 +126,7 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
 
     @Test
     fun `when all updates succeed then return true`() = runTest {
-        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue, AnalyticsCards.Session)
+        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue)
 
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(yesterday))
