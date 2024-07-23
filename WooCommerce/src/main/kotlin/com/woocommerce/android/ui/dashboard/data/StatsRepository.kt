@@ -168,6 +168,22 @@ class StatsRepository @Inject constructor(
         }
     }
 
+    suspend fun getNewVisitorStats(
+        range: StatsTimeRange,
+        granularity: StatsGranularity,
+        site: SiteModel
+    ): Result<Map<String, Int>> {
+        val visitorStats = withContext(dispatchers.io) {
+            wcStatsStore.getNewVisitorStats(
+                site = site,
+                granularity = granularity,
+                startDate = range.start.formatToYYYYmmDDhhmmss(),
+                endDate = range.end.formatToYYYYmmDDhhmmss()
+            )
+        }
+        return Result.success(visitorStats)
+    }
+
     suspend fun fetchTotalVisitorStats(
         date: Date,
         granularity: StatsGranularity,
@@ -364,6 +380,7 @@ class StatsRepository @Inject constructor(
         val site = selectedSite.get()
         return wcStatsStore.fetchProductBundlesReport(site, startDate, endDate, quantity)
     }
+
     suspend fun fetchGiftCardStats(
         startDate: String,
         endDate: String,

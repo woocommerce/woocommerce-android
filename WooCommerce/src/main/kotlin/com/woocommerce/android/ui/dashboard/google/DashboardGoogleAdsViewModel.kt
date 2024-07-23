@@ -5,6 +5,7 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -39,8 +40,11 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val googleAdsStore: WCGoogleStore,
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val EPOCH_DATE = "1970-01-01"
+    }
+
     private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    private val distantPastDate: String = dateFormatter.format(LocalDateTime.of(1970, 1, 1, 0, 0))
     private val currentDate: String = dateFormatter.format(LocalDateTime.now())
 
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
@@ -63,24 +67,22 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                         if (hasCampaigns) {
                             googleAdsStore.fetchImpressionsAndClicks(
                                 site = selectedSite.get(),
-                                startDate = distantPastDate,
+                                startDate = EPOCH_DATE, // To get all time data
                                 endDate = currentDate
                             ).let { result ->
 
                                 when {
                                     result.isError -> DashboardGoogleAdsState.Error(widgetMenu)
                                     else -> {
-                                        val impressions = result.model?.first?.toInt()?.toString() ?: "0"
-                                        val clicks = result.model?.second?.toInt()?.toString() ?: "0"
-
+                                        val data = result.model!!
                                         val campaignButton = DashboardWidgetAction(
                                             titleResource =
                                             R.string.dashboard_google_ads_card_view_all_campaigns_button,
                                             action = { launchCampaignDetails() }
                                         )
                                         DashboardGoogleAdsState.HasCampaigns(
-                                            impressions = impressions,
-                                            clicks = clicks,
+                                            impressions = data.impressions.formatToString(),
+                                            clicks = data.clicks.formatToString(),
                                             onCreateCampaignClicked = { launchCampaignCreation() },
                                             onPerformanceAreaClicked = { launchCampaignDetails() },
                                             showAllCampaignsButton = campaignButton,

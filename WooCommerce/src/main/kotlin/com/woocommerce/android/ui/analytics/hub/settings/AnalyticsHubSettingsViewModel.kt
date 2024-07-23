@@ -36,6 +36,12 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         const val MARKETPLACE = "https://woocommerce.com/products/"
     }
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
+    @Suppress("OPT_IN_USAGE")
     val viewStateData: LiveDataDelegate<AnalyticsHubSettingsViewState> =
         LiveDataDelegate(savedState, AnalyticsHubSettingsViewState.Loading)
 
@@ -106,7 +112,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         val enabledCards = mutableListOf<String>()
         val disabledCards = mutableListOf<String>()
         configuration.forEach { cardConfiguration ->
-            val cardName = cardConfiguration.card.name.lowercase()
+            val cardName = cardConfiguration.card.trackName
             if (cardConfiguration.isVisible) {
                 enabledCards.add(cardName)
             } else {

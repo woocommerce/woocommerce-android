@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-08 16:54:04+0000
+Translation-Revision-Date: 2024-07-16 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="customers_details_none_hint">Hiçbiri</string>
+    <string name="customers_details_no_phone_hint">Telefon numarası yok</string>
+    <string name="customers_details_postal_code_value_title">Posta kodu</string>
+    <string name="customers_details_city_value_title">Şehir</string>
+    <string name="customers_details_region_value_title">Bölge</string>
+    <string name="customers_details_country_value_title">Ülke</string>
+    <string name="customers_details_date_registered_value_title">Kayıt tarihi</string>
+    <string name="customers_details_username_value_title">Kullanıcı adı</string>
+    <string name="customers_details_average_order_value_title">Ortalama sipariş değeri</string>
+    <string name="customers_details_total_spend_value_title">Toplam harcama</string>
+    <string name="customers_details_orders_value_title">Siparişler</string>
+    <string name="customers_details_last_active_value_title">Son etkinlik</string>
+    <string name="customers_details_shipping_location_section">Konum</string>
+    <string name="customers_details_shipping_address_section">Gönderim Adresi</string>
+    <string name="customers_details_billing_address_section">Fatura Adresi</string>
+    <string name="customers_details_registration_section">Kayıt</string>
+    <string name="customers_details_orders_section">Siparişler</string>
+    <string name="customers_details_customer_section">Müşteri</string>
+    <string name="woopos_products_empty_list">Ürün yok</string>
+    <string name="more_menu_customers_title">Müşteriler</string>
+    <string name="more_menu_button_customers_description">Müşteri içgörüleri elde edin</string>
+    <string name="more_menu_button_customers">Müşteriler</string>
+    <string name="ai_product_creation_scanning_photo_error">Fotoğraftan metin taranmaya çalışılırken bir hata oluştu. Lütfen tekrar deneyin</string>
+    <string name="ai_product_creation_scanning_image">Görsel taranıyor</string>
+    <string name="ai_product_creation_image_selected_subtitle">Fotoğraf ürüne eklenecek</string>
+    <string name="ai_product_creation_image_selected">Fotoğraf seçildi</string>
+    <string name="ai_product_creation_remove_image">Fotoğrafı kaldır</string>
+    <string name="ai_product_creation_replace_image">Fotoğrafı değiştir</string>
+    <string name="ai_product_creation_view_image">Fotoğrafı görüntüle</string>
+    <string name="product_creation_ai_preview_name_description_sections">Ad, Özet ve Açıklama</string>
+    <string name="product_creation_ai_preview_subtitle">Kaydetmeden önce ürün ayrıntılarınızı düzenleyebilir veya yeniden oluşturabilirsiniz.</string>
+    <string name="product_detail_publish">Yayımla</string>
+    <string name="analytics_google_ads_programs_card_title">Programlar</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">Bu dönemde Program yok</string>
     <string name="woopos_reader_connect_now_button">Şimdi bağlan</string>
     <string name="woopos_cart_title">Sepet</string>
     <string name="ai_product_creation_generate_details_button">Ürün Ayrıntıları Oluştur</string>
