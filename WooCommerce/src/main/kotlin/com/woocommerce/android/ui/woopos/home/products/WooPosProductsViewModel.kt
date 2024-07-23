@@ -71,12 +71,19 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun loadProducts(withPullToRefresh: Boolean) {
         viewModelScope.launch {
-            updateProductsReloadingState(isReloading = withPullToRefresh)
+            if (withPullToRefresh) {
+                updateProductsReloadingState(isReloading = true)
+            } else {
+                _viewState.value = WooPosProductsViewState.Loading()
+            }
             val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
+
             if (result.isFailure) {
                 _viewState.value = WooPosProductsViewState.Error()
-            } else if (withPullToRefresh) {
-                updateProductsReloadingState(isReloading = false)
+            } else {
+                if (withPullToRefresh) {
+                    updateProductsReloadingState(isReloading = false)
+                }
             }
         }
     }
