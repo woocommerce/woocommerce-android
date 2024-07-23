@@ -318,7 +318,7 @@ class WooPosProductsViewModelTest {
         val viewModel = createViewModel()
         assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
-        contentState.bannerState?.onBannerClosed?.invoke()
+        viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerClosed)
 
         // THEN
         assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == true)

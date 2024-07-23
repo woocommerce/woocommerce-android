@@ -80,6 +80,11 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
                 reloadProducts()
             }
+
+            WooPosProductsUIEvent.SimpleProductsBannerClosed -> {
+                onSimpleProductsOnlyBannerClosed()
+            }
+            WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked -> TODO()
         }
     }
 
@@ -130,8 +135,6 @@ class WooPosProductsViewModel @Inject constructor(
             title = R.string.woopos_banner_simple_products_only_title,
             message = R.string.woopos_banner_simple_products_only_message,
             icon = R.drawable.info,
-            onBannerClosed = { onSimpleProductsOnlyBannerClosed() },
-            onLearnMoreClicked = {}
         )
     )
 

@@ -19,8 +19,6 @@ sealed class WooPosProductsViewState(
             @StringRes val title: Int,
             @StringRes val message: Int,
             @DrawableRes val icon: Int,
-            val onBannerClosed: () -> Unit,
-            val onLearnMoreClicked: () -> Unit,
         )
     }
 
