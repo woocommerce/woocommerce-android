@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,16 +47,16 @@ fun WooPosBanner(
             .padding(bottom = 16.dp.toAdaptivePadding())
     ) {
         Card(
-            shape = RoundedCornerShape(8.dp.toAdaptivePadding()),
+            shape = RoundedCornerShape(8.dp),
             backgroundColor = MaterialTheme.colors.surface,
-            elevation = 4.dp.toAdaptivePadding(),
+            elevation = 4.dp,
             modifier = Modifier
                 .fillMaxWidth()
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp.toAdaptivePadding())
+                    .padding(24.dp)
             ) {
                 ConstraintLayout(
                     modifier = Modifier
@@ -64,8 +66,7 @@ fun WooPosBanner(
 
                     Box(
                         modifier = Modifier
-                            .size(48.dp.toAdaptivePadding())
-                            .padding(8.dp.toAdaptivePadding())
+                            .size(48.dp)
                             .constrainAs(icon) {
                                 top.linkTo(parent.top)
                                 start.linkTo(parent.start)
@@ -84,13 +85,14 @@ fun WooPosBanner(
                         text = title,
                         style = MaterialTheme.typography.h5,
                         color = MaterialTheme.colors.onSurface,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.constrainAs(header) {
-                            top.linkTo(parent.top)
-                            start.linkTo(icon.end, margin = 16.dp)
-                            end.linkTo(close.start, margin = 16.dp)
-                            width = Dimension.fillToConstraints
-                        }
+                        fontWeight = FontWeight.Normal,
+                        modifier = Modifier
+                            .constrainAs(header) {
+                                top.linkTo(parent.top)
+                                start.linkTo(icon.end, margin = 16.dp)
+                                end.linkTo(close.start, margin = 16.dp)
+                                width = Dimension.fillToConstraints
+                            }
                     )
 
                     val annotatedText = buildAnnotatedString {
@@ -103,7 +105,7 @@ fun WooPosBanner(
                     Text(
                         text = annotatedText,
                         style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = FontWeight.Normal,
                         color = colorResource(id = R.color.color_on_surface_high),
                         modifier = Modifier
                             .clickable { onLearnMore() }
@@ -113,14 +115,18 @@ fun WooPosBanner(
                                 end.linkTo(close.start)
                                 width = Dimension.fillToConstraints
                             }
-                            .padding(end = 8.dp.toAdaptivePadding())
+                            .padding(
+                                top = 8.dp.toAdaptivePadding(),
+                                end = 8.dp.toAdaptivePadding()
+                            )
                     )
 
                     Icon(
                         imageVector = Icons.Default.Close,
+                        tint = MaterialTheme.colors.onSurface,
                         contentDescription = "Close",
                         modifier = Modifier
-                            .size(32.dp.toAdaptivePadding())
+                            .size(32.dp)
                             .clickable { onClose() }
                             .constrainAs(close) {
                                 top.linkTo(header.top)
