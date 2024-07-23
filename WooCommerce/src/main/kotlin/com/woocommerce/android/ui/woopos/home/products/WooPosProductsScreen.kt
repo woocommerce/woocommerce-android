@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -173,7 +172,6 @@ private fun SimpleProductsBanner(
     }
     AnimatedVisibility(
         visibleState = animVisibleState,
-        enter = expandVertically(),
         exit = shrinkVertically(),
     ) {
         WooPosBanner(
