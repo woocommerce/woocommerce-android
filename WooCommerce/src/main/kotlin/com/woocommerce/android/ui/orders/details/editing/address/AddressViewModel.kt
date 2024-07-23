@@ -37,9 +37,9 @@ class AddressViewModel @Inject constructor(
     private val getLocations: GetLocations,
 ) : ScopedViewModel(savedState) {
     /**
-     * Saving more than necessary into the SavedState has associated risks which were not known at the time this
-     * field was implemented - after we ensure we don't save unnecessary data, we can
-     * replace @Suppress("OPT_IN_USAGE") with @OptIn(LiveDelegateSavedStateAPI::class).
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
     @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState())
