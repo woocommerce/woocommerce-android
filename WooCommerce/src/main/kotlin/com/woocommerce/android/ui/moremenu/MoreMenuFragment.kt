@@ -47,7 +47,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-@Suppress("TooManyFunctions")
 class MoreMenuFragment : TopLevelFragment() {
     @Inject
     lateinit var selectedSite: SelectedSite
