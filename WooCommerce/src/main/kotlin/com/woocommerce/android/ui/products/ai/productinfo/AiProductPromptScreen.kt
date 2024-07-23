@@ -174,8 +174,6 @@ fun AiProductPromptScreen(
                 ProductPromptTextField(
                     state = uiState,
                     onPromptUpdated = onPromptUpdated,
-                    onReadTextFromProductPhoto = onReadTextFromProductPhoto,
-                    onImageActionSelected = onImageActionSelected,
                     scrollState = scrollState,
                 )
 
@@ -184,6 +182,12 @@ fun AiProductPromptScreen(
                         stringResource(id = R.string.product_creation_package_photo_no_text_detected)
                     )
                 }
+                ScanProductPhotoButton(
+                    state = uiState,
+                    onReadTextFromProductPhoto = onReadTextFromProductPhoto,
+                    onImageActionSelected = onImageActionSelected,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
                 ToneDropDown(
                     tone = uiState.selectedTone,
                     onToneSelected = onToneSelected,
@@ -284,8 +288,6 @@ private fun ToneDropDown(
 private fun ProductPromptTextField(
     state: AiProductPromptState,
     onPromptUpdated: (String) -> Unit,
-    onReadTextFromProductPhoto: () -> Unit,
-    onImageActionSelected: (ImageAction) -> Unit,
     scrollState: ScrollState
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -353,12 +355,6 @@ private fun ProductPromptTextField(
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
-        ScanProductPhotoButton(
-            state = state,
-            onReadTextFromProductPhoto = onReadTextFromProductPhoto,
-            onImageActionSelected = onImageActionSelected,
-            modifier = Modifier.padding(top = 8.dp)
-        )
     }
 }
 
