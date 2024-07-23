@@ -436,3 +436,54 @@ fun WooPosHomeScreenEmptyListPreview() {
         )
     }
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+@WooPosPreview
+fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview(modifier: Modifier = Modifier) {
+    val productState = MutableStateFlow(
+        WooPosProductsViewState.Content(
+            products = listOf(
+                WooPosProductsListItem(
+                    1,
+                    name = "Product 1, Product 1, Product 1, " +
+                        "Product 1, Product 1, Product 1, Product 1, Product 1" +
+                        "Product 1, Product 1, Product 1, Product 1, Product 1",
+                    price = "10.0$",
+                    imageUrl = null,
+                ),
+                WooPosProductsListItem(
+                    2,
+                    name = "Product 2",
+                    price = "2000.00$",
+                    imageUrl = null,
+                ),
+                WooPosProductsListItem(
+                    3,
+                    name = "Product 3",
+                    price = "1.0$",
+                    imageUrl = null,
+                ),
+            ),
+            loadingMore = false,
+            reloadingProducts = false,
+            bannerState = WooPosProductsViewState.Content.BannerState(
+                isSimpleProductsOnlyBannerShown = false,
+                title = R.string.woopos_banner_simple_products_only_title,
+                message = R.string.woopos_banner_simple_products_only_message,
+                icon = R.drawable.info,
+                onBannerClosed = {},
+                onLearnMoreClicked = {},
+            )
+        )
+    )
+    WooPosTheme {
+        WooPosProductsScreen(
+            modifier = modifier,
+            productsStateFlow = productState,
+            onItemClicked = {},
+            onEndOfProductListReached = {},
+            onPullToRefresh = {},
+        )
+    }
+}
