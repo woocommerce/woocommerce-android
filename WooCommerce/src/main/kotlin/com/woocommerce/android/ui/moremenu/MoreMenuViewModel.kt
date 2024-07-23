@@ -300,7 +300,7 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
-    private suspend fun determineUrlToOpen(): String {
+    private fun determineUrlToOpen(): String {
         val baseUrl = selectedSite.get().adminUrlOrDefault
         return if (storeHasGoogleAdsCampaigns) {
             baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_DASHBOARD)
@@ -345,42 +345,7 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, listOf()))
     }
 
-    private fun onGoogleAdsEntryPointUrlFinished() {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.GOOGLEADS_FLOW_STARTED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
-            )
-        )
-    }
-
-    private fun onGoogleAdsFlowCanceled() {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.GOOGLEADS_FLOW_CANCELED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
-            )
-        )
-    }
-
-    private fun onGoogleAdsFlowError(url: String, errorCode: Int?) {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.GOOGLEADS_FLOW_ERROR,
-            properties = mapOf(
-                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU,
-                AnalyticsTracker.KEY_URL to url,
-                AnalyticsTracker.KEY_ERROR to errorCode
-            )
-        )
-    }
-
     fun handleSuccessfulGoogleAdsCreation() {
-        analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.GOOGLEADS_CAMPAIGN_CREATION_SUCCESS,
-            properties = mapOf(
-                AnalyticsTracker.KEY_GOOGLEADS_SOURCE to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
-            )
-        )
         storeHasGoogleAdsCampaigns = true
     }
 

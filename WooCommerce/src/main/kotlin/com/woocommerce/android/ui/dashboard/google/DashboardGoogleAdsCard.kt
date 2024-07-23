@@ -82,7 +82,8 @@ private fun HandleEvents(
                         urlToLoad = event.url,
                         urlsToTriggerExit = event.successUrls.toTypedArray(),
                         title = webViewTitle,
-                        urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
+                        urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL,
+                        entryPointSource = GoogleAdsWebViewViewModel.EntryPointSource.MYSTORE
                     )
 
                     navController.navigateSafely(direction)

@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.google.webview
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.EQUALITY
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.STARTS_WITH
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -20,7 +22,8 @@ class GoogleAdsWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
     val canUseAutoLoginWebview: CanUseAutoLoginWebview,
-    val userAgent: UserAgent
+    val userAgent: UserAgent,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: GoogleAdsWebViewFragmentArgs by savedStateHandle.navArgs()
     private var isExiting = false
@@ -40,8 +43,16 @@ class GoogleAdsWebViewViewModel @Inject constructor(
             displayMode = it.displayMode,
             captureBackButton = it.captureBackButton,
             clearCache = it.clearCache,
-            canUseAutoLoginWebview = canUseAutoLoginWebview()
+            canUseAutoLoginWebview = canUseAutoLoginWebview(),
+            isCreationFlow = it.isCreationFlow,
+            source = it.entryPointSource
         )
+    }
+
+    private val sourceValue = if (viewState.source == EntryPointSource.MORE_MENU) {
+        AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
+    } else {
+        AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
     }
 
     fun onUrlLoaded(url: String) {
@@ -52,6 +63,15 @@ class GoogleAdsWebViewViewModel @Inject constructor(
         }
 
         if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true && !isExiting) {
+            if (viewState.isCreationFlow) {
+                analyticsTrackerWrapper.track(
+                    stat = AnalyticsEvent.GOOGLEADS_CAMPAIGN_CREATION_SUCCESS,
+                    properties = mapOf(
+                        AnalyticsTracker.KEY_GOOGLEADS_SOURCE to sourceValue
+                    )
+                )
+            }
+
             isExiting = true
             triggerEvent(ExitWithResult(Unit))
         }
@@ -63,18 +83,42 @@ class GoogleAdsWebViewViewModel @Inject constructor(
             return
         }
 
-        if (url == viewState.urlToLoad && !isUrlToLoadFinishedOnce) {
+        if (url == viewState.urlToLoad && !isUrlToLoadFinishedOnce && viewState.isCreationFlow) {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.GOOGLEADS_FLOW_STARTED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_GOOGLEADS_SOURCE to sourceValue
+                )
+            )
             isUrlToLoadFinishedOnce = true
         }
     }
 
     fun onClose() {
+        if (viewState.isCreationFlow) {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.GOOGLEADS_FLOW_CANCELED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_GOOGLEADS_SOURCE to sourceValue
+                )
+            )
+        }
+
         triggerEvent(Exit)
     }
 
     fun onUrlFailed(url: String, errorCode: Int?) {
-        WooLog.d(WooLog.T.GOOGLE_ADS, "Failed to load URL: $url, errorCode: $errorCode")
-        isUrlLoadingFailed = true
+        if (viewState.isCreationFlow) {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.GOOGLEADS_FLOW_ERROR,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_GOOGLEADS_SOURCE to sourceValue,
+                    AnalyticsTracker.KEY_URL to url,
+                    AnalyticsTracker.KEY_ERROR to errorCode
+                )
+            )
+            isUrlLoadingFailed = true
+        }
     }
 
     data class ViewState(
@@ -83,7 +127,9 @@ class GoogleAdsWebViewViewModel @Inject constructor(
         val displayMode: DisplayMode,
         val captureBackButton: Boolean,
         val clearCache: Boolean = false,
-        val canUseAutoLoginWebview: Boolean
+        val canUseAutoLoginWebview: Boolean,
+        val isCreationFlow: Boolean,
+        val source: EntryPointSource
     )
 
     enum class UrlComparisonMode {
@@ -92,5 +138,9 @@ class GoogleAdsWebViewViewModel @Inject constructor(
 
     enum class DisplayMode {
         REGULAR, MODAL
+    }
+
+    enum class EntryPointSource {
+        MORE_MENU, MYSTORE
     }
 }

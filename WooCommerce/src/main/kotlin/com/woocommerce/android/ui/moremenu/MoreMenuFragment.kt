@@ -203,7 +203,8 @@ class MoreMenuFragment : TopLevelFragment() {
                 urlToLoad = url,
                 urlsToTriggerExit = successUrls.toTypedArray(),
                 title = getString(R.string.more_menu_button_google),
-                urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
+                urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL,
+                entryPointSource = GoogleAdsWebViewViewModel.EntryPointSource.MORE_MENU
             )
         )
     }

@@ -547,6 +547,13 @@
             android:name="clearCache"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="isCreationFlow"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="entryPointSource"
+            app:argType="com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel$EntryPointSource" />
     </fragment>
     <action
         android:id="@+id/action_global_googleAdsWebViewFragment"

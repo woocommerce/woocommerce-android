@@ -20,11 +20,13 @@ import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentDashboardBinding
 import com.woocommerce.android.extensions.getColorCompat
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.showDateRangePicker
@@ -46,6 +48,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Sh
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -144,6 +147,7 @@ class DashboardFragment :
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
+        setupResultHandlers()
     }
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
@@ -201,6 +205,12 @@ class DashboardFragment :
         }
         dashboardViewModel.hasNewWidgets.observe(viewLifecycleOwner) { hasNewWidgets ->
             editButtonBadge.isVisible = hasNewWidgets
+        }
+    }
+
+    private fun setupResultHandlers() {
+        handleNotice(GoogleAdsWebViewFragment.WEBVIEW_RESULT) {
+            navigateToGoogleAdsCreationSuccess()
         }
     }
 
@@ -323,6 +333,12 @@ class DashboardFragment :
                 )
             }
         }
+    }
+
+    private fun navigateToGoogleAdsCreationSuccess() {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalGoogleAdsCampaignSuccessBottomSheet()
+        )
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
