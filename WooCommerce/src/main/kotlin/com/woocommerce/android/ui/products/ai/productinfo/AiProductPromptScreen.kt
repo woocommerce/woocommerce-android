@@ -68,11 +68,10 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
-import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
+import com.woocommerce.android.ui.products.ai.components.SelectImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
 import com.woocommerce.android.util.FeatureFlag
@@ -330,7 +329,7 @@ private fun ProductPromptTextField(
                     onValueChange = onPromptUpdated,
                     label = "", // Can't use label here as it breaks the visual design.
                     placeholderText = "", // Uses Text() above instead.
-                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.multiline_textfield_height)),
+                    textFieldModifier = Modifier.height(100.dp),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.Transparent, // Remove outline and use Column's border instead.
                         unfocusedBorderColor = Color.Transparent
@@ -344,31 +343,6 @@ private fun ProductPromptTextField(
                         }
                 )
             }
-
-            Divider()
-
-            when {
-                state.isScanningImage -> ImageScanning()
-                state.selectedImage != null -> SelectedImageSection(
-                    image = state.selectedImage,
-                    onImageActionSelected = onImageActionSelected,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = colorResource(id = R.color.ai_generated_text_background))
-                )
-
-                else -> {
-                    WCTextButton(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
-                        onClick = onReadTextFromProductPhoto,
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera_primary),
-                        allCaps = false,
-                        text = stringResource(id = R.string.ai_product_creation_read_text_from_photo_button),
-                    )
-                }
-            }
         }
         AnimatedVisibility(
             (isFocused || state.productPrompt.isNotEmpty()) &&
@@ -376,9 +350,40 @@ private fun ProductPromptTextField(
         ) {
             PromptSuggestions(
                 promptSuggestionBarState = state.promptSuggestionBarState,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
+        ScanProductPhotoButton(
+            state = state,
+            onReadTextFromProductPhoto = onReadTextFromProductPhoto,
+            onImageActionSelected = onImageActionSelected,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+    }
+}
+
+@Composable
+private fun ScanProductPhotoButton(
+    state: AiProductPromptState,
+    onReadTextFromProductPhoto: () -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when {
+        state.isScanningImage -> ImageScanning()
+        else -> SelectImageSection(
+            image = state.selectedImage,
+            onImageActionSelected = onImageActionSelected,
+            onReadTextFromProductPhoto = onReadTextFromProductPhoto,
+            subtitle = when {
+                state.selectedImage == null -> stringResource(id = R.string.ai_product_creation_image_scan_subtitle)
+                else -> stringResource(id = R.string.ai_product_creation_image_selected_subtitle)
+            },
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                .background(color = colorResource(id = R.color.ai_generated_text_background))
+        )
     }
 }
 
