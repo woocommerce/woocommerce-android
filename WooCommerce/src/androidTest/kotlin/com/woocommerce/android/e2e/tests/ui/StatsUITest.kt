@@ -75,7 +75,7 @@ class StatsUITest : TestBase() {
         visitors = "12000",
     )
 
-    @Ignore("This became flaky after the last dashboard changes")
+    @Ignore("This became flaky after the last dashboard changes. See https://github.com/woocommerce/woocommerce-android/issues/12111")
     @Test
     fun e2eStatsSummary() {
         DashboardScreen()
@@ -87,7 +87,7 @@ class StatsUITest : TestBase() {
             .assertStatsSummary(yearStats)
     }
 
-    @Ignore("This became flaky after the last dashboard changes")
+    @Ignore("This became flaky after the last dashboard changes. https://github.com/woocommerce/woocommerce-android/issues/12111")
     @Test
     fun e2eStatsTopPerformers() {
         val topPerformersJSONArray = MocksReader().readStatsTopPerformersToArray()
