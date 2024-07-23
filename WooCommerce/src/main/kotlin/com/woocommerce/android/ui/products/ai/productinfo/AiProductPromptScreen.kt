@@ -176,12 +176,6 @@ fun AiProductPromptScreen(
                     onPromptUpdated = onPromptUpdated,
                     scrollState = scrollState,
                 )
-
-                if (uiState.noTextDetectedMessage) {
-                    InformativeMessage(
-                        stringResource(id = R.string.product_creation_package_photo_no_text_detected)
-                    )
-                }
                 ScanProductPhotoButton(
                     state = uiState,
                     onReadTextFromProductPhoto = onReadTextFromProductPhoto,
@@ -382,6 +376,11 @@ private fun ScanProductPhotoButton(
                 .background(color = colorResource(id = R.color.ai_generated_text_background))
         )
     }
+    if (state.noTextDetectedMessage) {
+        InformativeMessage(
+            stringResource(id = R.string.product_creation_package_photo_no_text_detected)
+        )
+    }
 }
 
 @Composable
@@ -443,7 +442,7 @@ private fun InformativeMessage(message: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
+            .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .background(
                 colorResource(id = R.color.tag_bg_main)
