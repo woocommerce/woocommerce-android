@@ -9,9 +9,11 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,25 +27,25 @@ class WooPosProductsViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
+        .onEach { notifyParentAboutStatusChange(it) }
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = _viewState.value,
+        )
 
     init {
-        loadProducts()
+        listenToProducts()
     }
 
-    private fun loadProducts() {
+    private fun listenToProducts() {
         viewModelScope.launch {
             productsDataSource.products
                 .map { products -> calculateViewState(products) }
-                .onEach { notifyParentAboutStatusChange(it) }
                 .collect { _viewState.value = it }
         }
         viewModelScope.launch {
-            val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = false)
-            if (result.isFailure) {
-                val newStatus = WooPosProductsViewState.Error(reloadingProducts = false)
-                notifyParentAboutStatusChange(newStatus)
-                _viewState.value = newStatus
-            }
+            loadProducts(withPullToRefresh = false)
         }
     }
 
@@ -58,20 +60,24 @@ class WooPosProductsViewModel @Inject constructor(
             }
 
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
-                reloadProducts(true)
+                loadProducts(withPullToRefresh = true)
             }
 
             WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
-                reloadProducts(false)
+                loadProducts(withPullToRefresh = false)
             }
         }
     }
 
-    private fun reloadProducts(withPullToRefresh: Boolean) {
+    private fun loadProducts(withPullToRefresh: Boolean) {
         viewModelScope.launch {
             updateProductsReloadingState(isReloading = withPullToRefresh)
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
-            updateProductsReloadingState(isReloading = false)
+            val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
+            if (result.isFailure) {
+                _viewState.value = WooPosProductsViewState.Error()
+            } else if (withPullToRefresh) {
+                updateProductsReloadingState(isReloading = false)
+            }
         }
     }
 
