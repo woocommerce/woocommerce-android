@@ -331,7 +331,8 @@ private fun ProductPromptTextField(
                     onValueChange = onPromptUpdated,
                     label = "", // Can't use label here as it breaks the visual design.
                     placeholderText = "", // Uses Text() above instead.
-                    textFieldModifier = Modifier.height(100.dp),
+                    minLines = 3,
+                    maxLines = 6,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.Transparent, // Remove outline and use Column's border instead.
                         unfocusedBorderColor = Color.Transparent
