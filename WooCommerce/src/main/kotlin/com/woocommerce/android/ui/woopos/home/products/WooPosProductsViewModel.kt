@@ -11,6 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,12 +34,15 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch {
             productsDataSource.products
                 .map { products -> calculateViewState(products) }
+                .onEach { notifyParentAboutStatusChange(it) }
                 .collect { _viewState.value = it }
         }
         viewModelScope.launch {
             val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = false)
             if (result.isFailure) {
-                _viewState.value = WooPosProductsViewState.Error(reloadingProducts = false)
+                val newStatus = WooPosProductsViewState.Error(reloadingProducts = false)
+                notifyParentAboutStatusChange(newStatus)
+                _viewState.value = newStatus
             }
         }
     }
@@ -81,6 +85,7 @@ class WooPosProductsViewModel @Inject constructor(
             products.isEmpty() && !isReloadingProducts() -> WooPosProductsViewState.Empty()
             products.isEmpty() && isReloadingProducts() ->
                 WooPosProductsViewState.Loading(reloadingProducts = true)
+
             else -> products.toContentState()
         }
 
@@ -117,11 +122,22 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
-    private fun onItemClicked(item: WooPosProductsListItem) {
-        viewModelScope.launch {
-            fromChildToParentEventSender.sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(item.id)
-            )
+    private fun notifyParentAboutStatusChange(newState: WooPosProductsViewState) {
+        when (newState) {
+            is WooPosProductsViewState.Content ->
+                sendEventToParent(ChildToParentEvent.ProductsStatusChanged.WithCart)
+
+            is WooPosProductsViewState.Empty,
+            is WooPosProductsViewState.Error,
+            is WooPosProductsViewState.Loading -> sendEventToParent(ChildToParentEvent.ProductsStatusChanged.FullScreen)
         }
+    }
+
+    private fun onItemClicked(item: WooPosProductsListItem) {
+        sendEventToParent(ChildToParentEvent.ItemClickedInProductSelector(item.id))
+    }
+
+    private fun sendEventToParent(event: ChildToParentEvent) {
+        viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 }
