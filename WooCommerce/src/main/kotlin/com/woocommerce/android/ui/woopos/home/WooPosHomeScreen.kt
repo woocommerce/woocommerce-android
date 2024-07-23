@@ -111,7 +111,7 @@ private fun WooPosHomeScreen(
             WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
             WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
             WooPosHomeState.ScreenPositionState.Checkout.Paid,
-            WooPosHomeState.ScreenPositionState.Cart.Hidden-> 0f
+            WooPosHomeState.ScreenPositionState.Cart.Hidden -> 0f
         },
         label = "cartOverlayAnimated"
     )
