@@ -42,7 +42,6 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.network.UserAgent
-import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -270,7 +269,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
                 if (FeatureFlag.APP_PASSWORD_TUTORIAL.isEnabled()) {
                     when (authenticationError?.errorType) {
-                        GENERIC_ERROR,
                         INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
                         else -> {
                             fetchSiteForTutorial(

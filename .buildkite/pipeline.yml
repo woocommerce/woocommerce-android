@@ -89,15 +89,8 @@ steps:
         artifact_paths:
           - "**/build/test-results/*/*.xml"
 
-      - label: "Ensure Screenshot Tests Build"
-        command: |
-          echo "--- ⚒️ Building"
-          cp gradle.properties-example gradle.properties
-          ./gradlew assembleJalapenoDebugAndroidTest
-        plugins: [$CI_TOOLKIT]
-
       - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh "Pixel2.arm" "30" "portrait"
+        command: .buildkite/commands/run-instrumented-tests.sh
         plugins:
           - $CI_TOOLKIT
           - $TEST_COLLECTOR :

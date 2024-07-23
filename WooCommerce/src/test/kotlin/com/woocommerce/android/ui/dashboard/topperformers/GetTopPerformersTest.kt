@@ -1,26 +1,25 @@
 package com.woocommerce.android.ui.dashboard.topperformers
 
-import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
+import com.woocommerce.android.util.ResultWithOutdatedFlag
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import java.util.Calendar
 import java.util.Date
@@ -38,54 +37,95 @@ class GetTopPerformersTest : BaseUnitTest() {
     )
 
     @Test
-    fun `Given fetch top performers success, when get top performers, then returns successful result`() =
+    fun `Given fetch top performers success without cached data, when get top performers, then return successful result`() =
         testBlocking {
+            givenGetPerformerResult(emptyList())
             givenFetchTopPerformersResult(Result.success(Unit))
             givenShouldUpdateAnalyticsReturns(true)
 
-            val result = sut.fetchTopPerformers(
-                selectedRange = ANY_STATS_RANGE_SELECTION,
-                refresh = false,
-                topPerformersCount = ANY_TOP_PERFORMERS_NUMBER
+            val results = sut(selectedRange = ANY_STATS_RANGE_SELECTION, refresh = false).toList()
+            // Returns loading because data could not be fetched from the DB
+            assertThat(results).contains(GetTopPerformers.TopPerformerResult.Loading)
+            // Then returns the empty list
+            assertThat(results).contains(
+                GetTopPerformers.TopPerformerResult.Success(
+                    ResultWithOutdatedFlag(emptyList(), false)
+                )
             )
-
-            assertThat(result).isEqualTo(Result.success(Unit))
         }
 
     @Test
-    fun `Given fetch top performers error, when get top performers, then returns error`() =
+    fun `Given fetch top performers success with cached data, when get top performers, then return successful result`() =
         testBlocking {
-            val wooException = WooException(WOO_GENERIC_ERROR)
+            givenGetPerformerResult(EXPECTED_TOP_PERFORMERS_ENTITY_LIST)
+            givenFetchTopPerformersResult(Result.success(Unit))
             givenShouldUpdateAnalyticsReturns(true)
-            givenFetchTopPerformersResult(Result.failure(wooException))
 
-            val result = sut.fetchTopPerformers(
-                selectedRange = ANY_STATS_RANGE_SELECTION,
-                refresh = false,
-                topPerformersCount = ANY_TOP_PERFORMERS_NUMBER
+            val results = sut(selectedRange = ANY_STATS_RANGE_SELECTION, refresh = false).toList()
+            // Returns outdated data
+            assertThat(results).contains(
+                GetTopPerformers.TopPerformerResult.Success(
+                    ResultWithOutdatedFlag(EXPECTED_TOP_PERFORMER_PRODUCT_LIST, true)
+                )
             )
-
-            assertThat(result.exceptionOrNull()).isEqualTo(wooException)
+            // Then returns the up-to-date data
+            assertThat(results).contains(
+                GetTopPerformers.TopPerformerResult.Success(
+                    ResultWithOutdatedFlag(EXPECTED_TOP_PERFORMER_PRODUCT_LIST, false)
+                )
+            )
         }
 
     @Test
-    fun `observing top performer updates should return the right data`() {
+    fun `Given fetch top performers fails with cached data, when get top performers, then return error`() =
         testBlocking {
-            val emittedEntity = EXPECTED_TOP_PERFORMERS_ENTITY_LIST
-            givenTopPerformerEntityIsEmitted(emittedEntity)
+            val error = Exception("Something wrong")
+            givenGetPerformerResult(EXPECTED_TOP_PERFORMERS_ENTITY_LIST)
+            givenFetchTopPerformersResult(Result.failure(error))
+            givenShouldUpdateAnalyticsReturns(true)
 
-            val observedDataModel = sut
-                .observeTopPerformers(ANY_STATS_RANGE_SELECTION)
-                .first()
-
-            assertThat(observedDataModel).isEqualTo(EXPECTED_TOP_PERFORMER_PRODUCT_LIST)
+            val results = sut(selectedRange = ANY_STATS_RANGE_SELECTION, refresh = false).toList()
+            // Returns outdated data
+            assertThat(results).contains(
+                GetTopPerformers.TopPerformerResult.Success(
+                    ResultWithOutdatedFlag(EXPECTED_TOP_PERFORMER_PRODUCT_LIST, true)
+                )
+            )
+            // Then returns error
+            assertThat(results).contains(
+                GetTopPerformers.TopPerformerResult.Error(error)
+            )
         }
-    }
 
-    private fun givenTopPerformerEntityIsEmitted(emittedEntity: List<TopPerformerProductEntity>) {
-        whenever(statsRepository.observeTopPerformers(any())).thenReturn(
-            flowOf(emittedEntity)
-        )
+    @Test
+    fun `Given cached data is up-to-date, when get top performers, then return cached data`() =
+        testBlocking {
+            givenGetPerformerResult(EXPECTED_TOP_PERFORMERS_ENTITY_LIST)
+            givenShouldUpdateAnalyticsReturns(false)
+
+            val results = sut(selectedRange = ANY_STATS_RANGE_SELECTION, refresh = false).toList()
+            // Returns up-to-date data
+            assertThat(results.size).isEqualTo(1)
+            assertThat(results).contains(
+                GetTopPerformers.TopPerformerResult.Success(
+                    ResultWithOutdatedFlag(EXPECTED_TOP_PERFORMER_PRODUCT_LIST, false)
+                )
+            )
+            // Then returns up-to-date data
+            assertThat(results).contains(
+                GetTopPerformers.TopPerformerResult.Success(
+                    ResultWithOutdatedFlag(EXPECTED_TOP_PERFORMER_PRODUCT_LIST, false)
+                )
+            )
+            verify(statsRepository, never()).fetchTopPerformerProducts(
+                anyBoolean(),
+                any(),
+                anyInt(),
+            )
+        }
+
+    private suspend fun givenGetPerformerResult(result: List<TopPerformerProductEntity>) {
+        whenever(statsRepository.getTopPerformers(any(), any())).thenReturn(result)
     }
 
     private suspend fun givenFetchTopPerformersResult(result: Result<Unit>) {
@@ -110,8 +150,6 @@ class GetTopPerformersTest : BaseUnitTest() {
     }
 
     private companion object {
-        const val ANY_TOP_PERFORMERS_NUMBER = 3
-        val WOO_GENERIC_ERROR = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         val EXPECTED_TOP_PERFORMERS_ENTITY_LIST = listOf(
             TopPerformerProductEntity(
                 localSiteId = LocalId(1234),

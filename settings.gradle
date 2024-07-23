@@ -11,6 +11,7 @@ pluginManagement {
     gradle.ext.violationCommentsVersion = '1.69.0'
     gradle.ext.protobufVersion = '0.9.4'
     gradle.ext.dependencyAnalysisVersion = '1.28.0'
+    gradle.ext.fladleVersion = '0.17.5'
 
     repositories {
         google()
@@ -44,6 +45,7 @@ pluginManagement {
         id 'com.google.devtools.ksp' version gradle.ext.kspVersion
         id "com.google.protobuf" version gradle.ext.protobufVersion
         id "com.autonomousapps.dependency-analysis" version gradle.ext.dependencyAnalysisVersion
+        id "com.osacky.fladle" version gradle.ext.fladleVersion
     }
 }
 

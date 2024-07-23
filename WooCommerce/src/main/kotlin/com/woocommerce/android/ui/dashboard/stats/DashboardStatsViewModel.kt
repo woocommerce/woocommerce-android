@@ -196,10 +196,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
             _visitorStatsState.value = VisitorStatsViewState.NotLoaded
             return@coroutineScope
         }
-        _revenueStatsState.value = RevenueStatsViewState.Loading(isForced = forceRefresh)
-        if (forceRefresh) {
-            _visitorStatsState.value = VisitorStatsViewState.NotLoaded
-        }
+
         trackEventForStatsCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
         getStats(forceRefresh, selectedRange)
             .collect {
@@ -207,14 +204,23 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     is LoadStatsResult.RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
                     is LoadStatsResult.RevenueStatsError -> {
                         _revenueStatsState.value = RevenueStatsViewState.GenericError
+                        parentViewModel.hideRefreshingIndicator()
                         trackEventForStatsCard(
                             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
                             properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
                         )
                     }
+                    is LoadStatsResult.VisitorStatsLoading -> {
+                        _visitorStatsState.value = VisitorStatsViewState.NotLoaded
+                    }
+
+                    is LoadStatsResult.RevenueStatsLoading -> {
+                        _revenueStatsState.value = RevenueStatsViewState.Loading(isForced = forceRefresh)
+                    }
 
                     LoadStatsResult.PluginNotActive -> {
                         _revenueStatsState.value = RevenueStatsViewState.WCAnalyticsInactive
+                        parentViewModel.hideRefreshingIndicator()
                         trackEventForStatsCard(
                             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
                             properties = mapOf(
@@ -223,20 +229,19 @@ class DashboardStatsViewModel @AssistedInject constructor(
                         )
                     }
 
-                    is LoadStatsResult.VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(
-                        stats = it.stats, totalVisitorCount = it.totalVisitorCount
-                    )
+                    is LoadStatsResult.VisitorsStatsSuccess -> onVisitorsStatsSuccess(it)
 
                     is LoadStatsResult.VisitorsStatsError -> {
                         _visitorStatsState.value = VisitorStatsViewState.Error
+                        parentViewModel.hideRefreshingIndicator()
                         trackEventForStatsCard(
                             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
                             properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
                         )
                     }
-
                     is LoadStatsResult.VisitorStatUnavailable -> {
                         _visitorStatsState.value = VisitorStatsViewState.Unavailable
+                        parentViewModel.hideRefreshingIndicator()
                         trackEventForStatsCard(
                             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
                             properties = mapOf(AnalyticsTracker.KEY_ERROR to it.toString())
@@ -261,13 +266,39 @@ class DashboardStatsViewModel @AssistedInject constructor(
         }
     }
 
+    private fun onVisitorsStatsSuccess(result: LoadStatsResult.VisitorsStatsSuccess) {
+        val isPreviousValOutdated = (_visitorStatsState.value as? VisitorStatsViewState.Content)?.isOutdated ?: false
+        when {
+            result.isOutdated && isPreviousValOutdated.not() -> {
+                parentViewModel.displayRefreshingIndicator()
+            }
+
+            result.isOutdated.not() -> parentViewModel.hideRefreshingIndicator()
+        }
+        _visitorStatsState.value = VisitorStatsViewState.Content(
+            stats = result.stats,
+            totalVisitorCount = result.totalVisitorCount,
+            isOutdated = result.isOutdated
+        )
+    }
+
     private fun onRevenueStatsSuccess(
         result: LoadStatsResult.RevenueStatsSuccess,
         selectedRange: StatsTimeRangeSelection
     ) {
+        val isPreviousValOutdated = (_revenueStatsState.value as? RevenueStatsViewState.Content)?.isOutdated ?: false
+        when {
+            result.isOutdated && isPreviousValOutdated.not() -> {
+                parentViewModel.displayRefreshingIndicator()
+            }
+
+            result.isOutdated.not() -> parentViewModel.hideRefreshingIndicator()
+        }
+
         _revenueStatsState.value = RevenueStatsViewState.Content(
-            result.stats?.toStoreStatsUiModel(),
-            selectedRange
+            revenueStats = result.stats?.toStoreStatsUiModel(),
+            statsRangeSelection = selectedRange,
+            isOutdated = result.isOutdated
         )
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
@@ -339,7 +370,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
         data object WCAnalyticsInactive : RevenueStatsViewState()
         data class Content(
             val revenueStats: RevenueStatsUiModel?,
-            val statsRangeSelection: StatsTimeRangeSelection
+            val statsRangeSelection: StatsTimeRangeSelection,
+            val isOutdated: Boolean = false
         ) : RevenueStatsViewState()
     }
 
@@ -350,7 +382,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
         data class Content(
             val stats: Map<String, Int>,
-            val totalVisitorCount: Int?
+            val totalVisitorCount: Int?,
+            val isOutdated: Boolean = false
         ) : VisitorStatsViewState()
     }
 

@@ -20,6 +20,7 @@ class GetAnalyticPluginsCardActive @Inject constructor(
     private val analyticPlugins = listOf(
         WOO_PRODUCT_BUNDLES,
         WOO_GIFT_CARDS,
+        GOOGLE_ADS,
         JETPACK
     )
 
