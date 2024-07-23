@@ -26,18 +26,14 @@ import kotlin.reflect.KProperty
  *
  */
 class LiveDataDelegate<T : Parcelable>
-@Deprecated(
-    message = "Use the provided factory methods or secondary constructors instead.",
-    level = DeprecationLevel.WARNING
-)
+@LiveDelegateSavedStateAPI
 constructor(
     savedState: SavedStateHandle? = null,
     private val initialValue: T,
     savedStateKey: String = initialValue.javaClass.name,
     private val onChange: (T?, T) -> Unit = { _, _ -> }
 ) {
-    // This is a whitelisted usage of the primary constructor.
-    @Suppress("DEPRECATION")
+    @OptIn(LiveDelegateSavedStateAPI::class)
     constructor(
         initialValue: T,
         onChange: (T?, T) -> Unit = { _, _ -> }
@@ -80,23 +76,9 @@ constructor(
     operator fun getValue(ref: Any, p: KProperty<*>): T = _liveData.value!!
 }
 
-/**
- * !BEWARE! that only data that can't be easily recovered should be stored - e.g. user's input. Storing complete
- *  viewStates wastes device resources and often leads to issue such as TransactionTooLarge crashes.
- *
- *  Note: This method is technically not necessary, we could use the primary constructor. However, we are
- *  misusing the savedState in tons of places in the codebase. This approach will hopefully at least increase
- *  awareness of the associated risks and ensure developers who are using the saved state consider other options.
- *
- *  Note 2: We are intentionally not changing all the existing location to use this factory method as all these
- *  locations should be changed only after considering whether they truly store the minimal required data.
- */
-fun <T : Parcelable> createLiveDataDelegateWithSavedState(
-    savedState: SavedStateHandle,
-    initialValue: T,
-    savedStateKey: String = initialValue.javaClass.name,
-    onChange: (T?, T) -> Unit = { _, _ -> }
-): LiveDataDelegate<T> {
-    @Suppress("DEPRECATION") // This is a whitelisted usage of the primary constructor.
-    return LiveDataDelegate(savedState, initialValue, savedStateKey, onChange)
-}
+@RequiresOptIn(
+    message = "This API will cause the data to be saved to the SavedState, and should be used with caution.",
+    level = RequiresOptIn.Level.WARNING
+)
+@Retention(AnnotationRetention.BINARY)
+annotation class LiveDelegateSavedStateAPI

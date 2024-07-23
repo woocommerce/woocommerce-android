@@ -38,7 +38,13 @@ class AddProductCategoryViewModel @Inject constructor(
 ) : ScopedViewModel(savedState) {
     private val navArgs: AddProductCategoryFragmentArgs by savedState.navArgs()
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
     // view state for the add category screen
+    @Suppress("OPT_IN_USAGE")
     val addProductCategoryViewStateLiveData = LiveDataDelegate(
         savedState,
         AddProductCategoryViewState(
@@ -49,7 +55,13 @@ class AddProductCategoryViewModel @Inject constructor(
     )
     private var addProductCategoryViewState by addProductCategoryViewStateLiveData
 
+    /**
+     * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
+     * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
+     * with @OptIn(LiveDelegateSavedStateAPI::class).
+     */
     // view state for the parent category list screen
+    @Suppress("OPT_IN_USAGE")
     val parentCategoryListViewStateData = LiveDataDelegate(savedState, ParentCategoryListViewState())
     private var parentCategoryListViewState by parentCategoryListViewStateData
 
