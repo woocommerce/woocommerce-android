@@ -3494,6 +3494,7 @@
     <string name="stats_today_widget_description">WooCommerce Stats Today</string>
     <string name="stats_widget_error_no_data">Couldn\'t load data</string>
     <string name="stats_widget_last_updated_message">As of %1$s</string>
+    <string name="stats_widget_notification_message">Loading today\'s store stats</string>
 
     <!--
     Store theme

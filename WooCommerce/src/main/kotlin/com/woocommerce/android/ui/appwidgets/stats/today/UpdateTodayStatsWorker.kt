@@ -4,9 +4,9 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.widget.RemoteViews
 import androidx.hilt.work.HiltWorker
-import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.R
+import com.woocommerce.android.background.BatteryAwareCoroutineWorker
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -23,20 +23,24 @@ import java.util.Locale
 @Suppress("LongParameterList")
 @HiltWorker
 class UpdateTodayStatsWorker @AssistedInject constructor(
-    @Assisted private val appContext: Context,
+    @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val getWidgetStats: GetWidgetStats,
     private val selectedSite: SelectedSite,
     private val todayStatsWidgetUIHelper: TodayStatsWidgetUIHelper,
     private val dateUtils: DateUtils,
     private val localeProvider: LocaleProvider
-) : CoroutineWorker(appContext, workerParams) {
+) : BatteryAwareCoroutineWorker(appContext, workerParams) {
 
     companion object {
         const val DATA_WIDGET_ID = "widget_id"
     }
 
-    override suspend fun doWork(): Result {
+    override val notificationId = 3045
+    override val titleResId = R.string.notification_channel_background_works_title
+    override val messageResId = R.string.stats_widget_notification_message
+
+    override suspend fun executeWork(): Result {
         val site = selectedSite.getIfExists()
         val widgetId = inputData.getInt(DATA_WIDGET_ID, -1)
         val remoteViews = RemoteViews(appContext.packageName, R.layout.stats_widget_daily)
