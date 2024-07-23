@@ -18,6 +18,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewFragment
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -123,6 +125,11 @@ class MoreMenuFragment : TopLevelFragment() {
             navigateToGoogleAdsCreationSuccess()
             viewModel.handleSuccessfulGoogleAdsCreation()
         }
+
+        handleNotice(ExitAwareWebViewFragment.WEBVIEW_RESULT) {
+            navigateToGoogleAdsCreationSuccess()
+            viewModel.handleSuccessfulGoogleAdsCreation()
+        }
     }
 
     private fun openWooPos() {
@@ -198,11 +205,28 @@ class MoreMenuFragment : TopLevelFragment() {
     }
 
     private fun openGoogleForWooWebview(url: String, successUrls: List<String>, canAutoLogin: Boolean) {
+        when {
+            canAutoLogin -> openInAuthBrowser(url, successUrls)
+            else -> openInExitAwareWebview(url, successUrls)
+        }
+    }
+
+    private fun openInExitAwareWebview(url: String, successUrls: List<String>) {
+        findNavController().navigateSafely(
+            NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+                urlToLoad = url,
+                urlsToTriggerExit = successUrls.toTypedArray(),
+                title = getString(R.string.more_menu_button_google),
+                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+            )
+        )
+    }
+
+    private fun openInAuthBrowser(url: String, successUrls: List<String>) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                 urlToLoad = url,
                 urlsToTriggerExit = successUrls.toTypedArray(),
-                skipAutoAuth = !canAutoLogin,
                 title = getString(R.string.more_menu_button_google),
                 urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
             )

@@ -35,6 +35,7 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -78,13 +79,21 @@ private fun HandleEvents(
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
                 is DashboardGoogleAdsViewModel.ViewGoogleForWooEvent -> {
-                    val direction = NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                        urlToLoad = event.url,
-                        urlsToTriggerExit = event.successUrls.toTypedArray(),
-                        skipAutoAuth = !event.canAutoLogin,
-                        title = webViewTitle,
-                        urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
-                    )
+                    val direction = if (event.canAutoLogin) {
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            urlsToTriggerExit = event.successUrls.toTypedArray(),
+                            title = webViewTitle,
+                            urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
+                        )
+                    } else {
+                        NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+                            urlToLoad = event.url,
+                            urlsToTriggerExit = event.successUrls.toTypedArray(),
+                            title = webViewTitle,
+                            urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
+                        )
+                    }
 
                     navController.navigateSafely(direction)
                 }
@@ -129,7 +138,6 @@ fun DashboardGoogleAdsView(
                     viewState.onCreateCampaignClicked,
                     viewState.onPerformanceAreaClicked
                 )
-
                 is DashboardGoogleAdsState.Error -> {
                     WidgetError(
                         onContactSupportClicked = onContactSupportClicked,

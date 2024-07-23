@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.common.wpcomwebview
+package com.woocommerce.android.ui.common.exitawarewebview
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,17 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.MODAL
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.REGULAR
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.DisplayMode.MODAL
+import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.DisplayMode.REGULAR
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
-fun WPComWebViewScreen(viewViewModel: WPComWebViewViewModel) {
-    WPComWebViewScreen(
+fun ExitAwareWebViewScreen(viewViewModel: ExitAwareWebViewViewModel) {
+    ExitAwareWebViewScreen(
         viewState = viewViewModel.viewState,
-        wpcomWebViewAuthenticator = viewViewModel.wpComWebViewAuthenticator,
         userAgent = viewViewModel.userAgent,
         onUrlLoaded = viewViewModel::onUrlLoaded,
         onClose = viewViewModel::onClose
@@ -29,9 +28,8 @@ fun WPComWebViewScreen(viewViewModel: WPComWebViewViewModel) {
 }
 
 @Composable
-fun WPComWebViewScreen(
-    viewState: WPComWebViewViewModel.ViewState,
-    wpcomWebViewAuthenticator: WPComWebViewAuthenticator,
+fun ExitAwareWebViewScreen(
+    viewState: ExitAwareWebViewViewModel.ViewState,
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
     onClose: () -> Unit,
@@ -53,7 +51,6 @@ fun WPComWebViewScreen(
         WCWebView(
             url = viewState.urlToLoad,
             userAgent = userAgent,
-            wpComAuthenticator = wpcomWebViewAuthenticator,
             onUrlLoaded = onUrlLoaded,
             captureBackPresses = viewState.captureBackButton,
             clearCache = clearCache,
