@@ -43,8 +43,8 @@ class AddProductCategoryViewModel @Inject constructor(
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
-    @Suppress("OPT_IN_USAGE")
     // view state for the add category screen
+    @Suppress("OPT_IN_USAGE")
     val addProductCategoryViewStateLiveData = LiveDataDelegate(
         savedState,
         AddProductCategoryViewState(
@@ -60,8 +60,8 @@ class AddProductCategoryViewModel @Inject constructor(
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
-    @Suppress("OPT_IN_USAGE")
     // view state for the parent category list screen
+    @Suppress("OPT_IN_USAGE")
     val parentCategoryListViewStateData = LiveDataDelegate(savedState, ParentCategoryListViewState())
     private var parentCategoryListViewState by parentCategoryListViewStateData
 

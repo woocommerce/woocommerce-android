@@ -177,8 +177,8 @@ class ProductDetailViewModel @Inject constructor(
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
-    @Suppress("OPT_IN_USAGE")
     // view state for the product detail screen
+    @Suppress("OPT_IN_USAGE")
     val productDetailViewStateData = LiveDataDelegate(
         savedState = savedState,
         initialValue = ProductDetailViewState(areImagesAvailable = !selectedSite.get().isPrivate)
@@ -205,8 +205,8 @@ class ProductDetailViewModel @Inject constructor(
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
-    @Suppress("OPT_IN_USAGE")
     // view state for the product categories screen
+    @Suppress("OPT_IN_USAGE")
     val productCategoriesViewStateData = LiveDataDelegate(savedState, ProductCategoriesViewState())
     private var productCategoriesViewState by productCategoriesViewStateData
 
@@ -215,18 +215,18 @@ class ProductDetailViewModel @Inject constructor(
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
-    @Suppress("OPT_IN_USAGE")
     // view state for the product tags screen
+    @Suppress("OPT_IN_USAGE")
     val productTagsViewStateData = LiveDataDelegate(savedState, ProductTagsViewState())
     private var productTagsViewState by productTagsViewStateData
 
-        /**
+    /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
-    @Suppress("OPT_IN_USAGE")
     // view state for the product downloads screen
+    @Suppress("OPT_IN_USAGE")
     val productDownloadsViewStateData = LiveDataDelegate(savedState, ProductDownloadsViewState())
     private var productDownloadsViewState by productDownloadsViewStateData
 

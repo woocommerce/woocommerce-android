@@ -94,8 +94,8 @@ class VariationDetailViewModel @Inject constructor(
      * field was implemented - after we ensure we don't save unnecessary data, we can replace @Suppress("OPT_IN_USAGE")
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
-    @Suppress("OPT_IN_USAGE")
     // view state for the variation detail screen
+    @Suppress("OPT_IN_USAGE")
     val variationViewStateData = LiveDataDelegate(savedState, VariationViewState()) { old, new ->
         new.variation?.takeIf { it != old?.variation }
             ?.let {
