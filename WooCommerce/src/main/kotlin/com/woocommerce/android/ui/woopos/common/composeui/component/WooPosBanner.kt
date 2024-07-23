@@ -85,7 +85,7 @@ fun WooPosBanner(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onSurface,
+                        color = WooPosTheme.colors.onSurfaceHigh,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier
                             .constrainAs(header) {
@@ -107,7 +107,7 @@ fun WooPosBanner(
                         text = annotatedText,
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Normal,
-                        color = colorResource(id = R.color.color_on_surface_high),
+                        color = WooPosTheme.colors.onSurfaceHigh,
                         modifier = Modifier
                             .clickable { onLearnMore() }
                             .constrainAs(description) {
