@@ -4180,6 +4180,7 @@
 
     <string name="woopos_banner_simple_products_only_title">Showing simple products only</string>
     <string name="woopos_banner_simple_products_only_message">Only simple physical products are compatible with POS right now. Other product types, such as variable and virtual, will become available in future updates. </string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Learn more</string>
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
 

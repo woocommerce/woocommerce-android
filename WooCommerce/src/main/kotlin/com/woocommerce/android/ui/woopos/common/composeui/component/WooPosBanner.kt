@@ -99,7 +99,7 @@ fun WooPosBanner(
                     val annotatedText = buildAnnotatedString {
                         append(message)
                         withStyle(style = SpanStyle(color = colorResource(id = R.color.woo_purple_50))) {
-                            append(" Learn more")
+                            append(stringResource(id = R.string.woopos_banner_simple_products_only_message_learn_more))
                         }
                     }
 
