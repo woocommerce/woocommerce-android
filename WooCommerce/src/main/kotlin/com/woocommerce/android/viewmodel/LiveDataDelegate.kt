@@ -33,7 +33,6 @@ constructor(
     savedStateKey: String = initialValue.javaClass.name,
     private val onChange: (T?, T) -> Unit = { _, _ -> }
 ) {
-    // This is a whitelisted usage of the primary constructor.
     @OptIn(LiveDelegateSavedStateAPI::class)
     constructor(
         initialValue: T,
