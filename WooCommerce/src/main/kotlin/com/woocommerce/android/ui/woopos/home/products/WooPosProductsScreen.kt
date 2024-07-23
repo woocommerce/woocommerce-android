@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -123,34 +124,13 @@ private fun WooPosProductsScreen(
             when (val productsState = state.value) {
                 is WooPosProductsViewState.Content -> {
                     Column {
-                        if (productsState.bannerState?.isSimpleProductsOnlyBannerShown == false) {
-                            AnimatedVisibility(
-                                visibleState = animVisibleState,
-                                exit = shrinkVertically(),
-                            ) {
-                                WooPosBanner(
-                                    title = stringResource(id = productsState.bannerState.title),
-                                    message = stringResource(id = productsState.bannerState.message),
-                                    bannerIcon = R.drawable.info,
-                                    onClose = {
-                                        // Start exiting the animation
-                                        animVisibleState.targetState = false
-                                    },
-                                    onLearnMore = {
-                                        onSimpleProductsBannerLearnMoreClicked()
-                                    }
-                                )
-                            }
-                            // Check the animation state and call onBannerClosed when the banner is invisible
-                            LaunchedEffect(animVisibleState) {
-                                snapshotFlow { animVisibleState.isIdle && !animVisibleState.currentState }
-                                    .collect { isBannerInvisible ->
-                                        if (isBannerInvisible) {
-                                            onSimpleProductsBannerClosed()
-                                        }
-                                    }
-                            }
-                        }
+                        SimpleProductsBanner(
+                            productsState,
+                            animVisibleState,
+                            productsState.bannerState,
+                            onSimpleProductsBannerLearnMoreClicked,
+                            onSimpleProductsBannerClosed
+                        )
                         Box {
                             ProductsList(
                                 productsState,
@@ -177,6 +157,46 @@ private fun WooPosProductsScreen(
             refreshing = state.value.reloadingProducts,
             state = pullToRefreshState
         )
+    }
+}
+
+@Composable
+private fun SimpleProductsBanner(
+    productsState: WooPosProductsViewState.Content,
+    animVisibleState: MutableTransitionState<Boolean>,
+    bannerState: WooPosProductsViewState.Content.BannerState?,
+    onSimpleProductsBannerLearnMoreClicked: () -> Unit,
+    onSimpleProductsBannerClosed: () -> Unit
+) {
+    if (productsState.bannerState?.isSimpleProductsOnlyBannerShown != false) {
+        return
+    }
+    AnimatedVisibility(
+        visibleState = animVisibleState,
+        enter = expandVertically(),
+        exit = shrinkVertically(),
+    ) {
+        WooPosBanner(
+            title = stringResource(id = bannerState?.title!!),
+            message = stringResource(id = bannerState.message),
+            bannerIcon = R.drawable.info,
+            onClose = {
+                // Start exiting the animation
+                animVisibleState.targetState = false
+            },
+            onLearnMore = {
+                onSimpleProductsBannerLearnMoreClicked()
+            }
+        )
+    }
+    // Check the animation state and call onBannerClosed when the banner is invisible
+    LaunchedEffect(animVisibleState) {
+        snapshotFlow { animVisibleState.isIdle && !animVisibleState.currentState }
+            .collect { isBannerInvisible ->
+                if (isBannerInvisible) {
+                    onSimpleProductsBannerClosed()
+                }
+            }
     }
 }
 
