@@ -78,7 +78,7 @@ fun WooPosBanner(
                             contentDescription = stringResource(
                                 id = R.string.woopos_banner_simple_products_info_content_description
                             ),
-                            tint = colorResource(id = R.color.woo_purple_50),
+                            tint = MaterialTheme.colors.primary,
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
@@ -99,7 +99,7 @@ fun WooPosBanner(
 
                     val annotatedText = buildAnnotatedString {
                         append(message)
-                        withStyle(style = SpanStyle(color = colorResource(id = R.color.woo_purple_50))) {
+                        withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) {
                             append(stringResource(id = R.string.woopos_banner_simple_products_only_message_learn_more))
                         }
                     }
