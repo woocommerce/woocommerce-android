@@ -53,7 +53,6 @@ class WooPosTotalsViewModel @Inject constructor(
         key = KEY_STATE,
     )
 
-    // Provide access to the individual properties if needed
     private var wooPosState: WooPosState
         get() = _wooPosState.value
         set(value) {
