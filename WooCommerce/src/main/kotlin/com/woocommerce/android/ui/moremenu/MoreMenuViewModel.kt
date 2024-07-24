@@ -306,14 +306,17 @@ class MoreMenuViewModel @Inject constructor(
         launch {
             val urlToOpen = determineUrlToOpen()
 
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canUseAutoLoginWebview()))
+            val successUrlTriggers = listOf(
+                AppUrls.GOOGLE_ADMIN_FIRST_CAMPAIGN_CREATION_SUCCESS_TRIGGER,
+                AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
+            )
 
-            // todo-11917: This is just temporary to test this function,
-            //  in practice we want to set this to true if a campaign is successfully created in webview.
-            if (!hasCreatedGoogleAdsCampaign) {
-                hasCreatedGoogleAdsCampaign = true
-            }
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, successUrlTriggers, canUseAutoLoginWebview()))
         }
+    }
+
+    fun handleSuccessfulGoogleAdsCreation() {
+        hasCreatedGoogleAdsCampaign = true
     }
 
     private suspend fun determineUrlToOpen(): String {
