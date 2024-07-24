@@ -226,7 +226,9 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.ItemClicked(product))
         viewModel.viewState.test {
             // THEN
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ItemClickedInProductSelector(product.id))
+            verify(fromChildToParentEventSender).sendToParent(
+                ChildToParentEvent.ItemClickedInProductSelector(product.id)
+            )
             cancelAndConsumeRemainingEvents()
         }
     }
