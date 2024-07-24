@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -36,16 +39,23 @@ fun WooPosErrorComponent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically) // Align elements with spacing
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colors.onSurface)
-
-        Spacer(modifier = Modifier.height(16.dp))
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colors.onSurface,
+            modifier = Modifier.size(56.dp)
+        )
 
         Text(
             text = message,
             style = MaterialTheme.typography.h6,
             color = MaterialTheme.colors.onSurface
+        )
+
+        Divider(
+            color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+            thickness = 0.5.dp,
+            modifier = Modifier.padding(vertical = 8.dp)
         )
 
         Text(
@@ -59,7 +69,9 @@ fun WooPosErrorComponent(
             WooPosButton(
                 text = it.text,
                 onClick = it.click,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(56.dp)
             )
         }
 
@@ -68,7 +80,9 @@ fun WooPosErrorComponent(
             WooPosButton(
                 text = it.text,
                 onClick = it.click,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .height(56.dp)
             )
         }
     }
