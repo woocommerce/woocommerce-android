@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -32,6 +33,8 @@ fun WooPosErrorComponent(
     primaryButton: Button? = null,
     secondaryButton: Button? = null
 ) {
+    val amberColor = colorResource(id = R.color.woo_amber_60)
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -42,8 +45,8 @@ fun WooPosErrorComponent(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colors.error,
-            modifier = Modifier.size(56.dp)
+            tint = amberColor,
+            modifier = Modifier.size(64.dp)
         )
 
         Text(
