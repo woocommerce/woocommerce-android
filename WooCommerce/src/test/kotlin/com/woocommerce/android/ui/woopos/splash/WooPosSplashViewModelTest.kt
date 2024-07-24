@@ -51,5 +51,19 @@ class WooPosSplashViewModelTest {
         assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loaded)
     }
 
+    @Test
+    fun `given products are cached, when vm created, should remain in loading state`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
+            flowOf(ProductsResult.Cached(emptyList()))
+        )
+
+        // WHEN
+        val sut = createSut()
+
+        // THEN
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loading)
+    }
+
     private fun createSut() = WooPosSplashViewModel(productsDataSource)
 }
