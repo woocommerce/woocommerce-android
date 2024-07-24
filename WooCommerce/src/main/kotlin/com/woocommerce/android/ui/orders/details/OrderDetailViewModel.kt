@@ -140,7 +140,8 @@ class OrderDetailViewModel @Inject constructor(
     // and add the deleted tracking number back to the list
     private var deletedOrderShipmentTrackingSet = mutableSetOf<String>()
 
-    val viewStateData = LiveDataDelegate(savedState, OrderDetailViewState())
+    // Do NOT store the ViewState in SavedState bundle - it can be easily recreated on process death.
+    val viewStateData = LiveDataDelegate(OrderDetailViewState())
     private var viewState by viewStateData
 
     private val _orderNotes = MutableLiveData<List<OrderNote>>()
