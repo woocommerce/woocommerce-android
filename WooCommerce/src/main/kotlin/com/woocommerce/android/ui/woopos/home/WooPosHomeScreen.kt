@@ -9,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -167,13 +166,11 @@ private fun WooPosHomeScreen(
                 }
             }
             Row(modifier = Modifier.width(totalsWidthDp)) {
-                Spacer(modifier = Modifier.width(totalsStartPaddingDp))
                 WooPosHomeScreenTotals(
                     modifier = Modifier
                         .width(totalsWidthDp - 24.dp.toAdaptivePadding() - totalsStartPaddingDp)
                         .padding(vertical = 24.dp.toAdaptivePadding())
                 )
-                Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
             }
         }
 
