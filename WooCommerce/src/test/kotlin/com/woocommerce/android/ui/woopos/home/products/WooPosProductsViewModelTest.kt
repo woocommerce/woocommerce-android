@@ -479,6 +479,37 @@ class WooPosProductsViewModelTest {
         assertThat(contentState.bannerState?.icon).isEqualTo(R.drawable.info)
     }
 
+    @Test
+    fun `given info icon displayed, when clicked, then appropriate event is triggered`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+            flowOf(true)
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
+    }
+
     private fun createViewModel() =
         WooPosProductsViewModel(
             productsDataSource,
