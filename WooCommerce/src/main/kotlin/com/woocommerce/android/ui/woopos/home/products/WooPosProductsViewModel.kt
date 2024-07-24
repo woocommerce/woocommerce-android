@@ -86,8 +86,14 @@ class WooPosProductsViewModel @Inject constructor(
             }
             WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked -> TODO()
             WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked -> {
-
+                onSimpleProductsDialogInfoClicked()
             }
+        }
+    }
+
+    private fun onSimpleProductsDialogInfoClicked() {
+        viewModelScope.launch {
+            fromChildToParentEventSender.sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
         }
     }
 
