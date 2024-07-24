@@ -3,7 +3,7 @@ package com.woocommerce.android.wear.ui.orders.list
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.wear.extensions.toWearOrder
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
-import com.woocommerce.android.wear.system.NetworkStatus
+import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.orders.OrdersRepository
 import com.woocommerce.android.wear.ui.orders.list.FetchOrders.OrdersRequest
 import com.woocommerce.android.wear.ui.orders.list.FetchOrders.OrdersRequest.Error
@@ -29,7 +29,7 @@ class FetchOrdersTest : BaseUnitTest() {
 
     private val phoneRepository: PhoneConnectionRepository = mock()
     private val ordersRepository: OrdersRepository = mock()
-    private val networkStatus: NetworkStatus = mock()
+    private val connectionStatus: ConnectionStatus = mock()
     private val selectedSite: SiteModel = mock()
 
     @Test
@@ -37,7 +37,7 @@ class FetchOrdersTest : BaseUnitTest() {
         val fetchedOrders = mockedOrders()
         val expectedOrders = fetchedOrders.map { it.toWearOrder() }
         whenever(ordersRepository.fetchOrders(selectedSite)).thenReturn(Success(fetchedOrders))
-        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
         val events = mutableListOf<OrdersRequest>()
 
         createSut()
@@ -53,7 +53,7 @@ class FetchOrdersTest : BaseUnitTest() {
     @Test
     fun `returns Waiting when no orders and not timeout`() = testBlocking {
         whenever(ordersRepository.fetchOrders(selectedSite)).thenReturn(Success(emptyList()))
-        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
         val events = mutableListOf<OrdersRequest>()
 
         createSut()
@@ -69,7 +69,7 @@ class FetchOrdersTest : BaseUnitTest() {
     @Test
     fun `returns Error when no orders and timeout`() = testBlocking {
         whenever(ordersRepository.fetchOrders(selectedSite)).thenReturn(Success(emptyList()))
-        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
         val events = mutableListOf<OrdersRequest>()
 
         createSut()
@@ -86,7 +86,7 @@ class FetchOrdersTest : BaseUnitTest() {
     fun `returns orders from phone when no network connection`() = testBlocking {
         val expectedOrders = listOf<WearOrder>(mock())
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
-        whenever(networkStatus.isConnected()).thenReturn(false)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(false)
         whenever(ordersRepository.observeOrdersDataChanges(selectedSite))
             .thenReturn(flowOf(expectedOrders))
         val events = mutableListOf<OrdersRequest>()
@@ -106,7 +106,7 @@ class FetchOrdersTest : BaseUnitTest() {
         val fetchedOrders = mockedOrders()
         val expectedOrders = fetchedOrders.map { it.toWearOrder() }
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(false)
-        whenever(networkStatus.isConnected()).thenReturn(false)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(false)
         whenever(ordersRepository.getStoredOrders(selectedSite)).thenReturn(fetchedOrders)
         val events = mutableListOf<OrdersRequest>()
 
@@ -120,7 +120,7 @@ class FetchOrdersTest : BaseUnitTest() {
         assertThat(events).containsExactly(Finished(expectedOrders))
     }
 
-    private fun createSut() = FetchOrders(phoneRepository, ordersRepository, networkStatus, mock())
+    private fun createSut() = FetchOrders(phoneRepository, ordersRepository, connectionStatus, mock())
 
     private fun mockedOrders() = listOf(
         OrderEntity(
