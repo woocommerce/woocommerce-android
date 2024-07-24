@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -211,14 +212,21 @@ class WooPosTotalsViewModelTest {
             )
         }
 
+        val resourceProvider: ResourceProvider = mock {
+            on { getString(any()) }.thenReturn(errorMessage)
+        }
+
         // WHEN
         val viewModel = createViewModel(
+            resourceProvider = resourceProvider,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             totalsRepository = totalsRepository,
         )
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsViewState.Error
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosTotalsViewState.Error::class.java)
+        state as WooPosTotalsViewState.Error
         assertThat(state.message).isEqualTo(errorMessage)
     }
 
