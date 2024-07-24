@@ -39,6 +39,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     }
 
     fun onWebPageLoaded(url: String) {
+        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN)
         if (url.startsWith(REDIRECTION_URL)) {
             triggerEvent(ExitWithResult(url))
         }

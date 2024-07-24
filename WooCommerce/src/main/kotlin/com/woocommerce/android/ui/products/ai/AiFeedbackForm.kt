@@ -28,7 +28,7 @@ fun AiFeedbackForm(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .background(
-                color = colorResource(id = R.color.ai_feedback_form_background),
+                color = colorResource(id = R.color.ai_product_suggestion_box_background),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
             )
             .padding(dimensionResource(id = R.dimen.major_100))

@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-10 16:54:03+0000
+Translation-Revision-Date: 2024-07-16 15:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="customers_details_none_hint">Geen</string>
+    <string name="customers_details_no_phone_hint">Geen telefoonnummer</string>
+    <string name="customers_details_postal_code_value_title">Postcode</string>
+    <string name="customers_details_city_value_title">Plaats</string>
+    <string name="customers_details_region_value_title">Regio</string>
+    <string name="customers_details_country_value_title">Land</string>
+    <string name="customers_details_date_registered_value_title">Datum geregistreerd</string>
+    <string name="customers_details_username_value_title">Gebruikersnaam</string>
+    <string name="customers_details_average_order_value_title">Gemiddelde bestelwaarde</string>
+    <string name="customers_details_total_spend_value_title">Totaal uitgegeven</string>
+    <string name="customers_details_orders_value_title">Bestellingen</string>
+    <string name="customers_details_last_active_value_title">Laatst actief</string>
+    <string name="customers_details_shipping_location_section">Locatie</string>
+    <string name="customers_details_shipping_address_section">Verzendadres</string>
+    <string name="customers_details_billing_address_section">Factuuradres</string>
+    <string name="customers_details_registration_section">Registratie</string>
+    <string name="customers_details_orders_section">Bestellingen</string>
+    <string name="customers_details_customer_section">Klant</string>
+    <string name="woopos_products_empty_list">Geen producten</string>
+    <string name="more_menu_customers_title">Klanten</string>
+    <string name="more_menu_button_customers_description">Klantinzichten krijgen</string>
+    <string name="more_menu_button_customers">Klanten</string>
+    <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Probeer het nog eens</string>
+    <string name="ai_product_creation_scanning_image">Scanning image</string>
+    <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
+    <string name="ai_product_creation_image_selected">Foto geselecteerd</string>
+    <string name="ai_product_creation_remove_image">Foto verwijderen</string>
+    <string name="ai_product_creation_replace_image">Foto vervangen</string>
+    <string name="ai_product_creation_view_image">Foto weergeven</string>
+    <string name="product_creation_ai_preview_name_description_sections">Naam en beschrijving</string>
+    <string name="product_creation_ai_preview_subtitle">Je kan je productgegevens bewerken of opnieuw genereren voordat je ze opslaat.</string>
+    <string name="product_detail_publish">Publiceren</string>
+    <string name="analytics_google_ads_programs_card_title">programma</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">No Programs this period</string>
     <string name="woopos_reader_connect_now_button">Nu koppelen</string>
     <string name="woopos_cart_title">Winkelwagen</string>
     <string name="ai_product_creation_generate_details_button">Productgegevens genereren</string>

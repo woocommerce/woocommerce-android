@@ -1,13 +1,16 @@
 package com.woocommerce.android.ui.products.ai
 
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductType.SIMPLE
-import org.json.JSONArray
-import org.json.JSONObject
+import org.wordpress.android.fluxc.network.utils.getBoolean
+import org.wordpress.android.fluxc.network.utils.getString
 import java.math.BigDecimal
 
 data class AIProductModel(
@@ -46,29 +49,30 @@ data class AIProductModel(
 
     companion object {
         fun fromJson(
+            gson: Gson,
             json: String,
             existingCategories: List<ProductCategory>,
             existingTags: List<ProductTag>
         ): AIProductModel {
-            val jsonModel = JSONObject(json)
+            val jsonModel = gson.fromJson(json, JsonObject::class.java)
             return AIProductModel(
-                names = jsonModel.getJSONArray("names").toList(),
-                descriptions = jsonModel.getJSONArray("descriptions").toList(),
-                shortDescriptions = jsonModel.getJSONArray("short_descriptions").toList(),
+                names = jsonModel.getAsJsonArray("names").toList(),
+                descriptions = jsonModel.getAsJsonArray("descriptions").toList(),
+                shortDescriptions = jsonModel.getAsJsonArray("short_descriptions").toList(),
                 isVirtual = jsonModel.getBoolean("virtual"),
                 price = BigDecimal(jsonModel.getString("price")),
-                shipping = jsonModel.getJSONObject("shipping").run {
+                shipping = jsonModel.getAsJsonObject("shipping").run {
                     Shipping(
-                        weight = getDouble("weight").toFloat(),
-                        height = getDouble("height").toFloat(),
-                        length = getDouble("length").toFloat(),
-                        width = getDouble("width").toFloat()
+                        weight = get("weight").asFloat,
+                        height = get("height").asFloat,
+                        length = get("length").asFloat,
+                        width = get("width").asFloat
                     )
                 },
-                categories = jsonModel.getJSONArray("categories").toList().map { name ->
+                categories = jsonModel.getAsJsonArray("categories").toList().map { name ->
                     existingCategories.firstOrNull { it.name == name } ?: ProductCategory(name = name)
                 },
-                tags = jsonModel.getJSONArray("tags").toList().map { name ->
+                tags = jsonModel.getAsJsonArray("tags").toList().map { name ->
                     existingTags.firstOrNull { it.name == name } ?: ProductTag(name = name)
                 }
             )
@@ -88,9 +92,9 @@ data class AIProductModel(
             )
         }
 
-        private fun JSONArray.toList(): List<String> {
-            return (0 until length())
-                .map { i -> getString(i) }
+        private fun JsonArray.toList(): List<String> {
+            return (0 until size())
+                .map { i -> get(i).asString }
         }
     }
 }

@@ -206,6 +206,9 @@ class DashboardFragment :
         dashboardViewModel.hasNewWidgets.observe(viewLifecycleOwner) { hasNewWidgets ->
             editButtonBadge.isVisible = hasNewWidgets
         }
+        dashboardViewModel.isRefreshingOnBackground.observe(viewLifecycleOwner) { isRefreshing ->
+            binding.myStoreRefreshLayout.isRefreshing = isRefreshing
+        }
     }
 
     private fun setupResultHandlers() {

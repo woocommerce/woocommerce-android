@@ -507,6 +507,7 @@
     <string name="analytics_session_no_available">Session data unavailable</string>
     <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_spend_value">Spend: %1$s</string>
     <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
@@ -2149,7 +2150,6 @@
     <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
-    <string name="product_detail_publish">Publish</string>
     <string name="product_detail_linked_products">Linked products</string>
     <string name="upsells_label">Upsells</string>
     <string name="upsells_desc">Products promoted instead of the currently viewed product (ie: more profitable products)</string>
@@ -2219,6 +2219,8 @@
     <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_variant_selector">Option %1$d of %2$d</string>
+    <string name="product_creation_ai_preview_undo_edits">Undo edits</string>
+    <string name="product_creation_ai_preview_generate_again">Generate Again</string>
     <string name="product_creation_ai_select_previous_option">Select previous option</string>
     <string name="product_creation_ai_select_next_option">Select next option</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>
@@ -2248,6 +2250,13 @@
     <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">Add your product\'s name and key features, benefits, or details to help it get found online.</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details"><![CDATA[<b>Add more details.</b> The more details you provide, the better your generated details will be.]]></string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better"><![CDATA[<b>Getting better.</b> Can you describe the fit and any distinctive features of the item?]]></string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there"><![CDATA[<b>Great prompt!</b> Where was it made?]]></string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt"><![CDATA[<b>Great prompt!</b> You\'ve given us enough to work with, but you may add more detail to make it even better.]]></string>
+    <string name="ai_product_creation_error_media_upload">Failed to upload the selected product image.</string>
+    <string name="ai_product_creation_photo_removed">Photo removed</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -4168,13 +4177,15 @@
     <string name="woopos_checkout_button">Check out</string>
     <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
     <string name="woopos_cart_title">Cart</string>
-    <string name="woopos_clear_cart_button">Clear all</string>
+    <string name="woopos_clear_cart_button">Clear</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
+    <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
-    <string name="woopos_items_in_cart">%d items</string>
+    <string name="woopos_items_in_cart">%d item</string>
+    <string name="woopos_items_in_cart_multiple">%d items</string>
     <string name="woopos_product_image_description">Product Image</string>
     <string name="woopos_products_screen_title">Products</string>
     <string name="woopos_cart_back_content_description">Cart icon</string>
@@ -4187,6 +4198,11 @@
     <string name="woopos_payment_collect_payment_label">Collect card payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
+    <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
+    <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
+    <string name="woopos_cart_empty_content_description">Cart is empty</string>
+    <string name="woopos_splash_title">Starting up</string>
+    <string name="woopos_splash_message">Let’s serve some customers</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4208,7 +4224,6 @@
 
     <string name="customers_details_no_phone_hint">No phone number</string>
     <string name="customers_details_none_hint">None</string>
-
 
     <!--
     Google ads campaign creation

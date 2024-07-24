@@ -3,10 +3,11 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
-import com.woocommerce.android.model.Campaign
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.GiftCardsStat
+import com.woocommerce.android.model.GoogleAdsCampaign
 import com.woocommerce.android.model.GoogleAdsStat
+import com.woocommerce.android.model.GoogleAdsTotals
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -33,6 +34,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.google.WCGoogleAdsPrograms
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCGoogleStore
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
@@ -468,7 +470,11 @@ class AnalyticsRepository @Inject constructor(
         val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
 
-        val currentGoogleAdsStatsCall = async {
+        val previousPeriod = rangeSelection.previousRange
+        val previousStartDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
+        val previousEndDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val currentRangeGoogleAdsStatsCall = async {
             googleAdsStore.fetchAllPrograms(
                 site = selectedSite.get(),
                 startDate = currentStartDate,
@@ -477,17 +483,56 @@ class AnalyticsRepository @Inject constructor(
             )
         }
 
-        currentGoogleAdsStatsCall.await()
-            .model?.campaigns?.let { campaigns ->
-                GoogleAdsResult.GoogleAdsData(
-                    GoogleAdsStat(
-                        campaigns = campaigns.map {
-                            Campaign(it.id ?: 0L)
-                        }
-                    )
+        val previousRangeGoogleAdsStatsCall = async {
+            googleAdsStore.fetchAllPrograms(
+                site = selectedSite.get(),
+                startDate = previousStartDate,
+                endDate = previousEndDate,
+                metricType = WCGoogleStore.MetricType.SALES
+            )
+        }
+
+        val currentRangeStatsResult = currentRangeGoogleAdsStatsCall.await()
+        val previousRangeStatsResult = previousRangeGoogleAdsStatsCall.await()
+
+        currentRangeStatsResult
+            .model?.let {
+                mapGoogleAdsResponse(
+                    currentRangeResponse = it,
+                    previousRangeResponse = previousRangeStatsResult.model
                 )
             } ?: GoogleAdsResult.GoogleAdsError
     }
+
+    private fun mapGoogleAdsResponse(
+        currentRangeResponse: WCGoogleAdsPrograms,
+        previousRangeResponse: WCGoogleAdsPrograms?
+    ) = GoogleAdsResult.GoogleAdsData(
+        GoogleAdsStat(
+            googleAdsCampaigns = currentRangeResponse.campaigns?.map {
+                GoogleAdsCampaign(
+                    id = it.id ?: 0L,
+                    name = it.name,
+                    subtotal = it.subtotal.let { subtotal ->
+                        GoogleAdsTotals(
+                            sales = subtotal.sales,
+                            spend = subtotal.spend
+                        )
+                    }
+                )
+            } ?: emptyList(),
+            totals = currentRangeResponse.totals.let {
+                GoogleAdsTotals(
+                    sales = it?.sales ?: 0.0,
+                    spend = it?.spend ?: 0.0
+                )
+            },
+            deltaPercentage = calculateDeltaPercentage(
+                previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
+                currentVal = currentRangeResponse.totals?.sales ?: 0.0
+            )
+        )
+    )
 
     companion object {
         const val ZERO_VALUE = 0.0
