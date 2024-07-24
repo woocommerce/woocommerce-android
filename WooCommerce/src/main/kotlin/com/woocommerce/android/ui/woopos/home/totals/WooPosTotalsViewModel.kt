@@ -40,7 +40,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val uiState = savedState.getStateFlow<WooPosTotalsViewState>(
         scope = viewModelScope,
         initialValue = InitialState,
-        key = "woo_pos_totals_ui_state"
+        key = "woo_pos_totals_view_state"
     )
 
     val state: StateFlow<WooPosTotalsViewState> = uiState
