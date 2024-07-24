@@ -169,7 +169,7 @@ private fun ProductsToolbar(
     onToolbarInfoIconClicked: () -> Unit,
 ) {
     Row(
-        modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -181,7 +181,7 @@ private fun ProductsToolbar(
             is WooPosProductsViewState.Content -> {
                 if (productViewState.bannerState?.isSimpleProductsOnlyBannerShown != false) {
                     IconButton(
-                        modifier = modifier.size(40.dp),
+                        modifier = Modifier.size(40.dp),
                         onClick = {
                             onToolbarInfoIconClicked()
                         }
