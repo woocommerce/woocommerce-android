@@ -138,22 +138,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 loadTopPerformersStats(selectedRange, isForceRefresh)
             }
         }
-        observeTopPerformerUpdates()
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun observeTopPerformerUpdates() {
-        viewModelScope.launch {
-            _selectedDateRange
-                .flatMapLatest { dateRange ->
-                    getTopPerformers.observeTopPerformers(dateRange)
-                }
-                .collectLatest {
-                    _topPerformersState.value = _topPerformersState.value?.copy(
-                        topPerformers = it.toTopPerformersUiList(),
-                    )
-                }
-        }
     }
 
     fun onTabSelected(selectionType: SelectionType) {
@@ -203,36 +187,59 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
         coroutineScope {
             if (!networkStatus.isConnected()) {
-                _topPerformersState.value = _topPerformersState.value?.copy(error = ErrorType.Generic)
+                parentViewModel.hideRefreshingIndicator()
+                _topPerformersState.value = _topPerformersState.value?.copy(
+                    error = ErrorType.Generic,
+                    isOutdated = false
+                )
                 return@coroutineScope
             }
 
-            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, error = null)
             trackEventForTopPerformersCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_STARTED)
-            val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
-            result.fold(
-                onFailure = {
-                    _topPerformersState.value = _topPerformersState.value?.copy(
-                        error = if ((it as? WooException)?.error?.type == WooErrorType.API_NOT_FOUND) {
-                            ErrorType.WCAnalyticsInactive
+            getTopPerformers(selectedRange, forceRefresh).collect { result ->
+                when (result) {
+                    is GetTopPerformers.TopPerformerResult.Error -> {
+                        parentViewModel.hideRefreshingIndicator()
+                        _topPerformersState.value = _topPerformersState.value?.copy(
+                            error = if (
+                                (result.exception as? WooException)?.error?.type == WooErrorType.API_NOT_FOUND
+                            ) {
+                                ErrorType.WCAnalyticsInactive
+                            } else {
+                                ErrorType.Generic
+                            },
+                            isLoading = false
+                        )
+                        trackEventForTopPerformersCard(
+                            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
+                            properties = mapOf(AnalyticsTracker.KEY_ERROR to topPerformersState.value?.error.toString())
+                        )
+                    }
+
+                    is GetTopPerformers.TopPerformerResult.Success -> {
+                        analyticsTrackerWrapper.track(
+                            DASHBOARD_TOP_PERFORMERS_LOADED,
+                            mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
+                        )
+                        trackEventForTopPerformersCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
+                        if (_topPerformersState.value?.isOutdated != true && result.topPerformers.isOutdated) {
+                            parentViewModel.displayRefreshingIndicator()
                         } else {
-                            ErrorType.Generic
-                        },
-                    )
-                    trackEventForTopPerformersCard(
-                        AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
-                        properties = mapOf(AnalyticsTracker.KEY_ERROR to topPerformersState.value?.error.toString())
-                    )
-                },
-                onSuccess = {
-                    analyticsTrackerWrapper.track(
-                        DASHBOARD_TOP_PERFORMERS_LOADED,
-                        mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
-                    )
-                    trackEventForTopPerformersCard(AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_COMPLETED)
+                            parentViewModel.hideRefreshingIndicator()
+                        }
+                        _topPerformersState.value = _topPerformersState.value?.copy(
+                            isLoading = false,
+                            isOutdated = result.topPerformers.isOutdated,
+                            topPerformers = result.topPerformers.value.toTopPerformersUiList(),
+                        )
+                    }
+
+                    is GetTopPerformers.TopPerformerResult.Loading -> {
+                        parentViewModel.hideRefreshingIndicator()
+                        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true)
+                    }
                 }
-            )
-            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
+            }
 
             launch {
                 observeLastUpdate(
@@ -311,7 +318,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         @StringRes val titleStringRes: Int,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
         val menu: DashboardWidgetMenu,
-        val onOpenAnalyticsTapped: DashboardWidgetAction
+        val onOpenAnalyticsTapped: DashboardWidgetAction,
+        val isOutdated: Boolean = false,
     )
 
     enum class ErrorType {

@@ -312,6 +312,8 @@ fun ExpandableChildrenProductCard(
                     .constrainAs(sku) {
                         start.linkTo(name.start)
                         top.linkTo(stock.bottom)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
                     }
                     .padding(
                         start = dimensionResource(id = R.dimen.major_100),

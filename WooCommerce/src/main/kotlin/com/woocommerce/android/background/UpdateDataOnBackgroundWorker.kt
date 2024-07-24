@@ -14,6 +14,7 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val accountRepository: AccountRepository,
     private val updateAnalyticsDashboardRangeSelections: UpdateAnalyticsDashboardRangeSelections,
+    private val updateOrdersList: UpdateOrdersList
 ) : CoroutineWorker(appContext, workerParams) {
     companion object {
         const val REFRESH_TIME = 4L
@@ -23,7 +24,7 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return when {
             accountRepository.isUserLoggedIn().not() -> Result.success()
-            updateAnalyticsDashboardRangeSelections() -> Result.success()
+            updateAnalyticsDashboardRangeSelections() && updateOrdersList() -> Result.success()
             else -> Result.retry()
         }
     }
