@@ -18,11 +18,9 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewFragment
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSettingsEvent
@@ -104,7 +102,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
-                is ViewGoogleForWooEvent -> openGoogleForWooWebview(event.url, event.successUrls, event.canAutoLogin)
+                is ViewGoogleForWooEvent -> openGoogleAdsWebview(event.url, event.successUrls)
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
@@ -120,12 +118,7 @@ class MoreMenuFragment : TopLevelFragment() {
     }
 
     private fun setupResultHandlers() {
-        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
-            navigateToGoogleAdsCreationSuccess()
-            viewModel.handleSuccessfulGoogleAdsCreation()
-        }
-
-        handleNotice(ExitAwareWebViewFragment.WEBVIEW_RESULT) {
+        handleNotice(GoogleAdsWebViewFragment.WEBVIEW_RESULT) {
             navigateToGoogleAdsCreationSuccess()
             viewModel.handleSuccessfulGoogleAdsCreation()
         }
@@ -203,31 +196,13 @@ class MoreMenuFragment : TopLevelFragment() {
         )
     }
 
-    private fun openGoogleForWooWebview(url: String, successUrls: List<String>, canAutoLogin: Boolean) {
-        when {
-            canAutoLogin -> openInAuthBrowser(url, successUrls)
-            else -> openInExitAwareWebview(url, successUrls)
-        }
-    }
-
-    private fun openInExitAwareWebview(url: String, successUrls: List<String>) {
+    private fun openGoogleAdsWebview(url: String, successUrls: List<String>) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
+            NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
                 urlToLoad = url,
                 urlsToTriggerExit = successUrls.toTypedArray(),
                 title = getString(R.string.more_menu_button_google),
-                urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
-            )
-        )
-    }
-
-    private fun openInAuthBrowser(url: String, successUrls: List<String>) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                urlToLoad = url,
-                urlsToTriggerExit = successUrls.toTypedArray(),
-                title = getString(R.string.more_menu_button_google),
-                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
+                urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
             )
         )
     }

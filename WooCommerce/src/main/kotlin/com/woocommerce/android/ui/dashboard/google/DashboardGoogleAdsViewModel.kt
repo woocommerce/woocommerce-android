@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
-import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -37,7 +36,6 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val googleAdsStore: WCGoogleStore,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -116,12 +114,12 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
     private fun launchCampaignCreation() {
         val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-        triggerEvent(ViewGoogleForWooEvent(creationUrl, successUrlTriggers, canUseAutoLoginWebview()))
+        triggerEvent(ViewGoogleForWooEvent(creationUrl, successUrlTriggers))
     }
 
     private fun launchCampaignDetails() {
         val adminUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
-        triggerEvent(ViewGoogleForWooEvent(adminUrl, successUrlTriggers, canUseAutoLoginWebview()))
+        triggerEvent(ViewGoogleForWooEvent(adminUrl, successUrlTriggers))
     }
 
     fun onRefresh() {
@@ -154,8 +152,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
     data class ViewGoogleForWooEvent(
         val url: String,
-        val successUrls: List<String>,
-        val canAutoLogin: Boolean
+        val successUrls: List<String>
     ) : MultiLiveEvent.Event()
 
     @AssistedFactory
