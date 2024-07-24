@@ -17,8 +17,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -26,9 +24,7 @@ import java.math.BigDecimal
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner::class)
 class WooPosCartViewModelTest {
-
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()

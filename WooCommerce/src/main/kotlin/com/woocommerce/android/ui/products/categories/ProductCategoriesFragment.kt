@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.categories.AddProductCategoryViewMode
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
@@ -161,6 +162,7 @@ class ProductCategoriesFragment :
         }
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productCategoriesViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
@@ -180,8 +182,18 @@ class ProductCategoriesFragment :
             }
         }
 
-        viewModel.productCategories.observe(viewLifecycleOwner) {
-            showProductCategories(it)
+        viewModel.productCategories.observe(viewLifecycleOwner) { categories ->
+            if (categories != null) {
+                try {
+                    showProductCategories(categories)
+                } catch (e: IllegalArgumentException) {
+                    WooLog.e(WooLog.T.PRODUCTS, "Error: ${e.message}", e)
+                } catch (e: Exception) {
+                    WooLog.e(WooLog.T.PRODUCTS, "Unexpected error in showProductCategories", e)
+                }
+            } else {
+                WooLog.e(WooLog.T.PRODUCTS, "Received null categories")
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -203,7 +215,9 @@ class ProductCategoriesFragment :
     }
 
     private fun showProductCategories(productCategories: List<ProductCategory>) {
-        val product = requireNotNull(viewModel.getProduct().productDraft)
+        val product = requireNotNull(viewModel.getProduct().productDraft) {
+            "Product draft was null when trying to show categories"
+        }
         val sortedList = viewModel.sortAndStyleProductCategories(product, productCategories)
         productCategoriesAdapter.setProductCategories(sortedList)
     }

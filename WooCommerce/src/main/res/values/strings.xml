@@ -2256,6 +2256,7 @@
     <string name="ai_product_creation_prompt_suggestion_almost_there"><![CDATA[<b>Great prompt!</b> Where was it made?]]></string>
     <string name="ai_product_creation_prompt_suggestion_great_prompt"><![CDATA[<b>Great prompt!</b> You\'ve given us enough to work with, but you may add more detail to make it even better.]]></string>
     <string name="ai_product_creation_error_media_upload">Failed to upload the selected product image.</string>
+    <string name="ai_product_creation_photo_removed">Photo removed</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -4170,7 +4171,7 @@
     -->
     <string name="woopos_exit_pos">Exit POS</string>
     <string name="woopos_reader_connected">Reader Connected</string>
-    <string name="woopos_reader_disconnected">Reader Disconnected</string>
+    <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_unknown">Reader Status Unknown</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -4200,6 +4201,8 @@
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
+    <string name="woopos_splash_title">Starting up</string>
+    <string name="woopos_splash_message">Let’s serve some customers</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4221,4 +4224,11 @@
 
     <string name="customers_details_no_phone_hint">No phone number</string>
     <string name="customers_details_none_hint">None</string>
+
+    <!--
+    Google ads campaign creation
+    -->
+    <string name="google_ads_campaign_created_success_title">Ready to Go!</string>
+    <string name="google_ads_campaign_created_success_description">Your new campaign has been created. Exciting times ahead for your sales!</string>
+    <string name="google_ads_campaign_created_success_done_button">Done</string>
 </resources>

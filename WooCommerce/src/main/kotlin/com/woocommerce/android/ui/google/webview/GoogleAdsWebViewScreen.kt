@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.common.exitawarewebview
+package com.woocommerce.android.ui.google.webview
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,27 +11,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.DisplayMode.MODAL
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel.DisplayMode.REGULAR
+import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.DisplayMode.MODAL
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.DisplayMode.REGULAR
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
-fun ExitAwareWebViewScreen(viewViewModel: ExitAwareWebViewViewModel) {
-    ExitAwareWebViewScreen(
+fun GoogleAdsWebViewScreen(viewViewModel: GoogleAdsWebViewViewModel) {
+    val authenticator = viewViewModel.wpComWebViewAuthenticator.takeIf {
+        viewViewModel.viewState.canUseAutoLoginWebview
+    }
+
+    GoogleAdsWebViewScreen(
         viewState = viewViewModel.viewState,
+        wpcomWebViewAuthenticator = authenticator,
         userAgent = viewViewModel.userAgent,
         onUrlLoaded = viewViewModel::onUrlLoaded,
+        onPageFinished = viewViewModel::onPageFinished,
+        onUrlFailed = viewViewModel::onUrlFailed,
         onClose = viewViewModel::onClose
     )
 }
 
 @Composable
-fun ExitAwareWebViewScreen(
-    viewState: ExitAwareWebViewViewModel.ViewState,
+fun GoogleAdsWebViewScreen(
+    viewState: GoogleAdsWebViewViewModel.ViewState,
+    wpcomWebViewAuthenticator: WPComWebViewAuthenticator?,
     userAgent: UserAgent,
     onUrlLoaded: (String) -> Unit,
+    onPageFinished: (String) -> Unit,
+    onUrlFailed: (String, Int?) -> Unit,
     onClose: () -> Unit,
     clearCache: Boolean = false
 ) {
@@ -51,7 +62,10 @@ fun ExitAwareWebViewScreen(
         WCWebView(
             url = viewState.urlToLoad,
             userAgent = userAgent,
+            wpComAuthenticator = wpcomWebViewAuthenticator,
             onUrlLoaded = onUrlLoaded,
+            onPageFinished = onPageFinished,
+            onUrlFailed = onUrlFailed,
             captureBackPresses = viewState.captureBackButton,
             clearCache = clearCache,
             modifier = Modifier
