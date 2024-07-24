@@ -21,7 +21,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
-fun WooPosErrorState(
+fun WooPosErrorComponent(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     message: String,
@@ -82,7 +82,7 @@ data class Button(
 @Composable
 @WooPosPreview
 fun WooPosErrorStatePreview() {
-    WooPosErrorState(
+    WooPosErrorComponent(
         icon = Icons.Default.Error,
         message = stringResource(R.string.woopos_totals_main_error_label),
         reason = "Reason",
