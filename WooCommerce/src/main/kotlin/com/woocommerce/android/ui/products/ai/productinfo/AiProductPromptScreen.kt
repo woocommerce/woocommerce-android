@@ -68,14 +68,14 @@ import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
-import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
+import com.woocommerce.android.ui.products.ai.components.SelectImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
 import com.woocommerce.android.util.FeatureFlag
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
 import kotlin.math.roundToInt
@@ -175,20 +175,18 @@ fun AiProductPromptScreen(
                 ProductPromptTextField(
                     state = uiState,
                     onPromptUpdated = onPromptUpdated,
-                    onReadTextFromProductPhoto = onReadTextFromProductPhoto,
-                    onImageActionSelected = onImageActionSelected,
                     scrollState = scrollState,
                 )
-
-                if (uiState.noTextDetectedMessage) {
-                    InformativeMessage(
-                        stringResource(id = R.string.product_creation_package_photo_no_text_detected)
-                    )
-                }
+                ScanProductPhotoButton(
+                    state = uiState,
+                    onReadTextFromProductPhoto = onReadTextFromProductPhoto,
+                    onImageActionSelected = onImageActionSelected,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
                 ToneDropDown(
                     tone = uiState.selectedTone,
                     onToneSelected = onToneSelected,
-                    modifier = Modifier.padding(bottom = 56.dp)
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
 
                 // Button will scroll with the rest of UI on landscape mode, or... (see below)
@@ -201,7 +199,12 @@ fun AiProductPromptScreen(
             // Button will stick to the bottom on portrait mode
             if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 Divider()
-                GenerateProductButton(modifier = Modifier.padding(16.dp))
+                GenerateProductButton(
+                    modifier = Modifier.padding(
+                        vertical = 8.dp,
+                        horizontal = 16.dp
+                    )
+                )
             }
         }
     }
@@ -285,8 +288,6 @@ private fun ToneDropDown(
 private fun ProductPromptTextField(
     state: AiProductPromptState,
     onPromptUpdated: (String) -> Unit,
-    onReadTextFromProductPhoto: () -> Unit,
-    onImageActionSelected: (ImageAction) -> Unit,
     scrollState: ScrollState
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -330,7 +331,8 @@ private fun ProductPromptTextField(
                     onValueChange = onPromptUpdated,
                     label = "", // Can't use label here as it breaks the visual design.
                     placeholderText = "", // Uses Text() above instead.
-                    textFieldModifier = Modifier.height(dimensionResource(id = R.dimen.multiline_textfield_height)),
+                    minLines = 3,
+                    maxLines = 6,
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = Color.Transparent, // Remove outline and use Column's border instead.
                         unfocusedBorderColor = Color.Transparent
@@ -339,35 +341,14 @@ private fun ProductPromptTextField(
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
                             if (isFocused && FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()) {
-                                coroutineScope.launch { scrollState.animateScrollTo(scrollToPosition.roundToInt()) }
+                                coroutineScope.launch {
+                                    @Suppress("MagicNumber")
+                                    delay(200) // Delay to ensure advice box is shown before scrolling.
+                                    scrollState.animateScrollTo(scrollToPosition.roundToInt())
+                                }
                             }
                         }
                 )
-            }
-
-            Divider()
-
-            when {
-                state.isScanningImage -> ImageScanning()
-                state.selectedImage != null -> SelectedImageSection(
-                    image = state.selectedImage,
-                    onImageActionSelected = onImageActionSelected,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = colorResource(id = R.color.ai_generated_text_background))
-                )
-
-                else -> {
-                    WCTextButton(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = dimensionResource(id = R.dimen.minor_50)),
-                        onClick = onReadTextFromProductPhoto,
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_gridicons_camera_primary),
-                        allCaps = false,
-                        text = stringResource(id = R.string.ai_product_creation_read_text_from_photo_button),
-                    )
-                }
             }
         }
         AnimatedVisibility(
@@ -376,9 +357,39 @@ private fun ProductPromptTextField(
         ) {
             PromptSuggestions(
                 promptSuggestionBarState = state.promptSuggestionBarState,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun ScanProductPhotoButton(
+    state: AiProductPromptState,
+    onReadTextFromProductPhoto: () -> Unit,
+    onImageActionSelected: (ImageAction) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when {
+        state.isScanningImage -> ImageScanning()
+        else -> SelectImageSection(
+            image = state.selectedImage,
+            onImageActionSelected = onImageActionSelected,
+            onReadTextFromProductPhoto = onReadTextFromProductPhoto,
+            subtitle = when {
+                state.selectedImage == null -> stringResource(id = R.string.ai_product_creation_image_scan_subtitle)
+                else -> stringResource(id = R.string.ai_product_creation_image_selected_subtitle)
+            },
+            modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(color = colorResource(id = R.color.ai_generated_text_background))
+        )
+    }
+    if (state.noTextDetectedMessage) {
+        InformativeMessage(
+            stringResource(id = R.string.product_creation_package_photo_no_text_detected)
+        )
     }
 }
 
@@ -441,7 +452,7 @@ private fun InformativeMessage(message: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
+            .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .background(
                 colorResource(id = R.color.tag_bg_main)

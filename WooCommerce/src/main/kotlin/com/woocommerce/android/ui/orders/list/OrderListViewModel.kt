@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
@@ -64,6 +65,8 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -81,6 +84,7 @@ import org.wordpress.android.fluxc.store.ListStore.ListErrorType.PARSE_ERROR
 import org.wordpress.android.fluxc.store.ListStore.ListErrorType.TIMEOUT_ERROR
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -113,7 +117,9 @@ class OrderListViewModel @Inject constructor(
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val appPrefs: AppPrefsWrapper,
     private val showTestNotification: ShowTestNotification,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val shouldUpdateOrdersList: ShouldUpdateOrdersList,
+    private val observeOrdersListLastUpdate: ObserveOrdersListLastUpdate
 ) : ScopedViewModel(savedState), LifecycleOwner {
     private val navArgs: OrderListFragmentArgs by savedState.navArgs()
 
@@ -195,6 +201,17 @@ class OrderListViewModel @Inject constructor(
             return !simplePaymentsAndOrderFeedbackDismissed && !isTroubleshootingBannerVisible
         }
 
+    private var _lastUpdateOrdersList = MutableStateFlow<Long?>(null)
+    val lastUpdateOrdersList: LiveData<String?> = _lastUpdateOrdersList
+        .map { lastUpdateMillis ->
+            if (lastUpdateMillis == null) return@map null
+            String.format(
+                Locale.getDefault(),
+                resourceProvider.getString(R.string.last_update),
+                dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
+            )
+        }.asLiveData()
+
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -232,6 +249,7 @@ class OrderListViewModel @Inject constructor(
             Mode.START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION -> {
                 triggerEvent(OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration)
             }
+
             Mode.STANDARD -> {
                 // stay on the screen
             }
@@ -239,8 +257,9 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun loadOrders() {
-        activeWCOrderListDescriptor = getWCOrderListDescriptorWithFilters()
-        ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
+        val listDescriptor = getWCOrderListDescriptorWithFilters()
+        activeWCOrderListDescriptor = listDescriptor
+        ordersPagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         viewState = viewState.copy(
             filterCount = getSelectedOrderFiltersCount(),
             isErrorFetchingDataBannerVisible = false
@@ -249,7 +268,18 @@ class OrderListViewModel @Inject constructor(
             pagedListWrapper = ordersPagedListWrapper!!,
             shouldRetry = true
         )
-        fetchOrdersAndOrderDependencies()
+        val listId = listDescriptor.uniqueIdentifier.value
+        launch {
+            if (shouldUpdateOrdersList(listId)) {
+                fetchOrdersAndOrderDependencies()
+            } else {
+                // List is displayed from cache
+                orderListTransactionLauncher.onListFetched()
+            }
+            observeOrdersListLastUpdate(listId).collect {
+                _lastUpdateOrdersList.value = it
+            }
+        }
     }
 
     /**
