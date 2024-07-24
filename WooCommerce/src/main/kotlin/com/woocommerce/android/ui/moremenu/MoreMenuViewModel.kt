@@ -347,7 +347,7 @@ class MoreMenuViewModel @Inject constructor(
             AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
         )
 
-        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, successUrlTriggers))
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, successUrlTriggers, isCreationFlow = true))
     }
 
     private fun launchGoogleAdsCampaignDetails(url: String) {
@@ -363,7 +363,7 @@ class MoreMenuViewModel @Inject constructor(
             )
         )
 
-        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, listOf()))
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, listOf(), isCreationFlow = false))
     }
 
     fun handleSuccessfulGoogleAdsCreation() {

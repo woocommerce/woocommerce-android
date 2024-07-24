@@ -26,7 +26,8 @@ sealed class MoreMenuEvent : MultiLiveEvent.Event() {
     data class ViewAdminEvent(val url: String) : MoreMenuEvent()
     data class ViewGoogleForWooEvent(
         val url: String,
-        val successUrls: List<String>
+        val successUrls: List<String>,
+        val isCreationFlow: Boolean
     ) : MoreMenuEvent()
     data class ViewStoreEvent(val url: String) : MoreMenuEvent()
     data object ViewReviewsEvent : MoreMenuEvent()

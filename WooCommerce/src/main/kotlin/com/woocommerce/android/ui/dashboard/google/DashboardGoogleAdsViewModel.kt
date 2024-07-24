@@ -144,7 +144,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         )
 
         val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-        triggerEvent(ViewGoogleForWooEvent(creationUrl, successUrlTriggers))
+        triggerEvent(ViewGoogleForWooEvent(creationUrl, successUrlTriggers, isCreationFlow = true))
     }
 
     private fun launchCampaignDetails() {
@@ -161,7 +161,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         )
 
         val adminUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
-        triggerEvent(ViewGoogleForWooEvent(adminUrl, successUrlTriggers))
+        triggerEvent(ViewGoogleForWooEvent(adminUrl, successUrlTriggers, isCreationFlow = false))
     }
 
     fun onRefresh() {
@@ -194,7 +194,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
     data class ViewGoogleForWooEvent(
         val url: String,
-        val successUrls: List<String>
+        val successUrls: List<String>,
+        val isCreationFlow: Boolean
     ) : MultiLiveEvent.Event()
 
     object NavigateToGoogleAdsSuccessEvent : MultiLiveEvent.Event()

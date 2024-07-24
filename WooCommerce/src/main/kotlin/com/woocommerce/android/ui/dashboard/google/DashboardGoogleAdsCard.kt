@@ -83,6 +83,7 @@ private fun HandleEvents(
                         urlsToTriggerExit = event.successUrls.toTypedArray(),
                         title = webViewTitle,
                         urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL,
+                        isCreationFlow = event.isCreationFlow,
                         entryPointSource = GoogleAdsWebViewViewModel.EntryPointSource.MYSTORE
                     )
 
