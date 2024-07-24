@@ -516,8 +516,7 @@
     <fragment
         android:id="@+id/GoogleAdsWebViewFragment"
         android:name="com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment"
-        android:label="GoogleAdsWebViewFragment"
-        tools:layout="@layout/fragment_googleads_webview">
+        android:label="GoogleAdsWebViewFragment">
         <argument
             android:name="urlToLoad"
             app:argType="string" />
