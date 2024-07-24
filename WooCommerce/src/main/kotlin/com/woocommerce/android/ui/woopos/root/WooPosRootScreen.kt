@@ -70,7 +70,7 @@ private fun WooPosRootScreen(
                 rootController.handleNavigationEvent(event, activity, onUIEvent)
             }
         )
-        WooPosBottomToolbar(
+        WooPosFloatingToolbar(
             modifier = Modifier
                 .padding(24.dp.toAdaptivePadding())
                 .align(Alignment.BottomStart),
@@ -87,6 +87,7 @@ fun PreviewWooPosRootScreen() {
         mutableStateOf(
             WooPosRootScreenState(
                 WooPosRootScreenState.WooPosCardReaderStatus.NotConnected,
+                menu = WooPosRootScreenState.Menu.Hidden,
                 null,
             )
         )
