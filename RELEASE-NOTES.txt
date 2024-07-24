@@ -11,6 +11,7 @@
 - [**] Product Creation AI V2: Milestone 1 which simplifies package photo flow and revamps UI. [https://github.com/woocommerce/woocommerce-android/issues/11800]
 - [*] The more screen shows proper loading button statuses [https://github.com/woocommerce/woocommerce-android/pull/11968]
 - [*] [Login] Improved login reliability by addressing some edge-case issues [https://github.com/woocommerce/woocommerce-android/pull/12033]
+- [*] Fix an issue with image upload on devices running Android 8 and 9 [https://github.com/woocommerce/woocommerce-android/pull/12127]
 
 19.5
 -----
