@@ -16,8 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -26,7 +24,6 @@ import java.util.Date
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner.Silent::class)
 class WooPosTotalsViewModelTest {
 
     @Rule
@@ -41,7 +38,7 @@ class WooPosTotalsViewModelTest {
         return SavedStateHandle(
             mapOf(
                 "orderId" to EMPTY_ORDER_ID,
-                "totalsViewState" to WooPosTotalsState.Loading
+                "totalsViewState" to WooPosTotalsViewState.Loading
             )
         )
     }
@@ -65,7 +62,7 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
+        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Loading)
     }
 
     @Test
@@ -116,7 +113,7 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(
-            WooPosTotalsState.Totals(
+            WooPosTotalsViewState.Totals(
                 orderSubtotalText = "$3.00",
                 orderTaxText = "$2.00",
                 orderTotalText = "$5.00"
@@ -170,7 +167,7 @@ class WooPosTotalsViewModelTest {
             )
 
             // THEN
-            val totals = viewModel.state.value as WooPosTotalsState.Totals
+            val totals = viewModel.state.value as WooPosTotalsViewState.Totals
             assertThat(totals.orderTotalText).isEqualTo("5.00$")
             assertThat(totals.orderTaxText).isEqualTo("2.00$")
             assertThat(totals.orderSubtotalText).isEqualTo("3.00$")
@@ -195,7 +192,7 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
 
             // THEN
-            assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
+            assertThat(viewModel.state.value).isEqualTo(WooPosTotalsViewState.Loading)
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NewTransactionClicked)
         }
 
@@ -221,7 +218,7 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsState.Error
+        val state = viewModel.state.value as WooPosTotalsViewState.Error
         assertThat(state.message).isEqualTo(errorMessage)
     }
 
@@ -255,7 +252,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
         // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsState.Error::class.java)
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Error::class.java)
 
         // Change repository to simulate success on retry
         val order = Order.getEmptyOrder(
@@ -276,7 +273,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsState.Totals
+        val state = viewModel.state.value as WooPosTotalsViewState.Totals
         assertThat(state.orderTotalText).isEqualTo("$5.00")
         assertThat(state.orderTaxText).isEqualTo("$2.00")
         assertThat(state.orderSubtotalText).isEqualTo("$3.00")

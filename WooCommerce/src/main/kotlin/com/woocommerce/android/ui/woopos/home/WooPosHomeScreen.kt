@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -21,19 +22,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreenPreview
+import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolbarStatusConnectedWithMenu
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -56,13 +62,21 @@ fun WooPosHomeScreen(
 private fun WooPosHomeScreen(
     state: WooPosHomeState,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    onHomeUIEvent: (WooPosHomeUIEvent) -> Boolean,
+    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
     BackHandler {
-        val result = onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
-        if (!result) {
-            onNavigationEvent(WooPosNavigationEvent.BackFromHomeClicked)
-        }
+        onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+    }
+
+    state.exitConfirmationDialog?.let {
+        WooPosConfirmationDialog(
+            title = stringResource(id = it.title),
+            message = stringResource(id = it.message),
+            confirmButtonText = stringResource(id = it.confirmButton),
+            dismissButtonText = stringResource(id = it.dismissButton),
+            onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
+            onConfirm = { onNavigationEvent(WooPosNavigationEvent.ExitPosClicked) }
+        )
     }
 
     val current = LocalConfiguration.current
@@ -72,35 +86,35 @@ private fun WooPosHomeScreen(
     val totalsWidthDp = remember(screenWidthDp, cartWidthDp) { screenWidthDp - cartWidthDp }
 
     val totalsWidthAnimatedDp by animateDpAsState(
-        when (state) {
-            is WooPosHomeState.Checkout.Paid -> screenWidthDp
-            is WooPosHomeState.Cart,
-            WooPosHomeState.Checkout.NotPaid -> totalsWidthDp
+        when (state.screenPositionState) {
+            is WooPosHomeState.ScreenPositionState.Checkout.Paid -> screenWidthDp
+            is WooPosHomeState.ScreenPositionState.Cart,
+            WooPosHomeState.ScreenPositionState.Checkout.NotPaid -> totalsWidthDp
         },
         label = "totalsWidthAnimatedDp"
     )
 
     val cartOverlayIntensityAnimated by animateFloatAsState(
-        when (state) {
-            is WooPosHomeState.Cart.Empty -> .6f
-            WooPosHomeState.Cart.NotEmpty,
-            WooPosHomeState.Checkout.NotPaid,
-            WooPosHomeState.Checkout.Paid -> 0f
+        when (state.screenPositionState) {
+            is WooPosHomeState.ScreenPositionState.Cart.Empty -> .6f
+            WooPosHomeState.ScreenPositionState.Cart.NotEmpty,
+            WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
+            WooPosHomeState.ScreenPositionState.Checkout.Paid -> 0f
         },
         label = "cartOverlayAnimated"
     )
 
     val totalsStartPaddingAnimatedDp by animateDpAsState(
-        when (state) {
-            is WooPosHomeState.Cart,
-            WooPosHomeState.Checkout.NotPaid -> 0.dp.toAdaptivePadding()
+        when (state.screenPositionState) {
+            is WooPosHomeState.ScreenPositionState.Cart,
+            WooPosHomeState.ScreenPositionState.Checkout.NotPaid -> 0.dp.toAdaptivePadding()
 
-            WooPosHomeState.Checkout.Paid -> 24.dp.toAdaptivePadding()
+            WooPosHomeState.ScreenPositionState.Checkout.Paid -> 24.dp.toAdaptivePadding()
         },
         label = "totalsStartPaddingAnimatedDp"
     )
 
-    val scrollState = buildScrollStateForNavigationBetweenState(state)
+    val scrollState = buildScrollStateForNavigationBetweenState(state.screenPositionState)
     WooPosHomeScreen(
         scrollState = scrollState,
         productsWidthDp = productsWidthDp,
@@ -120,46 +134,54 @@ private fun WooPosHomeScreen(
     totalsWidthDp: Dp,
     totalsStartPaddingDp: Dp,
 ) {
-    Row(
-        modifier = Modifier
-            .horizontalScroll(scrollState, enabled = false)
-            .fillMaxWidth(),
-    ) {
-        Row(modifier = Modifier.width(productsWidthDp)) {
-            WooPosHomeScreenProducts(
-                modifier = Modifier
-                    .width(productsWidthDp)
-            )
-        }
+    Box(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
-                .width(cartWidthDp)
-                .background(MaterialTheme.colors.surface)
+                .horizontalScroll(scrollState, enabled = false)
+                .fillMaxWidth(),
         ) {
-            Box {
-                WooPosHomeScreenCart(
+            Row(modifier = Modifier.width(productsWidthDp)) {
+                WooPosHomeScreenProducts(
                     modifier = Modifier
-                        .width(cartWidthDp)
-                )
-                Box(
-                    modifier = Modifier
-                        .width(cartWidthDp)
-                        .fillMaxHeight()
-                        .background(
-                            color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                        )
+                        .width(productsWidthDp)
                 )
             }
-        }
-        Row(modifier = Modifier.width(totalsWidthDp)) {
-            Spacer(modifier = Modifier.width(totalsStartPaddingDp))
-            WooPosHomeScreenTotals(
+            Row(
                 modifier = Modifier
-                    .width(totalsWidthDp - 24.dp.toAdaptivePadding() - totalsStartPaddingDp)
-                    .padding(vertical = 24.dp.toAdaptivePadding())
-            )
-            Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
+                    .width(cartWidthDp)
+                    .background(MaterialTheme.colors.surface)
+            ) {
+                Box {
+                    WooPosHomeScreenCart(
+                        modifier = Modifier
+                            .width(cartWidthDp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .width(cartWidthDp)
+                            .fillMaxHeight()
+                            .background(
+                                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
+                            )
+                    )
+                }
+            }
+            Row(modifier = Modifier.width(totalsWidthDp)) {
+                Spacer(modifier = Modifier.width(totalsStartPaddingDp))
+                WooPosHomeScreenTotals(
+                    modifier = Modifier
+                        .width(totalsWidthDp - 24.dp.toAdaptivePadding() - totalsStartPaddingDp)
+                        .padding(vertical = 24.dp.toAdaptivePadding())
+                )
+                Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
+            }
         }
+
+        WooPosHomeScreenToolbar(
+            modifier = Modifier
+                .padding(24.dp.toAdaptivePadding())
+                .align(Alignment.BottomStart),
+        )
     }
 }
 
@@ -191,19 +213,27 @@ private fun WooPosHomeScreenTotals(modifier: Modifier) {
 }
 
 @Composable
-private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState): ScrollState {
+private fun WooPosHomeScreenToolbar(modifier: Modifier) {
+    if (isPreviewMode()) {
+        PreviewWooPosFloatingToolbarStatusConnectedWithMenu()
+    } else {
+        WooPosFloatingToolbar(modifier = modifier)
+    }
+}
+
+@Composable
+private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState.ScreenPositionState): ScrollState {
     val scrollState = rememberScrollState()
     LaunchedEffect(state) {
         val animationSpec = spring<Float>(dampingRatio = 0.8f, stiffness = 200f)
         when (state) {
-            is WooPosHomeState.Cart -> {
+            is WooPosHomeState.ScreenPositionState.Cart ->
                 scrollState.animateScrollTo(
                     0,
                     animationSpec = animationSpec
                 )
-            }
 
-            is WooPosHomeState.Checkout -> scrollState.animateScrollTo(
+            is WooPosHomeState.ScreenPositionState.Checkout -> scrollState.animateScrollTo(
                 scrollState.maxValue,
                 animationSpec = animationSpec
             )
@@ -217,8 +247,8 @@ private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState): S
 fun WooPosHomeCartScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
-            state = WooPosHomeState.Cart.NotEmpty,
-            onHomeUIEvent = { true },
+            state = WooPosHomeState(screenPositionState = WooPosHomeState.ScreenPositionState.Cart.NotEmpty),
+            onHomeUIEvent = { },
             onNavigationEvent = {},
         )
     }
@@ -229,8 +259,10 @@ fun WooPosHomeCartScreenPreview() {
 fun WooPosHomeCartEmptyScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
-            state = WooPosHomeState.Cart.Empty,
-            onHomeUIEvent = { true },
+            state = WooPosHomeState(
+                screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Empty
+            ),
+            onHomeUIEvent = { },
             onNavigationEvent = {},
         )
     }
@@ -241,8 +273,8 @@ fun WooPosHomeCartEmptyScreenPreview() {
 fun WooPosHomeCheckoutScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
-            state = WooPosHomeState.Checkout.NotPaid,
-            onHomeUIEvent = { true },
+            state = WooPosHomeState(screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.NotPaid),
+            onHomeUIEvent = { },
             onNavigationEvent = {},
         )
     }
@@ -253,8 +285,8 @@ fun WooPosHomeCheckoutScreenPreview() {
 fun WooPosHomeCheckoutPaidScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
-            state = WooPosHomeState.Checkout.Paid,
-            onHomeUIEvent = { true },
+            state = WooPosHomeState(screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.Paid),
+            onHomeUIEvent = { },
             onNavigationEvent = {},
         )
     }
