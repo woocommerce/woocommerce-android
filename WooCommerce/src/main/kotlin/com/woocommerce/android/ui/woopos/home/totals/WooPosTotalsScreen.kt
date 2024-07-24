@@ -50,29 +50,29 @@ fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
-    state: WooPosTotalsState,
+    state: TotalsUIState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
         modifier = modifier
     ) {
         when (state) {
-            is WooPosTotalsState.Totals -> {
+            is TotalsUIState.Totals -> {
                 TotalsLoaded(
                     state = state,
                     onUIEvent = onUIEvent
                 )
             }
 
-            is WooPosTotalsState.PaymentSuccess -> {
+            is TotalsUIState.PaymentSuccess -> {
                 WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
 
-            is WooPosTotalsState.Loading -> {
+            is TotalsUIState.Loading -> {
                 TotalsLoading()
             }
 
-            is WooPosTotalsState.Error -> {
+            is TotalsUIState.Error -> {
                 WooPosTotalsErrorScreen(
                     errorMessage = state.message,
                     onUIEvent = onUIEvent
@@ -84,7 +84,7 @@ private fun WooPosTotalsScreen(
 
 @Composable
 private fun TotalsLoaded(
-    state: WooPosTotalsState.Totals,
+    state: TotalsUIState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
@@ -129,7 +129,7 @@ private fun TotalsLoaded(
 }
 
 @Composable
-private fun TotalsGrid(state: WooPosTotalsState.Totals) {
+private fun TotalsGrid(state: TotalsUIState.Totals) {
     Column(
         modifier = Modifier
             .border(
@@ -271,7 +271,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
     WooPosTheme {
         WooPosTotalsScreen(
             modifier = modifier,
-            state = WooPosTotalsState.Totals(
+            state = TotalsUIState.Totals(
                 orderSubtotalText = "$420.00",
                 orderTotalText = "$462.00",
                 orderTaxText = "$42.00",
@@ -286,7 +286,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
 fun WooPosTotalsScreenLoadingPreview() {
     WooPosTheme {
         WooPosTotalsScreen(
-            state = WooPosTotalsState.Loading,
+            state = TotalsUIState.Loading,
             onUIEvent = {}
         )
     }

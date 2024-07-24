@@ -16,6 +16,7 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -28,33 +29,27 @@ class WooPosTotalsViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val totalsRepository: WooPosTotalsRepository,
     private val priceFormat: WooPosFormatPrice,
-    private val savedState: SavedStateHandle,
+    savedState: SavedStateHandle,
 ) : ViewModel() {
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
-        private const val KEY_STATE = "wooPosState"
-        private val InitialState = WooPosTotalsState.Loading
+        private const val KEY_STATE = "woo_pos_totals_data_state"
+        private val InitialState = TotalsUIState.Loading
     }
 
-    private val _state = savedState.getStateFlow<WooPosTotalsState>(
+    private val uiState = savedState.getStateFlow<TotalsUIState>(
         scope = viewModelScope,
         initialValue = InitialState,
-        key = "woo_pos_totals_state"
+        key = "woo_pos_totals_ui_state"
     )
 
-    val state: StateFlow<WooPosTotalsState> = _state
+    val state: StateFlow<TotalsUIState> = uiState
 
-    private val _wooPosState = savedState.getStateFlow(
+    private var dataState: MutableStateFlow<TotalsDataState> = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WooPosState(),
+        initialValue = TotalsDataState(),
         key = KEY_STATE,
     )
-
-    private var wooPosState: WooPosState
-        get() = _wooPosState.value
-        set(value) {
-            savedState[KEY_STATE] = value
-        }
 
     init {
         listenUpEvents()
@@ -64,14 +59,14 @@ class WooPosTotalsViewModel @Inject constructor(
         when (event) {
             is WooPosTotalsUIEvent.CollectPaymentClicked -> {
                 viewModelScope.launch {
-                    val orderId = wooPosState.orderId
+                    val orderId = dataState.value.orderId
                     check(orderId != EMPTY_ORDER_ID)
                     val result = cardReaderFacade.collectPayment(orderId)
                     when (result) {
                         is WooPosCardReaderPaymentResult.Success -> {
-                            val state = _state.value
-                            check(state is WooPosTotalsState.Totals)
-                            _state.value = WooPosTotalsState.PaymentSuccess(
+                            val state = uiState.value
+                            check(state is TotalsUIState.Totals)
+                            uiState.value = TotalsUIState.PaymentSuccess(
                                 state.orderSubtotalText,
                                 state.orderTaxText,
                                 state.orderTotalText
@@ -89,12 +84,12 @@ class WooPosTotalsViewModel @Inject constructor(
                     childrenToParentEventSender.sendToParent(
                         ChildToParentEvent.NewTransactionClicked
                     )
-                    _state.value = InitialState
+                    uiState.value = InitialState
                 }
             }
 
             is WooPosTotalsUIEvent.RetryOrderCreationClicked -> {
-                createOrderDraft(wooPosState.productIds)
+                createOrderDraft(dataState.value.productIds)
             }
         }
     }
@@ -104,12 +99,12 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.CheckoutClicked -> {
-                        wooPosState = wooPosState.copy(productIds = event.productIds)
-                        createOrderDraft(wooPosState.productIds)
+                        dataState.value = dataState.value.copy(productIds = event.productIds)
+                        createOrderDraft(dataState.value.productIds)
                     }
 
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = InitialState
+                        uiState.value = InitialState
                     }
 
                     else -> Unit
@@ -120,28 +115,28 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun createOrderDraft(productIds: List<Long>) {
         viewModelScope.launch {
-            _state.value = WooPosTotalsState.Loading
+            uiState.value = TotalsUIState.Loading
 
             totalsRepository.createOrderWithProducts(productIds = productIds)
                 .fold(
                     onSuccess = { order ->
-                        wooPosState = wooPosState.copy(orderId = order.id)
-                        _state.value = buildTotalsState(order)
+                        dataState.value = dataState.value.copy(orderId = order.id)
+                        uiState.value = buildTotalsUIState(order)
                     },
                     onFailure = { error ->
                         WooLog.e(T.ORDERS, "Order creation failed - $error")
-                        _state.value = WooPosTotalsState.Error(error.message ?: "Unknown error")
+                        uiState.value = TotalsUIState.Error(error.message ?: "Unknown error")
                     }
                 )
         }
     }
 
-    private suspend fun buildTotalsState(order: Order): WooPosTotalsState.Totals {
+    private suspend fun buildTotalsUIState(order: Order): TotalsUIState.Totals {
         val subtotalAmount = order.items.sumOf { it.subtotal }
         val taxAmount = order.totalTax
         val totalAmount = subtotalAmount + taxAmount
 
-        return WooPosTotalsState.Totals(
+        return TotalsUIState.Totals(
             orderSubtotalText = priceFormat(subtotalAmount),
             orderTaxText = priceFormat(taxAmount),
             orderTotalText = priceFormat(totalAmount),
@@ -149,7 +144,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     @Parcelize
-    data class WooPosState(
+    private data class TotalsDataState(
         val orderId: Long = EMPTY_ORDER_ID,
         val productIds: List<Long> = emptyList()
     ) : Parcelable

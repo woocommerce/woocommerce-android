@@ -4,20 +4,20 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-sealed class WooPosTotalsState : Parcelable {
-    data object Loading : WooPosTotalsState()
+sealed class TotalsUIState : Parcelable {
+    data object Loading : TotalsUIState()
 
     data class Totals(
         var orderSubtotalText: String,
         var orderTaxText: String,
         var orderTotalText: String,
-    ) : WooPosTotalsState()
+    ) : TotalsUIState()
 
     data class PaymentSuccess(
         var orderSubtotalText: String,
         var orderTaxText: String,
         var orderTotalText: String
-    ) : WooPosTotalsState()
+    ) : TotalsUIState()
 
-    data class Error(val message: String) : WooPosTotalsState()
+    data class Error(val message: String) : TotalsUIState()
 }
