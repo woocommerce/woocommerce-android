@@ -382,7 +382,7 @@ private fun ScanProductPhotoButton(
             },
             modifier = modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+                .clip(RoundedCornerShape(8.dp))
                 .background(color = colorResource(id = R.color.ai_generated_text_background))
         )
     }
