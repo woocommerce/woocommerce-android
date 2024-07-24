@@ -417,7 +417,7 @@
     <string name="my_store_widget_reviews_title">Most recent reviews</string>
     <string name="my_store_widget_coupons_title">Most active coupons</string>
     <string name="my_store_widget_product_stock_title">Stock</string>
-    <string name="my_store_widget_google_ads_title">Google Ads Campaigns</string>
+    <string name="my_store_widget_google_ads_title">Google Ads campaigns</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
@@ -2256,6 +2256,7 @@
     <string name="ai_product_creation_prompt_suggestion_almost_there"><![CDATA[<b>Great prompt!</b> Where was it made?]]></string>
     <string name="ai_product_creation_prompt_suggestion_great_prompt"><![CDATA[<b>Great prompt!</b> You\'ve given us enough to work with, but you may add more detail to make it even better.]]></string>
     <string name="ai_product_creation_error_media_upload">Failed to upload the selected product image.</string>
+    <string name="ai_product_creation_photo_removed">Photo removed</string>
 
     <!--
         Product Add more details Bottom sheet

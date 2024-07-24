@@ -132,6 +132,7 @@ class DashboardFragment :
         }
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
+            binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
             refreshJitm()
         }

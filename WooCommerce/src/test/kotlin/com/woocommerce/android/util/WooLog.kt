@@ -26,6 +26,7 @@ object WooLog {
         JITM,
         SITE_PICKER,
         BLAZE,
+        AI
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

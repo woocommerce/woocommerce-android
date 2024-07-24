@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.ai.preview
 
+import com.google.gson.Gson
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
@@ -29,7 +30,8 @@ class GenerateProductWithAI @Inject constructor(
     private val categoriesRepository: ProductCategoriesRepository,
     private val tagsRepository: ProductTagsRepository,
     private val parametersRepository: ParameterRepository,
-    private val appPrefs: AppPrefsWrapper
+    private val appPrefs: AppPrefsWrapper,
+    private val gson: Gson
 ) {
     private lateinit var languageISOCode: String
     private var isProductCategoriesFetched = false
@@ -67,6 +69,7 @@ class GenerateProductWithAI @Inject constructor(
             languageISOCode = languageISOCode,
         ).mapCatching {
             AIProductModel.fromJson(
+                gson = gson,
                 json = it,
                 existingCategories = existingCategories,
                 existingTags = existingTags,
@@ -87,7 +90,7 @@ class GenerateProductWithAI @Inject constructor(
     }
 
     private suspend fun getTags(): Result<List<ProductTag>> {
-        return if (isProductCategoriesFetched) {
+        return if (isProductTagsFetched) {
             withContext(Dispatchers.IO) {
                 Result.success(tagsRepository.getProductTags())
             }
