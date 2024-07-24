@@ -37,7 +37,7 @@ class WooPosTotalsViewModelTest {
         return SavedStateHandle(
             mapOf(
                 "orderId" to EMPTY_ORDER_ID,
-                "totalsViewState" to WooPosTotalsState.Loading
+                "totalsViewState" to TotalsUIState.Loading
             )
         )
     }
@@ -61,7 +61,7 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
+        assertThat(viewModel.state.value).isEqualTo(TotalsUIState.Loading)
     }
 
     @Test
@@ -112,7 +112,7 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isEqualTo(
-            WooPosTotalsState.Totals(
+            TotalsUIState.Totals(
                 orderSubtotalText = "$3.00",
                 orderTaxText = "$2.00",
                 orderTotalText = "$5.00"
@@ -166,7 +166,7 @@ class WooPosTotalsViewModelTest {
             )
 
             // THEN
-            val totals = viewModel.state.value as WooPosTotalsState.Totals
+            val totals = viewModel.state.value as TotalsUIState.Totals
             assertThat(totals.orderTotalText).isEqualTo("5.00$")
             assertThat(totals.orderTaxText).isEqualTo("2.00$")
             assertThat(totals.orderSubtotalText).isEqualTo("3.00$")
@@ -191,7 +191,7 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked)
 
             // THEN
-            assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
+            assertThat(viewModel.state.value).isEqualTo(TotalsUIState.Loading)
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NewTransactionClicked)
         }
 
@@ -217,7 +217,7 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsState.Error
+        val state = viewModel.state.value as TotalsUIState.Error
         assertThat(state.message).isEqualTo(errorMessage)
     }
 
@@ -251,7 +251,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
         // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsState.Error::class.java)
+        assertThat(viewModel.state.value).isInstanceOf(TotalsUIState.Error::class.java)
 
         // Change repository to simulate success on retry
         val order = Order.getEmptyOrder(
@@ -272,7 +272,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsState.Totals
+        val state = viewModel.state.value as TotalsUIState.Totals
         assertThat(state.orderTotalText).isEqualTo("$5.00")
         assertThat(state.orderTaxText).isEqualTo("$2.00")
         assertThat(state.orderSubtotalText).isEqualTo("$3.00")
