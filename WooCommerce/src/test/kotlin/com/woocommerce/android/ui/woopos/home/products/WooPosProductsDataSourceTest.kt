@@ -18,6 +18,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
+import java.math.BigDecimal
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.Test
 
@@ -27,11 +28,17 @@ class WooPosProductsDataSourceTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val sampleProducts = listOf<Product>(mock(), mock(), mock())
+    private val sampleProducts = listOf(
+        mock<Product> { on { price }.thenReturn(BigDecimal(1)) },
+        mock<Product> { on { price }.thenReturn(BigDecimal(2)) },
+        mock<Product> { on { price }.thenReturn(BigDecimal(3)) },
+    )
 
     private val handler: ProductListHandler = mock()
     private val productStore: WCProductStore = mock()
-    private val site: SelectedSite = mock()
+    private val site: SelectedSite = mock {
+        on { getOrNull() }.thenReturn(SiteModel())
+    }
 
     @Test
     fun `given force refresh, when loadSimpleProducts called, then should wipe products table`() = runTest {
@@ -51,9 +58,6 @@ class WooPosProductsDataSourceTest {
     @Test
     fun `given cached products, when loadSimpleProducts called, then should emit cached products first`() = runTest {
         // GIVEN
-        val handler: ProductListHandler = mock()
-        val productStore: WCProductStore = mock()
-        val site: SelectedSite = mock()
         whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
         whenever(site.getOrNull()).thenReturn(SiteModel())
         whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
@@ -73,11 +77,7 @@ class WooPosProductsDataSourceTest {
     fun `given cached and remote products, when loadSimpleProducts called, then should emit remote products after cached products`() =
         runTest {
             // GIVEN
-            val handler: ProductListHandler = mock()
-            val productStore: WCProductStore = mock()
-            val site: SelectedSite = mock()
             whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
-            whenever(site.getOrNull()).thenReturn(SiteModel())
             whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
             val sut = WooPosProductsDataSource(handler, productStore, site)
@@ -97,11 +97,7 @@ class WooPosProductsDataSourceTest {
     @Test
     fun `given remote load fails, when loadSimpleProducts called, then should emit error`() = runTest {
         // GIVEN
-        val handler: ProductListHandler = mock()
-        val productStore: WCProductStore = mock()
-        val site: SelectedSite = mock()
         whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
-        whenever(site.getOrNull()).thenReturn(SiteModel())
         whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
         val exception = Exception("Remote load failed")
         whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.failure(exception))
@@ -118,6 +114,4 @@ class WooPosProductsDataSourceTest {
         assertThat(remoteResult.productsResult.isFailure).isTrue()
         assertThat(remoteResult.productsResult.exceptionOrNull()).isEqualTo(exception)
     }
-
-    private fun createSut() = WooPosProductsDataSource(handler, productStore, site)
 }
