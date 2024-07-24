@@ -28,6 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -45,6 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -114,12 +117,7 @@ private fun WooPosProductsScreen(
         Column(
             modifier.fillMaxHeight()
         ) {
-            Text(
-                text = stringResource(id = R.string.woopos_products_screen_title),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold
-            )
-
+            ProductsToolbar(state.value, modifier)
             Spacer(modifier = Modifier.height(24.dp))
             when (val productsState = state.value) {
                 is WooPosProductsViewState.Content -> {
@@ -157,6 +155,44 @@ private fun WooPosProductsScreen(
             refreshing = state.value.reloadingProducts,
             state = pullToRefreshState
         )
+    }
+}
+
+@Composable
+private fun ProductsToolbar(
+    productViewState: WooPosProductsViewState,
+    modifier: Modifier
+) {
+    Row(
+        modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(id = R.string.woopos_products_screen_title),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold
+        )
+        when (productViewState) {
+            is WooPosProductsViewState.Content -> {
+                if (productViewState.bannerState?.isSimpleProductsOnlyBannerShown != false) {
+                    IconButton(
+                        modifier = modifier.size(40.dp),
+                        onClick = { /*TODO*/ }
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.info),
+                            contentDescription = stringResource(
+                                id = R.string.woopos_banner_simple_products_info_content_description
+                            ),
+                            tint = MaterialTheme.colors.primary,
+                        )
+                    }
+                }
+            }
+            else -> {
+                // no op
+            }
+        }
     }
 }
 
@@ -501,6 +537,57 @@ fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview(modifier: Modifi
             reloadingProducts = false,
             bannerState = WooPosProductsViewState.Content.BannerState(
                 isSimpleProductsOnlyBannerShown = false,
+                title = R.string.woopos_banner_simple_products_only_title,
+                message = R.string.woopos_banner_simple_products_only_message,
+                icon = R.drawable.info,
+            )
+        )
+    )
+    WooPosTheme {
+        WooPosProductsScreen(
+            modifier = modifier,
+            productsStateFlow = productState,
+            onItemClicked = {},
+            onEndOfProductListReached = {},
+            onPullToRefresh = {},
+            onSimpleProductsBannerClosed = {},
+            onSimpleProductsBannerLearnMoreClicked = {}
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+@WooPosPreview
+fun WooPosHomeScreenProductsWithInfoIconInToolbarPreview(modifier: Modifier = Modifier) {
+    val productState = MutableStateFlow(
+        WooPosProductsViewState.Content(
+            products = listOf(
+                WooPosProductsListItem(
+                    1,
+                    name = "Product 1, Product 1, Product 1, " +
+                        "Product 1, Product 1, Product 1, Product 1, Product 1" +
+                        "Product 1, Product 1, Product 1, Product 1, Product 1",
+                    price = "10.0$",
+                    imageUrl = null,
+                ),
+                WooPosProductsListItem(
+                    2,
+                    name = "Product 2",
+                    price = "2000.00$",
+                    imageUrl = null,
+                ),
+                WooPosProductsListItem(
+                    3,
+                    name = "Product 3",
+                    price = "1.0$",
+                    imageUrl = null,
+                ),
+            ),
+            loadingMore = false,
+            reloadingProducts = false,
+            bannerState = WooPosProductsViewState.Content.BannerState(
+                isSimpleProductsOnlyBannerShown = true,
                 title = R.string.woopos_banner_simple_products_only_title,
                 message = R.string.woopos_banner_simple_products_only_message,
                 icon = R.drawable.info,
