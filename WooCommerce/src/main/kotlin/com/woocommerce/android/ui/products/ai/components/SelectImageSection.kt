@@ -101,10 +101,12 @@ fun SelectImageSection(
             }
         }
 
-        ImageActionsMenu(
-            dropDownActions,
-            onImageActionSelected
-        )
+        if (image != null) {
+            ImageActionsMenu(
+                dropDownActions,
+                onImageActionSelected
+            )
+        }
     }
 }
 
