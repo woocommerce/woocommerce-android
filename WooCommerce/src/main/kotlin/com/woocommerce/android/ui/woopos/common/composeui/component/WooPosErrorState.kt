@@ -32,9 +32,9 @@ fun WooPosErrorState(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(horizontal = 32.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically) // Align elements with spacing
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -44,28 +44,27 @@ fun WooPosErrorState(
 
         Text(
             text = message,
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.h6,
+            color = MaterialTheme.colors.onSurface
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = reason,
-            style = MaterialTheme.typography.body1
+            style = MaterialTheme.typography.subtitle1,
+            color = MaterialTheme.colors.onSurface
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         primaryButton?.let {
+            Spacer(modifier = Modifier.height(32.dp))
             WooPosButton(
                 text = it.text,
                 onClick = it.click,
                 modifier = Modifier.padding(top = 16.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
         }
 
         secondaryButton?.let {
+            Spacer(modifier = Modifier.height(16.dp))
             WooPosButton(
                 text = it.text,
                 onClick = it.click,
@@ -80,8 +79,8 @@ data class Button(
     val click: () -> Unit
 )
 
-@WooPosPreview
 @Composable
+@WooPosPreview
 fun WooPosErrorStatePreview() {
     WooPosErrorState(
         icon = Icons.Default.Error,
