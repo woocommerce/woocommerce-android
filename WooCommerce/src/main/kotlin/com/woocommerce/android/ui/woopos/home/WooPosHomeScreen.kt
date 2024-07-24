@@ -189,9 +189,7 @@ private fun HandleProductsInfoDialog(
                 onDismissRequest = {
                     onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
                 },
-                onCreateOrderClick = {
-
-                }
+                onCreateOrderClick = {}
             )
         }
 

@@ -156,10 +156,8 @@ fun ProductInfoDialogPreview() {
                     label = R.string.woopos_dialog_products_info_button_label
                 )
             ),
-            onDismissRequest = {}
-        ) {
-
-        }
+            onDismissRequest = {},
+            onCreateOrderClick = {}
+        )
     }
 }
-
