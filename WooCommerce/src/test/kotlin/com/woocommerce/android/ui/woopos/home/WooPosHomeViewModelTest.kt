@@ -169,6 +169,21 @@ class WooPosHomeViewModelTest {
         )
     }
 
+    @Test
+    fun `given product info is displayed, when dialog is dismissed, then ensure the state is updated`() {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
+
+        // THEN
+        assertFalse((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).shouldDisplayDialog)
+    }
+
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender
