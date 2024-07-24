@@ -33,59 +33,74 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `given products from data source, when view model created, then view state updated correctly`() =
-        runTest {
-            // GIVEN
-            val products = listOf(
-                ProductTestUtils.generateProduct(
-                    productId = 1,
-                    productName = "Product 1",
-                    amount = "10.0",
-                    productType = "simple"
-                ),
-                ProductTestUtils.generateProduct(
-                    productId = 2,
-                    productName = "Product 2",
-                    amount = "20.0",
-                    productType = "simple"
-                ).copy(firstImageUrl = "https://test.com")
+    fun `given products from data source, when view model created, then view state updated correctly`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
             )
+        )
 
-            whenever(productsDataSource.products).thenReturn(flowOf(products))
+        // WHEN
+        val viewModel = createViewModel()
 
-            // WHEN
-            val viewModel = createViewModel()
-
-            // THEN
-            val value = viewModel.viewState.value as WooPosProductsViewState.Content
-            assertThat(value.products).hasSize(2)
-            assertThat(value.products[0].id).isEqualTo(1)
-            assertThat(value.products[0].name).isEqualTo("Product 1")
-            assertThat(value.products[0].price).isEqualTo("$10.0")
-            assertThat(value.products[1].id).isEqualTo(2)
-            assertThat(value.products[1].name).isEqualTo("Product 2")
-            assertThat(value.products[1].price).isEqualTo("$20.0")
-            assertThat(value.products[1].imageUrl).isEqualTo("https://test.com")
-        }
+        // THEN
+        val value = viewModel.viewState.value as WooPosProductsViewState.Content
+        assertThat(value.products).hasSize(2)
+        assertThat(value.products[0].id).isEqualTo(1)
+        assertThat(value.products[0].name).isEqualTo("Product 1")
+        assertThat(value.products[0].price).isEqualTo("$10.0")
+        assertThat(value.products[1].id).isEqualTo(2)
+        assertThat(value.products[1].name).isEqualTo("Product 2")
+        assertThat(value.products[1].price).isEqualTo("$20.0")
+        assertThat(value.products[1].imageUrl).isEqualTo("https://test.com")
+    }
 
     @Test
-    fun `given empty products list returned, when view model created, then view state is empty`() =
-        runTest {
-            // GIVEN
-            whenever(productsDataSource.products).thenReturn(flowOf(emptyList()))
+    fun `given empty products list returned, when view model created, then view state is empty`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(emptyList())
+                )
+            )
+        )
 
-            // WHEN
-            val viewModel = createViewModel()
+        // WHEN
+        val viewModel = createViewModel()
 
-            // THEN
-            assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Empty())
-        }
+        // THEN
+        assertThat(viewModel.viewState.value).isEqualTo(WooPosProductsViewState.Empty())
+    }
 
     @Test
     fun `given loading products is failure, when view model created, then view state is error`() = runTest {
         // GIVEN
-        whenever(productsDataSource.products).thenReturn(flowOf(emptyList()))
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(Result.failure(Exception()))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.failure(Exception())
+                )
+            )
+        )
 
         // WHEN
         val viewModel = createViewModel()
@@ -113,7 +128,13 @@ class WooPosProductsViewModelTest {
                 ).copy(firstImageUrl = "https://test.com")
             )
 
-            whenever(productsDataSource.products).thenReturn(flowOf(products))
+            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+                flowOf(
+                    WooPosProductsDataSource.ProductsResult.Remote(
+                        Result.success(products)
+                    )
+                )
+            )
 
             // WHEN
             val viewModel = createViewModel()
@@ -124,35 +145,42 @@ class WooPosProductsViewModelTest {
         }
 
     @Test
-    fun `given content state, when end of products grid reached and more pages available, then loading more products`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(productsDataSource.hasMorePages).thenReturn(true)
+    fun `given content state, when end of products grid reached and more pages available, then loading more products`() =
+        runTest {
+            // GIVEN
+            val products = listOf(
+                ProductTestUtils.generateProduct(
+                    productId = 1,
+                    productName = "Product 1",
+                    amount = "10.0",
+                    productType = "simple"
+                ),
+                ProductTestUtils.generateProduct(
+                    productId = 2,
+                    productName = "Product 2",
+                    amount = "20.0",
+                    productType = "simple"
+                ).copy(firstImageUrl = "https://test.com")
+            )
+            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+                flowOf(
+                    WooPosProductsDataSource.ProductsResult.Remote(
+                        Result.success(products)
+                    )
+                )
+            )
+            whenever(productsDataSource.hasMorePages).thenReturn(true)
 
-        val viewModel = createViewModel()
+            val viewModel = createViewModel()
 
-        // WHEN
-        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
+            // WHEN
+            viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
 
-        // THEN
-        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
-        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
-        assertThat(contentState.loadingMore).isTrue()
-    }
+            // THEN
+            assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+            val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+            assertThat(contentState.loadingMore).isTrue()
+        }
 
     @Test
     fun `given content state, when end of products grid reached and no more pages, then do not load more`() = runTest {
@@ -171,7 +199,13 @@ class WooPosProductsViewModelTest {
                 productType = "simple"
             ).copy(firstImageUrl = "https://test.com")
         )
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
         whenever(productsDataSource.hasMorePages).thenReturn(false)
 
         val viewModel = createViewModel()
@@ -202,7 +236,13 @@ class WooPosProductsViewModelTest {
                 productType = "simple"
             ).copy(firstImageUrl = "https://test.com")
         )
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
 
         val product = WooPosProductsListItem(
             id = 1,
@@ -220,38 +260,44 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `given load more products is called, when products source loads successfully then state is updated`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(productsDataSource.loadSimpleProducts(eq(false))).thenReturn(Result.success(Unit))
+    fun `given load more products is called, when products source loads successfully then state is updated`() =
+        runTest {
+            // GIVEN
+            val products = listOf(
+                ProductTestUtils.generateProduct(
+                    productId = 1,
+                    productName = "Product 1",
+                    amount = "10.0",
+                    productType = "simple"
+                ),
+                ProductTestUtils.generateProduct(
+                    productId = 2,
+                    productName = "Product 2",
+                    amount = "20.0",
+                    productType = "simple"
+                ).copy(firstImageUrl = "https://test.com")
+            )
+            whenever(productsDataSource.loadSimpleProducts(eq(false))).thenReturn(
+                flowOf(
+                    WooPosProductsDataSource.ProductsResult.Remote(
+                        Result.success(products)
+                    )
+                )
+            )
 
-        val viewModel = createViewModel()
+            val viewModel = createViewModel()
 
-        // Initial load
-        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+            // Initial load
+            assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
 
-        // WHEN
-        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
+            // WHEN
+            viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
 
-        // THEN
-        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
-        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
-        assertThat(contentState.loadingMore).isFalse()
-    }
+            // THEN
+            assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+            val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+            assertThat(contentState.loadingMore).isFalse()
+        }
 
     @Test
     fun `when loading without pull to refresh, then should not ask to remove products`() = runTest {
@@ -271,13 +317,132 @@ class WooPosProductsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
 
         // WHEN
         createViewModel()
 
         // THEN
         verify(productsDataSource).loadSimpleProducts(forceRefreshProducts = false)
+    }
+
+    @Test
+    fun `when loadProducts called, then view state is Loading`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(emptyList())
+                )
+            )
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Loading::class.java)
+    }
+
+    @Test
+    fun `given load more products fails, then state is Error`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+        whenever(productsDataSource.loadSimpleProducts(eq(false))).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+        whenever(productsDataSource.loadMore()).thenReturn(Result.failure(Exception()))
+
+        val viewModel = createViewModel()
+
+        // Initial load to set state to content
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Error::class.java)
+    }
+
+    @Test
+    fun `given pull-to-refresh with no products, then state is Empty`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.loadSimpleProducts(eq(true))).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(emptyList())
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+        // THEN
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Empty::class.java)
+    }
+
+    @Test
+    fun `given state changes, then parent notified correctly`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(emptyList())
+                )
+            )
+        )
+
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.FullScreen)
+
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            )
+        )
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.WithCart)
     }
 
     private fun createViewModel() =
