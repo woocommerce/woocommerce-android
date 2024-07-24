@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home
 
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -86,6 +87,22 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertTrue((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).shouldDisplayDialog)
+    }
+
+    @Test
+    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog heading is correct`() {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).header).isEqualTo(
+            R.string.woopos_dialog_products_info_heading
+        )
     }
 
     private fun createViewModel() = WooPosHomeViewModel(
