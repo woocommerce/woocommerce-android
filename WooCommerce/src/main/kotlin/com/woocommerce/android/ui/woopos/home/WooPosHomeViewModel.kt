@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +40,18 @@ class WooPosHomeViewModel @Inject constructor(
                     is WooPosHomeState.Cart -> {
                         false
                     }
+
+                    is WooPosHomeState.ProductsInfoDialog -> {
+                        false
+                    }
                 }
+            }
+
+            WooPosHomeUIEvent.DismissProductsInfoDialog -> {
+                _state.value = (_state.value as? WooPosHomeState.ProductsInfoDialog)?.copy(
+                    shouldDisplayDialog = false
+                )!!
+                true
             }
         }
     }
@@ -84,6 +96,20 @@ class WooPosHomeViewModel @Inject constructor(
                                 _state.value = WooPosHomeState.Cart.NotEmpty
                             }
                         }
+                    }
+
+                    ChildToParentEvent.ProductsDialogInfoIconClicked -> {
+                        _state.value = WooPosHomeState.ProductsInfoDialog(
+                            shouldDisplayDialog = true,
+                            header = R.string.woopos_dialog_products_info_heading,
+                            primaryMessage = R.string.woopos_dialog_products_info_primary_message,
+                            secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
+                            secondaryMessageActionLabel =
+                            R.string.woopos_dialog_products_info_secondary_message_action_label,
+                            primaryButton = WooPosHomeState.ProductsInfoDialog.PrimaryButton(
+                                label = R.string.woopos_dialog_products_info_button_label,
+                            ),
+                        )
                     }
                 }
             }
