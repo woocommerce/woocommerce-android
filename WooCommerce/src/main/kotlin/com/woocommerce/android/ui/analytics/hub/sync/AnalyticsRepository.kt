@@ -41,6 +41,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
+import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.SALES
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
@@ -465,7 +466,10 @@ class AnalyticsRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchGoogleAdsStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
+    suspend fun fetchGoogleAdsStats(
+        rangeSelection: StatsTimeRangeSelection,
+        selectedStatsTotalType: WCGoogleStore.TotalsType = SALES
+    ) = coroutineScope {
         val currentPeriod = rangeSelection.currentRange
         val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
@@ -479,7 +483,7 @@ class AnalyticsRepository @Inject constructor(
                 site = selectedSite.get(),
                 startDate = currentStartDate,
                 endDate = currentEndDate,
-                metricType = WCGoogleStore.MetricType.SALES
+                totals = listOf(selectedStatsTotalType)
             )
         }
 
@@ -488,7 +492,7 @@ class AnalyticsRepository @Inject constructor(
                 site = selectedSite.get(),
                 startDate = previousStartDate,
                 endDate = previousEndDate,
-                metricType = WCGoogleStore.MetricType.SALES
+                totals = listOf(selectedStatsTotalType)
             )
         }
 
