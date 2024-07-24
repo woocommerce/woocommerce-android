@@ -142,7 +142,8 @@ class AiProductPromptViewModel @Inject constructor(
         tracker.track(
             AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to isFirstAttempt
+                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to isFirstAttempt,
+                AnalyticsTracker.KEY_FEATURE_WORD_COUNT to _state.value.productPrompt.split(" ").size,
             )
         )
         isFirstAttempt = false
