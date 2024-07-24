@@ -4171,7 +4171,7 @@
     -->
     <string name="woopos_exit_pos">Exit POS</string>
     <string name="woopos_reader_connected">Reader Connected</string>
-    <string name="woopos_reader_disconnected">Reader Disconnected</string>
+    <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_unknown">Reader Status Unknown</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -4224,4 +4224,11 @@
 
     <string name="customers_details_no_phone_hint">No phone number</string>
     <string name="customers_details_none_hint">None</string>
+
+    <!--
+    Google ads campaign creation
+    -->
+    <string name="google_ads_campaign_created_success_title">Ready to Go!</string>
+    <string name="google_ads_campaign_created_success_description">Your new campaign has been created. Exciting times ahead for your sales!</string>
+    <string name="google_ads_campaign_created_success_done_button">Done</string>
 </resources>
