@@ -19,7 +19,12 @@ class WooPosSplashViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
-            _state.value = WooPosSplashState.Loaded
+                .collect { result ->
+                    when (result) {
+                        is WooPosProductsDataSource.ProductsResult.Cached -> {}
+                        is WooPosProductsDataSource.ProductsResult.Remote -> _state.value = WooPosSplashState.Loaded
+                    }
+                }
         }
     }
 }
