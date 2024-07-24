@@ -84,6 +84,9 @@ fun WooPosProductsScreen(modifier: Modifier = Modifier) {
         },
         onSimpleProductsBannerLearnMoreClicked = {
             productsViewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked)
+        },
+        onToolbarInfoIconClicked = {
+            productsViewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked)
         }
     )
 }
@@ -98,6 +101,7 @@ private fun WooPosProductsScreen(
     onPullToRefresh: () -> Unit,
     onSimpleProductsBannerClosed: () -> Unit,
     onSimpleProductsBannerLearnMoreClicked: () -> Unit,
+    onToolbarInfoIconClicked: () -> Unit,
 ) {
     val state = productsStateFlow.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
@@ -117,7 +121,7 @@ private fun WooPosProductsScreen(
         Column(
             modifier.fillMaxHeight()
         ) {
-            ProductsToolbar(state.value, modifier)
+            ProductsToolbar(state.value, modifier, onToolbarInfoIconClicked)
             Spacer(modifier = Modifier.height(24.dp))
             when (val productsState = state.value) {
                 is WooPosProductsViewState.Content -> {
@@ -161,7 +165,8 @@ private fun WooPosProductsScreen(
 @Composable
 private fun ProductsToolbar(
     productViewState: WooPosProductsViewState,
-    modifier: Modifier
+    modifier: Modifier,
+    onToolbarInfoIconClicked: () -> Unit,
 ) {
     Row(
         modifier.fillMaxWidth(),
@@ -177,7 +182,9 @@ private fun ProductsToolbar(
                 if (productViewState.bannerState?.isSimpleProductsOnlyBannerShown != false) {
                     IconButton(
                         modifier = modifier.size(40.dp),
-                        onClick = { /*TODO*/ }
+                        onClick = {
+                            onToolbarInfoIconClicked()
+                        }
                     ) {
                         Icon(
                             painterResource(id = R.drawable.info),
@@ -466,7 +473,8 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             onEndOfProductListReached = {},
             onPullToRefresh = {},
             onSimpleProductsBannerClosed = {},
-            onSimpleProductsBannerLearnMoreClicked = {}
+            onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -483,7 +491,8 @@ fun WooPosHomeScreenLoadingPreview() {
             onEndOfProductListReached = {},
             onPullToRefresh = {},
             onSimpleProductsBannerClosed = {},
-            onSimpleProductsBannerLearnMoreClicked = {}
+            onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -500,7 +509,8 @@ fun WooPosHomeScreenEmptyListPreview() {
             onEndOfProductListReached = {},
             onPullToRefresh = {},
             onSimpleProductsBannerClosed = {},
-            onSimpleProductsBannerLearnMoreClicked = {}
+            onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -551,7 +561,8 @@ fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview(modifier: Modifi
             onEndOfProductListReached = {},
             onPullToRefresh = {},
             onSimpleProductsBannerClosed = {},
-            onSimpleProductsBannerLearnMoreClicked = {}
+            onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -602,7 +613,8 @@ fun WooPosHomeScreenProductsWithInfoIconInToolbarPreview(modifier: Modifier = Mo
             onEndOfProductListReached = {},
             onPullToRefresh = {},
             onSimpleProductsBannerClosed = {},
-            onSimpleProductsBannerLearnMoreClicked = {}
+            onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }

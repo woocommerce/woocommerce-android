@@ -6,4 +6,5 @@ sealed class WooPosProductsUIEvent {
     data object PullToRefreshTriggered : WooPosProductsUIEvent()
     data object SimpleProductsBannerClosed : WooPosProductsUIEvent()
     data object SimpleProductsBannerLearnMoreClicked : WooPosProductsUIEvent()
+    data object SimpleProductsDialogInfoIconClicked : WooPosProductsUIEvent()
 }

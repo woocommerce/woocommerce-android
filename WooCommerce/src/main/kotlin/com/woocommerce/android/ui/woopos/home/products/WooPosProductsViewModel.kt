@@ -85,6 +85,9 @@ class WooPosProductsViewModel @Inject constructor(
                 onSimpleProductsOnlyBannerClosed()
             }
             WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked -> TODO()
+            WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked -> {
+
+            }
         }
     }
 
