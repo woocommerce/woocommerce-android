@@ -24,11 +24,7 @@ sealed class MoreMenuEvent : MultiLiveEvent.Event() {
     data object OpenBlazeCampaignListEvent : MoreMenuEvent()
     data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
     data class ViewAdminEvent(val url: String) : MoreMenuEvent()
-    data class ViewGoogleForWooEvent(
-        val url: String,
-        val successUrls: List<String>,
-        val isCreationFlow: Boolean
-    ) : MoreMenuEvent()
+    data class ViewGoogleForWooEvent(val url: String, val isCreationFlow: Boolean) : MoreMenuEvent()
     data class ViewStoreEvent(val url: String) : MoreMenuEvent()
     data object ViewReviewsEvent : MoreMenuEvent()
     data object ViewInboxEvent : MoreMenuEvent()

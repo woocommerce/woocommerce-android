@@ -80,7 +80,6 @@ private fun HandleEvents(
                 is DashboardGoogleAdsViewModel.ViewGoogleForWooEvent -> {
                     val direction = NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
                         urlToLoad = event.url,
-                        urlsToTriggerExit = event.successUrls.toTypedArray(),
                         title = webViewTitle,
                         urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL,
                         isCreationFlow = event.isCreationFlow,

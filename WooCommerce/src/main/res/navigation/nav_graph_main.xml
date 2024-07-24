@@ -527,11 +527,6 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="urlsToTriggerExit"
-            android:defaultValue="@null"
-            app:argType="string[]"
-            app:nullable="true" />
-        <argument
             android:name="captureBackButton"
             android:defaultValue="true"
             app:argType="boolean" />

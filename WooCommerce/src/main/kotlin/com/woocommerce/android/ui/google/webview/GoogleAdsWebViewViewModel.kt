@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.google.webview
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -36,6 +37,12 @@ class GoogleAdsWebViewViewModel @Inject constructor(
     // This flag is used to ensure the callback can return early.
     private var isUrlLoadingFailed = false
 
+    private val successUrlTriggers = listOf(
+        AppUrls.GOOGLE_ADMIN_FIRST_CAMPAIGN_CREATION_SUCCESS_TRIGGER,
+        AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER,
+        AppUrls.GOOGLE_ADMIN_SUBMISSION_SUCCESS_TRIGGER
+    )
+
     val viewState = navArgs.let {
         ViewState(
             urlToLoad = it.urlToLoad,
@@ -62,7 +69,7 @@ class GoogleAdsWebViewViewModel @Inject constructor(
             STARTS_WITH -> url.startsWith(this, ignoreCase = true)
         }
 
-        if (navArgs.urlsToTriggerExit?.any { it.matchesUrl(url) } == true && !isExiting) {
+        if (successUrlTriggers.any { it.matchesUrl(url) } && !isExiting) {
             if (viewState.isCreationFlow) {
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.GOOGLEADS_CAMPAIGN_CREATION_SUCCESS,
