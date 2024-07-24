@@ -37,12 +37,12 @@ fun WooPosErrorComponent(
             .fillMaxSize()
             .padding(horizontal = 32.dp, vertical = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically) // Align elements with spacing
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = MaterialTheme.colors.onSurface,
+            tint = MaterialTheme.colors.error,
             modifier = Modifier.size(56.dp)
         )
 
