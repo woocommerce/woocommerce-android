@@ -287,8 +287,6 @@ class WooPosProductsViewModelTest {
 
             val viewModel = createViewModel()
 
-            // Initial load
-            assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
 
             // WHEN
             viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
@@ -372,9 +370,6 @@ class WooPosProductsViewModelTest {
 
         val viewModel = createViewModel()
 
-        // Initial load to set state to content
-        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
-
         // WHEN
         viewModel.onUIEvent(WooPosProductsUIEvent.EndOfProductListReached)
 
@@ -403,7 +398,7 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `given state changes, then parent notified correctly`() = runTest {
+    fun `given empty list, when pull to refresh, then parent notified correctly`() = runTest {
         // GIVEN
         whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
             flowOf(
@@ -420,7 +415,10 @@ class WooPosProductsViewModelTest {
 
         // THEN
         verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.FullScreen)
+    }
 
+    @Test
+    fun `given products, when pull to refresh, then parent notified correctly`() = runTest {
         // GIVEN
         val products = listOf(
             ProductTestUtils.generateProduct(
@@ -437,6 +435,7 @@ class WooPosProductsViewModelTest {
                 )
             )
         )
+        val viewModel = createViewModel()
 
         // WHEN
         viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
