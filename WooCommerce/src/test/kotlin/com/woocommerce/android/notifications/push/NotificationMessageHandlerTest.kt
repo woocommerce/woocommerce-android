@@ -34,11 +34,9 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
-import org.wordpress.android.fluxc.store.SiteStore
 
 class NotificationMessageHandlerTest {
     private lateinit var notificationMessageHandler: NotificationMessageHandler
@@ -46,9 +44,6 @@ class NotificationMessageHandlerTest {
     private val accountModel = AccountModel().apply { userId = 12345 }
     private val accountStore: AccountStore = mock {
         on { account } doReturn accountModel
-    }
-    private val siteStore: SiteStore = mock {
-        on { getSiteBySiteId(any()) } doReturn SiteModel()
     }
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
