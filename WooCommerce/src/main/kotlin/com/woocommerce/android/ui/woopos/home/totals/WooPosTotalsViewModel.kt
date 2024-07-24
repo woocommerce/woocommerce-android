@@ -34,16 +34,16 @@ class WooPosTotalsViewModel @Inject constructor(
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
         private const val KEY_STATE = "woo_pos_totals_data_state"
-        private val InitialState = TotalsUIState.Loading
+        private val InitialState = WooPosTotalsViewState.Loading
     }
 
-    private val uiState = savedState.getStateFlow<TotalsUIState>(
+    private val uiState = savedState.getStateFlow<WooPosTotalsViewState>(
         scope = viewModelScope,
         initialValue = InitialState,
         key = "woo_pos_totals_ui_state"
     )
 
-    val state: StateFlow<TotalsUIState> = uiState
+    val state: StateFlow<WooPosTotalsViewState> = uiState
 
     private var dataState: MutableStateFlow<TotalsDataState> = savedState.getStateFlow(
         scope = viewModelScope,
@@ -65,8 +65,8 @@ class WooPosTotalsViewModel @Inject constructor(
                     when (result) {
                         is WooPosCardReaderPaymentResult.Success -> {
                             val state = uiState.value
-                            check(state is TotalsUIState.Totals)
-                            uiState.value = TotalsUIState.PaymentSuccess(
+                            check(state is WooPosTotalsViewState.Totals)
+                            uiState.value = WooPosTotalsViewState.PaymentSuccess(
                                 state.orderSubtotalText,
                                 state.orderTaxText,
                                 state.orderTotalText
@@ -115,28 +115,28 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun createOrderDraft(productIds: List<Long>) {
         viewModelScope.launch {
-            uiState.value = TotalsUIState.Loading
+            uiState.value = WooPosTotalsViewState.Loading
 
             totalsRepository.createOrderWithProducts(productIds = productIds)
                 .fold(
                     onSuccess = { order ->
                         dataState.value = dataState.value.copy(orderId = order.id)
-                        uiState.value = buildTotalsUIState(order)
+                        uiState.value = buildWooPosTotalsViewState(order)
                     },
                     onFailure = { error ->
                         WooLog.e(T.ORDERS, "Order creation failed - $error")
-                        uiState.value = TotalsUIState.Error(error.message ?: "Unknown error")
+                        uiState.value = WooPosTotalsViewState.Error(error.message ?: "Unknown error")
                     }
                 )
         }
     }
 
-    private suspend fun buildTotalsUIState(order: Order): TotalsUIState.Totals {
+    private suspend fun buildWooPosTotalsViewState(order: Order): WooPosTotalsViewState.Totals {
         val subtotalAmount = order.items.sumOf { it.subtotal }
         val taxAmount = order.totalTax
         val totalAmount = subtotalAmount + taxAmount
 
-        return TotalsUIState.Totals(
+        return WooPosTotalsViewState.Totals(
             orderSubtotalText = priceFormat(subtotalAmount),
             orderTaxText = priceFormat(taxAmount),
             orderTotalText = priceFormat(totalAmount),

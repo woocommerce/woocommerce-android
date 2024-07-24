@@ -50,29 +50,29 @@ fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
 @Composable
 private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
-    state: TotalsUIState,
+    state: WooPosTotalsViewState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
         modifier = modifier
     ) {
         when (state) {
-            is TotalsUIState.Totals -> {
+            is WooPosTotalsViewState.Totals -> {
                 TotalsLoaded(
                     state = state,
                     onUIEvent = onUIEvent
                 )
             }
 
-            is TotalsUIState.PaymentSuccess -> {
+            is WooPosTotalsViewState.PaymentSuccess -> {
                 WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
 
-            is TotalsUIState.Loading -> {
+            is WooPosTotalsViewState.Loading -> {
                 TotalsLoading()
             }
 
-            is TotalsUIState.Error -> {
+            is WooPosTotalsViewState.Error -> {
                 WooPosTotalsErrorScreen(
                     errorMessage = state.message,
                     onUIEvent = onUIEvent
@@ -84,7 +84,7 @@ private fun WooPosTotalsScreen(
 
 @Composable
 private fun TotalsLoaded(
-    state: TotalsUIState.Totals,
+    state: WooPosTotalsViewState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
@@ -129,7 +129,7 @@ private fun TotalsLoaded(
 }
 
 @Composable
-private fun TotalsGrid(state: TotalsUIState.Totals) {
+private fun TotalsGrid(state: WooPosTotalsViewState.Totals) {
     Column(
         modifier = Modifier
             .border(
@@ -271,7 +271,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
     WooPosTheme {
         WooPosTotalsScreen(
             modifier = modifier,
-            state = TotalsUIState.Totals(
+            state = WooPosTotalsViewState.Totals(
                 orderSubtotalText = "$420.00",
                 orderTotalText = "$462.00",
                 orderTaxText = "$42.00",
@@ -286,7 +286,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
 fun WooPosTotalsScreenLoadingPreview() {
     WooPosTheme {
         WooPosTotalsScreen(
-            state = TotalsUIState.Loading,
+            state = WooPosTotalsViewState.Loading,
             onUIEvent = {}
         )
     }
