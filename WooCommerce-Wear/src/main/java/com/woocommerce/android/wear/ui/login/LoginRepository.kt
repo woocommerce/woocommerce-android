@@ -53,11 +53,7 @@ class LoginRepository @Inject constructor(
             ?.let { gson.fromJson(it, SiteModel::class.java) }
             ?: return
 
-        if (site.origin == SiteModel.ORIGIN_XMLRPC || site.origin == SiteModel.ORIGIN_WPAPI) {
-            loginDataStore.edit { prefs ->
-                prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
-            }
-        } else {
+        if (site.origin == SiteModel.ORIGIN_WPCOM_REST) {
             coroutineScope.async {
                 wooCommerceStore.fetchSiteGeneralSettings(site)
             }.await()
@@ -67,6 +63,10 @@ class LoginRepository @Inject constructor(
                     wearableStore.updateToken(token)
                     prefs[stringPreferencesKey(generateTokenKey(site.siteId))] = token
                 }
+            }
+        } else {
+            loginDataStore.edit { prefs ->
+                prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
             }
         }
     }
