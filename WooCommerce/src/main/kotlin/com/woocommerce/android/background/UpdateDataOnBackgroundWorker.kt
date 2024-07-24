@@ -24,7 +24,7 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return when {
             accountRepository.isUserLoggedIn().not() -> Result.success()
-            updateAnalyticsDashboardRangeSelections() && updateOrdersList() -> Result.success()
+            updateAnalyticsDashboardRangeSelections() && updateOrdersList(true) -> Result.success()
             else -> Result.retry()
         }
     }

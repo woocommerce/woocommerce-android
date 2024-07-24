@@ -12,9 +12,9 @@ class UpdateOrdersList @Inject constructor(
     private val ordersStore: WCOrderStore,
     private val storeOrdersListLastUpdate: StoreOrdersListLastUpdate
 ) {
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(deleteOldData: Boolean = false): Boolean {
         val listDescriptor = getWCOrderListDescriptorWithFilters()
-        val response = ordersStore.fetchOrdersListFirstPage(listDescriptor)
+        val response = ordersStore.fetchOrdersListFirstPage(listDescriptor, deleteOldData)
         val orders = response.model
 
         if (response.isError || orders == null) return false
