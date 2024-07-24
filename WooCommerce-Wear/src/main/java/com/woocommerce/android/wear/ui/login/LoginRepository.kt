@@ -34,6 +34,10 @@ class LoginRepository @Inject constructor(
     val selectedSiteFlow: StateFlow<SiteModel?> = siteFlow
     val selectedSite get() = selectedSiteFlow.value
     val isSiteAvailable = siteFlow.map { it != null && it.siteId > 0 }
+    val isWPCOMSite
+        get() = siteFlow.value
+            ?.let { it.origin == SiteModel.ORIGIN_WPCOM_REST }
+            ?: false
 
     init {
         loginDataStore.data
@@ -49,15 +53,20 @@ class LoginRepository @Inject constructor(
             ?.let { gson.fromJson(it, SiteModel::class.java) }
             ?: return
 
-        coroutineScope.async {
-            wooCommerceStore.fetchSiteGeneralSettings(site)
-        }.await()
-
-        loginDataStore.edit { prefs ->
-            prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
-            data.getString(TOKEN.value)?.let { token ->
-                wearableStore.updateToken(token)
-                prefs[stringPreferencesKey(generateTokenKey(site.siteId))] = token
+        if (site.origin == SiteModel.ORIGIN_XMLRPC || site.origin == SiteModel.ORIGIN_WPAPI) {
+            loginDataStore.edit { prefs ->
+                prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
+            }
+        } else {
+            coroutineScope.async {
+                wooCommerceStore.fetchSiteGeneralSettings(site)
+            }.await()
+            loginDataStore.edit { prefs ->
+                prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
+                data.getString(TOKEN.value)?.let { token ->
+                    wearableStore.updateToken(token)
+                    prefs[stringPreferencesKey(generateTokenKey(site.siteId))] = token
+                }
             }
         }
     }
