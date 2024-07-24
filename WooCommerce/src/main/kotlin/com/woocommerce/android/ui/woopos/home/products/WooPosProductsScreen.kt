@@ -340,14 +340,20 @@ fun ProductsEmptyList() {
 
 @Composable
 fun ProductsError(onRetryClicked: () -> Unit) {
-    WooPosErrorState(
-        message = stringResource(id = R.string.woopos_products_loading_error_title),
-        reason = stringResource(id = R.string.woopos_products_loading_error_message),
-        primaryButton = Button(
-            text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
-            click = onRetryClicked
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        WooPosErrorState(
+            modifier = Modifier.width(640.dp),
+            message = stringResource(id = R.string.woopos_products_loading_error_title),
+            reason = stringResource(id = R.string.woopos_products_loading_error_message),
+            primaryButton = Button(
+                text = stringResource(id = R.string.woopos_products_loading_error_retry_button),
+                click = onRetryClicked
+            )
         )
-    )
+    }
 }
 
 @Composable
