@@ -1,6 +1,7 @@
 package com.woocommerce.android.background
 
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.list.StoreOrdersListLastUpdate
 import org.wordpress.android.fluxc.store.ListStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
@@ -8,7 +9,8 @@ import javax.inject.Inject
 class UpdateOrdersList @Inject constructor(
     private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters,
     private val listStore: ListStore,
-    private val ordersStore: WCOrderStore
+    private val ordersStore: WCOrderStore,
+    private val storeOrdersListLastUpdate: StoreOrdersListLastUpdate
 ) {
     suspend operator fun invoke(): Boolean {
         val listDescriptor = getWCOrderListDescriptorWithFilters()
@@ -25,6 +27,7 @@ class UpdateOrdersList @Inject constructor(
             )
         }
 
+        storeOrdersListLastUpdate(listDescriptor.uniqueIdentifier.value)
         return true
     }
 }
