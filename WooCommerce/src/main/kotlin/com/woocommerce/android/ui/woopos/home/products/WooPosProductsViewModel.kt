@@ -86,10 +86,17 @@ class WooPosProductsViewModel @Inject constructor(
                     }
 
                     is WooPosProductsDataSource.ProductsResult.Remote -> {
-                        _viewState.value = if (result.products.isSuccess) {
-                            result.products.getOrThrow().toContentState()
-                        } else {
-                            WooPosProductsViewState.Error()
+                        _viewState.value = when {
+                            result.productsResult.isSuccess -> {
+                                val products = result.productsResult.getOrThrow()
+                                if (products.isNotEmpty()) {
+                                    products.toContentState()
+                                } else {
+                                    WooPosProductsViewState.Empty()
+                                }
+                            }
+
+                            else -> WooPosProductsViewState.Error()
                         }
                     }
                 }
