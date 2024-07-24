@@ -82,14 +82,14 @@ private fun HandleEvents(
                     val direction = if (event.canAutoLogin) {
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                             urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                            urlsToTriggerExit = event.successUrls.toTypedArray(),
                             title = webViewTitle,
                             urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
                         )
                     } else {
                         NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
                             urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
+                            urlsToTriggerExit = event.successUrls.toTypedArray(),
                             title = webViewTitle,
                             urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
                         )

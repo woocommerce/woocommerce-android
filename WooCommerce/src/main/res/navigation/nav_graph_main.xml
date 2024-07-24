@@ -867,4 +867,11 @@
             android:name="customer"
             app:argType="com.woocommerce.android.model.CustomerWithAnalytics" />
     </fragment>
+    <action
+        android:id="@+id/action_global_googleAdsCampaignSuccessBottomSheet"
+        app:destination="@id/googleAdsCampaignSuccessBottomSheetFragment" />
+    <dialog
+        android:id="@+id/googleAdsCampaignSuccessBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.google.ads.success.GoogleAdsCampaignSuccessBottomSheetFragment"
+        android:label="GoogleAdsCampaignSuccessBottomSheetFragment" />
 </navigation>
