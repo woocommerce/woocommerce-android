@@ -105,6 +105,22 @@ class WooPosHomeViewModelTest {
         )
     }
 
+    @Test
+    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog primary message is correct`() {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).primaryMessage).isEqualTo(
+            R.string.woopos_dialog_products_info_primary_message
+        )
+    }
+
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender
