@@ -37,11 +37,11 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.google.WCGoogleAdsPrograms
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCGoogleStore
+import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.SALES
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
-import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.SALES
 
 @Suppress("TooManyFunctions")
 class AnalyticsRepository @Inject constructor(
