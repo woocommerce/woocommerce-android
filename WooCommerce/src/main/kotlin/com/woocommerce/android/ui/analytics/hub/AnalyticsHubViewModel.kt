@@ -74,6 +74,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
+import com.woocommerce.android.ui.analytics.hub.sync.UpdateGoogleCampaignStats
 
 @HiltViewModel
 @SuppressWarnings("LargeClass")
@@ -83,6 +84,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val updateStats: UpdateAnalyticsHubStats,
+    private val updateGoogleStats: UpdateGoogleCampaignStats,
     private val observeLastUpdate: ObserveLastUpdate,
     private val localeProvider: LocaleProvider,
     private val feedbackRepository: FeedbackRepository,
@@ -177,7 +179,7 @@ class AnalyticsHubViewModel @Inject constructor(
                 cancelCardsObservation()
                 val cardsState = configuration
                     .filter { cardConfiguration -> cardConfiguration.isVisible }
-                    .map(::generateObservedLoadingState)
+                    .map { generateObservedLoadingState(it) }
                 mutableState.update { viewState ->
                     viewState.copy(cards = AnalyticsHubCardViewState.CardsState(cardsState))
                 }
@@ -273,7 +275,7 @@ class AnalyticsHubViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun generateObservedLoadingState(config: AnalyticCardConfiguration) =
+    private suspend fun generateObservedLoadingState(config: AnalyticCardConfiguration) =
         when (config.card) {
             AnalyticsCards.Revenue -> {
                 observeRevenueChanges()
@@ -456,8 +458,11 @@ class AnalyticsHubViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun observeGoogleAdsChanges() {
-        googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
+    private suspend fun observeGoogleAdsChanges() {
+        googleAdsObservationJob = updateGoogleStats(
+            rangeSelection = rangeSelectionState.value,
+            filterOption = GoogleStatsFilterOptions.TotalSales
+        ).onEach { state ->
             when (state) {
                 is GoogleAdsState.Available -> {
                     updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
