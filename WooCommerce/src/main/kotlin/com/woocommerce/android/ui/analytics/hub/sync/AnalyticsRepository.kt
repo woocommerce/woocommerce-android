@@ -12,6 +12,8 @@ import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
+import com.woocommerce.android.model.StatType
+import com.woocommerce.android.model.StatType.TOTAL_SALES
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
@@ -37,7 +39,6 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.model.google.WCGoogleAdsPrograms
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCGoogleStore
-import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.SALES
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -468,8 +469,10 @@ class AnalyticsRepository @Inject constructor(
 
     suspend fun fetchGoogleAdsStats(
         rangeSelection: StatsTimeRangeSelection,
-        selectedStatsTotalType: WCGoogleStore.TotalsType = SALES
+        selectedStats: StatType = TOTAL_SALES
     ) = coroutineScope {
+        val selectedStatsTotalType = selectedStats.toTotalsType()
+
         val currentPeriod = rangeSelection.currentRange
         val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
@@ -503,14 +506,16 @@ class AnalyticsRepository @Inject constructor(
             .model?.let {
                 mapGoogleAdsResponse(
                     currentRangeResponse = it,
-                    previousRangeResponse = previousRangeStatsResult.model
+                    previousRangeResponse = previousRangeStatsResult.model,
+                    selectedStats = selectedStats
                 )
             } ?: GoogleAdsResult.GoogleAdsError
     }
 
     private fun mapGoogleAdsResponse(
         currentRangeResponse: WCGoogleAdsPrograms,
-        previousRangeResponse: WCGoogleAdsPrograms?
+        previousRangeResponse: WCGoogleAdsPrograms?,
+        selectedStats: StatType
     ) = GoogleAdsResult.GoogleAdsData(
         GoogleAdsStat(
             googleAdsCampaigns = currentRangeResponse.campaigns?.map {
@@ -534,7 +539,8 @@ class AnalyticsRepository @Inject constructor(
             deltaPercentage = calculateDeltaPercentage(
                 previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
                 currentVal = currentRangeResponse.totals?.sales ?: 0.0
-            )
+            ),
+            totalType = selectedStats
         )
     )
 
