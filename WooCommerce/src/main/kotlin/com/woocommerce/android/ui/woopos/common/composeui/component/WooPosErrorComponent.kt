@@ -37,7 +37,6 @@ fun WooPosErrorComponent(
     primaryButton: Button? = null,
     secondaryButton: Button? = null
 ) {
-
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
