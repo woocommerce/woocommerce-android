@@ -4205,6 +4205,7 @@
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
     <string name="woopos_splash_title">Starting up</string>
     <string name="woopos_splash_message">Let’s serve some customers</string>
+    <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
