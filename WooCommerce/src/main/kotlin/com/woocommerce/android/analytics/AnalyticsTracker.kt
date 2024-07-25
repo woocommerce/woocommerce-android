@@ -639,6 +639,7 @@ class AnalyticsTracker private constructor(
         // -- AI product creation
         const val KEY_TONE = "tone"
         const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
+        const val KEY_FEATURE_WORD_COUNT = "feature_word_count"
 
         // -- AI product from package photo
         const val KEY_SCANNED_TEXT_COUNT = "scanned_text_count"

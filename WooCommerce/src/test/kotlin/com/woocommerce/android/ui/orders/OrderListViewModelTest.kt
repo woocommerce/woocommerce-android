@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptor
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
+import com.woocommerce.android.ui.orders.list.ObserveOrdersListLastUpdate
 import com.woocommerce.android.ui.orders.list.OrderListFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
@@ -37,6 +38,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
+import com.woocommerce.android.ui.orders.list.ShouldUpdateOrdersList
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
@@ -54,6 +56,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -66,6 +69,7 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -115,6 +119,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val notificationChannelsHandler = mock<NotificationChannelsHandler>()
     private val appPrefs = mock<AppPrefsWrapper>()
     private val showTestNotification = mock<ShowTestNotification>()
+    private val shouldUpdateOrdersList = mock<ShouldUpdateOrdersList>()
+    private val observeOrdersListLastUpdate = mock<ObserveOrdersListLastUpdate>()
 
     @Before
     fun setup() = testBlocking {
@@ -137,6 +143,9 @@ class OrderListViewModelTest : BaseUnitTest() {
             )
         ).doReturn(pagedListWrapper)
         doReturn(true).whenever(networkStatus).isConnected()
+
+        whenever(shouldUpdateOrdersList.invoke(any())).doReturn(true)
+        whenever(observeOrdersListLastUpdate.invoke(any())).doReturn(flowOf(1721598780075L))
 
         viewModel = createViewModel()
     }
@@ -164,7 +173,9 @@ class OrderListViewModelTest : BaseUnitTest() {
         notificationChannelsHandler = notificationChannelsHandler,
         appPrefs = appPrefs,
         showTestNotification = showTestNotification,
-        dateUtils = mock()
+        dateUtils = mock(),
+        shouldUpdateOrdersList = shouldUpdateOrdersList,
+        observeOrdersListLastUpdate = observeOrdersListLastUpdate
     )
 
     @Test
@@ -180,14 +191,32 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `Load orders activates list wrapper`() = testBlocking {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchPaymentGateways()
+        whenever(shouldUpdateOrdersList.invoke(any())).doReturn(true)
 
         viewModel.loadOrders()
 
         assertNotNull(viewModel.ordersPagedListWrapper)
         assertNotNull(viewModel.activePagedListWrapper)
-        verify(viewModel.ordersPagedListWrapper, times(1))?.fetchFirstPage()
-        verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
         assertEquals(viewModel.ordersPagedListWrapper, viewModel.activePagedListWrapper)
+
+        verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
+        // When should update list is true, then fetch the first page
+        verify(viewModel.ordersPagedListWrapper, times(1))?.fetchFirstPage()
+    }
+
+    @Test
+    fun `Load orders with cache doesn't fetch data`() = testBlocking {
+        whenever(shouldUpdateOrdersList.invoke(any())).doReturn(false)
+
+        viewModel.loadOrders()
+
+        assertNotNull(viewModel.ordersPagedListWrapper)
+        assertNotNull(viewModel.activePagedListWrapper)
+        assertEquals(viewModel.ordersPagedListWrapper, viewModel.activePagedListWrapper)
+
+        // When should update list is false, then DON'T fetch the first page and rely on cached data (DB)
+        verify(viewModel.ordersPagedListWrapper, never())?.fetchFirstPage()
+        verify(viewModel.ordersPagedListWrapper, times(1))?.invalidateData()
     }
 
     /**
