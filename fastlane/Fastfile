@@ -447,8 +447,7 @@ platform :android do
     android_download_translations(
       res_dir: RES_DIR_PATH,
       glotpress_url: GLOTPRESS_APP_STRINGS_PROJECT_URL,
-      locales: SUPPORTED_LOCALES,
-      lint_task: 'lintVanillaRelease'
+      locales: SUPPORTED_LOCALES
     )
   end
 

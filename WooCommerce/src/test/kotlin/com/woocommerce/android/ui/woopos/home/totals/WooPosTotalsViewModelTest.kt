@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import java.math.BigDecimal
@@ -24,7 +22,6 @@ import java.util.Date
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-@RunWith(MockitoJUnitRunner.Silent::class)
 class WooPosTotalsViewModelTest {
 
     @Rule
@@ -196,6 +193,32 @@ class WooPosTotalsViewModelTest {
             assertThat(viewModel.state.value).isEqualTo(WooPosTotalsState.Loading)
             verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NewTransactionClicked)
         }
+
+    @Test
+    fun `given order creation fails, when vm created, then error state is shown`() = runTest {
+        // GIVEN
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val errorMessage = "Order creation failed"
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
+                Result.failure(Exception(errorMessage))
+            )
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        // THEN
+        val state = viewModel.state.value as WooPosTotalsState.Error
+        assertThat(state.message).isEqualTo(errorMessage)
+    }
 
     private fun createViewModel(
         parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock(),

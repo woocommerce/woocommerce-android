@@ -4,7 +4,7 @@ import com.woocommerce.android.wear.analytics.AnalyticsTracker
 import com.woocommerce.android.wear.extensions.combineWithTimeout
 import com.woocommerce.android.wear.extensions.toWearOrder
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
-import com.woocommerce.android.wear.system.NetworkStatus
+import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.orders.OrdersRepository
 import com.woocommerce.android.wear.ui.orders.list.FetchOrders.OrdersRequest.Error
 import com.woocommerce.android.wear.ui.orders.list.FetchOrders.OrdersRequest.Finished
@@ -24,7 +24,7 @@ import javax.inject.Inject
 class FetchOrders @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
     private val ordersRepository: OrdersRepository,
-    private val networkStatus: NetworkStatus,
+    private val connectionStatus: ConnectionStatus,
     private val analyticsTracker: AnalyticsTracker
 ) {
     suspend operator fun invoke(
@@ -43,7 +43,7 @@ class FetchOrders @Inject constructor(
         selectedSite: SiteModel
     ): Flow<List<WearOrder>> {
         return when {
-            networkStatus.isConnected() -> flow {
+            connectionStatus.isStoreConnected() -> flow {
                 analyticsTracker.track(WATCH_DATA_REQUESTED_FROM_STORE)
                 when (val result = ordersRepository.fetchOrders(selectedSite)) {
                     is Success -> result.orders

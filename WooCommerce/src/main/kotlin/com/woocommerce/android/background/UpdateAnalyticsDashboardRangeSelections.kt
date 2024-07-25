@@ -19,7 +19,7 @@ class UpdateAnalyticsDashboardRangeSelections @Inject constructor(
             getSelectedRangeForTopPerformers.invoke().first().let { add(it) }
             getSelectedRangeForDashboardStats.invoke().first().let { add(it) }
         }
-        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue)
+        val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue, AnalyticsCards.Session)
         return coroutineScope {
             val asyncCalls = dashboardRangeSelections.map { selectedRange ->
                 async {

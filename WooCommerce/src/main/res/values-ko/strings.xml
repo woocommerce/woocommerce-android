@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-09 09:54:03+0000
+Translation-Revision-Date: 2024-07-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="customers_details_none_hint">해당 없음</string>
+    <string name="customers_details_no_phone_hint">전화번호 없음</string>
+    <string name="customers_details_postal_code_value_title">우편번호</string>
+    <string name="customers_details_city_value_title">시/군/구</string>
+    <string name="customers_details_region_value_title">지역</string>
+    <string name="customers_details_country_value_title">국가</string>
+    <string name="customers_details_date_registered_value_title">등록된 날짜</string>
+    <string name="customers_details_username_value_title">사용자명</string>
+    <string name="customers_details_average_order_value_title">평균 주문 값</string>
+    <string name="customers_details_total_spend_value_title">총지출</string>
+    <string name="customers_details_orders_value_title">주문</string>
+    <string name="customers_details_last_active_value_title">마지막 활성 상태</string>
+    <string name="customers_details_shipping_location_section">위치</string>
+    <string name="customers_details_shipping_address_section">배송지</string>
+    <string name="customers_details_billing_address_section">청구 주소</string>
+    <string name="customers_details_registration_section">등록</string>
+    <string name="customers_details_orders_section">주문</string>
+    <string name="customers_details_customer_section">고객</string>
+    <string name="woopos_products_empty_list">제품 없음</string>
+    <string name="more_menu_customers_title">고객</string>
+    <string name="more_menu_button_customers_description">고객 인사이트 받기</string>
+    <string name="more_menu_button_customers">고객</string>
+    <string name="ai_product_creation_scanning_photo_error">사진의 텍스트를 스캔하는 동안 오류가 발생했습니다. 다시 시도해 주세요.</string>
+    <string name="ai_product_creation_scanning_image">이미지 스캔 중</string>
+    <string name="ai_product_creation_image_selected_subtitle">상품에 사진이 추가됩니다.</string>
+    <string name="ai_product_creation_image_selected">사진 선택됨</string>
+    <string name="ai_product_creation_remove_image">사진 제거</string>
+    <string name="ai_product_creation_replace_image">사진 바꾸기</string>
+    <string name="ai_product_creation_view_image">사진 보기</string>
+    <string name="product_creation_ai_preview_name_description_sections">이름, 요약 및 설명</string>
+    <string name="product_creation_ai_preview_subtitle">저장하기 전에 상품 상세 정보를 편집하거나 재생성할 수 있습니다.</string>
+    <string name="product_detail_publish">발행</string>
+    <string name="analytics_google_ads_programs_card_title">프로그램</string>
+    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_no_data">이 기간의 프로그램 없음</string>
     <string name="woopos_reader_connect_now_button">지금 연결</string>
     <string name="woopos_cart_title">장바구니</string>
     <string name="ai_product_creation_generate_details_button">상품 상세 정보 만들기</string>

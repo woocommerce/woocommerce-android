@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.google
 
+import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.google.WCGoogleAdsCampaign
@@ -21,14 +22,11 @@ class GoogleRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchGoogleAdsCampaigns(excludeRemovedCampaigns: Boolean = true): List<WCGoogleAdsCampaign> {
+    suspend fun fetchGoogleAdsCampaigns(excludeRemovedCampaigns: Boolean = true): Result<List<WCGoogleAdsCampaign>> {
         val result = googleStore.fetchGoogleAdsCampaigns(selectedSite.get(), excludeRemovedCampaigns)
-        when {
-            result.isError -> {
-                WooLog.e(WooLog.T.GOOGLE_ADS, "Error fetching Google Ads campaigns: ${result.error}")
-                return emptyList()
-            }
-            else -> return result.model ?: emptyList()
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(result.model ?: emptyList())
         }
     }
 }
