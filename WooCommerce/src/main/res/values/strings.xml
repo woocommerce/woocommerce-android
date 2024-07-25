@@ -2247,7 +2247,9 @@
     <string name="ai_product_creation_replace_image">Replace photo</string>
     <string name="ai_product_creation_remove_image">Remove photo</string>
     <string name="ai_product_creation_image_selected">Photo selected</string>
-    <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
+    <string name="ai_product_creation_image_scan_subtitle">Add text scanned from a photo</string>
+    <string name="ai_product_creation_image_selected_subtitle">Photo text added to starting info</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Scanning image</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
     <string name="ai_product_creation_prompt_suggestion_initial">Add your product\'s name and key features, benefits, or details to help it get found online.</string>
