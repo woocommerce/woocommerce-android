@@ -129,7 +129,10 @@ class MoreMenuViewModel @Inject constructor(
 
     fun onViewResumed() {
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
-        launch { trackBlazeDisplayed() }
+        launch {
+            trackBlazeDisplayed()
+            trackGoogleAdsDisplayed()
+        }
     }
 
     private fun generatePOSSection(wooPosState: MoreMenuItemButton.State) =
@@ -248,6 +251,18 @@ class MoreMenuViewModel @Inject constructor(
             AnalyticsTracker.track(
                 stat = BLAZE_ENTRY_POINT_DISPLAYED,
                 properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MORE_MENU_ITEM.trackingName)
+            )
+        }
+    }
+
+    private suspend fun trackGoogleAdsDisplayed() {
+        if (isGoogleForWooEnabled()) {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                        to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
+                )
             )
         }
     }
