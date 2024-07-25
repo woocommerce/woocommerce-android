@@ -499,7 +499,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
             flowOf(true)
         )
 
