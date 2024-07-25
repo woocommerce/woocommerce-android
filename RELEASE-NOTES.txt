@@ -3,6 +3,7 @@
 19.7
 -----
 - [*] Improve stability of the OrderDetail screen [https://github.com/woocommerce/woocommerce-android/pull/12106]
+- [*] Adds new advice box to product creation with AI prompt screen [https://github.com/woocommerce/woocommerce-android/pull/12129]
 
 19.6
 -----
