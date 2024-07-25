@@ -527,6 +527,10 @@
     <string name="analytics_bundles_card_title">Bundles</string>
     <string name="analytics_gift_cards_card_title">Gift Cards</string>
     <string name="analytics_google_ads_card_title">Google Campaigns</string>
+    <string name="analytics_google_ads_filter_total_sales">Total Sales</string>
+    <string name="analytics_google_ads_filter_conversion">Conversion</string>
+    <string name="analytics_google_ads_filter_impressions">Impressions</string>
+    <string name="analytics_google_ads_filter_clicks">Clicks</string>
     <string name="analytics_google_ads_programs_card_title">Programs</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
