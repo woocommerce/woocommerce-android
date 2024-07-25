@@ -3,7 +3,7 @@ package com.woocommerce.android.wear.ui.stats.datasource
 import com.woocommerce.android.wear.analytics.AnalyticsTracker
 import com.woocommerce.android.wear.extensions.combineWithTimeout
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
-import com.woocommerce.android.wear.system.NetworkStatus
+import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Error
 import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
@@ -25,7 +25,7 @@ class FetchStats @Inject constructor(
     private val statsRepository: StatsRepository,
     private val phoneRepository: PhoneConnectionRepository,
     private val wooCommerceStore: WooCommerceStore,
-    private val networkStatus: NetworkStatus,
+    private val connectionStatus: ConnectionStatus,
     private val analyticsTracker: AnalyticsTracker
 ) {
     private val revenueStats = MutableStateFlow<RevenueData?>(null)
@@ -34,7 +34,7 @@ class FetchStats @Inject constructor(
     suspend operator fun invoke(
         selectedSite: SiteModel
     ) = when {
-        networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
+        connectionStatus.isStoreConnected() -> fetchStatsFromStore(selectedSite)
         phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone(selectedSite)
         else -> flowOf(Error)
     }.distinctUntilChanged()

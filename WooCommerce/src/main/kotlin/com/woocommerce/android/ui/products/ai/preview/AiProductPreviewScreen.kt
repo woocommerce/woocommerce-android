@@ -67,7 +67,7 @@ import com.woocommerce.android.ui.products.ai.AiFeedbackForm
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
-import com.woocommerce.android.ui.products.ai.components.SelectedImageSection
+import com.woocommerce.android.ui.products.ai.components.SelectImageSection
 
 @Composable
 fun AiProductPreviewScreen(viewModel: AiProductPreviewViewModel) {
@@ -413,16 +413,16 @@ private fun ProductImage(
 ) {
     if (state.image == null) return
 
-    SelectedImageSection(
+    SelectImageSection(
         image = state.image,
-        subtitle = stringResource(id = R.string.ai_product_creation_image_selected_subtitle),
         onImageActionSelected = onImageActionSelected,
-        dropDownActions = listOf(ImageAction.View, ImageAction.Remove),
         modifier = modifier
             .background(
                 color = colorResource(id = R.color.ai_generated_text_background),
                 shape = RoundedCornerShape(8.dp)
-            )
+            ),
+        subtitle = stringResource(id = R.string.ai_product_creation_image_selected_subtitle),
+        dropDownActions = listOf(ImageAction.View, ImageAction.Remove)
     )
 
     if (state.showImageFullScreen) {

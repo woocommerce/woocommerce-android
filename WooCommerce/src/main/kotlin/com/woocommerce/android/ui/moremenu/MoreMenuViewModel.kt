@@ -25,7 +25,6 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -70,7 +69,6 @@ class MoreMenuViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val isWooPosEnabled: WooPosIsEnabled,
     private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled,
 ) : ScopedViewModel(savedState) {
@@ -306,14 +304,17 @@ class MoreMenuViewModel @Inject constructor(
         launch {
             val urlToOpen = determineUrlToOpen()
 
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canUseAutoLoginWebview()))
+            val successUrlTriggers = listOf(
+                AppUrls.GOOGLE_ADMIN_FIRST_CAMPAIGN_CREATION_SUCCESS_TRIGGER,
+                AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
+            )
 
-            // todo-11917: This is just temporary to test this function,
-            //  in practice we want to set this to true if a campaign is successfully created in webview.
-            if (!hasCreatedGoogleAdsCampaign) {
-                hasCreatedGoogleAdsCampaign = true
-            }
+            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, successUrlTriggers))
         }
+    }
+
+    fun handleSuccessfulGoogleAdsCreation() {
+        hasCreatedGoogleAdsCampaign = true
     }
 
     private suspend fun determineUrlToOpen(): String {
