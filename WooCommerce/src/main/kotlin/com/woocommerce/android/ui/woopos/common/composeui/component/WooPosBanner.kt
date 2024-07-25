@@ -43,7 +43,11 @@ fun WooPosBanner(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp.toAdaptivePadding())
+            .padding(
+                start = 2.dp.toAdaptivePadding(),
+                end = 2.dp.toAdaptivePadding(),
+                bottom = 16.dp.toAdaptivePadding()
+            )
     ) {
         Card(
             shape = RoundedCornerShape(8.dp),
