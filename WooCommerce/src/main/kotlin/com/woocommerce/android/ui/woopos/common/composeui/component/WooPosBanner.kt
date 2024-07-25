@@ -55,7 +55,7 @@ fun WooPosBanner(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
+                    .padding(24.dp.toAdaptivePadding())
             ) {
                 ConstraintLayout(
                     modifier = Modifier
@@ -85,13 +85,17 @@ fun WooPosBanner(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.h5,
-                        color = WooPosTheme.colors.onSurfaceHigh,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
+                            .padding(
+                                start = 16.dp.toAdaptivePadding(),
+                                bottom = 8.dp.toAdaptivePadding()
+                            )
                             .constrainAs(header) {
                                 top.linkTo(parent.top)
-                                start.linkTo(icon.end, margin = 16.dp)
-                                end.linkTo(close.start, margin = 16.dp)
+                                start.linkTo(icon.end)
+                                end.linkTo(close.start)
                                 width = Dimension.fillToConstraints
                             }
                     )
@@ -107,11 +111,12 @@ fun WooPosBanner(
                         text = annotatedText,
                         style = MaterialTheme.typography.body1,
                         fontWeight = FontWeight.Medium,
-                        color = WooPosTheme.colors.onSurfaceHigh,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                         modifier = Modifier
                             .clickable { onLearnMore() }
+                            .padding(start = 16.dp.toAdaptivePadding())
                             .constrainAs(description) {
-                                top.linkTo(header.bottom, margin = 8.dp)
+                                top.linkTo(header.bottom)
                                 start.linkTo(header.start)
                                 end.linkTo(close.start)
                                 width = Dimension.fillToConstraints
