@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
+import com.woocommerce.android.ui.analytics.hub.sync.UpdateGoogleCampaignStats
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
@@ -100,6 +101,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val dateUtils: DateUtils = mock()
     private val trackerEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
+    private val updateGoogleStats: UpdateGoogleCampaignStats = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -1010,6 +1012,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             transactionLauncher,
             trackerEventEmitter,
             updateStats,
+            updateGoogleStats,
             observeLastUpdate,
             localeProvider,
             feedbackRepository,
