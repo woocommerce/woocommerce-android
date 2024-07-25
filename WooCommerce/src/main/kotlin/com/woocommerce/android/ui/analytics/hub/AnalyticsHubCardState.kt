@@ -69,7 +69,9 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
         val listRightHeader: String,
         val delta: Int?,
         val items: List<AnalyticsHubListCardItemViewState>,
-        val reportUrl: String?
+        val reportUrl: String?,
+        val filterOptions: List<String> = emptyList(),
+        val onFilterSelected: (filterOption: String) -> Unit = {}
     ) : AnalyticsHubCustomSelectionListViewState() {
         val sign: String
             get() = when {
