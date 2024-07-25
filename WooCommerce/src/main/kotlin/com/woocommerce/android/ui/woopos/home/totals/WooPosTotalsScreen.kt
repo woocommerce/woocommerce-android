@@ -34,7 +34,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonLarge
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
@@ -111,12 +111,8 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        WooPosButton(
+        WooPosButtonLarge(
             text = stringResource(R.string.woopos_payment_collect_payment_label),
-            textStyle = MaterialTheme.typography.h4,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(160.dp),
             onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
         )
     }

@@ -14,7 +14,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -24,7 +23,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 fun WooPosButton(
     modifier: Modifier = Modifier,
     text: String,
-    textStyle: TextStyle = MaterialTheme.typography.h5,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -39,7 +37,29 @@ fun WooPosButton(
         Text(
             text = text,
             color = MaterialTheme.colors.onPrimary,
-            style = textStyle,
+            style = MaterialTheme.typography.h5,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+fun WooPosButtonLarge(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(160.dp)
+    ) {
+        Text(
+            text = text,
+            color = MaterialTheme.colors.onPrimary,
+            style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold,
         )
     }
@@ -88,6 +108,24 @@ fun WooPosButtonPreview() {
             contentAlignment = Alignment.Center
         ) {
             WooPosButton(
+                text = "Button",
+                onClick = {},
+            )
+        }
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosButtonLargePreview() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            WooPosButtonLarge(
                 text = "Button",
                 onClick = {},
             )
