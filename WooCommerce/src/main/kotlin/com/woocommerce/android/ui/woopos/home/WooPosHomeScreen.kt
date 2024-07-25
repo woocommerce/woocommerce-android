@@ -1,32 +1,46 @@
 package com.woocommerce.android.ui.woopos.home
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
@@ -78,9 +92,7 @@ private fun WooPosHomeScreen(
             is WooPosHomeState.Cart,
             WooPosHomeState.Checkout.NotPaid -> totalsWidthDp
 
-            is WooPosHomeState.ProductsInfoDialog -> {
-                screenWidthDp
-            }
+            is WooPosHomeState.ProductsInfoDialog.Visible, WooPosHomeState.ProductsInfoDialog.Hidden -> screenWidthDp
         },
         label = "totalsWidthAnimatedDp"
     )
@@ -91,7 +103,7 @@ private fun WooPosHomeScreen(
             WooPosHomeState.Cart.NotEmpty,
             WooPosHomeState.Checkout.NotPaid,
             WooPosHomeState.Checkout.Paid,
-            is WooPosHomeState.ProductsInfoDialog -> 0f
+            is WooPosHomeState.ProductsInfoDialog.Visible, WooPosHomeState.ProductsInfoDialog.Hidden -> 0f
         },
         label = "cartOverlayAnimated"
     )
@@ -100,7 +112,8 @@ private fun WooPosHomeScreen(
         when (state) {
             is WooPosHomeState.Cart,
             WooPosHomeState.Checkout.NotPaid,
-            is WooPosHomeState.ProductsInfoDialog -> 0.dp.toAdaptivePadding()
+            is WooPosHomeState.ProductsInfoDialog.Visible, WooPosHomeState.ProductsInfoDialog.Hidden ->
+                0.dp.toAdaptivePadding()
 
             WooPosHomeState.Checkout.Paid -> 24.dp.toAdaptivePadding()
         },
@@ -173,7 +186,55 @@ private fun WooPosHomeScreen(
                 Spacer(modifier = Modifier.width(24.dp.toAdaptivePadding()))
             }
         }
+//        TestAnimatedVisibility(state, onHomeUIEvent)
         HandleProductsInfoDialog(state, onHomeUIEvent)
+    }
+}
+
+@Composable
+fun TestAnimatedVisibility(
+    state: WooPosHomeState,
+    onHomeUIEvent: (WooPosHomeUIEvent) -> Boolean
+) {
+    println(state.hashCode() + onHomeUIEvent.hashCode())
+    var isVisible by remember { mutableStateOf(true) }
+
+    Column {
+        Button(onClick = {
+            isVisible = !isVisible
+        }) {
+            Text("Toggle Visibility")
+        }
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = expandVertically(animationSpec = tween(durationMillis = 5000)),
+            exit = shrinkVertically(animationSpec = tween(durationMillis = 2000))
+        ) {
+//            Dialog(
+//                onDismissRequest = { isVisible = !isVisible }
+//            ) {
+//                Box(
+//                    modifier = Modifier
+//                        .size(100.dp)
+//                        .background(Color.Red)
+//                )
+//            }
+            ProductInfoDialog(
+                state = WooPosHomeState.ProductsInfoDialog.Visible(
+                    header = R.string.woopos_dialog_products_info_heading,
+                    primaryMessage = R.string.woopos_dialog_products_info_primary_message,
+                    secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
+                    secondaryMessageActionLabel = R.string.woopos_dialog_products_info_secondary_message_action_label,
+                    primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
+                        label = R.string.woopos_dialog_products_info_button_label
+                    )
+                ),
+                onDismissRequest = {
+                    isVisible = !isVisible
+                }
+            ) {
+            }
+        }
     }
 }
 
@@ -182,20 +243,14 @@ private fun HandleProductsInfoDialog(
     state: WooPosHomeState,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Boolean
 ) {
-    when (state) {
-        is WooPosHomeState.ProductsInfoDialog -> {
-            ProductInfoDialog(
-                state,
-                onDismissRequest = {
-                    onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
-                },
-                onCreateOrderClick = {}
-            )
-        }
-
-        else -> {
-            // no op
-        }
+    if (state is WooPosHomeState.ProductsInfoDialog.Visible) {
+        ProductInfoDialog(
+            state,
+            onDismissRequest = {
+                onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
+            },
+            onCreateOrderClick = {}
+        )
     }
 }
 
@@ -244,7 +299,7 @@ private fun buildScrollStateForNavigationBetweenState(state: WooPosHomeState): S
                 animationSpec = animationSpec
             )
 
-            is WooPosHomeState.ProductsInfoDialog -> {
+            is WooPosHomeState.ProductsInfoDialog.Visible, WooPosHomeState.ProductsInfoDialog.Hidden -> {
                 // no op
             }
         }
