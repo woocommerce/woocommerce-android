@@ -58,25 +58,25 @@ private fun WooPosTotalsScreen(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Box(modifier = modifier) {
-        StateChangeAnimated(visible = state is WooPosTotalsState.Totals) {
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.Totals) {
             if (state is WooPosTotalsViewState.Totals) {
                 TotalsLoaded(state = state, onUIEvent = onUIEvent)
             }
         }
 
-        StateChangeAnimated(visible = state is WooPosTotalsState.PaymentSuccess) {
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentSuccess) {
             if (state is WooPosTotalsViewState.PaymentSuccess) {
                 WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
         }
 
-        StateChangeAnimated(visible = state is WooPosTotalsState.Loading) {
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.Loading) {
             if (state is WooPosTotalsViewState.Loading) {
                 TotalsLoading()
             }
         }
 
-        StateChangeAnimated(visible = state is WooPosTotalsState.Error) {
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.Error) {
             if (state is WooPosTotalsViewState.Error) {
                 TotalsErrorScreen(
                     errorMessage = state.message,
