@@ -64,6 +64,16 @@
                 tools:text="Total Sales"
                 />
 
+            <ImageButton
+                android:id="@+id/analyticsFilterButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Woo.ImageButton.More"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBaseline_toBaselineOf="@id/analyticsItemsTitle"
+                android:src="@drawable/ic_gridicons_align_justify"
+                android:contentDescription="@string/analytics_custom_list_selection_button_description" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/analyticsItemsValue"
                 style="@style/Woo.Card.Title"

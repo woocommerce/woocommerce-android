@@ -505,6 +505,7 @@
     <string name="analytics_google_ads_no_data">No Programs this period</string>
     <string name="analytics_session_no_data">No sessions this period</string>
     <string name="analytics_session_no_available">Session data unavailable</string>
+    <string name="analytics_custom_list_selection_button_description">Filter selection</string>
     <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
     <string name="analytics_spend_value">Spend: %1$s</string>
