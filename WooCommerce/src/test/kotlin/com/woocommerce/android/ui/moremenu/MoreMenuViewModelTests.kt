@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
@@ -87,6 +88,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
 
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+
     private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
@@ -114,6 +117,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             isWooPosEnabled = isWooPosEnabled,
             isWooPosFFEnabled = isWooPosFFEnabled,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
 

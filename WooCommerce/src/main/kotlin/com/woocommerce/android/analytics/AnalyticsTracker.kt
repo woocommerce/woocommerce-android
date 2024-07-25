@@ -670,6 +670,15 @@ class AnalyticsTracker private constructor(
         const val KEY_CARDS = "cards"
         const val KEY_SORTED_CARDS = "sorted_cards"
 
+        // -- Google for Woo
+        const val KEY_GOOGLEADS_SOURCE = "source"
+        const val KEY_GOOGLEADS_TYPE = "type"
+        const val KEY_GOOGLEADS_HAS_CAMPAIGNS = "has_campaigns"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE = "my_store"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU = "more_menu"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION = "creation"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_DASHBOARD = "dashboard"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {

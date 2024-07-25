@@ -80,12 +80,19 @@ private fun HandleEvents(
                 is DashboardGoogleAdsViewModel.ViewGoogleForWooEvent -> {
                     val direction = NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
                         urlToLoad = event.url,
-                        urlsToTriggerExit = event.successUrls.toTypedArray(),
                         title = webViewTitle,
-                        urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
+                        urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL,
+                        isCreationFlow = event.isCreationFlow,
+                        entryPointSource = GoogleAdsWebViewViewModel.EntryPointSource.MYSTORE
                     )
 
                     navController.navigateSafely(direction)
+                }
+
+                is DashboardGoogleAdsViewModel.NavigateToGoogleAdsSuccessEvent -> {
+                    navController.navigateSafely(
+                        NavGraphMainDirections.actionGlobalGoogleAdsCampaignSuccessBottomSheet()
+                    )
                 }
             }
         }
