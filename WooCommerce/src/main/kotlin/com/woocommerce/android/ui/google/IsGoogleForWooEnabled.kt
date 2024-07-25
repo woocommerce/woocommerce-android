@@ -15,7 +15,7 @@ class IsGoogleForWooEnabled @Inject constructor(
 
     companion object {
         private const val GOOGLE_FOR_WOO_PLUGIN_NAME = "google-listings-and-ads/google-listings-and-ads.php"
-        private const val GOOGLE_FOR_WOO_PLUGIN_MIN_VERSION = "2.7.5"
+        private const val GOOGLE_FOR_WOO_PLUGIN_MIN_VERSION = "2.7.7"
     }
 
     suspend operator fun invoke(): Boolean {
