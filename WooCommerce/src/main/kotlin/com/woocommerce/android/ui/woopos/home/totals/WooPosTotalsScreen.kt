@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,9 +53,7 @@ private fun WooPosTotalsScreen(
     state: WooPosTotalsState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
-    Column(
-        modifier = modifier
-    ) {
+    Box(modifier = modifier) {
         when (state) {
             is WooPosTotalsState.Totals -> {
                 TotalsLoaded(
@@ -87,18 +86,14 @@ private fun TotalsLoaded(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Column(
             modifier = Modifier
-                .padding(
-                    top = 24.dp.toAdaptivePadding(),
-                    start = 24.dp.toAdaptivePadding(),
-                    end = 24.dp.toAdaptivePadding(),
-                    bottom = 0.dp.toAdaptivePadding()
-                )
                 .weight(1f)
                 .fillMaxWidth()
                 .background(
@@ -120,8 +115,7 @@ private fun TotalsLoaded(
             text = stringResource(R.string.woopos_payment_collect_payment_label),
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(24.dp.toAdaptivePadding()),
+                .height(160.dp),
             onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
         )
     }
@@ -134,35 +128,17 @@ private fun TotalsGrid(state: WooPosTotalsState.Totals) {
             .padding(24.dp.toAdaptivePadding())
             .width(382.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.woopos_payment_subtotal_label),
-                style = MaterialTheme.typography.h5,
-            )
-            Text(
-                text = state.orderSubtotalText,
-                style = MaterialTheme.typography.h5,
-            )
-        }
+        TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_subtotal_label),
+            textTwo = state.orderSubtotalText,
+        )
 
         Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.woopos_payment_tax_label),
-                style = MaterialTheme.typography.h5,
-            )
-            Text(
-                text = state.orderTaxText,
-                style = MaterialTheme.typography.h5,
-            )
-        }
+        TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_tax_label),
+            textTwo = state.orderTaxText,
+        )
 
         Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
@@ -170,22 +146,40 @@ private fun TotalsGrid(state: WooPosTotalsState.Totals) {
 
         Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.woopos_payment_total_label),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Medium,
-            )
-            Text(
-                text = state.orderTotalText,
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold,
-            )
-        }
+        TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_total_label),
+            textTwo = state.orderTotalText,
+            styleOne = MaterialTheme.typography.h4,
+            styleTwo = MaterialTheme.typography.h4,
+            fontWeightOne = FontWeight.Medium,
+            fontWeightTwo = FontWeight.Bold,
+        )
+    }
+}
 
+@Composable
+private fun TotalsGridRow(
+    textOne: String,
+    textTwo: String,
+    styleOne: TextStyle = MaterialTheme.typography.h5,
+    styleTwo: TextStyle = MaterialTheme.typography.h5,
+    fontWeightOne: FontWeight = FontWeight.Normal,
+    fontWeightTwo: FontWeight = FontWeight.Normal,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = textOne,
+            style = styleOne,
+            fontWeight = fontWeightOne,
+        )
+        Text(
+            text = textTwo,
+            style = styleTwo,
+            fontWeight = fontWeightTwo,
+        )
     }
 }
 
