@@ -3,7 +3,7 @@
 19.7
 -----
 - [*] Improve stability of the OrderDetail screen [https://github.com/woocommerce/woocommerce-android/pull/12106]
-
+- [**] Google Listing and Ads: Google Ads campaign creation and management is now available for sites with the plugin active and set up. [https://github.com/woocommerce/woocommerce-android/pull/12145]
 19.6
 -----
 - [**] Stats: The Analytics Hub (accessed by tapping "View all store analytics" on the My Store dashboard) now includes analytics for Google Ads campaigns, when the Google Listings & Ads extension is active and connected to Google. [https://github.com/woocommerce/woocommerce-android/pull/12084]
