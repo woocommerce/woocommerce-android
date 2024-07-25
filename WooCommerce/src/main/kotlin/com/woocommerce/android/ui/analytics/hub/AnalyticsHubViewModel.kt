@@ -179,7 +179,7 @@ class AnalyticsHubViewModel @Inject constructor(
                 cancelCardsObservation()
                 val cardsState = configuration
                     .filter { cardConfiguration -> cardConfiguration.isVisible }
-                    .map { generateObservedLoadingState(it) }
+                    .map(::generateObservedLoadingState)
                 mutableState.update { viewState ->
                     viewState.copy(cards = AnalyticsHubCardViewState.CardsState(cardsState))
                 }
@@ -275,7 +275,7 @@ class AnalyticsHubViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private suspend fun generateObservedLoadingState(config: AnalyticCardConfiguration) =
+    private fun generateObservedLoadingState(config: AnalyticCardConfiguration) =
         when (config.card) {
             AnalyticsCards.Revenue -> {
                 observeRevenueChanges()
@@ -458,11 +458,8 @@ class AnalyticsHubViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private suspend fun observeGoogleAdsChanges() {
-        googleAdsObservationJob = updateGoogleStats(
-            rangeSelection = rangeSelectionState.value,
-            filterOption = GoogleStatsFilterOptions.TotalSales
-        ).onEach { state ->
+    private fun observeGoogleAdsChanges() {
+        googleAdsObservationJob = updateGoogleStats.googleAdsState.onEach { state ->
             when (state) {
                 is GoogleAdsState.Available -> {
                     updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
+import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.ui.analytics.hub.GoogleStatsFilterOptions
 import com.woocommerce.android.ui.analytics.hub.GoogleStatsFilterOptions.Clicks
 import com.woocommerce.android.ui.analytics.hub.GoogleStatsFilterOptions.Conversions
@@ -8,7 +9,8 @@ import com.woocommerce.android.ui.analytics.hub.GoogleStatsFilterOptions.TotalSa
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType
 import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.CLICKS
 import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.CONVERSIONS
@@ -18,14 +20,15 @@ import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType.SALES
 class UpdateGoogleCampaignStats @Inject constructor(
     private val analyticsRepository: AnalyticsRepository
 ) {
+    private val _googleAdsState = MutableStateFlow(GoogleAdsState.Available(GoogleAdsStat.EMPTY) as GoogleAdsState)
+    val googleAdsState: Flow<GoogleAdsState> = _googleAdsState
+
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
         filterOption: GoogleStatsFilterOptions
     ): Flow<GoogleAdsState> {
-        return flow {
-            emit(GoogleAdsState.Loading)
-            emit(fetchGoogleAdsAsync(rangeSelection, filterOption.toTotalType()))
-        }
+        fetchGoogleAdsAsync(rangeSelection, filterOption.toTotalType())
+        return googleAdsState
     }
 
     private fun GoogleStatsFilterOptions.toTotalType() =
@@ -41,6 +44,6 @@ class UpdateGoogleCampaignStats @Inject constructor(
         selectedStatsTotalType: TotalsType
     ) = analyticsRepository.fetchGoogleAdsStats(rangeSelection, selectedStatsTotalType)
         .run { this as? AnalyticsRepository.GoogleAdsResult.GoogleAdsData }
-        ?.let { GoogleAdsState.Available(it.googleAdsStat) }
-        ?: GoogleAdsState.Error
+        ?.let { _googleAdsState.value = GoogleAdsState.Available(it.googleAdsStat) }
+        ?: _googleAdsState.update { GoogleAdsState.Error }
 }
