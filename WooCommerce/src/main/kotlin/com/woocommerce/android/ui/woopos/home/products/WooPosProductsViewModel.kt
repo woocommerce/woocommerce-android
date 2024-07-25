@@ -31,22 +31,6 @@ class WooPosProductsViewModel @Inject constructor(
 
     init {
         loadProducts()
-        observeSimpleProductsOnlyBanner()
-    }
-
-    private fun observeSimpleProductsOnlyBanner() {
-        viewModelScope.launch {
-            preferencesRepository.isSimpleProductsOnlyBannerShown.collect { isShown ->
-                val currentState = _viewState.value
-                if (currentState is WooPosProductsViewState.Content) {
-                    _viewState.value = currentState.copy(
-                        bannerState = currentState.bannerState?.copy(
-                            isSimpleProductsOnlyBannerShown = isShown
-                        )
-                    )
-                }
-            }
-        }
     }
 
     private fun loadProducts() {
@@ -88,6 +72,14 @@ class WooPosProductsViewModel @Inject constructor(
     private fun onSimpleProductsOnlyBannerClosed() {
         viewModelScope.launch {
             preferencesRepository.setSimpleProductsOnlyBannerShown(true)
+            val currentState = _viewState.value
+            if (currentState is WooPosProductsViewState.Content) {
+                _viewState.value = currentState.copy(
+                    bannerState = currentState.bannerState?.copy(
+                        isSimpleProductsOnlyBannerShown = true
+                    )
+                )
+            }
         }
     }
 
