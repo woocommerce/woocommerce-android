@@ -55,7 +55,7 @@ fun WooPosBanner(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(36.dp.toAdaptivePadding())
+                    .padding(24.dp.toAdaptivePadding())
             ) {
                 ConstraintLayout(
                     modifier = Modifier
