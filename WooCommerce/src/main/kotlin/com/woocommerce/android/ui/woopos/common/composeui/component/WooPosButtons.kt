@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -23,6 +24,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 fun WooPosButton(
     modifier: Modifier = Modifier,
     text: String,
+    textStyle: TextStyle = MaterialTheme.typography.h5,
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -37,7 +39,7 @@ fun WooPosButton(
         Text(
             text = text,
             color = MaterialTheme.colors.onPrimary,
-            style = MaterialTheme.typography.h5,
+            style = textStyle,
             fontWeight = FontWeight.Bold,
         )
     }

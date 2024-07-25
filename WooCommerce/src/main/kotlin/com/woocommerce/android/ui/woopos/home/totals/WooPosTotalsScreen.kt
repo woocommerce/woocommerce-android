@@ -113,6 +113,7 @@ private fun TotalsLoaded(
 
         WooPosButton(
             text = stringResource(R.string.woopos_payment_collect_payment_label),
+            textStyle = MaterialTheme.typography.h4,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(160.dp),
