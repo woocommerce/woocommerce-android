@@ -11,11 +11,11 @@ sealed class WooPosProductsViewState(
     data class Content(
         val products: List<WooPosProductsListItem>,
         val loadingMore: Boolean,
-        val bannerState: BannerState? = null,
+        val bannerState: BannerState,
         override val reloadingProducts: Boolean = false,
     ) : WooPosProductsViewState(reloadingProducts) {
         data class BannerState(
-            val isSimpleProductsOnlyBannerShown: Boolean,
+            val isBannerVisible: Boolean,
             @StringRes val title: Int,
             @StringRes val message: Int,
             @DrawableRes val icon: Int,

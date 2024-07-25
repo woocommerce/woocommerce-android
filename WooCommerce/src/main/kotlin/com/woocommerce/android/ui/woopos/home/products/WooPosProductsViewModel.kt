@@ -6,17 +6,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.util.datastore.PosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +22,7 @@ class WooPosProductsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val priceFormat: WooPosFormatPrice,
-    private val posPreferencesRepository: PosPreferencesRepository
+    private val preferencesRepository: WooPosPreferencesRepository
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
@@ -33,24 +31,6 @@ class WooPosProductsViewModel @Inject constructor(
 
     init {
         loadProducts()
-        observeSimpleProductsOnlyBanner()
-    }
-
-    private fun observeSimpleProductsOnlyBanner() {
-        viewModelScope.launch {
-            posPreferencesRepository.isSimpleProductsOnlyBannerShown.collect { isShown ->
-                withContext(Dispatchers.Main) {
-                    val currentState = _viewState.value
-                    if (currentState is WooPosProductsViewState.Content) {
-                        _viewState.value = currentState.copy(
-                            bannerState = currentState.bannerState?.copy(
-                                isSimpleProductsOnlyBannerShown = isShown
-                            )
-                        )
-                    }
-                }
-            }
-        }
     }
 
     private fun loadProducts() {
@@ -84,6 +64,7 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.SimpleProductsBannerClosed -> {
                 onSimpleProductsOnlyBannerClosed()
             }
+
             WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked -> TODO()
             WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked -> {
                 onSimpleProductsDialogInfoClicked()
@@ -99,7 +80,13 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun onSimpleProductsOnlyBannerClosed() {
         viewModelScope.launch {
-            posPreferencesRepository.setSimpleProductsOnlyBannerShown(true)
+            val currentState = _viewState.value as WooPosProductsViewState.Content
+            preferencesRepository.setSimpleProductsOnlyBannerVisibility(false)
+            _viewState.value = currentState.copy(
+                bannerState = currentState.bannerState.copy(
+                    isBannerVisible = false
+                )
+            )
         }
     }
 
@@ -125,6 +112,7 @@ class WooPosProductsViewModel @Inject constructor(
             products.isEmpty() && !isReloadingProducts() -> WooPosProductsViewState.Empty()
             products.isEmpty() && isReloadingProducts() ->
                 WooPosProductsViewState.Loading(reloadingProducts = true)
+
             else -> products.toContentState()
         }
 
@@ -140,7 +128,7 @@ class WooPosProductsViewModel @Inject constructor(
         loadingMore = false,
         reloadingProducts = false,
         bannerState = WooPosProductsViewState.Content.BannerState(
-            isSimpleProductsOnlyBannerShown = shouldShowProductsOnlyBanner(),
+            isBannerVisible = shouldShowProductsOnlyBanner(),
             title = R.string.woopos_banner_simple_products_only_title,
             message = R.string.woopos_banner_simple_products_only_message,
             icon = R.drawable.info,
@@ -176,6 +164,6 @@ class WooPosProductsViewModel @Inject constructor(
     }
 
     private suspend fun shouldShowProductsOnlyBanner(): Boolean {
-        return posPreferencesRepository.isSimpleProductsOnlyBannerShown.first()
+        return preferencesRepository.isSimpleProductsOnlyBannerVisible.first()
     }
 }

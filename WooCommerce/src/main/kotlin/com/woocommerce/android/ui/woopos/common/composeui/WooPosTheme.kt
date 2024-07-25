@@ -18,7 +18,6 @@ data class CustomColors(
     val border: Color,
     val success: Color,
     val error: Color,
-    val onSurfaceHigh: Color,
 )
 
 private val DarkColorPalette = darkColors(
@@ -50,7 +49,6 @@ private val DarkCustomColors = CustomColors(
     border = Color(0xFF8D8D8D),
     success = Color(0xFF06B166),
     error = Color(0xFFBE4400),
-    onSurfaceHigh = Color(0xDEFFFFFF)
 )
 
 private val LightCustomColors = CustomColors(
@@ -58,7 +56,6 @@ private val LightCustomColors = CustomColors(
     border = Color(0xFFC6C6C8),
     success = Color(0xFF03D479),
     error = Color(0xFFF16618),
-    onSurfaceHigh = Color(0xDE000000),
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {

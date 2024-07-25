@@ -43,7 +43,11 @@ fun WooPosBanner(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp.toAdaptivePadding())
+            .padding(
+                start = 2.dp.toAdaptivePadding(),
+                end = 2.dp.toAdaptivePadding(),
+                bottom = 16.dp.toAdaptivePadding()
+            )
     ) {
         Card(
             shape = RoundedCornerShape(8.dp),
@@ -55,7 +59,7 @@ fun WooPosBanner(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
+                    .padding(24.dp.toAdaptivePadding())
             ) {
                 ConstraintLayout(
                     modifier = Modifier
@@ -85,13 +89,17 @@ fun WooPosBanner(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.h5,
-                        color = WooPosTheme.colors.onSurfaceHigh,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
+                            .padding(
+                                start = 36.dp.toAdaptivePadding(),
+                                bottom = 8.dp.toAdaptivePadding()
+                            )
                             .constrainAs(header) {
                                 top.linkTo(parent.top)
-                                start.linkTo(icon.end, margin = 16.dp)
-                                end.linkTo(close.start, margin = 16.dp)
+                                start.linkTo(icon.end)
+                                end.linkTo(close.start)
                                 width = Dimension.fillToConstraints
                             }
                     )
@@ -99,6 +107,7 @@ fun WooPosBanner(
                     val annotatedText = buildAnnotatedString {
                         append(message)
                         withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) {
+                            append(" ")
                             append(stringResource(id = R.string.woopos_banner_simple_products_only_message_learn_more))
                         }
                     }
@@ -106,12 +115,13 @@ fun WooPosBanner(
                     Text(
                         text = annotatedText,
                         style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.Medium,
-                        color = WooPosTheme.colors.onSurfaceHigh,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                         modifier = Modifier
                             .clickable { onLearnMore() }
+                            .padding(start = 36.dp.toAdaptivePadding())
                             .constrainAs(description) {
-                                top.linkTo(header.bottom, margin = 8.dp)
+                                top.linkTo(header.bottom)
                                 start.linkTo(header.start)
                                 end.linkTo(close.start)
                                 width = Dimension.fillToConstraints
@@ -124,7 +134,6 @@ fun WooPosBanner(
 
                     IconButton(
                         modifier = Modifier
-                            .size(32.dp)
                             .constrainAs(close) {
                                 top.linkTo(header.top)
                                 bottom.linkTo(header.bottom)
@@ -133,6 +142,7 @@ fun WooPosBanner(
                         onClick = { onClose() }
                     ) {
                         Icon(
+                            modifier = Modifier.size(32.dp),
                             imageVector = Icons.Default.Close,
                             tint = MaterialTheme.colors.onSurface,
                             contentDescription = stringResource(
