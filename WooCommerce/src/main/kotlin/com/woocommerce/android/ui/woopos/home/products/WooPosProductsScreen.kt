@@ -174,7 +174,7 @@ private fun ProductsToolbar(
         )
         when (productViewState) {
             is WooPosProductsViewState.Content -> {
-                if (productViewState.bannerState?.isSimpleProductsOnlyBannerShown != false) {
+                if (!productViewState.bannerState.isBannerVisible) {
                     IconButton(
                         modifier = Modifier.size(40.dp),
                         onClick = {
@@ -584,7 +584,7 @@ fun WooPosHomeScreenProductsWithInfoIconInToolbarPreview(modifier: Modifier = Mo
             loadingMore = false,
             reloadingProducts = false,
             bannerState = WooPosProductsViewState.Content.BannerState(
-                isSimpleProductsOnlyBannerShown = true,
+                isBannerVisible = false,
                 title = R.string.woopos_banner_simple_products_only_title,
                 message = R.string.woopos_banner_simple_products_only_message,
                 icon = R.drawable.info,
