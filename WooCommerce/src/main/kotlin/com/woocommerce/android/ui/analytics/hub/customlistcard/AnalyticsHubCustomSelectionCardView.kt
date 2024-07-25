@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -78,6 +79,18 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
                 }
             }
         } ?: run { binding.reportGroup.visibility = GONE }
+
+        binding.analyticsFilterButton.setOnClickListener {
+            val popup = PopupMenu(ctx, it)
+            viewState.filterOptions.forEach { option ->
+                popup.menu.add(option)
+            }
+            popup.setOnMenuItemClickListener { item ->
+                viewState.onFilterSelected(item.title.toString())
+                true
+            }
+            popup.show()
+        }
     }
 
     private fun setNoAdsViewState(viewState: NoAdsState) {
