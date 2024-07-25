@@ -143,7 +143,7 @@ private fun TotalsGrid(state: WooPosTotalsState.Totals) {
 
         Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
-        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
+        Divider(color = WooPosTheme.colors.border, thickness = 1.dp)
 
         Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
