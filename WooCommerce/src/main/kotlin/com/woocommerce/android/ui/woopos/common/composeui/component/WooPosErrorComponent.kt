@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -67,7 +69,13 @@ fun WooPosErrorComponent(
                 fontWeight = FontWeight.SemiBold
             )
 
-            Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
+            Divider(
+                color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
+                thickness = 0.5.dp,
+                modifier = Modifier
+                    .padding(vertical = 8.dp.toAdaptivePadding())
+                    .widthIn(min = 150.dp.toAdaptivePadding())
+            )
 
             Text(
                 text = reason,
