@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosTotalsViewModel @Inject constructor(
+    private val resourceProvider: ResourceProvider,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val cardReaderFacade: WooPosCardReaderFacade,
@@ -125,7 +128,9 @@ class WooPosTotalsViewModel @Inject constructor(
                     },
                     onFailure = { error ->
                         WooLog.e(T.ORDERS, "Order creation failed - $error")
-                        uiState.value = WooPosTotalsViewState.Error(error.message ?: "Unknown error")
+                        uiState.value = WooPosTotalsViewState.Error(
+                            resourceProvider.getString(R.string.woopos_totals_order_creation_error)
+                        )
                     }
                 )
         }
