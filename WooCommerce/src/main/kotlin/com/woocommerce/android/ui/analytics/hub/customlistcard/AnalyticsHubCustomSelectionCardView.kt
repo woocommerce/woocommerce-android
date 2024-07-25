@@ -80,17 +80,23 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
             }
         } ?: run { binding.reportGroup.visibility = GONE }
 
-        binding.analyticsFilterButton.setOnClickListener {
-            val popup = PopupMenu(ctx, it)
-            viewState.filterOptions.forEach { option ->
-                popup.menu.add(option)
-            }
-            popup.setOnMenuItemClickListener { item ->
+        binding.analyticsFilterButton
+            .takeIf { viewState.filterOptions.isNotEmpty() }
+            ?.setOnClickListener { displayFilterPopupMenu(it, viewState) }
+            ?: run { binding.analyticsFilterButton.visibility = GONE }
+    }
+
+    private fun displayFilterPopupMenu(
+        filterButton: View,
+        viewState: DataViewState
+    ) {
+        PopupMenu(ctx, filterButton).apply {
+            viewState.filterOptions.forEach { menu.add(it) }
+            setOnMenuItemClickListener { item ->
                 viewState.onFilterSelected(item.title.toString())
                 true
             }
-            popup.show()
-        }
+        }.show()
     }
 
     private fun setNoAdsViewState(viewState: NoAdsState) {
