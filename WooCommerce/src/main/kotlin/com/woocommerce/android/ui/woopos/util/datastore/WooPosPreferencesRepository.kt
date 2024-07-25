@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class PosPreferencesRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
+class WooPosPreferencesRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
     companion object {
         val SIMPLE_PRODUCTS_ONLY_BANNER_SHOWN = booleanPreferencesKey("isSimpleProductsOnlyBannerShown")

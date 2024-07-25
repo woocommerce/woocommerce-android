@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.datastore.PosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -33,7 +33,7 @@ class WooPosProductsViewModelTest {
 
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val posPreferencesRepository: PosPreferencesRepository = mock()
+    private val posPreferencesRepository: WooPosPreferencesRepository = mock()
     private val priceFormat: WooPosFormatPrice = mock {
         onBlocking { invoke(BigDecimal("10.0")) }.thenReturn("$10.0")
         onBlocking { invoke(BigDecimal("20.0")) }.thenReturn("$20.0")
