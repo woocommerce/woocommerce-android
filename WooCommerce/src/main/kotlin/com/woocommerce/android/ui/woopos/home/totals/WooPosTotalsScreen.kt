@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,23 +58,26 @@ private fun WooPosTotalsScreen(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Box(modifier = modifier) {
-        when (state) {
-            is WooPosTotalsState.Totals -> {
-                TotalsLoaded(
-                    state = state,
-                    onUIEvent = onUIEvent
-                )
+        StateChangeAnimated(visible = state is WooPosTotalsState.Totals) {
+            if (state is WooPosTotalsState.Totals) {
+                TotalsLoaded(state = state, onUIEvent = onUIEvent)
             }
+        }
 
-            is WooPosTotalsState.PaymentSuccess -> {
+        StateChangeAnimated(visible = state is WooPosTotalsState.PaymentSuccess) {
+            if (state is WooPosTotalsState.PaymentSuccess) {
                 WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
+        }
 
-            is WooPosTotalsState.Loading -> {
+        StateChangeAnimated(visible = state is WooPosTotalsState.Loading) {
+            if (state is WooPosTotalsState.Loading) {
                 TotalsLoading()
             }
+        }
 
-            is WooPosTotalsState.Error -> {
+        StateChangeAnimated(visible = state is WooPosTotalsState.Error) {
+            if (state is WooPosTotalsState.Error) {
                 TotalsErrorScreen(
                     errorMessage = state.message,
                     onUIEvent = onUIEvent
@@ -78,6 +85,19 @@ private fun WooPosTotalsScreen(
             }
         }
     }
+}
+
+@Composable
+private fun StateChangeAnimated(
+    visible: Boolean,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        content = content
+    )
 }
 
 @Composable
