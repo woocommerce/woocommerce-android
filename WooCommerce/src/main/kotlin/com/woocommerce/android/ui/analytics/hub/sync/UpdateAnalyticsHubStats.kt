@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.GiftCardsStat
-import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -46,9 +45,6 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val _giftCardsState = MutableStateFlow(GiftCardsState.Available(GiftCardsStat.EMPTY) as GiftCardsState)
     val giftCardsState: Flow<GiftCardsState> = _giftCardsState
 
-    private val _googleAdsState = MutableStateFlow(GoogleAdsState.Available(GoogleAdsStat.EMPTY) as GoogleAdsState)
-    val googleAdsState: Flow<GoogleAdsState> = _googleAdsState
-
     private val fullStatsRequestState by lazy { combineFullUpdateState() }
 
     suspend operator fun invoke(
@@ -65,7 +61,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Session -> visitorsCountState.update { VisitorsState.Loading }
                 AnalyticsCards.Bundles -> _bundlesState.update { BundlesState.Loading }
                 AnalyticsCards.GiftCards -> _giftCardsState.update { GiftCardsState.Loading }
-                AnalyticsCards.GoogleAds -> _googleAdsState.update { GoogleAdsState.Loading }
+                AnalyticsCards.GoogleAds -> { /* Handled by the [UpdateGoogleCampaignStats] use case */}
             }
         }
 
@@ -82,7 +78,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         fetchStrategy: FetchStrategy,
         visibleCards: List<AnalyticsCards>
     ) {
-        val asyncCalls = visibleCards.map { card ->
+        val asyncCalls = visibleCards.mapNotNull { card ->
             when (card) {
                 AnalyticsCards.Revenue -> scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Orders -> scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy)
@@ -90,7 +86,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Session -> scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Bundles -> scope.fetchBundlesDataAsync(rangeSelection)
                 AnalyticsCards.GiftCards -> scope.fetchGiftCardDataAsync(rangeSelection)
-                AnalyticsCards.GoogleAds -> scope.fetchGoogleAdsAsync(rangeSelection)
+                AnalyticsCards.GoogleAds -> null // Handled by the [UpdateGoogleCampaignStats] use case
             }
         }
 
@@ -222,14 +218,5 @@ class UpdateAnalyticsHubStats @Inject constructor(
             .run { this as? AnalyticsRepository.GiftCardResult.GiftCardData }
             ?.let { _giftCardsState.value = GiftCardsState.Available(it.giftCardStat) }
             ?: _giftCardsState.update { GiftCardsState.Error }
-    }
-
-    private fun CoroutineScope.fetchGoogleAdsAsync(
-        rangeSelection: StatsTimeRangeSelection
-    ) = async {
-        analyticsRepository.fetchGoogleAdsStats(rangeSelection)
-            .run { this as? AnalyticsRepository.GoogleAdsResult.GoogleAdsData }
-            ?.let { _googleAdsState.value = GoogleAdsState.Available(it.googleAdsStat) }
-            ?: _googleAdsState.update { GoogleAdsState.Error }
     }
 }
