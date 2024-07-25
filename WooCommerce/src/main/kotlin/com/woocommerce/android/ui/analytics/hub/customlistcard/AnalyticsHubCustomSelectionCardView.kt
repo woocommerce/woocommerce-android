@@ -82,15 +82,14 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
 
         binding.analyticsFilterButton
             .takeIf { viewState.filterOptions.isNotEmpty() }
-            ?.setOnClickListener { displayFilterPopupMenu(it, viewState) }
+            ?.setOnClickListener { it.displayFilterPopupMenu(viewState) }
             ?: run { binding.analyticsFilterButton.visibility = GONE }
     }
 
-    private fun displayFilterPopupMenu(
-        filterButton: View,
+    private fun View.displayFilterPopupMenu(
         viewState: DataViewState
     ) {
-        PopupMenu(ctx, filterButton).apply {
+        PopupMenu(ctx, this).apply {
             viewState.filterOptions.forEach { menu.add(it) }
             setOnMenuItemClickListener { item ->
                 viewState.onFilterSelected(item.title.toString())
@@ -106,7 +105,8 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
         binding.analyticsItemsValue.visibility = GONE
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
-        binding.analyticsItemsTag.visibility = View.GONE
+        binding.analyticsItemsTag.visibility = GONE
+        binding.analyticsFilterButton.visibility = GONE
         binding.noDataText.visibility = VISIBLE
         binding.noDataText.text = viewState.message
     }
@@ -122,8 +122,9 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
         binding.analyticsItemsValue.visibility = GONE
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
-        binding.analyticsItemsTag.visibility = View.GONE
+        binding.analyticsItemsTag.visibility = GONE
         binding.noDataText.visibility = GONE
+        binding.analyticsFilterButton.visibility = GONE
     }
 
     private fun getDeltaTagText(viewState: DataViewState) =
