@@ -37,102 +37,100 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
 fun ProductInfoDialog(
-    state: WooPosHomeState.ProductsInfoDialog,
+    state: WooPosHomeState.ProductsInfoDialog.Visible,
     onDismissRequest: () -> Unit,
     onCreateOrderClick: () -> Unit
 ) {
-    if (state.shouldDisplayDialog) {
-        Dialog(
-            onDismissRequest = onDismissRequest,
+    Dialog(
+        onDismissRequest = onDismissRequest,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                elevation = 8.dp,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = 8.dp,
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.align(Alignment.Center)
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.align(Alignment.Center)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                            IconButton(
+                                onClick = onDismissRequest,
                             ) {
-                                IconButton(
-                                    onClick = onDismissRequest,
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Close,
-                                        tint = MaterialTheme.colors.onSurface,
-                                        contentDescription = stringResource(
-                                            id = R.string.woopos_banner_simple_products_close_content_description
-                                        ),
-                                    )
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    tint = MaterialTheme.colors.onSurface,
+                                    contentDescription = stringResource(
+                                        id = R.string.woopos_banner_simple_products_close_content_description
+                                    ),
+                                )
                             }
-                            Text(
-                                text = stringResource(id = state.header),
-                                style = MaterialTheme.typography.h5,
-                                fontWeight = FontWeight.Bold,
-                                color = WooPosTheme.colors.onSurfaceHigh,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Text(
-                                text = stringResource(id = state.primaryMessage),
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Normal,
-                                    lineHeight = 24.sp
-                                ),
-                                color = WooPosTheme.colors.onSurfaceHigh,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                            Box(
-                                Modifier
-                                    .background(color = Color(0xF6F7F7).copy(alpha = 0.8f))
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
+                        }
+                        Text(
+                            text = stringResource(id = state.header),
+                            style = MaterialTheme.typography.h5,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = stringResource(id = state.primaryMessage),
+                            style = TextStyle(
+                                fontWeight = FontWeight.Normal,
+                                lineHeight = 24.sp
+                            ),
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        Box(
+                            Modifier
+                                .background(color = Color(0xF6F7F7).copy(alpha = 0.8f))
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                Text(
+                                    text = stringResource(id = state.secondaryMessage),
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Normal,
+                                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                                )
+                                TextButton(
+                                    onClick = onCreateOrderClick,
                                 ) {
                                     Text(
-                                        text = stringResource(id = state.secondaryMessage),
-                                        textAlign = TextAlign.Center,
-                                        fontWeight = FontWeight.Normal,
-                                        color = WooPosTheme.colors.onSurfaceHigh,
+                                        text = stringResource(id = state.secondaryMessageActionLabel),
+                                        color = MaterialTheme.colors.primary,
                                     )
-                                    TextButton(
-                                        onClick = onCreateOrderClick,
-                                    ) {
-                                        Text(
-                                            text = stringResource(id = state.secondaryMessageActionLabel),
-                                            color = MaterialTheme.colors.primary,
-                                        )
-                                    }
                                 }
                             }
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(
-                                onClick = onDismissRequest,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(text = stringResource(id = state.primaryButton.label))
-                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = onDismissRequest,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = stringResource(id = state.primaryButton.label))
                         }
                     }
                 }
@@ -146,13 +144,12 @@ fun ProductInfoDialog(
 fun ProductInfoDialogPreview() {
     WooPosTheme {
         ProductInfoDialog(
-            state = WooPosHomeState.ProductsInfoDialog(
-                shouldDisplayDialog = true,
+            state = WooPosHomeState.ProductsInfoDialog.Visible(
                 header = R.string.woopos_dialog_products_info_heading,
                 primaryMessage = R.string.woopos_dialog_products_info_primary_message,
                 secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
                 secondaryMessageActionLabel = R.string.woopos_dialog_products_info_secondary_message_action_label,
-                primaryButton = WooPosHomeState.ProductsInfoDialog.PrimaryButton(
+                primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
                     label = R.string.woopos_dialog_products_info_button_label
                 )
             ),
