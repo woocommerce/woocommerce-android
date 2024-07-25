@@ -13,16 +13,32 @@ sealed class WooPosHomeState {
         data object Paid : Checkout()
     }
 
-    data class ProductsInfoDialog(
-        val shouldDisplayDialog: Boolean = false,
-        @StringRes val header: Int,
-        @StringRes val primaryMessage: Int,
-        @StringRes val secondaryMessage: Int,
-        @StringRes val secondaryMessageActionLabel: Int,
-        val primaryButton: PrimaryButton,
-    ) : WooPosHomeState() {
-        data class PrimaryButton(
-            @StringRes val label: Int,
-        )
+    sealed class ProductsInfoDialog : WooPosHomeState() {
+        data object Hidden : WooPosHomeState()
+
+        data class Visible(
+            @StringRes val header: Int,
+            @StringRes val primaryMessage: Int,
+            @StringRes val secondaryMessage: Int,
+            @StringRes val secondaryMessageActionLabel: Int,
+            val primaryButton: PrimaryButton,
+        ) : ProductsInfoDialog() {
+            data class PrimaryButton(
+                @StringRes val label: Int,
+            )
+        }
     }
+
+//    data class ProductsInfoDialog(
+//        val shouldDisplayDialog: Boolean = false,
+//        @StringRes val header: Int,
+//        @StringRes val primaryMessage: Int,
+//        @StringRes val secondaryMessage: Int,
+//        @StringRes val secondaryMessageActionLabel: Int,
+//        val primaryButton: PrimaryButton,
+//    ) : WooPosHomeState() {
+//        data class PrimaryButton(
+//            @StringRes val label: Int,
+//        )
+//    }
 }
