@@ -2,12 +2,15 @@ package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.ListStore.OnListChanged
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.util.AppLog
 import java.util.Collections
@@ -15,7 +18,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FetchOrdersRepository @Inject constructor(private val dispatcher: Dispatcher) {
+class FetchOrdersRepository @Inject constructor(
+    private val dispatcher: Dispatcher,
+    private val coroutineScope: CoroutineScope,
+    private val storeOrdersListLastUpdate: StoreOrdersListLastUpdate
+) {
     /**
      * The [RemoteId] of the OrderEntity in the process of being fetched from
      * the remote API.
@@ -59,5 +66,17 @@ class FetchOrdersRepository @Inject constructor(private val dispatcher: Dispatch
             )
         }
         ongoingRequests.removeAll(event.orderIds.toSet())
+    }
+
+    @Suppress("unused", "ForbiddenComment")
+    @Subscribe(threadMode = ThreadMode.BACKGROUND)
+    fun onOrderListFetched(event: OnListChanged) {
+        if (event.isError.not() && event.causeOfChange == OnListChanged.CauseOfListChange.FIRST_PAGE_FETCHED) {
+            coroutineScope.launch {
+                event.listDescriptors.forEach { listDescriptor ->
+                    storeOrdersListLastUpdate(listDescriptor.uniqueIdentifier.value)
+                }
+            }
+        }
     }
 }
