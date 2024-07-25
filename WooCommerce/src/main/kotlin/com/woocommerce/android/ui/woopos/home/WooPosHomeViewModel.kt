@@ -41,16 +41,14 @@ class WooPosHomeViewModel @Inject constructor(
                         false
                     }
 
-                    is WooPosHomeState.ProductsInfoDialog -> {
+                    is WooPosHomeState.ProductsInfoDialog.Visible, WooPosHomeState.ProductsInfoDialog.Hidden -> {
                         false
                     }
                 }
             }
 
             WooPosHomeUIEvent.DismissProductsInfoDialog -> {
-                _state.value = (_state.value as? WooPosHomeState.ProductsInfoDialog)?.copy(
-                    shouldDisplayDialog = false
-                )!!
+                _state.value = WooPosHomeState.ProductsInfoDialog.Hidden
                 true
             }
         }
@@ -99,16 +97,15 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     ChildToParentEvent.ProductsDialogInfoIconClicked -> {
-                        _state.value = WooPosHomeState.ProductsInfoDialog(
-                            shouldDisplayDialog = true,
+                        _state.value = WooPosHomeState.ProductsInfoDialog.Visible(
                             header = R.string.woopos_dialog_products_info_heading,
                             primaryMessage = R.string.woopos_dialog_products_info_primary_message,
                             secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
                             secondaryMessageActionLabel =
                             R.string.woopos_dialog_products_info_secondary_message_action_label,
-                            primaryButton = WooPosHomeState.ProductsInfoDialog.PrimaryButton(
+                            primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
                                 label = R.string.woopos_dialog_products_info_button_label,
-                            ),
+                            )
                         )
                     }
                 }
