@@ -1,6 +1,7 @@
 package com.woocommerce.android.model
 
 import com.woocommerce.android.util.CurrencyFormatter
+import org.wordpress.android.fluxc.store.WCGoogleStore
 
 data class GoogleAdsStat(
     val googleAdsCampaigns: List<GoogleAdsCampaign>,
@@ -8,7 +9,8 @@ data class GoogleAdsStat(
         sales = 0.0,
         spend = 0.0
     ),
-    val deltaPercentage: DeltaPercentage
+    val deltaPercentage: DeltaPercentage,
+    val totalType: StatType
 ) {
     companion object {
         val EMPTY = GoogleAdsStat(
@@ -17,7 +19,8 @@ data class GoogleAdsStat(
                 sales = 0.0,
                 spend = 0.0
             ),
-            deltaPercentage = DeltaPercentage.NotExist
+            deltaPercentage = DeltaPercentage.NotExist,
+            totalType = StatType.TOTAL_SALES
         )
     }
 }
@@ -41,4 +44,18 @@ data class GoogleAdsTotals(
         spend?.let {
             currencyFormatter.formatCurrency(it.toString())
         }.orEmpty()
+}
+
+enum class StatType {
+    TOTAL_SALES,
+    CLICKS,
+    IMPRESSIONS,
+    CONVERSIONS;
+
+    fun toTotalsType() = when (this) {
+        TOTAL_SALES -> WCGoogleStore.TotalsType.SALES
+        CLICKS -> WCGoogleStore.TotalsType.CLICKS
+        IMPRESSIONS -> WCGoogleStore.TotalsType.IMPRESSIONS
+        CONVERSIONS -> WCGoogleStore.TotalsType.CONVERSIONS
+    }
 }
