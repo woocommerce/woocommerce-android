@@ -73,7 +73,7 @@ private fun WooPosTotalsScreen(
             }
 
             is WooPosTotalsState.Error -> {
-                WooPosTotalsErrorScreen(
+                TotalsErrorScreen(
                     errorMessage = state.message,
                     onUIEvent = onUIEvent
                 )
@@ -250,7 +250,7 @@ private fun TotalsLoading() {
 }
 
 @Composable
-private fun WooPosTotalsErrorScreen(
+private fun TotalsErrorScreen(
     errorMessage: String,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
@@ -269,7 +269,7 @@ private fun WooPosTotalsErrorScreen(
 @WooPosPreview
 fun WooPosTotalsErrorScreenPreview() {
     WooPosTheme {
-        WooPosTotalsErrorScreen(
+        TotalsErrorScreen(
             errorMessage = "An error occurred. Please try again.",
             onUIEvent = {}
         )
