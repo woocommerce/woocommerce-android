@@ -22,6 +22,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -41,7 +42,7 @@ class WooPosProductsViewModelTest {
 
     @Before
     fun setup() {
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
             flowOf(false)
         )
     }
@@ -295,7 +296,7 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `when simple products only banner is closed, then state is updated with simple products value to true`() = runTest {
+    fun `when simple products only banner is closed, then state is updated with simple products value to false`() = runTest {
         // GIVEN
         val products = listOf(
             ProductTestUtils.generateProduct(
@@ -321,11 +322,11 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerClosed)
 
         // THEN
-        assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == true)
+        assertThat(contentState.bannerState.isBannerVisible).isFalse()
     }
 
     @Test
-    fun `given simple products only banner is already shown, when view model init, then state is updated with simple products value to true`() = runTest {
+    fun `given simple products only banner is shown, when view model init, then state is updated with simple products value to true`() = runTest {
         // GIVEN
         val products = listOf(
             ProductTestUtils.generateProduct(
@@ -343,7 +344,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
             flowOf(true)
         )
 
@@ -352,7 +353,7 @@ class WooPosProductsViewModelTest {
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
         // THEN
-        assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == true)
+        assertTrue(contentState.bannerState.isBannerVisible)
     }
 
     @Test
@@ -374,7 +375,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
             flowOf(false)
         )
 
@@ -383,7 +384,7 @@ class WooPosProductsViewModelTest {
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
         // THEN
-        assertThat(contentState.bannerState?.isSimpleProductsOnlyBannerShown == false)
+        assertThat(contentState.bannerState.isBannerVisible).isFalse()
     }
 
     @Test
@@ -405,7 +406,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
             flowOf(false)
         )
 
@@ -414,7 +415,7 @@ class WooPosProductsViewModelTest {
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
         // THEN
-        assertThat(contentState.bannerState?.title).isEqualTo(R.string.woopos_banner_simple_products_only_title)
+        assertThat(contentState.bannerState.title).isEqualTo(R.string.woopos_banner_simple_products_only_title)
     }
 
     @Test
@@ -436,7 +437,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
             flowOf(false)
         )
 
@@ -445,7 +446,7 @@ class WooPosProductsViewModelTest {
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
         // THEN
-        assertThat(contentState.bannerState?.message).isEqualTo(R.string.woopos_banner_simple_products_only_message)
+        assertThat(contentState.bannerState.message).isEqualTo(R.string.woopos_banner_simple_products_only_message)
     }
 
     @Test
@@ -467,7 +468,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerShown).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
             flowOf(false)
         )
 
@@ -476,7 +477,7 @@ class WooPosProductsViewModelTest {
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
         // THEN
-        assertThat(contentState.bannerState?.icon).isEqualTo(R.drawable.info)
+        assertThat(contentState.bannerState.icon).isEqualTo(R.drawable.info)
     }
 
     private fun createViewModel() =

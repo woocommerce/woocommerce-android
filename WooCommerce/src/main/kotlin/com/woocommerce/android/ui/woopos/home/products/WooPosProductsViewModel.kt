@@ -71,15 +71,13 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun onSimpleProductsOnlyBannerClosed() {
         viewModelScope.launch {
-            preferencesRepository.setSimpleProductsOnlyBannerShown(true)
-            val currentState = _viewState.value
-            if (currentState is WooPosProductsViewState.Content) {
-                _viewState.value = currentState.copy(
-                    bannerState = currentState.bannerState?.copy(
-                        isSimpleProductsOnlyBannerShown = true
-                    )
+            val currentState = _viewState.value as WooPosProductsViewState.Content
+            preferencesRepository.setSimpleProductsOnlyBannerVisibility(false)
+            _viewState.value = currentState.copy(
+                bannerState = currentState.bannerState.copy(
+                    isBannerVisible = false
                 )
-            }
+            )
         }
     }
 
@@ -121,7 +119,7 @@ class WooPosProductsViewModel @Inject constructor(
         loadingMore = false,
         reloadingProducts = false,
         bannerState = WooPosProductsViewState.Content.BannerState(
-            isSimpleProductsOnlyBannerShown = shouldShowProductsOnlyBanner(),
+            isBannerVisible = shouldShowProductsOnlyBanner(),
             title = R.string.woopos_banner_simple_products_only_title,
             message = R.string.woopos_banner_simple_products_only_message,
             icon = R.drawable.info,
@@ -157,6 +155,6 @@ class WooPosProductsViewModel @Inject constructor(
     }
 
     private suspend fun shouldShowProductsOnlyBanner(): Boolean {
-        return preferencesRepository.isSimpleProductsOnlyBannerShown.first()
+        return preferencesRepository.isSimpleProductsOnlyBannerVisible.first()
     }
 }

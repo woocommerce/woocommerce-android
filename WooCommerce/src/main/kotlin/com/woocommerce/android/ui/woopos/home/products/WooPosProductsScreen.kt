@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -98,8 +97,6 @@ private fun WooPosProductsScreen(
 ) {
     val state = productsStateFlow.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProducts, onPullToRefresh)
-    val animVisibleState = remember { MutableTransitionState(false) }
-        .apply { targetState = true }
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -125,8 +122,6 @@ private fun WooPosProductsScreen(
                 is WooPosProductsViewState.Content -> {
                     Column {
                         SimpleProductsBanner(
-                            productsState,
-                            animVisibleState,
                             productsState.bannerState,
                             onSimpleProductsBannerLearnMoreClicked,
                             onSimpleProductsBannerClosed
@@ -162,40 +157,25 @@ private fun WooPosProductsScreen(
 
 @Composable
 private fun SimpleProductsBanner(
-    productsState: WooPosProductsViewState.Content,
-    animVisibleState: MutableTransitionState<Boolean>,
-    bannerState: WooPosProductsViewState.Content.BannerState?,
+    bannerState: WooPosProductsViewState.Content.BannerState,
     onSimpleProductsBannerLearnMoreClicked: () -> Unit,
     onSimpleProductsBannerClosed: () -> Unit
 ) {
-    if (productsState.bannerState?.isSimpleProductsOnlyBannerShown != false) {
-        return
-    }
     AnimatedVisibility(
-        visibleState = animVisibleState,
+        visible = bannerState.isBannerVisible,
         exit = shrinkVertically(),
     ) {
         WooPosBanner(
-            title = stringResource(id = bannerState?.title!!),
+            title = stringResource(id = bannerState.title),
             message = stringResource(id = bannerState.message),
             bannerIcon = R.drawable.info,
             onClose = {
-                // Start exiting the animation
-                animVisibleState.targetState = false
+                onSimpleProductsBannerClosed()
             },
             onLearnMore = {
                 onSimpleProductsBannerLearnMoreClicked()
             }
         )
-    }
-    // Check the animation state and call onBannerClosed when the banner is invisible
-    LaunchedEffect(animVisibleState) {
-        snapshotFlow { animVisibleState.isIdle && !animVisibleState.currentState }
-            .collect { isBannerInvisible ->
-                if (isBannerInvisible) {
-                    onSimpleProductsBannerClosed()
-                }
-            }
     }
 }
 
@@ -420,6 +400,12 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             ),
             loadingMore = true,
             reloadingProducts = true,
+            bannerState = WooPosProductsViewState.Content.BannerState(
+                isBannerVisible = true,
+                title = R.string.woopos_banner_simple_products_only_title,
+                message = R.string.woopos_banner_simple_products_only_message,
+                icon = R.drawable.info,
+            )
         )
     )
     WooPosTheme {
@@ -500,7 +486,7 @@ fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview(modifier: Modifi
             loadingMore = false,
             reloadingProducts = false,
             bannerState = WooPosProductsViewState.Content.BannerState(
-                isSimpleProductsOnlyBannerShown = false,
+                isBannerVisible = false,
                 title = R.string.woopos_banner_simple_products_only_title,
                 message = R.string.woopos_banner_simple_products_only_message,
                 icon = R.drawable.info,
