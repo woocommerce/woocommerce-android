@@ -55,7 +55,7 @@ fun WooPosBanner(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp.toAdaptivePadding())
+                    .padding(36.dp.toAdaptivePadding())
             ) {
                 ConstraintLayout(
                     modifier = Modifier
@@ -89,7 +89,7 @@ fun WooPosBanner(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
                             .padding(
-                                start = 16.dp.toAdaptivePadding(),
+                                start = 36.dp.toAdaptivePadding(),
                                 bottom = 8.dp.toAdaptivePadding()
                             )
                             .constrainAs(header) {
@@ -111,11 +111,11 @@ fun WooPosBanner(
                     Text(
                         text = annotatedText,
                         style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                         modifier = Modifier
                             .clickable { onLearnMore() }
-                            .padding(start = 16.dp.toAdaptivePadding())
+                            .padding(start = 36.dp.toAdaptivePadding())
                             .constrainAs(description) {
                                 top.linkTo(header.bottom)
                                 start.linkTo(header.start)
@@ -130,7 +130,6 @@ fun WooPosBanner(
 
                     IconButton(
                         modifier = Modifier
-                            .size(32.dp)
                             .constrainAs(close) {
                                 top.linkTo(header.top)
                                 bottom.linkTo(header.bottom)
@@ -139,6 +138,7 @@ fun WooPosBanner(
                         onClick = { onClose() }
                     ) {
                         Icon(
+                            modifier = Modifier.size(32.dp),
                             imageVector = Icons.Default.Close,
                             tint = MaterialTheme.colors.onSurface,
                             contentDescription = stringResource(
