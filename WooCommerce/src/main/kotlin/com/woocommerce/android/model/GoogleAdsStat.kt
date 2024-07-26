@@ -5,10 +5,7 @@ import org.wordpress.android.fluxc.store.WCGoogleStore
 
 data class GoogleAdsStat(
     val googleAdsCampaigns: List<GoogleAdsCampaign>,
-    val totals: GoogleAdsTotals = GoogleAdsTotals(
-        sales = 0.0,
-        spend = 0.0
-    ),
+    val totals: GoogleAdsTotals,
     val deltaPercentage: DeltaPercentage,
     val statType: StatType
 ) {
@@ -17,7 +14,10 @@ data class GoogleAdsStat(
             googleAdsCampaigns = emptyList(),
             totals = GoogleAdsTotals(
                 sales = 0.0,
-                spend = 0.0
+                spend = 0.0,
+                clicks = 0,
+                impressions = 0,
+                conversions = 0
             ),
             deltaPercentage = DeltaPercentage.NotExist,
             statType = StatType.TOTAL_SALES
@@ -33,7 +33,10 @@ data class GoogleAdsCampaign(
 
 data class GoogleAdsTotals(
     val sales: Double?,
-    val spend: Double?
+    val spend: Double?,
+    val clicks: Int?,
+    val impressions: Int?,
+    val conversions: Int?
 ) {
     fun formatSales(currencyFormatter: CurrencyFormatter) =
         sales?.let {
@@ -48,12 +51,14 @@ data class GoogleAdsTotals(
 
 enum class StatType {
     TOTAL_SALES,
+    SPEND,
     CLICKS,
     IMPRESSIONS,
     CONVERSIONS;
 
     fun toTotalsType() = when (this) {
         TOTAL_SALES -> WCGoogleStore.TotalsType.SALES
+        SPEND -> WCGoogleStore.TotalsType.SPEND
         CLICKS -> WCGoogleStore.TotalsType.CLICKS
         IMPRESSIONS -> WCGoogleStore.TotalsType.IMPRESSIONS
         CONVERSIONS -> WCGoogleStore.TotalsType.CONVERSIONS
