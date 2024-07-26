@@ -77,6 +77,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
+import com.woocommerce.android.model.GoogleStatsFilterOptions
 
 @HiltViewModel
 @SuppressWarnings("LargeClass")
@@ -795,35 +796,6 @@ class AnalyticsHubViewModel @Inject constructor(
 }
 
 enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard, GoogleCampaigns }
-
-enum class GoogleStatsFilterOptions(val resourceId: Int) {
-    TotalSales(R.string.analytics_google_ads_filter_total_sales),
-    Spend(R.string.analytics_google_ads_filter_spend),
-    Conversions(R.string.analytics_google_ads_filter_conversion),
-    Clicks(R.string.analytics_google_ads_filter_clicks),
-    Impressions(R.string.analytics_google_ads_filter_impressions);
-
-    fun toStatsType() = when (this) {
-        TotalSales -> StatType.TOTAL_SALES
-        Spend -> StatType.SPEND
-        Conversions -> StatType.CONVERSIONS
-        Clicks -> StatType.CLICKS
-        Impressions -> StatType.IMPRESSIONS
-    }
-
-    companion object {
-        fun fromTranslatedString(
-            translatedValue: String,
-            resourceProvider: ResourceProvider
-        ) = when (translatedValue) {
-            resourceProvider.getString(TotalSales.resourceId) -> TotalSales
-            resourceProvider.getString(Conversions.resourceId) -> Conversions
-            resourceProvider.getString(Clicks.resourceId) -> Clicks
-            resourceProvider.getString(Impressions.resourceId) -> Impressions
-            else -> null
-        }
-    }
-}
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {

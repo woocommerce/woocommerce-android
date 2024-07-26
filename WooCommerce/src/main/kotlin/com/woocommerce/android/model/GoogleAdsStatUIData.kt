@@ -100,7 +100,7 @@ class GoogleAdsStatUIData(
             }
         }
 
-        statSecondColumnTitle = mainTotalStat
+        statSecondColumnTitle = mainTotalStatTitle
 
         deltaPercentage = when (selectedStatType) {
             StatType.TOTAL_SALES -> rawStats.totalsDeltaPercentage.salesDelta
@@ -117,3 +117,33 @@ data class GoogleAdsStatUIDataItem(
     val mainStat: String?,
     val secondaryStat: String?
 )
+
+enum class GoogleStatsFilterOptions(val resourceId: Int) {
+    TotalSales(R.string.analytics_google_ads_filter_total_sales),
+    Spend(R.string.analytics_google_ads_filter_spend),
+    Conversions(R.string.analytics_google_ads_filter_conversion),
+    Clicks(R.string.analytics_google_ads_filter_clicks),
+    Impressions(R.string.analytics_google_ads_filter_impressions);
+
+    fun toStatsType() = when (this) {
+        TotalSales -> StatType.TOTAL_SALES
+        Spend -> StatType.SPEND
+        Conversions -> StatType.CONVERSIONS
+        Clicks -> StatType.CLICKS
+        Impressions -> StatType.IMPRESSIONS
+    }
+
+    companion object {
+        fun fromTranslatedString(
+            translatedValue: String,
+            resourceProvider: ResourceProvider
+        ) = when (translatedValue) {
+            resourceProvider.getString(TotalSales.resourceId) -> TotalSales
+            resourceProvider.getString(Spend.resourceId) -> Spend
+            resourceProvider.getString(Conversions.resourceId) -> Conversions
+            resourceProvider.getString(Clicks.resourceId) -> Clicks
+            resourceProvider.getString(Impressions.resourceId) -> Impressions
+            else -> null
+        }
+    }
+}
