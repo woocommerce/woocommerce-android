@@ -326,6 +326,35 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
+    fun `when simple products only banner is closed, then data store is updated to true`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "10.0",
+                productType = "simple"
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple"
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.products).thenReturn(flowOf(products))
+
+        // WHEN
+        val viewModel = createViewModel()
+        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
+        viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerClosed)
+
+        // THEN
+        verify(posPreferencesRepository).setSimpleProductsOnlyBannerWasHiddenByUser(true)
+    }
+
+    @Test
     fun `given simple products only banner is shown, when view model init, then state is updated with false`() = runTest {
         // GIVEN
         val products = listOf(
