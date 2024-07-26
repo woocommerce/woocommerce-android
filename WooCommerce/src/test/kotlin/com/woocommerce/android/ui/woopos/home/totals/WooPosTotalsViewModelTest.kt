@@ -10,11 +10,13 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -210,14 +212,21 @@ class WooPosTotalsViewModelTest {
             )
         }
 
+        val resourceProvider: ResourceProvider = mock {
+            on { getString(any()) }.thenReturn(errorMessage)
+        }
+
         // WHEN
         val viewModel = createViewModel(
+            resourceProvider = resourceProvider,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             totalsRepository = totalsRepository,
         )
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsViewState.Error
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosTotalsViewState.Error::class.java)
+        state as WooPosTotalsViewState.Error
         assertThat(state.message).isEqualTo(errorMessage)
     }
 
@@ -229,10 +238,16 @@ class WooPosTotalsViewModelTest {
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
-        val totalsRepository: WooPosTotalsRepository = mock()
-        whenever(totalsRepository.createOrderWithProducts(productIds)).thenReturn(
-            Result.failure(Exception("Order creation failed"))
-        )
+        val errorMessage = "Order creation failed"
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds) }.thenReturn(
+                Result.failure(Exception(errorMessage))
+            )
+        }
+
+        val resourceProvider: ResourceProvider = mock {
+            on { getString(any()) }.thenReturn(errorMessage)
+        }
 
         val savedState = createMockSavedStateHandle()
         val priceFormat: WooPosFormatPrice = mock {
@@ -241,19 +256,22 @@ class WooPosTotalsViewModelTest {
             onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
             onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("$5.00")
         }
+
         val viewModel = createViewModel(
+            resourceProvider = resourceProvider,
             savedState = savedState,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             totalsRepository = totalsRepository,
             priceFormat = priceFormat,
         )
 
+        // WHEN
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
-        // THEN
+        // Ensure that the view model state transitions to error state
         assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Error::class.java)
 
-        // Change repository to simulate success on retry
+        // Mock repository to simulate success on retry
         val order = Order.getEmptyOrder(
             dateCreated = Date(),
             dateModified = Date()
@@ -265,13 +283,15 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00"))
             )
         )
+
         whenever(totalsRepository.createOrderWithProducts(productIds)).thenReturn(
             Result.success(order)
         )
 
+        // Trigger RetryOrderCreationClicked again to simulate a successful retry
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
-        // THEN
+        // Ensure the view model state transitions to the success state with correct totals
         val state = viewModel.state.value as WooPosTotalsViewState.Totals
         assertThat(state.orderTotalText).isEqualTo("$5.00")
         assertThat(state.orderTaxText).isEqualTo("$2.00")
@@ -279,6 +299,7 @@ class WooPosTotalsViewModelTest {
     }
 
     private fun createViewModel(
+        resourceProvider: ResourceProvider = mock(),
         parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock(),
         childrenToParentEventSender: WooPosChildrenToParentEventSender = mock(),
         cardReaderFacade: WooPosCardReaderFacade = mock(),
@@ -286,6 +307,7 @@ class WooPosTotalsViewModelTest {
         priceFormat: WooPosFormatPrice = mock(),
         savedState: SavedStateHandle = SavedStateHandle(),
     ) = WooPosTotalsViewModel(
+        resourceProvider,
         parentToChildrenEventReceiver,
         childrenToParentEventSender,
         cardReaderFacade,

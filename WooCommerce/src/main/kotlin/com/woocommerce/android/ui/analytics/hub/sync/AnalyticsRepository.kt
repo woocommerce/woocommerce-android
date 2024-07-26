@@ -8,6 +8,7 @@ import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsCampaign
 import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.GoogleAdsTotals
+import com.woocommerce.android.model.GoogleAdsTotalsDeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -34,6 +35,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.google.WCGoogleAdsProgramCampaign
+import org.wordpress.android.fluxc.model.google.WCGoogleAdsProgramTotals
 import org.wordpress.android.fluxc.model.google.WCGoogleAdsPrograms
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCGoogleStore
@@ -479,7 +482,7 @@ class AnalyticsRepository @Inject constructor(
                 site = selectedSite.get(),
                 startDate = currentStartDate,
                 endDate = currentEndDate,
-                metricType = WCGoogleStore.MetricType.SALES
+                totals = WCGoogleStore.TotalsType.entries
             )
         }
 
@@ -488,7 +491,7 @@ class AnalyticsRepository @Inject constructor(
                 site = selectedSite.get(),
                 startDate = previousStartDate,
                 endDate = previousEndDate,
-                metricType = WCGoogleStore.MetricType.SALES
+                totals = WCGoogleStore.TotalsType.entries
             )
         }
 
@@ -509,28 +512,63 @@ class AnalyticsRepository @Inject constructor(
         previousRangeResponse: WCGoogleAdsPrograms?
     ) = GoogleAdsResult.GoogleAdsData(
         GoogleAdsStat(
-            googleAdsCampaigns = currentRangeResponse.campaigns?.map {
-                GoogleAdsCampaign(
-                    id = it.id ?: 0L,
-                    name = it.name,
-                    subtotal = it.subtotal.let { subtotal ->
-                        GoogleAdsTotals(
-                            sales = subtotal.sales,
-                            spend = subtotal.spend
-                        )
-                    }
-                )
-            } ?: emptyList(),
-            totals = currentRangeResponse.totals.let {
-                GoogleAdsTotals(
-                    sales = it?.sales ?: 0.0,
-                    spend = it?.spend ?: 0.0
-                )
-            },
-            deltaPercentage = calculateDeltaPercentage(
-                previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
-                currentVal = currentRangeResponse.totals?.sales ?: 0.0
+            googleAdsCampaigns = currentRangeResponse
+                .campaigns?.map { it.toGoogleAdsCampaign() }
+                ?: emptyList(),
+            totals = currentRangeResponse.totals.toGoogleAdsTotals(),
+            totalsDeltaPercentage = mapGoogleAdsDeltaPercentages(
+                previousRangeResponse,
+                currentRangeResponse
             )
+        )
+    )
+
+    private fun WCGoogleAdsProgramTotals?.toGoogleAdsTotals() = GoogleAdsTotals(
+        sales = this?.sales ?: 0.0,
+        spend = this?.spend ?: 0.0,
+        clicks = this?.clicks?.toInt() ?: 0,
+        impressions = this?.impressions?.toInt() ?: 0,
+        conversions = this?.conversions?.toInt() ?: 0
+    )
+
+    private fun WCGoogleAdsProgramCampaign.toGoogleAdsCampaign() =
+        GoogleAdsCampaign(
+            id = id ?: 0L,
+            name = name.orEmpty(),
+            subtotal = subtotal.let { subtotal ->
+                GoogleAdsTotals(
+                    sales = subtotal.sales ?: 0.0,
+                    spend = subtotal.spend ?: 0.0,
+                    clicks = subtotal.clicks?.toInt() ?: 0,
+                    impressions = subtotal.impressions?.toInt() ?: 0,
+                    conversions = subtotal.conversions?.toInt() ?: 0
+                )
+            }
+        )
+
+    private fun mapGoogleAdsDeltaPercentages(
+        previousRangeResponse: WCGoogleAdsPrograms?,
+        currentRangeResponse: WCGoogleAdsPrograms
+    ) = GoogleAdsTotalsDeltaPercentage(
+        salesDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
+            currentVal = currentRangeResponse.totals?.sales ?: 0.0
+        ),
+        spendDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.spend ?: 0.0,
+            currentVal = currentRangeResponse.totals?.spend ?: 0.0
+        ),
+        clicksDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.clicks ?: 0.0,
+            currentVal = currentRangeResponse.totals?.clicks ?: 0.0
+        ),
+        impressionsDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.impressions ?: 0.0,
+            currentVal = currentRangeResponse.totals?.impressions ?: 0.0
+        ),
+        conversionsDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.conversions ?: 0.0,
+            currentVal = currentRangeResponse.totals?.conversions ?: 0.0
         )
     )
 
