@@ -59,7 +59,7 @@ fun WooPosBanner(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp.toAdaptivePadding())
+                    .padding(32.dp.toAdaptivePadding())
             ) {
                 ConstraintLayout(
                     modifier = Modifier
@@ -93,7 +93,7 @@ fun WooPosBanner(
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
                             .padding(
-                                start = 36.dp.toAdaptivePadding(),
+                                start = 32.dp.toAdaptivePadding(),
                                 bottom = 8.dp.toAdaptivePadding()
                             )
                             .constrainAs(header) {
@@ -119,7 +119,7 @@ fun WooPosBanner(
                         color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                         modifier = Modifier
                             .clickable { onLearnMore() }
-                            .padding(start = 36.dp.toAdaptivePadding())
+                            .padding(start = 32.dp.toAdaptivePadding())
                             .constrainAs(description) {
                                 top.linkTo(header.bottom)
                                 start.linkTo(header.start)
