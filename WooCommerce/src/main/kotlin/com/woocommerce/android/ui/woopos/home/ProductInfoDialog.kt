@@ -236,4 +236,3 @@ fun ProductInfoDialogPreview() {
         }
     }
 }
-

@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
-import com.woocommerce.android.R
 import androidx.annotation.StringRes
+import com.woocommerce.android.R
 
 data class WooPosHomeState(
     val screenPositionState: ScreenPositionState,
