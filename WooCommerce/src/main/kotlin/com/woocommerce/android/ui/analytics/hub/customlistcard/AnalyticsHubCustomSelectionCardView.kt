@@ -80,10 +80,14 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
             }
         } ?: run { binding.reportGroup.visibility = GONE }
 
-        binding.analyticsFilterButton
-            .takeIf { viewState.filterOptions.isNotEmpty() }
-            ?.setOnClickListener { it.displayFilterPopupMenu(viewState) }
-            ?: run { binding.analyticsFilterButton.visibility = GONE }
+        if (viewState.filterOptions.isNotEmpty()) {
+            with(binding.analyticsFilterButton) {
+                visibility = VISIBLE
+                setOnClickListener { it.displayFilterPopupMenu(viewState) }
+            }
+        } else {
+            binding.analyticsFilterButton.visibility = GONE
+        }
     }
 
     private fun View.displayFilterPopupMenu(
