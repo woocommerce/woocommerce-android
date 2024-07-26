@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -16,7 +15,6 @@ import org.mockito.kotlin.verify
 class WooPosTotalsRepositoryTest {
     private val orderCreateEditRepository: OrderCreateEditRepository = mock()
     private val dateUtils: DateUtils = mock()
-    private val getProductById: WooPosGetProductById = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
@@ -24,8 +22,7 @@ class WooPosTotalsRepositoryTest {
     fun setUp() {
         repository = WooPosTotalsRepository(
             orderCreateEditRepository,
-            dateUtils,
-            getProductById
+            dateUtils
         )
     }
 
