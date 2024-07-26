@@ -151,7 +151,8 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
         val rawStatsWithNullImpressions = rawStats.copy(totals = rawStats.totals.copy(impressions = null))
         whenever(resourceProvider.getString(any())).thenReturn("Impressions")
 
-        val sut = GoogleAdsStatUIData(rawStatsWithNullImpressions, StatType.IMPRESSIONS, currencyFormatter, resourceProvider)
+        val sut =
+            GoogleAdsStatUIData(rawStatsWithNullImpressions, StatType.IMPRESSIONS, currencyFormatter, resourceProvider)
 
         assertThat(sut.mainTotalStat).isEmpty()
     }
@@ -189,7 +190,8 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
         val rawStatsWithNullConversions = rawStats.copy(totals = rawStats.totals.copy(conversions = null))
         whenever(resourceProvider.getString(any())).thenReturn("Conversions")
 
-        val sut = GoogleAdsStatUIData(rawStatsWithNullConversions, StatType.CONVERSIONS, currencyFormatter, resourceProvider)
+        val sut =
+            GoogleAdsStatUIData(rawStatsWithNullConversions, StatType.CONVERSIONS, currencyFormatter, resourceProvider)
 
         assertThat(sut.mainTotalStat).isEmpty()
     }
