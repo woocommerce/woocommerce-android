@@ -233,6 +233,7 @@ class AnalyticsHubViewModel @Inject constructor(
         val visibleCards =
             currentConfiguration.value?.filter { it.isVisible }?.map { it.card } ?: AnalyticsCards.entries
         viewModelScope.launch {
+            updateGoogleStats(ranges)
             updateStats(
                 rangeSelection = ranges,
                 scope = viewModelScope,
@@ -267,6 +268,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun combineSelectionAndConfiguration() {
         combine(currentConfiguration.filterNotNull(), rangeSelectionState) { configuration, selection ->
+            updateGoogleStats(selection)
             updateStats(
                 rangeSelection = selection,
                 scope = viewModelScope,
@@ -712,7 +714,13 @@ class AnalyticsHubViewModel @Inject constructor(
                     showImage = false
                 )
             },
-            filterOptions = GoogleStatsFilterOptions.entries.map { resourceProvider.getString(it.resourceId) }
+            filterOptions = GoogleStatsFilterOptions
+                .entries.map { resourceProvider.getString(it.resourceId) },
+            onFilterSelected = { selectedFilterName ->
+                val selectedFilter = GoogleStatsFilterOptions
+                    .fromTranslatedString(selectedFilterName, resourceProvider)
+                launch { updateGoogleStats(ranges, selectedFilter) }
+            }
         )
 
     private fun trackSelectedDateRange() {
@@ -785,7 +793,20 @@ enum class GoogleStatsFilterOptions(val resourceId: Int) {
     TotalSales(R.string.analytics_google_ads_filter_total_sales),
     Conversions(R.string.analytics_google_ads_filter_conversion),
     Clicks(R.string.analytics_google_ads_filter_clicks),
-    Impressions(R.string.analytics_google_ads_filter_impressions)
+    Impressions(R.string.analytics_google_ads_filter_impressions);
+
+    companion object {
+        fun fromTranslatedString(
+            translatedValue: String,
+            resourceProvider: ResourceProvider
+        ) = when (translatedValue) {
+            resourceProvider.getString(TotalSales.resourceId) -> TotalSales
+            resourceProvider.getString(Conversions.resourceId) -> Conversions
+            resourceProvider.getString(Clicks.resourceId) -> Clicks
+            resourceProvider.getString(Impressions.resourceId) -> Impressions
+            else -> null
+        }
+    }
 }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
