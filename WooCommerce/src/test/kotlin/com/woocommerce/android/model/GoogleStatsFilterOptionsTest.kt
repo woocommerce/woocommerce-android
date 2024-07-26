@@ -120,6 +120,7 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
 
     @Test
     fun `statItems are mapped correctly for CLICKS`() = testBlocking {
+        whenever(currencyFormatter.formatCurrency("100.0")).thenReturn("$100.0")
         val sut = GoogleAdsStatUIData(rawStats, StatType.CLICKS, currencyFormatter, resourceProvider)
 
         assertThat(sut.statItems).hasSize(2)
@@ -157,6 +158,7 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
 
     @Test
     fun `statItems are mapped correctly for IMPRESSIONS`() = testBlocking {
+        whenever(currencyFormatter.formatCurrency("100.0")).thenReturn("$100.0")
         val sut = GoogleAdsStatUIData(rawStats, StatType.IMPRESSIONS, currencyFormatter, resourceProvider)
 
         assertThat(sut.statItems).hasSize(2)
@@ -194,6 +196,7 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
 
     @Test
     fun `statItems are mapped correctly for CONVERSIONS`() = testBlocking {
+        whenever(currencyFormatter.formatCurrency("100.0")).thenReturn("$100.0")
         val sut = GoogleAdsStatUIData(rawStats, StatType.CONVERSIONS, currencyFormatter, resourceProvider)
 
         assertThat(sut.statItems).hasSize(2)
