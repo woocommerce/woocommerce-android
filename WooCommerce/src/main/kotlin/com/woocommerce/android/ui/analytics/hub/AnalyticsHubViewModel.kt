@@ -15,11 +15,15 @@ import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsStat
+import com.woocommerce.android.model.GoogleAdsStatUIData
+import com.woocommerce.android.model.GoogleStatsFilterOptions
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.model.StatType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
@@ -683,34 +687,50 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
-    private fun buildGoogleAdsDataViewState(googleAdsStats: GoogleAdsStat) =
-        AnalyticsHubCustomSelectionListViewState.DataViewState(
+    private fun buildGoogleAdsDataViewState(
+        googleAdsStats: GoogleAdsStat,
+        statType: StatType = StatType.TOTAL_SALES
+    ): CustomListViewState {
+        val statsUIData = GoogleAdsStatUIData(
+            rawStats = googleAdsStats,
+            selectedStatType = statType,
+            currencyFormatter = currencyFormatter,
+            resourceProvider = resourceProvider
+        )
+        return CustomListViewState(
             card = AnalyticsCards.GoogleAds,
             title = resourceProvider.getString(R.string.analytics_google_ads_card_title),
-            subTitle = resourceProvider.getString(R.string.analytics_total_sales_title),
+            subTitle = statsUIData.mainTotalStatTitle,
+            filterTitle = resourceProvider.getString(R.string.analytics_google_ads_metric_card_title),
             listLeftHeader = resourceProvider.getString(R.string.analytics_google_ads_programs_card_title),
-            listRightHeader = resourceProvider.getString(R.string.analytics_total_sales_title),
-            itemTitleValue = googleAdsStats.totals.formatSales(currencyFormatter).orEmpty(),
-            delta = googleAdsStats.deltaPercentage
-                .run { this as? DeltaPercentage.Value }?.value,
-            reportUrl = getReportUrl(
-                selection = ranges,
-                card = ReportCard.GoogleCampaigns
-            ),
-            items = googleAdsStats.googleAdsCampaigns.map {
+            listRightHeader = statsUIData.statSecondColumnTitle,
+            itemTitleValue = statsUIData.mainTotalStat,
+            delta = statsUIData.deltaPercentage,
+            items = statsUIData.statItems.map {
                 AnalyticsHubListCardItemViewState(
                     title = it.name.orEmpty(),
                     showDivider = true,
                     imageUri = null,
-                    value = it.subtotal?.formatSales(currencyFormatter).orEmpty(),
-                    description = resourceProvider.getString(
-                        R.string.analytics_spend_value,
-                        it.subtotal?.formatSpend(currencyFormatter).orEmpty()
-                    ),
+                    value = it.mainStat.orEmpty(),
+                    description = it.secondaryStat.orEmpty(),
                     showImage = false
                 )
+            },
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.GoogleCampaigns
+            ),
+            filterOptions = GoogleStatsFilterOptions
+                .entries.map { resourceProvider.getString(it.resourceId) },
+            onFilterSelected = { selectedFilterName ->
+                GoogleStatsFilterOptions
+                    .fromTranslatedString(selectedFilterName, resourceProvider)
+                    ?.toStatsType()
+                    ?.let { buildGoogleAdsDataViewState(googleAdsStats, it) }
+                    ?.let { updateCardStatus(AnalyticsCards.GoogleAds, it) }
             }
         )
+    }
 
     private fun trackSelectedDateRange() {
         onTrackableUIInteraction()
