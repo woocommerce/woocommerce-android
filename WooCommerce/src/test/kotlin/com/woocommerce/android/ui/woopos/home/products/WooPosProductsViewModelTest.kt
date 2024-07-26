@@ -42,7 +42,7 @@ class WooPosProductsViewModelTest {
 
     @Before
     fun setup() {
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(false)
         )
     }
@@ -296,7 +296,7 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `when simple products only banner is closed, then state is updated with simple products value to false`() = runTest {
+    fun `when simple products only banner is closed, then state is updated to true`() = runTest {
         // GIVEN
         val products = listOf(
             ProductTestUtils.generateProduct(
@@ -322,11 +322,11 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerClosed)
 
         // THEN
-        assertThat(contentState.bannerState.isBannerVisible).isFalse()
+        assertTrue(contentState.bannerState.isBannerHiddenByUser)
     }
 
     @Test
-    fun `given simple products only banner is shown, when view model init, then state is updated with simple products value to true`() = runTest {
+    fun `given simple products only banner is shown, when view model init, then state is updated with false`() = runTest {
         // GIVEN
         val products = listOf(
             ProductTestUtils.generateProduct(
@@ -344,7 +344,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(true)
         )
 
@@ -353,11 +353,11 @@ class WooPosProductsViewModelTest {
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
         // THEN
-        assertTrue(contentState.bannerState.isBannerVisible)
+        assertThat(contentState.bannerState.isBannerHiddenByUser).isFalse()
     }
 
     @Test
-    fun `given simple products only banner is not shown, when view model init, then state is updated with simple products value to false`() = runTest {
+    fun `given simple products only banner already closed by user, when view model init, then banner state is updated to true`() = runTest {
         // GIVEN
         val products = listOf(
             ProductTestUtils.generateProduct(
@@ -375,7 +375,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(false)
         )
 
@@ -384,7 +384,7 @@ class WooPosProductsViewModelTest {
         val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
 
         // THEN
-        assertThat(contentState.bannerState.isBannerVisible).isFalse()
+        assertTrue(contentState.bannerState.isBannerHiddenByUser)
     }
 
     @Test
@@ -406,7 +406,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(false)
         )
 
@@ -437,7 +437,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(false)
         )
 
@@ -468,7 +468,7 @@ class WooPosProductsViewModelTest {
         )
 
         whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(false)
         )
 

@@ -162,7 +162,7 @@ private fun SimpleProductsBanner(
     onSimpleProductsBannerClosed: () -> Unit
 ) {
     AnimatedVisibility(
-        visible = bannerState.isBannerVisible,
+        visible = bannerState.isBannerHiddenByUser,
         exit = shrinkVertically(),
     ) {
         WooPosBanner(
@@ -401,7 +401,7 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             loadingMore = true,
             reloadingProducts = true,
             bannerState = WooPosProductsViewState.Content.BannerState(
-                isBannerVisible = true,
+                isBannerHiddenByUser = true,
                 title = R.string.woopos_banner_simple_products_only_title,
                 message = R.string.woopos_banner_simple_products_only_message,
                 icon = R.drawable.info,
@@ -486,7 +486,7 @@ fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview(modifier: Modifi
             loadingMore = false,
             reloadingProducts = false,
             bannerState = WooPosProductsViewState.Content.BannerState(
-                isBannerVisible = false,
+                isBannerHiddenByUser = false,
                 title = R.string.woopos_banner_simple_products_only_title,
                 message = R.string.woopos_banner_simple_products_only_message,
                 icon = R.drawable.info,

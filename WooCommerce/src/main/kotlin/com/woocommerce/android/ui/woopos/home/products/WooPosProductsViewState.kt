@@ -15,7 +15,7 @@ sealed class WooPosProductsViewState(
         override val reloadingProducts: Boolean = false,
     ) : WooPosProductsViewState(reloadingProducts) {
         data class BannerState(
-            val isBannerVisible: Boolean,
+            val isBannerHiddenByUser: Boolean,
             @StringRes val title: Int,
             @StringRes val message: Int,
             @DrawableRes val icon: Int,
