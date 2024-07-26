@@ -64,6 +64,7 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
         override val card: AnalyticsCards,
         val title: String,
         val subTitle: String,
+        val filterTitle: String,
         val itemTitleValue: String,
         val listLeftHeader: String,
         val listRightHeader: String,

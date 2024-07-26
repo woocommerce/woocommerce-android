@@ -14,7 +14,6 @@ class GoogleAdsStatUIData(
     val mainTotalStatTitle: String
 
     val statItems: List<GoogleAdsStatUIDataItem>
-    val statFirstColumnTitle: String = resourceProvider.getString(R.string.analytics_google_ads_programs_card_title)
     val statSecondColumnTitle: String
 
     val deltaPercentage: Int?
