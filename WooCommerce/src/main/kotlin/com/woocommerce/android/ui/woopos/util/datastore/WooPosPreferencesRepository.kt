@@ -11,17 +11,19 @@ import javax.inject.Inject
 class WooPosPreferencesRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
     companion object {
-        val SIMPLE_PRODUCTS_ONLY_BANNER_VISIBILITY = booleanPreferencesKey("isSimpleProductsOnlyBannerVisible")
+        val SIMPLE_PRODUCTS_ONLY_BANNER_HIDDEN_BY_USER = booleanPreferencesKey(
+            "is_simple_products_only_banner_hidden_by_user"
+        )
     }
 
-    val isSimpleProductsOnlyBannerVisible: Flow<Boolean> = dataStore.data
+    val isSimpleProductsOnlyBannerWasHiddenByUser: Flow<Boolean> = dataStore.data
         .map { preferences ->
-            preferences[SIMPLE_PRODUCTS_ONLY_BANNER_VISIBILITY] ?: true
+            preferences[SIMPLE_PRODUCTS_ONLY_BANNER_HIDDEN_BY_USER] ?: false
         }
 
-    suspend fun setSimpleProductsOnlyBannerVisibility(shown: Boolean) {
+    suspend fun setSimpleProductsOnlyBannerWasHiddenByUser(shown: Boolean) {
         dataStore.edit { preferences ->
-            preferences[SIMPLE_PRODUCTS_ONLY_BANNER_VISIBILITY] = shown
+            preferences[SIMPLE_PRODUCTS_ONLY_BANNER_HIDDEN_BY_USER] = shown
         }
     }
 }

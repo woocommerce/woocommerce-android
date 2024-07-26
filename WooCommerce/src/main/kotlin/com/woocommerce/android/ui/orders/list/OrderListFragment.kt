@@ -639,6 +639,9 @@ class OrderListFragment :
                 displayTimeoutErrorCard(it)
             }
         }
+        viewModel.lastUpdateOrdersList.observe(viewLifecycleOwner) { lastUpdate ->
+            binding.orderFiltersCard.updateLastUpdate(lastUpdate)
+        }
     }
 
     private fun openFirstOrder() {

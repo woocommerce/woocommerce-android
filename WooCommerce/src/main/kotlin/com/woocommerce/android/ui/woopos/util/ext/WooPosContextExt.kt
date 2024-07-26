@@ -6,7 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "pos_preferences")
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "woo_pos_data_store")
 
 fun Context.getScreenWidthDp(): Int {
     val displayMetrics = resources.displayMetrics

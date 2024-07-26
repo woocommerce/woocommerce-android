@@ -35,8 +35,6 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.ui.common.exitawarewebview.ExitAwareWebViewViewModel
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.rememberNavController
@@ -45,6 +43,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsViewModel.DashboardGoogleAdsState
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
@@ -79,23 +78,21 @@ private fun HandleEvents(
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
                 is DashboardGoogleAdsViewModel.ViewGoogleForWooEvent -> {
-                    val direction = if (event.canAutoLogin) {
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
-                            title = webViewTitle,
-                            urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.PARTIAL
-                        )
-                    } else {
-                        NavGraphMainDirections.actionGlobalExitAwareWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(), // todo-11917: Replace with the right success URL
-                            title = webViewTitle,
-                            urlComparisonMode = ExitAwareWebViewViewModel.UrlComparisonMode.PARTIAL
-                        )
-                    }
+                    val direction = NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
+                        urlToLoad = event.url,
+                        title = webViewTitle,
+                        urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL,
+                        isCreationFlow = event.isCreationFlow,
+                        entryPointSource = GoogleAdsWebViewViewModel.EntryPointSource.MYSTORE
+                    )
 
                     navController.navigateSafely(direction)
+                }
+
+                is DashboardGoogleAdsViewModel.NavigateToGoogleAdsSuccessEvent -> {
+                    navController.navigateSafely(
+                        NavGraphMainDirections.actionGlobalGoogleAdsCampaignSuccessBottomSheet()
+                    )
                 }
             }
         }
@@ -138,6 +135,7 @@ fun DashboardGoogleAdsView(
                     viewState.onCreateCampaignClicked,
                     viewState.onPerformanceAreaClicked
                 )
+
                 is DashboardGoogleAdsState.Error -> {
                     WidgetError(
                         onContactSupportClicked = onContactSupportClicked,
