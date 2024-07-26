@@ -35,6 +35,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.model.google.WCGoogleAdsProgramCampaign
+import org.wordpress.android.fluxc.model.google.WCGoogleAdsProgramTotals
 import org.wordpress.android.fluxc.model.google.WCGoogleAdsPrograms
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCGoogleStore
@@ -510,36 +512,39 @@ class AnalyticsRepository @Inject constructor(
         previousRangeResponse: WCGoogleAdsPrograms?
     ) = GoogleAdsResult.GoogleAdsData(
         GoogleAdsStat(
-            googleAdsCampaigns = currentRangeResponse.campaigns?.map {
-                GoogleAdsCampaign(
-                    id = it.id ?: 0L,
-                    name = it.name.orEmpty(),
-                    subtotal = it.subtotal.let { subtotal ->
-                        GoogleAdsTotals(
-                            sales = subtotal.sales ?: 0.0,
-                            spend = subtotal.spend ?: 0.0,
-                            clicks = subtotal.clicks?.toInt() ?: 0,
-                            impressions = subtotal.impressions?.toInt() ?: 0,
-                            conversions = subtotal.conversions?.toInt() ?: 0
-                        )
-                    }
-                )
-            } ?: emptyList(),
-            totals = currentRangeResponse.totals.let {
-                GoogleAdsTotals(
-                    sales = it?.sales ?: 0.0,
-                    spend = it?.spend ?: 0.0,
-                    clicks = it?.clicks?.toInt() ?: 0,
-                    impressions = it?.impressions?.toInt() ?: 0,
-                    conversions = it?.conversions?.toInt() ?: 0
-                )
-            },
+            googleAdsCampaigns = currentRangeResponse
+                .campaigns?.map { it.toGoogleAdsCampaign() }
+                ?: emptyList(),
+            totals = currentRangeResponse.totals.toGoogleAdsTotals(),
             totalsDeltaPercentage = mapGoogleAdsDeltaPercentages(
                 previousRangeResponse,
                 currentRangeResponse
             )
         )
     )
+
+    private fun WCGoogleAdsProgramTotals?.toGoogleAdsTotals() = GoogleAdsTotals(
+        sales = this?.sales ?: 0.0,
+        spend = this?.spend ?: 0.0,
+        clicks = this?.clicks?.toInt() ?: 0,
+        impressions = this?.impressions?.toInt() ?: 0,
+        conversions = this?.conversions?.toInt() ?: 0
+    )
+
+    private fun WCGoogleAdsProgramCampaign.toGoogleAdsCampaign() =
+        GoogleAdsCampaign(
+            id = id ?: 0L,
+            name = name.orEmpty(),
+            subtotal = subtotal.let { subtotal ->
+                GoogleAdsTotals(
+                    sales = subtotal.sales ?: 0.0,
+                    spend = subtotal.spend ?: 0.0,
+                    clicks = subtotal.clicks?.toInt() ?: 0,
+                    impressions = subtotal.impressions?.toInt() ?: 0,
+                    conversions = subtotal.conversions?.toInt() ?: 0
+                )
+            }
+        )
 
     private fun mapGoogleAdsDeltaPercentages(
         previousRangeResponse: WCGoogleAdsPrograms?,
