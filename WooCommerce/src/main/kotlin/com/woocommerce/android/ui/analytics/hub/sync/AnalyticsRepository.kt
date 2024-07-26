@@ -8,12 +8,11 @@ import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsCampaign
 import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.GoogleAdsTotals
+import com.woocommerce.android.model.GoogleAdsTotalsDeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
-import com.woocommerce.android.model.StatType
-import com.woocommerce.android.model.StatType.TOTAL_SALES
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
@@ -467,12 +466,7 @@ class AnalyticsRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchGoogleAdsStats(
-        rangeSelection: StatsTimeRangeSelection,
-        selectedStats: StatType = TOTAL_SALES
-    ) = coroutineScope {
-        val selectedStatsTotalType = selectedStats.toTotalsType()
-
+    suspend fun fetchGoogleAdsStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
         val currentPeriod = rangeSelection.currentRange
         val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
@@ -486,7 +480,7 @@ class AnalyticsRepository @Inject constructor(
                 site = selectedSite.get(),
                 startDate = currentStartDate,
                 endDate = currentEndDate,
-                totals = listOf(selectedStatsTotalType)
+                totals = WCGoogleStore.TotalsType.entries
             )
         }
 
@@ -495,7 +489,7 @@ class AnalyticsRepository @Inject constructor(
                 site = selectedSite.get(),
                 startDate = previousStartDate,
                 endDate = previousEndDate,
-                totals = listOf(selectedStatsTotalType)
+                totals = WCGoogleStore.TotalsType.entries
             )
         }
 
@@ -506,16 +500,14 @@ class AnalyticsRepository @Inject constructor(
             .model?.let {
                 mapGoogleAdsResponse(
                     currentRangeResponse = it,
-                    previousRangeResponse = previousRangeStatsResult.model,
-                    selectedStats = selectedStats
+                    previousRangeResponse = previousRangeStatsResult.model
                 )
             } ?: GoogleAdsResult.GoogleAdsError
     }
 
     private fun mapGoogleAdsResponse(
         currentRangeResponse: WCGoogleAdsPrograms,
-        previousRangeResponse: WCGoogleAdsPrograms?,
-        selectedStats: StatType
+        previousRangeResponse: WCGoogleAdsPrograms?
     ) = GoogleAdsResult.GoogleAdsData(
         GoogleAdsStat(
             googleAdsCampaigns = currentRangeResponse.campaigns?.map {
@@ -525,7 +517,10 @@ class AnalyticsRepository @Inject constructor(
                     subtotal = it.subtotal.let { subtotal ->
                         GoogleAdsTotals(
                             sales = subtotal.sales,
-                            spend = subtotal.spend
+                            spend = subtotal.spend,
+                            clicks = subtotal.clicks?.toInt(),
+                            impressions = subtotal.impressions?.toInt(),
+                            conversions = subtotal.conversions?.toInt()
                         )
                     }
                 )
@@ -533,14 +528,34 @@ class AnalyticsRepository @Inject constructor(
             totals = currentRangeResponse.totals.let {
                 GoogleAdsTotals(
                     sales = it?.sales ?: 0.0,
-                    spend = it?.spend ?: 0.0
+                    spend = it?.spend ?: 0.0,
+                    clicks = it?.clicks?.toInt() ?: 0,
+                    impressions = it?.impressions?.toInt() ?: 0,
+                    conversions = it?.conversions?.toInt() ?: 0
                 )
             },
-            deltaPercentage = calculateDeltaPercentage(
-                previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
-                currentVal = currentRangeResponse.totals?.sales ?: 0.0
-            ),
-            statType = selectedStats
+            totalsDeltaPercentage = GoogleAdsTotalsDeltaPercentage(
+                salesDelta = calculateDeltaPercentage(
+                    previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
+                    currentVal = currentRangeResponse.totals?.sales ?: 0.0
+                ),
+                spendDelta = calculateDeltaPercentage(
+                    previousVal = previousRangeResponse?.totals?.spend ?: 0.0,
+                    currentVal = currentRangeResponse.totals?.spend ?: 0.0
+                ),
+                clicksDelta = calculateDeltaPercentage(
+                    previousVal = previousRangeResponse?.totals?.clicks ?: 0.0,
+                    currentVal = currentRangeResponse.totals?.clicks ?: 0.0
+                ),
+                impressionsDelta = calculateDeltaPercentage(
+                    previousVal = previousRangeResponse?.totals?.impressions ?: 0.0,
+                    currentVal = currentRangeResponse.totals?.impressions ?: 0.0
+                ),
+                conversionsDelta = calculateDeltaPercentage(
+                    previousVal = previousRangeResponse?.totals?.conversions ?: 0.0,
+                    currentVal = currentRangeResponse.totals?.conversions ?: 0.0
+                )
+            )
         )
     )
 
