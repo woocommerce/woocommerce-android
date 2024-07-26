@@ -1,12 +1,9 @@
 package com.woocommerce.android.model
 
-import org.wordpress.android.fluxc.store.WCGoogleStore
-
 data class GoogleAdsStat(
     val googleAdsCampaigns: List<GoogleAdsCampaign>,
     val totals: GoogleAdsTotals,
-    val totalsDeltaPercentage: GoogleAdsTotalsDeltaPercentage,
-    val statType: StatType
+    val totalsDeltaPercentage: GoogleAdsTotalsDeltaPercentage
 ) {
     companion object {
         val EMPTY = GoogleAdsStat(
@@ -24,8 +21,7 @@ data class GoogleAdsStat(
                 clicksDelta = DeltaPercentage.NotExist,
                 impressionsDelta = DeltaPercentage.NotExist,
                 conversionsDelta = DeltaPercentage.NotExist
-            ),
-            statType = StatType.TOTAL_SALES
+            )
         )
     }
 }
@@ -58,12 +54,4 @@ enum class StatType {
     CLICKS,
     IMPRESSIONS,
     CONVERSIONS;
-
-    fun toTotalsType() = when (this) {
-        TOTAL_SALES -> WCGoogleStore.TotalsType.SALES
-        SPEND -> WCGoogleStore.TotalsType.SPEND
-        CLICKS -> WCGoogleStore.TotalsType.CLICKS
-        IMPRESSIONS -> WCGoogleStore.TotalsType.IMPRESSIONS
-        CONVERSIONS -> WCGoogleStore.TotalsType.CONVERSIONS
-    }
 }

@@ -5,7 +5,8 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class GoogleAdsStatUIData(
-    rawStat: GoogleAdsStat,
+    rawStats: GoogleAdsStat,
+    selectedStatType: StatType,
     currencyFormatter: CurrencyFormatter,
     resourceProvider: ResourceProvider
 ) {
@@ -19,13 +20,13 @@ class GoogleAdsStatUIData(
     val deltaPercentage: Int?
 
     init {
-        when (rawStat.statType) {
+        when (selectedStatType) {
             StatType.TOTAL_SALES -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_total_sales)
-                mainTotalStat = rawStat.totals.sales?.let {
+                mainTotalStat = rawStats.totals.sales?.let {
                     currencyFormatter.formatCurrency(it.toString())
                 }.orEmpty()
-                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                statItems = rawStats.googleAdsCampaigns.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = campaign.subtotal?.sales?.let {
@@ -40,10 +41,10 @@ class GoogleAdsStatUIData(
 
             StatType.SPEND -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_spend)
-                mainTotalStat = rawStat.totals.spend?.let {
+                mainTotalStat = rawStats.totals.spend?.let {
                     currencyFormatter.formatCurrency(it.toString())
                 }.orEmpty()
-                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                statItems = rawStats.googleAdsCampaigns.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = campaign.subtotal?.spend?.let {
@@ -58,8 +59,8 @@ class GoogleAdsStatUIData(
 
             StatType.CLICKS -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_clicks)
-                mainTotalStat = rawStat.totals.clicks?.toString().orEmpty()
-                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                mainTotalStat = rawStats.totals.clicks?.toString().orEmpty()
+                statItems = rawStats.googleAdsCampaigns.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = campaign.subtotal?.clicks?.toString().orEmpty(),
@@ -72,8 +73,8 @@ class GoogleAdsStatUIData(
 
             StatType.IMPRESSIONS -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_impressions)
-                mainTotalStat = rawStat.totals.impressions?.toString().orEmpty()
-                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                mainTotalStat = rawStats.totals.impressions?.toString().orEmpty()
+                statItems = rawStats.googleAdsCampaigns.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = campaign.subtotal?.impressions?.toString().orEmpty(),
@@ -86,8 +87,8 @@ class GoogleAdsStatUIData(
 
             StatType.CONVERSIONS -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_conversion)
-                mainTotalStat = rawStat.totals.conversions?.toString().orEmpty()
-                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                mainTotalStat = rawStats.totals.conversions?.toString().orEmpty()
+                statItems = rawStats.googleAdsCampaigns.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = campaign.subtotal?.conversions?.toString().orEmpty(),
@@ -101,12 +102,12 @@ class GoogleAdsStatUIData(
 
         statSecondColumnTitle = mainTotalStat
 
-        deltaPercentage = when (rawStat.statType) {
-            StatType.TOTAL_SALES -> rawStat.totalsDeltaPercentage.salesDelta
-            StatType.SPEND -> rawStat.totalsDeltaPercentage.spendDelta
-            StatType.CLICKS -> rawStat.totalsDeltaPercentage.clicksDelta
-            StatType.IMPRESSIONS -> rawStat.totalsDeltaPercentage.impressionsDelta
-            StatType.CONVERSIONS -> rawStat.totalsDeltaPercentage.conversionsDelta
+        deltaPercentage = when (selectedStatType) {
+            StatType.TOTAL_SALES -> rawStats.totalsDeltaPercentage.salesDelta
+            StatType.SPEND -> rawStats.totalsDeltaPercentage.spendDelta
+            StatType.CLICKS -> rawStats.totalsDeltaPercentage.clicksDelta
+            StatType.IMPRESSIONS -> rawStats.totalsDeltaPercentage.impressionsDelta
+            StatType.CONVERSIONS -> rawStats.totalsDeltaPercentage.conversionsDelta
         }.run { this as? DeltaPercentage.Value }?.value
     }
 }

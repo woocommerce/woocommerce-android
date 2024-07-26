@@ -690,9 +690,13 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
-    private fun buildGoogleAdsDataViewState(googleAdsStats: GoogleAdsStat): CustomListViewState {
+    private fun buildGoogleAdsDataViewState(
+        googleAdsStats: GoogleAdsStat,
+        statType: StatType = StatType.TOTAL_SALES
+    ): CustomListViewState {
         val statsUIData = GoogleAdsStatUIData(
-            rawStat = googleAdsStats,
+            rawStats = googleAdsStats,
+            selectedStatType = statType,
             currencyFormatter = currencyFormatter,
             resourceProvider = resourceProvider
         )
@@ -724,8 +728,8 @@ class AnalyticsHubViewModel @Inject constructor(
                 GoogleStatsFilterOptions
                     .fromTranslatedString(selectedFilterName, resourceProvider)
                     ?.toStatsType()
-                    ?.let { googleAdsStats.copy(statType = it) }
-                    ?.let { updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(it)) }
+                    ?.let { buildGoogleAdsDataViewState(googleAdsStats, it) }
+                    ?.let { updateCardStatus(AnalyticsCards.GoogleAds, it) }
             }
         )
     }
