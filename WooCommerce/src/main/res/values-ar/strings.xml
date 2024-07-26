@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-15 14:54:04+0000
+Translation-Revision-Date: 2024-07-23 13:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="woopos_cart_empty_content_description">سلة التسوق فارغة</string>
+    <string name="woopos_cart_empty_subtitle">النقر على منتج إلى\nإضافته إلى عربة التسوق</string>
+    <string name="woopos_totals_main_error_label">يتعذر تحميل الإجماليات</string>
+    <string name="woopos_items_in_cart_multiple">%d من العناصر</string>
+    <string name="ai_product_creation_error_media_upload">فشل رفع صورة المنتج المحددة.</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;موجّه رائع!&lt;/b&gt; لقد قدمت إلينا ما يكفي لكي نعمل من خلاله، لكن يمكنك إضافة مزيد من التفاصيل لجعله أفضل.</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;موجّه رائع!&lt;/b&gt; أين صُنِع؟</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;التحسُّن.&lt;/b&gt; هل يمكنك وصف الملاءمة وأي سمات مميزة للعنصر؟</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;أضف مزيدًا من التفاصيل.&lt;/b&gt; كلما كانت التفاصيل التي قدَّمتها أكبر، ستكون تفاصيلك التي تم إنشاؤها أفضل.</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">أضف اسم منتجك والميزات الأساسية أو المزايا أو التفاصيل لمساعدته على الظهور على الإنترنت.</string>
+    <string name="product_creation_ai_select_next_option">تحديد الخيار التالي</string>
+    <string name="product_creation_ai_select_previous_option">تحديد الخيار السابق</string>
+    <string name="product_creation_ai_preview_generate_again">الإنشاء مجددًا</string>
+    <string name="product_creation_ai_preview_undo_edits">التراجع عن عمليات التحرير</string>
+    <string name="product_creation_ai_preview_variant_selector">خيار ⁦%1$d⁩ من ⁦%2$d⁩</string>
+    <string name="analytics_spend_value">الإنفاق: ⁦%1$s⁩</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">مشاهدة كل الحملات</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">إنشاء حملة</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">النقرات</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">الانطباعات</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">أداء الحملة المدفوعة</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">يمكنك الترويج لمنتجاتك عبر البحث في غوغل والتسوق ويوتيوب وGmail والمزيد.</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">زيادة المبيعات وإنشاء مزيد من حركة المرور باستخدام إعلانات غوغل</string>
+    <string name="my_store_widget_google_ads_title">حملات إعلانات غوغل</string>
     <string name="customers_details_none_hint">لا شيء</string>
     <string name="customers_details_no_phone_hint">لا يوجد رقم هاتف</string>
     <string name="customers_details_postal_code_value_title">الرمز البريدي</string>
@@ -37,9 +61,8 @@ Language: ar
     <string name="ai_product_creation_view_image">عرض الصورة</string>
     <string name="product_creation_ai_preview_name_description_sections">الاسم والملخص والوصف</string>
     <string name="product_creation_ai_preview_subtitle">يمكنك تحرير تفاصيل منتجاتك أو إعادة إنشائها قبل الحفظ.</string>
-    <string name="product_detail_publish">نشر</string>
     <string name="analytics_google_ads_programs_card_title">البرامج</string>
-    <string name="analytics_google_ads_card_title">إعلانات غوغل</string>
+    <string name="analytics_google_ads_card_title">حملات غوغل</string>
     <string name="analytics_google_ads_no_data">لا توجد برامج في هذه الفترة</string>
     <string name="woopos_reader_connect_now_button">الاتصال الآن</string>
     <string name="woopos_cart_title">عربة التسوق</string>
@@ -60,7 +83,7 @@ Language: ar
     <string name="woopos_products_screen_title">المنتجات</string>
     <string name="woopos_product_image_description">صورة المنتج</string>
     <string name="woopos_items_in_cart">%d من العناصر</string>
-    <string name="woopos_clear_cart_button">مسح الكل</string>
+    <string name="woopos_clear_cart_button">مسح</string>
     <string name="more_menu_button_google_description">زيادة المبيعات وإنشاء مزيد من حركة المرور باستخدام Google Ads</string>
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="no_quantity_rules">لا توجد قواعد للكميات</string>
@@ -74,7 +97,6 @@ Language: ar
     <string name="woopos_reader_unknown">حالة القارئ مجهولة</string>
     <string name="woopos_checkout">السداد</string>
     <string name="woopos_reader_disconnected">تم فصل القارئ</string>
-    <string name="woopos_reader_connecting">اتصال القارئ</string>
     <string name="woopos_reader_connected">تم اتصال القارئ</string>
     <string name="woopos_exit_pos">إنهاء POS</string>
     <string name="dashboard_new_widgets_card_button">إضافة أقسام جديدة</string>

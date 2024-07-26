@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 11:54:04+0000
+Translation-Revision-Date: 2024-07-23 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="woopos_cart_empty_content_description">עגלת הקניות ריקה</string>
+    <string name="woopos_cart_empty_subtitle">יש להקיש על מוצר כדי\nלהוסיף את המוצר לעגלה</string>
+    <string name="woopos_totals_main_error_label">לא ניתן היה לטעון סך כל</string>
+    <string name="woopos_items_in_cart_multiple">%d פריטים</string>
+    <string name="ai_product_creation_error_media_upload">נכשלה ההעלאה של תמונת המוצר שנבחרה.</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;הנחיה מצוינת!&lt;/b&gt; קיבלנו מספיק מידע כדי ליצור את התוכן, אבל אפשר להוסיף פרטים כדי לשפר אותו.</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;הנחיה מצוינת!&lt;/b&gt; איפה המוצר יוצר?</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;משתפר.&lt;/b&gt; יש לתאר את המידות של הפריט או תכונות שמאפיינות אותו.</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;להוסיף עוד פרטים.&lt;/b&gt; תיאור מפורט יותר ישפר את הפרטים שניצור עבורך.</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">יש להוסיף את השם, המאפיינים המרכזיים והיתרונות של המוצר או פרטים שיעזרו למחפשים למצוא את המוצר שלך באינטרנט.</string>
+    <string name="product_creation_ai_select_next_option">לבחור את האפשרות הבאה</string>
+    <string name="product_creation_ai_select_previous_option">לבחור את האפשרות הקודמת</string>
+    <string name="product_creation_ai_preview_generate_again">ליצור שוב</string>
+    <string name="product_creation_ai_preview_undo_edits">לבטל שינויים</string>
+    <string name="product_creation_ai_preview_variant_selector">אפשרות ⁦%1$d⁩ מתוך ⁦%2$d⁩</string>
+    <string name="analytics_spend_value">הוצאה: ⁦%1$s⁩</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">להציג את כל הקמפיינים</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">ליצור קמפיין</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">קליקים</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">צפיות</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">ביצועים של קמפיינים בתשלום</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">לקדם את המוצרים שלך בחיפוש של Google, ב-Google Shopping, ב-YouTube, ב-Gmail ועוד.</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">לעודד מכירות ולהגדיל את התעבורה עם Google Ads</string>
+    <string name="my_store_widget_google_ads_title">קמפיינים של Google Ads</string>
     <string name="customers_details_none_hint">ללא</string>
     <string name="customers_details_no_phone_hint">אין מספר טלפון</string>
     <string name="customers_details_postal_code_value_title">מיקוד</string>
@@ -37,9 +61,8 @@ Language: he_IL
     <string name="ai_product_creation_view_image">להציג את התמונה</string>
     <string name="product_creation_ai_preview_name_description_sections">שם, סיכום ותיאור</string>
     <string name="product_creation_ai_preview_subtitle">אפשר לערוך את פרטי המוצר או ליצור אותם מחדש לפני השמירה.</string>
-    <string name="product_detail_publish">לפרסם</string>
     <string name="analytics_google_ads_programs_card_title">תוכניות</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_card_title">קמפיינים של Google</string>
     <string name="analytics_google_ads_no_data">אין תוכניות בתקופה הזאת</string>
     <string name="woopos_reader_connect_now_button">להתחבר כעת</string>
     <string name="woopos_cart_title">עגלת קניות</string>
@@ -59,8 +82,8 @@ Language: he_IL
     <string name="woopos_cart_back_content_description">סמל \'עגלת קניות\'</string>
     <string name="woopos_products_screen_title">מוצרים</string>
     <string name="woopos_product_image_description">תמונת מוצר</string>
-    <string name="woopos_items_in_cart">%d פריטים</string>
-    <string name="woopos_clear_cart_button">לנקות הכול</string>
+    <string name="woopos_items_in_cart">פריט %d</string>
+    <string name="woopos_clear_cart_button">למחוק</string>
     <string name="more_menu_button_google_description">לעודד מכירות ולהגדיל את התעבורה עם Google Ads</string>
     <string name="more_menu_button_google">Google ל-WooCommerce</string>
     <string name="no_quantity_rules">אין כללי כמות</string>
@@ -74,7 +97,6 @@ Language: he_IL
     <string name="woopos_reader_unknown">הסטטוס של הקורא לא ידוע</string>
     <string name="woopos_checkout">קופה</string>
     <string name="woopos_reader_disconnected">הקורא מנותק</string>
-    <string name="woopos_reader_connecting">הקורא מתחבר</string>
     <string name="woopos_reader_connected">הקורא חובר</string>
     <string name="woopos_exit_pos">לצאת מ-POS</string>
     <string name="dashboard_new_widgets_card_button">להוסיף מקטעים חדשים</string>
