@@ -61,7 +61,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Session -> visitorsCountState.update { VisitorsState.Loading }
                 AnalyticsCards.Bundles -> _bundlesState.update { BundlesState.Loading }
                 AnalyticsCards.GiftCards -> _giftCardsState.update { GiftCardsState.Loading }
-                AnalyticsCards.GoogleAds -> { /* Handled by the [UpdateGoogleCampaignStats] use case */}
+                AnalyticsCards.GoogleAds -> { /* Handled by the [UpdateGoogleCampaignStats] use case */ }
             }
         }
 

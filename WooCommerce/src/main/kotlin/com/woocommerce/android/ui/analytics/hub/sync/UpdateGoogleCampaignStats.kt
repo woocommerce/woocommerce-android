@@ -8,10 +8,10 @@ import com.woocommerce.android.ui.analytics.hub.GoogleStatsFilterOptions.Convers
 import com.woocommerce.android.ui.analytics.hub.GoogleStatsFilterOptions.Impressions
 import com.woocommerce.android.ui.analytics.hub.GoogleStatsFilterOptions.TotalSales
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
 class UpdateGoogleCampaignStats @Inject constructor(
     private val analyticsRepository: AnalyticsRepository
