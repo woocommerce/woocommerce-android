@@ -17,6 +17,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val _state = MutableStateFlow(
         WooPosHomeState(
             screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Hidden,
+            productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden,
             exitConfirmationDialog = null
         )
     )
@@ -49,10 +50,6 @@ class WooPosHomeViewModel @Inject constructor(
                             exitConfirmationDialog = WooPosExitConfirmationDialog
                         )
                     }
-
-                    is WooPosHomeState.ProductsInfoDialog.Visible, WooPosHomeState.ProductsInfoDialog.Hidden -> {
-                        false
-                    }
                 }
             }
 
@@ -61,8 +58,9 @@ class WooPosHomeViewModel @Inject constructor(
             }
 
             WooPosHomeUIEvent.DismissProductsInfoDialog -> {
-                _state.value = WooPosHomeState.ProductsInfoDialog.Hidden
-                true
+                _state.value = _state.value.copy(
+                    productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden
+                )
             }
         }
     }
@@ -114,19 +112,19 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.ProductsStatusChanged -> handleProductsStatusChanged(event)
 
                     ChildToParentEvent.ProductsDialogInfoIconClicked -> {
-                        _state.value = WooPosHomeState.ProductsInfoDialog.Visible(
-                            header = R.string.woopos_dialog_products_info_heading,
-                            primaryMessage = R.string.woopos_dialog_products_info_primary_message,
-                            secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
-                            secondaryMessageActionLabel =
-                            R.string.woopos_dialog_products_info_secondary_message_action_label,
-                            primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
-                                label = R.string.woopos_dialog_products_info_button_label,
+                        _state.value = _state.value.copy(
+                            productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Visible(
+                                header = R.string.woopos_dialog_products_info_heading,
+                                primaryMessage = R.string.woopos_dialog_products_info_primary_message,
+                                secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
+                                secondaryMessageActionLabel =
+                                R.string.woopos_dialog_products_info_secondary_message_action_label,
+                                primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
+                                    label = R.string.woopos_dialog_products_info_button_label,
+                                )
                             )
                         )
                     }
-                }
-            }
                 }
             }
         }
