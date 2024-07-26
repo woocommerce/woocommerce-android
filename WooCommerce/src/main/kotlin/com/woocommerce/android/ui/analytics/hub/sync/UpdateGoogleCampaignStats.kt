@@ -21,9 +21,14 @@ class UpdateGoogleCampaignStats @Inject constructor(
 
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
-        filterOption: GoogleStatsFilterOptions
+        filterOption: GoogleStatsFilterOptions? = null
     ): Flow<GoogleAdsState> {
-        fetchGoogleAdsAsync(rangeSelection, filterOption.toStatType())
+        val selectedFilterOption = filterOption?.toStatType()
+            ?: _googleAdsState.value.run { this as? GoogleAdsState.Available }
+                ?.googleAdsStat?.statType
+            ?: StatType.TOTAL_SALES
+
+        fetchGoogleAdsAsync(rangeSelection, selectedFilterOption)
         return googleAdsState
     }
 

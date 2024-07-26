@@ -10,7 +10,7 @@ data class GoogleAdsStat(
         spend = 0.0
     ),
     val deltaPercentage: DeltaPercentage,
-    val totalType: StatType
+    val statType: StatType
 ) {
     companion object {
         val EMPTY = GoogleAdsStat(
@@ -20,7 +20,7 @@ data class GoogleAdsStat(
                 spend = 0.0
             ),
             deltaPercentage = DeltaPercentage.NotExist,
-            totalType = StatType.TOTAL_SALES
+            statType = StatType.TOTAL_SALES
         )
     }
 }

@@ -540,7 +540,7 @@ class AnalyticsRepository @Inject constructor(
                 previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
                 currentVal = currentRangeResponse.totals?.sales ?: 0.0
             ),
-            totalType = selectedStats
+            statType = selectedStats
         )
     )
 
