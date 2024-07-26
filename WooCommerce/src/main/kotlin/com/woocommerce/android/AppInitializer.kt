@@ -219,13 +219,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         trackStartupAnalytics()
 
-        zendeskSettings.setup(
-            context = application,
-            zendeskUrl = BuildConfig.ZENDESK_DOMAIN,
-            applicationId = BuildConfig.ZENDESK_APP_ID,
-            oauthClientId = BuildConfig.ZENDESK_OAUTH_CLIENT_ID
-        )
-
         observeEncryptedLogsUploadResults()
         uploadEncryptedLogs()
 
