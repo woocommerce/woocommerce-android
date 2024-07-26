@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
 import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
-import com.woocommerce.android.ui.analytics.hub.sync.UpdateGoogleCampaignStats
 import com.woocommerce.android.ui.analytics.hub.sync.toAnalyticData
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -87,7 +86,6 @@ class AnalyticsHubViewModel @Inject constructor(
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val updateStats: UpdateAnalyticsHubStats,
-    private val updateGoogleStats: UpdateGoogleCampaignStats,
     private val observeLastUpdate: ObserveLastUpdate,
     private val localeProvider: LocaleProvider,
     private val feedbackRepository: FeedbackRepository,
@@ -236,7 +234,6 @@ class AnalyticsHubViewModel @Inject constructor(
         val visibleCards =
             currentConfiguration.value?.filter { it.isVisible }?.map { it.card } ?: AnalyticsCards.entries
         viewModelScope.launch {
-            updateGoogleStats(ranges)
             updateStats(
                 rangeSelection = ranges,
                 scope = viewModelScope,
@@ -271,7 +268,6 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun combineSelectionAndConfiguration() {
         combine(currentConfiguration.filterNotNull(), rangeSelectionState) { configuration, selection ->
-            updateGoogleStats(selection)
             updateStats(
                 rangeSelection = selection,
                 scope = viewModelScope,
@@ -464,7 +460,7 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun observeGoogleAdsChanges() {
-        googleAdsObservationJob = updateGoogleStats.googleAdsState.onEach { state ->
+        googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
             when (state) {
                 is GoogleAdsState.Available -> {
                     updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
