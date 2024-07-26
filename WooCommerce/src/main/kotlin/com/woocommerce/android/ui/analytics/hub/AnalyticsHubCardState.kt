@@ -60,16 +60,19 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
         override val card: AnalyticsCards,
         val message: String
     ) : AnalyticsHubCustomSelectionListViewState()
-    data class DataViewState(
+    data class CustomListViewState(
         override val card: AnalyticsCards,
         val title: String,
         val subTitle: String,
+        val filterTitle: String,
         val itemTitleValue: String,
         val listLeftHeader: String,
         val listRightHeader: String,
         val delta: Int?,
         val items: List<AnalyticsHubListCardItemViewState>,
-        val reportUrl: String?
+        val reportUrl: String?,
+        val filterOptions: List<String> = emptyList(),
+        val onFilterSelected: (filterOption: String) -> Unit = {}
     ) : AnalyticsHubCustomSelectionListViewState() {
         val sign: String
             get() = when {
