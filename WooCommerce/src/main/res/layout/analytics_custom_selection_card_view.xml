@@ -52,13 +52,29 @@
             tools:ignore="UnusedAttribute">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/analyticsItemsTitle"
+                android:id="@+id/analyticsMainTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/major_100"
                 android:focusable="false"
                 android:textSize="@dimen/text_minor_125"
+                android:textStyle="bold"
+                android:textColor="@color/woo_black"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lineHeight="@dimen/text_major_25"
+                tools:text="Metric"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/analyticsFilterTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/major_100"
+                android:focusable="false"
+                android:textSize="@dimen/text_minor_125"
+                android:layout_marginStart="@dimen/minor_100"
+                app:layout_constraintStart_toEndOf="@id/analyticsMainTitle"
                 app:layout_constraintTop_toTopOf="parent"
                 app:lineHeight="@dimen/text_major_25"
                 tools:text="Total Sales"
@@ -70,8 +86,9 @@
                 android:layout_height="wrap_content"
                 style="@style/Woo.ImageButton.More"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBaseline_toBaselineOf="@id/analyticsItemsTitle"
-                android:src="@drawable/ic_gridicons_align_justify"
+                app:layout_constraintBaseline_toBaselineOf="@id/analyticsMainTitle"
+                android:src="@drawable/ic_filter"
+                app:tint="@color/woo_gray_40"
                 android:contentDescription="@string/analytics_custom_list_selection_button_description" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -82,8 +99,8 @@
                 android:layout_marginStart="@dimen/minor_00"
                 android:focusable="false"
                 android:textSize="@dimen/text_major_50"
-                app:layout_constraintStart_toStartOf="@+id/analyticsItemsTitle"
-                app:layout_constraintTop_toBottomOf="@+id/analyticsItemsTitle"
+                app:layout_constraintStart_toStartOf="@+id/analyticsMainTitle"
+                app:layout_constraintTop_toBottomOf="@+id/analyticsMainTitle"
                 app:lineHeight="@dimen/text_major_25"
                 tools:text="32" />
 

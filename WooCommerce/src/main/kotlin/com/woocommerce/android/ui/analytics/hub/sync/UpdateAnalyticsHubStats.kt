@@ -82,7 +82,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         fetchStrategy: FetchStrategy,
         visibleCards: List<AnalyticsCards>
     ) {
-        val asyncCalls = visibleCards.map { card ->
+        val asyncCalls = visibleCards.mapNotNull { card ->
             when (card) {
                 AnalyticsCards.Revenue -> scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Orders -> scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy)
