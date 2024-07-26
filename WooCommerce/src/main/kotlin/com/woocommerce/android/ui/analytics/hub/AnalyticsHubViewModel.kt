@@ -16,6 +16,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsStat
 import com.woocommerce.android.model.GoogleAdsStatUIData
+import com.woocommerce.android.model.GoogleStatsFilterOptions
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -77,7 +78,6 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
-import com.woocommerce.android.model.GoogleStatsFilterOptions
 
 @HiltViewModel
 @SuppressWarnings("LargeClass")
