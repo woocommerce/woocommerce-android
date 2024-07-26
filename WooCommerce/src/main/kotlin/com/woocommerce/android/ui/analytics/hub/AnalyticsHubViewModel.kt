@@ -75,6 +75,8 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
+import com.woocommerce.android.model.GoogleAdsStatUIData
+import com.woocommerce.android.model.StatType
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
 
 @HiltViewModel
@@ -689,38 +691,41 @@ class AnalyticsHubViewModel @Inject constructor(
         )
 
     private fun buildGoogleAdsDataViewState(googleAdsStats: GoogleAdsStat): CustomListViewState {
+        val statsUIData = GoogleAdsStatUIData(
+            rawStat = googleAdsStats,
+            currencyFormatter = currencyFormatter,
+            resourceProvider = resourceProvider
+        )
         return CustomListViewState(
             card = AnalyticsCards.GoogleAds,
             title = resourceProvider.getString(R.string.analytics_google_ads_card_title),
-            subTitle = resourceProvider.getString(R.string.analytics_total_sales_title),
-            listLeftHeader = resourceProvider.getString(R.string.analytics_google_ads_programs_card_title),
-            listRightHeader = resourceProvider.getString(R.string.analytics_total_sales_title),
-            itemTitleValue = googleAdsStats.totals.formatSales(currencyFormatter).orEmpty(),
-            delta = googleAdsStats.deltaPercentage
-                .run { this as? DeltaPercentage.Value }?.value,
-            reportUrl = getReportUrl(
-                selection = ranges,
-                card = ReportCard.GoogleCampaigns
-            ),
-            items = googleAdsStats.googleAdsCampaigns.map {
+            subTitle = statsUIData.mainTotalStatTitle,
+            listLeftHeader = statsUIData.statFirstColumnTitle,
+            listRightHeader = statsUIData.statSecondColumnTitle,
+            itemTitleValue = statsUIData.mainTotalStat,
+            delta = statsUIData.deltaPercentage,
+            items = statsUIData.statItems.map {
                 AnalyticsHubListCardItemViewState(
                     title = it.name.orEmpty(),
                     showDivider = true,
                     imageUri = null,
-                    value = it.subtotal?.formatSales(currencyFormatter).orEmpty(),
-                    description = resourceProvider.getString(
-                        R.string.analytics_spend_value,
-                        it.subtotal?.formatSpend(currencyFormatter).orEmpty()
-                    ),
+                    value = it.mainStat.orEmpty(),
+                    description = it.secondaryStat.orEmpty(),
                     showImage = false
                 )
             },
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.GoogleCampaigns
+            ),
             filterOptions = GoogleStatsFilterOptions
                 .entries.map { resourceProvider.getString(it.resourceId) },
             onFilterSelected = { selectedFilterName ->
-                val selectedFilter = GoogleStatsFilterOptions
+                GoogleStatsFilterOptions
                     .fromTranslatedString(selectedFilterName, resourceProvider)
-                launch { updateGoogleStats(ranges, selectedFilter) }
+                    ?.toStatsType()
+                    ?.let { googleAdsStats.copy(statType = it) }
+                    ?.let { updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(it)) }
             }
         )
     }
@@ -793,9 +798,18 @@ enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard, GoogleCamp
 
 enum class GoogleStatsFilterOptions(val resourceId: Int) {
     TotalSales(R.string.analytics_google_ads_filter_total_sales),
+    Spend(R.string.analytics_google_ads_filter_spend),
     Conversions(R.string.analytics_google_ads_filter_conversion),
     Clicks(R.string.analytics_google_ads_filter_clicks),
     Impressions(R.string.analytics_google_ads_filter_impressions);
+
+    fun toStatsType() = when(this) {
+        TotalSales -> StatType.TOTAL_SALES
+        Spend -> StatType.SPEND
+        Conversions -> StatType.CONVERSIONS
+        Clicks -> StatType.CLICKS
+        Impressions -> StatType.IMPRESSIONS
+    }
 
     companion object {
         fun fromTranslatedString(
