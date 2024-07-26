@@ -16,6 +16,8 @@ class GoogleAdsStatUIData(
     val statFirstColumnTitle: String = resourceProvider.getString(R.string.analytics_google_ads_programs_card_title)
     val statSecondColumnTitle: String
 
+    val deltaPercentage: Int?
+
     init {
         mainTotalStatTitle = when (rawStat.statType) {
             StatType.TOTAL_SALES -> resourceProvider.getString(R.string.analytics_google_ads_filter_total_sales)
@@ -63,6 +65,14 @@ class GoogleAdsStatUIData(
                 }
             )
         }
+
+        deltaPercentage = when (rawStat.statType) {
+            StatType.TOTAL_SALES -> rawStat.totalsDeltaPercentage.salesDelta
+            StatType.SPEND -> rawStat.totalsDeltaPercentage.spendDelta
+            StatType.CLICKS -> rawStat.totalsDeltaPercentage.clicksDelta
+            StatType.IMPRESSIONS -> rawStat.totalsDeltaPercentage.impressionsDelta
+            StatType.CONVERSIONS -> rawStat.totalsDeltaPercentage.conversionsDelta
+        }.run { this as? DeltaPercentage.Value }?.value
     }
 }
 
