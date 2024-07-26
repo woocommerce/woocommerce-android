@@ -534,28 +534,36 @@ class AnalyticsRepository @Inject constructor(
                     conversions = it?.conversions?.toInt() ?: 0
                 )
             },
-            totalsDeltaPercentage = GoogleAdsTotalsDeltaPercentage(
-                salesDelta = calculateDeltaPercentage(
-                    previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
-                    currentVal = currentRangeResponse.totals?.sales ?: 0.0
-                ),
-                spendDelta = calculateDeltaPercentage(
-                    previousVal = previousRangeResponse?.totals?.spend ?: 0.0,
-                    currentVal = currentRangeResponse.totals?.spend ?: 0.0
-                ),
-                clicksDelta = calculateDeltaPercentage(
-                    previousVal = previousRangeResponse?.totals?.clicks ?: 0.0,
-                    currentVal = currentRangeResponse.totals?.clicks ?: 0.0
-                ),
-                impressionsDelta = calculateDeltaPercentage(
-                    previousVal = previousRangeResponse?.totals?.impressions ?: 0.0,
-                    currentVal = currentRangeResponse.totals?.impressions ?: 0.0
-                ),
-                conversionsDelta = calculateDeltaPercentage(
-                    previousVal = previousRangeResponse?.totals?.conversions ?: 0.0,
-                    currentVal = currentRangeResponse.totals?.conversions ?: 0.0
-                )
+            totalsDeltaPercentage = mapGoogleAdsDeltaPercentages(
+                previousRangeResponse,
+                currentRangeResponse
             )
+        )
+    )
+
+    private fun mapGoogleAdsDeltaPercentages(
+        previousRangeResponse: WCGoogleAdsPrograms?,
+        currentRangeResponse: WCGoogleAdsPrograms
+    ) = GoogleAdsTotalsDeltaPercentage(
+        salesDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.sales ?: 0.0,
+            currentVal = currentRangeResponse.totals?.sales ?: 0.0
+        ),
+        spendDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.spend ?: 0.0,
+            currentVal = currentRangeResponse.totals?.spend ?: 0.0
+        ),
+        clicksDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.clicks ?: 0.0,
+            currentVal = currentRangeResponse.totals?.clicks ?: 0.0
+        ),
+        impressionsDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.impressions ?: 0.0,
+            currentVal = currentRangeResponse.totals?.impressions ?: 0.0
+        ),
+        conversionsDelta = calculateDeltaPercentage(
+            previousVal = previousRangeResponse?.totals?.conversions ?: 0.0,
+            currentVal = currentRangeResponse.totals?.conversions ?: 0.0
         )
     )
 

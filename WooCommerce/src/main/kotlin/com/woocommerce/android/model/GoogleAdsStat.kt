@@ -53,5 +53,5 @@ enum class StatType {
     SPEND,
     CLICKS,
     IMPRESSIONS,
-    CONVERSIONS;
+    CONVERSIONS
 }

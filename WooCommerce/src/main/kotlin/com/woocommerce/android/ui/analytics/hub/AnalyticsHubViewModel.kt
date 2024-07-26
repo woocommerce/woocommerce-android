@@ -15,11 +15,14 @@ import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.GoogleAdsStat
+import com.woocommerce.android.model.GoogleAdsStatUIData
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
+import com.woocommerce.android.model.StatType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
@@ -74,9 +77,6 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
-import com.woocommerce.android.model.GoogleAdsStatUIData
-import com.woocommerce.android.model.StatType
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
 
 @HiltViewModel
 @SuppressWarnings("LargeClass")
@@ -803,7 +803,7 @@ enum class GoogleStatsFilterOptions(val resourceId: Int) {
     Clicks(R.string.analytics_google_ads_filter_clicks),
     Impressions(R.string.analytics_google_ads_filter_impressions);
 
-    fun toStatsType() = when(this) {
+    fun toStatsType() = when (this) {
         TotalSales -> StatType.TOTAL_SALES
         Spend -> StatType.SPEND
         Conversions -> StatType.CONVERSIONS
