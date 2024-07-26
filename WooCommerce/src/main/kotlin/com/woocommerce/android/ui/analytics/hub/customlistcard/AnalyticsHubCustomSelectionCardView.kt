@@ -42,7 +42,7 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
     private fun setDataViewState(viewState: CustomListViewState) {
         skeletonView.hide()
         binding.analyticsCardTitle.text = viewState.title
-        binding.analyticsItemsTitle.text = viewState.subTitle
+        binding.analyticsFilterTitle.text = viewState.subTitle
         binding.analyticsItemsValue.text = viewState.itemTitleValue
         binding.analyticsListLeftHeader.text = viewState.listLeftHeader
         binding.analyticsListRightHeader.text = viewState.listRightHeader
@@ -64,7 +64,8 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
 
         binding.analyticsItemsTag.isVisible = viewState.delta != null
         binding.analyticsCardTitle.visibility = VISIBLE
-        binding.analyticsItemsTitle.visibility = VISIBLE
+        binding.analyticsMainTitle.visibility = VISIBLE
+        binding.analyticsFilterTitle.visibility = VISIBLE
         binding.analyticsItemsValue.visibility = VISIBLE
         binding.analyticsListLeftHeader.visibility = VISIBLE
         binding.analyticsListRightHeader.visibility = VISIBLE
@@ -105,7 +106,8 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
     private fun setNoAdsViewState(viewState: NoAdsState) {
         skeletonView.hide()
         binding.analyticsCardTitle.visibility = GONE
-        binding.analyticsItemsTitle.visibility = GONE
+        binding.analyticsMainTitle.visibility = GONE
+        binding.analyticsFilterTitle.visibility = GONE
         binding.analyticsItemsValue.visibility = GONE
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
@@ -122,7 +124,8 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
             delayed = true
         )
         binding.analyticsCardTitle.visibility = GONE
-        binding.analyticsItemsTitle.visibility = GONE
+        binding.analyticsMainTitle.visibility = GONE
+        binding.analyticsFilterTitle.visibility = GONE
         binding.analyticsItemsValue.visibility = GONE
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
