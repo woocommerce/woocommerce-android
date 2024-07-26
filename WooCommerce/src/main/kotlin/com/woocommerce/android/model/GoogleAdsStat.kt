@@ -1,12 +1,11 @@
 package com.woocommerce.android.model
 
-import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.store.WCGoogleStore
 
 data class GoogleAdsStat(
     val googleAdsCampaigns: List<GoogleAdsCampaign>,
     val totals: GoogleAdsTotals,
-    val deltaPercentage: DeltaPercentage,
+    val totalsDeltaPercentage: GoogleAdsTotalsDeltaPercentage,
     val statType: StatType
 ) {
     companion object {
@@ -19,7 +18,13 @@ data class GoogleAdsStat(
                 impressions = 0,
                 conversions = 0
             ),
-            deltaPercentage = DeltaPercentage.NotExist,
+            totalsDeltaPercentage = GoogleAdsTotalsDeltaPercentage(
+                salesDelta = DeltaPercentage.NotExist,
+                spendDelta = DeltaPercentage.NotExist,
+                clicksDelta = DeltaPercentage.NotExist,
+                impressionsDelta = DeltaPercentage.NotExist,
+                conversionsDelta = DeltaPercentage.NotExist
+            ),
             statType = StatType.TOTAL_SALES
         )
     }
@@ -37,17 +42,15 @@ data class GoogleAdsTotals(
     val clicks: Int?,
     val impressions: Int?,
     val conversions: Int?
-) {
-    fun formatSales(currencyFormatter: CurrencyFormatter) =
-        sales?.let {
-            currencyFormatter.formatCurrency(it.toString())
-        }.orEmpty()
+)
 
-    fun formatSpend(currencyFormatter: CurrencyFormatter) =
-        spend?.let {
-            currencyFormatter.formatCurrency(it.toString())
-        }.orEmpty()
-}
+data class GoogleAdsTotalsDeltaPercentage(
+    val salesDelta: DeltaPercentage,
+    val spendDelta: DeltaPercentage,
+    val clicksDelta: DeltaPercentage,
+    val impressionsDelta: DeltaPercentage,
+    val conversionsDelta: DeltaPercentage
+)
 
 enum class StatType {
     TOTAL_SALES,
