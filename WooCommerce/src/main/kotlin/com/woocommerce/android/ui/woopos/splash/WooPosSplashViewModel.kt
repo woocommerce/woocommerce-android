@@ -18,11 +18,13 @@ class WooPosSplashViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
-            when {
-                result.isSuccess -> _state.value = WooPosSplashState.Loaded
-                result.isFailure -> _state.value = WooPosSplashState.Error
-            }
+            productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
+                .collect { result ->
+                    when (result) {
+                        is WooPosProductsDataSource.ProductsResult.Cached -> {}
+                        is WooPosProductsDataSource.ProductsResult.Remote -> _state.value = WooPosSplashState.Loaded
+                    }
+                }
         }
     }
 }
