@@ -60,7 +60,7 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
         override val card: AnalyticsCards,
         val message: String
     ) : AnalyticsHubCustomSelectionListViewState()
-    data class DataViewState(
+    data class CustomListViewState(
         override val card: AnalyticsCards,
         val title: String,
         val subTitle: String,

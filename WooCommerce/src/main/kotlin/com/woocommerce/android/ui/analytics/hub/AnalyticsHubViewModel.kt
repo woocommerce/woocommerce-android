@@ -75,6 +75,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
 
 @HiltViewModel
 @SuppressWarnings("LargeClass")
@@ -687,8 +688,8 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
-    private fun buildGoogleAdsDataViewState(googleAdsStats: GoogleAdsStat) =
-        AnalyticsHubCustomSelectionListViewState.DataViewState(
+    private fun buildGoogleAdsDataViewState(googleAdsStats: GoogleAdsStat): CustomListViewState {
+        return CustomListViewState(
             card = AnalyticsCards.GoogleAds,
             title = resourceProvider.getString(R.string.analytics_google_ads_card_title),
             subTitle = resourceProvider.getString(R.string.analytics_total_sales_title),
@@ -722,6 +723,7 @@ class AnalyticsHubViewModel @Inject constructor(
                 launch { updateGoogleStats(ranges, selectedFilter) }
             }
         )
+    }
 
     private fun trackSelectedDateRange() {
         onTrackableUIInteraction()

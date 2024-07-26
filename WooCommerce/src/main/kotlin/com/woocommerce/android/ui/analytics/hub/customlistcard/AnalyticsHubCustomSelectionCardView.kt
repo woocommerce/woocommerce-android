@@ -12,7 +12,7 @@ import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsCustomSelectionCardViewBinding
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.NoAdsState
 import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
@@ -35,11 +35,11 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
         when (viewState) {
             is LoadingAdsViewState -> setSkeleton()
             is NoAdsState -> setNoAdsViewState(viewState)
-            is DataViewState -> setDataViewState(viewState)
+            is CustomListViewState -> setDataViewState(viewState)
         }
     }
 
-    private fun setDataViewState(viewState: DataViewState) {
+    private fun setDataViewState(viewState: CustomListViewState) {
         skeletonView.hide()
         binding.analyticsCardTitle.text = viewState.title
         binding.analyticsItemsTitle.text = viewState.subTitle
@@ -91,7 +91,7 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
     }
 
     private fun View.displayFilterPopupMenu(
-        viewState: DataViewState
+        viewState: CustomListViewState
     ) {
         PopupMenu(ctx, this).apply {
             viewState.filterOptions.forEach { menu.add(it) }
@@ -131,7 +131,7 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
         binding.analyticsFilterButton.visibility = GONE
     }
 
-    private fun getDeltaTagText(viewState: DataViewState) =
+    private fun getDeltaTagText(viewState: CustomListViewState) =
         ctx.resources.getString(
             R.string.analytics_information_card_delta,
             viewState.sign,
