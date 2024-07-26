@@ -6,7 +6,7 @@ import com.woocommerce.android.wear.model.Refund
 import com.woocommerce.android.wear.model.getNonRefundedProducts
 import com.woocommerce.android.wear.model.toAppModel
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
-import com.woocommerce.android.wear.system.NetworkStatus
+import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.orders.OrdersRepository
 import com.woocommerce.android.wear.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Error
 import com.woocommerce.android.wear.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class FetchOrderProducts @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
     private val ordersRepository: OrdersRepository,
-    private val networkStatus: NetworkStatus
+    private val connectionStatus: ConnectionStatus
 ) {
     suspend operator fun invoke(
         selectedSite: SiteModel,
@@ -43,7 +43,7 @@ class FetchOrderProducts @Inject constructor(
         orderId: Long
     ): Flow<List<WearOrderedProduct>> {
         return when {
-            networkStatus.isConnected() -> flow {
+            connectionStatus.isStoreConnected() -> flow {
                 ordersRepository.fetchOrderRefunds(selectedSite, orderId)
                     .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
                     .let { emit(it) }

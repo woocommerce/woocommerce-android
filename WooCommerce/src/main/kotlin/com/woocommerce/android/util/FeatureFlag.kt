@@ -32,9 +32,7 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            GOOGLE_ADS_M1,
-            BACKGROUND_TASKS,
-            PRODUCT_CREATION_WITH_AI_V2_M3 -> PackageUtils.isDebugBuild()
+            BACKGROUND_TASKS -> PackageUtils.isDebugBuild()
 
             PRODUCT_CREATION_WITH_AI_V2,
             CONNECTIVITY_TOOL,
@@ -42,7 +40,9 @@ enum class FeatureFlag {
             APP_PASSWORD_TUTORIAL,
             INBOX,
             GOOGLE_ADS_ANALYTICS_HUB_M1,
-            SHOW_INBOX_CTA -> true
+            SHOW_INBOX_CTA,
+            PRODUCT_CREATION_WITH_AI_V2_M3,
+            GOOGLE_ADS_M1 -> true
         }
     }
 }

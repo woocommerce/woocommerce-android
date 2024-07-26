@@ -92,6 +92,7 @@ class DashboardStatsView @JvmOverloads constructor(
             // to appear, and we remove the chart's empty string so it doesn't briefly show
             // up before the chart data is added once the request completes
             if (value) {
+                clearStatsHeaderValues()
                 binding.chart.setNoDataText(null)
                 binding.chart.clear()
             } else {
@@ -398,8 +399,7 @@ class DashboardStatsView @JvmOverloads constructor(
         binding.chart.isVisible = !show
     }
 
-    fun showVisitorStats(statsViewState: VisitorStatsViewState, rangeSelection: StatsTimeRangeSelection?) {
-        rangeSelection?.let { statsTimeRangeSelection = it }
+    fun showVisitorStats(statsViewState: VisitorStatsViewState) {
         // Reset click listeners
         binding.statsViewRow.emptyVisitorStatsIcon.setOnClickListener(null)
         binding.statsViewRow.emptyVisitorStatsIndicator.setOnClickListener(null)
@@ -726,7 +726,6 @@ class DashboardStatsView @JvmOverloads constructor(
                     dateString,
                     statsTimeRangeSelection.revenueStatsGranularity
                 )
-
                 else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
             }.also { result -> trackUnexpectedFormat(result, dateString) }
         }

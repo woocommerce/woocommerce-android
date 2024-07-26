@@ -2252,7 +2252,9 @@
     <string name="ai_product_creation_replace_image">Replace photo</string>
     <string name="ai_product_creation_remove_image">Remove photo</string>
     <string name="ai_product_creation_image_selected">Photo selected</string>
-    <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
+    <string name="ai_product_creation_image_scan_subtitle">Add text scanned from a photo</string>
+    <string name="ai_product_creation_image_selected_subtitle">Photo text added to starting info</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Scanning image</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
     <string name="ai_product_creation_prompt_suggestion_initial">Add your product\'s name and key features, benefits, or details to help it get found online.</string>
@@ -4176,7 +4178,7 @@
     -->
     <string name="woopos_exit_pos">Exit POS</string>
     <string name="woopos_reader_connected">Reader Connected</string>
-    <string name="woopos_reader_disconnected">Reader Disconnected</string>
+    <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_unknown">Reader Status Unknown</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -4208,6 +4210,15 @@
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
     <string name="woopos_splash_title">Starting up</string>
     <string name="woopos_splash_message">Let’s serve some customers</string>
+    <string name="woopos_products_empty_list_image_description">No products</string>
+    <string name="woopos_products_empty_list_title">No supported products found</string>
+    <string name="woopos_products_empty_list_message">POS currently only supports simple products – \ncreate one to get started.</string>
+    <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
+    <string name="woopos_products_loading_error_title">Error loading products</string>
+    <string name="woopos_products_loading_error_message">Give it another go?</string>
+    <string name="woopos_error_icon_content_description">Error indication icon</string>
+    <string name="woopos_products_loading_error_retry_button">Rerty</string>
+    <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4229,4 +4240,11 @@
 
     <string name="customers_details_no_phone_hint">No phone number</string>
     <string name="customers_details_none_hint">None</string>
+
+    <!--
+    Google ads campaign creation
+    -->
+    <string name="google_ads_campaign_created_success_title">Ready to Go!</string>
+    <string name="google_ads_campaign_created_success_description">Your new campaign has been created. Exciting times ahead for your sales!</string>
+    <string name="google_ads_campaign_created_success_done_button">Done</string>
 </resources>

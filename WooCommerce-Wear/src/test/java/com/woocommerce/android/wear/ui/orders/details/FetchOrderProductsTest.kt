@@ -2,7 +2,7 @@ package com.woocommerce.android.wear.ui.orders.details
 
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
-import com.woocommerce.android.wear.system.NetworkStatus
+import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.orders.OrdersRepository
 import com.woocommerce.android.wear.ui.orders.details.FetchOrderProducts.OrderProductsRequest
 import com.woocommerce.android.wear.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
@@ -27,14 +27,14 @@ class FetchOrderProductsTest : BaseUnitTest() {
     private val phoneRepository: PhoneConnectionRepository = mock()
     private val ordersRepository: OrdersRepository = mock()
     private val selectedSite: SiteModel = mock()
-    private val networkStatus: NetworkStatus = mock()
+    private val connectionStatus: ConnectionStatus = mock()
 
     private lateinit var sut: FetchOrderProducts
 
     @Before
     fun setup() {
-        whenever(networkStatus.isConnected()).thenReturn(false)
-        sut = FetchOrderProducts(phoneRepository, ordersRepository, networkStatus)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(false)
+        sut = FetchOrderProducts(phoneRepository, ordersRepository, connectionStatus)
     }
 
     @Test

@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -25,7 +26,6 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import com.woocommerce.android.ui.google.CanUseAutoLoginWebview
 import com.woocommerce.android.ui.google.HasGoogleAdsCampaigns
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -55,7 +55,7 @@ import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("TooManyFunctions", "LongParameterList")
+@Suppress("TooManyFunctions", "LongParameterList", "UnusedPrivateMember")
 class MoreMenuViewModel @Inject constructor(
     savedState: SavedStateHandle,
     accountStore: AccountStore,
@@ -70,11 +70,11 @@ class MoreMenuViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
-    private val canUseAutoLoginWebview: CanUseAutoLoginWebview,
     private val isWooPosEnabled: WooPosIsEnabled,
     private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
-    private var hasCreatedGoogleAdsCampaign = false
+    private var storeHasGoogleAdsCampaigns = false
 
     val moreMenuViewState =
         combine(
@@ -102,6 +102,15 @@ class MoreMenuViewModel @Inject constructor(
             )
         }.asLiveData()
 
+    init {
+        launch {
+            hasGoogleAdsCampaigns().fold(
+                onSuccess = { storeHasGoogleAdsCampaigns = it },
+                onFailure = { WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to fetch Google Ads campaigns: $it") }
+            )
+        }
+    }
+
     private fun generateAllSections(
         buttonsStates: Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>,
         count: Int,
@@ -120,7 +129,10 @@ class MoreMenuViewModel @Inject constructor(
 
     fun onViewResumed() {
         moreMenuNewFeatureHandler.markNewFeatureAsSeen()
-        launch { trackBlazeDisplayed() }
+        launch {
+            trackBlazeDisplayed()
+            trackGoogleAdsDisplayed()
+        }
     }
 
     private fun generatePOSSection(wooPosState: MoreMenuItemButton.State) =
@@ -243,6 +255,18 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
+    private suspend fun trackGoogleAdsDisplayed() {
+        if (isGoogleForWooEnabled()) {
+            analyticsTrackerWrapper.track(
+                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                        to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
+                )
+            )
+        }
+    }
+
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
         if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) {
             BadgeState(
@@ -301,37 +325,60 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun onPromoteProductsWithGoogle() {
-        WooLog.d(WooLog.T.GOOGLE_ADS, "onPromoteProductsWithGoogle")
-
         launch {
             val urlToOpen = determineUrlToOpen()
 
-            triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(urlToOpen, canUseAutoLoginWebview()))
-
-            // todo-11917: This is just temporary to test this function,
-            //  in practice we want to set this to true if a campaign is successfully created in webview.
-            if (!hasCreatedGoogleAdsCampaign) {
-                hasCreatedGoogleAdsCampaign = true
+            if (urlToOpen.contains(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)) {
+                launchGoogleAdsCampaignCreation(urlToOpen)
+            } else {
+                launchGoogleAdsCampaignDetails(urlToOpen)
             }
         }
     }
 
-    private suspend fun determineUrlToOpen(): String {
+    private fun determineUrlToOpen(): String {
         val baseUrl = selectedSite.get().adminUrlOrDefault
-        return hasGoogleAdsCampaigns().fold(
-            onSuccess = { hasCampaigns ->
-                if (hasCreatedGoogleAdsCampaign || hasCampaigns) {
-                    baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_DASHBOARD)
-                } else {
-                    baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)
-                }
-            },
-            onFailure = { error ->
-                WooLog.e(WooLog.T.GOOGLE_ADS, "Failed to check for Google Ads campaigns: ${error.message}")
-                // Fallback to campaign creation URL in case of error
-                baseUrl + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-            }
+        return if (storeHasGoogleAdsCampaigns) {
+            baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_DASHBOARD)
+        } else {
+            baseUrl.slashJoin(AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX)
+        }
+    }
+
+    private fun launchGoogleAdsCampaignCreation(url: String) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasGoogleAdsCampaigns
+            )
         )
+
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, isCreationFlow = true))
+    }
+
+    private fun launchGoogleAdsCampaignDetails(url: String) {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasGoogleAdsCampaigns
+            )
+        )
+
+        triggerEvent(MoreMenuEvent.ViewGoogleForWooEvent(url, isCreationFlow = false))
+    }
+
+    fun handleSuccessfulGoogleAdsCreation() {
+        storeHasGoogleAdsCampaigns = true
     }
 
     private fun onPromoteProductsWithBlaze() {
