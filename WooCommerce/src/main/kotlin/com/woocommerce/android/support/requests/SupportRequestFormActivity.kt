@@ -28,6 +28,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SupportRequestFormActivity : AppCompatActivity() {
     @Inject lateinit var supportHelper: SupportHelper
+
     @Inject lateinit var zendeskSettings: ZendeskSettings
 
     private val viewModel: SupportRequestFormViewModel by viewModels()
