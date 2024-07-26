@@ -78,9 +78,9 @@ class ZendeskSettings @Inject constructor(
     @Synchronized
     fun setup(
         context: Context,
-        zendeskUrl: String,
-        applicationId: String,
-        oauthClientId: String,
+        zendeskUrl: String = BuildConfig.ZENDESK_DOMAIN,
+        applicationId: String = BuildConfig.ZENDESK_APP_ID,
+        oauthClientId: String = BuildConfig.ZENDESK_OAUTH_CLIENT_ID,
         enableLogs: Boolean = BuildConfig.DEBUG
     ) {
         if (setupDone) {
