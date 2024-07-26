@@ -33,7 +33,10 @@ class GoogleAdsStatUIData(
                             currencyFormatter.formatCurrency(it.toString())
                         }.orEmpty(),
                         secondaryStat = campaign.subtotal?.spend?.let {
-                            currencyFormatter.formatCurrency(it.toString())
+                            resourceProvider.getString(
+                                R.string.analytics_spend_subtitle_value,
+                                currencyFormatter.formatCurrency(it.toString())
+                            )
                         }.orEmpty()
                     )
                 }
@@ -51,7 +54,10 @@ class GoogleAdsStatUIData(
                             currencyFormatter.formatCurrency(it.toString())
                         }.orEmpty(),
                         secondaryStat = campaign.subtotal?.sales?.let {
-                            currencyFormatter.formatCurrency(it.toString())
+                            resourceProvider.getString(
+                                R.string.analytics_total_sales_subtitle_value,
+                                currencyFormatter.formatCurrency(it.toString())
+                            )
                         }.orEmpty()
                     )
                 }
@@ -65,7 +71,10 @@ class GoogleAdsStatUIData(
                         name = campaign.name,
                         mainStat = campaign.subtotal?.clicks?.toString().orEmpty(),
                         secondaryStat = campaign.subtotal?.spend?.let {
-                            currencyFormatter.formatCurrency(it.toString())
+                            resourceProvider.getString(
+                                R.string.analytics_spend_subtitle_value,
+                                currencyFormatter.formatCurrency(it.toString())
+                            )
                         }.orEmpty()
                     )
                 }
@@ -79,7 +88,10 @@ class GoogleAdsStatUIData(
                         name = campaign.name,
                         mainStat = campaign.subtotal?.impressions?.toString().orEmpty(),
                         secondaryStat = campaign.subtotal?.spend?.let {
-                            currencyFormatter.formatCurrency(it.toString())
+                            resourceProvider.getString(
+                                R.string.analytics_spend_subtitle_value,
+                                currencyFormatter.formatCurrency(it.toString())
+                            )
                         }.orEmpty()
                     )
                 }
@@ -93,7 +105,10 @@ class GoogleAdsStatUIData(
                         name = campaign.name,
                         mainStat = campaign.subtotal?.conversions?.toString().orEmpty(),
                         secondaryStat = campaign.subtotal?.spend?.let {
-                            currencyFormatter.formatCurrency(it.toString())
+                            resourceProvider.getString(
+                                R.string.analytics_spend_subtitle_value,
+                                currencyFormatter.formatCurrency(it.toString())
+                            )
                         }.orEmpty()
                     )
                 }
