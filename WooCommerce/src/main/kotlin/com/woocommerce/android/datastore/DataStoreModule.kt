@@ -105,4 +105,17 @@ class DataStoreModule {
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = CustomDateRangeSerializer
     )
+
+    @Provides
+    @Singleton
+    @DataStoreQualifier(DataStoreType.LAST_UPDATE)
+    fun provideLastUpdateDataStore(
+        appContext: Context,
+        @AppCoroutineScope appCoroutineScope: CoroutineScope
+    ) = PreferenceDataStoreFactory.create(
+        produceFile = {
+            appContext.preferencesDataStoreFile("update")
+        },
+        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
+    )
 }

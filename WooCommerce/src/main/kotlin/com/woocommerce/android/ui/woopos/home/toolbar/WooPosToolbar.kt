@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.root
+package com.woocommerce.android.ui.woopos.home.toolbar
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
@@ -8,6 +8,7 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -32,6 +32,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,18 +47,30 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.Menu.MenuItem
-import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.Menu
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.WooPosCardReaderStatus
 
 @Composable
-fun WooPosFloatingToolbar(
+fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
+    val viewModel: WooPosToolbarViewModel = hiltViewModel()
+    WooPosFloatingToolbar(
+        modifier = modifier,
+        state = viewModel.state.collectAsState(),
+    ) { uiEvent ->
+        viewModel.onUiEvent(uiEvent)
+    }
+}
+
+@Composable
+private fun WooPosFloatingToolbar(
     modifier: Modifier = Modifier,
-    state: State<WooPosRootScreenState>,
-    onUIEvent: (WooPosRootUIEvent) -> Unit,
+    state: State<WooPosToolbarState>,
+    onUIEvent: (WooPosToolbarUIEvent) -> Unit,
 ) {
     val cardReaderStatus = state.value.cardReaderStatus
     val menu = state.value.menu
@@ -70,15 +83,15 @@ fun WooPosFloatingToolbar(
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ) { onUIEvent(WooPosRootUIEvent.OnOutsideOfToolbarMenuClicked) },
-            isVisible = menu is WooPosRootScreenState.Menu.Visible,
+                ) { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) },
+            isVisible = menu is Menu.Visible,
         )
 
         ConstraintLayout(modifier = modifier) {
             val (toolbar, popupMenu) = createRefs()
 
             when (menu) {
-                is WooPosRootScreenState.Menu.Hidden -> {
+                is Menu.Hidden -> {
                     Toolbar(
                         modifier = Modifier.constrainAs(toolbar) {
                             bottom.linkTo(parent.bottom)
@@ -90,7 +103,7 @@ fun WooPosFloatingToolbar(
                     )
                 }
 
-                is WooPosRootScreenState.Menu.Visible -> {
+                is Menu.Visible -> {
                     Toolbar(
                         modifier = Modifier.constrainAs(toolbar) {
                             bottom.linkTo(parent.bottom)
@@ -109,7 +122,7 @@ fun WooPosFloatingToolbar(
                         },
                         menuItems = menu.items,
                         onClick = { menuItem ->
-                            onUIEvent(WooPosRootUIEvent.MenuItemClicked(menuItem))
+                            onUIEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
                         }
                     )
                 }
@@ -137,7 +150,7 @@ private fun Toolbar(
     modifier: Modifier,
     menuCardDisabled: Boolean,
     cardReaderStatus: WooPosCardReaderStatus,
-    onUIEvent: (WooPosRootUIEvent) -> Unit
+    onUIEvent: (WooPosToolbarUIEvent) -> Unit
 ) {
     ConstraintLayout(modifier = modifier) {
         val (menuCard, cardReaderStatusCard) = createRefs()
@@ -152,7 +165,7 @@ private fun Toolbar(
                     bottom.linkTo(parent.bottom)
                 },
             state = cardReaderStatus,
-        ) { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }
+        ) { onUIEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked) }
 
         MenuButtonWithPopUpMenu(
             modifier = Modifier
@@ -163,7 +176,7 @@ private fun Toolbar(
                     height = Dimension.fillToConstraints
                 },
             menuCardDisabled = menuCardDisabled,
-        ) { onUIEvent(WooPosRootUIEvent.OnToolbarMenuClicked) }
+        ) { onUIEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked) }
     }
 }
 
@@ -208,8 +221,8 @@ private fun MenuButtonWithPopUpMenu(
 @Composable
 private fun PopUpMenu(
     modifier: Modifier,
-    menuItems: List<MenuItem>,
-    onClick: (MenuItem) -> Unit
+    menuItems: List<Menu.MenuItem>,
+    onClick: (Menu.MenuItem) -> Unit
 ) {
     Card(
         modifier = modifier.width(214.dp),
@@ -227,8 +240,8 @@ private fun PopUpMenu(
 
 @Composable
 private fun PopUpMenuItem(
-    menuItem: MenuItem,
-    onClick: (MenuItem) -> Unit
+    menuItem: Menu.MenuItem,
+    onClick: (Menu.MenuItem) -> Unit
 ) {
     TextButton(onClick = { onClick(menuItem) }) {
         Spacer(modifier = Modifier.width(20.dp.toAdaptivePadding()))
@@ -281,9 +294,7 @@ private fun CardReaderStatusButton(
     ) { status ->
         when (status) {
             WooPosCardReaderStatus.Connected -> MaterialTheme.colors.secondary
-            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.secondaryVariant.copy(
-                alpha = 0.8f
-            )
+            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.primary
         }
     }
 
@@ -294,14 +305,34 @@ private fun CardReaderStatusButton(
         }
     )
 
+    val borderColor by transition.animateColor(
+        transitionSpec = { tween(durationMillis = animationDuration) },
+        label = "BorderColorTransition"
+    ) { status ->
+        when (status) {
+            WooPosCardReaderStatus.Connected -> Color.Transparent
+            WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.primary
+        }
+    }
+
     Card(
         modifier = modifier
-            .wrapContentSize(Alignment.Center),
+            .height(56.dp),
         backgroundColor = MaterialTheme.colors.surface,
         elevation = 8.dp,
         shape = RoundedCornerShape(8.dp),
     ) {
-        TextButton(onClick = onClick) {
+        TextButton(
+            onClick = onClick,
+            modifier = Modifier
+                .padding(8.dp.toAdaptivePadding())
+                .border(
+                    width = 2.dp,
+                    color = borderColor,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .height(40.dp),
+        ) {
             Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
             Circle(size = 12.dp, color = illustrationColor)
             Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
@@ -322,7 +353,7 @@ private fun ReaderStatusText(
     color: Color
 ) {
     Text(
-        modifier = modifier.padding(8.dp.toAdaptivePadding()),
+        modifier = modifier.padding(horizontal = 8.dp.toAdaptivePadding()),
         text = title,
         color = color,
         style = MaterialTheme.typography.button
@@ -346,10 +377,9 @@ private fun Circle(
 fun PreviewWooPosFloatingToolbarStatusNotConnected() {
     val state = remember {
         mutableStateOf(
-            WooPosRootScreenState(
-                WooPosCardReaderStatus.NotConnected,
-                menu = WooPosRootScreenState.Menu.Hidden,
-                null
+            WooPosToolbarState(
+                cardReaderStatus = WooPosCardReaderStatus.NotConnected,
+                menu = Menu.Hidden
             )
         )
     }
@@ -361,21 +391,20 @@ fun PreviewWooPosFloatingToolbarStatusNotConnected() {
 fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
     val state = remember {
         mutableStateOf(
-            WooPosRootScreenState(
-                WooPosCardReaderStatus.Connected,
-                menu = WooPosRootScreenState.Menu.Visible(
+            WooPosToolbarState(
+                cardReaderStatus = WooPosCardReaderStatus.Connected,
+                menu = Menu.Visible(
                     listOf(
-                        MenuItem(
+                        Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_message,
                             icon = R.drawable.woopos_ic_exit_pos,
                         ),
-                        MenuItem(
+                        Menu.MenuItem(
                             title = R.string.woopos_get_support_title,
                             icon = R.drawable.woopos_ic_get_support,
                         )
                     )
                 ),
-                null
             )
         )
     }
@@ -383,7 +412,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
 }
 
 @Composable
-private fun Preview(state: MutableState<WooPosRootScreenState>) {
+private fun Preview(state: MutableState<WooPosToolbarState>) {
     WooPosTheme {
         Box(
             modifier = Modifier.fillMaxSize(),

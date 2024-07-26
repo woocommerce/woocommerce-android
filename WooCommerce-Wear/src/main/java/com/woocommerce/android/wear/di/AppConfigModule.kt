@@ -2,7 +2,8 @@ package com.woocommerce.android.wear.di
 
 import android.content.Context
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.wear.system.NetworkStatus
+import com.woocommerce.android.wear.system.ConnectionStatus
+import com.woocommerce.android.wear.ui.login.LoginRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +28,10 @@ class AppConfigModule {
 
     @Provides
     @Singleton
-    fun provideNetworkStatus(appContext: Context) = NetworkStatus(appContext)
+    fun provideConnectionStatus(
+        appContext: Context,
+        loginRepository: LoginRepository
+    ) = ConnectionStatus(appContext, loginRepository)
 
     @Provides
     fun provideDefaultLocale(): Locale = Locale.getDefault()

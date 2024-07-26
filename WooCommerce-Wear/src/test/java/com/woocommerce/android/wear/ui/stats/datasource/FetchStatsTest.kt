@@ -3,7 +3,7 @@ package com.woocommerce.android.wear.ui.stats.datasource
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.wear.analytics.AnalyticsTracker
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
-import com.woocommerce.android.wear.system.NetworkStatus
+import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest
 import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
@@ -31,7 +31,7 @@ class FetchStatsTest : BaseUnitTest() {
     private val statsRepository: StatsRepository = mock()
     private val phoneRepository: PhoneConnectionRepository = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
-    private val networkStatus: NetworkStatus = mock()
+    private val connectionStatus: ConnectionStatus = mock()
     private val analyticsTracker: AnalyticsTracker = mock()
     private val selectedSite: SiteModel = mock()
 
@@ -50,7 +50,7 @@ class FetchStatsTest : BaseUnitTest() {
     fun `returns Waiting when no stats and not timeout`() = testBlocking {
         whenever(statsRepository.fetchRevenueStats(selectedSite)).thenReturn(Result.failure(Throwable()))
         whenever(statsRepository.fetchVisitorStats(selectedSite)).thenReturn(Result.failure(Throwable()))
-        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
 
         val event = createSut()
             .invoke(selectedSite)
@@ -63,7 +63,7 @@ class FetchStatsTest : BaseUnitTest() {
     fun `returns Error when no stats and timeout`() = testBlocking {
         whenever(statsRepository.fetchRevenueStats(selectedSite)).thenReturn(Result.failure(Throwable()))
         whenever(statsRepository.fetchVisitorStats(selectedSite)).thenReturn(Result.failure(Throwable()))
-        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
 
         val event = createSut()
             .invoke(selectedSite)
@@ -77,7 +77,7 @@ class FetchStatsTest : BaseUnitTest() {
     fun `returns stats from phone when no network connection`() = testBlocking {
         val expectedData = StoreStatsData(StoreStatsData.RevenueData("100.0", 5), 1)
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
-        whenever(networkStatus.isConnected()).thenReturn(false)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(false)
         whenever(statsRepository.observeStatsDataChanges(selectedSite)).thenReturn(flowOf(expectedData))
         val events = mutableListOf<StoreStatsRequest>()
 
@@ -95,7 +95,7 @@ class FetchStatsTest : BaseUnitTest() {
     @Test
     fun `returns Error when no network and phone connection`() = testBlocking {
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(false)
-        whenever(networkStatus.isConnected()).thenReturn(false)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(false)
         val events = mutableListOf<StoreStatsRequest>()
 
         createSut()
@@ -108,7 +108,7 @@ class FetchStatsTest : BaseUnitTest() {
     }
 
     private fun createSut() =
-        FetchStats(statsRepository, phoneRepository, wooCommerceStore, networkStatus, analyticsTracker)
+        FetchStats(statsRepository, phoneRepository, wooCommerceStore, connectionStatus, analyticsTracker)
 
     private suspend fun generateStatsDataWithExpectedMocks(): StoreStatsData {
         val expectedData = StoreStatsData(StoreStatsData.RevenueData("100.0", 5), 1)
@@ -121,7 +121,7 @@ class FetchStatsTest : BaseUnitTest() {
         }
         whenever(statsRepository.fetchRevenueStats(selectedSite)).thenReturn(Result.success(revenueResponse))
         whenever(statsRepository.fetchVisitorStats(selectedSite)).thenReturn(Result.success(1))
-        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
         whenever(wooCommerceStore.formatCurrencyForDisplay(100.0, selectedSite, null, true)).thenReturn("100.0")
         return expectedData
     }

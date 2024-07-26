@@ -135,10 +135,11 @@ object AppUrls {
 
     // Google for Woo
     const val GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX =
-        "admin.php?page=wc-admin&path=%2Fgoogle%2Fsetup-ads"
+        "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard&subpath=%2Fcampaigns%2Fcreate"
 
-    const val GOOGLE_ADMIN_CAMPAIGN_CREATION_SUCCESS_SUFFIX =
-        "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard&campaign=saved"
+    const val GOOGLE_ADMIN_FIRST_CAMPAIGN_CREATION_SUCCESS_TRIGGER = "guide=campaign-creation-success"
+    const val GOOGLE_ADMIN_SUBMISSION_SUCCESS_TRIGGER = "guide=submission-success"
+    const val GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER = "campaign=saved"
 
     const val GOOGLE_ADMIN_DASHBOARD =
         "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard"

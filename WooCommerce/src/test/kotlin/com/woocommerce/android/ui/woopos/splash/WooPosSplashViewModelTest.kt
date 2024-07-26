@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.woopos.splash
 
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsDataSource.ProductsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -39,7 +41,7 @@ class WooPosSplashViewModelTest {
     fun `given products load successfully, when vm created, should update state to Loaded`() = runTest {
         // GIVEN
         whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
-            Result.success(Unit)
+            flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
 
         // WHEN
@@ -50,17 +52,17 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `given products load with error, when vm created, should update state to error`() = runTest {
+    fun `given products are cached, when vm created, should remain in loading state`() = runTest {
         // GIVEN
         whenever(productsDataSource.loadSimpleProducts(forceRefreshProducts = true)).thenReturn(
-            Result.failure(Exception())
+            flowOf(ProductsResult.Cached(emptyList()))
         )
 
         // WHEN
         val sut = createSut()
 
         // THEN
-        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Error)
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Loading)
     }
 
     private fun createSut() = WooPosSplashViewModel(productsDataSource)
