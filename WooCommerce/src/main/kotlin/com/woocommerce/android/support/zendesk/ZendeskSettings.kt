@@ -6,7 +6,6 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.PackageUtils
 import com.zendesk.logger.Logger
 import org.wordpress.android.fluxc.store.AccountStore
 import zendesk.core.AnonymousIdentity
@@ -76,6 +75,7 @@ class ZendeskSettings @Inject constructor(
      * setup. It'll also enable Zendesk logs for DEBUG builds.
      */
     @JvmOverloads
+    @Synchronized
     fun setup(
         context: Context,
         zendeskUrl: String,
@@ -83,14 +83,10 @@ class ZendeskSettings @Inject constructor(
         oauthClientId: String,
         enableLogs: Boolean = BuildConfig.DEBUG
     ) {
-        val zendeskInstance = Zendesk.INSTANCE
-        if (zendeskInstance.isInitialized) {
-            if (PackageUtils.isTesting()) {
-                return
-            } else {
-                error("Zendesk shouldn't be initialized more than once!")
-            }
+        if (setupDone) {
+            return
         }
+        val zendeskInstance = Zendesk.INSTANCE
         if (zendeskUrl.isEmpty() || applicationId.isEmpty() || oauthClientId.isEmpty()) {
             return
         }
