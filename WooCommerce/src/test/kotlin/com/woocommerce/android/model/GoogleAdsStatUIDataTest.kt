@@ -7,6 +7,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -29,18 +30,20 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
 
     @Test
     fun `mainTotalStat is empty when sales is null for TOTAL_SALES`() = testBlocking {
-        val rawStatsWithNullSales = rawStats.copy(totals = rawStats.totals.copy(sales = null))
+        val rawStatsWithNullSales = rawStats.copy(totals = rawStats.totals.copy(sales = 0.0))
         whenever(resourceProvider.getString(any())).thenReturn("Total Sales")
+        whenever(currencyFormatter.formatCurrency("0.0")).thenReturn("0")
 
         val sut = GoogleAdsStatUIData(rawStatsWithNullSales, StatType.TOTAL_SALES, currencyFormatter, resourceProvider)
 
-        assertThat(sut.mainTotalStat).isEmpty()
+        assertThat(sut.mainTotalStat).isEqualTo("0")
     }
 
     @Test
     fun `statItems are mapped correctly for TOTAL_SALES`() = testBlocking {
         whenever(currencyFormatter.formatCurrency("500.0")).thenReturn("$500.0")
         whenever(currencyFormatter.formatCurrency("100.0")).thenReturn("$100.0")
+        whenever(resourceProvider.getString(any(), eq("$100.0"))).thenReturn("$100.0")
 
         val sut = GoogleAdsStatUIData(rawStats, StatType.TOTAL_SALES, currencyFormatter, resourceProvider)
 
@@ -70,18 +73,20 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
 
     @Test
     fun `mainTotalStat is empty when spend is null for SPEND`() = testBlocking {
-        val rawStatsWithNullSpend = rawStats.copy(totals = rawStats.totals.copy(spend = null))
+        val rawStatsWithNullSpend = rawStats.copy(totals = rawStats.totals.copy(spend = 0.0))
         whenever(resourceProvider.getString(any())).thenReturn("Spend")
+        whenever(currencyFormatter.formatCurrency("0.0")).thenReturn("0")
 
         val sut = GoogleAdsStatUIData(rawStatsWithNullSpend, StatType.SPEND, currencyFormatter, resourceProvider)
 
-        assertThat(sut.mainTotalStat).isEmpty()
+        assertThat(sut.mainTotalStat).isEqualTo("0")
     }
 
     @Test
     fun `statItems are mapped correctly for SPEND`() = testBlocking {
         whenever(currencyFormatter.formatCurrency("500.0")).thenReturn("$500.0")
         whenever(currencyFormatter.formatCurrency("100.0")).thenReturn("$100.0")
+        whenever(resourceProvider.getString(any(), eq("$500.0"))).thenReturn("$500.0")
 
         val sut = GoogleAdsStatUIData(rawStats, StatType.SPEND, currencyFormatter, resourceProvider)
 
@@ -110,17 +115,18 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
 
     @Test
     fun `mainTotalStat is empty when clicks is null for CLICKS`() = testBlocking {
-        val rawStatsWithNullClicks = rawStats.copy(totals = rawStats.totals.copy(clicks = null))
+        val rawStatsWithNullClicks = rawStats.copy(totals = rawStats.totals.copy(clicks = 0))
         whenever(resourceProvider.getString(any())).thenReturn("Clicks")
 
         val sut = GoogleAdsStatUIData(rawStatsWithNullClicks, StatType.CLICKS, currencyFormatter, resourceProvider)
 
-        assertThat(sut.mainTotalStat).isEmpty()
+        assertThat(sut.mainTotalStat).isEqualTo("0")
     }
 
     @Test
     fun `statItems are mapped correctly for CLICKS`() = testBlocking {
         whenever(currencyFormatter.formatCurrency("100.0")).thenReturn("$100.0")
+        whenever(resourceProvider.getString(any(), eq("$100.0"))).thenReturn("$100.0")
         val sut = GoogleAdsStatUIData(rawStats, StatType.CLICKS, currencyFormatter, resourceProvider)
 
         assertThat(sut.statItems).hasSize(2)
@@ -148,18 +154,19 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
 
     @Test
     fun `mainTotalStat is empty when impressions is null for IMPRESSIONS`() = testBlocking {
-        val rawStatsWithNullImpressions = rawStats.copy(totals = rawStats.totals.copy(impressions = null))
+        val rawStatsWithNullImpressions = rawStats.copy(totals = rawStats.totals.copy(impressions = 0))
         whenever(resourceProvider.getString(any())).thenReturn("Impressions")
 
         val sut =
             GoogleAdsStatUIData(rawStatsWithNullImpressions, StatType.IMPRESSIONS, currencyFormatter, resourceProvider)
 
-        assertThat(sut.mainTotalStat).isEmpty()
+        assertThat(sut.mainTotalStat).isEqualTo("0")
     }
 
     @Test
     fun `statItems are mapped correctly for IMPRESSIONS`() = testBlocking {
         whenever(currencyFormatter.formatCurrency("100.0")).thenReturn("$100.0")
+        whenever(resourceProvider.getString(any(), eq("$100.0"))).thenReturn("$100.0")
         val sut = GoogleAdsStatUIData(rawStats, StatType.IMPRESSIONS, currencyFormatter, resourceProvider)
 
         assertThat(sut.statItems).hasSize(2)
@@ -187,18 +194,19 @@ class GoogleAdsStatUIDataTest : BaseUnitTest() {
 
     @Test
     fun `mainTotalStat is empty when conversions is null for CONVERSIONS`() = testBlocking {
-        val rawStatsWithNullConversions = rawStats.copy(totals = rawStats.totals.copy(conversions = null))
+        val rawStatsWithNullConversions = rawStats.copy(totals = rawStats.totals.copy(conversions = 0))
         whenever(resourceProvider.getString(any())).thenReturn("Conversions")
 
         val sut =
             GoogleAdsStatUIData(rawStatsWithNullConversions, StatType.CONVERSIONS, currencyFormatter, resourceProvider)
 
-        assertThat(sut.mainTotalStat).isEmpty()
+        assertThat(sut.mainTotalStat).isEqualTo("0")
     }
 
     @Test
     fun `statItems are mapped correctly for CONVERSIONS`() = testBlocking {
         whenever(currencyFormatter.formatCurrency("100.0")).thenReturn("$100.0")
+        whenever(resourceProvider.getString(any(), eq("$100.0"))).thenReturn("$100.0")
         val sut = GoogleAdsStatUIData(rawStats, StatType.CONVERSIONS, currencyFormatter, resourceProvider)
 
         assertThat(sut.statItems).hasSize(2)
