@@ -43,6 +43,7 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
         skeletonView.hide()
         binding.analyticsCardTitle.text = viewState.title
         binding.analyticsFilterTitle.text = viewState.subTitle
+        binding.analyticsMainTitle.text = viewState.filterTitle
         binding.analyticsItemsValue.text = viewState.itemTitleValue
         binding.analyticsListLeftHeader.text = viewState.listLeftHeader
         binding.analyticsListRightHeader.text = viewState.listRightHeader
