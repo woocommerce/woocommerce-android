@@ -98,12 +98,9 @@ class WooPosProductsViewModel @Inject constructor(
                             }
 
                             else -> {
-                                val errorString = result.productsResult.toString()
-                                if (errorString != "null") {
-                                    WooLog.e(WooLog.T.POS, "Loading simple products failed - $errorString")
-                                } else {
-                                    WooLog.e(WooLog.T.POS, "Loading simple products failed")
-                                }
+                                val error = result.productsResult.exceptionOrNull()
+                                val errorMessage = error?.message ?: "Unknown error"
+                                WooLog.e(WooLog.T.POS, "Loading simple products failed - $errorMessage", error)
                                 WooPosProductsViewState.Error()
                             }
                         }
