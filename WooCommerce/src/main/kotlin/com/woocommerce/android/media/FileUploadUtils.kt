@@ -135,10 +135,6 @@ object FileUploadUtils {
      * @return A local {@link Uri} or null if the download failed
      */
     private fun fetchMedia(context: Context, mediaUri: Uri): Uri? {
-        if (MediaUtils.isInMediaStore(mediaUri)) {
-            return mediaUri
-        }
-
         return try {
             MediaUtils.downloadExternalMedia(context.applicationContext, mediaUri)
         } catch (e: IllegalStateException) {

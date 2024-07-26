@@ -1,8 +1,15 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+19.8
+-----
+
+
 19.7
 -----
+- [**] Google Listing and Ads: Google Ads campaign creation and management is now available for sites with the plugin active and set up. [https://github.com/woocommerce/woocommerce-android/pull/12145]
 - [*] Improve stability of the OrderDetail screen [https://github.com/woocommerce/woocommerce-android/pull/12106]
+- [*] Adds new advice box to product creation with AI prompt screen [https://github.com/woocommerce/woocommerce-android/pull/12129]
+- [*] [Internal] Move UserAgent initialization to a background thread to fix ANRs caused by it [https://github.com/woocommerce/woocommerce-android/pull/12147]
 
 19.6
 -----
@@ -11,6 +18,7 @@
 - [**] Product Creation AI V2: Milestone 1 which simplifies package photo flow and revamps UI. [https://github.com/woocommerce/woocommerce-android/issues/11800]
 - [*] The more screen shows proper loading button statuses [https://github.com/woocommerce/woocommerce-android/pull/11968]
 - [*] [Login] Improved login reliability by addressing some edge-case issues [https://github.com/woocommerce/woocommerce-android/pull/12033]
+- [*] Fix an issue with image upload on devices running Android 8 and 9 [https://github.com/woocommerce/woocommerce-android/pull/12127]
 
 19.5
 -----

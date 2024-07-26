@@ -102,7 +102,7 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSettingsEvent -> navigateToSettings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
-                is ViewGoogleForWooEvent -> openGoogleAdsWebview(event.url, event.successUrls)
+                is ViewGoogleForWooEvent -> openGoogleAdsWebview(event.url, event.isCreationFlow)
                 is ViewAdminEvent -> openInBrowser(event.url)
                 is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
@@ -196,13 +196,14 @@ class MoreMenuFragment : TopLevelFragment() {
         )
     }
 
-    private fun openGoogleAdsWebview(url: String, successUrls: List<String>) {
+    private fun openGoogleAdsWebview(url: String, isCreationFlow: Boolean) {
         findNavController().navigateSafely(
             NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
                 urlToLoad = url,
-                urlsToTriggerExit = successUrls.toTypedArray(),
                 title = getString(R.string.more_menu_button_google),
-                urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
+                urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL,
+                isCreationFlow = isCreationFlow,
+                entryPointSource = GoogleAdsWebViewViewModel.EntryPointSource.MORE_MENU
             )
         )
     }

@@ -526,11 +526,6 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="urlsToTriggerExit"
-            android:defaultValue="@null"
-            app:argType="string[]"
-            app:nullable="true" />
-        <argument
             android:name="captureBackButton"
             android:defaultValue="true"
             app:argType="boolean" />
@@ -546,6 +541,13 @@
             android:name="clearCache"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="isCreationFlow"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="entryPointSource"
+            app:argType="com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel$EntryPointSource" />
     </fragment>
     <action
         android:id="@+id/action_global_googleAdsWebViewFragment"

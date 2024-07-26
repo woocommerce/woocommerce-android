@@ -8,8 +8,12 @@ data class WooPosHomeState(
 ) {
     sealed class ScreenPositionState {
         sealed class Cart : ScreenPositionState() {
-            data object Empty : Cart()
-            data object NotEmpty : Cart()
+            sealed class Visible : Cart() {
+                data object Empty : Cart()
+                data object NotEmpty : Cart()
+            }
+
+            data object Hidden : Cart()
         }
 
         sealed class Checkout : ScreenPositionState() {

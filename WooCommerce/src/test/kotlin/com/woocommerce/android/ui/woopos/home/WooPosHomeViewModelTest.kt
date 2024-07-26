@@ -36,7 +36,7 @@ class WooPosHomeViewModelTest {
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.NotEmpty)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty)
         }
 
     @Test
@@ -67,7 +67,7 @@ class WooPosHomeViewModelTest {
         // THEN
         verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
         assertThat(viewModel.state.value.screenPositionState)
-            .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Empty)
+            .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty)
     }
 
     @Test

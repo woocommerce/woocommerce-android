@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 13:54:04+0000
+Translation-Revision-Date: 2024-07-22 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="woopos_cart_empty_content_description">Varukorg är tom</string>
+    <string name="woopos_cart_empty_subtitle">Tryck på en produkt för att\nlägga till den i varukorgen</string>
+    <string name="woopos_totals_main_error_label">Det gick inte att hämta summor.</string>
+    <string name="woopos_items_in_cart_multiple">%d artiklar</string>
+    <string name="ai_product_creation_error_media_upload">Misslyckades att ladda upp den valda produktbilden.</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;Bra förfrågan!&lt;/b&gt; Du har gett oss tillräckligt att arbeta med, men du kan lägga till mer information för att få ännu bättre resultat.</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;Bra förfrågan!&lt;/b&gt; Var gjordes den?</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;Det blir bättre.&lt;/b&gt; Kan du beskriva passformen och eventuella särdrag hos varan?</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;Lägg till fler detaljer.&lt;/b&gt; Ju fler detaljer du anger, desto bättre blir dina genererade detaljer.</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">Lägg till din produkts namn och viktiga funktioner, fördelar eller information som hjälper kunder att hitta den online.</string>
+    <string name="product_creation_ai_select_next_option">Välj nästa alternativ</string>
+    <string name="product_creation_ai_select_previous_option">Välj föregående alternativ</string>
+    <string name="product_creation_ai_preview_generate_again">Generera igen</string>
+    <string name="product_creation_ai_preview_undo_edits">Ångra redigeringar</string>
+    <string name="product_creation_ai_preview_variant_selector">Alternativ %1$d av %2$d</string>
+    <string name="analytics_spend_value">Belopp: %1$s</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">Visa alla kampanjer</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">Skapa kampanj</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">Klick</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">Visningar</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">Betalkampanjsresultat</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">Marknadsför dina produkter i Google Sök, Google Shopping, Youtube, Gmail med mera.</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">Öka försäljningen och generera mer trafik med Google Ads</string>
+    <string name="my_store_widget_google_ads_title">Google Ads-kampanjer</string>
     <string name="customers_details_none_hint">Inget</string>
     <string name="customers_details_no_phone_hint">Inget telefonnummer</string>
     <string name="customers_details_postal_code_value_title">Postnummer</string>
@@ -37,9 +61,8 @@ Language: sv_SE
     <string name="ai_product_creation_view_image">Visa foto</string>
     <string name="product_creation_ai_preview_name_description_sections">Namn, sammanfattning och beskrivning</string>
     <string name="product_creation_ai_preview_subtitle">Du kan redigera eller återskapa din produktinformation innan du sparar.</string>
-    <string name="product_detail_publish">Publicera</string>
     <string name="analytics_google_ads_programs_card_title">Program</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_card_title">Google-kampanjer</string>
     <string name="analytics_google_ads_no_data">Inga program under den här perioden</string>
     <string name="woopos_reader_connect_now_button">Anslut nu</string>
     <string name="woopos_cart_title">Varukorg</string>
@@ -59,8 +82,8 @@ Language: sv_SE
     <string name="woopos_cart_back_content_description">Varukorgsikon</string>
     <string name="woopos_products_screen_title">Produkter</string>
     <string name="woopos_product_image_description">Produktbild</string>
-    <string name="woopos_items_in_cart">%d artiklar</string>
-    <string name="woopos_clear_cart_button">Rensa allt</string>
+    <string name="woopos_items_in_cart">%d artikel</string>
+    <string name="woopos_clear_cart_button">Rensa</string>
     <string name="more_menu_button_google_description">Öka försäljningen och generera mer trafik med Google Ads</string>
     <string name="more_menu_button_google">Google för WooCommerce</string>
     <string name="no_quantity_rules">Inga regler för antal</string>
@@ -74,7 +97,6 @@ Language: sv_SE
     <string name="woopos_reader_unknown">Läsarens status okänd</string>
     <string name="woopos_checkout">Kassa</string>
     <string name="woopos_reader_disconnected">Läsare frånkopplad</string>
-    <string name="woopos_reader_connecting">Läsare ansluter</string>
     <string name="woopos_reader_connected">Läsare ansluten</string>
     <string name="woopos_exit_pos">Avsluta POS</string>
     <string name="dashboard_new_widgets_card_button">Lägg till nya sektioner</string>
