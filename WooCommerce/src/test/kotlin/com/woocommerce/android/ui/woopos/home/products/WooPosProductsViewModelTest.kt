@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import com.woocommerce.android.R
 import app.cash.turbine.test
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -453,16 +453,26 @@ class WooPosProductsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
+            flowOf(true)
+        )
 
         // WHEN
         val viewModel = createViewModel()
-        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
-        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
-        viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerClosed)
+        viewModel.viewState.test {
+            val contentState = awaitItem() as WooPosProductsViewState.Content
+            viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerClosed)
 
-        // THEN
-        assertTrue(contentState.bannerState.isBannerHiddenByUser)
+            // THEN
+            assertTrue(contentState.bannerState.isBannerHiddenByUser)
+        }
     }
 
     @Test
@@ -483,11 +493,19 @@ class WooPosProductsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
+            flowOf(true)
+        )
 
         // WHEN
         val viewModel = createViewModel()
-        assertThat(viewModel.viewState.value).isInstanceOf(WooPosProductsViewState.Content::class.java)
         viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerClosed)
 
         // THEN
@@ -495,66 +513,84 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `given simple products only banner is shown, when view model init, then state is updated with false`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
+    fun `given simple products only banner is shown, when view model init, then state is updated with false`() =
+        runTest {
+            // GIVEN
+            val products = listOf(
+                ProductTestUtils.generateProduct(
+                    productId = 1,
+                    productName = "Product 1",
+                    amount = "10.0",
+                    productType = "simple"
+                ),
+                ProductTestUtils.generateProduct(
+                    productId = 2,
+                    productName = "Product 2",
+                    amount = "20.0",
+                    productType = "simple"
+                ).copy(firstImageUrl = "https://test.com")
+            )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(true)
-        )
+            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+                flowOf(
+                    WooPosProductsDataSource.ProductsResult.Remote(
+                        Result.success(products)
+                    )
+                )
+            )
+            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
+                flowOf(false)
+            )
 
-        // WHEN
-        val viewModel = createViewModel()
-        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.viewState.test {
+                val contentState = awaitItem() as WooPosProductsViewState.Content
 
-        // THEN
-        assertThat(contentState.bannerState.isBannerHiddenByUser).isFalse()
-    }
+                // THEN
+                assertThat(contentState.bannerState.isBannerHiddenByUser).isFalse()
+            }
+        }
 
     @Test
-    fun `given simple products only banner already closed by user, when view model init, then banner state is updated to true`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
+    fun `given simple products only banner already closed by user, when view model init, then banner state is updated to true`() =
+        runTest {
+            // GIVEN
+            val products = listOf(
+                ProductTestUtils.generateProduct(
+                    productId = 1,
+                    productName = "Product 1",
+                    amount = "10.0",
+                    productType = "simple"
+                ),
+                ProductTestUtils.generateProduct(
+                    productId = 2,
+                    productName = "Product 2",
+                    amount = "20.0",
+                    productType = "simple"
+                ).copy(firstImageUrl = "https://test.com")
+            )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
+            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+                flowOf(
+                    WooPosProductsDataSource.ProductsResult.Remote(
+                        Result.success(products)
+                    )
+                )
+            )
+            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
+                flowOf(true)
+            )
 
-        // WHEN
-        val viewModel = createViewModel()
-        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.viewState.test {
+                val contentState = awaitItem() as WooPosProductsViewState.Content
 
-        // THEN
-        assertTrue(contentState.bannerState.isBannerHiddenByUser)
-    }
+                // THEN
+                assertTrue(contentState.bannerState.isBannerHiddenByUser)
+            }
+        }
 
     @Test
     fun `given simple products only banner is shown, then correct title is displayed`() = runTest {
@@ -574,17 +610,25 @@ class WooPosProductsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
         whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(false)
         )
 
         // WHEN
         val viewModel = createViewModel()
-        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        viewModel.viewState.test {
+            val contentState = awaitItem() as WooPosProductsViewState.Content
 
-        // THEN
-        assertThat(contentState.bannerState.title).isEqualTo(R.string.woopos_banner_simple_products_only_title)
+            // THEN
+            assertThat(contentState.bannerState.title).isEqualTo(R.string.woopos_banner_simple_products_only_title)
+        }
     }
 
     @Test
@@ -605,17 +649,25 @@ class WooPosProductsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
         whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(false)
         )
 
         // WHEN
         val viewModel = createViewModel()
-        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        viewModel.viewState.test {
+            val contentState = awaitItem() as WooPosProductsViewState.Content
 
-        // THEN
-        assertThat(contentState.bannerState.message).isEqualTo(R.string.woopos_banner_simple_products_only_message)
+            // THEN
+            assertThat(contentState.bannerState.message).isEqualTo(R.string.woopos_banner_simple_products_only_message)
+        }
     }
 
     @Test
@@ -636,17 +688,26 @@ class WooPosProductsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
         whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(false)
         )
 
         // WHEN
         val viewModel = createViewModel()
-        val contentState = viewModel.viewState.value as WooPosProductsViewState.Content
+        viewModel.viewState.test {
+            // THEN
+            val contentState = awaitItem() as WooPosProductsViewState.Content
 
-        // THEN
-        assertThat(contentState.bannerState.icon).isEqualTo(R.drawable.info)
+            // THEN
+            assertThat(contentState.bannerState.icon).isEqualTo(R.drawable.info)
+        }
     }
 
     private fun createViewModel() =

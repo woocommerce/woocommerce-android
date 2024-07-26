@@ -146,7 +146,7 @@ class WooPosProductsViewModel @Inject constructor(
         loadingMore = false,
         reloadingProductsWithPullToRefresh = false,
         bannerState = WooPosProductsViewState.Content.BannerState(
-            isBannerHiddenByUser = shouldShowProductsOnlyBanner(),
+            isBannerHiddenByUser = isBannerHiddenByUser(),
             title = R.string.woopos_banner_simple_products_only_title,
             message = R.string.woopos_banner_simple_products_only_message,
             icon = R.drawable.info,
@@ -196,7 +196,7 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 
-    private suspend fun shouldShowProductsOnlyBanner(): Boolean {
-        return !preferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser.first()
+    private suspend fun isBannerHiddenByUser(): Boolean {
+        return preferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser.first()
     }
 }

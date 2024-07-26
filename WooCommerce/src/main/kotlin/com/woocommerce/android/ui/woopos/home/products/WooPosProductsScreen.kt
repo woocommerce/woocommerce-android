@@ -58,8 +58,8 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBanner
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBanner
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
@@ -176,7 +176,7 @@ private fun SimpleProductsBanner(
     onSimpleProductsBannerClosed: () -> Unit
 ) {
     AnimatedVisibility(
-        visible = bannerState.isBannerHiddenByUser,
+        visible = !bannerState.isBannerHiddenByUser,
         exit = shrinkVertically(),
     ) {
         WooPosBanner(
@@ -527,6 +527,8 @@ fun WooPosProductsScreenErrorPreview() {
             onEndOfProductListReached = {},
             onPullToRefresh = {},
             onRetryClicked = {},
+            onSimpleProductsBannerClosed = {},
+            onSimpleProductsBannerLearnMoreClicked = {},
         )
     }
 }
@@ -534,7 +536,7 @@ fun WooPosProductsScreenErrorPreview() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
-fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview(modifier: Modifier = Modifier) {
+fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview() {
     val productState = MutableStateFlow(
         WooPosProductsViewState.Content(
             products = listOf(
@@ -560,7 +562,7 @@ fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview(modifier: Modifi
                 ),
             ),
             loadingMore = false,
-            reloadingProducts = false,
+            reloadingProductsWithPullToRefresh = true,
             bannerState = WooPosProductsViewState.Content.BannerState(
                 isBannerHiddenByUser = false,
                 title = R.string.woopos_banner_simple_products_only_title,
@@ -571,13 +573,13 @@ fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview(modifier: Modifi
     )
     WooPosTheme {
         WooPosProductsScreen(
-            modifier = modifier,
             productsStateFlow = productState,
             onItemClicked = {},
             onEndOfProductListReached = {},
             onPullToRefresh = {},
+            onRetryClicked = {},
             onSimpleProductsBannerClosed = {},
-            onSimpleProductsBannerLearnMoreClicked = {}
+            onSimpleProductsBannerLearnMoreClicked = {},
         )
     }
 }
