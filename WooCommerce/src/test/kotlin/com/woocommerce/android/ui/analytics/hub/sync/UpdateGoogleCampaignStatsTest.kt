@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.model.GoogleAdsStat
+import com.woocommerce.android.model.StatType
 import com.woocommerce.android.ui.analytics.hub.GoogleStatsFilterOptions
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -10,7 +11,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.store.WCGoogleStore.TotalsType
 
 @ExperimentalCoroutinesApi
 class UpdateGoogleCampaignStatsTest : BaseUnitTest() {
@@ -23,7 +23,7 @@ class UpdateGoogleCampaignStatsTest : BaseUnitTest() {
 
     @Test
     fun `returns Available state when Google Ads data is fetched successfully`() = testBlocking {
-        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, TotalsType.SALES))
+        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, StatType.TOTAL_SALES))
             .thenReturn(AnalyticsRepository.GoogleAdsResult.GoogleAdsData(googleAdsStat))
 
         sut = UpdateGoogleCampaignStats(analyticsRepository)
@@ -34,7 +34,7 @@ class UpdateGoogleCampaignStatsTest : BaseUnitTest() {
 
     @Test
     fun `returns Error state when Google Ads data fetch fails`() = testBlocking {
-        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, TotalsType.SALES))
+        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, StatType.TOTAL_SALES))
             .thenReturn(AnalyticsRepository.GoogleAdsResult.GoogleAdsError)
 
         sut = UpdateGoogleCampaignStats(analyticsRepository)
@@ -45,7 +45,7 @@ class UpdateGoogleCampaignStatsTest : BaseUnitTest() {
 
     @Test
     fun `returns Available state when filter option is Clicks`() = testBlocking {
-        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, TotalsType.CLICKS))
+        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, StatType.CLICKS))
             .thenReturn(AnalyticsRepository.GoogleAdsResult.GoogleAdsData(googleAdsStat))
 
         sut = UpdateGoogleCampaignStats(analyticsRepository)
@@ -56,7 +56,7 @@ class UpdateGoogleCampaignStatsTest : BaseUnitTest() {
 
     @Test
     fun `returns Available state when filter option is Impressions`() = testBlocking {
-        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, TotalsType.IMPRESSIONS))
+        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, StatType.IMPRESSIONS))
             .thenReturn(AnalyticsRepository.GoogleAdsResult.GoogleAdsData(googleAdsStat))
 
         sut = UpdateGoogleCampaignStats(analyticsRepository)
@@ -67,7 +67,7 @@ class UpdateGoogleCampaignStatsTest : BaseUnitTest() {
 
     @Test
     fun `returns Available state when filter option is Conversions`() = testBlocking {
-        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, TotalsType.CONVERSIONS))
+        whenever(analyticsRepository.fetchGoogleAdsStats(rangeSelection, StatType.CONVERSIONS))
             .thenReturn(AnalyticsRepository.GoogleAdsResult.GoogleAdsData(googleAdsStat))
 
         sut = UpdateGoogleCampaignStats(analyticsRepository)
