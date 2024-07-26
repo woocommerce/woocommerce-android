@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 
 data class WooPosHomeState(
     val screenPositionState: ScreenPositionState,
+    val productsInfoDialog: ProductsInfoDialog,
     val exitConfirmationDialog: WooPosExitConfirmationDialog? = null,
 ) {
     sealed class ScreenPositionState {
@@ -23,8 +24,8 @@ data class WooPosHomeState(
         }
     }
 
-    sealed class ProductsInfoDialog : WooPosHomeState() {
-        data object Hidden : WooPosHomeState()
+    sealed class ProductsInfoDialog {
+        data object Hidden : ProductsInfoDialog()
 
         data class Visible(
             @StringRes val header: Int,
@@ -38,19 +39,6 @@ data class WooPosHomeState(
             )
         }
     }
-
-//    data class ProductsInfoDialog(
-//        val shouldDisplayDialog: Boolean = false,
-//        @StringRes val header: Int,
-//        @StringRes val primaryMessage: Int,
-//        @StringRes val secondaryMessage: Int,
-//        @StringRes val secondaryMessageActionLabel: Int,
-//        val primaryButton: PrimaryButton,
-//    ) : WooPosHomeState() {
-//        data class PrimaryButton(
-//            @StringRes val label: Int,
-//        )
-//    }
 }
 
 data object WooPosExitConfirmationDialog {
