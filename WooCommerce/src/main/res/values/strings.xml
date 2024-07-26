@@ -528,6 +528,7 @@
     <string name="analytics_gift_cards_card_title">Gift Cards</string>
     <string name="analytics_google_ads_card_title">Google Campaigns</string>
     <string name="analytics_google_ads_filter_total_sales">Total Sales</string>
+    <string name="analytics_google_ads_filter_spend">Spend</string>
     <string name="analytics_google_ads_filter_conversion">Conversion</string>
     <string name="analytics_google_ads_filter_impressions">Impressions</string>
     <string name="analytics_google_ads_filter_clicks">Clicks</string>
