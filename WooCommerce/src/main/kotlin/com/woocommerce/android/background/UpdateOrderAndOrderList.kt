@@ -11,7 +11,7 @@ class UpdateOrderAndOrderList @Inject constructor(
 ) {
     suspend operator fun invoke(remoteOrderId: Long): Boolean {
         val orderFetchedSuccess = selectedSite.getOrNull()?.let { site ->
-            val result = orderStore.fetchSingleOrder(site, remoteOrderId)
+            val result = orderStore.fetchSingleOrderSync(site, remoteOrderId)
             result.isError.not()
         } ?: false
         val listFetchedSuccess = updateOrdersList()
