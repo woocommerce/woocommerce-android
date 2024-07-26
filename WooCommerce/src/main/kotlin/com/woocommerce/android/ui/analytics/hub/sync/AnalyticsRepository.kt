@@ -513,14 +513,14 @@ class AnalyticsRepository @Inject constructor(
             googleAdsCampaigns = currentRangeResponse.campaigns?.map {
                 GoogleAdsCampaign(
                     id = it.id ?: 0L,
-                    name = it.name,
+                    name = it.name.orEmpty(),
                     subtotal = it.subtotal.let { subtotal ->
                         GoogleAdsTotals(
-                            sales = subtotal.sales,
-                            spend = subtotal.spend,
-                            clicks = subtotal.clicks?.toInt(),
-                            impressions = subtotal.impressions?.toInt(),
-                            conversions = subtotal.conversions?.toInt()
+                            sales = subtotal.sales ?: 0.0,
+                            spend = subtotal.spend ?: 0.0,
+                            clicks = subtotal.clicks?.toInt() ?: 0,
+                            impressions = subtotal.impressions?.toInt() ?: 0,
+                            conversions = subtotal.conversions?.toInt() ?: 0
                         )
                     }
                 )

@@ -27,17 +27,17 @@ data class GoogleAdsStat(
 }
 
 data class GoogleAdsCampaign(
-    val id: Long?,
-    val name: String?,
-    val subtotal: GoogleAdsTotals?
+    val id: Long,
+    val name: String,
+    val subtotal: GoogleAdsTotals
 )
 
 data class GoogleAdsTotals(
-    val sales: Double?,
-    val spend: Double?,
-    val clicks: Int?,
-    val impressions: Int?,
-    val conversions: Int?
+    val sales: Double,
+    val spend: Double,
+    val clicks: Int,
+    val impressions: Int,
+    val conversions: Int
 )
 
 data class GoogleAdsTotalsDeltaPercentage(
