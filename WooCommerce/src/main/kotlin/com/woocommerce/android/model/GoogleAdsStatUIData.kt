@@ -19,52 +19,87 @@ class GoogleAdsStatUIData(
     val deltaPercentage: Int?
 
     init {
-        mainTotalStatTitle = when (rawStat.statType) {
-            StatType.TOTAL_SALES -> resourceProvider.getString(R.string.analytics_google_ads_filter_total_sales)
-            StatType.SPEND -> resourceProvider.getString(R.string.analytics_google_ads_filter_spend)
-            StatType.CLICKS -> resourceProvider.getString(R.string.analytics_google_ads_filter_clicks)
-            StatType.IMPRESSIONS -> resourceProvider.getString(R.string.analytics_google_ads_filter_impressions)
-            StatType.CONVERSIONS -> resourceProvider.getString(R.string.analytics_google_ads_filter_conversion)
-        }
-
-        mainTotalStat = when (rawStat.statType) {
-            StatType.TOTAL_SALES -> rawStat.totals.sales?.let {
-                currencyFormatter.formatCurrency(it.toString())
-            }.orEmpty()
-            StatType.SPEND -> rawStat.totals.spend?.let {
-                currencyFormatter.formatCurrency(it.toString())
-            }.orEmpty()
-            StatType.CLICKS -> rawStat.totals.clicks?.toString().orEmpty()
-            StatType.IMPRESSIONS -> rawStat.totals.impressions?.toString().orEmpty()
-            StatType.CONVERSIONS -> rawStat.totals.conversions?.toString().orEmpty()
-        }
-        statSecondColumnTitle = mainTotalStat
-
-        statItems = rawStat.googleAdsCampaigns.map { campaign ->
-            GoogleAdsStatUIDataItem(
-                name = campaign.name,
-                mainStat = when (rawStat.statType) {
-                    StatType.TOTAL_SALES -> campaign.subtotal?.sales?.let {
-                        currencyFormatter.formatCurrency(it.toString())
-                    }.orEmpty()
-                    StatType.SPEND -> campaign.subtotal?.spend?.let {
-                        currencyFormatter.formatCurrency(it.toString())
-                    }.orEmpty()
-                    StatType.CLICKS -> campaign.subtotal?.clicks?.toString().orEmpty()
-                    StatType.IMPRESSIONS -> campaign.subtotal?.impressions?.toString().orEmpty()
-                    StatType.CONVERSIONS -> campaign.subtotal?.conversions?.toString().orEmpty()
-                },
-                secondaryStat = when (rawStat.statType) {
-                    StatType.SPEND -> campaign.subtotal?.sales?.let {
-                        currencyFormatter.formatCurrency(it.toString())
-                    }.orEmpty()
-
-                    else -> campaign.subtotal?.spend?.let {
-                        currencyFormatter.formatCurrency(it.toString())
-                    }.orEmpty()
+        when (rawStat.statType) {
+            StatType.TOTAL_SALES -> {
+                mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_total_sales)
+                mainTotalStat = rawStat.totals.sales?.let {
+                    currencyFormatter.formatCurrency(it.toString())
+                }.orEmpty()
+                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                    GoogleAdsStatUIDataItem(
+                        name = campaign.name,
+                        mainStat = campaign.subtotal?.sales?.let {
+                            currencyFormatter.formatCurrency(it.toString())
+                        }.orEmpty(),
+                        secondaryStat = campaign.subtotal?.spend?.let {
+                            currencyFormatter.formatCurrency(it.toString())
+                        }.orEmpty()
+                    )
                 }
-            )
+            }
+
+            StatType.SPEND -> {
+                mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_spend)
+                mainTotalStat = rawStat.totals.spend?.let {
+                    currencyFormatter.formatCurrency(it.toString())
+                }.orEmpty()
+                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                    GoogleAdsStatUIDataItem(
+                        name = campaign.name,
+                        mainStat = campaign.subtotal?.spend?.let {
+                            currencyFormatter.formatCurrency(it.toString())
+                        }.orEmpty(),
+                        secondaryStat = campaign.subtotal?.sales?.let {
+                            currencyFormatter.formatCurrency(it.toString())
+                        }.orEmpty()
+                    )
+                }
+            }
+
+            StatType.CLICKS -> {
+                mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_clicks)
+                mainTotalStat = rawStat.totals.clicks?.toString().orEmpty()
+                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                    GoogleAdsStatUIDataItem(
+                        name = campaign.name,
+                        mainStat = campaign.subtotal?.clicks?.toString().orEmpty(),
+                        secondaryStat = campaign.subtotal?.spend?.let {
+                            currencyFormatter.formatCurrency(it.toString())
+                        }.orEmpty()
+                    )
+                }
+            }
+
+            StatType.IMPRESSIONS -> {
+                mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_impressions)
+                mainTotalStat = rawStat.totals.impressions?.toString().orEmpty()
+                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                    GoogleAdsStatUIDataItem(
+                        name = campaign.name,
+                        mainStat = campaign.subtotal?.impressions?.toString().orEmpty(),
+                        secondaryStat = campaign.subtotal?.spend?.let {
+                            currencyFormatter.formatCurrency(it.toString())
+                        }.orEmpty()
+                    )
+                }
+            }
+
+            StatType.CONVERSIONS -> {
+                mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_conversion)
+                mainTotalStat = rawStat.totals.conversions?.toString().orEmpty()
+                statItems = rawStat.googleAdsCampaigns.map { campaign ->
+                    GoogleAdsStatUIDataItem(
+                        name = campaign.name,
+                        mainStat = campaign.subtotal?.conversions?.toString().orEmpty(),
+                        secondaryStat = campaign.subtotal?.spend?.let {
+                            currencyFormatter.formatCurrency(it.toString())
+                        }.orEmpty()
+                    )
+                }
+            }
         }
+
+        statSecondColumnTitle = mainTotalStat
 
         deltaPercentage = when (rawStat.statType) {
             StatType.TOTAL_SALES -> rawStat.totalsDeltaPercentage.salesDelta
