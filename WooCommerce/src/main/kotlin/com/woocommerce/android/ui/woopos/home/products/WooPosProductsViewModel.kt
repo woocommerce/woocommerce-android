@@ -100,7 +100,8 @@ class WooPosProductsViewModel @Inject constructor(
                             else -> {
                                 val errorString = result.productsResult.toString()
                                 WooLog.e(WooLog.T.POS, "Loading simple products failed - $errorString")
-                                WooPosProductsViewState.Error()}
+                                WooPosProductsViewState.Error()
+                            }
                         }
                     }
                 }
