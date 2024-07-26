@@ -44,6 +44,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -134,7 +135,7 @@ private fun WooPosProductsScreen(
 
                 is WooPosProductsViewState.Content -> MaterialTheme.colors.onSurface
             }
-            ProductsToolbar(state.value, modifier, onToolbarInfoIconClicked)
+            ProductsToolbar(state.value, modifier, titleColor, onToolbarInfoIconClicked)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -175,6 +176,7 @@ private fun WooPosProductsScreen(
 private fun ProductsToolbar(
     productViewState: WooPosProductsViewState,
     modifier: Modifier,
+    titleColor: Color,
     onToolbarInfoIconClicked: () -> Unit,
 ) {
     Row(
@@ -184,11 +186,12 @@ private fun ProductsToolbar(
         Text(
             text = stringResource(id = R.string.woopos_products_screen_title),
             style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = titleColor,
         )
         when (productViewState) {
             is WooPosProductsViewState.Content -> {
-                if (!productViewState.bannerState.isBannerVisible) {
+                if (productViewState.bannerState.isBannerHiddenByUser) {
                     IconButton(
                         modifier = Modifier.size(40.dp),
                         onClick = {
@@ -575,6 +578,7 @@ fun WooPosProductsScreenErrorPreview() {
             onRetryClicked = {},
             onSimpleProductsBannerClosed = {},
             onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -634,7 +638,7 @@ fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
-fun WooPosHomeScreenProductsWithInfoIconInToolbarPreview(modifier: Modifier = Modifier) {
+fun WooPosHomeScreenProductsWithInfoIconInToolbarPreview() {
     val productState = MutableStateFlow(
         WooPosProductsViewState.Content(
             products = listOf(
@@ -660,9 +664,9 @@ fun WooPosHomeScreenProductsWithInfoIconInToolbarPreview(modifier: Modifier = Mo
                 ),
             ),
             loadingMore = false,
-            reloadingProducts = false,
+            reloadingProductsWithPullToRefresh = false,
             bannerState = WooPosProductsViewState.Content.BannerState(
-                isBannerVisible = false,
+                isBannerHiddenByUser = true,
                 title = R.string.woopos_banner_simple_products_only_title,
                 message = R.string.woopos_banner_simple_products_only_message,
                 icon = R.drawable.info,
