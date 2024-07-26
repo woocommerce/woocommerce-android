@@ -1,1 +1,5 @@
-Boost your WooCommerce experience with our latest update! Dive into enhanced analytics for Google Ads campaigns in the Analytics Hub, streamline package photo flow with our revamped Product Creation AI V2, and enjoy more reliable login. Plus, we've fixed cash payment assignments and improved button statuses on the More screen. Update now for a smoother, smarter store management!
+- [**] Google Listing and Ads: Google Ads campaign creation and management is now available for sites with the plugin active and set up. [https://github.com/woocommerce/woocommerce-android/pull/12145]
+- [*] Improve stability of the OrderDetail screen [https://github.com/woocommerce/woocommerce-android/pull/12106]
+- [*] Adds new advice box to product creation with AI prompt screen [https://github.com/woocommerce/woocommerce-android/pull/12129]
+- [*] [Internal] Move UserAgent initialization to a background thread to fix ANRs caused by it [https://github.com/woocommerce/woocommerce-android/pull/12147]
+
