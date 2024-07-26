@@ -709,7 +709,8 @@ class AnalyticsHubViewModel @Inject constructor(
                     ),
                     showImage = false
                 )
-            }
+            },
+            filterOptions = GoogleStatsFilterOptions.entries.map { resourceProvider.getString(it.resourceId) }
         )
 
     private fun trackSelectedDateRange() {
@@ -777,6 +778,13 @@ class AnalyticsHubViewModel @Inject constructor(
 }
 
 enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard, GoogleCampaigns }
+
+enum class GoogleStatsFilterOptions(val resourceId: Int) {
+    TotalSales(R.string.analytics_google_ads_filter_total_sales),
+    Conversions(R.string.analytics_google_ads_filter_conversion),
+    Clicks(R.string.analytics_google_ads_filter_clicks),
+    Impressions(R.string.analytics_google_ads_filter_impressions)
+}
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {
