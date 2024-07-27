@@ -29,7 +29,7 @@ class NotificationTest {
         remoteSiteId = remoteSiteId,
         uniqueId = 0L,
         channelType = NotificationChannelType.OTHER,
-        noteType = WooNotificationType.ZENDESK
+        noteType = WooNotificationType.LOCAL_REMINDER
     )
 
     @Test
