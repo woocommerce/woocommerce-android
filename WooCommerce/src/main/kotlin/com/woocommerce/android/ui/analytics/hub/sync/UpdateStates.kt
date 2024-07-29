@@ -68,6 +68,7 @@ sealed class GiftCardsState {
 
 sealed class GoogleAdsState {
     data class Available(val googleAdsStat: GoogleAdsStat) : GoogleAdsState()
+    data object Empty : GoogleAdsState()
     data object Loading : GoogleAdsState()
     data object Error : GoogleAdsState()
     val isIdle get() = this !is Loading

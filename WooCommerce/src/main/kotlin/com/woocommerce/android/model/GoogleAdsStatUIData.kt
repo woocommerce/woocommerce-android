@@ -23,7 +23,7 @@ class GoogleAdsStatUIData(
             StatType.TOTAL_SALES -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_total_sales)
                 mainTotalStat = currencyFormatter.formatCurrency(rawStats.totals.sales.toString())
-                statItems = rawStats.googleAdsCampaigns.map { campaign ->
+                statItems = rawStats.googleAdsCampaigns?.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = currencyFormatter.formatCurrency(campaign.subtotal.sales.toString()),
@@ -32,13 +32,13 @@ class GoogleAdsStatUIData(
                             currencyFormatter.formatCurrency(campaign.subtotal.spend.toString())
                         )
                     )
-                }
+                }.orEmpty()
             }
 
             StatType.SPEND -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_spend)
                 mainTotalStat = currencyFormatter.formatCurrency(rawStats.totals.spend.toString())
-                statItems = rawStats.googleAdsCampaigns.map { campaign ->
+                statItems = rawStats.googleAdsCampaigns?.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = currencyFormatter.formatCurrency(campaign.subtotal.spend.toString()),
@@ -47,13 +47,13 @@ class GoogleAdsStatUIData(
                             currencyFormatter.formatCurrency(campaign.subtotal.sales.toString())
                         )
                     )
-                }
+                }.orEmpty()
             }
 
             StatType.CLICKS -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_clicks)
                 mainTotalStat = rawStats.totals.clicks.toString()
-                statItems = rawStats.googleAdsCampaigns.map { campaign ->
+                statItems = rawStats.googleAdsCampaigns?.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = campaign.subtotal.clicks.toString(),
@@ -62,13 +62,13 @@ class GoogleAdsStatUIData(
                             currencyFormatter.formatCurrency(campaign.subtotal.spend.toString())
                         )
                     )
-                }
+                }.orEmpty()
             }
 
             StatType.IMPRESSIONS -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_impressions)
                 mainTotalStat = rawStats.totals.impressions.toString()
-                statItems = rawStats.googleAdsCampaigns.map { campaign ->
+                statItems = rawStats.googleAdsCampaigns?.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = campaign.subtotal.impressions.toString(),
@@ -77,13 +77,13 @@ class GoogleAdsStatUIData(
                             currencyFormatter.formatCurrency(campaign.subtotal.spend.toString())
                         )
                     )
-                }
+                }.orEmpty()
             }
 
             StatType.CONVERSIONS -> {
                 mainTotalStatTitle = resourceProvider.getString(R.string.analytics_google_ads_filter_conversion)
                 mainTotalStat = rawStats.totals.conversions.toString()
-                statItems = rawStats.googleAdsCampaigns.map { campaign ->
+                statItems = rawStats.googleAdsCampaigns?.map { campaign ->
                     GoogleAdsStatUIDataItem(
                         name = campaign.name,
                         mainStat = campaign.subtotal.conversions.toString(),
@@ -92,7 +92,7 @@ class GoogleAdsStatUIData(
                             currencyFormatter.formatCurrency(campaign.subtotal.spend.toString())
                         )
                     )
-                }
+                }.orEmpty()
             }
         }
 
