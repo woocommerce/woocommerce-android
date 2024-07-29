@@ -814,6 +814,15 @@ class AnalyticsHubViewModel @Inject constructor(
         ).let { newState ->
             mutableState.update { it.copy(ctaState = newState) }
         }
+
+        if (isVisible) {
+            tracker.track(
+                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    KEY_GOOGLEADS_SOURCE to VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
+                )
+            )
+        }
     }
 
     private fun onGoogleAdsCTAClicked() {
@@ -827,7 +836,7 @@ class AnalyticsHubViewModel @Inject constructor(
             ))
 
             tracker.track(
-                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
                 properties = mapOf(
                     KEY_GOOGLEADS_SOURCE to VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
                 )
