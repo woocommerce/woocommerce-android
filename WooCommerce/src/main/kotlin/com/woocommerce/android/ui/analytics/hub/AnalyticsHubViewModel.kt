@@ -848,10 +848,6 @@ class AnalyticsHubViewModel @Inject constructor(
         tracker.track(AnalyticsEvent.ANALYTICS_HUB_SETTINGS_OPENED)
         triggerEvent(AnalyticsViewEvent.OpenSettings)
     }
-
-    fun onGoogleAdsCreationSuccess() {
-        TODO("Not yet implemented")
-    }
 }
 
 enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard, GoogleCampaigns }

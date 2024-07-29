@@ -134,8 +134,8 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
                 ?.let { viewModel.onNewRangeSelection(it) }
                 ?: viewModel.onCustomDateRangeClicked()
         }
+
         handleNotice(WEBVIEW_RESULT) {
-            viewModel.onGoogleAdsCreationSuccess()
             findNavController().navigateSafely(
                 NavGraphMainDirections.actionGlobalGoogleAdsCampaignSuccessBottomSheet()
             )
