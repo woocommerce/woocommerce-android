@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
@@ -131,8 +133,9 @@ fun ProductInfoDialog(
                                 }
                             ) {
                                 Icon(
+                                    modifier = Modifier.size(35.dp),
                                     imageVector = Icons.Default.Close,
-                                    tint = MaterialTheme.colors.onSurface,
+                                    tint = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.30f),
                                     contentDescription = stringResource(
                                         id = R.string.woopos_banner_simple_products_close_content_description
                                     ),
@@ -160,12 +163,14 @@ fun ProductInfoDialog(
                                 )
                                 Box(
                                     Modifier
-                                        .background(color = Color(0xF6F7F7).copy(alpha = 0.8f))
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(color = MaterialTheme.colors.background)
                                         .padding(16.dp),
-                                    contentAlignment = Alignment.Center
+                                    contentAlignment = Alignment.Center,
                                 ) {
                                     Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text(
                                             text = stringResource(id = state.secondaryMessage),
@@ -185,21 +190,23 @@ fun ProductInfoDialog(
                                         }
                                     }
                                 }
-                                Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.height(40.dp))
                                 OutlinedButton(
                                     onClick = {
                                         animVisibleState.targetState = false
                                     },
                                     modifier = Modifier.fillMaxWidth(),
                                     border = BorderStroke(2.dp, MaterialTheme.colors.primary),
-                                    shape = RectangleShape,
+                                    shape = RoundedCornerShape(8.dp),
                                 ) {
                                     Text(
                                         modifier = Modifier
                                             .padding(
-                                                top = 8.dp.toAdaptivePadding(),
-                                                bottom = 8.dp.toAdaptivePadding(),
+                                                top = 22.dp.toAdaptivePadding(),
+                                                bottom = 22.dp.toAdaptivePadding(),
                                             ),
+                                        fontWeight = FontWeight.Bold,
+                                        style = MaterialTheme.typography.h5,
                                         text = stringResource(id = state.primaryButton.label)
                                     )
                                 }
