@@ -678,6 +678,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU = "more_menu"
         const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION = "creation"
         const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_DASHBOARD = "dashboard"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB = "analytics_hub"
 
         var sendUsageStats: Boolean = true
             set(value) {
