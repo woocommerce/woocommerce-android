@@ -131,7 +131,7 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertTrue((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).shouldDisplayDialog)
+        assertTrue((viewModel.state.value.productsInfoDialog is WooPosHomeState.ProductsInfoDialog.Visible))
     }
 
     @Test
@@ -145,7 +145,7 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).header).isEqualTo(
+        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).header).isEqualTo(
             R.string.woopos_dialog_products_info_heading
         )
     }
@@ -161,7 +161,7 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).primaryMessage).isEqualTo(
+        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryMessage).isEqualTo(
             R.string.woopos_dialog_products_info_primary_message
         )
     }
@@ -177,7 +177,7 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).secondaryMessage).isEqualTo(
+        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).secondaryMessage).isEqualTo(
             R.string.woopos_dialog_products_info_secondary_message
         )
     }
@@ -193,7 +193,7 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).primaryButton.label).isEqualTo(
+        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryButton.label).isEqualTo(
             R.string.woopos_dialog_products_info_button_label
         )
     }
@@ -209,7 +209,7 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).secondaryMessageActionLabel).isEqualTo(
+        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).secondaryMessageActionLabel).isEqualTo(
             R.string.woopos_dialog_products_info_secondary_message_action_label
         )
     }
@@ -226,7 +226,7 @@ class WooPosHomeViewModelTest {
         viewModel.onUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
 
         // THEN
-        assertFalse((viewModel.state.value as WooPosHomeState.ProductsInfoDialog).shouldDisplayDialog)
+        assertFalse((viewModel.state.value.productsInfoDialog is WooPosHomeState.ProductsInfoDialog.Visible))
     }
 
     private fun createViewModel() = WooPosHomeViewModel(

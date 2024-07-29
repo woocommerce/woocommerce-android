@@ -728,8 +728,14 @@ class WooPosProductsViewModelTest {
             ).copy(firstImageUrl = "https://test.com")
         )
 
-        whenever(productsDataSource.products).thenReturn(flowOf(products))
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerVisible).thenReturn(
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
             flowOf(true)
         )
 
