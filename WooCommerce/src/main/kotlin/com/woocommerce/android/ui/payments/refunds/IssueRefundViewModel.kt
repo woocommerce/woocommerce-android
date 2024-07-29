@@ -496,6 +496,7 @@ class IssueRefundViewModel @Inject constructor(
                     refundStore.createItemsRefund(
                         selectedSite.get(),
                         order.id,
+                        commonState.refundTotal,
                         refundSummaryState.refundReason ?: "",
                         true,
                         gateway.supportsRefunds,
