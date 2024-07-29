@@ -78,6 +78,10 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
+import com.woocommerce.android.AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.HiddenState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsViewEvent.OpenGoogleAdsCreation
 
 @HiltViewModel
 @SuppressWarnings("LargeClass")
@@ -112,6 +116,7 @@ class AnalyticsHubViewModel @Inject constructor(
             refreshIndicator = NotShowIndicator,
             analyticsDateRangeSelectorState = AnalyticsHubDateRangeSelectorViewState.EMPTY,
             cards = AnalyticsHubCardViewState.LoadingCardsConfiguration,
+            ctaState = AnalyticsHubUserCallToActionViewState.EMPTY,
             showFeedBackBanner = false,
             lastUpdateTimestamp = ""
         )
@@ -315,6 +320,23 @@ class AnalyticsHubViewModel @Inject constructor(
             }
         }
 
+    private fun updateCardStatus(card: AnalyticsCards, newState: AnalyticsCardViewState) {
+        val cardsInformation = mutableState.value.cards
+        if (cardsInformation is AnalyticsHubCardViewState.CardsState) {
+            val updatedCardState = cardsInformation.cardsState.toMutableList().map { state ->
+                if (state.card == card) {
+                    newState
+                } else {
+                    state
+                }
+            }
+            val updatedInfo = cardsInformation.copy(cardsState = updatedCardState)
+            mutableState.update { viewState ->
+                viewState.copy(cards = updatedInfo)
+            }
+        }
+    }
+
     private fun observeOrdersStatChanges() {
         ordersObservationJob = updateStats.ordersState.onEach { state ->
             when (state) {
@@ -464,7 +486,14 @@ class AnalyticsHubViewModel @Inject constructor(
         googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
             when (state) {
                 is GoogleAdsState.Available -> {
-                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
+                    val stats = state.googleAdsStat
+                    if (stats.noCampaignsAvailable) {
+                        updateGoogleAdsCTAVisibility(isVisible = true)
+                        updateCardStatus(AnalyticsCards.GoogleAds, HiddenState(AnalyticsCards.GoogleAds))
+                    } else {
+                        updateGoogleAdsCTAVisibility(isVisible = false)
+                        updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(stats))
+                    }
                 }
 
                 is GoogleAdsState.Error -> {
@@ -478,23 +507,6 @@ class AnalyticsHubViewModel @Inject constructor(
                 }
             }
         }.launchIn(viewModelScope)
-    }
-
-    private fun updateCardStatus(card: AnalyticsCards, newState: AnalyticsCardViewState) {
-        val cardsInformation = mutableState.value.cards
-        if (cardsInformation is AnalyticsHubCardViewState.CardsState) {
-            val updatedCardState = cardsInformation.cardsState.toMutableList().map { state ->
-                if (state.card == card) {
-                    newState
-                } else {
-                    state
-                }
-            }
-            val updatedInfo = cardsInformation.copy(cardsState = updatedCardState)
-            mutableState.update { viewState ->
-                viewState.copy(cards = updatedInfo)
-            }
-        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -790,9 +802,35 @@ class AnalyticsHubViewModel @Inject constructor(
         giftCardsObservationJob?.cancel()
     }
 
+    private fun updateGoogleAdsCTAVisibility(isVisible: Boolean) {
+        val newState = AnalyticsHubUserCallToActionViewState(
+            title = resourceProvider.getString(R.string.analytics_google_ads_cta_title),
+            description = resourceProvider.getString(R.string.analytics_google_ads_cta_description),
+            callToActionText = resourceProvider.getString(R.string.analytics_google_ads_cta_action),
+            isVisible = isVisible,
+            onCallToActionClickListener = {
+                selectedSite.getOrNull()?.let {
+                    it.adminUrlOrDefault + GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+                }?.let { url ->
+                    triggerEvent(OpenGoogleAdsCreation(
+                        url = url,
+                        isCreationFlow = true,
+                        title = resourceProvider.getString(R.string.analytics_google_ads_cta_action)
+                    ))
+                }
+
+            }
+        )
+        mutableState.update { it.copy(ctaState = newState) }
+    }
+
     fun onOpenSettings() {
         tracker.track(AnalyticsEvent.ANALYTICS_HUB_SETTINGS_OPENED)
         triggerEvent(AnalyticsViewEvent.OpenSettings)
+    }
+
+    fun onGoogleAdsCreationSuccess() {
+        TODO("Not yet implemented")
     }
 }
 
