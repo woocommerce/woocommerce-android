@@ -162,15 +162,12 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsDateSelectorCard.updateLastUpdateTimestamp(viewState.lastUpdateTimestamp)
         binding.analyticsCallToActionCard.updateInformation(viewState.ctaState)
-        when (viewState.cards) {
-            is AnalyticsHubCardViewState.CardsState -> {
-                (binding.cards.adapter as AnalyticsHubCardsAdapter).cardList = viewState.cards.cardsState
-            }
-
-            else -> {}
-        }
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
         displayFeedbackBanner(viewState.showFeedBackBanner)
+
+        binding.cards.adapter
+            .run { this as? AnalyticsHubCardsAdapter }
+            ?.cardList = viewState.cards.cardsState
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
