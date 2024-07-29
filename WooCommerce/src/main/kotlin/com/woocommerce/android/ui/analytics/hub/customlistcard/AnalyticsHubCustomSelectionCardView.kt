@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsCustomSelectionCardViewBinding
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.HiddenState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.NoAdsState
 import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
@@ -36,7 +37,13 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
             is LoadingAdsViewState -> setSkeleton()
             is NoAdsState -> setNoAdsViewState(viewState)
             is CustomListViewState -> setDataViewState(viewState)
+            is HiddenState -> setHiddenState()
         }
+    }
+
+    private fun setHiddenState() {
+        skeletonView.hide()
+        binding.analyticsCustomCardListContainer.visibility = GONE
     }
 
     private fun setDataViewState(viewState: CustomListViewState) {
