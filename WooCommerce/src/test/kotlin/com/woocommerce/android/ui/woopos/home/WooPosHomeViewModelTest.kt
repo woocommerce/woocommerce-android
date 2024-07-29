@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
