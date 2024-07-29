@@ -833,7 +833,7 @@ class AnalyticsHubViewModel @Inject constructor(
                 OpenGoogleAdsCreation(
                     url = url,
                     isCreationFlow = true,
-                    title = resourceProvider.getString(R.string.analytics_google_ads_cta_action)
+                    title = resourceProvider.getString(R.string.analytics_google_ads_cta_web_view_title)
                 )
             )
 
