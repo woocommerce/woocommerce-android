@@ -4226,6 +4226,8 @@
     <string name="woopos_error_icon_content_description">Error indication icon</string>
     <string name="woopos_products_loading_error_retry_button">Rerty</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
+    <string name="woopos_success_screen_total">A payment of %1$s was successfully made</string>
+
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>

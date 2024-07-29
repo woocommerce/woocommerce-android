@@ -85,7 +85,7 @@ fun WooPosPaymentSuccessScreen(
             )
 
             Text(
-                text = "A payment of ${state.orderTotalText} was successfully made",
+                text = stringResource(R.string.woopos_success_screen_total, state.orderTotalText),
                 style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Center,
                 color = Color(0xFF004D40),
