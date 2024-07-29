@@ -22,9 +22,9 @@ class AnalyticsHubUserCallToActionView @JvmOverloads constructor(
             binding.buttonCtaAction.setOnClickListener {
                 viewState.onCallToActionClickListener()
             }
-            binding.analyticsCallToActionCard.visibility = VISIBLE
+            binding.root.visibility = VISIBLE
         } else {
-            binding.analyticsCallToActionCard.visibility = GONE
+            binding.root.visibility = GONE
         }
     }
 }
