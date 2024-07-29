@@ -56,10 +56,12 @@ sealed class AnalyticsHubListViewState : AnalyticsCardViewState {
 
 sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
     data class LoadingAdsViewState(override val card: AnalyticsCards) : AnalyticsHubCustomSelectionListViewState()
+
     data class NoAdsState(
         override val card: AnalyticsCards,
         val message: String
     ) : AnalyticsHubCustomSelectionListViewState()
+
     data class CustomListViewState(
         override val card: AnalyticsCards,
         val title: String,
@@ -81,5 +83,27 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
                 delta > 0 -> "+"
                 else -> "-"
             }
+    }
+
+    data class HiddenState(
+        override val card: AnalyticsCards
+    ) : AnalyticsHubCustomSelectionListViewState()
+}
+
+data class AnalyticsHubUserCallToActionViewState(
+    val title: String,
+    val description: String,
+    val callToActionText: String,
+    val isVisible: Boolean,
+    val onCallToActionClickListener: () -> Unit
+) {
+    companion object {
+        val EMPTY = AnalyticsHubUserCallToActionViewState(
+            title = "",
+            description = "",
+            callToActionText = "",
+            isVisible = false,
+            onCallToActionClickListener = {}
+        )
     }
 }
