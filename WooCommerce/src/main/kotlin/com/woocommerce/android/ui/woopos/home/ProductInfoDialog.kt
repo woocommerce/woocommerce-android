@@ -24,7 +24,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
@@ -51,7 +50,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 fun ProductInfoDialog(
     state: WooPosHomeState.ProductsInfoDialog.Visible,
     onDismissRequest: () -> Unit,
-    onCreateOrderClick: () -> Unit
 ) {
     val animVisibleState = remember { MutableTransitionState(false) }
         .apply { targetState = true }
@@ -177,15 +175,6 @@ fun ProductInfoDialog(
                                             fontWeight = FontWeight.Normal,
                                             color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                                         )
-                                        TextButton(
-                                            onClick = onCreateOrderClick,
-                                        ) {
-                                            Text(
-                                                text = stringResource(id = state.secondaryMessageActionLabel),
-                                                style = MaterialTheme.typography.subtitle1,
-                                                color = MaterialTheme.colors.primary,
-                                            )
-                                        }
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(40.dp))
@@ -230,13 +219,11 @@ fun ProductInfoDialogPreview() {
                     header = R.string.woopos_dialog_products_info_heading,
                     primaryMessage = R.string.woopos_dialog_products_info_primary_message,
                     secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
-                    secondaryMessageActionLabel = R.string.woopos_dialog_products_info_secondary_message_action_label,
                     primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
                         label = R.string.woopos_dialog_products_info_button_label
                     )
                 ),
                 onDismissRequest = {},
-                onCreateOrderClick = {}
             )
         }
     }

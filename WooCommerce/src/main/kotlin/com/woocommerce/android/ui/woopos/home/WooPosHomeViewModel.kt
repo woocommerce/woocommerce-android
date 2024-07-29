@@ -117,8 +117,6 @@ class WooPosHomeViewModel @Inject constructor(
                                 header = R.string.woopos_dialog_products_info_heading,
                                 primaryMessage = R.string.woopos_dialog_products_info_primary_message,
                                 secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
-                                secondaryMessageActionLabel =
-                                R.string.woopos_dialog_products_info_secondary_message_action_label,
                                 primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
                                     label = R.string.woopos_dialog_products_info_button_label,
                                 )

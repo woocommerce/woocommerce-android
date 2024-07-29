@@ -31,7 +31,6 @@ data class WooPosHomeState(
             @StringRes val header: Int,
             @StringRes val primaryMessage: Int,
             @StringRes val secondaryMessage: Int,
-            @StringRes val secondaryMessageActionLabel: Int,
             val primaryButton: PrimaryButton,
         ) : ProductsInfoDialog() {
             data class PrimaryButton(
