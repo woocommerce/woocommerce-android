@@ -79,6 +79,8 @@ import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as Lis
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
 import com.woocommerce.android.AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_GOOGLEADS_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.HiddenState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsViewEvent.OpenGoogleAdsCreation
@@ -803,25 +805,34 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 
     private fun updateGoogleAdsCTAVisibility(isVisible: Boolean) {
-        val newState = AnalyticsHubUserCallToActionViewState(
+        AnalyticsHubUserCallToActionViewState(
             title = resourceProvider.getString(R.string.analytics_google_ads_cta_title),
             description = resourceProvider.getString(R.string.analytics_google_ads_cta_description),
             callToActionText = resourceProvider.getString(R.string.analytics_google_ads_cta_action),
             isVisible = isVisible,
-            onCallToActionClickListener = {
-                selectedSite.getOrNull()?.let {
-                    it.adminUrlOrDefault + GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-                }?.let { url ->
-                    triggerEvent(OpenGoogleAdsCreation(
-                        url = url,
-                        isCreationFlow = true,
-                        title = resourceProvider.getString(R.string.analytics_google_ads_cta_action)
-                    ))
-                }
+            onCallToActionClickListener = { onGoogleAdsCTAClicked() }
+        ).let { newState ->
+            mutableState.update { it.copy(ctaState = newState) }
+        }
+    }
 
-            }
-        )
-        mutableState.update { it.copy(ctaState = newState) }
+    private fun onGoogleAdsCTAClicked() {
+        selectedSite.getOrNull()?.let {
+            it.adminUrlOrDefault + GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+        }?.let { url ->
+            triggerEvent(OpenGoogleAdsCreation(
+                url = url,
+                isCreationFlow = true,
+                title = resourceProvider.getString(R.string.analytics_google_ads_cta_action)
+            ))
+
+            tracker.track(
+                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    KEY_GOOGLEADS_SOURCE to VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
+                )
+            )
+        }
     }
 
     fun onOpenSettings() {
