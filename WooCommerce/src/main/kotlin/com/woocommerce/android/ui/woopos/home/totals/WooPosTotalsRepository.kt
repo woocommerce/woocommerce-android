@@ -25,7 +25,6 @@ class WooPosTotalsRepository @Inject constructor(
         orderCreationJob?.cancel()
 
         return withContext(IO) {
-
             productIds.forEach { productId ->
                 require(productId >= 0) { "Invalid product ID: $productId" }
             }
