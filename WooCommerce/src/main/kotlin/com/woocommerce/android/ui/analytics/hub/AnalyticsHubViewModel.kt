@@ -4,10 +4,14 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_GOOGLEADS_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.BundleStat
@@ -24,11 +28,13 @@ import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.model.StatType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.HiddenState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoSupportedState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsViewEvent.OpenGoogleAdsCreation
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
@@ -112,6 +118,7 @@ class AnalyticsHubViewModel @Inject constructor(
             refreshIndicator = NotShowIndicator,
             analyticsDateRangeSelectorState = AnalyticsHubDateRangeSelectorViewState.EMPTY,
             cards = AnalyticsHubCardViewState.LoadingCardsConfiguration,
+            ctaState = AnalyticsHubUserCallToActionViewState.EMPTY,
             showFeedBackBanner = false,
             lastUpdateTimestamp = ""
         )
@@ -315,6 +322,23 @@ class AnalyticsHubViewModel @Inject constructor(
             }
         }
 
+    private fun updateCardStatus(card: AnalyticsCards, newState: AnalyticsCardViewState) {
+        val cardsInformation = mutableState.value.cards
+        if (cardsInformation is AnalyticsHubCardViewState.CardsState) {
+            val updatedCardState = cardsInformation.cardsState.toMutableList().map { state ->
+                if (state.card == card) {
+                    newState
+                } else {
+                    state
+                }
+            }
+            val updatedInfo = cardsInformation.copy(cardsState = updatedCardState)
+            mutableState.update { viewState ->
+                viewState.copy(cards = updatedInfo)
+            }
+        }
+    }
+
     private fun observeOrdersStatChanges() {
         ordersObservationJob = updateStats.ordersState.onEach { state ->
             when (state) {
@@ -462,9 +486,16 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun observeGoogleAdsChanges() {
         googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
+            updateGoogleAdsCTAVisibility(isVisible = false)
+
             when (state) {
                 is GoogleAdsState.Available -> {
                     updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
+                }
+
+                is GoogleAdsState.Empty -> {
+                    updateGoogleAdsCTAVisibility(isVisible = true)
+                    updateCardStatus(AnalyticsCards.GoogleAds, HiddenState(AnalyticsCards.GoogleAds))
                 }
 
                 is GoogleAdsState.Error -> {
@@ -478,23 +509,6 @@ class AnalyticsHubViewModel @Inject constructor(
                 }
             }
         }.launchIn(viewModelScope)
-    }
-
-    private fun updateCardStatus(card: AnalyticsCards, newState: AnalyticsCardViewState) {
-        val cardsInformation = mutableState.value.cards
-        if (cardsInformation is AnalyticsHubCardViewState.CardsState) {
-            val updatedCardState = cardsInformation.cardsState.toMutableList().map { state ->
-                if (state.card == card) {
-                    newState
-                } else {
-                    state
-                }
-            }
-            val updatedInfo = cardsInformation.copy(cardsState = updatedCardState)
-            mutableState.update { viewState ->
-                viewState.copy(cards = updatedInfo)
-            }
-        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -788,6 +802,48 @@ class AnalyticsHubViewModel @Inject constructor(
         sessionObservationJob?.cancel()
         bundlesObservationJob?.cancel()
         giftCardsObservationJob?.cancel()
+    }
+
+    private fun updateGoogleAdsCTAVisibility(isVisible: Boolean) {
+        AnalyticsHubUserCallToActionViewState(
+            title = resourceProvider.getString(R.string.analytics_google_ads_cta_title),
+            description = resourceProvider.getString(R.string.analytics_google_ads_cta_description),
+            callToActionText = resourceProvider.getString(R.string.analytics_google_ads_cta_action),
+            isVisible = isVisible,
+            onCallToActionClickListener = { onGoogleAdsCTAClicked() }
+        ).let { newState ->
+            mutableState.update { it.copy(ctaState = newState) }
+        }
+
+        if (isVisible) {
+            tracker.track(
+                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                properties = mapOf(
+                    KEY_GOOGLEADS_SOURCE to VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
+                )
+            )
+        }
+    }
+
+    private fun onGoogleAdsCTAClicked() {
+        selectedSite.getOrNull()?.let {
+            it.adminUrlOrDefault + GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
+        }?.let { url ->
+            triggerEvent(
+                OpenGoogleAdsCreation(
+                    url = url,
+                    isCreationFlow = true,
+                    title = resourceProvider.getString(R.string.analytics_google_ads_cta_web_view_title)
+                )
+            )
+
+            tracker.track(
+                stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+                properties = mapOf(
+                    KEY_GOOGLEADS_SOURCE to VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
+                )
+            )
+        }
     }
 
     fun onOpenSettings() {
