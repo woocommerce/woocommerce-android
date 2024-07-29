@@ -57,67 +57,71 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
-    fun `given state checkout is paid, when SystemBackClicked passed, then OrderSuccessfullyPaid event should be sent`() = runTest {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.OrderSuccessfullyPaid)
-        )
-        val viewModel = createViewModel()
+    fun `given state checkout is paid, when SystemBackClicked passed, then OrderSuccessfullyPaid event should be sent`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaid)
+            )
+            val viewModel = createViewModel()
 
-        // WHEN
-        viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
 
-        // THEN
-        verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
-        assertThat(viewModel.state.value.screenPositionState)
-            .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty)
-    }
-
-    @Test
-    fun `given state is Checkout NotPaid, when ExitConfirmationDialogDismissed passed, then exit confirmation dialog should be dismissed`() = runTest {
-        // GIVEN
-        whenever(childrenToParentEventReceiver.events).thenReturn(
-            flowOf(ChildToParentEvent.CheckoutClicked(emptyList()))
-        )
-        val viewModel = createViewModel()
-
-        // WHEN
-        viewModel.onUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed)
-
-        // THEN
-        assertThat(viewModel.state.value.exitConfirmationDialog).isNull()
-    }
+            // THEN
+            verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
+            assertThat(viewModel.state.value.screenPositionState)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty)
+        }
 
     @Test
-    fun `given state is Cart Empty, when ExitPosClicked passed, then exit confirmation dialog should be shown`() = runTest {
-        // GIVEN
-        val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
-        whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
-        val viewModel = createViewModel()
+    fun `given state is Checkout NotPaid, when ExitConfirmationDialogDismissed passed, then exit confirmation dialog should be dismissed`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.CheckoutClicked(emptyList()))
+            )
+            val viewModel = createViewModel()
 
-        // WHEN
-        eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed)
 
-        // THEN
-        assertThat(viewModel.state.value.exitConfirmationDialog)
-            .isEqualTo(WooPosExitConfirmationDialog)
-    }
+            // THEN
+            assertThat(viewModel.state.value.exitConfirmationDialog).isNull()
+        }
 
     @Test
-    fun `given state is Cart NotEmpty, when ExitPosClicked passed, then exit confirmation dialog should be shown`() = runTest {
-        // GIVEN
-        val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
-        whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
-        val viewModel = createViewModel()
+    fun `given state is Cart Empty, when ExitPosClicked passed, then exit confirmation dialog should be shown`() =
+        runTest {
+            // GIVEN
+            val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
+            whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
+            val viewModel = createViewModel()
 
-        // WHEN
-        eventsFlow.emit(ChildToParentEvent.CartStatusChanged.NotEmpty)
-        eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
+            // WHEN
+            eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
 
-        // THEN
-        assertThat(viewModel.state.value.exitConfirmationDialog)
-            .isEqualTo(WooPosExitConfirmationDialog)
-    }
+            // THEN
+            assertThat(viewModel.state.value.exitConfirmationDialog)
+                .isEqualTo(WooPosExitConfirmationDialog)
+        }
+
+    @Test
+    fun `given state is Cart NotEmpty, when ExitPosClicked passed, then exit confirmation dialog should be shown`() =
+        runTest {
+            // GIVEN
+            val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
+            whenever(childrenToParentEventReceiver.events).thenReturn(eventsFlow)
+            val viewModel = createViewModel()
+
+            // WHEN
+            eventsFlow.emit(ChildToParentEvent.CartStatusChanged.NotEmpty)
+            eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
+
+            // THEN
+            assertThat(viewModel.state.value.exitConfirmationDialog)
+                .isEqualTo(WooPosExitConfirmationDialog)
+        }
 
     @Test
     fun `when info icon is clicked in products, then display products info dialog`() {
@@ -144,7 +148,9 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).header).isEqualTo(
+        assertThat(
+            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).header
+        ).isEqualTo(
             R.string.woopos_dialog_products_info_heading
         )
     }
@@ -160,7 +166,9 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryMessage).isEqualTo(
+        assertThat(
+            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryMessage
+        ).isEqualTo(
             R.string.woopos_dialog_products_info_primary_message
         )
     }
@@ -176,7 +184,9 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).secondaryMessage).isEqualTo(
+        assertThat(
+            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).secondaryMessage
+        ).isEqualTo(
             R.string.woopos_dialog_products_info_secondary_message
         )
     }
@@ -192,7 +202,9 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryButton.label).isEqualTo(
+        assertThat(
+            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryButton.label
+        ).isEqualTo(
             R.string.woopos_dialog_products_info_button_label
         )
     }
@@ -208,7 +220,11 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertThat((viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).secondaryMessageActionLabel).isEqualTo(
+        assertThat(
+            (
+                viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible
+                ).secondaryMessageActionLabel
+        ).isEqualTo(
             R.string.woopos_dialog_products_info_secondary_message_action_label
         )
     }
