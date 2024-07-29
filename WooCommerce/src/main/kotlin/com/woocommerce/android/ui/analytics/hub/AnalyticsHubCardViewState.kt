@@ -6,8 +6,8 @@ sealed class AnalyticsHubCardViewState(
     open val cardsState: List<AnalyticsCardViewState>
 ) {
     /**
-    A default Loading configuration for when the Analytics Hub has started
-    but the AnalyticCardConfiguration list is still unknown.
+     A default Loading configuration for when the Analytics Hub has started
+     but the AnalyticCardConfiguration list is still unknown.
      */
     data object LoadingCardsConfiguration : AnalyticsHubCardViewState(
         cardsState = listOf(
