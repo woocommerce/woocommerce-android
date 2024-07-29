@@ -201,8 +201,6 @@ private fun WooPosHomeScreen(
             }
         }
 
-        //        TestAnimatedVisibility(state, onHomeUIEvent)
-
         WooPosHomeScreenToolbar(
             modifier = Modifier
                 .padding(24.dp.toAdaptivePadding())
