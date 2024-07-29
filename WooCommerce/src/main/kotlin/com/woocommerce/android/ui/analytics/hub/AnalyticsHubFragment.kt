@@ -136,6 +136,7 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         }
 
         handleNotice(WEBVIEW_RESULT) {
+            viewModel.onRefreshRequested()
             findNavController().navigateSafely(
                 NavGraphMainDirections.actionGlobalGoogleAdsCampaignSuccessBottomSheet()
             )
