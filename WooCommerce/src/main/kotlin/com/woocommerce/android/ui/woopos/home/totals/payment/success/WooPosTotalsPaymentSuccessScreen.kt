@@ -40,7 +40,7 @@ fun WooPosPaymentSuccessScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFBBFFCC)),
+            .background(Color(0xFF98F179)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
