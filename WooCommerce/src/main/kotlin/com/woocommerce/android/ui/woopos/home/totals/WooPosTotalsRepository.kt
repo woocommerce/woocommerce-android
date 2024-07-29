@@ -22,6 +22,10 @@ class WooPosTotalsRepository @Inject constructor(
         orderCreationJob?.cancel()
 
         return withContext(IO) {
+            productIds.forEach { productId ->
+                require(productId >= 0) { "Invalid product ID: $productId" }
+            }
+
             orderCreationJob = async {
                 val order = Order.getEmptyOrder(
                     dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
