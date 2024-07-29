@@ -108,13 +108,16 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_productsTotal"
-        style="@style/Woo.Card.Body.Bold"
+        style="@style/Woo.ListItem.Title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_75"
-        android:layout_marginBottom="@dimen/major_75"
+        android:layout_height="32dp"
+        android:layout_marginVertical="@dimen/major_75"
+        android:background="@drawable/refund_product_item_qty_bg"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:minWidth="42dp"
         app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="@dimen/major_75"
+        android:textAlignment="center"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"
         tools:text="$1.00" />
 
