@@ -486,16 +486,16 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun observeGoogleAdsChanges() {
         googleAdsObservationJob = updateStats.googleAdsState.onEach { state ->
+            updateGoogleAdsCTAVisibility(isVisible = false)
+
             when (state) {
                 is GoogleAdsState.Available -> {
-                    val stats = state.googleAdsStat
-                    if (stats.noCampaignsAvailable) {
-                        updateGoogleAdsCTAVisibility(isVisible = true)
-                        updateCardStatus(AnalyticsCards.GoogleAds, HiddenState(AnalyticsCards.GoogleAds))
-                    } else {
-                        updateGoogleAdsCTAVisibility(isVisible = false)
-                        updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(stats))
-                    }
+                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsDataViewState(state.googleAdsStat))
+                }
+
+                is GoogleAdsState.Empty -> {
+                    updateGoogleAdsCTAVisibility(isVisible = true)
+                    updateCardStatus(AnalyticsCards.GoogleAds, HiddenState(AnalyticsCards.GoogleAds))
                 }
 
                 is GoogleAdsState.Error -> {
