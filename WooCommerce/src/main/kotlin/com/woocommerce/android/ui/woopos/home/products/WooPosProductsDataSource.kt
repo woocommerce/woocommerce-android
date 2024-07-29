@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductListHandler
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -44,6 +45,9 @@ class WooPosProductsDataSource @Inject constructor(
             val remoteProducts = handler.productsFlow.first().filter { it.price != null }
             emit(ProductsResult.Remote(Result.success(remoteProducts)))
         } else {
+            val error = result.exceptionOrNull()
+            val errorMessage = error?.message ?: "Unknown error"
+            WooLog.e(WooLog.T.POS, "Loading simple products failed - $errorMessage", error)
             emit(ProductsResult.Remote(Result.failure(result.exceptionOrNull()!!)))
         }
     }.flowOn(Dispatchers.IO).take(2)
@@ -53,7 +57,10 @@ class WooPosProductsDataSource @Inject constructor(
         if (result.isSuccess) {
             Result.success(handler.productsFlow.first().filter { it.price != null })
         } else {
-            Result.failure(result.exceptionOrNull()!!)
+            val error = result.exceptionOrNull()
+            val errorMessage = error?.message ?: "Unknown error"
+            WooLog.e(WooLog.T.POS, "Loading more products failed - $errorMessage", error)
+            Result.failure(error!!)
         }
     }
 
