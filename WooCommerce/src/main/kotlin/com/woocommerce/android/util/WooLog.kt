@@ -10,6 +10,8 @@ import org.wordpress.android.util.AppLog as WordPressAppLog
  * Simple wrapper for Android log calls, enables registering listeners for log events.
  *
  * Simplified version of [org.wordpress.android.util.AppLog].
+ *
+ * Note: If you want to reference these enum values in tests, you must duplicate them here: WooPosProductsDataSourceTest.kt
  */
 object WooLog {
     // T for Tag
