@@ -540,6 +540,9 @@
     <string name="analytics_item">item</string>
     <string name="analytics_items">items</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s sold</string>
+    <string name="analytics_google_ads_cta_title">Google Campaigns</string>
+    <string name="analytics_google_ads_cta_description">Drive sales and generate more traffic with Google Ads.</string>
+    <string name="analytics_google_ads_cta_action">Add paid campaign</string>
 
     <string name="analytics_wip_title">See your stats, revenue and more from your device!</string>
     <string name="analytics_wip_message">We\'ve been working on making it possible to display significant store information from your device! Could it be better? Please help us improve this feature by sharing your feedback with us</string>
