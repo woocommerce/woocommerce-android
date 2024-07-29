@@ -519,7 +519,8 @@ class AnalyticsRepository @Inject constructor(
             totalsDeltaPercentage = mapGoogleAdsDeltaPercentages(
                 previousRangeResponse,
                 currentRangeResponse
-            )
+            ),
+            isFetchedData = true
         )
     )
 
