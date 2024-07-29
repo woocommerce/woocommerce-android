@@ -1,4 +1,4 @@
-package com.woocommerce.android.e2e.tests.ui
+package com.woocommerce.android
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
