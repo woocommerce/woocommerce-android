@@ -7,6 +7,7 @@ data class AnalyticsViewState(
     val refreshIndicator: RefreshIndicator,
     val analyticsDateRangeSelectorState: AnalyticsHubDateRangeSelectorViewState,
     val cards: AnalyticsHubCardViewState,
+    val ctaState: AnalyticsHubUserCallToActionViewState,
     val showFeedBackBanner: Boolean,
     val lastUpdateTimestamp: String
 )
@@ -18,6 +19,11 @@ sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
     object OpenDateRangeSelector : AnalyticsViewEvent()
     object SendFeedback : AnalyticsViewEvent()
     object OpenSettings : AnalyticsViewEvent()
+    data class OpenGoogleAdsCreation(
+        val url: String,
+        val isCreationFlow: Boolean,
+        val title: String
+    ) : AnalyticsViewEvent()
 }
 
 sealed class RefreshIndicator {
