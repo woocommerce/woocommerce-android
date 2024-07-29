@@ -98,7 +98,7 @@ fun WooPosPaymentSuccessScreen(
             )
             Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
             Text(
-                text = stringResource(R.string.woopos_new_transaction_button),
+                text = stringResource(R.string.woopos_new_order_button),
                 style = MaterialTheme.typography.button,
                 fontWeight = FontWeight.SemiBold,
                 color = Color(0xFF004D40),
