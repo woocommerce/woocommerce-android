@@ -28,7 +28,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.MarginBottomItemDecoration
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment.Companion.WEBVIEW_RESULT
-import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.EntryPointSource.ANALYTICS_HUB
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -218,9 +219,9 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         val direction = NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
             urlToLoad = url,
             title = title,
-            urlComparisonMode = GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL,
+            urlComparisonMode = PARTIAL,
             isCreationFlow = isCreationFlow,
-            entryPointSource = GoogleAdsWebViewViewModel.EntryPointSource.MYSTORE
+            entryPointSource = ANALYTICS_HUB
         )
 
         findNavController().navigateSafely(direction)
