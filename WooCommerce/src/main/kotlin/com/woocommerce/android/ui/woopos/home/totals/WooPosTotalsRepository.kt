@@ -2,20 +2,17 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 
 class WooPosTotalsRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val dateUtils: DateUtils,
-    private val getProductById: WooPosGetProductById,
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
@@ -25,6 +22,10 @@ class WooPosTotalsRepository @Inject constructor(
         orderCreationJob?.cancel()
 
         return withContext(IO) {
+            productIds.forEach { productId ->
+                require(productId >= 0) { "Invalid product ID: $productId" }
+            }
+
             orderCreationJob = async {
                 val order = Order.getEmptyOrder(
                     dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
@@ -35,7 +36,6 @@ class WooPosTotalsRepository @Inject constructor(
                         .groupingBy { it }
                         .eachCount()
                         .map { (productId, quantity) ->
-                            val product = getProductById(productId)
                             Order.Item.EMPTY.copy(
                                 itemId = 0L,
                                 productId = productId,
@@ -43,8 +43,7 @@ class WooPosTotalsRepository @Inject constructor(
                                 quantity = quantity.toFloat(),
                                 total = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 subtotal = EMPTY_TOTALS_SUBTOTAL_VALUE,
-                                price = product?.price ?: BigDecimal.ZERO,
-                                sku = product?.sku.orEmpty(),
+                                price = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 attributesList = emptyList(),
                             )
                         }
