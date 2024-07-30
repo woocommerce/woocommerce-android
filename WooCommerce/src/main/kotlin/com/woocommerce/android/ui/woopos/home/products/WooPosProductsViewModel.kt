@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +14,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -22,6 +25,7 @@ class WooPosProductsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val priceFormat: WooPosFormatPrice,
+    private val preferencesRepository: WooPosPreferencesRepository
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
@@ -64,6 +68,24 @@ class WooPosProductsViewModel @Inject constructor(
                     withPullToRefresh = false
                 )
             }
+
+            WooPosProductsUIEvent.SimpleProductsBannerClosed -> {
+                onSimpleProductsOnlyBannerClosed()
+            }
+
+            WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked -> TODO()
+        }
+    }
+
+    private fun onSimpleProductsOnlyBannerClosed() {
+        viewModelScope.launch {
+            val currentState = _viewState.value as WooPosProductsViewState.Content
+            preferencesRepository.setSimpleProductsOnlyBannerWasHiddenByUser(true)
+            _viewState.value = currentState.copy(
+                bannerState = currentState.bannerState.copy(
+                    isBannerHiddenByUser = true
+                )
+            )
         }
     }
 
@@ -129,6 +151,12 @@ class WooPosProductsViewModel @Inject constructor(
         },
         loadingMore = false,
         reloadingProductsWithPullToRefresh = false,
+        bannerState = WooPosProductsViewState.Content.BannerState(
+            isBannerHiddenByUser = isBannerHiddenByUser(),
+            title = R.string.woopos_banner_simple_products_only_title,
+            message = R.string.woopos_banner_simple_products_only_message,
+            icon = R.drawable.info,
+        ),
     )
 
     private fun onEndOfProductsListReached() {
@@ -172,5 +200,9 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun sendEventToParent(event: ChildToParentEvent) {
         viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
+    }
+
+    private suspend fun isBannerHiddenByUser(): Boolean {
+        return preferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser.first()
     }
 }
