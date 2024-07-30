@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
+import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -44,7 +45,11 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                     finish()
                 }
 
-                else -> error("Unknown request key: $requestKey")
+                else -> {
+                    val errorMessage = "Unknown request key: $requestKey"
+                    WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderActivity - $errorMessage")
+                    error(errorMessage)
+                }
             }
         }
 
@@ -57,7 +62,11 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                     finish()
                 }
 
-                else -> error("Unknown request key: $requestKey")
+                else -> {
+                    val errorMessage = "Unknown request key: $requestKey"
+                    WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderActivity - $errorMessage")
+                    error(errorMessage)
+                }
             }
         }
     }

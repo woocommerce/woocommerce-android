@@ -540,6 +540,10 @@
     <string name="analytics_item">item</string>
     <string name="analytics_items">items</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s sold</string>
+    <string name="analytics_google_ads_cta_title">Google Campaigns</string>
+    <string name="analytics_google_ads_cta_description">Drive sales and generate more traffic with Google Ads.</string>
+    <string name="analytics_google_ads_cta_action">Add paid campaign</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
 
     <string name="analytics_wip_title">See your stats, revenue and more from your device!</string>
     <string name="analytics_wip_message">We\'ve been working on making it possible to display significant store information from your device! Could it be better? Please help us improve this feature by sharing your feedback with us</string>
@@ -4188,6 +4192,12 @@
     <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
+
+    <string name="woopos_banner_simple_products_only_title">Showing simple products only</string>
+    <string name="woopos_banner_simple_products_only_message">Only simple physical products are compatible with POS right now. Other product types, such as variable and virtual, will become available in future updates. </string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Learn more</string>
+    <string name="woopos_banner_simple_products_close_content_description">Close</string>
+    <string name="woopos_banner_simple_products_info_content_description">Info</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>

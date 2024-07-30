@@ -17,6 +17,7 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.showDateRangePicker
@@ -26,6 +27,9 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.MarginBottomItemDecoration
 import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment.Companion.WEBVIEW_RESULT
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.EntryPointSource.ANALYTICS_HUB
+import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,6 +85,12 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
 
     private fun handleEvent(event: MultiLiveEvent.Event) {
         when (event) {
+            is AnalyticsViewEvent.OpenGoogleAdsCreation -> startGoogleAdsWebView(
+                url = event.url,
+                title = event.title,
+                isCreationFlow = event.isCreationFlow
+            )
+
             is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
 
             is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
@@ -124,6 +134,13 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
                 ?.let { viewModel.onNewRangeSelection(it) }
                 ?: viewModel.onCustomDateRangeClicked()
         }
+
+        handleNotice(WEBVIEW_RESULT) {
+            viewModel.onRefreshRequested()
+            findNavController().navigateSafely(
+                NavGraphMainDirections.actionGlobalGoogleAdsCampaignSuccessBottomSheet()
+            )
+        }
     }
 
     private fun bind(view: View) {
@@ -145,15 +162,13 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsDateSelectorCard.updateLastUpdateTimestamp(viewState.lastUpdateTimestamp)
-        when (viewState.cards) {
-            is AnalyticsHubCardViewState.CardsState -> {
-                (binding.cards.adapter as AnalyticsHubCardsAdapter).cardList = viewState.cards.cardsState
-            }
-
-            else -> {}
-        }
+        binding.analyticsCallToActionCard.updateInformation(viewState.ctaState)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
         displayFeedbackBanner(viewState.showFeedBackBanner)
+
+        binding.cards.adapter
+            .run { this as? AnalyticsHubCardsAdapter }
+            ?.cardList = viewState.cards.cardsState
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
@@ -192,5 +207,21 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
             viewLifecycleOwner,
             Lifecycle.State.RESUMED
         )
+    }
+
+    private fun startGoogleAdsWebView(
+        url: String,
+        title: String,
+        isCreationFlow: Boolean
+    ) {
+        val direction = NavGraphMainDirections.actionGlobalGoogleAdsWebViewFragment(
+            urlToLoad = url,
+            title = title,
+            urlComparisonMode = PARTIAL,
+            isCreationFlow = isCreationFlow,
+            entryPointSource = ANALYTICS_HUB
+        )
+
+        findNavController().navigateSafely(direction)
     }
 }
