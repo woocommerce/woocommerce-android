@@ -38,7 +38,7 @@ class UpdateOrdersListByStoreIdTest : BaseUnitTest() {
         getWCOrderListDescriptorWithFiltersBySiteId = getWCOrderListDescriptorWithFiltersBySiteId,
         listStore = listStore,
         ordersStore = ordersStore,
-        storeOrdersListLastUpdate
+        storeOrdersListLastUpdate = storeOrdersListLastUpdate
     )
 
     @Test
