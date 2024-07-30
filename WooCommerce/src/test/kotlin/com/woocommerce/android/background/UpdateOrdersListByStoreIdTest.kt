@@ -1,7 +1,7 @@
 package com.woocommerce.android.background
 
 import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.list.GetWCOrderListDescriptorWithFiltersBySiteId
 import com.woocommerce.android.ui.orders.list.StoreOrdersListLastUpdate
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,19 +22,20 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UpdateOrdersListTest : BaseUnitTest() {
+class UpdateOrdersListByStoreIdTest : BaseUnitTest() {
+    private val defaultSiteId = 3L
     private val defaultListDescriptor = WCOrderListDescriptor(SiteModel().apply { id = 1 })
     private val storeOrdersListLastUpdate: StoreOrdersListLastUpdate = mock()
     private val defaultOrderResponse = List(5) { i ->
         OrderTestUtils.generateOrder().copy(orderId = i.toLong())
     }
 
-    private val getWCOrderListDescriptorWithFilters: GetWCOrderListDescriptorWithFilters = mock()
+    private val getWCOrderListDescriptorWithFiltersBySiteId: GetWCOrderListDescriptorWithFiltersBySiteId = mock()
     private val listStore: ListStore = mock()
     private val ordersStore: WCOrderStore = mock()
 
-    val sut = UpdateOrdersList(
-        getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
+    val sut = UpdateOrdersListByStoreId(
+        getWCOrderListDescriptorWithFiltersBySiteId = getWCOrderListDescriptorWithFiltersBySiteId,
         listStore = listStore,
         ordersStore = ordersStore,
         storeOrdersListLastUpdate
@@ -43,11 +44,11 @@ class UpdateOrdersListTest : BaseUnitTest() {
     @Test
     fun `when fetch orders succeed then persist data and return true`() = testBlocking {
         // Mock dependencies
-        whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(defaultListDescriptor)
+        whenever(getWCOrderListDescriptorWithFiltersBySiteId.invoke(defaultSiteId)).thenReturn(defaultListDescriptor)
         whenever(ordersStore.fetchOrdersListFirstPage(defaultListDescriptor))
             .thenReturn(WooResult(defaultOrderResponse))
 
-        val result = sut()
+        val result = sut(defaultSiteId)
 
         // Assertions
         val expectedIds = defaultOrderResponse.map { it.orderId }
@@ -59,7 +60,7 @@ class UpdateOrdersListTest : BaseUnitTest() {
     @Test
     fun `when fetch orders fails then DON'T persist data and return false`() = testBlocking {
         // Mock dependencies
-        whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(defaultListDescriptor)
+        whenever(getWCOrderListDescriptorWithFiltersBySiteId.invoke(defaultSiteId)).thenReturn(defaultListDescriptor)
         whenever(ordersStore.fetchOrdersListFirstPage(defaultListDescriptor))
             .thenReturn(
                 WooResult(
@@ -67,7 +68,7 @@ class UpdateOrdersListTest : BaseUnitTest() {
                 )
             )
 
-        val result = sut()
+        val result = sut(defaultSiteId)
 
         // Assertions
         val expectedIds = defaultOrderResponse.map { it.orderId }
@@ -79,11 +80,11 @@ class UpdateOrdersListTest : BaseUnitTest() {
     @Test
     fun `when fetch orders succeed but result is null then DON'T persist data and return false`() = testBlocking {
         // Mock dependencies
-        whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(defaultListDescriptor)
+        whenever(getWCOrderListDescriptorWithFiltersBySiteId.invoke(defaultSiteId)).thenReturn(defaultListDescriptor)
         whenever(ordersStore.fetchOrdersListFirstPage(defaultListDescriptor))
             .thenReturn(WooResult(null))
 
-        val result = sut()
+        val result = sut(defaultSiteId)
 
         // Assertions
         val expectedIds = defaultOrderResponse.map { it.orderId }
@@ -95,11 +96,11 @@ class UpdateOrdersListTest : BaseUnitTest() {
     @Test
     fun `when fetch orders succeed but result is empty then DON'T persist data and return true`() = testBlocking {
         // Mock dependencies
-        whenever(getWCOrderListDescriptorWithFilters.invoke()).thenReturn(defaultListDescriptor)
+        whenever(getWCOrderListDescriptorWithFiltersBySiteId.invoke(defaultSiteId)).thenReturn(defaultListDescriptor)
         whenever(ordersStore.fetchOrdersListFirstPage(defaultListDescriptor))
             .thenReturn(WooResult(emptyList()))
 
-        val result = sut()
+        val result = sut(defaultSiteId)
 
         // Assertions
         val expectedIds = defaultOrderResponse.map { it.orderId }

@@ -117,8 +117,12 @@ class NotificationMessageHandler @Inject constructor(
         )
 
         if (notificationModel.isOrderNotification()) {
-            notificationModel.meta?.ids?.order?.let { remoteOrderId ->
-                workManagerScheduler.scheduleOrderUpdate(remoteOrderId)
+            notificationModel.meta?.ids?.let { ids ->
+                val siteId = ids.site
+                val orderId = ids.order
+                if (siteId != null && orderId != null) {
+                    workManagerScheduler.scheduleOrderUpdate(siteId, orderId)
+                }
             }
         }
     }

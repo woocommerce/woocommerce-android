@@ -6,7 +6,7 @@ import javax.inject.Inject
 class WorkManagerScheduler @Inject constructor(
     private val context: Context
 ) {
-    fun scheduleOrderUpdate(remoteOrderId: Long) {
-        OrderNotificationWorker.schedule(context, remoteOrderId)
+    fun scheduleOrderUpdate(siteId: Long, remoteOrderId: Long) {
+        OrderNotificationWorker.schedule(context, siteId, remoteOrderId)
     }
 }

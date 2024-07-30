@@ -17,9 +17,11 @@ class OrderNotificationWorker @AssistedInject constructor(
     private val updateOrderAndOrderList: UpdateOrderAndOrderList
 ) : CoroutineWorker(appContext, workerParams) {
     companion object {
+        const val SITE_ID = "site_id"
         const val ORDER_ID = "order_id"
-        fun schedule(context: Context, remoteOrderId: Long) {
+        fun schedule(context: Context, siteId: Long, remoteOrderId: Long) {
             val dataBuilder = Data.Builder()
+            dataBuilder.putLong(SITE_ID, siteId)
             dataBuilder.putLong(ORDER_ID, remoteOrderId)
             val data = dataBuilder.build()
 
@@ -32,10 +34,11 @@ class OrderNotificationWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
+        val siteId = inputData.getLong(SITE_ID, -1L)
         val orderId = inputData.getLong(ORDER_ID, -1L)
         return when {
             orderId == -1L -> Result.failure()
-            updateOrderAndOrderList(orderId) -> Result.success()
+            updateOrderAndOrderList(siteId, orderId) -> Result.success()
             else -> Result.failure()
         }
     }

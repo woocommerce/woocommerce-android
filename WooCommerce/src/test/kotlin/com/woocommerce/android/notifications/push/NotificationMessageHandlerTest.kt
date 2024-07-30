@@ -184,13 +184,13 @@ class NotificationMessageHandlerTest {
         assertThat(actionCaptor.allValues.map { it.payload }).anySatisfy {
             assertThat(it).isNotInstanceOf(FetchNotificationPayload::class.java)
         }
-        verify(workManagerScheduler, never()).scheduleOrderUpdate(any())
+        verify(workManagerScheduler, never()).scheduleOrderUpdate(any(), any())
     }
 
     @Test
     fun `when order notifications are received, then we should request all orders diff fetch from api`() {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-        verify(workManagerScheduler).scheduleOrderUpdate(any())
+        verify(workManagerScheduler).scheduleOrderUpdate(any(), any())
     }
 
     @Test
