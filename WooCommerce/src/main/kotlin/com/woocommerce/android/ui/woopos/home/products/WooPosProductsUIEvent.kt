@@ -5,4 +5,6 @@ sealed class WooPosProductsUIEvent {
     data object EndOfProductListReached : WooPosProductsUIEvent()
     data object PullToRefreshTriggered : WooPosProductsUIEvent()
     data object ProductsLoadingErrorRetryButtonClicked : WooPosProductsUIEvent()
+    data object SimpleProductsBannerClosed : WooPosProductsUIEvent()
+    data object SimpleProductsBannerLearnMoreClicked : WooPosProductsUIEvent()
 }

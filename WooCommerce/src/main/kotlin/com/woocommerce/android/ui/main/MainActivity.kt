@@ -56,8 +56,6 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
@@ -91,7 +89,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
@@ -780,7 +777,6 @@ class MainActivity :
             when (event) {
                 is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
                 is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                is ViewZendeskTickets -> startZendeskActivity()
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
@@ -927,11 +923,6 @@ class MainActivity :
             remoteNoteId = event.remoteNoteId,
             launchedFromNotification = true
         )
-    }
-
-    private fun startZendeskActivity() {
-        binding.bottomNav.currentPosition = MY_STORE
-        startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
     private fun onRestartActivityEvent(event: RestartActivityEvent) {
