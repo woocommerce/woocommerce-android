@@ -88,7 +88,7 @@ fun WooPosPaymentSuccessScreen(
                 .padding(24.dp.toAdaptivePadding())
                 .fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = Color(0xFF004D40)
+                contentColor = WooColors.md_theme_dark_surface
             ),
             onClick = onNewTransactionClicked
         ) {
