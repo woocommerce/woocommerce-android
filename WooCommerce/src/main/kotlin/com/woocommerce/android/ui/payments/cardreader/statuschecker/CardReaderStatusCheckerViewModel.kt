@@ -82,37 +82,47 @@ class CardReaderStatusCheckerViewModel
     private suspend fun handleOnboardingStatus(param: CardReaderFlowParam) {
         when (val state = cardReaderChecker.getOnboardingState()) {
             is CardReaderOnboardingState.OnboardingCompleted -> {
-                if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
-                    triggerEvent(
-                        NavigateToConnection(
-                            param,
-                            arguments.cardReaderType
-                        )
-                    )
-                } else {
-                    triggerEvent(
-                        StatusCheckerEvent.NavigateToWelcome(
-                            param,
-                            arguments.cardReaderType
-                        )
-                    )
-                }
+                handleOnboardingCompletedState(param)
+            }
+            else -> {
+                handleOnboardingNotCompletedState(param, state)
+            }
+        }
+    }
+
+    private fun handleOnboardingCompletedState(param: CardReaderFlowParam) {
+        if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
+            triggerEvent(
+                NavigateToConnection(
+                    param,
+                    arguments.cardReaderType
+                )
+            )
+        } else {
+            triggerEvent(
+                StatusCheckerEvent.NavigateToWelcome(
+                    param,
+                    arguments.cardReaderType
+                )
+            )
+        }
+    }
+
+    private fun handleOnboardingNotCompletedState(
+        param: CardReaderFlowParam,
+        state: CardReaderOnboardingState
+    ) {
+        when (param) {
+            is CardReaderFlowParam.CardReadersHub, is CardReaderFlowParam.PaymentOrRefund.Refund -> {
+                navigateToOnboardingFailed(param, state, arguments.cardReaderType)
             }
 
-            else -> {
-                when (param) {
-                    is CardReaderFlowParam.CardReadersHub, is CardReaderFlowParam.PaymentOrRefund.Refund -> {
-                        navigateToOnboardingFailed(param, state, arguments.cardReaderType)
-                    }
+            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+                handlePaymentType(param, arguments.cardReaderType, state)
+            }
 
-                    is CardReaderFlowParam.PaymentOrRefund.Payment -> {
-                        handlePaymentType(param, arguments.cardReaderType, state)
-                    }
-
-                    CardReaderFlowParam.WooPosConnection -> {
-                        handleCardReaderConnection(state, param)
-                    }
-                }
+            CardReaderFlowParam.WooPosConnection -> {
+                handleCardReaderConnection(state, param)
             }
         }
     }
