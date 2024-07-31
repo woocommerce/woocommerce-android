@@ -9,6 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.windowHeightSizeClass
 import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.UiDimen
 import com.woocommerce.android.model.UiDimen.UiDimenDPInt
@@ -72,14 +73,14 @@ object UiHelpers {
         }
     }
 
-    fun setImageOrHideInLandscapeOnNonExpandedScreenSizes(
+    fun setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
         imageView: ImageView,
         @DrawableRes resId: Int?,
         setInvisible: Boolean = false
     ) {
         val isLandscape = DisplayUtils.isLandscape(imageView.context)
-        val isExpandedOrBigger = imageView.context.windowSizeClass >= WindowSizeClass.ExpandedAndBigger
-        val shouldShowBasedOnOrientationAndSize = !isLandscape || isExpandedOrBigger
+        val isNotCompact = imageView.context.windowHeightSizeClass >= WindowSizeClass.Medium
+        val shouldShowBasedOnOrientationAndSize = !isLandscape || isNotCompact
         val showImage = resId != null && shouldShowBasedOnOrientationAndSize
         updateVisibility(imageView, showImage, setInvisible)
         resId?.let {
