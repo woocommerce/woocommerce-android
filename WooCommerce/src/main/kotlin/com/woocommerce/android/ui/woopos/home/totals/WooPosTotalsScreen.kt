@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,7 +38,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonLarge
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
@@ -53,27 +57,28 @@ private fun WooPosTotalsScreen(
     state: WooPosTotalsViewState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        when (state) {
-            is WooPosTotalsViewState.Totals -> {
-                TotalsLoaded(
-                    state = state,
-                    onUIEvent = onUIEvent
-                )
+    Box(modifier = modifier) {
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.Totals) {
+            if (state is WooPosTotalsViewState.Totals) {
+                TotalsLoaded(state = state, onUIEvent = onUIEvent)
             }
+        }
 
-            is WooPosTotalsViewState.PaymentSuccess -> {
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentSuccess) {
+            if (state is WooPosTotalsViewState.PaymentSuccess) {
                 WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
+        }
 
-            is WooPosTotalsViewState.Loading -> {
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.Loading) {
+            if (state is WooPosTotalsViewState.Loading) {
                 TotalsLoading()
             }
+        }
 
-            is WooPosTotalsViewState.Error -> {
-                WooPosTotalsErrorScreen(
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.Error) {
+            if (state is WooPosTotalsViewState.Error) {
+                TotalsErrorScreen(
                     errorMessage = state.message,
                     onUIEvent = onUIEvent
                 )
@@ -83,23 +88,32 @@ private fun WooPosTotalsScreen(
 }
 
 @Composable
+private fun StateChangeAnimated(
+    visible: Boolean,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        content = content
+    )
+}
+
+@Composable
 private fun TotalsLoaded(
     state: WooPosTotalsViewState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Column(
             modifier = Modifier
-                .padding(
-                    top = 24.dp.toAdaptivePadding(),
-                    start = 24.dp.toAdaptivePadding(),
-                    end = 24.dp.toAdaptivePadding(),
-                    bottom = 0.dp.toAdaptivePadding()
-                )
                 .weight(1f)
                 .fillMaxWidth()
                 .background(
@@ -117,12 +131,8 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        WooPosButton(
+        WooPosButtonLarge(
             text = stringResource(R.string.woopos_payment_collect_payment_label),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(24.dp.toAdaptivePadding()),
             onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
         )
     }
@@ -132,74 +142,61 @@ private fun TotalsLoaded(
 private fun TotalsGrid(state: WooPosTotalsViewState.Totals) {
     Column(
         modifier = Modifier
-            .border(
-                width = (0.5).dp,
-                color = WooPosTheme.colors.border,
-                shape = RoundedCornerShape(8.dp)
-            )
-            .padding(24.dp)
-            .width(380.dp)
+            .padding(24.dp.toAdaptivePadding())
+            .width(382.dp)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.woopos_payment_subtotal_label),
-                style = MaterialTheme.typography.h6,
-            )
-            Text(
-                text = state.orderSubtotalText,
-                style = MaterialTheme.typography.h6,
-            )
-        }
+        TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_subtotal_label),
+            textTwo = state.orderSubtotalText,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
+
+        TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_tax_label),
+            textTwo = state.orderTaxText,
+        )
 
         Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
-        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
+        Divider(color = WooPosTheme.colors.border, thickness = 1.dp)
 
         Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.woopos_payment_tax_label),
-                style = MaterialTheme.typography.h6,
-            )
-            Text(
-                text = state.orderTaxText,
-                style = MaterialTheme.typography.h6,
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
+        TotalsGridRow(
+            textOne = stringResource(R.string.woopos_payment_total_label),
+            textTwo = state.orderTotalText,
+            styleOne = MaterialTheme.typography.h4,
+            styleTwo = MaterialTheme.typography.h4,
+            fontWeightOne = FontWeight.Medium,
+            fontWeightTwo = FontWeight.Bold,
+        )
+    }
+}
 
-        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
-
-        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Spacer(modifier = Modifier.height(32.dp.toAdaptivePadding()))
-            Text(
-                text = stringResource(R.string.woopos_payment_total_label),
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-            Text(
-                text = state.orderTotalText,
-                style = MaterialTheme.typography.h2,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(modifier = Modifier.height(32.dp.toAdaptivePadding()))
-        }
+@Composable
+private fun TotalsGridRow(
+    textOne: String,
+    textTwo: String,
+    styleOne: TextStyle = MaterialTheme.typography.h5,
+    styleTwo: TextStyle = MaterialTheme.typography.h5,
+    fontWeightOne: FontWeight = FontWeight.Normal,
+    fontWeightTwo: FontWeight = FontWeight.Normal,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = textOne,
+            style = styleOne,
+            fontWeight = fontWeightOne,
+        )
+        Text(
+            text = textTwo,
+            style = styleTwo,
+            fontWeight = fontWeightTwo,
+        )
     }
 }
 
@@ -250,7 +247,7 @@ private fun TotalsLoading() {
 }
 
 @Composable
-private fun WooPosTotalsErrorScreen(
+private fun TotalsErrorScreen(
     errorMessage: String,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
@@ -296,7 +293,7 @@ fun WooPosTotalsScreenLoadingPreview() {
 @WooPosPreview
 fun WooPosTotalsErrorScreenPreview() {
     WooPosTheme {
-        WooPosTotalsErrorScreen(
+        TotalsErrorScreen(
             errorMessage = "An error occurred. Please try again.",
             onUIEvent = {}
         )

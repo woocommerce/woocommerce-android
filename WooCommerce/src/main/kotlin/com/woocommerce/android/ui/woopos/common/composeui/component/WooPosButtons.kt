@@ -44,6 +44,28 @@ fun WooPosButton(
 }
 
 @Composable
+fun WooPosButtonLarge(
+    modifier: Modifier = Modifier,
+    text: String,
+    onClick: () -> Unit,
+) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(160.dp)
+    ) {
+        Text(
+            text = text,
+            color = MaterialTheme.colors.onPrimary,
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
 fun WooPosOutlinedButton(
     modifier: Modifier = Modifier,
     text: String,
@@ -86,6 +108,24 @@ fun WooPosButtonPreview() {
             contentAlignment = Alignment.Center
         ) {
             WooPosButton(
+                text = "Button",
+                onClick = {},
+            )
+        }
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosButtonLargePreview() {
+    WooPosTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            WooPosButtonLarge(
                 text = "Button",
                 onClick = {},
             )
