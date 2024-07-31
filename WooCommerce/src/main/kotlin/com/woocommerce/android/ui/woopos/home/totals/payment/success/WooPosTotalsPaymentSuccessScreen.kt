@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooColors
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
@@ -67,14 +66,14 @@ fun WooPosPaymentSuccessScreen(
                 style = MaterialTheme.typography.h4,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                color = WooColors.md_theme_dark_surface
+                color = MaterialTheme.colors.onSurface
             )
 
             Text(
                 text = stringResource(R.string.woopos_success_screen_total, state.orderTotalText),
                 style = MaterialTheme.typography.subtitle1,
                 textAlign = TextAlign.Center,
-                color = WooColors.md_theme_dark_surface,
+                color = MaterialTheme.colors.onSurface,
                 modifier = Modifier.padding(24.dp.toAdaptivePadding())
             )
 
@@ -88,7 +87,7 @@ fun WooPosPaymentSuccessScreen(
                 .padding(24.dp.toAdaptivePadding())
                 .fillMaxWidth(),
             colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = WooColors.md_theme_dark_surface
+                contentColor = MaterialTheme.colors.onSurface
             ),
             onClick = onNewTransactionClicked
         ) {
@@ -102,7 +101,7 @@ fun WooPosPaymentSuccessScreen(
                 text = stringResource(R.string.woopos_new_order_button),
                 style = MaterialTheme.typography.button,
                 fontWeight = FontWeight.SemiBold,
-                color = WooColors.md_theme_dark_surface,
+                color = MaterialTheme.colors.onSurface,  // Uses the adaptive color scheme
                 textAlign = TextAlign.Center
             )
         }
