@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD_FAILED
@@ -28,6 +29,7 @@ import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.model.PaymentGateway
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.getMaxRefundQuantities
+import com.woocommerce.android.model.getRefundedProductsAmount
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -38,6 +40,7 @@ import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.InputVal
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.HideValidationError
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
+import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundAmountDialog
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundConfirmation
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowValidationError
@@ -179,6 +182,7 @@ class IssueRefundViewModel @Inject constructor(
     private val refundableFeeLineIds: List<Long> /* Fees lines that haven't been refunded */
 
     private val maxRefund: BigDecimal
+    private val availableRefundForProducts: BigDecimal
     private val maxQuantities: Map<Long, Float>
     private val formatCurrency: (BigDecimal) -> String
     private val gateway: PaymentGateway
@@ -202,6 +206,7 @@ class IssueRefundViewModel @Inject constructor(
         refunds = refundStore.getAllRefunds(selectedSite.get(), arguments.orderId).map { it.toAppModel() }
         formatCurrency = currencyFormatter.buildBigDecimalFormatter(order.currency)
         maxRefund = order.total - order.refundTotal
+        availableRefundForProducts = calculateProductTotal(order) - refunds.getRefundedProductsAmount()
         maxQuantities = refunds.getMaxRefundQuantities(order.items)
             .map { (id, quantity) -> id to quantity }
             .toMap()
@@ -494,6 +499,7 @@ class IssueRefundViewModel @Inject constructor(
                     refundStore.createItemsRefund(
                         selectedSite.get(),
                         order.id,
+                        commonState.refundTotal,
                         refundSummaryState.refundReason ?: "",
                         true,
                         gateway.supportsRefunds,
@@ -614,6 +620,24 @@ class IssueRefundViewModel @Inject constructor(
         refundSummaryState = refundSummaryState.copy(isSummaryTextTooLong = currLength > maxLength)
     }
 
+    fun onProductRefundAmountTapped() {
+        triggerEvent(
+            ShowRefundAmountDialog(
+                refundByItemsState.productsRefund,
+                availableRefundForProducts,
+                resourceProvider.getString(
+                    R.string.order_refunds_available_for_refund,
+                    formatCurrency(availableRefundForProducts)
+                )
+            )
+        )
+
+        analyticsTrackerWrapper.track(
+            CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED,
+            mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
+        )
+    }
+
     fun onProductsRefundAmountChanged(newAmount: BigDecimal) {
         refundByItemsState = refundByItemsState.copy(
             productsRefund = newAmount,
@@ -628,7 +652,7 @@ class IssueRefundViewModel @Inject constructor(
         selectedQuantities[uniqueId] = newQuantity
 
         val (subtotal, taxes) = newItems.calculateTotals()
-        val productsRefund = min(max(subtotal + taxes, BigDecimal.ZERO), maxRefund)
+        val productsRefund = min(max(subtotal + taxes, BigDecimal.ZERO), availableRefundForProducts)
 
         val selectButtonTitle = if (areAllItemsSelected) {
             resourceProvider.getString(R.string.order_refunds_items_select_none)
@@ -866,6 +890,8 @@ class IssueRefundViewModel @Inject constructor(
         }
         return availableFeeLines
     }
+
+    private fun calculateProductTotal(order: Order) = order.items.sumByBigDecimal { it.subtotal + it.totalTax }
 
     private fun calculatePartialShippingSubtotal(selectedShippingLinesId: List<Long>): BigDecimal {
         return order.shippingLines

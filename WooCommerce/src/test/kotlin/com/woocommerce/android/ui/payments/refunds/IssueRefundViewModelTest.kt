@@ -381,6 +381,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = any(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -432,6 +433,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = any(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -483,6 +485,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = any(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -800,6 +803,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = any(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -855,6 +859,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
                 refundStore.createItemsRefund(
                     site = any(),
                     orderId = any(),
+                    amount = any(),
                     reason = any(),
                     restockItems = any(),
                     autoRefund = any(),
@@ -924,6 +929,25 @@ class IssueRefundViewModelTest : BaseUnitTest() {
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED,
+                mapOf(AnalyticsTracker.KEY_ORDER_ID to ORDER_ID)
+            )
+        }
+    }
+
+    @Test
+    fun `when product refund amount is tapped, then proper track event is triggered`() {
+        testBlocking {
+            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
+                paymentMethod = "cod",
+                metaData = "[]"
+            )
+            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
+
+            initViewModel()
+            viewModel.onProductRefundAmountTapped()
+
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED,
                 mapOf(AnalyticsTracker.KEY_ORDER_ID to ORDER_ID)
             )
         }

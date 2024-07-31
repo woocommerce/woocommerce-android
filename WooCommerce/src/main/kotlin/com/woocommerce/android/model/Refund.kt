@@ -1,11 +1,14 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.ui.products.ProductHelper
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel.*
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundFeeLine
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundShippingLine
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 import java.util.Date
@@ -115,6 +118,10 @@ fun WCRefundFeeLine.toAppModel(): Refund.FeeLine {
         totalTax = -totalTax, // WCRefundFeeLine.totalTax is NEGATIVE
         total = (total), // WCRefundFeeLine.total is NEGATIVE
     )
+}
+
+fun List<Refund>.getRefundedProductsAmount() = filter { it.items.isNotEmpty() }.sumByBigDecimal {
+    it.items.sumByBigDecimal { item -> item.total }
 }
 
 fun List<Refund>.getNonRefundedProducts(
