@@ -77,7 +77,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = mock(),
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).single()
 
             // Then
@@ -102,7 +103,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
         }
 
@@ -138,7 +140,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
         }
 
@@ -169,7 +172,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
         }
         advanceUntilIdle()
@@ -199,7 +203,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = expectedSubject,
                 description = expectedDescription,
-                extraTags = expectedTags.toList()
+                extraTags = expectedTags.toList(),
+                siteAddress = "siteAddress"
             ).first()
         }
 
@@ -230,7 +235,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -262,7 +268,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -298,7 +305,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = listOf(ZendeskTags.jetpackTag)
+                    extraTags = listOf(ZendeskTags.jetpackTag),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -333,7 +341,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = listOf(ZendeskTags.jetpackTag)
+                    extraTags = listOf(ZendeskTags.jetpackTag),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -369,7 +378,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = listOf(ZendeskTags.jetpackTag)
+                    extraTags = listOf(ZendeskTags.jetpackTag),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -405,7 +415,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = selectedSite,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -437,7 +448,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -469,7 +481,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -504,7 +517,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -534,7 +548,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                     selectedSite = null,
                     subject = "subject",
                     description = "description",
-                    extraTags = emptyList()
+                    extraTags = emptyList(),
+                    siteAddress = "siteAddress"
                 ).first()
             }
 
@@ -547,6 +562,38 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             assertThat(actualRequest.tags).contains(*expectedTags)
         }
 
+    @Test
+    fun `when createRequest is called, then the request is created with the site address`() =
+        testBlocking {
+            // given
+            wooStore.stub {
+                onBlocking { fetchSSR(any()) } doReturn WooResult(model = WCSSRModel(123))
+            }
+            val siteAddress = "www.test.com"
+            val captor = argumentCaptor<CreateRequest>()
+            createSUT()
+
+            // when
+                sut.createRequest(
+                    context = mock(),
+                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                    ticketType = TicketType.MobileApp,
+                    selectedSite = SiteModel(),
+                    subject = "subject",
+                    description = "description",
+                    extraTags = emptyList(),
+                    siteAddress = siteAddress
+                ).first()
+
+            // then
+            verify(requestProvider).createRequest(captor.capture(), any())
+
+            val customFields = captor.firstValue.customFields
+            assertThat(customFields).anySatisfy {
+                assertThat(it.id).isEqualTo(TicketCustomField.siteAddress)
+                assertThat(it.valueString).isEqualTo(siteAddress)
+            }
+        }
     @Test
     fun `given the ssr report is returned and site is selected, when creating the request, attach ssr`() =
         testBlocking {
@@ -565,7 +612,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = SiteModel(),
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
 
             // then
@@ -592,7 +640,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = null,
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
 
             // then
@@ -627,7 +676,8 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 selectedSite = SiteModel(),
                 subject = "subject",
                 description = "description",
-                extraTags = emptyList()
+                extraTags = emptyList(),
+                siteAddress = "siteAddress"
             ).first()
 
             // then
