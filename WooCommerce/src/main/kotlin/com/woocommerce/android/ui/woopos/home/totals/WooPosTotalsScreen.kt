@@ -26,8 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,10 +43,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
@@ -111,11 +105,6 @@ private fun TotalsLoaded(
     state: WooPosTotalsViewState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
-    val uiScope = rememberCoroutineScope()
-    val debouncedCollectPaymentClick = rememberDebouncedClickHandler(uiScope, 3000L) {
-        onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -144,7 +133,7 @@ private fun TotalsLoaded(
 
         WooPosButtonLarge(
             text = stringResource(R.string.woopos_payment_collect_payment_label),
-            onClick = { debouncedCollectPaymentClick(Unit) },
+            onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
         )
     }
 }
@@ -308,23 +297,5 @@ fun WooPosTotalsErrorScreenPreview() {
             errorMessage = "An error occurred. Please try again.",
             onUIEvent = {}
         )
-    }
-}
-
-@Composable
-fun rememberDebouncedClickHandler(scope: CoroutineScope, debounceTime: Long, action: (Unit) -> Unit): (Unit) -> Unit {
-    return remember(scope, debounceTime) {
-        debounce(debounceTime, scope, action)
-    }
-}
-
-fun <T> debounce(waitMs: Long, scope: CoroutineScope, destinationFunction: (T) -> Unit): (T) -> Unit {
-    var debounceJob: Job? = null
-    return { param: T ->
-        debounceJob?.cancel()
-        debounceJob = scope.launch {
-            delay(waitMs)
-            destinationFunction(param)
-        }
     }
 }
