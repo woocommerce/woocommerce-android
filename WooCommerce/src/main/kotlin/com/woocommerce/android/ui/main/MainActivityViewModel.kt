@@ -117,7 +117,6 @@ class MainActivityViewModel @Inject constructor(
             } else {
                 when (localPushId) {
                     it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
-                    it.noteId -> onZendeskNotificationOpened(localPushId, it.noteId.toLong())
                     else -> onSingleNotificationOpened(localPushId, it)
                 }
             }
@@ -177,12 +176,6 @@ class MainActivityViewModel @Inject constructor(
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
             else -> triggerEvent(ViewMyStoreStats)
         }
-    }
-
-    private fun onZendeskNotificationOpened(localPushId: Int, remoteNoteId: Long) {
-        notificationHandler.markNotificationTapped(remoteNoteId)
-        notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
-        triggerEvent(ViewZendeskTickets)
     }
 
     private fun onSingleNotificationOpened(localPushId: Int, notification: Notification) {
@@ -306,7 +299,6 @@ class MainActivityViewModel @Inject constructor(
     object ViewOrderList : Event()
     object ViewReviewList : Event()
     object ViewMyStoreStats : Event()
-    object ViewZendeskTickets : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
     object RequestNotificationsPermission : Event()
