@@ -101,7 +101,7 @@ fun WooPosPaymentSuccessScreen(
                 text = stringResource(R.string.woopos_new_order_button),
                 style = MaterialTheme.typography.button,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colors.onSurface,  // Uses the adaptive color scheme
+                color = MaterialTheme.colors.onSurface,
                 textAlign = TextAlign.Center
             )
         }
