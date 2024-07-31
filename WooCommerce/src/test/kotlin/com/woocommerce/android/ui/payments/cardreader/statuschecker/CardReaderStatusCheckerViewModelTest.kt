@@ -553,6 +553,30 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                 )
         }
 
+    @Test
+    fun `given card reader hub flow and not connected and error, when vm init, then navigates to onboarding with fail`() =
+        testBlocking {
+            // GIVEN
+            val param = CardReaderFlowParam.CardReadersHub()
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
+                dueDate = 0L,
+                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                version = pluginVersion,
+                countryCode = countryCode
+            )
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingError)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isInstanceOf(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java
+                )
+        }
+
     private fun initViewModel(
         param: CardReaderFlowParam,
         cardReaderType: CardReaderType = CardReaderType.EXTERNAL
