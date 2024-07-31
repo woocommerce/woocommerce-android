@@ -200,6 +200,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     ANALYTICS_HUB_VIEW_FULL_REPORT_TAPPED,
     ANALYTICS_HUB_SETTINGS_OPENED,
     ANALYTICS_HUB_SETTINGS_SAVED,
+    ANALYTICS_HUB_CARD_METRIC_SELECTED,
 
     // -- Orders List
     ORDERS_LIST_FILTER,
