@@ -67,7 +67,7 @@ class WooPosTotalsViewModel @Inject constructor(
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.CollectPaymentClicked -> {
-                debounce(DEBOUNCE_TIME_MS) {
+                debounce {
                     viewModelScope.launch {
                         collectPayment()
                     }
@@ -84,14 +84,6 @@ class WooPosTotalsViewModel @Inject constructor(
             is WooPosTotalsUIEvent.RetryOrderCreationClicked -> {
                 createOrderDraft(dataState.value.productIds)
             }
-        }
-    }
-
-    private fun debounce(waitMs: Long, destinationFunction: () -> Unit) {
-        debounceJob?.cancel()
-        debounceJob = viewModelScope.launch {
-            delay(waitMs)
-            destinationFunction()
         }
     }
 
@@ -170,4 +162,12 @@ class WooPosTotalsViewModel @Inject constructor(
         val orderId: Long = EMPTY_ORDER_ID,
         val productIds: List<Long> = emptyList()
     ) : Parcelable
+
+    private fun debounce(destinationFunction: () -> Unit) {
+        debounceJob?.cancel()
+        debounceJob = viewModelScope.launch {
+            delay(DEBOUNCE_TIME_MS)
+            destinationFunction()
+        }
+    }
 }
