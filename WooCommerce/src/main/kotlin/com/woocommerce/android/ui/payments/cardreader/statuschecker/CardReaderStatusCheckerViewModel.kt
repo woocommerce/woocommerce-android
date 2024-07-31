@@ -83,19 +83,96 @@ class CardReaderStatusCheckerViewModel
         when (val state = cardReaderChecker.getOnboardingState()) {
             is CardReaderOnboardingState.OnboardingCompleted -> {
                 if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
-                    triggerEvent(NavigateToConnection(param, arguments.cardReaderType))
+                    triggerEvent(
+                        NavigateToConnection(
+                            param,
+                            arguments.cardReaderType
+                        )
+                    )
                 } else {
-                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, arguments.cardReaderType))
+                    triggerEvent(
+                        StatusCheckerEvent.NavigateToWelcome(
+                            param,
+                            arguments.cardReaderType
+                        )
+                    )
                 }
             }
 
-            else -> triggerEvent(
-                StatusCheckerEvent.NavigateToOnboarding(
-                    CardReaderOnboardingParams.Failed(param, state),
-                    arguments.cardReaderType
-                )
+            else -> {
+                when (param) {
+                    is CardReaderFlowParam.CardReadersHub, is CardReaderFlowParam.PaymentOrRefund.Refund -> {
+                        navigateToOnboardingFailed(param, state, arguments.cardReaderType)
+                    }
+
+                    is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+                        handlePaymentType(param, arguments.cardReaderType, state)
+                    }
+
+                    CardReaderFlowParam.WooPosConnection -> {
+                        if (state is CardReaderOnboardingState.StripeAccountPendingRequirement) {
+                            navigateToConnection(
+                                param,
+                                arguments.cardReaderType
+                            )
+                        } else {
+                            navigateToOnboardingFailed(
+                                param,
+                                state,
+                                arguments.cardReaderType
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun navigateToOnboardingFailed(
+        param: CardReaderFlowParam,
+        state: CardReaderOnboardingState,
+        cardReaderType: CardReaderType
+    ) {
+        triggerEvent(
+            StatusCheckerEvent.NavigateToOnboarding(
+                CardReaderOnboardingParams.Failed(
+                    param,
+                    state
+                ),
+                cardReaderType
+            )
+        )
+    }
+
+    private fun handlePaymentType(
+        param: CardReaderFlowParam.PaymentOrRefund.Payment,
+        cardReaderType: CardReaderType,
+        state: CardReaderOnboardingState,
+    ) {
+        if (
+            param.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS &&
+            state is CardReaderOnboardingState.StripeAccountPendingRequirement
+        ) {
+            navigateToConnection(
+                param,
+                cardReaderType
+            )
+        } else {
+            navigateToOnboardingFailed(
+                param,
+                state,
+                cardReaderType
             )
         }
+    }
+
+    private fun navigateToConnection(param: CardReaderFlowParam, cardReaderType: CardReaderType) {
+        triggerEvent(
+            NavigateToConnection(
+                param,
+                cardReaderType
+            )
+        )
     }
 
     private fun CardReader.toCardReaderType() =
