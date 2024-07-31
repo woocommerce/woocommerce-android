@@ -49,7 +49,8 @@ class ZendeskTicketRepository @Inject constructor(
         selectedSite: SiteModel?,
         subject: String,
         description: String,
-        extraTags: List<String>
+        extraTags: List<String>,
+        siteAddress: String
     ) = callbackFlow {
         if (zendeskSettings.isIdentitySet.not()) {
             trySend(Result.failure(IdentityNotSetException))
@@ -84,7 +85,8 @@ class ZendeskTicketRepository @Inject constructor(
                 ticketType,
                 siteStore.sites,
                 selectedSite,
-                ssr
+                ssr,
+                siteAddress
             )
         }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
 
@@ -118,7 +120,8 @@ class ZendeskTicketRepository @Inject constructor(
         ticketType: TicketType,
         allSites: List<SiteModel>?,
         selectedSite: SiteModel?,
-        ssr: String?
+        ssr: String?,
+        siteAddress: String
     ): List<CustomField> {
         return listOf(
             CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(context)),
@@ -131,7 +134,8 @@ class ZendeskTicketRepository @Inject constructor(
             CustomField(TicketCustomField.appLanguage, envDataSource.deviceLanguage),
             CustomField(TicketCustomField.categoryId, ticketType.categoryName),
             CustomField(TicketCustomField.subcategoryId, ticketType.subcategoryName),
-            CustomField(TicketCustomField.blogList, envDataSource.generateCombinedLogInformationOfSites(allSites))
+            CustomField(TicketCustomField.blogList, envDataSource.generateCombinedLogInformationOfSites(allSites)),
+            CustomField(TicketCustomField.siteAddress, siteAddress)
         )
     }
 
@@ -261,6 +265,7 @@ object TicketCustomField {
     const val currentSite = 360000103103L
     const val appLanguage = 360008583691L
     const val sourcePlatform = 360009311651L
+    const val siteAddress = 22054927L
 }
 
 object ZendeskTags {
