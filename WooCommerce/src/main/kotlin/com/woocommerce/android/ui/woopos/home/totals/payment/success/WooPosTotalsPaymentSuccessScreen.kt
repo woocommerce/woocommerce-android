@@ -92,7 +92,7 @@ fun WooPosPaymentSuccessScreen(
             onClick = onNewTransactionClicked
         ) {
             Icon(
-                modifier = Modifier.size(24.dp.toAdaptivePadding()),
+                modifier = Modifier.size(20.dp.toAdaptivePadding()),
                 painter = painterResource(id = R.drawable.woo_pos_ic_return_home),
                 contentDescription = null
             )
