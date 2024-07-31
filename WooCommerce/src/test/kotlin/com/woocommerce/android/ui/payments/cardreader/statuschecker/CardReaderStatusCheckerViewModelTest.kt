@@ -559,7 +559,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val param = CardReaderFlowParam.CardReadersHub()
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
                 dueDate = 0L,
                 preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
