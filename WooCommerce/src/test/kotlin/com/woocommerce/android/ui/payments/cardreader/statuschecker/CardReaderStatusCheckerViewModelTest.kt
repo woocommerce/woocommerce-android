@@ -22,6 +22,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
@@ -522,6 +523,34 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(vm.event.value)
                 .isInstanceOf(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java)
+        }
+
+    @Test
+    fun `given refund flow and not connected and error, when vm init, then navigates to onboarding with fail`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Refund(orderId = orderId, BigDecimal.TEN)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
+                dueDate = 0L,
+                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                version = pluginVersion,
+                countryCode = countryCode
+            )
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingError)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding(
+                        CardReaderOnboardingParams.Failed(param, onboardingError),
+                        CardReaderType.EXTERNAL
+                    )
+                )
         }
 
     private fun initViewModel(
