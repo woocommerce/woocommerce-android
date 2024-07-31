@@ -20,8 +20,6 @@ val Context.windowSizeClass: WindowSizeClass
 val Context.windowHeightSizeClass: WindowSizeClass
     get() = determineWindowHeightSizeClassByGivenSize(resources.configuration.screenHeightDp)
 
-
-
 private fun determineWindowWidthSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
     return when {
         sizeDp < WindowSizeClass.Compact.maxWidthDp -> WindowSizeClass.Compact
