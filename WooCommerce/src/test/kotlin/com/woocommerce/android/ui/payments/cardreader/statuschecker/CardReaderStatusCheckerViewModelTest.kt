@@ -6,6 +6,7 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
@@ -421,6 +422,37 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                 countryCode
             )
             whenever(appPrefsWrapper.isCardReaderWelcomeDialogShown()).thenReturn(true)
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(
+                        param,
+                        CardReaderType.EXTERNAL
+                    )
+                )
+        }
+
+    @Test
+    fun `given woo pos connection and onboarding failed with stripe pending requirements, when vm init, then navigates to connection`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(
+                orderId = orderId,
+                paymentType = PaymentType.WOO_POS
+            )
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            val onboardingState = CardReaderOnboardingState.StripeAccountPendingRequirement(
+                dueDate = 0L,
+                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                version = pluginVersion,
+                countryCode = countryCode
+            )
             whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
 
             // WHEN
