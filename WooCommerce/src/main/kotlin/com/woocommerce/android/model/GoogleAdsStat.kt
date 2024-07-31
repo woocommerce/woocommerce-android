@@ -1,13 +1,16 @@
 package com.woocommerce.android.model
 
 data class GoogleAdsStat(
-    val googleAdsCampaigns: List<GoogleAdsCampaign>,
+    val googleAdsCampaigns: List<GoogleAdsCampaign>?,
     val totals: GoogleAdsTotals,
     val totalsDeltaPercentage: GoogleAdsTotalsDeltaPercentage
 ) {
+    val noCampaignsAvailable
+        get() = googleAdsCampaigns?.isEmpty() ?: false
+
     companion object {
         val EMPTY = GoogleAdsStat(
-            googleAdsCampaigns = emptyList(),
+            googleAdsCampaigns = null,
             totals = GoogleAdsTotals(
                 sales = 0.0,
                 spend = 0.0,
@@ -48,10 +51,10 @@ data class GoogleAdsTotalsDeltaPercentage(
     val conversionsDelta: DeltaPercentage
 )
 
-enum class StatType {
-    TOTAL_SALES,
-    SPEND,
-    CLICKS,
-    IMPRESSIONS,
-    CONVERSIONS
+enum class StatType(val tracksValue: String) {
+    TOTAL_SALES("sales"),
+    SPEND("spend"),
+    CLICKS("clicks"),
+    IMPRESSIONS("impressions"),
+    CONVERSIONS("conversions")
 }

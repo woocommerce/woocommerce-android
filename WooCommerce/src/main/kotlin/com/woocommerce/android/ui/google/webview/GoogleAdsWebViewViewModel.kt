@@ -56,10 +56,10 @@ class GoogleAdsWebViewViewModel @Inject constructor(
         )
     }
 
-    private val sourceValue = if (viewState.source == EntryPointSource.MORE_MENU) {
-        AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
-    } else {
-        AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+    private val sourceValue = when (viewState.source) {
+        EntryPointSource.MORE_MENU -> AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU
+        EntryPointSource.MYSTORE -> AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+        EntryPointSource.ANALYTICS_HUB -> AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
     }
 
     fun onUrlLoaded(url: String) {
@@ -148,6 +148,6 @@ class GoogleAdsWebViewViewModel @Inject constructor(
     }
 
     enum class EntryPointSource {
-        MORE_MENU, MYSTORE
+        MORE_MENU, MYSTORE, ANALYTICS_HUB
     }
 }

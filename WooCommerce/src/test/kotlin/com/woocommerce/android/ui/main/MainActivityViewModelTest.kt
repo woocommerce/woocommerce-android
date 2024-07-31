@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -65,8 +64,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
         private const val TEST_NEW_REVIEW_REMOTE_NOTE_ID = 5604993863
         private const val TEST_NEW_REVIEW_ID_1 = 4418L
         private const val TEST_NEW_REVIEW_ID_2 = 4418L
-
-        private const val TEST_ZENDESK_PUSH_NOTIFICATION_ID = 1999999999
     }
 
     private lateinit var viewModel: MainActivityViewModel
@@ -95,15 +92,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
         uniqueId = TEST_NEW_REVIEW_ID_1,
         channelType = NotificationChannelType.REVIEW,
         noteType = WooNotificationType.PRODUCT_REVIEW
-    )
-
-    private val testZendeskNotification = NotificationTestUtils.generateTestNotification(
-        noteId = TEST_ZENDESK_PUSH_NOTIFICATION_ID,
-        remoteNoteId = TEST_ZENDESK_PUSH_NOTIFICATION_ID.toLong(),
-        remoteSiteId = siteModel.siteId,
-        uniqueId = 0,
-        channelType = NotificationChannelType.OTHER,
-        noteType = WooNotificationType.ZENDESK
     )
 
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
@@ -239,24 +227,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a new zendesk notification is clicked, then the my tickets screen of zendesk is opened`() {
-        var event: ViewZendeskTickets? = null
-        viewModel.event.observeForever {
-            if (it is ViewZendeskTickets) event = it
-        }
-
-        viewModel.handleIncomingNotification(TEST_ZENDESK_PUSH_NOTIFICATION_ID, testZendeskNotification)
-
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(
-            eq(testZendeskNotification.remoteNoteId)
-        )
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationByNotificationIdFromSystemsBar(
-            eq(TEST_ZENDESK_PUSH_NOTIFICATION_ID)
-        )
-        assertThat(event).isEqualTo(ViewZendeskTickets)
-    }
-
-    @Test
     fun `when multiple order notifications for the same store is clicked, then the order list screen is opened`() {
         val groupOrderPushId = testOrderNotification.getGroupPushId()
         var event: ViewOrderList? = null
@@ -330,25 +300,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 reviewNotification2
             )
         )
-    }
-
-    @Test
-    fun `when multiple zendesk notifications is clicked, then the my store tab is opened`() {
-        val localPushId = testZendeskNotification.getGroupPushId()
-        var event: ViewMyStoreStats? = null
-        viewModel.event.observeForever {
-            if (it is ViewMyStoreStats) event = it
-        }
-
-        viewModel.handleIncomingNotification(localPushId, testZendeskNotification)
-        verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
-            eq(testZendeskNotification.channelType)
-        )
-        verify(notificationMessageHandler, atLeastOnce()).removeNotificationsOfTypeFromSystemsBar(
-            eq(testZendeskNotification.channelType),
-            eq(testZendeskNotification.remoteSiteId)
-        )
-        assertThat(event).isEqualTo(ViewMyStoreStats)
     }
 
     @Test

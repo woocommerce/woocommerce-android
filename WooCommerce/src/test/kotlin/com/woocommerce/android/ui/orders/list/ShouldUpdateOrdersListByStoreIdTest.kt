@@ -14,7 +14,7 @@ import org.mockito.kotlin.whenever
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ShouldUpdateOrdersListTest : BaseUnitTest() {
+class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
     private val lastUpdateDataStore: LastUpdateDataStore = mock()
     val sut = ShouldUpdateOrdersList(lastUpdateDataStore)
 
