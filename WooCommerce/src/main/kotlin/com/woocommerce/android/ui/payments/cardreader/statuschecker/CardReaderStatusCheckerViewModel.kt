@@ -110,21 +110,28 @@ class CardReaderStatusCheckerViewModel
                     }
 
                     CardReaderFlowParam.WooPosConnection -> {
-                        if (state is CardReaderOnboardingState.StripeAccountPendingRequirement) {
-                            navigateToConnection(
-                                param,
-                                arguments.cardReaderType
-                            )
-                        } else {
-                            navigateToOnboardingFailed(
-                                param,
-                                state,
-                                arguments.cardReaderType
-                            )
-                        }
+                        handleCardReaderConnection(state, param)
                     }
                 }
             }
+        }
+    }
+
+    private fun handleCardReaderConnection(
+        state: CardReaderOnboardingState,
+        param: CardReaderFlowParam
+    ) {
+        if (state is CardReaderOnboardingState.StripeAccountPendingRequirement) {
+            navigateToConnection(
+                param,
+                arguments.cardReaderType
+            )
+        } else {
+            navigateToOnboardingFailed(
+                param,
+                state,
+                arguments.cardReaderType
+            )
         }
     }
 
