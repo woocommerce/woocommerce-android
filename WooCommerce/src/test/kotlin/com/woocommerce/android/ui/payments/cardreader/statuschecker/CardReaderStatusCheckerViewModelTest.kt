@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
@@ -558,6 +559,31 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val param = CardReaderFlowParam.CardReadersHub()
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
+                dueDate = 0L,
+                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                version = pluginVersion,
+                countryCode = countryCode
+            )
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingError)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isInstanceOf(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java
+                )
+        }
+
+    @Test
+    fun `given payment flow during IPP and not connected and error, when vm init, then navigates to onboarding with fail`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = SIMPLE)
             whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
                 dueDate = 0L,
