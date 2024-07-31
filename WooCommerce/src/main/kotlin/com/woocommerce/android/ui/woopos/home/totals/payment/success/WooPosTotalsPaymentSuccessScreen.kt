@@ -85,7 +85,7 @@ fun WooPosPaymentSuccessScreen(
         OutlinedButton(
             modifier = Modifier
                 .padding(24.dp.toAdaptivePadding())
-                .fillMaxWidth(),
+                .width(600.dp.toAdaptivePadding()),
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = MaterialTheme.colors.onSurface
             ),
