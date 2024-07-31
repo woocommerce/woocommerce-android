@@ -229,7 +229,12 @@ class UpdateAnalyticsHubStats @Inject constructor(
     ) = async {
         analyticsRepository.fetchGoogleAdsStats(rangeSelection)
             .run { this as? AnalyticsRepository.GoogleAdsResult.GoogleAdsData }
-            ?.let { _googleAdsState.value = GoogleAdsState.Available(it.googleAdsStat) }
-            ?: _googleAdsState.update { GoogleAdsState.Error }
+            ?.let {
+                if (it.googleAdsStat.noCampaignsAvailable) {
+                    _googleAdsState.value = GoogleAdsState.Empty
+                } else {
+                    _googleAdsState.value = GoogleAdsState.Available(it.googleAdsStat)
+                }
+            } ?: _googleAdsState.update { GoogleAdsState.Error }
     }
 }

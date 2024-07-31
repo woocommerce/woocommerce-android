@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.cardreader
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity.Companion.WOO_POS_CARD_READER_MODE_KEY
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -22,7 +23,11 @@ class WooPosCardReaderViewModel @Inject constructor(
                 }
             }
 
-            null -> error("WooPosCardReaderMode not found in savedStateHandle")
+            null -> {
+                val errorMessage = "WooPosCardReaderMode not found in savedStateHandle"
+                WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderViewModel - $errorMessage")
+                error(errorMessage)
+            }
         }
     }
 }
