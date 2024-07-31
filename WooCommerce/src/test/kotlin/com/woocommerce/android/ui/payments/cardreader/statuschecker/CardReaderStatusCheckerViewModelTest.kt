@@ -511,6 +511,26 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                 .isInstanceOf(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection::class.java)
         }
 
+    @Test
+    fun `given payment flow for woo pos and onboarding failed with error other than stripe pending requirements, when vm init, then navigates to onboarding`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = WOO_POS)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            val onboardingState = CardReaderOnboardingState.StripeAccountRejected(
+                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+            )
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isInstanceOf(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java)
+        }
+
     private fun initViewModel(
         param: CardReaderFlowParam,
         cardReaderType: CardReaderType = CardReaderType.EXTERNAL
