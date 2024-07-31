@@ -737,13 +737,32 @@ class AnalyticsHubViewModel @Inject constructor(
             filterOptions = GoogleStatsFilterOptions
                 .entries.map { resourceProvider.getString(it.resourceId) },
             onFilterSelected = { selectedFilterName ->
-                GoogleStatsFilterOptions
-                    .fromTranslatedString(selectedFilterName, resourceProvider)
-                    ?.toStatsType()
-                    ?.let { buildGoogleAdsDataViewState(googleAdsStats, it) }
-                    ?.let { updateCardStatus(AnalyticsCards.GoogleAds, it) }
+                onGoogleCampaignFilterSelected(googleAdsStats, selectedFilterName)
             }
         )
+    }
+
+    private fun onGoogleCampaignFilterSelected(
+        googleAdsStats: GoogleAdsStat,
+        selectedFilterName: String
+    ) {
+        GoogleStatsFilterOptions
+            .fromTranslatedString(selectedFilterName, resourceProvider)
+            ?.toStatsType()
+            ?.let {
+                updateCardStatus(
+                    card = AnalyticsCards.GoogleAds,
+                    newState = buildGoogleAdsDataViewState(googleAdsStats, it)
+                )
+
+                tracker.track(
+                    AnalyticsEvent.ANALYTICS_HUB_CARD_METRIC_SELECTED,
+                    mapOf(
+                        AnalyticsTracker.KEY_METRIC_CARD to "googleCampaigns",
+                        AnalyticsTracker.KEY_SELECTED_METRIC to it.tracksValue
+                    )
+                )
+            }
     }
 
     private fun trackSelectedDateRange() {
