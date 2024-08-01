@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +22,10 @@ class WooPosHomeViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
+
+    @Rule
+    @JvmField
+    val rule = InstantTaskExecutorRule()
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
@@ -226,6 +232,7 @@ class WooPosHomeViewModelTest {
 
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
-        parentToChildrenEventSender
+        parentToChildrenEventSender,
+        SavedStateHandle()
     )
 }
