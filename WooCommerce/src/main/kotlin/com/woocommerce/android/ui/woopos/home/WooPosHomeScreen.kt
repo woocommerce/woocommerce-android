@@ -128,17 +128,6 @@ private fun WooPosHomeScreen(
         label = "cartOverlayAnimated"
     )
 
-    val totalsStartPaddingAnimatedDp by animateDpAsState(
-        when (state.screenPositionState) {
-            is WooPosHomeState.ScreenPositionState.Cart,
-            WooPosHomeState.ScreenPositionState.Checkout.NotPaid ->
-                0.dp.toAdaptivePadding()
-
-            WooPosHomeState.ScreenPositionState.Checkout.Paid -> 24.dp.toAdaptivePadding()
-        },
-        label = "totalsStartPaddingAnimatedDp"
-    )
-
     val scrollState = buildScrollStateForNavigationBetweenState(state.screenPositionState)
     WooPosHomeScreen(
         state = state,
@@ -147,7 +136,6 @@ private fun WooPosHomeScreen(
         cartWidthDp = cartWidthDp,
         cartOverlayIntensity = cartOverlayIntensityAnimated,
         totalsWidthDp = totalsWidthAnimatedDp,
-        totalsStartPaddingDp = totalsStartPaddingAnimatedDp,
         onHomeUIEvent,
     )
 }
@@ -160,7 +148,6 @@ private fun WooPosHomeScreen(
     cartWidthDp: Dp,
     cartOverlayIntensity: Float,
     totalsWidthDp: Dp,
-    totalsStartPaddingDp: Dp,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -201,7 +188,7 @@ private fun WooPosHomeScreen(
             ) {
                 WooPosHomeScreenTotals(
                     modifier = Modifier
-                        .width(totalsWidthDp - 24.dp.toAdaptivePadding() - totalsStartPaddingDp)
+                        .width(totalsWidthDp)
                 )
             }
         }
