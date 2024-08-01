@@ -26,7 +26,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -34,11 +37,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
@@ -213,29 +218,55 @@ private fun WooPosHomeScreen(
 
 @Composable
 private fun HandleProductsInfoDialog(
-    state: WooPosHomeState.ProductsInfoDialog,
+    state: ProductsInfoDialog,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
-    if (state is WooPosHomeState.ProductsInfoDialog.Visible) {
-        BoxOverlay(state = state) {
+    // isDialogVisible is mainly used to restore dialog after process death
+    var isDialogVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+    isDialogVisible = when (state) {
+        /**
+         * We cannot use false here directly since dialog's state can be hidden for 2 reasons
+         *     1. User explicitly closed the dialog
+         *     2. After process death and activity recreation, dialog's state will be reset to Hidden (Since the initial
+         *     state of the dialog is Hidden)
+         *
+         * In the second case, the isDialogVisible boolean value will be true when the dialog was displayed
+         * before process death happened since it remembers the value across process death.
+         */
+        ProductsInfoDialog.Hidden -> isDialogVisible
+        is ProductsInfoDialog.Visible -> true
+    }
+    if (isDialogVisible) {
+        val currentState = state as? ProductsInfoDialog.Visible ?: ProductsInfoDialog.Visible(
+            header = R.string.woopos_dialog_products_info_heading,
+            primaryMessage = R.string.woopos_dialog_products_info_primary_message,
+            secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
+            primaryButton = ProductsInfoDialog.Visible.PrimaryButton(
+                label = R.string.woopos_dialog_products_info_button_label
+            )
+        )
+        BoxOverlay(state = currentState) {
             // no op
         }
         ProductInfoDialog(
-            state,
+            state = currentState,
             onDismissRequest = {
+                isDialogVisible = false
                 onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
-            },
+            }
         )
     }
 }
 
 @Composable
 private fun BoxOverlay(
-    state: WooPosHomeState.ProductsInfoDialog,
+    state: ProductsInfoDialog,
     onClick: () -> Unit,
 ) {
     AnimatedVisibility(
-        visible = state is WooPosHomeState.ProductsInfoDialog.Visible,
+        visible = state is ProductsInfoDialog.Visible,
         enter = fadeIn(initialAlpha = 0.3f),
         exit = fadeOut(targetAlpha = 0.0f)
     ) {
@@ -319,7 +350,7 @@ fun WooPosHomeCartScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
-                productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden
+                productsInfoDialog = ProductsInfoDialog.Hidden
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},
@@ -334,7 +365,7 @@ fun WooPosHomeCartEmptyScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
-                productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden
+                productsInfoDialog = ProductsInfoDialog.Hidden
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},
@@ -349,7 +380,7 @@ fun WooPosHomeCheckoutScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-                productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden
+                productsInfoDialog = ProductsInfoDialog.Hidden
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},
@@ -364,7 +395,7 @@ fun WooPosHomeCheckoutPaidScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.Paid,
-                productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden
+                productsInfoDialog = ProductsInfoDialog.Hidden
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},
