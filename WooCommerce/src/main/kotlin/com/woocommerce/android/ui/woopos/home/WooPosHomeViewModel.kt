@@ -133,6 +133,7 @@ class WooPosHomeViewModel @Inject constructor(
     }
 
     private fun handleProductsStatusChanged(event: ChildToParentEvent.ProductsStatusChanged) {
+        if (state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout) return
         val newScreenPositionState = when (event) {
             ChildToParentEvent.ProductsStatusChanged.FullScreen -> WooPosHomeState.ScreenPositionState.Cart.Hidden
             ChildToParentEvent.ProductsStatusChanged.WithCart -> {
