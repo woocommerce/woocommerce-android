@@ -7,6 +7,8 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -14,7 +16,8 @@ import dagger.assisted.AssistedInject
 class OrderNotificationWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val updateOrderAndOrderList: UpdateOrderAndOrderList
+    private val updateOrderAndOrderList: UpdateOrderAndOrderList,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : CoroutineWorker(appContext, workerParams) {
     companion object {
         const val SITE_ID = "site_id"
@@ -37,9 +40,16 @@ class OrderNotificationWorker @AssistedInject constructor(
         val siteId = inputData.getLong(SITE_ID, -1L)
         val orderId = inputData.getLong(ORDER_ID, -1L)
         return when {
-            orderId == -1L -> Result.failure()
-            updateOrderAndOrderList(siteId, orderId) -> Result.success()
-            else -> Result.failure()
+            siteId == -1L || orderId == -1L -> Result.success()
+            updateOrderAndOrderList(siteId, orderId) -> {
+                analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNCED)
+                Result.success()
+            }
+
+            else -> {
+                analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNC_ERROR)
+                Result.failure()
+            }
         }
     }
 }
