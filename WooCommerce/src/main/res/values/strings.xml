@@ -4200,6 +4200,12 @@
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
 
+    <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
+    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\nOther product types, such as variable and virtual, will be available in future updates.</string>
+    <string name="woopos_dialog_products_info_secondary_message">To take payment for a non-simple product, exit POS and create a new order from the orders tab.</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Create an order in store management</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
