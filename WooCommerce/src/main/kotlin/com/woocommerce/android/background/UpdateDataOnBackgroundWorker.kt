@@ -41,8 +41,8 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
 
             else -> {
                 val errorDescription = when {
-                    updateAnalyticsDashboardRangeSelectionsResult.not()
-                        && updateOrderListBySelectedStoreResult.not() -> {
+                    updateAnalyticsDashboardRangeSelectionsResult.not() &&
+                        updateOrderListBySelectedStoreResult.not() -> {
                         "Orders & Dashboard stats refresh failed."
                     }
 
