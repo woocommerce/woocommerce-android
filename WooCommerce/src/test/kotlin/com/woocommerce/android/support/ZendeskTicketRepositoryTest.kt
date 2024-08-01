@@ -574,16 +574,16 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
             createSUT()
 
             // when
-                sut.createRequest(
-                    context = mock(),
-                    origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
-                    ticketType = TicketType.MobileApp,
-                    selectedSite = SiteModel(),
-                    subject = "subject",
-                    description = "description",
-                    extraTags = emptyList(),
-                    siteAddress = siteAddress
-                ).first()
+            sut.createRequest(
+                context = mock(),
+                origin = HelpOrigin.LOGIN_HELP_NOTIFICATION,
+                ticketType = TicketType.MobileApp,
+                selectedSite = SiteModel(),
+                subject = "subject",
+                description = "description",
+                extraTags = emptyList(),
+                siteAddress = siteAddress
+            ).first()
 
             // then
             verify(requestProvider).createRequest(captor.capture(), any())
@@ -594,6 +594,7 @@ internal class ZendeskTicketRepositoryTest : BaseUnitTest() {
                 assertThat(it.valueString).isEqualTo(siteAddress)
             }
         }
+
     @Test
     fun `given the ssr report is returned and site is selected, when creating the request, attach ssr`() =
         testBlocking {
