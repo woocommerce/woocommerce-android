@@ -99,7 +99,7 @@ fun WooPosPaymentSuccessScreen(
             Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
             Text(
                 text = stringResource(R.string.woopos_new_order_button),
-                style = MaterialTheme.typography.button,
+                style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colors.onSurface,
                 textAlign = TextAlign.Center
