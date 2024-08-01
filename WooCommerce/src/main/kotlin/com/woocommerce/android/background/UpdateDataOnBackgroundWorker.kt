@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import dagger.assisted.Assisted
@@ -25,10 +26,14 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
+        val startTime = System.currentTimeMillis()
         return when {
             accountRepository.isUserLoggedIn().not() -> Result.success()
             updateAnalyticsDashboardRangeSelections() && updateOrderListBySelectedStore(true) -> {
-                analyticsTrackerWrapper.track(AnalyticsEvent.BACKGROUND_DATA_SYNCED)
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.BACKGROUND_DATA_SYNCED,
+                    mapOf(AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime))
+                )
                 Result.success()
             }
 

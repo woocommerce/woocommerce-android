@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -37,12 +38,16 @@ class OrderNotificationWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
+        val startTime = System.currentTimeMillis()
         val siteId = inputData.getLong(SITE_ID, -1L)
         val orderId = inputData.getLong(ORDER_ID, -1L)
         return when {
             siteId == -1L || orderId == -1L -> Result.success()
             updateOrderAndOrderList(siteId, orderId) -> {
-                analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNCED)
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNCED,
+                    mapOf(AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime))
+                )
                 Result.success()
             }
 
