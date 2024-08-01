@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -14,7 +16,8 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val accountRepository: AccountRepository,
     private val updateAnalyticsDashboardRangeSelections: UpdateAnalyticsDashboardRangeSelections,
-    private val updateOrderListBySelectedStore: UpdateOrderListBySelectedStore
+    private val updateOrderListBySelectedStore: UpdateOrderListBySelectedStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : CoroutineWorker(appContext, workerParams) {
     companion object {
         const val REFRESH_TIME = 4L
@@ -24,8 +27,15 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         return when {
             accountRepository.isUserLoggedIn().not() -> Result.success()
-            updateAnalyticsDashboardRangeSelections() && updateOrderListBySelectedStore(true) -> Result.success()
-            else -> Result.retry()
+            updateAnalyticsDashboardRangeSelections() && updateOrderListBySelectedStore(true) -> {
+                analyticsTrackerWrapper.track(AnalyticsEvent.BACKGROUND_DATA_SYNCED)
+                Result.success()
+            }
+
+            else -> {
+                analyticsTrackerWrapper.track(AnalyticsEvent.BACKGROUND_DATA_SYNC_ERROR)
+                Result.retry()
+            }
         }
     }
 }
