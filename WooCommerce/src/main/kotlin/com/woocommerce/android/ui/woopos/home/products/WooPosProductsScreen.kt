@@ -63,7 +63,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBanner
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding

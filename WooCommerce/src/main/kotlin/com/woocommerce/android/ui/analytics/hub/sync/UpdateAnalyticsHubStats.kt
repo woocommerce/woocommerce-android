@@ -82,7 +82,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
         fetchStrategy: FetchStrategy,
         visibleCards: List<AnalyticsCards>
     ) {
-        val asyncCalls = visibleCards.map { card ->
+        val asyncCalls = visibleCards.mapNotNull { card ->
             when (card) {
                 AnalyticsCards.Revenue -> scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Orders -> scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy)
@@ -229,7 +229,12 @@ class UpdateAnalyticsHubStats @Inject constructor(
     ) = async {
         analyticsRepository.fetchGoogleAdsStats(rangeSelection)
             .run { this as? AnalyticsRepository.GoogleAdsResult.GoogleAdsData }
-            ?.let { _googleAdsState.value = GoogleAdsState.Available(it.googleAdsStat) }
-            ?: _googleAdsState.update { GoogleAdsState.Error }
+            ?.let {
+                if (it.googleAdsStat.noCampaignsAvailable) {
+                    _googleAdsState.value = GoogleAdsState.Empty
+                } else {
+                    _googleAdsState.value = GoogleAdsState.Available(it.googleAdsStat)
+                }
+            } ?: _googleAdsState.update { GoogleAdsState.Error }
     }
 }

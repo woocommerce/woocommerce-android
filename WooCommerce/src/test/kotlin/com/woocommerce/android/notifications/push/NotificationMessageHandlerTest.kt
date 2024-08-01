@@ -2,6 +2,7 @@ package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.background.WorkManagerScheduler
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_2
@@ -33,14 +34,9 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
-import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WCLeaderboardsStore
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 
 class NotificationMessageHandlerTest {
     private lateinit var notificationMessageHandler: NotificationMessageHandler
@@ -48,9 +44,6 @@ class NotificationMessageHandlerTest {
     private val accountModel = AccountModel().apply { userId = 12345 }
     private val accountStore: AccountStore = mock {
         on { account } doReturn accountModel
-    }
-    private val siteStore: SiteStore = mock {
-        on { getSiteBySiteId(any()) } doReturn SiteModel()
     }
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
@@ -72,7 +65,6 @@ class NotificationMessageHandlerTest {
     private val selectedSite: SelectedSite = mock {
         on { exists() }.thenReturn(true)
     }
-    private val topPerformersStore: WCLeaderboardsStore = mock()
 
     private val orderNotificationPayload = NotificationTestUtils.generateTestNewOrderNotificationPayload(
         userId = accountModel.userId
@@ -87,19 +79,20 @@ class NotificationMessageHandlerTest {
     private val reviewNotification = notificationsParser
         .buildNotificationModelFromPayloadMap(reviewNotificationPayload)!!.toAppModel(resourceProvider)
 
+    private val workManagerScheduler: WorkManagerScheduler = mock()
+
     @Before
     fun setUp() {
         notificationMessageHandler = NotificationMessageHandler(
             accountStore = accountStore,
             wooLogWrapper = wooLogWrapper,
             dispatcher = dispatcher,
-            siteStore = siteStore,
             resourceProvider = resourceProvider,
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
             notificationsParser = notificationsParser,
             selectedSite = selectedSite,
-            topPerformersStore = topPerformersStore,
+            workManagerScheduler = workManagerScheduler,
         )
 
         doReturn(true).whenever(accountStore).hasAccessToken()
@@ -191,47 +184,13 @@ class NotificationMessageHandlerTest {
         assertThat(actionCaptor.allValues.map { it.payload }).anySatisfy {
             assertThat(it).isNotInstanceOf(FetchNotificationPayload::class.java)
         }
-    }
-
-    @Test
-    fun `when order notification is received for a non existent site, then do not request all orders diff fetch`() {
-        doReturn(null).whenever(siteStore).getSiteBySiteId(any())
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-
-        verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
-
-        assertThat(actionCaptor.allValues.map { it.payload }).anySatisfy {
-            assertThat(it).isNotInstanceOf(FetchNotificationPayload::class.java)
-        }
-        verify(wooLogWrapper, only()).e(
-            eq(WooLog.T.NOTIFS),
-            eq("Site not found - can't dispatchNewOrderEvents")
-        )
+        verify(workManagerScheduler, never()).scheduleOrderUpdate(any(), any())
     }
 
     @Test
     fun `when order notifications are received, then we should request all orders diff fetch from api`() {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-
-        verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
-
-        assertThat(actionCaptor.allValues.map { it.payload }).anySatisfy {
-            assertThat(it).isInstanceOf(FetchOrderListPayload::class.java)
-            assertThat((it as FetchOrderListPayload).listDescriptor.statusFilter).isNull()
-        }
-    }
-
-    @Test
-    fun `when order notifications are received, then we should request processing orders diff fetch from api`() {
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-
-        verify(dispatcher, atLeastOnce()).dispatch(actionCaptor.capture())
-
-        assertThat(actionCaptor.allValues.map { it.payload }).anySatisfy {
-            assertThat(it).isInstanceOf(FetchOrderListPayload::class.java)
-            assertThat((it as FetchOrderListPayload).listDescriptor.statusFilter)
-                .isEqualTo(CoreOrderStatus.PROCESSING.value)
-        }
+        verify(workManagerScheduler).scheduleOrderUpdate(any(), any())
     }
 
     @Test
@@ -519,12 +478,5 @@ class NotificationMessageHandlerTest {
             eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
             eq(orderNotification)
         )
-    }
-
-    @Test
-    fun `when new order notifications is received, then top performers cache should be invalidated`() {
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-
-        verify(topPerformersStore).invalidateTopPerformers(any())
     }
 }

@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 15:54:07+0000
+Translation-Revision-Date: 2024-07-23 16:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="woopos_cart_empty_subtitle">Toque no produto para\nadicionar ao carrinho</string>
+    <string name="woopos_items_in_cart_multiple">%d itens</string>
+    <string name="woopos_cart_empty_content_description">O carrinho está vazio</string>
+    <string name="woopos_totals_main_error_label">Não foi possível carregar o total</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;Ficou ótimo!&lt;/b&gt; Já sabemos o suficiente, mas você pode dar mais detalhes para ter um resultado ainda melhor.</string>
+    <string name="ai_product_creation_error_media_upload">Não foi possível fazer upload da imagem de produto selecionada.</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;Ficou ótimo!&lt;/b&gt; Onde foi feito?</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;Adicione mais detalhes.&lt;/b&gt; Quanto mais detalhes você der, melhor o conteúdo gerado será.</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;Está melhorando.&lt;/b&gt; Pode descrever o caimento e quaisquer características distintivas do item?</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">Adicione o nome e as principais funcionalidades, benefícios ou detalhes do seu produto para ser mais fácil encontrá-lo online.</string>
+    <string name="product_creation_ai_select_next_option">Selecionar próxima opção</string>
+    <string name="product_creation_ai_select_previous_option">Selecionar opção anterior</string>
+    <string name="product_creation_ai_preview_generate_again">Gerar novamente</string>
+    <string name="product_creation_ai_preview_undo_edits">Desfazer edições</string>
+    <string name="product_creation_ai_preview_variant_selector">Opção %1$d de %2$d</string>
+    <string name="analytics_spend_value">Gasto: %1$s</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">Ver todas as campanhas</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">Criar campanha</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">Cliques</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">Impressões</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">Desempenho da campanha paga</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">Aumente suas vendas e o número de visitas com o Google Ads</string>
+    <string name="my_store_widget_google_ads_title">Campanhas do Google Ads</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">Promova seus produtos na Pesquisa Google, Google Shopping, YouTube, Gmail e muito mais.</string>
     <string name="customers_details_none_hint">Nenhum</string>
     <string name="customers_details_no_phone_hint">Não há números de telefone</string>
     <string name="customers_details_postal_code_value_title">CEP</string>
@@ -37,10 +61,9 @@ Language: pt_BR
     <string name="ai_product_creation_view_image">Visualizar foto</string>
     <string name="product_creation_ai_preview_name_description_sections">Nome, resumo e descrição</string>
     <string name="product_creation_ai_preview_subtitle">Você pode editar ou gerar novamente os detalhes do produto antes de salvar.</string>
-    <string name="product_detail_publish">Publicar</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
     <string name="analytics_google_ads_programs_card_title">Programas</string>
     <string name="analytics_google_ads_no_data">Nenhum programa neste período</string>
+    <string name="analytics_google_ads_card_title">Campanhas do Google</string>
     <string name="woopos_reader_connect_now_button">Conectar agora</string>
     <string name="woopos_cart_title">Carrinho</string>
     <string name="ai_product_creation_generate_details_button">Gerar detalhes do produto</string>
@@ -58,12 +81,12 @@ Language: pt_BR
     <string name="woopos_cart_back_content_description">Ícone do carrinho</string>
     <string name="woopos_products_screen_title">Produtos</string>
     <string name="woopos_product_image_description">Imagem do produto</string>
-    <string name="woopos_items_in_cart">%d itens</string>
-    <string name="woopos_clear_cart_button">Limpar tudo</string>
     <string name="more_menu_button_google_description">Otimizar vendas e aumentar o número de visitas com Google Ads</string>
     <string name="no_quantity_rules">Não há regras de quantidade</string>
     <string name="woopos_payment_collect_payment_label">Receber pagamentos com cartão</string>
     <string name="more_menu_button_google">Google para WooCommerce</string>
+    <string name="woopos_items_in_cart">%d item</string>
+    <string name="woopos_clear_cart_button">Limpar</string>
     <string name="blaze_campaign_preview_audience_section_title">Público</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancelar</string>
     <string name="woopos_exit_confirmation_confirm_button">Sair</string>
@@ -74,7 +97,6 @@ Language: pt_BR
     <string name="woopos_reader_unknown">Status do leitor desconhecido</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_disconnected">Leitor desconectado</string>
-    <string name="woopos_reader_connecting">Conectando o Leitor</string>
     <string name="woopos_reader_connected">Leitor conectado</string>
     <string name="woopos_exit_pos">Sair do PDV</string>
     <string name="dashboard_new_widgets_card_button">Adicionar novas seções</string>

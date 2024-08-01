@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 15:54:04+0000
+Translation-Revision-Date: 2024-07-23 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="woopos_cart_empty_content_description">購物車是空的</string>
+    <string name="woopos_cart_empty_subtitle">點選商品即可\n新增至購物車</string>
+    <string name="woopos_totals_main_error_label">無法載入總金額</string>
+    <string name="woopos_items_in_cart_multiple">%d 個品項</string>
+    <string name="ai_product_creation_error_media_upload">無法上傳所選商品圖片。</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;很棒的提示！&lt;/b&gt;你已提供足夠的工作資料，但歡迎新增更多詳細資料，讓成品更臻完善。</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;很棒的提示！&lt;/b&gt;製造地點在何處？</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;獲得更讚的成果。&lt;/b&gt;你能描述一下此商品的契合度與任何獨門特色嗎？</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;新增更多詳細資料。&lt;/b&gt;你提供的詳細資料越豐富，就能產生更好的詳細資料。</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">新增商品的名稱和主要功能、優點或詳細資料，讓商品更容易在網路上獲得賞識。</string>
+    <string name="product_creation_ai_select_next_option">選取下一個選項</string>
+    <string name="product_creation_ai_select_previous_option">選取上一個選項</string>
+    <string name="product_creation_ai_preview_generate_again">再次產生</string>
+    <string name="product_creation_ai_preview_undo_edits">復原編輯</string>
+    <string name="product_creation_ai_preview_variant_selector">選項 %1$d (共 %2$d 項)</string>
+    <string name="analytics_spend_value">花費：%1$s</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">檢視所有行銷活動</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">建立行銷活動</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">點擊數</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">曝光數</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">付費行銷活動績效</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">在 Google 搜尋、購物、Youtube、Gmail 等處推廣你的商品。</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">運用 Google Ads 刺激銷售額並帶來更多流量</string>
+    <string name="my_store_widget_google_ads_title">Google Ads 行銷活動</string>
     <string name="customers_details_none_hint">無</string>
     <string name="customers_details_no_phone_hint">沒有電話號碼</string>
     <string name="customers_details_postal_code_value_title">郵遞區號</string>
@@ -37,9 +61,8 @@ Language: zh_TW
     <string name="ai_product_creation_view_image">檢視照片</string>
     <string name="product_creation_ai_preview_name_description_sections">名稱、摘要和說明</string>
     <string name="product_creation_ai_preview_subtitle">你可以在儲存前編輯或重新產生商品詳細資料。</string>
-    <string name="product_detail_publish">發表</string>
     <string name="analytics_google_ads_programs_card_title">計畫</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_card_title">Google 行銷活動</string>
     <string name="analytics_google_ads_no_data">此期間沒有計畫</string>
     <string name="woopos_reader_connect_now_button">立即連結</string>
     <string name="woopos_cart_title">購物車</string>
@@ -60,7 +83,7 @@ Language: zh_TW
     <string name="woopos_products_screen_title">商品</string>
     <string name="woopos_product_image_description">商品圖片</string>
     <string name="woopos_items_in_cart">%d 個品項</string>
-    <string name="woopos_clear_cart_button">全部清除</string>
+    <string name="woopos_clear_cart_button">清除</string>
     <string name="more_menu_button_google_description">運用 Google Ads 刺激銷售額並帶來更多流量</string>
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="no_quantity_rules">沒有數量規則</string>
@@ -74,7 +97,6 @@ Language: zh_TW
     <string name="woopos_reader_unknown">讀卡機狀態不明</string>
     <string name="woopos_checkout">結帳</string>
     <string name="woopos_reader_disconnected">讀卡機已中斷連結</string>
-    <string name="woopos_reader_connecting">正在連結讀卡機</string>
     <string name="woopos_reader_connected">已連結讀卡機</string>
     <string name="woopos_exit_pos">結束 POS</string>
     <string name="dashboard_new_widgets_card_button">新增新的區段</string>

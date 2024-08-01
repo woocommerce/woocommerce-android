@@ -127,7 +127,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         uiState.value = buildWooPosTotalsViewState(order)
                     },
                     onFailure = { error ->
-                        WooLog.e(T.ORDERS, "Order creation failed - $error")
+                        WooLog.e(T.POS, "Order creation failed - $error")
                         uiState.value = WooPosTotalsViewState.Error(
                             resourceProvider.getString(R.string.woopos_totals_order_creation_error)
                         )
