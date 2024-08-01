@@ -4,6 +4,10 @@
 -----
 
 
+19.6.1
+-----
+- [***] Fixed a critical bug causing Tap to Pay to crash on Android 14. [https://github.com/woocommerce/woocommerce-android/pull/12184]
+
 19.6
 -----
 - [**] Stats: The Analytics Hub (accessed by tapping "View all store analytics" on the My Store dashboard) now includes analytics for Google Ads campaigns, when the Google Listings & Ads extension is active and connected to Google. [https://github.com/woocommerce/woocommerce-android/pull/12084]
