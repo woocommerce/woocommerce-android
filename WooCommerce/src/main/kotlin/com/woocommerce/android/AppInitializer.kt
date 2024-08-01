@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.background.BackgroundUpdatesDisabled
 import com.woocommerce.android.background.UpdateDataOnBackgroundWorker
 import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.di.AppCoroutineScope
@@ -157,6 +158,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var notificationChannelsHandler: NotificationChannelsHandler
 
+    @Inject lateinit var backgroundUpdatesDisabled: BackgroundUpdatesDisabled
+
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
@@ -245,6 +248,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         trackApplicationOpened()
         if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
             clearRefreshDataPeriodically()
+            backgroundUpdatesDisabled()
         }
 
         if (!connectionReceiverRegistered) {
