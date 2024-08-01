@@ -82,114 +82,20 @@ class CardReaderStatusCheckerViewModel
     private suspend fun handleOnboardingStatus(param: CardReaderFlowParam) {
         when (val state = cardReaderChecker.getOnboardingState()) {
             is CardReaderOnboardingState.OnboardingCompleted -> {
-                handleOnboardingCompletedState(param)
+                if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
+                    triggerEvent(NavigateToConnection(param, arguments.cardReaderType))
+                } else {
+                    triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, arguments.cardReaderType))
+                }
             }
-            else -> {
-                handleOnboardingNotCompletedState(param, state)
-            }
-        }
-    }
 
-    private fun handleOnboardingCompletedState(param: CardReaderFlowParam) {
-        if (appPrefsWrapper.isCardReaderWelcomeDialogShown()) {
-            triggerEvent(
-                NavigateToConnection(
-                    param,
-                    arguments.cardReaderType
-                )
-            )
-        } else {
-            triggerEvent(
-                StatusCheckerEvent.NavigateToWelcome(
-                    param,
+            else -> triggerEvent(
+                StatusCheckerEvent.NavigateToOnboarding(
+                    CardReaderOnboardingParams.Failed(param, state),
                     arguments.cardReaderType
                 )
             )
         }
-    }
-
-    private fun handleOnboardingNotCompletedState(
-        param: CardReaderFlowParam,
-        state: CardReaderOnboardingState
-    ) {
-        when (param) {
-            is CardReaderFlowParam.CardReadersHub, is CardReaderFlowParam.PaymentOrRefund.Refund -> {
-                navigateToOnboardingFailed(param, state, arguments.cardReaderType)
-            }
-
-            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
-                handlePaymentType(param, arguments.cardReaderType, state)
-            }
-
-            CardReaderFlowParam.WooPosConnection -> {
-                handleCardReaderConnection(state, param)
-            }
-        }
-    }
-
-    private fun handleCardReaderConnection(
-        state: CardReaderOnboardingState,
-        param: CardReaderFlowParam
-    ) {
-        if (state is CardReaderOnboardingState.StripeAccountPendingRequirement) {
-            navigateToConnection(
-                param,
-                arguments.cardReaderType
-            )
-        } else {
-            navigateToOnboardingFailed(
-                param,
-                state,
-                arguments.cardReaderType
-            )
-        }
-    }
-
-    private fun navigateToOnboardingFailed(
-        param: CardReaderFlowParam,
-        state: CardReaderOnboardingState,
-        cardReaderType: CardReaderType
-    ) {
-        triggerEvent(
-            StatusCheckerEvent.NavigateToOnboarding(
-                CardReaderOnboardingParams.Failed(
-                    param,
-                    state
-                ),
-                cardReaderType
-            )
-        )
-    }
-
-    private fun handlePaymentType(
-        param: CardReaderFlowParam.PaymentOrRefund.Payment,
-        cardReaderType: CardReaderType,
-        state: CardReaderOnboardingState,
-    ) {
-        if (
-            param.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS &&
-            state is CardReaderOnboardingState.StripeAccountPendingRequirement
-        ) {
-            navigateToConnection(
-                param,
-                cardReaderType
-            )
-        } else {
-            navigateToOnboardingFailed(
-                param,
-                state,
-                cardReaderType
-            )
-        }
-    }
-
-    private fun navigateToConnection(param: CardReaderFlowParam, cardReaderType: CardReaderType) {
-        triggerEvent(
-            NavigateToConnection(
-                param,
-                cardReaderType
-            )
-        )
     }
 
     private fun CardReader.toCardReaderType() =

@@ -7,8 +7,6 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
@@ -440,79 +438,10 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given woo pos connection and onboarding failed with stripe pending requirements, when vm init, then navigates to connection`() =
+    fun `given woo pos connection and onboarding failed with error, when vm init, then navigates to onboarding`() =
         testBlocking {
             // GIVEN
             val param = CardReaderFlowParam.WooPosConnection
-            val onboardingState = CardReaderOnboardingState.StripeAccountPendingRequirement(
-                dueDate = 0L,
-                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
-                version = pluginVersion,
-                countryCode = countryCode
-            )
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
-
-            // WHEN
-            val vm = initViewModel(param)
-
-            // THEN
-            assertThat(vm.event.value)
-                .isEqualTo(
-                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection(
-                        param,
-                        CardReaderType.EXTERNAL
-                    )
-                )
-        }
-
-    @Test
-    fun `given woo pos connection and onboarding failed with error other than stripe pending requirements, when vm init, then navigates to onboarding`() =
-        testBlocking {
-            // GIVEN
-            val param = CardReaderFlowParam.WooPosConnection
-            val onboardingState = CardReaderOnboardingState.StripeAccountRejected(
-                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
-            )
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
-
-            // WHEN
-            val vm = initViewModel(param)
-
-            // THEN
-            assertThat(vm.event.value)
-                .isInstanceOf(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java)
-        }
-
-    @Test
-    fun `given payment flow for woo pos and onboarding failed with stripe pending requirements, when vm init, then navigates to connection`() =
-        testBlocking {
-            // GIVEN
-            val orderId = 1L
-            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = WOO_POS)
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
-            val onboardingState = CardReaderOnboardingState.StripeAccountPendingRequirement(
-                dueDate = 0L,
-                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
-                version = pluginVersion,
-                countryCode = countryCode
-            )
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
-
-            // WHEN
-            val vm = initViewModel(param)
-
-            // THEN
-            assertThat(vm.event.value)
-                .isInstanceOf(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection::class.java)
-        }
-
-    @Test
-    fun `given payment flow for woo pos and onboarding failed with error other than stripe pending requirements, when vm init, then navigates to onboarding`() =
-        testBlocking {
-            // GIVEN
-            val orderId = 1L
-            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = WOO_POS)
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingState = CardReaderOnboardingState.StripeAccountRejected(
                 preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
             )
@@ -559,31 +488,6 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             val param = CardReaderFlowParam.CardReadersHub()
-            val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
-                dueDate = 0L,
-                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
-                version = pluginVersion,
-                countryCode = countryCode
-            )
-            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingError)
-
-            // WHEN
-            val vm = initViewModel(param)
-
-            // THEN
-            assertThat(vm.event.value)
-                .isInstanceOf(
-                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java
-                )
-        }
-
-    @Test
-    fun `given payment flow during IPP and not connected and error, when vm init, then navigates to onboarding with fail`() =
-        testBlocking {
-            // GIVEN
-            val orderId = 1L
-            val param = CardReaderFlowParam.PaymentOrRefund.Payment(orderId = orderId, paymentType = SIMPLE)
-            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
             val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
                 dueDate = 0L,
                 preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
