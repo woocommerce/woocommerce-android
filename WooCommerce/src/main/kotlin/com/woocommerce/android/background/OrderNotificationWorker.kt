@@ -52,7 +52,12 @@ class OrderNotificationWorker @AssistedInject constructor(
             }
 
             else -> {
-                analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNC_ERROR)
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNC_ERROR,
+                    errorContext = this.javaClass.simpleName,
+                    errorType = "ORDER_NOTIFICATION_SYNCED_ERROR",
+                    errorDescription = "Orders refresh failed."
+                )
                 Result.failure()
             }
         }
