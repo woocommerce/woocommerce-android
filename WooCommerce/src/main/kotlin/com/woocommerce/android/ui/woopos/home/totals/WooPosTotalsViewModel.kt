@@ -39,7 +39,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
-        private const val DEBOUNCE_TIME_MS = 3000L
+        private const val DEBOUNCE_TIME_MS = 800L
         private const val KEY_STATE = "woo_pos_totals_data_state"
         private val InitialState = WooPosTotalsViewState.Loading
     }
@@ -164,10 +164,12 @@ class WooPosTotalsViewModel @Inject constructor(
     ) : Parcelable
 
     private fun debounce(destinationFunction: () -> Unit) {
-        debounceJob?.cancel()
+        if (debounceJob?.isActive == true) {
+            return
+        }
         debounceJob = viewModelScope.launch {
-            delay(DEBOUNCE_TIME_MS)
             destinationFunction()
+            delay(DEBOUNCE_TIME_MS)
         }
     }
 }
