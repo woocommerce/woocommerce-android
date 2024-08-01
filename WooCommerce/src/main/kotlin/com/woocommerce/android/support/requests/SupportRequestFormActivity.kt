@@ -65,6 +65,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
         binding.requestSubject.setOnTextChangedListener { viewModel.onSubjectChanged(it.toString()) }
+        binding.requestSiteAddress.setOnTextChangedListener { viewModel.onSiteAddressChanged(it.toString()) }
         binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
         binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
             when (selectionID) {

@@ -28,6 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -42,10 +44,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -88,6 +92,9 @@ fun WooPosProductsScreen(modifier: Modifier = Modifier) {
         onSimpleProductsBannerLearnMoreClicked = {
             productsViewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked)
         },
+        onToolbarInfoIconClicked = {
+            productsViewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked)
+        },
     )
 }
 
@@ -102,6 +109,7 @@ private fun WooPosProductsScreen(
     onRetryClicked: () -> Unit,
     onSimpleProductsBannerClosed: () -> Unit,
     onSimpleProductsBannerLearnMoreClicked: () -> Unit,
+    onToolbarInfoIconClicked: () -> Unit,
 ) {
     val state = productsStateFlow.collectAsState()
     val pullToRefreshState = rememberPullRefreshState(state.value.reloadingProductsWithPullToRefresh, onPullToRefresh)
@@ -126,12 +134,7 @@ private fun WooPosProductsScreen(
 
                 is WooPosProductsViewState.Content -> MaterialTheme.colors.onSurface
             }
-            Text(
-                text = stringResource(id = R.string.woopos_products_screen_title),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold,
-                color = titleColor
-            )
+            ProductsToolbar(state.value, modifier, titleColor, onToolbarInfoIconClicked)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -165,6 +168,49 @@ private fun WooPosProductsScreen(
             refreshing = state.value.reloadingProductsWithPullToRefresh,
             state = pullToRefreshState
         )
+    }
+}
+
+@Composable
+private fun ProductsToolbar(
+    productViewState: WooPosProductsViewState,
+    modifier: Modifier,
+    titleColor: Color,
+    onToolbarInfoIconClicked: () -> Unit,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(id = R.string.woopos_products_screen_title),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+            color = titleColor,
+        )
+        when (productViewState) {
+            is WooPosProductsViewState.Content -> {
+                if (productViewState.bannerState.isBannerHiddenByUser) {
+                    IconButton(
+                        modifier = Modifier.size(40.dp),
+                        onClick = {
+                            onToolbarInfoIconClicked()
+                        }
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.info),
+                            contentDescription = stringResource(
+                                id = R.string.woopos_banner_simple_products_info_content_description
+                            ),
+                            tint = MaterialTheme.colors.primary,
+                        )
+                    }
+                }
+            }
+            else -> {
+                // no op
+            }
+        }
     }
 }
 
@@ -474,6 +520,7 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
             onRetryClicked = {},
             onSimpleProductsBannerClosed = {},
             onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -492,6 +539,7 @@ fun WooPosProductsScreenLoadingPreview() {
             onRetryClicked = {},
             onSimpleProductsBannerClosed = {},
             onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -510,6 +558,7 @@ fun WooPosProductsScreenEmptyListPreview() {
             onRetryClicked = {},
             onSimpleProductsBannerClosed = {},
             onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -528,6 +577,7 @@ fun WooPosProductsScreenErrorPreview() {
             onRetryClicked = {},
             onSimpleProductsBannerClosed = {},
             onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
@@ -579,6 +629,59 @@ fun WooPosHomeScreenProductsWithSimpleProductsOnlyBannerPreview() {
             onRetryClicked = {},
             onSimpleProductsBannerClosed = {},
             onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+@WooPosPreview
+fun WooPosHomeScreenProductsWithInfoIconInToolbarPreview() {
+    val productState = MutableStateFlow(
+        WooPosProductsViewState.Content(
+            products = listOf(
+                WooPosProductsListItem(
+                    1,
+                    name = "Product 1, Product 1, Product 1, " +
+                        "Product 1, Product 1, Product 1, Product 1, Product 1" +
+                        "Product 1, Product 1, Product 1, Product 1, Product 1",
+                    price = "10.0$",
+                    imageUrl = null,
+                ),
+                WooPosProductsListItem(
+                    2,
+                    name = "Product 2",
+                    price = "2000.00$",
+                    imageUrl = null,
+                ),
+                WooPosProductsListItem(
+                    3,
+                    name = "Product 3",
+                    price = "1.0$",
+                    imageUrl = null,
+                ),
+            ),
+            loadingMore = false,
+            reloadingProductsWithPullToRefresh = false,
+            bannerState = WooPosProductsViewState.Content.BannerState(
+                isBannerHiddenByUser = true,
+                title = R.string.woopos_banner_simple_products_only_title,
+                message = R.string.woopos_banner_simple_products_only_message,
+                icon = R.drawable.info,
+            )
+        )
+    )
+    WooPosTheme {
+        WooPosProductsScreen(
+            productsStateFlow = productState,
+            onItemClicked = {},
+            onEndOfProductListReached = {},
+            onPullToRefresh = {},
+            onRetryClicked = {},
+            onSimpleProductsBannerClosed = {},
+            onSimpleProductsBannerLearnMoreClicked = {},
+            onToolbarInfoIconClicked = {},
         )
     }
 }
