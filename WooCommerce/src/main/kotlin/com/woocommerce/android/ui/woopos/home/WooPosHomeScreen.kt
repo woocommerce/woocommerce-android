@@ -227,13 +227,12 @@ private fun HandleProductsInfoDialog(
     }
     isDialogVisible = when (state) {
         /**
-         * We cannot use false here directly since dialog's state can be hidden for 2 reasons
-         *     1. User explicitly closed the dialog
-         *     2. After process death and activity recreation, dialog's state will be reset to Hidden (Since the initial
-         *     state of the dialog is Hidden)
+         * We can't set isDialogVisible to false directly because the dialog's state can be hidden for two different reasons:
+         * 1. The user explicitly closed the dialog.
+         * 2. After a process death and activity recreation, the dialog's state is reset to Hidden, as its initial state is Hidden.
          *
-         * In the second case, the isDialogVisible boolean value will be true when the dialog was displayed
-         * before process death happened since it remembers the value across process death.
+         * In the second scenario, isDialogVisible will be true if the dialog was visible before the process death,
+         * since rememberSaveable retains this value across process death and activity recreation.
          */
         ProductsInfoDialog.Hidden -> isDialogVisible
         is ProductsInfoDialog.Visible -> true
