@@ -6,6 +6,7 @@
 - [*] Fix broken in-person payments illustrations in landscape mode. [https://github.com/woocommerce/woocommerce-android/pull/12179]
 - [*] [Internal] Fixed an ANR related to the Zendesk SDK initialization [https://github.com/woocommerce/woocommerce-android/pull/12153]
 - [*] Contact Support Form: Added a field to enter the Site Address. [https://github.com/woocommerce/woocommerce-android/pull/12180]
+- [*] [Internal] Improved login flow to allow signing-in when one of the user's websites is duplicated on WPCom [https://github.com/woocommerce/woocommerce-android/pull/12143]
 
 19.7
 -----
