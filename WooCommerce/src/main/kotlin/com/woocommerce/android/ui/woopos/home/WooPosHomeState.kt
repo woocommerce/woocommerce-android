@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
-import androidx.annotation.StringRes
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
@@ -20,6 +20,7 @@ data class WooPosHomeState(
             sealed class Visible : Cart() {
                 @Parcelize
                 data object Empty : Cart()
+
                 @Parcelize
                 data object NotEmpty : Cart()
             }
@@ -32,13 +33,14 @@ data class WooPosHomeState(
         sealed class Checkout : ScreenPositionState() {
             @Parcelize
             data object NotPaid : Checkout()
+
             @Parcelize
             data object Paid : Checkout()
         }
     }
 
     @Parcelize
-    sealed class ProductsInfoDialog: Parcelable {
+    sealed class ProductsInfoDialog : Parcelable {
         data object Hidden : ProductsInfoDialog()
 
         data class Visible(
@@ -50,19 +52,22 @@ data class WooPosHomeState(
             @Parcelize
             data class PrimaryButton(
                 @StringRes val label: Int,
-            ): Parcelable
+            ) : Parcelable
         }
     }
 }
 
 @Parcelize
-data object WooPosExitConfirmationDialog: Parcelable {
+data object WooPosExitConfirmationDialog : Parcelable {
     @IgnoredOnParcel
     val title: Int = R.string.woopos_exit_confirmation_title
+
     @IgnoredOnParcel
     val message: Int = R.string.woopos_exit_confirmation_message
+
     @IgnoredOnParcel
     val confirmButton: Int = R.string.woopos_exit_confirmation_confirm_button
+
     @IgnoredOnParcel
     val dismissButton: Int = R.string.woopos_exit_confirmation_dismiss_button
 }
