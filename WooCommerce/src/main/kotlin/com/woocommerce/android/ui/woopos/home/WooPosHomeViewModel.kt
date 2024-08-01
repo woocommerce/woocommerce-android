@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +17,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val _state = MutableStateFlow(
         WooPosHomeState(
             screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Hidden,
+            productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden,
             exitConfirmationDialog = null
         )
     )
@@ -53,6 +55,12 @@ class WooPosHomeViewModel @Inject constructor(
 
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = _state.value.copy(exitConfirmationDialog = null)
+            }
+
+            WooPosHomeUIEvent.DismissProductsInfoDialog -> {
+                _state.value = _state.value.copy(
+                    productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden
+                )
             }
         }
     }
@@ -102,6 +110,19 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.ProductsStatusChanged -> handleProductsStatusChanged(event)
+
+                    ChildToParentEvent.ProductsDialogInfoIconClicked -> {
+                        _state.value = _state.value.copy(
+                            productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Visible(
+                                header = R.string.woopos_dialog_products_info_heading,
+                                primaryMessage = R.string.woopos_dialog_products_info_primary_message,
+                                secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
+                                primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
+                                    label = R.string.woopos_dialog_products_info_button_label,
+                                )
+                            )
+                        )
+                    }
                 }
             }
         }
