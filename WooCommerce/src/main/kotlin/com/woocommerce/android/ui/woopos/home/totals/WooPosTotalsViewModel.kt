@@ -163,7 +163,7 @@ class WooPosTotalsViewModel @Inject constructor(
         val productIds: List<Long> = emptyList()
     ) : Parcelable
 
-    private fun debounce(destinationFunction: () -> Unit) {
+    private fun debounce(destinationFunction: suspend () -> Unit) {
         if (debounceJob?.isActive == true) {
             return
         }
