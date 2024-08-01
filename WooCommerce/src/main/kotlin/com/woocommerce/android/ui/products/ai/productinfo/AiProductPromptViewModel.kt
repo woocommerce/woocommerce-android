@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +32,8 @@ class AiProductPromptViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val tracker: AnalyticsTrackerWrapper,
     private val textRecognitionEngine: TextRecognitionEngine,
-    private val prefs: AppPrefsWrapper
+    private val prefs: AppPrefsWrapper,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState = savedStateHandle) {
     companion object {
         private const val SUGGESTIONS_BAR_INITIAL_PROGRESS = 0.05F
@@ -140,7 +142,8 @@ class AiProductPromptViewModel @Inject constructor(
         tracker.track(
             AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to isFirstAttempt
+                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to isFirstAttempt,
+                AnalyticsTracker.KEY_FEATURE_WORD_COUNT to _state.value.productPrompt.split(" ").size,
             )
         )
         isFirstAttempt = false
@@ -205,10 +208,20 @@ class AiProductPromptViewModel @Inject constructor(
                 tracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_STARTED_PACKAGE_PHOTO_SELECTION_FLOW)
                 _state.value = _state.value.copy(isMediaPickerDialogVisible = true)
             }
-            ImageAction.Remove -> _state.value = _state.value.copy(
-                selectedImage = null,
-                noTextDetectedMessage = false,
-            )
+
+            ImageAction.Remove -> {
+                val previousState = _state.value
+                _state.value = _state.value.copy(
+                    selectedImage = null,
+                    noTextDetectedMessage = false,
+                )
+                triggerEvent(
+                    Event.ShowUndoSnackbar(
+                        message = resourceProvider.getString(R.string.ai_product_creation_photo_removed),
+                        undoAction = { _state.value = previousState }
+                    )
+                )
+            }
         }
     }
 

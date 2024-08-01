@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.model.Image
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.ShowMediaDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,6 +37,8 @@ class AiProductPromptFragment : BaseFragment(), MediaPickerResultHandler {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    private var undoSnackBar: Snackbar? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -58,6 +62,16 @@ class AiProductPromptFragment : BaseFragment(), MediaPickerResultHandler {
                 Exit -> findNavController().navigateUp()
                 is ShowMediaDialog -> mediaPickerHelper.showMediaPicker(event.source)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.ShowUndoSnackbar -> {
+                    undoSnackBar = uiMessageResolver.getUndoSnack(
+                        message = event.message,
+                        actionListener = event.undoAction
+                    ).also {
+                        it.addCallback(event.dismissAction)
+                        it.show()
+                    }
+                }
+
                 is AiProductPromptViewModel.ShowProductPreviewScreen -> {
                     findNavController().navigate(
                         AiProductPromptFragmentDirections.actionAiProductPromptFragmentToAiProductPreviewFragment(
@@ -68,6 +82,11 @@ class AiProductPromptFragment : BaseFragment(), MediaPickerResultHandler {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        undoSnackBar?.dismiss()
     }
 
     override fun onDeviceMediaSelected(imageUris: List<Uri>, source: String) {

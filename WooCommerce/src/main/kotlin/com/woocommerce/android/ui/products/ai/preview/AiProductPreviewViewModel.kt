@@ -13,12 +13,14 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Image.WPMediaLibraryImage
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.SaveAiGeneratedProduct
 import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -42,7 +44,8 @@ class AiProductPreviewViewModel @Inject constructor(
     private val generateProductWithAI: GenerateProductWithAI,
     private val uploadImage: UploadImage,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val saveAiGeneratedProduct: SaveAiGeneratedProduct
+    private val saveAiGeneratedProduct: SaveAiGeneratedProduct,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DEFAULT_COUNT_OF_VARIANTS = 3
@@ -136,7 +139,17 @@ class AiProductPreviewViewModel @Inject constructor(
     fun onImageActionSelected(action: ImageAction) {
         when (action) {
             ImageAction.View -> imageState.value = imageState.value.copy(showImageFullScreen = true)
-            ImageAction.Remove -> imageState.value = imageState.value.copy(image = null)
+            ImageAction.Remove -> {
+                val previousState = imageState.value
+                imageState.value = imageState.value.copy(image = null)
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowUndoSnackbar(
+                        message = resourceProvider.getString(R.string.ai_product_creation_photo_removed),
+                        undoAction = { imageState.value = previousState }
+                    )
+                )
+            }
+
             else -> error("Unsupported action: $action")
         }
     }
@@ -204,7 +217,8 @@ class AiProductPreviewViewModel @Inject constructor(
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_DETAILS_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to false
+                AnalyticsTracker.KEY_IS_FIRST_ATTEMPT to false,
+                AnalyticsTracker.KEY_FEATURE_WORD_COUNT to navArgs.productFeatures.split(" ").size,
             )
         )
         generateProduct()
@@ -215,51 +229,53 @@ class AiProductPreviewViewModel @Inject constructor(
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         savingProductState.value = SavingProductState.Loading
         viewModelScope.launch {
-            uploadSelectedImage()
+            val image = uploadSelectedImage().onFailure {
+                return@launch
+            }.getOrNull()
             val editedFields = userEditedFields.value
-            val (success, productId) = saveAiGeneratedProduct(
+
+            saveAiGeneratedProduct(
                 product.copy(
                     name = editedFields.names[selectedVariant.value] ?: product.name,
                     description = editedFields.descriptions[selectedVariant.value] ?: product.description,
-                    shortDescription = editedFields.shortDescriptions[selectedVariant.value] ?: product.shortDescription
+                    shortDescription = editedFields.shortDescriptions[selectedVariant.value]
+                        ?: product.shortDescription
                 ),
-                imageState.value.getImage()
-            )
-            if (!success) {
-                savingProductState.value = SavingProductState.Error(
-                    messageRes = R.string.error_generic,
-                    onRetryClick = ::onSaveProductAsDraft,
-                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                )
-                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
-            } else {
-                analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
-                triggerEvent(NavigateToProductDetailScreen(productId))
-                savingProductState.value = SavingProductState.Success
-            }
-        }
-    }
-
-    private suspend fun uploadSelectedImage() {
-        imageState.value.image
-            ?.let { uploadImage(it) }
-            ?.fold(
-                onSuccess = {
-                    imageState.value = imageState.value.copy(
-                        image = WPMediaLibraryImage(content = it)
-                    )
+                image
+            ).fold(
+                onSuccess = { productId ->
+                    savingProductState.value = SavingProductState.Success
+                    triggerEvent(NavigateToProductDetailScreen(productId))
+                    analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
                 },
                 onFailure = {
                     savingProductState.value = SavingProductState.Error(
-                        messageRes = R.string.ai_product_creation_error_media_upload,
+                        messageRes = R.string.error_generic,
                         onRetryClick = ::onSaveProductAsDraft,
                         onDismissClick = { savingProductState.value = SavingProductState.Idle }
                     )
+                    analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
                 }
             )
+        }
     }
 
-    private fun ImageState.getImage() = (image as? WPMediaLibraryImage)?.content
+    private suspend fun uploadSelectedImage(): Result<Product.Image?> {
+        val image = imageState.value.image ?: return Result.success(null)
+        return uploadImage(image)
+            .onSuccess {
+                imageState.value = imageState.value.copy(
+                    image = WPMediaLibraryImage(content = it)
+                )
+            }
+            .onFailure {
+                savingProductState.value = SavingProductState.Error(
+                    messageRes = R.string.ai_product_creation_error_media_upload,
+                    onRetryClick = ::onSaveProductAsDraft,
+                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
+                )
+            }
+    }
 
     private fun trackUndoEditClick(field: String) {
         analyticsTracker.track(

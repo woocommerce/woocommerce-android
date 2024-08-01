@@ -9,8 +9,10 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,23 +26,18 @@ class WooPosProductsViewModel @Inject constructor(
 
     private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
+        .onEach { notifyParentAboutStatusChange(it) }
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = _viewState.value,
+        )
 
     init {
-        loadProducts()
-    }
-
-    private fun loadProducts() {
-        viewModelScope.launch {
-            productsDataSource.products
-                .map { products -> calculateViewState(products) }
-                .collect { _viewState.value = it }
-        }
-        viewModelScope.launch {
-            val result = productsDataSource.loadSimpleProducts(forceRefreshProducts = false)
-            if (result.isFailure) {
-                _viewState.value = WooPosProductsViewState.Error(reloadingProducts = false)
-            }
-        }
+        loadProducts(
+            forceRefreshProducts = false,
+            withPullToRefresh = false
+        )
     }
 
     fun onUIEvent(event: WooPosProductsUIEvent) {
@@ -54,34 +51,65 @@ class WooPosProductsViewModel @Inject constructor(
             }
 
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
-                reloadProducts()
+                loadProducts(
+                    forceRefreshProducts = true,
+                    withPullToRefresh = true
+                )
+            }
+
+            WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
+                loadProducts(
+                    forceRefreshProducts = false,
+                    withPullToRefresh = false
+                )
             }
         }
     }
 
-    private fun reloadProducts() {
+    private fun loadProducts(
+        forceRefreshProducts: Boolean,
+        withPullToRefresh: Boolean
+    ) {
         viewModelScope.launch {
-            updateProductsReloadingState(isReloading = true)
-            productsDataSource.loadSimpleProducts(forceRefreshProducts = true)
-            updateProductsReloadingState(isReloading = false)
+            _viewState.value = if (withPullToRefresh) {
+                buildProductsReloadingState()
+            } else {
+                WooPosProductsViewState.Loading()
+            }
+
+            productsDataSource.loadSimpleProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
+                when (result) {
+                    is WooPosProductsDataSource.ProductsResult.Cached -> {
+                        if (result.products.isNotEmpty()) {
+                            _viewState.value = result.products.toContentState()
+                        }
+                    }
+
+                    is WooPosProductsDataSource.ProductsResult.Remote -> {
+                        _viewState.value = when {
+                            result.productsResult.isSuccess -> {
+                                val products = result.productsResult.getOrThrow()
+                                if (products.isNotEmpty()) {
+                                    products.toContentState()
+                                } else {
+                                    WooPosProductsViewState.Empty()
+                                }
+                            }
+
+                            else -> WooPosProductsViewState.Error()
+                        }
+                    }
+                }
+            }
         }
     }
 
-    private fun updateProductsReloadingState(isReloading: Boolean) {
-        _viewState.value = when (val state = viewState.value) {
-            is WooPosProductsViewState.Content -> state.copy(reloadingProducts = isReloading)
-            is WooPosProductsViewState.Loading -> state.copy(reloadingProducts = isReloading)
-            is WooPosProductsViewState.Error -> state.copy(reloadingProducts = isReloading)
-            is WooPosProductsViewState.Empty -> state.copy(reloadingProducts = isReloading)
-        }
-    }
-
-    private suspend fun calculateViewState(products: List<Product>): WooPosProductsViewState =
-        when {
-            products.isEmpty() && !isReloadingProducts() -> WooPosProductsViewState.Empty()
-            products.isEmpty() && isReloadingProducts() ->
-                WooPosProductsViewState.Loading(reloadingProducts = true)
-            else -> products.toContentState()
+    private fun buildProductsReloadingState() =
+        when (val state = viewState.value) {
+            is WooPosProductsViewState.Content -> state.copy(reloadingProductsWithPullToRefresh = true)
+            is WooPosProductsViewState.Loading -> state.copy(reloadingProductsWithPullToRefresh = true)
+            is WooPosProductsViewState.Error -> state.copy(reloadingProductsWithPullToRefresh = true)
+            is WooPosProductsViewState.Empty -> state.copy(reloadingProductsWithPullToRefresh = true)
         }
 
     private suspend fun List<Product>.toContentState() = WooPosProductsViewState.Content(
@@ -94,10 +122,8 @@ class WooPosProductsViewModel @Inject constructor(
             )
         },
         loadingMore = false,
-        reloadingProducts = false,
+        reloadingProductsWithPullToRefresh = false,
     )
-
-    private fun isReloadingProducts(): Boolean = viewState.value.reloadingProducts
 
     private fun onEndOfProductsListReached() {
         val currentState = _viewState.value
@@ -113,15 +139,32 @@ class WooPosProductsViewModel @Inject constructor(
 
         loadMoreProductsJob?.cancel()
         loadMoreProductsJob = viewModelScope.launch {
-            productsDataSource.loadMore()
+            val result = productsDataSource.loadMore()
+            _viewState.value = if (result.isSuccess) {
+                result.getOrThrow().toContentState()
+            } else {
+                WooPosProductsViewState.Error()
+            }
         }
     }
 
+    private fun notifyParentAboutStatusChange(newState: WooPosProductsViewState) {
+        sendEventToParent(
+            when (newState) {
+                is WooPosProductsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart
+
+                is WooPosProductsViewState.Empty,
+                is WooPosProductsViewState.Error,
+                is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.FullScreen
+            }
+        )
+    }
+
     private fun onItemClicked(item: WooPosProductsListItem) {
-        viewModelScope.launch {
-            fromChildToParentEventSender.sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(item.id)
-            )
-        }
+        sendEventToParent(ChildToParentEvent.ItemClickedInProductSelector(item.id))
+    }
+
+    private fun sendEventToParent(event: ChildToParentEvent) {
+        viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 }

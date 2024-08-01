@@ -23,9 +23,14 @@ sealed class ChildToParentEvent {
     data class ItemClickedInProductSelector(val productId: Long) : ChildToParentEvent()
     data object NewTransactionClicked : ChildToParentEvent()
     data object OrderSuccessfullyPaid : ChildToParentEvent()
+    data object ExitPosClicked : ChildToParentEvent()
     sealed class CartStatusChanged : ChildToParentEvent() {
         data object Empty : CartStatusChanged()
         data object NotEmpty : CartStatusChanged()
+    }
+    sealed class ProductsStatusChanged : ChildToParentEvent() {
+        data object FullScreen : ProductsStatusChanged()
+        data object WithCart : ProductsStatusChanged()
     }
 }
 

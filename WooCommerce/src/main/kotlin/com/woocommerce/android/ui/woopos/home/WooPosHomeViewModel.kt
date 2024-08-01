@@ -13,33 +13,46 @@ class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart.Empty)
+    private val _state = MutableStateFlow(
+        WooPosHomeState(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Hidden,
+            exitConfirmationDialog = null
+        )
+    )
     val state: StateFlow<WooPosHomeState> = _state
 
     init {
         listenBottomEvents()
     }
 
-    fun onUIEvent(event: WooPosHomeUIEvent): Boolean {
+    fun onUIEvent(event: WooPosHomeUIEvent) {
         return when (event) {
             WooPosHomeUIEvent.SystemBackClicked -> {
-                when (_state.value) {
-                    WooPosHomeState.Checkout.NotPaid -> {
-                        _state.value = WooPosHomeState.Cart.NotEmpty
+                when (_state.value.screenPositionState) {
+                    WooPosHomeState.ScreenPositionState.Checkout.NotPaid -> {
+                        _state.value = _state.value.copy(
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
+                        )
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
-                        true
                     }
 
-                    WooPosHomeState.Checkout.Paid -> {
-                        _state.value = WooPosHomeState.Cart.Empty
+                    WooPosHomeState.ScreenPositionState.Checkout.Paid -> {
+                        _state.value = _state.value.copy(
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
+                        )
                         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
-                        true
                     }
 
-                    is WooPosHomeState.Cart -> {
-                        false
+                    is WooPosHomeState.ScreenPositionState.Cart -> {
+                        _state.value = _state.value.copy(
+                            exitConfirmationDialog = WooPosExitConfirmationDialog
+                        )
                     }
                 }
+            }
+
+            WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
+                _state.value = _state.value.copy(exitConfirmationDialog = null)
             }
         }
     }
@@ -49,12 +62,16 @@ class WooPosHomeViewModel @Inject constructor(
             childrenToParentEventReceiver.events.collect { event ->
                 when (event) {
                     is ChildToParentEvent.CheckoutClicked -> {
-                        _state.value = WooPosHomeState.Checkout.NotPaid
+                        _state.value = _state.value.copy(
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.NotPaid
+                        )
                         sendEventToChildren(ParentToChildrenEvent.CheckoutClicked(event.productIds))
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosHomeState.Cart.NotEmpty
+                        _state.value = _state.value.copy(
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
+                        )
                     }
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
@@ -64,30 +81,60 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.NewTransactionClicked -> {
-                        _state.value = WooPosHomeState.Cart.Empty
+                        _state.value = _state.value.copy(
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
+                        )
                         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                     }
 
                     is ChildToParentEvent.OrderSuccessfullyPaid -> {
-                        _state.value = WooPosHomeState.Checkout.Paid
+                        _state.value = _state.value.copy(
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.Paid
+                        )
                     }
 
-                    is ChildToParentEvent.CartStatusChanged -> {
-                        if (_state.value is WooPosHomeState.Checkout.Paid) return@collect
+                    is ChildToParentEvent.CartStatusChanged -> handleCartStatusChanged(event)
 
-                        when (event) {
-                            ChildToParentEvent.CartStatusChanged.Empty -> {
-                                _state.value = WooPosHomeState.Cart.Empty
-                            }
-
-                            ChildToParentEvent.CartStatusChanged.NotEmpty -> {
-                                _state.value = WooPosHomeState.Cart.NotEmpty
-                            }
-                        }
+                    ChildToParentEvent.ExitPosClicked -> {
+                        _state.value = _state.value.copy(
+                            exitConfirmationDialog = WooPosExitConfirmationDialog
+                        )
                     }
+
+                    is ChildToParentEvent.ProductsStatusChanged -> handleProductsStatusChanged(event)
                 }
             }
         }
+    }
+
+    private fun handleProductsStatusChanged(event: ChildToParentEvent.ProductsStatusChanged) {
+        val newScreenPositionState = when (event) {
+            ChildToParentEvent.ProductsStatusChanged.FullScreen -> WooPosHomeState.ScreenPositionState.Cart.Hidden
+            ChildToParentEvent.ProductsStatusChanged.WithCart -> {
+                when (val value = _state.value.screenPositionState) {
+                    WooPosHomeState.ScreenPositionState.Cart.Hidden ->
+                        WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
+
+                    WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
+                    WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
+                    WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
+                    WooPosHomeState.ScreenPositionState.Checkout.Paid -> value
+                }
+            }
+        }
+        _state.value = _state.value.copy(screenPositionState = newScreenPositionState)
+    }
+
+    private fun handleCartStatusChanged(event: ChildToParentEvent.CartStatusChanged) {
+        if (_state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.Paid) {
+            return
+        }
+
+        val newScreenPositionState = when (event) {
+            ChildToParentEvent.CartStatusChanged.Empty -> WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
+            ChildToParentEvent.CartStatusChanged.NotEmpty -> WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
+        }
+        _state.value = _state.value.copy(screenPositionState = newScreenPositionState)
     }
 
     private fun sendEventToChildren(event: ParentToChildrenEvent) {
