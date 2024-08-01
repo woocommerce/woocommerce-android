@@ -104,7 +104,10 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             announceForAccessibility(binding, viewState)
             UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
             UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
-            UiHelpers.setImageOrHideInLandscapeOnNonExpandedScreenSizes(binding.illustration, viewState.illustration)
+            UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+                binding.illustration,
+                viewState.illustration
+            )
             UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
             (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
                 .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
