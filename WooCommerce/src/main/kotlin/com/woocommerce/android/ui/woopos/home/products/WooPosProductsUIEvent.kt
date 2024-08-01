@@ -7,4 +7,5 @@ sealed class WooPosProductsUIEvent {
     data object ProductsLoadingErrorRetryButtonClicked : WooPosProductsUIEvent()
     data object SimpleProductsBannerClosed : WooPosProductsUIEvent()
     data object SimpleProductsBannerLearnMoreClicked : WooPosProductsUIEvent()
+    data object SimpleProductsDialogInfoIconClicked : WooPosProductsUIEvent()
 }
