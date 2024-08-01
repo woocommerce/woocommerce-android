@@ -49,7 +49,8 @@ class ZendeskTicketRepository @Inject constructor(
         selectedSite: SiteModel?,
         subject: String,
         description: String,
-        extraTags: List<String>
+        extraTags: List<String>,
+        siteAddress: String
     ) = callbackFlow {
         if (zendeskSettings.isIdentitySet.not()) {
             trySend(Result.failure(IdentityNotSetException))
@@ -79,13 +80,16 @@ class ZendeskTicketRepository @Inject constructor(
             this.description = description
             this.tags = buildZendeskTags(selectedSite, siteStore.sites, origin, tags)
                 .filter { ticketType.excludedTags.contains(it).not() }
-            this.customFields = buildZendeskCustomFields(
-                context,
-                ticketType,
-                siteStore.sites,
-                selectedSite,
-                ssr
+            val zendeskCustomFieldsParams = ZendeskCustomFieldsParams(
+                context = context,
+                ticketType = ticketType,
+                allSites = siteStore.sites,
+                selectedSite = selectedSite,
+                ssr = ssr,
+                siteAddress = siteAddress
             )
+
+            this.customFields = buildZendeskCustomFields(zendeskCustomFieldsParams)
         }.let { request -> zendeskSettings.requestProvider?.createRequest(request, requestCallback) }
 
         // Sets a timeout since the callback might not be called from Zendesk API
@@ -113,25 +117,23 @@ class ZendeskTicketRepository @Inject constructor(
      * This is a helper function which builds a list of `CustomField`s which will be used during ticket creation. They
      * will be used to fill the custom fields we have setup in Zendesk UI for Happiness Engineers.
      */
-    private fun buildZendeskCustomFields(
-        context: Context,
-        ticketType: TicketType,
-        allSites: List<SiteModel>?,
-        selectedSite: SiteModel?,
-        ssr: String?
-    ): List<CustomField> {
+    private fun buildZendeskCustomFields(params: ZendeskCustomFieldsParams): List<CustomField> {
         return listOf(
-            CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(context)),
+            CustomField(TicketCustomField.appVersion, envDataSource.generateVersionName(params.context)),
             CustomField(TicketCustomField.deviceFreeSpace, envDataSource.totalAvailableMemorySize),
-            CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(context)),
+            CustomField(TicketCustomField.networkInformation, envDataSource.generateNetworkInformation(params.context)),
             CustomField(TicketCustomField.logs, envDataSource.deviceLogs),
-            CustomField(TicketCustomField.ssr, ssr),
-            CustomField(TicketCustomField.currentSite, envDataSource.generateHostData(selectedSite)),
+            CustomField(TicketCustomField.ssr, params.ssr),
+            CustomField(TicketCustomField.currentSite, envDataSource.generateHostData(params.selectedSite)),
             CustomField(TicketCustomField.sourcePlatform, ZendeskEnvironmentDataSource.sourcePlatform),
             CustomField(TicketCustomField.appLanguage, envDataSource.deviceLanguage),
-            CustomField(TicketCustomField.categoryId, ticketType.categoryName),
-            CustomField(TicketCustomField.subcategoryId, ticketType.subcategoryName),
-            CustomField(TicketCustomField.blogList, envDataSource.generateCombinedLogInformationOfSites(allSites))
+            CustomField(TicketCustomField.categoryId, params.ticketType.categoryName),
+            CustomField(TicketCustomField.subcategoryId, params.ticketType.subcategoryName),
+            CustomField(
+                TicketCustomField.blogList,
+                envDataSource.generateCombinedLogInformationOfSites(params.allSites)
+            ),
+            CustomField(TicketCustomField.siteAddress, params.siteAddress)
         )
     }
 
@@ -261,6 +263,7 @@ object TicketCustomField {
     const val currentSite = 360000103103L
     const val appLanguage = 360008583691L
     const val sourcePlatform = 360009311651L
+    const val siteAddress = 22054927L
 }
 
 object ZendeskTags {
@@ -293,3 +296,12 @@ private object RequestConstants {
     const val requestCreationTimeoutErrorMessage = "Request creation timed out"
     const val requestCreationIdentityNotSetErrorMessage = "Request creation failed: identity not set"
 }
+
+private data class ZendeskCustomFieldsParams(
+    val context: Context,
+    val ticketType: TicketType,
+    val allSites: List<SiteModel>?,
+    val selectedSite: SiteModel?,
+    val ssr: String?,
+    val siteAddress: String
+)
