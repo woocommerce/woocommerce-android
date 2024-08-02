@@ -39,8 +39,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldClickListener
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldType
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
+import org.wordpress.android.fluxc.model.WCMetaData
 
 private var clickListener: CustomOrderFieldClickListener? = null
 
@@ -55,7 +54,7 @@ fun CustomOrderFieldsScreen(viewModel: OrderDetailViewModel, listener: CustomOrd
 
 @Composable
 fun CustomFieldsScreen(
-    metadataList: List<OrderMetaDataEntity>,
+    metadataList: List<WCMetaData>,
     onBackPressed: () -> Unit
 ) {
     Box(
@@ -91,7 +90,7 @@ fun CustomFieldsScreen(
 }
 
 @Composable
-private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
+private fun CustomFieldListItem(metadata: WCMetaData) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50)),
         modifier = Modifier
@@ -116,10 +115,10 @@ private fun CustomFieldListItem(metadata: OrderMetaDataEntity) {
                     )
                 }
                 SelectionContainer {
-                    if (CustomOrderFieldType.fromMetadataValue(metadata.value) == CustomOrderFieldType.TEXT) {
-                        textValueItem(metadata.value)
+                    if (CustomOrderFieldType.fromMetadataValue(metadata.valueStrippedHtml) == CustomOrderFieldType.TEXT) {
+                        textValueItem(metadata.valueStrippedHtml)
                     } else {
-                        clickableTextValueItem(metadata.value)
+                        clickableTextValueItem(metadata.valueStrippedHtml)
                     }
                 }
             }
@@ -174,31 +173,23 @@ private fun CustomFieldsPreview() {
     WooThemeWithBackground {
         CustomFieldsScreen(
             listOf(
-                OrderMetaDataEntity(
+                WCMetaData(
                     id = 1,
-                    localSiteId = LocalOrRemoteId.LocalId(0),
-                    orderId = 0,
                     key = "text key",
                     value = "text value"
                 ),
-                OrderMetaDataEntity(
+                WCMetaData(
                     id = 2,
-                    localSiteId = LocalOrRemoteId.LocalId(0),
-                    orderId = 0,
                     key = "url key",
                     value = "https://automattic.com/"
                 ),
-                OrderMetaDataEntity(
+                WCMetaData(
                     id = 3,
-                    localSiteId = LocalOrRemoteId.LocalId(0),
-                    orderId = 0,
                     key = "email key",
                     value = "example@example.com"
                 ),
-                OrderMetaDataEntity(
+                WCMetaData(
                     id = 4,
-                    localSiteId = LocalOrRemoteId.LocalId(0),
-                    orderId = 0,
                     key = "phone key",
                     value = "tel://1234567890"
                 )
