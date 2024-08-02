@@ -32,7 +32,7 @@ class GetOrderSubscriptions @Inject constructor(
         val renewal = metadataList.find { metadata ->
             metadata.key == WCMetaData.SubscriptionMetadataKeys.SUBSCRIPTION_RENEWAL
         }
-        return renewal?.value?.toLongOrNull()
+        return renewal?.value?.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isNumber }?.asLong
     }
 
     private suspend fun getRenewalSubscription(subscriptionId: Long): Result<List<Subscription>> {
