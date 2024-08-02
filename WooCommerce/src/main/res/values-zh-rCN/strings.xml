@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-23 09:54:04+0000
+Translation-Revision-Date: 2024-07-30 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">完成</string>
+    <string name="google_ads_campaign_created_success_description">您的新广告活动已创建。 您的销售工作将迎来激动人心的时刻！</string>
+    <string name="google_ads_campaign_created_success_title">准备就绪！</string>
+    <string name="woopos_totals_order_creation_error">无法创建订单</string>
+    <string name="woopos_products_loading_error_retry_button">重试</string>
+    <string name="woopos_error_icon_content_description">错误指示图标</string>
+    <string name="woopos_products_loading_error_message">再试一次？</string>
+    <string name="woopos_products_loading_error_title">加载产品时出错</string>
+    <string name="woopos_products_empty_list_message_two">POS 目前仅支持简单产品</string>
+    <string name="woopos_products_empty_list_message">POS 目前仅支持简单产品 – \n创建一个以开始。</string>
+    <string name="woopos_products_empty_list_title">未找到受支持的产品</string>
+    <string name="woopos_products_empty_list_image_description">无任何产品</string>
+    <string name="woopos_splash_message">让我们为客户服务</string>
+    <string name="woopos_splash_title">开始</string>
+    <string name="woopos_get_support_title">获取支持</string>
+    <string name="woopos_reader_disconnected">连接您的读卡器</string>
+    <string name="ai_product_creation_photo_removed">照片已删除</string>
+    <string name="ai_product_creation_image_scanned_subtitle">正在扫描图片</string>
+    <string name="ai_product_creation_image_selected_subtitle">照片文字已添加到起始信息中</string>
+    <string name="ai_product_creation_image_scan_subtitle">添加从照片扫描的文字</string>
+    <string name="analytics_google_ads_filter_clicks">点击次数</string>
+    <string name="analytics_google_ads_filter_impressions">展示次数</string>
+    <string name="analytics_google_ads_filter_conversion">转化</string>
+    <string name="analytics_google_ads_filter_spend">支出</string>
+    <string name="analytics_google_ads_filter_total_sales">总销售额</string>
+    <string name="analytics_google_ads_metric_card_title">指标</string>
+    <string name="analytics_total_sales_subtitle_value">总销售额：%1$s</string>
+    <string name="analytics_spend_subtitle_value">支出：%1$s</string>
+    <string name="analytics_custom_list_selection_button_description">筛选条件选择</string>
     <string name="woopos_cart_empty_content_description">购物车为空</string>
     <string name="woopos_cart_empty_subtitle">点击产品以\n将其添加到购物车</string>
     <string name="woopos_totals_main_error_label">无法加载总计。</string>
@@ -21,7 +50,6 @@ Language: zh_CN
     <string name="product_creation_ai_preview_generate_again">再次生成</string>
     <string name="product_creation_ai_preview_undo_edits">撤销编辑</string>
     <string name="product_creation_ai_preview_variant_selector">第 %1$d 个选项，共 %2$d 个</string>
-    <string name="analytics_spend_value">支出：%1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">查看所有广告活动</string>
     <string name="dashboard_google_ads_card_create_campaign_button">创建广告活动</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">点击次数</string>
@@ -54,7 +82,6 @@ Language: zh_CN
     <string name="more_menu_button_customers">客户</string>
     <string name="ai_product_creation_scanning_photo_error">尝试扫描照片上的文本时出错。 请重试</string>
     <string name="ai_product_creation_scanning_image">正在扫描图片</string>
-    <string name="ai_product_creation_image_selected_subtitle">照片将添加到产品中</string>
     <string name="ai_product_creation_image_selected">照片已选择</string>
     <string name="ai_product_creation_remove_image">删除照片</string>
     <string name="ai_product_creation_replace_image">替换照片</string>
@@ -96,7 +123,6 @@ Language: zh_CN
     <string name="woopos_checkout_button">结账</string>
     <string name="woopos_reader_unknown">读卡器状态未知</string>
     <string name="woopos_checkout">结账</string>
-    <string name="woopos_reader_disconnected">读卡器已断开连接</string>
     <string name="woopos_reader_connected">读卡器已连接</string>
     <string name="woopos_exit_pos">退出 POS 机</string>
     <string name="dashboard_new_widgets_card_button">添加新板块</string>

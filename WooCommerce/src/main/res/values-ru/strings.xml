@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-23 16:54:03+0000
+Translation-Revision-Date: 2024-07-31 17:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">Готово</string>
+    <string name="google_ads_campaign_created_success_description">Ваша новая кампания создана. Впереди у вас удачный сезон продаж!</string>
+    <string name="google_ads_campaign_created_success_title">Всё готово!</string>
+    <string name="woopos_totals_order_creation_error">Не удалось создать заказ</string>
+    <string name="woopos_products_loading_error_retry_button">Повторить попытку</string>
+    <string name="woopos_error_icon_content_description">Значок ошибки</string>
+    <string name="woopos_products_loading_error_message">Хотите повторить попытку?</string>
+    <string name="woopos_products_loading_error_title">Ошибка при загрузке товаров</string>
+    <string name="woopos_products_empty_list_message_two">В данный момент POS поддерживает только простые товары</string>
+    <string name="woopos_products_empty_list_message">В данный момент POS поддерживает только простые товары — \nсначала создайте такой товар.</string>
+    <string name="woopos_products_empty_list_title">Нет поддерживаемых товаров</string>
+    <string name="woopos_products_empty_list_image_description">Товаров нет</string>
+    <string name="woopos_splash_message">Давайте обслужим нескольких клиентов</string>
+    <string name="woopos_splash_title">Начало работы</string>
+    <string name="woopos_get_support_title">Поддержка</string>
+    <string name="woopos_reader_disconnected">Подключите платёжный терминал</string>
+    <string name="ai_product_creation_photo_removed">Фотография удалена</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Сканирование изображения</string>
+    <string name="ai_product_creation_image_selected_subtitle">Текст с фотографии добавлен к начальной информации</string>
+    <string name="ai_product_creation_image_scan_subtitle">Добавить текст, отсканированный с фотографии</string>
+    <string name="analytics_google_ads_filter_clicks">Переходы</string>
+    <string name="analytics_google_ads_filter_impressions">Показы</string>
+    <string name="analytics_google_ads_filter_conversion">Конверсия</string>
+    <string name="analytics_google_ads_filter_spend">Сумма</string>
+    <string name="analytics_google_ads_filter_total_sales">Всего продаж</string>
+    <string name="analytics_google_ads_metric_card_title">Критерии</string>
+    <string name="analytics_total_sales_subtitle_value">Всего продаж: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Сумма: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Выбор фильтров</string>
     <string name="woopos_cart_empty_content_description">Корзина пуста</string>
     <string name="woopos_cart_empty_subtitle">Нажмите на товар, чтобы\nдобавить его в корзину</string>
     <string name="woopos_totals_main_error_label">Ошибка при загрузке итоговой суммы</string>
@@ -21,7 +50,6 @@ Language: ru
     <string name="product_creation_ai_preview_generate_again">Сгенерировать заново</string>
     <string name="product_creation_ai_preview_undo_edits">Отменить изменения</string>
     <string name="product_creation_ai_preview_variant_selector">Вариант %1$d из %2$d</string>
-    <string name="analytics_spend_value">Сумма: %1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">Показать все кампании</string>
     <string name="dashboard_google_ads_card_create_campaign_button">Создать кампанию</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">Переходы</string>
@@ -54,7 +82,6 @@ Language: ru
     <string name="more_menu_button_customers">Клиенты</string>
     <string name="ai_product_creation_scanning_photo_error">Ошибка при попытке сканирования текста на фотографии. Повторите попытку</string>
     <string name="ai_product_creation_scanning_image">Сканирование изображения</string>
-    <string name="ai_product_creation_image_selected_subtitle">Фотография будет добавлена к товару</string>
     <string name="ai_product_creation_image_selected">Выбранная фотография</string>
     <string name="ai_product_creation_remove_image">Удалить фотографию</string>
     <string name="ai_product_creation_replace_image">Заменить фотографию</string>
@@ -96,7 +123,6 @@ Language: ru
     <string name="woopos_checkout_button">Оформление заказа</string>
     <string name="woopos_reader_unknown">Статус считывающего устройства неизвестен</string>
     <string name="woopos_checkout">Оформление заказа</string>
-    <string name="woopos_reader_disconnected">Считывающее устройство отключено</string>
     <string name="woopos_reader_connected">Считывающее устройство подключено</string>
     <string name="woopos_exit_pos">Закрыть POS</string>
     <string name="dashboard_new_widgets_card_button">Добавить новые разделы</string>
