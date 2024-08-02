@@ -303,11 +303,8 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
-    fun getProductMetadata(remoteProductId: Long): Map<String, Any>? {
-        val metadata = getCachedWCProductModel(remoteProductId)?.metadata ?: return null
-        val metadataArray = gson.fromJson(metadata, Array<WCMetaData>::class.java)
-
-        return metadataArray?.associate { metadataItem -> metadataItem.key to metadataItem.value }
+    fun getProductMetadata(remoteProductId: Long): List<WCMetaData>? {
+        return getCachedWCProductModel(remoteProductId)?.parsedMetaData ?: return null
     }
 
     @SuppressWarnings("unused")
