@@ -168,7 +168,7 @@ class DashboardViewModel @Inject constructor(
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
-    fun onResume(){
+    fun onResume() {
         _refreshTrigger.tryEmit(RefreshEvent())
     }
 
