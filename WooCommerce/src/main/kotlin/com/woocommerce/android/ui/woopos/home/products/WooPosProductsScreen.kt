@@ -146,13 +146,11 @@ private fun WooPosProductsScreen(
                             onSimpleProductsBannerLearnMoreClicked,
                             onSimpleProductsBannerClosed
                         )
-                        Box {
-                            ProductsList(
-                                productsState,
-                                onItemClicked,
-                                onEndOfProductListReached,
-                            )
-                        }
+                        ProductsList(
+                            productsState,
+                            onItemClicked,
+                            onEndOfProductListReached,
+                        )
                     }
                 }
 
