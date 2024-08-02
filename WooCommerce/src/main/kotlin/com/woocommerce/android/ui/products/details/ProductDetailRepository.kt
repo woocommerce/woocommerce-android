@@ -307,8 +307,7 @@ class ProductDetailRepository @Inject constructor(
         val metadata = getCachedWCProductModel(remoteProductId)?.metadata ?: return null
         val metadataArray = gson.fromJson(metadata, Array<WCMetaData>::class.java)
 
-        return metadataArray?.filter { metadataItem -> metadataItem.key.isNullOrEmpty().not() }
-            ?.associate { metadataItem -> metadataItem.key!! to metadataItem.value }
+        return metadataArray?.associate { metadataItem -> metadataItem.key to metadataItem.value }
     }
 
     @SuppressWarnings("unused")
