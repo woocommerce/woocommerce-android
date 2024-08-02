@@ -477,6 +477,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             UpdateDataOnBackgroundWorker.REFRESH_TIME,
             TimeUnit.HOURS
         )
+            .setInitialDelay(
+                UpdateDataOnBackgroundWorker.REFRESH_TIME,
+                TimeUnit.HOURS
+            )
             .setConstraints(constraints)
             .build()
 
