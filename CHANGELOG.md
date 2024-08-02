@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 19.8
+In our latest update, we've added a button in Google Campaign analytics for easier paid campaign creation. The Contact Support Form now includes a Site Address field. Enjoy seamless in-person payments illustrations in landscape mode, and benefit from background updates for order lists and dashboard analytics.
+
 ## 19.7
 Get ready for a better WooCommerce experience with our latest update! Now, create and manage Google Ads campaigns seamlessly. Enjoy enhanced stability on the order detail screen and get helpful tips with our new AI-powered advice box during product creation. Update now for a smoother, smarter app!
 
