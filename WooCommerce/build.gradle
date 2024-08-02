@@ -347,7 +347,7 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
-    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation("androidx.arch.core:core-testing:2.1.0", {

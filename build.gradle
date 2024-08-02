@@ -149,8 +149,8 @@ ext {
     androidxTestCoreVersion = '1.4.0'
     assertjVersion = '3.24.1'
     espressoVersion = '3.4.0'
-    mockitoKotlinVersion = '4.0.0'
-    mockitoVersion = '4.6.1'
+    mockitoKotlinVersion = '5.4.0'
+    mockitoVersion = '5.12.0'
 }
 
 // Onboarding and dev env setup tasks
