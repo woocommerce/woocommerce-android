@@ -25,7 +25,7 @@ class OrderMapper @Inject constructor(
     private val dateUtils: DateUtils,
 ) {
     fun toAppModel(databaseEntity: OrderEntity): Order {
-        val metaDataList = databaseEntity.getMetaDataList()
+        val metaDataList = databaseEntity.metaData
         return Order(
             id = databaseEntity.orderId,
             number = databaseEntity.number,
