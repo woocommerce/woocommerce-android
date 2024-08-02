@@ -344,6 +344,7 @@ class OrderListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        viewModel.loadOrders()
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             refreshOrders()
         }
