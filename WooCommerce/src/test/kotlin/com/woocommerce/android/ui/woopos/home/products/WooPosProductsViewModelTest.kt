@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -31,10 +29,6 @@ class WooPosProductsViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
-
-    @Rule
-    @JvmField
-    val rule = InstantTaskExecutorRule()
 
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
@@ -796,6 +790,5 @@ class WooPosProductsViewModelTest {
             fromChildToParentEventSender,
             priceFormat,
             posPreferencesRepository,
-            SavedStateHandle()
         )
 }

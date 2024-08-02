@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
@@ -10,7 +9,6 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,16 +26,11 @@ class WooPosProductsViewModel @Inject constructor(
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val priceFormat: WooPosFormatPrice,
     private val preferencesRepository: WooPosPreferencesRepository,
-    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    private val _viewState: MutableStateFlow<WooPosProductsViewState> = savedStateHandle.getStateFlow(
-        scope = viewModelScope,
-        key = "productsViewState",
-        initialValue =
-        WooPosProductsViewState.Loading()
-    )
+    private val _viewState =
+        MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
         .onEach { notifyParentAboutStatusChange(it) }
         .stateIn(
