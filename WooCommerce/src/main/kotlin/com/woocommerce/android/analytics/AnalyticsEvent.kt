@@ -1101,7 +1101,14 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     GOOGLEADS_FLOW_STARTED,
     GOOGLEADS_FLOW_CANCELED,
     GOOGLEADS_CAMPAIGN_CREATION_SUCCESS,
-    GOOGLEADS_FLOW_ERROR;
+    GOOGLEADS_FLOW_ERROR,
+
+    // Background Updates
+    BACKGROUND_UPDATES_DISABLED(siteless = true),
+    BACKGROUND_DATA_SYNCED,
+    BACKGROUND_DATA_SYNC_ERROR,
+    PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNCED,
+    PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNC_ERROR;
 
     override val isPosEvent: Boolean = false
 }
