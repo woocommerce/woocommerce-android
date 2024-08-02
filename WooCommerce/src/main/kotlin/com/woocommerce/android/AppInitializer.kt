@@ -246,10 +246,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Suppress("DEPRECATION")
     override fun onAppComesFromBackground() {
         trackApplicationOpened()
-        if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
-            clearRefreshDataPeriodically()
-            backgroundUpdatesDisabled()
-        }
+
+        clearRefreshDataPeriodically()
+        backgroundUpdatesDisabled()
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
@@ -322,9 +321,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     override fun onAppGoesToBackground() {
         AnalyticsTracker.track(AnalyticsEvent.APPLICATION_CLOSED)
-        if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
-            refreshDataPeriodically()
-        }
+        refreshDataPeriodically()
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
