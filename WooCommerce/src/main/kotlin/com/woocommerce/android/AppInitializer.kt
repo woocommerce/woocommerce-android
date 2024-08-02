@@ -47,7 +47,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
@@ -246,10 +245,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Suppress("DEPRECATION")
     override fun onAppComesFromBackground() {
         trackApplicationOpened()
-        if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
-            clearRefreshDataPeriodically()
-            backgroundUpdatesDisabled()
-        }
+
+        clearRefreshDataPeriodically()
+        backgroundUpdatesDisabled()
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
@@ -322,9 +320,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     override fun onAppGoesToBackground() {
         AnalyticsTracker.track(AnalyticsEvent.APPLICATION_CLOSED)
-        if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
-            refreshDataPeriodically()
-        }
+        refreshDataPeriodically()
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
@@ -480,6 +476,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             UpdateDataOnBackgroundWorker.REFRESH_TIME,
             TimeUnit.HOURS
         )
+            .setInitialDelay(
+                UpdateDataOnBackgroundWorker.REFRESH_TIME,
+                TimeUnit.HOURS
+            )
             .setConstraints(constraints)
             .build()
 
