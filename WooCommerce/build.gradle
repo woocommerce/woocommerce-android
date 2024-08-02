@@ -14,7 +14,10 @@ plugins {
     id 'com.google.devtools.ksp'
     id "com.google.protobuf"
     id "com.osacky.fladle"
+    id "pl.droidsonroids.pitest"
 }
+
+apply from: '../config/gradle/pitest.gradle'
 
 fladle {
     variant = "vanillaDebug"

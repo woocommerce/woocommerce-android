@@ -1,0 +1,28 @@
+pitest {
+    targetClasses = ['com.woocommerce.android.*']
+    // BASIC
+    pitestVersion = '1.16.1'
+    threads = 4
+    outputFormats = [
+            'XML',
+            'HTML',
+    ]
+    timestampedReports = false
+    // CONFIG
+    excludedClasses = [
+            // DI
+            '*Hilt*',
+            // UI
+            '*Activity*',
+            '*Fragment*',
+            '*View', // ⚠️ For some reason this doesn't exclude all views!
+            '*Screen*',
+            '*BottomSheet*',
+            '*Dialog*',
+            '*Item*',
+            '*ViewHolder*',
+            '*Adapter*',
+    ]
+    // PROBLEMS
+    failWhenNoMutations = false
+}

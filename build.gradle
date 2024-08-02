@@ -11,6 +11,7 @@ plugins {
     id 'com.google.dagger.hilt.android' apply false
     id 'com.google.gms.google-services' apply false
     id 'com.google.devtools.ksp' apply false
+    id 'pl.droidsonroids.pitest' apply false
 }
 
 measureBuilds {

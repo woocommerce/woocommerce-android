@@ -12,6 +12,7 @@ pluginManagement {
     gradle.ext.protobufVersion = '0.9.4'
     gradle.ext.dependencyAnalysisVersion = '1.28.0'
     gradle.ext.fladleVersion = '0.17.5'
+    gradle.ext.droidsonroidsPitestVersion = '0.2.18'
 
     repositories {
         google()
@@ -46,6 +47,7 @@ pluginManagement {
         id "com.google.protobuf" version gradle.ext.protobufVersion
         id "com.autonomousapps.dependency-analysis" version gradle.ext.dependencyAnalysisVersion
         id "com.osacky.fladle" version gradle.ext.fladleVersion
+        id 'pl.droidsonroids.pitest' version gradle.ext.droidsonroidsPitestVersion
     }
 }
 
