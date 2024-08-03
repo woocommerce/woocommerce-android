@@ -7,6 +7,7 @@ import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCMetaData
+import org.wordpress.android.fluxc.model.get
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
 import org.wordpress.android.fluxc.model.order.OrderAddress
 import org.wordpress.android.fluxc.model.order.TaxLine
@@ -69,17 +70,9 @@ class OrderMapper @Inject constructor(
         )
     }
 
-    private fun List<WCMetaData>.getOrNull(key: String): String? = firstOrNull {
-        it.key == key
-    }.let {
-        it?.value?.toString()
-    }
+    private fun List<WCMetaData>.getOrNull(key: String): String? = get(key)?.valueAsString
 
-    private fun List<WCMetaData>.getOrEmpty(key: String): String = find {
-        it.key == key
-    }.let {
-        it?.value?.toString().orEmpty()
-    }
+    private fun List<WCMetaData>.getOrEmpty(key: String): String = getOrNull(key).orEmpty()
 
     private fun List<WCFeeLine>.mapFeesLines(): List<Order.FeeLine> = map {
         Order.FeeLine(
