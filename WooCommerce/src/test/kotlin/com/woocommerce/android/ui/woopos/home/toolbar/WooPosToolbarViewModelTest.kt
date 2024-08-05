@@ -147,6 +147,24 @@ class WooPosToolbarViewModelTest {
         verify(cardReaderFacade, times(1)).connectToReader()
     }
 
+    @Test
+    fun `when connect to card reader clicked multiple times after delay, then debounce handles all clicks`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        advanceUntilIdle()
+        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        advanceUntilIdle()
+        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(cardReaderFacade, times(3)).connectToReader()
+    }
+
     private fun createViewModel() = WooPosToolbarViewModel(
         cardReaderFacade,
         childrenToParentEventSender
