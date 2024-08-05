@@ -117,9 +117,7 @@ private fun CheckMarkIcon() {
         modifier = Modifier
             .size(156.dp)
             .shadow(8.dp, CircleShape)
-            .background(
-                MaterialTheme.colors.background, CircleShape
-            )
+            .background(MaterialTheme.colors.background, CircleShape)
     ) {
         Icon(
             imageVector = Icons.Default.Check,
