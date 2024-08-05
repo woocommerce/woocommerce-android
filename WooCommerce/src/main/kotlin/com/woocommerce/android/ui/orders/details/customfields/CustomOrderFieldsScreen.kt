@@ -115,7 +115,9 @@ private fun CustomFieldListItem(metadata: WCMetaData) {
                     )
                 }
                 SelectionContainer {
-                    if (CustomOrderFieldType.fromMetadataValue(metadata.valueStrippedHtml) == CustomOrderFieldType.TEXT) {
+                    if (
+                        CustomOrderFieldType.fromMetadataValue(metadata.valueStrippedHtml) == CustomOrderFieldType.TEXT
+                    ) {
                         textValueItem(metadata.valueStrippedHtml)
                     } else {
                         clickableTextValueItem(metadata.valueStrippedHtml)

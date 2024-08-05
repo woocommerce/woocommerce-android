@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.details
 
-import com.google.gson.Gson
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
@@ -57,8 +56,7 @@ class ProductDetailRepository @Inject constructor(
     private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore,
-    private val coroutineDispatchers: CoroutineDispatchers,
-    private val gson: Gson
+    private val coroutineDispatchers: CoroutineDispatchers
 ) {
     private var continuationUpdateProduct: Continuation<Pair<Boolean, WCProductStore.ProductError?>>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
