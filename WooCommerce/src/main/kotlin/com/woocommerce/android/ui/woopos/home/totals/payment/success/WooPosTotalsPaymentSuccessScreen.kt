@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -77,22 +76,20 @@ fun WooPosPaymentSuccessScreen(
         OutlinedButton(
             modifier = Modifier
                 .padding(24.dp.toAdaptivePadding())
-                .height(80.dp.toAdaptivePadding())
-                .width(600.dp.toAdaptivePadding()),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colors.onSurface
-            ),
+                .height(80.dp)
+                .width(604.dp),
             onClick = onNewTransactionClicked
         ) {
             Icon(
-                modifier = Modifier.size(20.dp.toAdaptivePadding()),
+                modifier = Modifier.size(24.dp),
                 painter = painterResource(id = R.drawable.woo_pos_ic_return_home),
-                contentDescription = null
+                tint = MaterialTheme.colors.onSurface,
+                contentDescription = stringResource(id = R.string.woopos_new_order_button)
             )
-            Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(12.dp.toAdaptivePadding()))
             Text(
                 text = stringResource(R.string.woopos_new_order_button),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.h5,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colors.onSurface,
                 textAlign = TextAlign.Center
