@@ -64,10 +64,10 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given device has os less than Android 9, when invoking, then system is not supported returned`() {
+    fun `given device has os less than Android 10, when invoking, then system is not supported returned`() {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(false)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(false)
 
         val result = availabilityStatus.invoke()
 
