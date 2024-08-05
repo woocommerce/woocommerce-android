@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-23 09:54:05+0000
+Translation-Revision-Date: 2024-07-30 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">Selesai</string>
+    <string name="google_ads_campaign_created_success_description">Kampanye baru sudah dibuat. Bersiaplah, penjualan Anda akan meroket!</string>
+    <string name="google_ads_campaign_created_success_title">Semua Siap!</string>
+    <string name="woopos_totals_order_creation_error">Tidak dapat membuat pesanan</string>
+    <string name="woopos_products_loading_error_retry_button">Coba lagi</string>
+    <string name="woopos_error_icon_content_description">Ikon indikasi error</string>
+    <string name="woopos_products_loading_error_message">Ingin mencoba sekali lagi?</string>
+    <string name="woopos_products_loading_error_title">Terjadi error saat memuat produk</string>
+    <string name="woopos_products_empty_list_message_two">POS saat ini hanya mendukung produk sederhana</string>
+    <string name="woopos_products_empty_list_message">POS saat ini hanya mendukung produk sederhana – \nbuat untuk memulai.</string>
+    <string name="woopos_products_empty_list_title">Produk yang didukung tidak ditemukan</string>
+    <string name="woopos_products_empty_list_image_description">Tidak ada produk</string>
+    <string name="woopos_splash_message">Mari layani pelanggan</string>
+    <string name="woopos_splash_title">Memulai</string>
+    <string name="woopos_get_support_title">Dapatkan Dukungan</string>
+    <string name="woopos_reader_disconnected">Hubungkan ke pembaca</string>
+    <string name="ai_product_creation_photo_removed">Foto dihapus</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Memindai gambar</string>
+    <string name="ai_product_creation_image_selected_subtitle">Teks foto yang ditambahkan ke info mulai</string>
+    <string name="ai_product_creation_image_scan_subtitle">Tambahkan teks yang dipindai dari foto</string>
+    <string name="analytics_google_ads_filter_clicks">Klik</string>
+    <string name="analytics_google_ads_filter_impressions">Tayangan</string>
+    <string name="analytics_google_ads_filter_conversion">Konversi</string>
+    <string name="analytics_google_ads_filter_spend">Belanja</string>
+    <string name="analytics_google_ads_filter_total_sales">Total Penjualan</string>
+    <string name="analytics_google_ads_metric_card_title">Metrik</string>
+    <string name="analytics_total_sales_subtitle_value">Total Penjualan: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Belanja: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Pilihan filter</string>
     <string name="woopos_cart_empty_content_description">Keranjang kosong</string>
     <string name="woopos_cart_empty_subtitle">Ketuk produk ke\ntambahkan ke keranjang</string>
     <string name="woopos_totals_main_error_label">Tidak bisa memuat total</string>
@@ -21,7 +50,6 @@ Language: id
     <string name="product_creation_ai_preview_generate_again">Buat Lagi</string>
     <string name="product_creation_ai_preview_undo_edits">Batalkan suntingan</string>
     <string name="product_creation_ai_preview_variant_selector">Pilihan %1$d dari %2$d</string>
-    <string name="analytics_spend_value">Pengeluaran: %1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">Lihat semua kampanye</string>
     <string name="dashboard_google_ads_card_create_campaign_button">Buat Kampanye</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">Klik</string>
@@ -54,7 +82,6 @@ Language: id
     <string name="more_menu_button_customers">Pelanggan</string>
     <string name="ai_product_creation_scanning_photo_error">Terjadi error saat mencoba untuk memindai teks dari foto. Silakan coba lagi</string>
     <string name="ai_product_creation_scanning_image">Memindai gambar</string>
-    <string name="ai_product_creation_image_selected_subtitle">Foto akan ditambahkan ke produk</string>
     <string name="ai_product_creation_image_selected">Foto dipilih</string>
     <string name="ai_product_creation_remove_image">Hapus foto</string>
     <string name="ai_product_creation_replace_image">Ganti foto</string>
@@ -96,7 +123,6 @@ Language: id
     <string name="woopos_checkout_button">Checkout</string>
     <string name="woopos_reader_unknown">Status Pembaca Tidak Diketahui</string>
     <string name="woopos_checkout">Checkout</string>
-    <string name="woopos_reader_disconnected">Sambungan Pembaca Terputus</string>
     <string name="woopos_reader_connected">Pembaca Terhubung</string>
     <string name="woopos_exit_pos">Keluar POS</string>
     <string name="dashboard_new_widgets_card_button">Tambahkan Bagian baru</string>
