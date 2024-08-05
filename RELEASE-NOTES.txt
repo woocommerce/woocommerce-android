@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 19.9
 -----
-
+- [*] [Internal] Update Android material from 1.9.0 to 1.10.0 [https://github.com/woocommerce/woocommerce-android/pull/12186]
 
 19.8
 -----
