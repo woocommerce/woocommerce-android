@@ -8,11 +8,13 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -127,6 +129,22 @@ class WooPosToolbarViewModelTest {
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ExitPosClicked)
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosToolbarState.Menu.Hidden)
+    }
+
+    @Test
+    fun `when connect to card reader clicked multiple times, then debounce prevents multiple clicks`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(cardReaderFacade, times(1)).connectToReader()
     }
 
     private fun createViewModel() = WooPosToolbarViewModel(
