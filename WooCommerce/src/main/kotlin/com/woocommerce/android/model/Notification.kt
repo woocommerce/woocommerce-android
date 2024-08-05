@@ -93,7 +93,7 @@ fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String
         NotificationModel.Kind.BLAZE_APPROVED_NOTE,
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
-        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.getMessageSnippet()
+        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.getTitleSnippet()
 
         else -> resourceProvider.getString(R.string.support_push_notification_message)
     }
