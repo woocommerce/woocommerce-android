@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,48 +38,39 @@ fun WooPosPaymentSuccessScreen(
 ) {
     Column(
         modifier = Modifier
+            .padding(24.dp.toAdaptivePadding())
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(Color(0xFF98F179)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Column(
-            modifier = Modifier
-                .padding(24.dp.toAdaptivePadding())
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
 
-            Icon(
-                painter = painterResource(id = R.drawable.woo_pos_ic_payment_success),
-                tint = Color.Unspecified,
-                contentDescription = null,
-            )
-            Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-            Text(
-                text = stringResource(R.string.woopos_payment_successful_label),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.onSurface
-            )
+        Icon(
+            painter = painterResource(id = R.drawable.woo_pos_ic_payment_success),
+            tint = Color.Unspecified,
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.height(56.dp.toAdaptivePadding()))
+        Text(
+            text = stringResource(R.string.woopos_payment_successful_label),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.onSurface
+        )
 
-            Text(
-                text = stringResource(R.string.woopos_success_screen_total, state.orderTotalText),
-                style = MaterialTheme.typography.subtitle1,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.onSurface,
-                modifier = Modifier.padding(24.dp.toAdaptivePadding())
-            )
+        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
 
-            Spacer(modifier = Modifier.weight(1f))
-        }
+        Text(
+            text = stringResource(R.string.woopos_success_screen_total, state.orderTotalText),
+            style = MaterialTheme.typography.subtitle1,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.onSurface,
+        )
 
-        Spacer(modifier = Modifier.height(24.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(80.dp.toAdaptivePadding()))
 
         OutlinedButton(
             modifier = Modifier
@@ -106,6 +96,8 @@ fun WooPosPaymentSuccessScreen(
                 textAlign = TextAlign.Center
             )
         }
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
