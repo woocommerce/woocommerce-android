@@ -5,7 +5,8 @@ import org.wordpress.android.fluxc.model.notification.NotificationModel
 enum class WooNotificationType {
     NEW_ORDER,
     PRODUCT_REVIEW,
-    LOCAL_REMINDER
+    LOCAL_REMINDER,
+    BLAZE;
 }
 
 fun NotificationModel.getWooType(): WooNotificationType {
