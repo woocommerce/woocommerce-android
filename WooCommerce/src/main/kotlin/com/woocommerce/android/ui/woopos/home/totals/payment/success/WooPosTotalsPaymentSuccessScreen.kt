@@ -83,6 +83,7 @@ fun WooPosPaymentSuccessScreen(
             targetValue = if (bottomAnimationStarted) 80.dp else 16.dp,
             label = "Check mark size"
         )
+        @Suppress("DestructuringDeclarationWithTooManyEntries")
         ConstraintLayout {
             val (icon, title, message, button) = createRefs()
 
