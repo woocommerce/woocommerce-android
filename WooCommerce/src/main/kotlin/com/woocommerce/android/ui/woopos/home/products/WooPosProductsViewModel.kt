@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.products
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,7 +28,7 @@ class WooPosProductsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val priceFormat: WooPosFormatPrice,
-    private val preferencesRepository: WooPosPreferencesRepository
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
@@ -76,6 +79,7 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked -> {
                 onSimpleProductsOnlyBannerLearnMoreClicked()
             }
+
             WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked -> {
                 onSimpleProductsDialogInfoClicked()
             }
@@ -156,14 +160,15 @@ class WooPosProductsViewModel @Inject constructor(
         }
 
     private suspend fun List<Product>.toContentState() = WooPosProductsViewState.Content(
-        products = map { product ->
-            WooPosProductsListItem(
-                id = product.remoteId,
-                name = product.name,
-                price = priceFormat(product.price),
-                imageUrl = product.firstImageUrl,
-            )
-        },
+        products = applyPosProductFilter()
+            .map { product ->
+                WooPosProductsListItem(
+                    id = product.remoteId,
+                    name = product.name,
+                    price = priceFormat(product.price),
+                    imageUrl = product.firstImageUrl,
+                )
+            },
         loadingMore = false,
         reloadingProductsWithPullToRefresh = false,
         bannerState = WooPosProductsViewState.Content.BannerState(
@@ -221,3 +226,20 @@ class WooPosProductsViewModel @Inject constructor(
         return preferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser.first()
     }
 }
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+fun List<Product>.applyPosProductFilter() = this.filter { product ->
+    isProductPublished(product) &&
+        isProductHasAPrice(product) &&
+        isProductNotVirtual(product) &&
+        isProductNotDownloadable(product)
+}
+
+private fun isProductNotDownloadable(product: Product) = !product.isDownloadable
+
+private fun isProductNotVirtual(product: Product) = !product.isVirtual
+
+private fun isProductHasAPrice(product: Product) =
+    (product.price != null && product.price.compareTo(BigDecimal.ZERO) != 0)
+
+private fun isProductPublished(product: Product) = product.status == ProductStatus.PUBLISH
