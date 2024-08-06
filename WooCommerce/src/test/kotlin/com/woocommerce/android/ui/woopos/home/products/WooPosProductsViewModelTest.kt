@@ -53,7 +53,7 @@ class WooPosProductsViewModelTest {
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = "simple"
+                productType = "simple",
             ),
             ProductTestUtils.generateProduct(
                 productId = 2,
@@ -793,7 +793,51 @@ class WooPosProductsViewModelTest {
                 productName = "Product 1",
                 amount = "10.0",
                 productType = "simple",
-                customStatus = "private"
+                customStatus = "private",
+                isDownloadable = false,
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple",
+                isDownloadable = false,
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.viewState.test {
+            // THEN
+            val value = awaitItem() as WooPosProductsViewState.Content
+            assertThat(value.products).hasSize(1)
+            assertThat(value.products[0].id).isEqualTo(2)
+            assertThat(value.products[0].name).isEqualTo("Product 2")
+            assertThat(value.products[0].price).isEqualTo("$20.0")
+            assertThat(value.products[0].imageUrl).isEqualTo("https://test.com")
+        }
+
+    }
+
+    @Test
+    fun `given products list, then only products with a price are displayed`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "0",
+                productType = "simple",
+                customStatus = "private",
+                isDownloadable = false,
             ),
             ProductTestUtils.generateProduct(
                 productId = 2,
