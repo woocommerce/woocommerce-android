@@ -6,7 +6,7 @@ enum class WooNotificationType {
     NEW_ORDER,
     PRODUCT_REVIEW,
     LOCAL_REMINDER,
-    BLAZE;
+    BLAZE
 }
 
 fun NotificationModel.getWooType(): WooNotificationType {
