@@ -464,9 +464,17 @@ class CardReaderPaymentViewModel
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
-        triggerEvent(PlayChaChing)
-        showPaymentSuccessfulState()
-        reFetchOrder()
+        val flowParam: CardReaderFlowParam.PaymentOrRefund = arguments.paymentOrRefund
+        if (flowParam is CardReaderFlowParam.PaymentOrRefund.Payment &&
+            flowParam.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+        ) {
+            reFetchOrder()
+            onCancelPaymentFlow()
+        } else {
+            triggerEvent(PlayChaChing)
+            showPaymentSuccessfulState()
+            reFetchOrder()
+        }
     }
 
     @VisibleForTesting
