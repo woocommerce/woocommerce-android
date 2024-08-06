@@ -8,15 +8,18 @@ fun List<ProductRefundListItem>.calculateTotals(): Pair<BigDecimal, BigDecimal> 
     var taxes = BigDecimal.ZERO
     var subtotal = BigDecimal.ZERO
     this.forEach { item ->
-        val quantity = item.quantity.toBigDecimal()
-        subtotal += quantity.times(item.orderItem.price)
-
-        val singleItemTax = item.orderItem.totalTax.divide(
-            item.orderItem.quantity.toBigDecimal(),
-            2,
-            HALF_UP
-        )
-        taxes += quantity.times(singleItemTax)
+        val (itemSubtotal, itemTaxes) = item.calculateTotal()
+        subtotal += itemSubtotal
+        taxes += itemTaxes
     }
+    return Pair(subtotal, taxes)
+}
+
+fun ProductRefundListItem.calculateTotal(): Pair<BigDecimal, BigDecimal> {
+    val quantity = quantity.toBigDecimal()
+    val subtotal = quantity.times(orderItem.price)
+
+    val singleItemTax = orderItem.totalTax.divide(orderItem.quantity.toBigDecimal(), 2, HALF_UP)
+    val taxes = quantity.times(singleItemTax)
     return Pair(subtotal, taxes)
 }
