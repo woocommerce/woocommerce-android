@@ -3,6 +3,16 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+repositories {
+    maven {
+        url 'https://a8c-libs.s3.amazonaws.com/android'
+        content {
+            includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
+        }
+    }
+}
+
 android {
     namespace 'com.woocommerce.commons'
     compileSdk gradle.ext.compileSdkVersion
@@ -22,5 +32,7 @@ android {
 }
 
 dependencies {
+    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
     implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
 }
