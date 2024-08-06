@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 15:54:04+0000
+Translation-Revision-Date: 2024-07-31 19:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">Hecho</string>
+    <string name="google_ads_campaign_created_success_description">Se ha creado tu nueva campaña. ¡Se avecinan momentos emocionantes para tus ventas!</string>
+    <string name="google_ads_campaign_created_success_title">¡Todo listo!</string>
+    <string name="woopos_totals_order_creation_error">No se ha podido crear el pedido</string>
+    <string name="woopos_products_loading_error_retry_button">Reintentar</string>
+    <string name="woopos_error_icon_content_description">Icono de indicación de error</string>
+    <string name="woopos_products_loading_error_message">¿Intentarlo de nuevo?</string>
+    <string name="woopos_products_loading_error_title">Se ha producido un error al cargar los productos</string>
+    <string name="woopos_products_empty_list_message_two">Las órdenes de compra actualmente solo admiten productos simples</string>
+    <string name="woopos_products_empty_list_message">Las órdenes de compra actualmente solo admiten productos simples: \ncrear uno para empezar.</string>
+    <string name="woopos_products_empty_list_title">No se han encontrado productos compatibles</string>
+    <string name="woopos_products_empty_list_image_description">Sin productos</string>
+    <string name="woopos_splash_message">Atendamos a algunos clientes</string>
+    <string name="woopos_splash_title">Puesta en marcha</string>
+    <string name="woopos_get_support_title">Conseguir ayuda</string>
+    <string name="woopos_reader_disconnected">Conectar con tu lector</string>
+    <string name="ai_product_creation_photo_removed">Foto eliminada</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Explorando imagen</string>
+    <string name="ai_product_creation_image_selected_subtitle">Texto de foto añadido a la información inicial</string>
+    <string name="ai_product_creation_image_scan_subtitle">Añadir texto escaneado a partir de una foto</string>
+    <string name="analytics_google_ads_filter_clicks">Clics</string>
+    <string name="analytics_google_ads_filter_impressions">Impresiones</string>
+    <string name="analytics_google_ads_filter_conversion">Conversión</string>
+    <string name="analytics_google_ads_filter_spend">Gasto</string>
+    <string name="analytics_google_ads_filter_total_sales">Ventas totales</string>
+    <string name="analytics_google_ads_metric_card_title">Métrica</string>
+    <string name="analytics_total_sales_subtitle_value">Ventas totales: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Gasto: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Selección de filtro</string>
+    <string name="woopos_cart_empty_content_description">El carrito está vacío</string>
+    <string name="woopos_cart_empty_subtitle">Toca un producto para\nañadirlo al carrito</string>
+    <string name="woopos_totals_main_error_label">No se han podido cargar los totales</string>
+    <string name="woopos_items_in_cart_multiple">%d elementos</string>
+    <string name="ai_product_creation_error_media_upload">No se ha podido cargar la imagen del producto seleccionado.</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;¡Buena sugerencia!&lt;/b&gt; Nos has proporcionado suficiente información con la que trabajar, pero puedes añadir más detalles para que resulte aún mejor.</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;¡Buena sugerencia!&lt;/b&gt; ¿Dónde se ha hecho?</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;Va mejorando.&lt;/b&gt; ¿Puedes describir el tamaño y las características distintivas del elemento?</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;Añadir más detalles.&lt;/b&gt; Cuantos más detalles proporciones, mejores serán los detalles generados.</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">Añade el nombre de tu producto y las características, ventajas o detalles clave para ayudar a que se pueda encontrar en Internet.</string>
+    <string name="product_creation_ai_select_next_option">Elegir opción siguiente</string>
+    <string name="product_creation_ai_select_previous_option">Elegir opción anterior</string>
+    <string name="product_creation_ai_preview_generate_again">Volver a generar</string>
+    <string name="product_creation_ai_preview_undo_edits">Deshacer las ediciones</string>
+    <string name="product_creation_ai_preview_variant_selector">Opción %1$d de %2$d</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">Ver todas las campañas</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">Crear campaña</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">Clics</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">Impresiones</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">Rendimiento de la campaña de pago</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">Promociona tus productos en la búsqueda de Google, Shopping, YouTube, Gmail y más.</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">Dirige las ventas y genera más tráfico con Google Ads</string>
+    <string name="my_store_widget_google_ads_title">Campañas de Google Ads</string>
     <string name="customers_details_none_hint">Ninguno</string>
     <string name="customers_details_no_phone_hint">No hay número de teléfono</string>
     <string name="customers_details_postal_code_value_title">Código postal</string>
@@ -30,16 +82,14 @@ Language: es
     <string name="more_menu_button_customers">Clientes</string>
     <string name="ai_product_creation_scanning_photo_error">Se ha producido un error al explorar el texto de la imagen. Inténtalo de nuevo.</string>
     <string name="ai_product_creation_scanning_image">Explorando imagen</string>
-    <string name="ai_product_creation_image_selected_subtitle">La imagen se añadirá al producto</string>
     <string name="ai_product_creation_image_selected">Imagen elegida</string>
     <string name="ai_product_creation_remove_image">Eliminar imagen</string>
     <string name="ai_product_creation_replace_image">Reemplazar foto</string>
     <string name="ai_product_creation_view_image">Ver imagen</string>
     <string name="product_creation_ai_preview_name_description_sections">Nombre, resumen y descripción</string>
     <string name="product_creation_ai_preview_subtitle">Puedes editar o volver a generar los detalles del producto antes de guardar.</string>
-    <string name="product_detail_publish">Publicar</string>
     <string name="analytics_google_ads_programs_card_title">Programas</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_card_title">Campañas de Google</string>
     <string name="analytics_google_ads_no_data">No hay programas en este periodo</string>
     <string name="woopos_reader_connect_now_button">Conectar ahora</string>
     <string name="woopos_cart_title">Carrito</string>
@@ -59,8 +109,8 @@ Language: es
     <string name="woopos_cart_back_content_description">Icono de carrito</string>
     <string name="woopos_products_screen_title">Productos</string>
     <string name="woopos_product_image_description">Imagen del producto</string>
-    <string name="woopos_items_in_cart">%d elementos</string>
-    <string name="woopos_clear_cart_button">Borrar todo</string>
+    <string name="woopos_items_in_cart">%d elemento</string>
+    <string name="woopos_clear_cart_button">Borrar</string>
     <string name="more_menu_button_google_description">Dirige las ventas y genera más tráfico con Google Ads</string>
     <string name="more_menu_button_google">Google para WooCommerce</string>
     <string name="no_quantity_rules">No hay reglas de cantidad</string>
@@ -73,8 +123,6 @@ Language: es
     <string name="woopos_checkout_button">Finalizar compra</string>
     <string name="woopos_reader_unknown">Estado del lector desconocido</string>
     <string name="woopos_checkout">Finalizar compra</string>
-    <string name="woopos_reader_disconnected">Lector desconectado</string>
-    <string name="woopos_reader_connecting">Conectando lector</string>
     <string name="woopos_reader_connected">Lector conectado</string>
     <string name="woopos_exit_pos">Salir del punto de venta</string>
     <string name="dashboard_new_widgets_card_button">Añadir nuevas secciones</string>

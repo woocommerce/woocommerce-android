@@ -505,9 +505,11 @@
     <string name="analytics_google_ads_no_data">No Programs this period</string>
     <string name="analytics_session_no_data">No sessions this period</string>
     <string name="analytics_session_no_available">Session data unavailable</string>
+    <string name="analytics_custom_list_selection_button_description">Filter selection</string>
     <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
-    <string name="analytics_spend_value">Spend: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Spend: %1$s</string>
+    <string name="analytics_total_sales_subtitle_value">Total Sales: %1$s</string>
     <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
@@ -526,12 +528,22 @@
     <string name="analytics_bundles_card_title">Bundles</string>
     <string name="analytics_gift_cards_card_title">Gift Cards</string>
     <string name="analytics_google_ads_card_title">Google Campaigns</string>
+    <string name="analytics_google_ads_metric_card_title">Metric</string>
+    <string name="analytics_google_ads_filter_total_sales">Total Sales</string>
+    <string name="analytics_google_ads_filter_spend">Spend</string>
+    <string name="analytics_google_ads_filter_conversion">Conversion</string>
+    <string name="analytics_google_ads_filter_impressions">Impressions</string>
+    <string name="analytics_google_ads_filter_clicks">Clicks</string>
     <string name="analytics_google_ads_programs_card_title">Programs</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
     <string name="analytics_item">item</string>
     <string name="analytics_items">items</string>
     <string name="analytics_list_item_products_sold">%1$s, %2$s, %3$s, %4$s sold</string>
+    <string name="analytics_google_ads_cta_title">Google Campaigns</string>
+    <string name="analytics_google_ads_cta_description">Drive sales and generate more traffic with Google Ads.</string>
+    <string name="analytics_google_ads_cta_action">Add paid campaign</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
 
     <string name="analytics_wip_title">See your stats, revenue and more from your device!</string>
     <string name="analytics_wip_message">We\'ve been working on making it possible to display significant store information from your device! Could it be better? Please help us improve this feature by sharing your feedback with us</string>
@@ -2247,7 +2259,9 @@
     <string name="ai_product_creation_replace_image">Replace photo</string>
     <string name="ai_product_creation_remove_image">Remove photo</string>
     <string name="ai_product_creation_image_selected">Photo selected</string>
-    <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
+    <string name="ai_product_creation_image_scan_subtitle">Add text scanned from a photo</string>
+    <string name="ai_product_creation_image_selected_subtitle">Photo text added to starting info</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Scanning image</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Please try again</string>
     <string name="ai_product_creation_prompt_suggestion_initial">Add your product\'s name and key features, benefits, or details to help it get found online.</string>
@@ -2256,6 +2270,7 @@
     <string name="ai_product_creation_prompt_suggestion_almost_there"><![CDATA[<b>Great prompt!</b> Where was it made?]]></string>
     <string name="ai_product_creation_prompt_suggestion_great_prompt"><![CDATA[<b>Great prompt!</b> You\'ve given us enough to work with, but you may add more detail to make it even better.]]></string>
     <string name="ai_product_creation_error_media_upload">Failed to upload the selected product image.</string>
+    <string name="ai_product_creation_photo_removed">Photo removed</string>
 
     <!--
         Product Add more details Bottom sheet
@@ -3594,6 +3609,7 @@
     <string name="support_request_title">Let\'s get this sorted</string>
     <string name="support_request_description">Let us know your site address (URL) and tell us as much as you can about the problem, and we will be in touch soon.</string>
     <string name="support_request_subject">Subject</string>
+    <string name="support_request_site_address">Site Address</string>
     <string name="support_request_submit">Submit Support Request</string>
     <string name="support_request_message">Message</string>
     <string name="support_request_message_hint">Write something</string>
@@ -4170,7 +4186,7 @@
     -->
     <string name="woopos_exit_pos">Exit POS</string>
     <string name="woopos_reader_connected">Reader Connected</string>
-    <string name="woopos_reader_disconnected">Reader Disconnected</string>
+    <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_unknown">Reader Status Unknown</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -4178,7 +4194,20 @@
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
+    <string name="woopos_banner_simple_products_only_title">Showing simple products only</string>
+    <string name="woopos_banner_simple_products_only_message">Only simple physical products are compatible with POS right now. Other product types, such as variable and virtual, will become available in future updates. </string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Learn more</string>
+    <string name="woopos_banner_simple_products_close_content_description">Close</string>
+    <string name="woopos_banner_simple_products_info_content_description">Info</string>
+
+    <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
+    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\nOther product types, such as variable and virtual, will be available in future updates.</string>
+    <string name="woopos_dialog_products_info_secondary_message">To take payment for a non-simple product, exit POS and create a new order from the orders tab.</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Create an order in store management</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+
     <string name="woopos_exit_confirmation_title">Exit POS</string>
+    <string name="woopos_get_support_title">Get Support</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
@@ -4189,16 +4218,29 @@
     <string name="woopos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
-    <string name="woopos_new_transaction_button">New transaction</string>
+    <string name="woopos_new_order_button">New order</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Tax</string>
     <string name="woopos_payment_total_label">Total</string>
-    <string name="woopos_payment_collect_payment_label">Collect card payment</string>
+    <string name="woopos_payment_collect_payment_label">Collect Card Payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
+    <string name="woopos_splash_title">Starting up</string>
+    <string name="woopos_splash_message">Let’s serve some customers</string>
+    <string name="woopos_products_empty_list_image_description">No products</string>
+    <string name="woopos_products_empty_list_title">No supported products found</string>
+    <string name="woopos_products_empty_list_message">POS currently only supports simple products – \ncreate one to get started.</string>
+    <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
+    <string name="woopos_products_loading_error_title">Error loading products</string>
+    <string name="woopos_products_loading_error_message">Give it another go?</string>
+    <string name="woopos_error_icon_content_description">Error indication icon</string>
+    <string name="woopos_products_loading_error_retry_button">Rerty</string>
+    <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
+    <string name="woopos_success_screen_total">A payment of %1$s was successfully made</string>
+
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
@@ -4220,4 +4262,11 @@
 
     <string name="customers_details_no_phone_hint">No phone number</string>
     <string name="customers_details_none_hint">None</string>
+
+    <!--
+    Google ads campaign creation
+    -->
+    <string name="google_ads_campaign_created_success_title">Ready to Go!</string>
+    <string name="google_ads_campaign_created_success_description">Your new campaign has been created. Exciting times ahead for your sales!</string>
+    <string name="google_ads_campaign_created_success_done_button">Done</string>
 </resources>

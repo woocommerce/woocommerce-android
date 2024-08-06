@@ -639,6 +639,7 @@ class AnalyticsTracker private constructor(
         // -- AI product creation
         const val KEY_TONE = "tone"
         const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
+        const val KEY_FEATURE_WORD_COUNT = "feature_word_count"
 
         // -- AI product from package photo
         const val KEY_SCANNED_TEXT_COUNT = "scanned_text_count"
@@ -660,14 +661,26 @@ class AnalyticsTracker private constructor(
         const val KEY_THEME_PICKER_LAYOUT_PREVIEW = "layout"
         const val KEY_THEME_PICKER_PAGE_PREVIEW = "page"
 
-        // Analytics Hub Settings
+        // Analytics Hub
         const val KEY_ENABLED_CARDS = "enabled_cards"
         const val KEY_DISABLED_CARDS = "disabled_cards"
+        const val KEY_METRIC_CARD = "card"
+        const val KEY_SELECTED_METRIC = "selected_metric"
 
         // Dynamic Dashboard
         const val KEY_NEW_CARD_AVAILABLE = "new_card_available"
         const val KEY_CARDS = "cards"
         const val KEY_SORTED_CARDS = "sorted_cards"
+
+        // -- Google for Woo
+        const val KEY_GOOGLEADS_SOURCE = "source"
+        const val KEY_GOOGLEADS_TYPE = "type"
+        const val KEY_GOOGLEADS_HAS_CAMPAIGNS = "has_campaigns"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE = "my_store"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MOREMENU = "more_menu"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION = "creation"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_DASHBOARD = "dashboard"
+        const val VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB = "analytics_hub"
 
         var sendUsageStats: Boolean = true
             set(value) {

@@ -19,6 +19,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Requ
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +28,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SupportRequestFormActivity : AppCompatActivity() {
     @Inject lateinit var supportHelper: SupportHelper
+
+    @Inject lateinit var zendeskSettings: ZendeskSettings
 
     private val viewModel: SupportRequestFormViewModel by viewModels()
 
@@ -42,6 +45,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        zendeskSettings.setup(context = this)
+
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
             setContentView(root)
             setupActionBar()
@@ -59,6 +65,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
         binding.requestSubject.setOnTextChangedListener { viewModel.onSubjectChanged(it.toString()) }
+        binding.requestSiteAddress.setOnTextChangedListener { viewModel.onSiteAddressChanged(it.toString()) }
         binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
         binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
             when (selectionID) {

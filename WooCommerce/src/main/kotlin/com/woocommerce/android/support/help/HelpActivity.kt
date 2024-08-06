@@ -64,6 +64,8 @@ class HelpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        zendeskSettings.setup(context = this)
+
         binding = ActivityHelpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

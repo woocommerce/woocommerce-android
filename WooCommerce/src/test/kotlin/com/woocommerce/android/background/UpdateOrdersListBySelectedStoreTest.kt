@@ -2,6 +2,7 @@ package com.woocommerce.android.background
 
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
+import com.woocommerce.android.ui.orders.list.StoreOrdersListLastUpdate
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertFalse
@@ -21,8 +22,9 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UpdateOrdersListTest : BaseUnitTest() {
+class UpdateOrdersListBySelectedStoreTest : BaseUnitTest() {
     private val defaultListDescriptor = WCOrderListDescriptor(SiteModel().apply { id = 1 })
+    private val storeOrdersListLastUpdate: StoreOrdersListLastUpdate = mock()
     private val defaultOrderResponse = List(5) { i ->
         OrderTestUtils.generateOrder().copy(orderId = i.toLong())
     }
@@ -31,10 +33,11 @@ class UpdateOrdersListTest : BaseUnitTest() {
     private val listStore: ListStore = mock()
     private val ordersStore: WCOrderStore = mock()
 
-    val sut = UpdateOrdersList(
+    val sut = UpdateOrderListBySelectedStore(
         getWCOrderListDescriptorWithFilters = getWCOrderListDescriptorWithFilters,
         listStore = listStore,
-        ordersStore = ordersStore
+        ordersStore = ordersStore,
+        storeOrdersListLastUpdate = storeOrdersListLastUpdate
     )
 
     @Test
@@ -49,6 +52,7 @@ class UpdateOrdersListTest : BaseUnitTest() {
         // Assertions
         val expectedIds = defaultOrderResponse.map { it.orderId }
         verify(listStore).saveListFetched(defaultListDescriptor, expectedIds, false)
+        verify(storeOrdersListLastUpdate).invoke(defaultListDescriptor.uniqueIdentifier.value)
         assertTrue(result)
     }
 
@@ -68,6 +72,7 @@ class UpdateOrdersListTest : BaseUnitTest() {
         // Assertions
         val expectedIds = defaultOrderResponse.map { it.orderId }
         verify(listStore, never()).saveListFetched(defaultListDescriptor, expectedIds, false)
+        verify(storeOrdersListLastUpdate, never()).invoke(defaultListDescriptor.uniqueIdentifier.value)
         assertFalse(result)
     }
 
@@ -83,6 +88,7 @@ class UpdateOrdersListTest : BaseUnitTest() {
         // Assertions
         val expectedIds = defaultOrderResponse.map { it.orderId }
         verify(listStore, never()).saveListFetched(defaultListDescriptor, expectedIds, false)
+        verify(storeOrdersListLastUpdate, never()).invoke(defaultListDescriptor.uniqueIdentifier.value)
         assertFalse(result)
     }
 
@@ -98,6 +104,7 @@ class UpdateOrdersListTest : BaseUnitTest() {
         // Assertions
         val expectedIds = defaultOrderResponse.map { it.orderId }
         verify(listStore, never()).saveListFetched(defaultListDescriptor, expectedIds, false)
+        verify(storeOrdersListLastUpdate).invoke(defaultListDescriptor.uniqueIdentifier.value)
         assertTrue(result)
     }
 }

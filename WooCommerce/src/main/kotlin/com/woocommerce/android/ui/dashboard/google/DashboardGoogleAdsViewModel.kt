@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.DashboardWidget
@@ -30,13 +33,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @HiltViewModel(assistedFactory = DashboardGoogleAdsViewModel.Factory::class)
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "LongParameterList", "UnusedPrivateMember")
 class DashboardGoogleAdsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val googleAdsStore: WCGoogleStore,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val EPOCH_DATE = "1970-01-01"
@@ -49,10 +53,7 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     private val refreshTrigger = merge(_refreshTrigger, (parentViewModel.refreshTrigger))
         .onStart { emit(RefreshEvent()) }
 
-    private val successUrlTriggers = listOf(
-        AppUrls.GOOGLE_ADMIN_FIRST_CAMPAIGN_CREATION_SUCCESS_TRIGGER,
-        AppUrls.GOOGLE_ADMIN_SUBSEQUENT_CAMPAIGN_CREATION_SUCCESS_TRIGGER
-    )
+    private var storeHasCampaigns = false
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = refreshTrigger
@@ -61,8 +62,18 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
 
             hasGoogleAdsCampaigns().fold(
                 onSuccess = { hasCampaigns ->
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_DISPLAYED,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                                to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE
+                        )
+                    )
+
                     emit(
                         if (hasCampaigns) {
+                            storeHasCampaigns = true
+
                             googleAdsStore.fetchImpressionsAndClicks(
                                 site = selectedSite.get(),
                                 startDate = EPOCH_DATE, // To get all time data
@@ -90,6 +101,8 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
                                 }
                             }
                         } else {
+                            storeHasCampaigns = false
+
                             DashboardGoogleAdsState.NoCampaigns(
                                 onCreateCampaignClicked = { launchCampaignCreation() },
                                 menu = widgetMenu
@@ -113,13 +126,37 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
     )
 
     private fun launchCampaignCreation() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_CREATION,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasCampaigns
+            )
+        )
+
         val creationUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_CAMPAIGN_CREATION_SUFFIX
-        triggerEvent(ViewGoogleForWooEvent(creationUrl, successUrlTriggers))
+        triggerEvent(ViewGoogleForWooEvent(creationUrl, isCreationFlow = true))
     }
 
     private fun launchCampaignDetails() {
+        analyticsTrackerWrapper.track(
+            stat = AnalyticsEvent.GOOGLEADS_ENTRY_POINT_TAPPED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_GOOGLEADS_SOURCE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_SOURCE_MYSTORE,
+                AnalyticsTracker.KEY_GOOGLEADS_TYPE
+                    to AnalyticsTracker.VALUE_GOOGLEADS_ENTRY_POINT_TYPE_DASHBOARD,
+                AnalyticsTracker.KEY_GOOGLEADS_HAS_CAMPAIGNS
+                    to storeHasCampaigns
+            )
+        )
+
         val adminUrl = selectedSite.get().adminUrlOrDefault + AppUrls.GOOGLE_ADMIN_DASHBOARD
-        triggerEvent(ViewGoogleForWooEvent(adminUrl, successUrlTriggers))
+        triggerEvent(ViewGoogleForWooEvent(adminUrl, isCreationFlow = false))
     }
 
     fun onRefresh() {
@@ -150,10 +187,9 @@ class DashboardGoogleAdsViewModel @AssistedInject constructor(
         ) : DashboardGoogleAdsState(menu, showAllCampaignsButton)
     }
 
-    data class ViewGoogleForWooEvent(
-        val url: String,
-        val successUrls: List<String>
-    ) : MultiLiveEvent.Event()
+    data class ViewGoogleForWooEvent(val url: String, val isCreationFlow: Boolean) : MultiLiveEvent.Event()
+
+    object NavigateToGoogleAdsSuccessEvent : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

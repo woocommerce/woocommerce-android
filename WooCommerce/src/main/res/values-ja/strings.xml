@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 09:54:04+0000
+Translation-Revision-Date: 2024-07-31 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">完了</string>
+    <string name="google_ads_campaign_created_success_description">新しいキャンペーンが作成されました。 販売の楽しい時期がやってきます !</string>
+    <string name="google_ads_campaign_created_success_title">準備完了 !</string>
+    <string name="woopos_totals_order_creation_error">注文を作成できませんでした</string>
+    <string name="woopos_products_loading_error_retry_button">再試行</string>
+    <string name="woopos_error_icon_content_description">エラー表示アイコン</string>
+    <string name="woopos_products_loading_error_message">もう一度試しますか ?</string>
+    <string name="woopos_products_loading_error_title">商品の読み込み中にエラーが発生しました</string>
+    <string name="woopos_products_empty_list_message_two">現在、POS はシンプルな商品のみに対応しています</string>
+    <string name="woopos_products_empty_list_message">現在、POS はシンプルな商品のみに対応しています – \n作成して開始します。</string>
+    <string name="woopos_products_empty_list_title">サポート対象の商品が見つかりません</string>
+    <string name="woopos_products_empty_list_image_description">商品なし</string>
+    <string name="woopos_splash_message">お客様にサービスを提供しましょう</string>
+    <string name="woopos_splash_title">開始</string>
+    <string name="woopos_get_support_title">サポートを受ける</string>
+    <string name="woopos_reader_disconnected">リーダーを接続</string>
+    <string name="ai_product_creation_photo_removed">写真が削除されました</string>
+    <string name="ai_product_creation_image_scanned_subtitle">画像をスキャンしています</string>
+    <string name="ai_product_creation_image_selected_subtitle">開始情報に写真テキストを追加しました</string>
+    <string name="ai_product_creation_image_scan_subtitle">写真からスキャンしたテキストを追加</string>
+    <string name="analytics_google_ads_filter_clicks">クリック数</string>
+    <string name="analytics_google_ads_filter_impressions">インプレッション</string>
+    <string name="analytics_google_ads_filter_conversion">コンバージョン</string>
+    <string name="analytics_google_ads_filter_spend">利用額 </string>
+    <string name="analytics_google_ads_filter_total_sales">合計売上高</string>
+    <string name="analytics_google_ads_metric_card_title">メトリック</string>
+    <string name="analytics_total_sales_subtitle_value">合計売上高: %1$s</string>
+    <string name="analytics_spend_subtitle_value">利用額: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">フィルター選択</string>
+    <string name="woopos_cart_empty_content_description">お買い物カゴが空です</string>
+    <string name="woopos_cart_empty_subtitle">商品をタップして\nお買い物カゴに追加します</string>
+    <string name="woopos_totals_main_error_label">合計を読み込めませんでした</string>
+    <string name="woopos_items_in_cart_multiple">%d個のアイテム</string>
+    <string name="ai_product_creation_error_media_upload">選択した商品の画像のアップロードに失敗しました。</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;すばらしいプロンプトです。&lt;/b&gt; 十分な情報をご提供いただきましたが、細かい部分を追加して、さらに良くすることも可能です。</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;すばらしいプロンプトです。&lt;/b&gt; どこで作られたものですか ?</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;良くなっています。&lt;/b&gt; 商品のフィット感や特徴について詳細をお知らせください。</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;詳細を追加してください。&lt;/b&gt; 提供する情報が多いほど、より適切な詳細が生成されます。</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">商品名や主要な機能、利点、詳細を追加して商品をオンラインで見つけてもらいやすくします。</string>
+    <string name="product_creation_ai_select_next_option">次のオプションを選択</string>
+    <string name="product_creation_ai_select_previous_option">前のオプションを選択</string>
+    <string name="product_creation_ai_preview_generate_again">もう一度生成</string>
+    <string name="product_creation_ai_preview_undo_edits">編集を元に戻す</string>
+    <string name="product_creation_ai_preview_variant_selector">オプション%1$d/%2$d</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">すべてのキャンペーンを表示</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">キャンペーンを作成</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">クリック数</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">インプレッション</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">有料キャンペーンのパフォーマンス</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">Google 検索、ショッピング、YouTube、Gmail などで商品を宣伝できます。</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">Google 広告で売上を伸ばし、トラフィックを増やしましょう</string>
+    <string name="my_store_widget_google_ads_title">Google 広告キャンペーン</string>
     <string name="customers_details_none_hint">なし</string>
     <string name="customers_details_no_phone_hint">電話番号がありません</string>
     <string name="customers_details_postal_code_value_title">郵便番号</string>
@@ -30,16 +82,14 @@ Language: ja_JP
     <string name="more_menu_button_customers">顧客</string>
     <string name="ai_product_creation_scanning_photo_error">写真からテキストを読み取ろうとしてエラーが発生しました。 もう一度お試しください</string>
     <string name="ai_product_creation_scanning_image">画像をスキャンしています</string>
-    <string name="ai_product_creation_image_selected_subtitle">写真が商品に追加されます</string>
     <string name="ai_product_creation_image_selected">写真が選択されました</string>
     <string name="ai_product_creation_remove_image">写真を削除</string>
     <string name="ai_product_creation_replace_image">写真を置換</string>
     <string name="ai_product_creation_view_image">写真を表示</string>
     <string name="product_creation_ai_preview_name_description_sections">名前、概要、説明</string>
     <string name="product_creation_ai_preview_subtitle">保存する前に商品詳細を編集または再生成できます。</string>
-    <string name="product_detail_publish">公開</string>
     <string name="analytics_google_ads_programs_card_title">プログラム</string>
-    <string name="analytics_google_ads_card_title">Google 広告</string>
+    <string name="analytics_google_ads_card_title">Google キャンペーン</string>
     <string name="analytics_google_ads_no_data">この期間のプログラムはありません</string>
     <string name="woopos_reader_connect_now_button">いますぐ連携</string>
     <string name="woopos_cart_title">お買い物カゴ</string>
@@ -60,7 +110,7 @@ Language: ja_JP
     <string name="woopos_products_screen_title">商品</string>
     <string name="woopos_product_image_description">商品画像</string>
     <string name="woopos_items_in_cart">%d個のアイテム</string>
-    <string name="woopos_clear_cart_button">すべてクリア</string>
+    <string name="woopos_clear_cart_button">消去</string>
     <string name="more_menu_button_google_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう</string>
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="no_quantity_rules">数量ルールなし</string>
@@ -73,8 +123,6 @@ Language: ja_JP
     <string name="woopos_checkout_button">購入手続き</string>
     <string name="woopos_reader_unknown">Reader ステータス不明</string>
     <string name="woopos_checkout">購入手続き</string>
-    <string name="woopos_reader_disconnected">Reader 切断済み</string>
-    <string name="woopos_reader_connecting">Reader 接続中</string>
     <string name="woopos_reader_connected">Reader 接続済み</string>
     <string name="woopos_exit_pos">POS を終了</string>
     <string name="dashboard_new_widgets_card_button">新しいセクションを追加</string>

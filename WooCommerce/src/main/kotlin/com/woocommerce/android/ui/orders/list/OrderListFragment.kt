@@ -344,6 +344,7 @@ class OrderListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        viewModel.loadOrders()
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             refreshOrders()
         }
@@ -638,6 +639,9 @@ class OrderListFragment :
             new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
                 displayTimeoutErrorCard(it)
             }
+        }
+        viewModel.lastUpdateOrdersList.observe(viewLifecycleOwner) { lastUpdate ->
+            binding.orderFiltersCard.updateLastUpdate(lastUpdate)
         }
     }
 

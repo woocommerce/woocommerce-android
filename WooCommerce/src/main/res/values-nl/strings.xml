@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 15:54:05+0000
+Translation-Revision-Date: 2024-07-31 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">Gereed</string>
+    <string name="google_ads_campaign_created_success_description">Je nieuwe campagne is gemaakt. Er komen geweldige momenten aan voor jouw omzet!</string>
+    <string name="google_ads_campaign_created_success_title">Klaar voor de start!</string>
+    <string name="woopos_totals_order_creation_error">Bestelling kan niet worden aangemaakt</string>
+    <string name="woopos_products_loading_error_retry_button">Probeer het opnieuw</string>
+    <string name="woopos_error_icon_content_description">Foutpictogram</string>
+    <string name="woopos_products_loading_error_message">Nog een keertje proberen?</string>
+    <string name="woopos_products_loading_error_title">Fout bij laden van producten</string>
+    <string name="woopos_products_empty_list_message_two">POS ondersteunt momenteel alleen simpele producten</string>
+    <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele producten – \nmaak er een aan om te beginnen.</string>
+    <string name="woopos_products_empty_list_title">Geen ondersteunde producten gevonden</string>
+    <string name="woopos_products_empty_list_image_description">Geen producten</string>
+    <string name="woopos_splash_message">Laten we wat klanten helpen</string>
+    <string name="woopos_splash_title">Aan de slag</string>
+    <string name="woopos_get_support_title">Vraag om ondersteuning</string>
+    <string name="woopos_reader_disconnected">Verbind je lezer</string>
+    <string name="ai_product_creation_photo_removed">Foto verwijderd</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Afbeelding scannen</string>
+    <string name="ai_product_creation_image_selected_subtitle">Afbeeldingstekst toegevoegd aan startinformatie</string>
+    <string name="ai_product_creation_image_scan_subtitle">Voeg tekst toe die van een afbeelding is gescand</string>
+    <string name="analytics_google_ads_filter_clicks">Klikken</string>
+    <string name="analytics_google_ads_filter_impressions">Impressies</string>
+    <string name="analytics_google_ads_filter_conversion">Conversie</string>
+    <string name="analytics_google_ads_filter_spend">Uitgeven</string>
+    <string name="analytics_google_ads_filter_total_sales">Totale omzet</string>
+    <string name="analytics_google_ads_metric_card_title">Meetwaarde</string>
+    <string name="analytics_total_sales_subtitle_value">Totale omzet: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Uitgaven: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Filterselectie</string>
+    <string name="woopos_cart_empty_content_description">Winkelwagen is leeg</string>
+    <string name="woopos_cart_empty_subtitle">Tik op een product om het\ntoe te voegen aan de winkelwagen</string>
+    <string name="woopos_totals_main_error_label">Kan totalen niet laden</string>
+    <string name="woopos_items_in_cart_multiple">%d artikelen</string>
+    <string name="ai_product_creation_error_media_upload">De geselecteerde productafbeelding kan niet geüpload worden.</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;Geweldige opdracht!&lt;/b&gt; We hebben genoeg informatie om mee aan de slag te kunnen, maar als je nog meer details toevoegt, zal het resultaat nog beter zijn.</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;Geweldige opdracht!&lt;/b&gt; Waar is deze gemaakt?</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;Het gaat de goede kant op.&lt;/b&gt; Kan je de afmetingen en opvallende kenmerken van het artikel beschrijven?</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;Meer informatie toevoegen.&lt;/b&gt; Hoe meer informatie je toevoegt, hoe beter je gegenereerde details zullen zijn.</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">Voeg belangrijke functies, voordelen of details van je product toe, zodat het beter vindbaar is online.</string>
+    <string name="product_creation_ai_select_next_option">Selecteer de volgende optie</string>
+    <string name="product_creation_ai_select_previous_option">Selecteer de vorige optie</string>
+    <string name="product_creation_ai_preview_generate_again">Opnieuw genereren</string>
+    <string name="product_creation_ai_preview_undo_edits">Wijzigingen verwijderen</string>
+    <string name="product_creation_ai_preview_variant_selector">Optie %1$d van %2$d</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">Alle campagnes weergeven</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">Campagne aanmaken</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">Klikken</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">Impressies</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">Prestaties betaalde campagne</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">Promoot je producten via Google Search, Shopping, YouTube, Gmail en meer.</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">Verkoop meer en genereer meer verkeer met Google Ads</string>
+    <string name="my_store_widget_google_ads_title">Google Ads-campagnes</string>
     <string name="customers_details_none_hint">Geen</string>
     <string name="customers_details_no_phone_hint">Geen telefoonnummer</string>
     <string name="customers_details_postal_code_value_title">Postcode</string>
@@ -30,16 +82,14 @@ Language: nl
     <string name="more_menu_button_customers">Klanten</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Probeer het nog eens</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
-    <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
     <string name="ai_product_creation_image_selected">Foto geselecteerd</string>
     <string name="ai_product_creation_remove_image">Foto verwijderen</string>
     <string name="ai_product_creation_replace_image">Foto vervangen</string>
     <string name="ai_product_creation_view_image">Foto weergeven</string>
     <string name="product_creation_ai_preview_name_description_sections">Naam en beschrijving</string>
     <string name="product_creation_ai_preview_subtitle">Je kan je productgegevens bewerken of opnieuw genereren voordat je ze opslaat.</string>
-    <string name="product_detail_publish">Publiceren</string>
     <string name="analytics_google_ads_programs_card_title">programma</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_card_title">Google-campagnes</string>
     <string name="analytics_google_ads_no_data">No Programs this period</string>
     <string name="woopos_reader_connect_now_button">Nu koppelen</string>
     <string name="woopos_cart_title">Winkelwagen</string>
@@ -60,7 +110,7 @@ Language: nl
     <string name="woopos_products_screen_title">Producten</string>
     <string name="woopos_product_image_description">Productafbeelding</string>
     <string name="woopos_items_in_cart">%d items</string>
-    <string name="woopos_clear_cart_button">Alles wissen</string>
+    <string name="woopos_clear_cart_button">Wissen</string>
     <string name="more_menu_button_google_description">Verkoop meer en genereer meer verkeer met Google Ads</string>
     <string name="more_menu_button_google">Google voor WooCommerce</string>
     <string name="no_quantity_rules">Geen regels voor hoeveelheid</string>
@@ -73,8 +123,6 @@ Language: nl
     <string name="woopos_checkout_button">Afrekenen</string>
     <string name="woopos_reader_unknown">Status van lezer is onbekend</string>
     <string name="woopos_checkout">Afrekenen</string>
-    <string name="woopos_reader_disconnected">Verbinding met lezer is verbroken</string>
-    <string name="woopos_reader_connecting">Verbinden met lezer</string>
     <string name="woopos_reader_connected">Verbonden met lezer</string>
     <string name="woopos_exit_pos">POS verlaten</string>
     <string name="dashboard_new_widgets_card_button">Nieuwe delen toevoegen</string>

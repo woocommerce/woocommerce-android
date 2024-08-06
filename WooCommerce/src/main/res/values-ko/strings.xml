@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 09:54:04+0000
+Translation-Revision-Date: 2024-07-31 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">완료</string>
+    <string name="google_ads_campaign_created_success_description">새 캠페인이 생성되었습니다. 판매 시간이 다가오고 있습니다!</string>
+    <string name="google_ads_campaign_created_success_title">모든 준비를 마쳤습니다!</string>
+    <string name="woopos_totals_order_creation_error">주문을 생성할 수 없음</string>
+    <string name="woopos_products_loading_error_retry_button">다시 시도</string>
+    <string name="woopos_error_icon_content_description">오류 표시 아이콘</string>
+    <string name="woopos_products_loading_error_message">한 번 더 시도할까요?</string>
+    <string name="woopos_products_loading_error_title">상품 로드 오류</string>
+    <string name="woopos_products_empty_list_message_two">현재 POS에서는 단순 상품만 지원합니다.</string>
+    <string name="woopos_products_empty_list_message">현재 POS에서는 단순 상품만 지원합니다 - \n시작하려면 단순 상품을 생성하세요.</string>
+    <string name="woopos_products_empty_list_title">지원되는 상품을 찾을 수 없음</string>
+    <string name="woopos_products_empty_list_image_description">상품 없음</string>
+    <string name="woopos_splash_message">고객에게 서비스 제공하기</string>
+    <string name="woopos_splash_title">시작하기</string>
+    <string name="woopos_get_support_title">고객 지원</string>
+    <string name="woopos_reader_disconnected">리더 연결</string>
+    <string name="ai_product_creation_photo_removed">사진 제거됨</string>
+    <string name="ai_product_creation_image_scanned_subtitle">이미지 스캔 중</string>
+    <string name="ai_product_creation_image_selected_subtitle">시작 정보에 사진 텍스트가 추가됨</string>
+    <string name="ai_product_creation_image_scan_subtitle">사진에서 스캔된 텍스트 추가</string>
+    <string name="analytics_google_ads_filter_clicks">클릭 수</string>
+    <string name="analytics_google_ads_filter_impressions">노출 수</string>
+    <string name="analytics_google_ads_filter_conversion">전환</string>
+    <string name="analytics_google_ads_filter_spend">지출</string>
+    <string name="analytics_google_ads_filter_total_sales">총매출액</string>
+    <string name="analytics_google_ads_metric_card_title">지표</string>
+    <string name="analytics_total_sales_subtitle_value">총매출액: %1$s</string>
+    <string name="analytics_spend_subtitle_value">지출: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">필터 선택</string>
+    <string name="woopos_cart_empty_content_description">장바구니가 비어 있음</string>
+    <string name="woopos_cart_empty_subtitle">상품을 눌러\n장바구니에 추가</string>
+    <string name="woopos_totals_main_error_label">합계를 로드할 수 없음</string>
+    <string name="woopos_items_in_cart_multiple">아이템 %d개</string>
+    <string name="ai_product_creation_error_media_upload">선택한 상품 이미지를 업로드하지 못했습니다.</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;잘 설명해 주셨습니다!&lt;/b&gt; 작업에 충분한 정보를 제공해 주셨지만 상세 정보를 추가하여 결과를 더욱 개선할 수도 있습니다.</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;잘 설명해 주셨습니다!&lt;/b&gt; 어디서 만들어졌나요?</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;결과가 더 나아집니다.&lt;/b&gt; 아이템의 착용감과 기타 특징에 대해 설명해 주시겠어요?</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;상세 정보를 추가하세요.&lt;/b&gt; 더 많은 상세 정보를 제공할수록 생성되는 상세 정보가 더 좋아집니다.</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">온라인에서 상품을 찾는 데 도움이 되도록 상품의 이름, 주요 기능, 이점 또는 상세 정보를 추가하세요.</string>
+    <string name="product_creation_ai_select_next_option">다음 옵션 선택</string>
+    <string name="product_creation_ai_select_previous_option">이전 옵션 선택</string>
+    <string name="product_creation_ai_preview_generate_again">다시 생성</string>
+    <string name="product_creation_ai_preview_undo_edits">편집 실행 취소</string>
+    <string name="product_creation_ai_preview_variant_selector">옵션 %1$d/%2$d</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">모든 캠페인 보기</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">캠페인 생성</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">클릭 수</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">노출 수</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">유료 캠페인 성과</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">Google 검색, 쇼핑, YouTube, Gmail 등에서 상품을 홍보하세요.</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">Google Ads로 매출과 트래픽을 늘리세요</string>
+    <string name="my_store_widget_google_ads_title">Google Ads 캠페인</string>
     <string name="customers_details_none_hint">해당 없음</string>
     <string name="customers_details_no_phone_hint">전화번호 없음</string>
     <string name="customers_details_postal_code_value_title">우편번호</string>
@@ -30,17 +82,15 @@ Language: ko_KR
     <string name="more_menu_button_customers">고객</string>
     <string name="ai_product_creation_scanning_photo_error">사진의 텍스트를 스캔하는 동안 오류가 발생했습니다. 다시 시도해 주세요.</string>
     <string name="ai_product_creation_scanning_image">이미지 스캔 중</string>
-    <string name="ai_product_creation_image_selected_subtitle">상품에 사진이 추가됩니다.</string>
     <string name="ai_product_creation_image_selected">사진 선택됨</string>
     <string name="ai_product_creation_remove_image">사진 제거</string>
     <string name="ai_product_creation_replace_image">사진 바꾸기</string>
     <string name="ai_product_creation_view_image">사진 보기</string>
     <string name="product_creation_ai_preview_name_description_sections">이름, 요약 및 설명</string>
     <string name="product_creation_ai_preview_subtitle">저장하기 전에 상품 상세 정보를 편집하거나 재생성할 수 있습니다.</string>
-    <string name="product_detail_publish">발행</string>
     <string name="analytics_google_ads_programs_card_title">프로그램</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
     <string name="analytics_google_ads_no_data">이 기간의 프로그램 없음</string>
+    <string name="analytics_google_ads_card_title">Google 캠페인</string>
     <string name="woopos_reader_connect_now_button">지금 연결</string>
     <string name="woopos_cart_title">장바구니</string>
     <string name="ai_product_creation_generate_details_button">상품 상세 정보 만들기</string>
@@ -59,11 +109,11 @@ Language: ko_KR
     <string name="woopos_cart_back_content_description">장바구니 아이콘</string>
     <string name="woopos_products_screen_title">상품</string>
     <string name="woopos_product_image_description">상품 이미지</string>
-    <string name="woopos_items_in_cart">아이템 %d개</string>
-    <string name="woopos_clear_cart_button">모두 지우기</string>
     <string name="more_menu_button_google_description">Google Ads로 매출과 트래픽을 늘리세요</string>
     <string name="more_menu_button_google">우커머스용 Google</string>
     <string name="no_quantity_rules">수량 규칙 없음</string>
+    <string name="woopos_items_in_cart">%d개 아이템</string>
+    <string name="woopos_clear_cart_button">지우기</string>
     <string name="blaze_campaign_preview_audience_section_title">잠재 고객</string>
     <string name="woopos_exit_confirmation_dismiss_button">취소</string>
     <string name="woopos_exit_confirmation_confirm_button">종료</string>
@@ -73,8 +123,6 @@ Language: ko_KR
     <string name="woopos_checkout_button">체크아웃</string>
     <string name="woopos_reader_unknown">리더 상태 알 수 없음</string>
     <string name="woopos_checkout">체크아웃</string>
-    <string name="woopos_reader_disconnected">리더 연결 해제됨</string>
-    <string name="woopos_reader_connecting">리더 연결 중</string>
     <string name="woopos_reader_connected">리더 연결됨</string>
     <string name="woopos_exit_pos">POS 종료</string>
     <string name="dashboard_new_widgets_card_button">새 섹션 추가</string>
@@ -1473,7 +1521,6 @@ Language: ko_KR
     <string name="coupon_restrictions_allowed_emails_hint">주문을 받았을 때 확인이 허용되는 청구 이메일 목록입니다. 쉼표로 이메일 주소를 구분합니다. 이메일 일부와 일치하도록 별표(*)를 사용할 수도 있습니다. 예를 들어 \"*@gmail.com\"은 모든 gmail 주소와 일치합니다.</string>
     <string name="empty_message_with_filters">죄송합니다. 선택한 필터와 일치하는 상품이 없습니다.\"</string>
     <string name="card_reader_onboarding_confirm_payment_method_button">결제 수단 확인</string>
-    <string name="card_reader_onboarding_choose_stripe_button">스트라이프</string>
     <string name="card_reader_onboarding_choose_wcpayment_button">우커머스 결제 FAQ</string>
     <string name="card_reader_onboarding_choose_plugin_hint">이러한 결제 제공업체 중 하나를 통해 대면 결제를 처리할 수 있습니다. 어떤 제공업체를 사용하시겠나요?</string>
     <string name="card_reader_onboarding_choose_payment_provider">결제 제공업체 선택</string>
@@ -1482,6 +1529,7 @@ Language: ko_KR
     <string name="order_editing_non_editable_title">이 주문 중 일부는 현재 편집할 수 없습니다.</string>
     <string name="order_creation_customer_search_empty">고객 없음</string>
     <string name="order_creation_customer_search_hint">고객 검색</string>
+    <string name="card_reader_onboarding_choose_stripe_button">Stripe</string>
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">나중에</string>
     <string name="install_wc_shipping_flow_onboarding_screen_add_extension_button">스토어에 확장 기능 추가</string>
     <string name="install_wc_shipping_flow_onboarding_screen_link">우커머스 배송이 무엇인가요?</string>

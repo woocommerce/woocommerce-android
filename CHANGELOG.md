@@ -1,6 +1,15 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 19.8
+In our latest update, we've added a button in Google Campaign analytics for easier paid campaign creation. The Contact Support Form now includes a Site Address field. Enjoy seamless in-person payments illustrations in landscape mode, and benefit from background updates for order lists and dashboard analytics.
+
+## 19.7
+Get ready for a better WooCommerce experience with our latest update! Now, create and manage Google Ads campaigns seamlessly. Enjoy enhanced stability on the order detail screen and get helpful tips with our new AI-powered advice box during product creation. Update now for a smoother, smarter app!
+
+## 19.6
+Boost your WooCommerce experience with our latest update! Dive into enhanced analytics for Google Ads campaigns in the Analytics Hub, streamline package photo flow with our revamped Product Creation AI V2, and enjoy more reliable login. Plus, we've fixed cash payment assignments and improved button statuses on the More screen. Update now for a smoother, smarter store management!
+
 ## 19.5
 We're excited to bring you the latest update for our WooCommerce mobile app! Customize your experience with themed app icons, and enjoy the new Customer Section in the Hub Menu, where merchants can effortlessly manage customer contacts and delve into customer analytics. Plus, under the hood, we've enhanced compatibility with Android 14. Discover these improvements and more in our latest release!
 

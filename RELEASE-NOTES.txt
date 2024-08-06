@@ -1,8 +1,29 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+*** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+19.9
+-----
+- [*] [Internal] Update Android material from 1.9.0 to 1.10.0 [https://github.com/woocommerce/woocommerce-android/pull/12186]
+
+19.8
+-----
+- [*] Stats: The Google Campaign analytics card now has a call to action to create a paid campaign if there are no campaign analytics for the selected time period. [https://github.com/woocommerce/woocommerce-android/pull/12161]
+- [*] Fix broken in-person payments illustrations in landscape mode. [https://github.com/woocommerce/woocommerce-android/pull/12179]
+- [*] [Internal] Fixed an ANR related to the Zendesk SDK initialization [https://github.com/woocommerce/woocommerce-android/pull/12153]
+- [*] Contact Support Form: Added a field to enter the Site Address. [https://github.com/woocommerce/woocommerce-android/pull/12180]
+- [*] [Internal] Improved login flow to allow signing-in when one of the user's websites is duplicated on WPCom [https://github.com/woocommerce/woocommerce-android/pull/12143]
+- [*] Add support to background update the order list and the dashboard analytics cards(Performance & Top Performers).
+
 19.7
 -----
+- [**] Google Listing and Ads: Google Ads campaign creation and management is now available for sites with the plugin active and set up. [https://github.com/woocommerce/woocommerce-android/pull/12145]
 - [*] Improve stability of the OrderDetail screen [https://github.com/woocommerce/woocommerce-android/pull/12106]
+- [*] Adds new advice box to product creation with AI prompt screen [https://github.com/woocommerce/woocommerce-android/pull/12129]
+- [*] [Internal] Move UserAgent initialization to a background thread to fix ANRs caused by it [https://github.com/woocommerce/woocommerce-android/pull/12147]
+
+19.6.1
+-----
+- [***] Fixed a critical bug causing Tap to Pay to crash on Android 14. [https://github.com/woocommerce/woocommerce-android/pull/12184]
 
 19.6
 -----
@@ -11,6 +32,7 @@
 - [**] Product Creation AI V2: Milestone 1 which simplifies package photo flow and revamps UI. [https://github.com/woocommerce/woocommerce-android/issues/11800]
 - [*] The more screen shows proper loading button statuses [https://github.com/woocommerce/woocommerce-android/pull/11968]
 - [*] [Login] Improved login reliability by addressing some edge-case issues [https://github.com/woocommerce/woocommerce-android/pull/12033]
+- [*] Fix an issue with image upload on devices running Android 8 and 9 [https://github.com/woocommerce/woocommerce-android/pull/12127]
 
 19.5
 -----

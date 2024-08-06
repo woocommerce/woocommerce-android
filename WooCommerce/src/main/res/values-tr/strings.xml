@@ -1,11 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-16 15:54:04+0000
+Translation-Revision-Date: 2024-07-31 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">Tamam</string>
+    <string name="google_ads_campaign_created_success_description">Yeni kampanyanız oluşturuldu. Önümüzdeki günlerde satışlarınızla ilgili harika gelişmeler olacak!</string>
+    <string name="google_ads_campaign_created_success_title">Her Şey Hazır!</string>
+    <string name="woopos_totals_order_creation_error">Sipariş oluşturulamadı</string>
+    <string name="woopos_products_loading_error_retry_button">Yeniden dene</string>
+    <string name="woopos_error_icon_content_description">Hata göstergesi simgesi</string>
+    <string name="woopos_products_loading_error_message">Bir kez daha denemek ister misiniz?</string>
+    <string name="woopos_products_loading_error_title">Ürünler yüklenirken hata oluştu</string>
+    <string name="woopos_products_empty_list_message_two">POS şu anda yalnızca basit ürünleri destekliyor</string>
+    <string name="woopos_products_empty_list_message">POS şu anda yalnızca basit ürünleri destekliyor, \nbaşlamak için bir tane oluşturun.</string>
+    <string name="woopos_products_empty_list_title">Desteklenen ürün bulunamadı</string>
+    <string name="woopos_products_empty_list_image_description">Ürün yok</string>
+    <string name="woopos_splash_message">Birkaç müşteriye hizmet edelim</string>
+    <string name="woopos_splash_title">Başlatılıyor</string>
+    <string name="woopos_get_support_title">Destek Alın</string>
+    <string name="woopos_reader_disconnected">Okuyucunuzu bağlayın</string>
+    <string name="ai_product_creation_photo_removed">Fotoğraf kaldırıldı</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Görsel taranıyor</string>
+    <string name="ai_product_creation_image_selected_subtitle">Fotoğraf metni başlangıç menüsüne eklendi</string>
+    <string name="ai_product_creation_image_scan_subtitle">Bir fotoğraftan taranan metin ekleyin</string>
+    <string name="analytics_google_ads_filter_clicks">Tıklamalar</string>
+    <string name="analytics_google_ads_filter_impressions">İzlenimler</string>
+    <string name="analytics_google_ads_filter_conversion">Dönüşüm</string>
+    <string name="analytics_google_ads_filter_spend">Harcama</string>
+    <string name="analytics_google_ads_filter_total_sales">Toplam Satış</string>
+    <string name="analytics_google_ads_metric_card_title">Metrik</string>
+    <string name="analytics_total_sales_subtitle_value">Toplam Satış: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Harcama: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Seçimi filtreleyin</string>
+    <string name="woopos_cart_empty_content_description">Sepet boş</string>
+    <string name="woopos_cart_empty_subtitle">Sepete eklemek için\nbir ürüne dokunun</string>
+    <string name="woopos_totals_main_error_label">Toplamlar yüklenemedi</string>
+    <string name="woopos_items_in_cart_multiple">%d öğe</string>
+    <string name="ai_product_creation_error_media_upload">Seçilen ürün görseli yüklenemedi.</string>
+    <string name="ai_product_creation_prompt_suggestion_great_prompt">&lt;b&gt;Harika istem!&lt;/b&gt; Üzerinde çalışmamız için bize yeterince şey verdiniz ancak bunu daha da iyi hale getirmek için daha fazla ayrıntı eklemek isteyebilirsiniz.</string>
+    <string name="ai_product_creation_prompt_suggestion_almost_there">&lt;b&gt;Harika istem!&lt;/b&gt; Bu nerede üretildi?</string>
+    <string name="ai_product_creation_prompt_suggestion_getting_better">&lt;b&gt;Daha iyiye gidiyor.&lt;/b&gt; Ürünün uyumunu ve göze çarpan özelliklerini açıklayabilir misiniz?</string>
+    <string name="ai_product_creation_prompt_suggestion_add_more_details">&lt;b&gt;Daha fazla ayrıntı ekleyin.&lt;/b&gt; Ne kadar ayrıntı sağlarsanız oluşturulan ayrıntılarınızın o kadar iyi olur.</string>
+    <string name="ai_product_creation_prompt_suggestion_initial">Ürününüzün internette bulunmasına yardımcı olmak için ürününüzün adını ve temel özelliklerini, avantajlarını veya ayrıntılarını ekleyin.</string>
+    <string name="product_creation_ai_select_next_option">Sonraki seçeneği belirleyin</string>
+    <string name="product_creation_ai_select_previous_option">Önceki seçeneği belirleyin</string>
+    <string name="product_creation_ai_preview_generate_again">Yeniden Oluştur</string>
+    <string name="product_creation_ai_preview_undo_edits">Düzenlemeleri geri al</string>
+    <string name="product_creation_ai_preview_variant_selector">Seçenek %1$d/%2$d</string>
+    <string name="dashboard_google_ads_card_view_all_campaigns_button">Tüm kampanyaları görüntüle</string>
+    <string name="dashboard_google_ads_card_create_campaign_button">Kampanya Oluştur</string>
+    <string name="dashboard_google_ads_card_has_campaign_clicks">Tıklamalar</string>
+    <string name="dashboard_google_ads_card_has_campaign_impressions">İzlenimler</string>
+    <string name="dashboard_google_ads_card_has_campaign_heading">Ücretli kampanya performansı</string>
+    <string name="dashboard_google_ads_card_no_campaign_description">Google Arama, Alışveriş, Youtube, Gmail ve daha fazlasında ürünlerinizi tanıtın.</string>
+    <string name="dashboard_google_ads_card_no_campaign_heading">Google Ads ile satışları teşvik edin ve trafiği artırın</string>
+    <string name="my_store_widget_google_ads_title">Google Ads kampanyaları</string>
     <string name="customers_details_none_hint">Hiçbiri</string>
     <string name="customers_details_no_phone_hint">Telefon numarası yok</string>
     <string name="customers_details_postal_code_value_title">Posta kodu</string>
@@ -30,16 +82,14 @@ Language: tr
     <string name="more_menu_button_customers">Müşteriler</string>
     <string name="ai_product_creation_scanning_photo_error">Fotoğraftan metin taranmaya çalışılırken bir hata oluştu. Lütfen tekrar deneyin</string>
     <string name="ai_product_creation_scanning_image">Görsel taranıyor</string>
-    <string name="ai_product_creation_image_selected_subtitle">Fotoğraf ürüne eklenecek</string>
     <string name="ai_product_creation_image_selected">Fotoğraf seçildi</string>
     <string name="ai_product_creation_remove_image">Fotoğrafı kaldır</string>
     <string name="ai_product_creation_replace_image">Fotoğrafı değiştir</string>
     <string name="ai_product_creation_view_image">Fotoğrafı görüntüle</string>
     <string name="product_creation_ai_preview_name_description_sections">Ad, Özet ve Açıklama</string>
     <string name="product_creation_ai_preview_subtitle">Kaydetmeden önce ürün ayrıntılarınızı düzenleyebilir veya yeniden oluşturabilirsiniz.</string>
-    <string name="product_detail_publish">Yayımla</string>
     <string name="analytics_google_ads_programs_card_title">Programlar</string>
-    <string name="analytics_google_ads_card_title">Google Ads</string>
+    <string name="analytics_google_ads_card_title">Google Kampanyaları</string>
     <string name="analytics_google_ads_no_data">Bu dönemde Program yok</string>
     <string name="woopos_reader_connect_now_button">Şimdi bağlan</string>
     <string name="woopos_cart_title">Sepet</string>
@@ -59,8 +109,8 @@ Language: tr
     <string name="woopos_cart_back_content_description">Sepet simgesi</string>
     <string name="woopos_products_screen_title">Ürünler</string>
     <string name="woopos_product_image_description">Ürün Görseli</string>
-    <string name="woopos_items_in_cart">%d ürün</string>
-    <string name="woopos_clear_cart_button">Tümünü temizle</string>
+    <string name="woopos_items_in_cart">%d öğe</string>
+    <string name="woopos_clear_cart_button">Temizle</string>
     <string name="more_menu_button_google_description">Google Reklamlar ile satışları teşvik edin ve trafiği artırın</string>
     <string name="more_menu_button_google">WooCommerce için Google</string>
     <string name="no_quantity_rules">Miktar Kuralı Yok</string>
@@ -73,8 +123,6 @@ Language: tr
     <string name="woopos_checkout_button">Ödeme</string>
     <string name="woopos_reader_unknown">Okuyucu Durumu Bilinmiyor</string>
     <string name="woopos_checkout">Ödeme</string>
-    <string name="woopos_reader_disconnected">Okuyucu Bağlantısı Kesildi</string>
-    <string name="woopos_reader_connecting">Okuyucu Bağlanıyor</string>
     <string name="woopos_reader_connected">Okuyucu Bağlandı</string>
     <string name="woopos_exit_pos">POS\'tan çık</string>
     <string name="dashboard_new_widgets_card_button">Yeni bölümler ekle</string>

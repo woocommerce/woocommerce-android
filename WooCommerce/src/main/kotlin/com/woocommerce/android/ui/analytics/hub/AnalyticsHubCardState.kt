@@ -56,20 +56,25 @@ sealed class AnalyticsHubListViewState : AnalyticsCardViewState {
 
 sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
     data class LoadingAdsViewState(override val card: AnalyticsCards) : AnalyticsHubCustomSelectionListViewState()
+
     data class NoAdsState(
         override val card: AnalyticsCards,
         val message: String
     ) : AnalyticsHubCustomSelectionListViewState()
-    data class DataViewState(
+
+    data class CustomListViewState(
         override val card: AnalyticsCards,
         val title: String,
         val subTitle: String,
+        val filterTitle: String,
         val itemTitleValue: String,
         val listLeftHeader: String,
         val listRightHeader: String,
         val delta: Int?,
         val items: List<AnalyticsHubListCardItemViewState>,
-        val reportUrl: String?
+        val reportUrl: String?,
+        val filterOptions: List<String> = emptyList(),
+        val onFilterSelected: (filterOption: String) -> Unit = {}
     ) : AnalyticsHubCustomSelectionListViewState() {
         val sign: String
             get() = when {
@@ -78,5 +83,27 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
                 delta > 0 -> "+"
                 else -> "-"
             }
+    }
+
+    data class HiddenState(
+        override val card: AnalyticsCards
+    ) : AnalyticsHubCustomSelectionListViewState()
+}
+
+data class AnalyticsHubUserCallToActionViewState(
+    val title: String,
+    val description: String,
+    val callToActionText: String,
+    val isVisible: Boolean,
+    val onCallToActionClickListener: () -> Unit
+) {
+    companion object {
+        val EMPTY = AnalyticsHubUserCallToActionViewState(
+            title = "",
+            description = "",
+            callToActionText = "",
+            isVisible = false,
+            onCallToActionClickListener = {}
+        )
     }
 }
