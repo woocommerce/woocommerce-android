@@ -20,3 +20,7 @@ android {
         jvmTarget = '1.8'
     }
 }
+
+dependencies {
+    implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
+}
