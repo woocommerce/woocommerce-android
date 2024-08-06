@@ -266,7 +266,7 @@ private fun ProductsList(
             }
         }
         item {
-            Spacer(modifier = Modifier.height(112.dp))
+            Spacer(modifier = Modifier.height(104.dp))
         }
     }
     InfiniteListHandler(listState) {
