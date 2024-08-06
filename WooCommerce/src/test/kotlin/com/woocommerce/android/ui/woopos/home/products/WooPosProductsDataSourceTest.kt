@@ -29,6 +29,11 @@ class WooPosProductsDataSourceTest {
         mock<Product> { on { price }.thenReturn(BigDecimal(3)) },
     )
 
+    private val additionalProducts = listOf(
+        mock<Product> { on { price }.thenReturn(BigDecimal(4)) },
+        mock<Product> { on { price }.thenReturn(BigDecimal(5)) }
+    )
+
     private val handler: ProductListHandler = mock()
 
     @Test
@@ -40,7 +45,9 @@ class WooPosProductsDataSourceTest {
 
         // Pre-populate the cache
         sut.loadSimpleProducts(forceRefreshProducts = false).first()
-        assertThat(sut.loadSimpleProducts(forceRefreshProducts = false).first()).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
+        assertThat(
+            sut.loadSimpleProducts(forceRefreshProducts = false).first()
+        ).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
 
         // WHEN
         sut.loadSimpleProducts(forceRefreshProducts = true).first()
@@ -71,49 +78,103 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given cached and remote products, when loadSimpleProducts called, then should emit remote products after cached products`() = runTest {
-        // GIVEN
-        whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
-        whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
-        whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
-        val sut = WooPosProductsDataSource(handler)
+    fun `given cached and remote products, when loadSimpleProducts called, then should emit remote products after cached products`() =
+        runTest {
+            // GIVEN
+            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+            whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
+            whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
+            val sut = WooPosProductsDataSource(handler)
 
-        // WHEN
-        val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            // WHEN
+            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
 
-        // THEN
-        val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
-        val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+            // THEN
+            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
+            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
 
-        assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
-        assertThat(remoteResult.productsResult.isSuccess).isTrue()
-        assertThat(remoteResult.productsResult.getOrNull()).containsExactlyElementsOf(sampleProducts)
-    }
+            assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
+            assertThat(remoteResult.productsResult.isSuccess).isTrue()
+            assertThat(remoteResult.productsResult.getOrNull()).containsExactlyElementsOf(sampleProducts)
+        }
 
     @Test
-    fun `given remote load fails, when loadSimpleProducts called, then should emit cached products and then error`() = runTest {
-        // GIVEN
-        whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
-        whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
-        val exception = Exception("Remote load failed")
-        whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
+    fun `given remote load fails, when loadSimpleProducts called, then should emit cached products and then error`() =
+        runTest {
+            // GIVEN
+            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+            whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
+            val exception = Exception("Remote load failed")
+            whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
 
-        val sut = WooPosProductsDataSource(handler)
+            val sut = WooPosProductsDataSource(handler)
 
-        // Prepopulate the cache by calling loadSimpleProducts once
-        sut.loadSimpleProducts(forceRefreshProducts = false).first()
+            // Prepopulate the cache by calling loadSimpleProducts once
+            sut.loadSimpleProducts(forceRefreshProducts = false).first()
 
-        whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.failure(exception))
+            whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.failure(exception))
 
-        // WHEN
-        val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            // WHEN
+            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
 
-        // THEN
-        val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
-        val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+            // THEN
+            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
+            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
 
-        assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
-        assertThat(remoteResult.productsResult.isFailure).isTrue()
-        assertThat(remoteResult.productsResult.exceptionOrNull()).isEqualTo(exception)
-    }
+            assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
+            assertThat(remoteResult.productsResult.isFailure).isTrue()
+            assertThat(remoteResult.productsResult.exceptionOrNull()).isEqualTo(exception)
+        }
+
+    @Test
+    fun `given successful loadMore, when loadMore called, then should add products to cache and return them`() =
+        runTest {
+            // GIVEN
+            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+            whenever(handler.productsFlow).thenReturn(
+                flowOf(sampleProducts),
+                flowOf(sampleProducts + additionalProducts)
+            )
+            whenever(handler.loadMore()).thenReturn(Result.success(Unit))
+            val sut = WooPosProductsDataSource(handler)
+
+            sut.loadSimpleProducts(forceRefreshProducts = false).first()
+
+            // WHEN
+            val result = sut.loadMore()
+
+            // THEN
+            assertThat(result.isSuccess).isTrue()
+            assertThat(result.getOrNull()).containsExactlyElementsOf(sampleProducts + additionalProducts)
+
+            val cachedResult = sut.loadSimpleProducts(forceRefreshProducts = false).first()
+            assertThat(cachedResult).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
+            val cachedProducts = (cachedResult as WooPosProductsDataSource.ProductsResult.Cached).products
+            assertThat(cachedProducts).containsExactlyElementsOf(sampleProducts + additionalProducts)
+        }
+
+    @Test
+    fun `given failed loadMore, when loadMore called, then should return error and cache remains unchanged`() =
+        runTest {
+            // GIVEN
+            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+            whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
+            val exception = Exception("Load more failed")
+            whenever(handler.loadMore()).thenReturn(Result.failure(exception))
+            val sut = WooPosProductsDataSource(handler)
+
+            sut.loadSimpleProducts(forceRefreshProducts = false).first()
+
+            // WHEN
+            val result = sut.loadMore()
+
+            // THEN
+            assertThat(result.isFailure).isTrue()
+            assertThat(result.exceptionOrNull()).isEqualTo(exception)
+
+            val cachedResult = sut.loadSimpleProducts(forceRefreshProducts = false).first()
+            assertThat(cachedResult).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
+            val cachedProducts = (cachedResult as WooPosProductsDataSource.ProductsResult.Cached).products
+            assertThat(cachedProducts).containsExactlyElementsOf(sampleProducts)
+        }
 }
