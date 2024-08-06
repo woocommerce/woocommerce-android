@@ -131,7 +131,7 @@ fun ProductInfoDialog(
                                 Icon(
                                     modifier = Modifier.size(35.dp),
                                     imageVector = Icons.Default.Close,
-                                    tint = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.30f),
+                                    tint = MaterialTheme.colors.onSurface,
                                     contentDescription = stringResource(
                                         id = R.string.woopos_banner_simple_products_close_content_description
                                     ),
