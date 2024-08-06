@@ -16,6 +16,7 @@ Closes: #
 <!-- Include before and after images or gifs when appropriate. -->
 
 
+- [ ] I have considered adding unit tests for this change. If I decided not to add them, I have provided a brief explanation below (optional):
 - [ ] I have considered if this change warrants release notes and have added them to `RELEASE-NOTES.txt` if necessary. Use the "[Internal]" label for non-user-facing changes.
 
 <!-- Pull request guidelines: https://github.com/woocommerce/woocommerce-android/blob/develop/docs/pull-request-guidelines.md -->
