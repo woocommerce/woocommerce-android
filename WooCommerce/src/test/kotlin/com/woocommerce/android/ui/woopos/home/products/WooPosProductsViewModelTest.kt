@@ -872,6 +872,51 @@ class WooPosProductsViewModelTest {
 
     }
 
+    @Test
+    fun `given products list, then only non virtual products are displayed`() = runTest {
+        // GIVEN
+        val products = listOf(
+            ProductTestUtils.generateProduct(
+                productId = 1,
+                productName = "Product 1",
+                amount = "0",
+                productType = "simple",
+                customStatus = "private",
+                isVirtual = true,
+                isDownloadable = false,
+            ),
+            ProductTestUtils.generateProduct(
+                productId = 2,
+                productName = "Product 2",
+                amount = "20.0",
+                productType = "simple",
+                isVirtual = false,
+                isDownloadable = false
+            ).copy(firstImageUrl = "https://test.com")
+        )
+
+        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+            flowOf(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.success(products)
+                )
+            )
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.viewState.test {
+            // THEN
+            val value = awaitItem() as WooPosProductsViewState.Content
+            assertThat(value.products).hasSize(1)
+            assertThat(value.products[0].id).isEqualTo(2)
+            assertThat(value.products[0].name).isEqualTo("Product 2")
+            assertThat(value.products[0].price).isEqualTo("$20.0")
+            assertThat(value.products[0].imageUrl).isEqualTo("https://test.com")
+        }
+
+    }
+
     private fun createViewModel() =
         WooPosProductsViewModel(
             productsDataSource,
