@@ -133,18 +133,23 @@ class WooPosHomeViewModel @Inject constructor(
     }
 
     private fun handleProductsStatusChanged(event: ChildToParentEvent.ProductsStatusChanged) {
-        if (state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout) return
+        val screenPosition = _state.value.screenPositionState
         val newScreenPositionState = when (event) {
-            ChildToParentEvent.ProductsStatusChanged.FullScreen -> WooPosHomeState.ScreenPositionState.Cart.Hidden
+            ChildToParentEvent.ProductsStatusChanged.FullScreen -> {
+                when (screenPosition) {
+                    is WooPosHomeState.ScreenPositionState.Cart -> WooPosHomeState.ScreenPositionState.Cart.Hidden
+                    is WooPosHomeState.ScreenPositionState.Checkout -> screenPosition
+                }
+            }
             ChildToParentEvent.ProductsStatusChanged.WithCart -> {
-                when (val value = _state.value.screenPositionState) {
+                when (screenPosition) {
                     WooPosHomeState.ScreenPositionState.Cart.Hidden ->
                         WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
 
                     WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
                     WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
                     WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-                    WooPosHomeState.ScreenPositionState.Checkout.Paid -> value
+                    WooPosHomeState.ScreenPositionState.Checkout.Paid -> screenPosition
                 }
             }
         }
