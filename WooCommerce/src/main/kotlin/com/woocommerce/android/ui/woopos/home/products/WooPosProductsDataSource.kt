@@ -41,7 +41,13 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
             emit(ProductsResult.Remote(Result.success(remoteProducts)))
         } else {
             result.logFailure()
-            emit(ProductsResult.Remote(Result.failure(result.exceptionOrNull()!!)))
+            emit(
+                ProductsResult.Remote(
+                    Result.failure(
+                        result.exceptionOrNull() ?: Exception("Unknown error")
+                    )
+                )
+            )
         }
     }.flowOn(Dispatchers.IO).take(2)
 
@@ -53,7 +59,7 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
             Result.success(moreProducts)
         } else {
             result.logFailure()
-            Result.failure(result.exceptionOrNull()!!)
+            Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
         }
     }
 
