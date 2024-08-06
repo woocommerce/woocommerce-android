@@ -826,7 +826,6 @@ class WooPosProductsViewModelTest {
             assertThat(value.products[0].price).isEqualTo("$20.0")
             assertThat(value.products[0].imageUrl).isEqualTo("https://test.com")
         }
-
     }
 
     @Test
@@ -869,7 +868,6 @@ class WooPosProductsViewModelTest {
             assertThat(value.products[0].price).isEqualTo("$20.0")
             assertThat(value.products[0].imageUrl).isEqualTo("https://test.com")
         }
-
     }
 
     @Test
@@ -914,7 +912,6 @@ class WooPosProductsViewModelTest {
             assertThat(value.products[0].price).isEqualTo("$20.0")
             assertThat(value.products[0].imageUrl).isEqualTo("https://test.com")
         }
-
     }
 
     @Test
@@ -957,7 +954,6 @@ class WooPosProductsViewModelTest {
             assertThat(value.products[0].price).isEqualTo("$20.0")
             assertThat(value.products[0].imageUrl).isEqualTo("https://test.com")
         }
-
     }
 
     private fun createViewModel() =
