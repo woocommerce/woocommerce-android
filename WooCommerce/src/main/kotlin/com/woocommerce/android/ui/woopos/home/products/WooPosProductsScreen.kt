@@ -146,13 +146,11 @@ private fun WooPosProductsScreen(
                             onSimpleProductsBannerLearnMoreClicked,
                             onSimpleProductsBannerClosed
                         )
-                        Box {
-                            ProductsList(
-                                productsState,
-                                onItemClicked,
-                                onEndOfProductListReached,
-                            )
-                        }
+                        ProductsList(
+                            productsState,
+                            onItemClicked,
+                            onEndOfProductListReached,
+                        )
                     }
                 }
 
@@ -268,7 +266,7 @@ private fun ProductsList(
             }
         }
         item {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(104.dp))
         }
     }
     InfiniteListHandler(listState) {
