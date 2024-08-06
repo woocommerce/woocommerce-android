@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.extensions.calculateTotal
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
@@ -285,7 +286,13 @@ class IssueRefundViewModel @Inject constructor(
         val items = order.items.map {
             val maxQuantity = maxQuantities[it.itemId] ?: 0f
             val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity.toInt())
-            ProductRefundListItem(it, maxQuantity, selectedQuantity)
+            ProductRefundListItem(
+                it,
+                maxQuantity,
+                selectedQuantity,
+                formatCurrency(BigDecimal.ZERO),
+                formatCurrency(BigDecimal.ZERO)
+            )
         }
         updateRefundItems(items)
 
@@ -649,12 +656,14 @@ class IssueRefundViewModel @Inject constructor(
         val newItems = mutableListOf<ProductRefundListItem>()
         _refundItems.value?.forEach {
             if (it.orderItem.itemId == uniqueId) {
-                newItems.add(
-                    it.copy(
-                        quantity = newQuantity,
-                        maxQuantity = maxQuantities[uniqueId] ?: 0f
-                    )
-                )
+                // Update the quantity
+                var newItem = it.copy(quantity = newQuantity, maxQuantity = maxQuantities[uniqueId] ?: 0f)
+
+                // Update the subtotal and taxes based on the new quantity
+                val (subtotal, taxes) = newItem.calculateTotal()
+                newItem = newItem.copy(subtotal = formatCurrency(subtotal), taxes = formatCurrency(taxes))
+
+                newItems.add(newItem)
             } else {
                 newItems.add(it)
             }
