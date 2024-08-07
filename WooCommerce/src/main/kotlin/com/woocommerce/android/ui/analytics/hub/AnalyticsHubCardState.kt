@@ -92,7 +92,16 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
         val callToActionText: String,
         val isVisible: Boolean,
         val onCallToActionClickListener: () -> Unit
-    ) : AnalyticsHubCustomSelectionListViewState()
+    ) : AnalyticsHubCustomSelectionListViewState() {
+        val asAnalyticsHubUserCallToActionViewState
+            get() = AnalyticsHubUserCallToActionViewState(
+                title = title,
+                description = description,
+                callToActionText = callToActionText,
+                isVisible = isVisible,
+                onCallToActionClickListener = onCallToActionClickListener
+            )
+    }
 }
 
 data class AnalyticsHubUserCallToActionViewState(
