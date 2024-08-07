@@ -36,15 +36,14 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                                 selectedRange,
                                 AnalyticsRepository.FetchStrategy.ForceNew
                             )
-                            if (result is AnalyticsRepository.RevenueResult.RevenueData) {
+                            val isSuccess = result is AnalyticsRepository.RevenueResult.RevenueData
+                            if (isSuccess) {
                                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
                                     selectedRange,
                                     AnalyticsUpdateDataStore.AnalyticData.REVENUE
                                 )
-                                true
-                            } else {
-                                false
                             }
+                            isSuccess
                         }
                     }
 
@@ -54,15 +53,14 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                                 selectedRange,
                                 AnalyticsRepository.FetchStrategy.ForceNew
                             )
-                            if (result is AnalyticsRepository.OrdersResult.OrdersData) {
+                            val isSuccess = result is AnalyticsRepository.OrdersResult.OrdersData
+                            if (isSuccess) {
                                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
                                     selectedRange,
                                     AnalyticsUpdateDataStore.AnalyticData.ORDERS
                                 )
-                                true
-                            } else {
-                                false
                             }
+                            isSuccess
                         }
                     }
 
@@ -72,15 +70,14 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                                 selectedRange,
                                 AnalyticsRepository.FetchStrategy.ForceNew
                             )
-                            if (result is AnalyticsRepository.ProductsResult.ProductsData) {
+                            val isSuccess = result is AnalyticsRepository.ProductsResult.ProductsData
+                            if (isSuccess) {
                                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
                                     selectedRange,
                                     AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
                                 )
-                                true
-                            } else {
-                                false
                             }
+                            isSuccess
                         }
                     }
 
