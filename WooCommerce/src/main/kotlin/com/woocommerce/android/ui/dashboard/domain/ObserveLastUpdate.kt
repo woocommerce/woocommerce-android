@@ -10,11 +10,13 @@ class ObserveLastUpdate @Inject constructor(
 ) {
     operator fun invoke(
         selectedRange: StatsTimeRangeSelection,
-        analyticDataList: List<AnalyticsUpdateDataStore.AnalyticData>
+        analyticDataList: List<AnalyticsUpdateDataStore.AnalyticData>,
+        shouldAllCardsBePresent: Boolean = true
     ): Flow<Long?> {
         return analyticsUpdateDataStore.observeLastUpdate(
             rangeSelection = selectedRange,
-            analyticData = analyticDataList
+            analyticData = analyticDataList,
+            shouldAllCardsBePresent = shouldAllCardsBePresent
         )
     }
 
