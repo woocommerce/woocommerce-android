@@ -184,7 +184,7 @@ class OrderListAdapter(
                 viewBinding.root,
                 String.format(
                     ctx.getString(R.string.order_card_transition_name),
-                    orderItemUI.orderId
+                    orderItemUI.orderId.toString()
                 )
             )
             extras.clear()
