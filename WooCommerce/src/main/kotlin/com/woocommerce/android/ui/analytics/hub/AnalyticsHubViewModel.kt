@@ -28,8 +28,8 @@ import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.model.StatType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.ShowCTAState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.ShowCTAState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState

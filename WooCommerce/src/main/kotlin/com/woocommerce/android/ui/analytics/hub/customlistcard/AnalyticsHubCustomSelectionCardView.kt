@@ -13,9 +13,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsCustomSelectionCardViewBinding
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.ShowCTAState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.NoAdsState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.ShowCTAState
 import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListAdapter
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardView
