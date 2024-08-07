@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
@@ -28,6 +27,7 @@ fun WooPosLazyColumn(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     state: LazyListState = rememberLazyListState(),
     content: LazyListScope.() -> Unit
 ) {
@@ -36,6 +36,7 @@ fun WooPosLazyColumn(
             modifier = modifier,
             contentPadding = contentPadding,
             verticalArrangement = verticalArrangement,
+            horizontalAlignment = horizontalAlignment,
             state = state,
             content = content
         )
@@ -48,10 +49,9 @@ fun WooPosLazyColumn(
 
         if (showShadow.value) {
             Card(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .height(0.5.dp)
-                    .padding(horizontal = .5.dp)
                     .align(Alignment.TopCenter),
                 elevation = 4.dp.toAdaptivePadding(),
                 backgroundColor = MaterialTheme.colors.onBackground.copy(alpha = 0.1f)
