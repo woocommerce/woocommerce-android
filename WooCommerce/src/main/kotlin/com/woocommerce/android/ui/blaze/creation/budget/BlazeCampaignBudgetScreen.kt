@@ -20,6 +20,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -197,7 +198,7 @@ private fun EditBudgetSection(
             style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold,
         )
-        if (state.isEndlessCampaign) {
+        if (state.isEndlessCampaign.not()) {
             Text(
                 text = stringResource(id = R.string.blaze_campaign_budget_days_duration, state.durationInDays),
                 style = MaterialTheme.typography.h4,
@@ -364,18 +365,6 @@ private fun EditDurationBottomSheet(
             style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.SemiBold,
         )
-        Text(
-            modifier = Modifier
-                .padding(top = 40.dp)
-                .fillMaxWidth(),
-            text = stringResource(
-                id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
-                sliderPosition.toInt()
-            ),
-            style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center
-        )
         Row(
             modifier = Modifier.padding(top = 40.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -386,24 +375,29 @@ private fun EditDurationBottomSheet(
                 style = MaterialTheme.typography.body1,
             )
             Switch(
-                checked = budgetUiState.isEndlessCampaign,
-                onCheckedChange = { isEndlessCampaign = it }
-            )
-            Text(
-                modifier = Modifier
-                    .clickable { showDatePicker = !showDatePicker }
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(colorResource(id = color.divider_color))
-                    .padding(8.dp),
-                text = Date(budgetUiState.bottomSheetCampaignStartDateMillis).formatToMMMddYYYY(),
-                style = MaterialTheme.typography.body1,
+                checked = isEndlessCampaign,
+                onCheckedChange = { isEndlessCampaign = it },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = colorResource(id = color.color_primary),
+                    checkedTrackColor = colorResource(id = color.color_primary)
+                )
             )
         }
         if (isEndlessCampaign.not()) {
-            Slider(
+            Text(
                 modifier = Modifier
-                    .padding(top = 8.dp, bottom = 8.dp)
+                    .padding(top = 40.dp)
                     .fillMaxWidth(),
+                text = stringResource(
+                    id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
+                    sliderPosition.toInt()
+                ),
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
+            )
+            Slider(
+                modifier = Modifier.fillMaxWidth(),
                 value = sliderPosition,
                 valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
                 onValueChange = { sliderPosition = it },
