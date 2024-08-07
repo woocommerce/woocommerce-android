@@ -55,6 +55,6 @@ open class WooCommerce : Application(), HasAndroidInjector, Configuration.Provid
     override fun androidInjector(): AndroidInjector<Any> = androidInjector
 
     companion object {
-        private const val TAP_TO_PAY_STRIPE_PROCESS_NAME = "com.stripe.cots.aidlservice"
+        private const val TAP_TO_PAY_STRIPE_PROCESS_NAME = "com.woocommerce.android:stripelocalmobile"
     }
 }
