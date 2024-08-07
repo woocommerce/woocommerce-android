@@ -63,7 +63,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 navArgs.budget.durationInDays
             ),
             showImpressionsBottomSheet = false,
-            showCampaignDurationBottomSheet = false
+            showCampaignDurationBottomSheet = false,
+            isEndlessCampaign = true,
         )
     )
 
@@ -131,7 +132,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         }
     }
 
-    fun onApplyDurationTapped(newDuration: Int) {
+    fun onApplyDurationTapped(newDuration: Int, isEndlessCampaign: Boolean) {
         val currentDailySpend = calculateDailySpending(newDuration)
         budgetUiState.update {
             it.copy(
@@ -144,7 +145,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 campaignDurationDates = getCampaignDurationDisplayDate(
                     it.bottomSheetCampaignStartDateMillis,
                     newDuration
-                )
+                ),
+                isEndlessCampaign = isEndlessCampaign
             )
         }
         fetchAdForecast()
@@ -237,6 +239,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val confirmedCampaignStartDateMillis: Long,
         val bottomSheetCampaignStartDateMillis: Long,
         val campaignDurationDates: String,
+        val isEndlessCampaign: Boolean,
     ) : Parcelable
 
     @Parcelize
