@@ -325,6 +325,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'
 
     implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
+    implementation "com.google.android.gms:play-services-mlkit-text-recognition-japanese:$mlkitTextRecognitionVersion"
+    implementation "com.google.android.gms:play-services-mlkit-text-recognition-chinese:$mlkitTextRecognitionVersion"
+    implementation "com.google.android.gms:play-services-mlkit-text-recognition-korean:$mlkitTextRecognitionVersion"
+
     implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
 
     implementation "com.google.zxing:core:3.5.3"
