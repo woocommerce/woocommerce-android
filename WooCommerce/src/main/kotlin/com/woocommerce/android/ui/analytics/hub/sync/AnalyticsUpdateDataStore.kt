@@ -99,26 +99,28 @@ class AnalyticsUpdateDataStore @Inject constructor(
     fun observeLastUpdate(
         rangeSelection: StatsTimeRangeSelection,
         analyticData: List<AnalyticData>,
-        shouldAllCardsBePresent: Boolean = true
+        shouldAllDataBePresent: Boolean = true
     ): Flow<Long?> {
         val timestampKeys = analyticData.map { data ->
             getTimeStampKey(rangeSelection.identifier, data)
         }
-        return observeLastUpdate(timestampKeys, shouldAllCardsBePresent)
+        return observeLastUpdate(timestampKeys, shouldAllDataBePresent)
     }
 
     private fun observeLastUpdate(
         timestampKeys: List<String>,
-        shouldAllCardsBePresent: Boolean
+        shouldAllDataBePresent: Boolean
     ): Flow<Long?> {
         val flows = timestampKeys.map { timestampKey ->
             dataStore.data.map { prefs -> prefs[longPreferencesKey(timestampKey)] }
         }
         return combine(flows) { lastUpdateMillisArray -> lastUpdateMillisArray.filterNotNull() }
             .filter { notNullValues ->
-                if (shouldAllCardsBePresent) {
+                if (shouldAllDataBePresent) {
                     notNullValues.size == timestampKeys.size
-                } else true
+                } else {
+                    true
+                }
             }
             .map { lastUpdateValues -> lastUpdateValues.min() }
     }
