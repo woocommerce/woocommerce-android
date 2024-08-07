@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-22 10:54:05+0000
+Translation-Revision-Date: 2024-07-31 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">Tamam</string>
+    <string name="google_ads_campaign_created_success_description">Yeni kampanyanız oluşturuldu. Önümüzdeki günlerde satışlarınızla ilgili harika gelişmeler olacak!</string>
+    <string name="google_ads_campaign_created_success_title">Her Şey Hazır!</string>
+    <string name="woopos_totals_order_creation_error">Sipariş oluşturulamadı</string>
+    <string name="woopos_products_loading_error_retry_button">Yeniden dene</string>
+    <string name="woopos_error_icon_content_description">Hata göstergesi simgesi</string>
+    <string name="woopos_products_loading_error_message">Bir kez daha denemek ister misiniz?</string>
+    <string name="woopos_products_loading_error_title">Ürünler yüklenirken hata oluştu</string>
+    <string name="woopos_products_empty_list_message_two">POS şu anda yalnızca basit ürünleri destekliyor</string>
+    <string name="woopos_products_empty_list_message">POS şu anda yalnızca basit ürünleri destekliyor, \nbaşlamak için bir tane oluşturun.</string>
+    <string name="woopos_products_empty_list_title">Desteklenen ürün bulunamadı</string>
+    <string name="woopos_products_empty_list_image_description">Ürün yok</string>
+    <string name="woopos_splash_message">Birkaç müşteriye hizmet edelim</string>
+    <string name="woopos_splash_title">Başlatılıyor</string>
+    <string name="woopos_get_support_title">Destek Alın</string>
+    <string name="woopos_reader_disconnected">Okuyucunuzu bağlayın</string>
+    <string name="ai_product_creation_photo_removed">Fotoğraf kaldırıldı</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Görsel taranıyor</string>
+    <string name="ai_product_creation_image_selected_subtitle">Fotoğraf metni başlangıç menüsüne eklendi</string>
+    <string name="ai_product_creation_image_scan_subtitle">Bir fotoğraftan taranan metin ekleyin</string>
+    <string name="analytics_google_ads_filter_clicks">Tıklamalar</string>
+    <string name="analytics_google_ads_filter_impressions">İzlenimler</string>
+    <string name="analytics_google_ads_filter_conversion">Dönüşüm</string>
+    <string name="analytics_google_ads_filter_spend">Harcama</string>
+    <string name="analytics_google_ads_filter_total_sales">Toplam Satış</string>
+    <string name="analytics_google_ads_metric_card_title">Metrik</string>
+    <string name="analytics_total_sales_subtitle_value">Toplam Satış: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Harcama: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Seçimi filtreleyin</string>
     <string name="woopos_cart_empty_content_description">Sepet boş</string>
     <string name="woopos_cart_empty_subtitle">Sepete eklemek için\nbir ürüne dokunun</string>
     <string name="woopos_totals_main_error_label">Toplamlar yüklenemedi</string>
@@ -21,7 +50,6 @@ Language: tr
     <string name="product_creation_ai_preview_generate_again">Yeniden Oluştur</string>
     <string name="product_creation_ai_preview_undo_edits">Düzenlemeleri geri al</string>
     <string name="product_creation_ai_preview_variant_selector">Seçenek %1$d/%2$d</string>
-    <string name="analytics_spend_value">Harcama: %1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">Tüm kampanyaları görüntüle</string>
     <string name="dashboard_google_ads_card_create_campaign_button">Kampanya Oluştur</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">Tıklamalar</string>
@@ -54,7 +82,6 @@ Language: tr
     <string name="more_menu_button_customers">Müşteriler</string>
     <string name="ai_product_creation_scanning_photo_error">Fotoğraftan metin taranmaya çalışılırken bir hata oluştu. Lütfen tekrar deneyin</string>
     <string name="ai_product_creation_scanning_image">Görsel taranıyor</string>
-    <string name="ai_product_creation_image_selected_subtitle">Fotoğraf ürüne eklenecek</string>
     <string name="ai_product_creation_image_selected">Fotoğraf seçildi</string>
     <string name="ai_product_creation_remove_image">Fotoğrafı kaldır</string>
     <string name="ai_product_creation_replace_image">Fotoğrafı değiştir</string>
@@ -96,7 +123,6 @@ Language: tr
     <string name="woopos_checkout_button">Ödeme</string>
     <string name="woopos_reader_unknown">Okuyucu Durumu Bilinmiyor</string>
     <string name="woopos_checkout">Ödeme</string>
-    <string name="woopos_reader_disconnected">Okuyucu Bağlantısı Kesildi</string>
     <string name="woopos_reader_connected">Okuyucu Bağlandı</string>
     <string name="woopos_exit_pos">POS\'tan çık</string>
     <string name="dashboard_new_widgets_card_button">Yeni bölümler ekle</string>

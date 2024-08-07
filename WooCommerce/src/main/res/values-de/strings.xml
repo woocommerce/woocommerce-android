@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-22 12:54:04+0000
+Translation-Revision-Date: 2024-07-31 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="google_ads_campaign_created_success_done_button">Fertig</string>
+    <string name="google_ads_campaign_created_success_description">Deine neue Kampagne wurde erstellt. Gute Aussichten für deine Verkaufszahlen!</string>
+    <string name="google_ads_campaign_created_success_title">Fertig!</string>
+    <string name="woopos_totals_order_creation_error">Bestellung konnte nicht erstellt werden</string>
+    <string name="woopos_products_loading_error_retry_button">Erneut versuchen</string>
+    <string name="woopos_error_icon_content_description">Icon für Fehleranzeige</string>
+    <string name="woopos_products_loading_error_message">Noch einmal versuchen?</string>
+    <string name="woopos_products_loading_error_title">Fehler beim Laden der Produkte</string>
+    <string name="woopos_products_empty_list_message_two">POS unterstützt derzeit nur einfache Produkte</string>
+    <string name="woopos_products_empty_list_message">POS unterstützt derzeit nur einfache Produkte – \nerstelle eins, um anzufangen.</string>
+    <string name="woopos_products_empty_list_title">Keine unterstützten Produkte gefunden</string>
+    <string name="woopos_products_empty_list_image_description">Keine Produkte</string>
+    <string name="woopos_splash_message">Zeit, deine Kunden glücklich zu machen</string>
+    <string name="woopos_splash_title">Wird geladen</string>
+    <string name="woopos_get_support_title">Erhalte Support</string>
+    <string name="woopos_reader_disconnected">Kartenlesegerät verbinden</string>
+    <string name="ai_product_creation_photo_removed">Foto entfernt</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Bild wird gescannt</string>
+    <string name="ai_product_creation_image_selected_subtitle">Fototext zur Startinfo hinzugefügt</string>
+    <string name="ai_product_creation_image_scan_subtitle">Von Foto gescannten Text hinzufügen</string>
+    <string name="analytics_google_ads_filter_clicks">Klicks</string>
+    <string name="analytics_google_ads_filter_impressions">Aufrufe</string>
+    <string name="analytics_google_ads_filter_conversion">Konversion</string>
+    <string name="analytics_google_ads_filter_spend">Ausgaben</string>
+    <string name="analytics_google_ads_filter_total_sales">Umsatz insgesamt</string>
+    <string name="analytics_google_ads_metric_card_title">Kennzahl</string>
+    <string name="analytics_total_sales_subtitle_value">Umsatz insgesamt: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Ausgaben: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Filterauswahl</string>
     <string name="woopos_cart_empty_content_description">Warenkorb ist leer</string>
     <string name="woopos_cart_empty_subtitle">Tippe auf ein Produkt, um \nes dem Warenkorb hinzuzufügen</string>
     <string name="woopos_totals_main_error_label">Gesamtbeträge konnten nicht geladen werden</string>
@@ -21,7 +50,6 @@ Language: de
     <string name="product_creation_ai_preview_generate_again">Neu generieren</string>
     <string name="product_creation_ai_preview_undo_edits">Änderungen rückgängig machen</string>
     <string name="product_creation_ai_preview_variant_selector">Option %1$d von %2$d</string>
-    <string name="analytics_spend_value">Ausgaben: %1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">Alle Kampagnen anzeigen</string>
     <string name="dashboard_google_ads_card_create_campaign_button">Kampagne erstellen</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">Klicks</string>
@@ -54,7 +82,6 @@ Language: de
     <string name="more_menu_button_customers">Kunden</string>
     <string name="ai_product_creation_scanning_photo_error">Beim Scannen des Texts auf dem Foto ist ein Fehler aufgetreten. Bitte versuche es erneut</string>
     <string name="ai_product_creation_scanning_image">Bild wird gescannt</string>
-    <string name="ai_product_creation_image_selected_subtitle">Foto wird dem Produkt hinzugefügt</string>
     <string name="ai_product_creation_image_selected">Foto ausgewählt</string>
     <string name="ai_product_creation_remove_image">Foto entfernen</string>
     <string name="ai_product_creation_replace_image">Foto ersetzen</string>
@@ -96,7 +123,6 @@ Language: de
     <string name="woopos_checkout_button">Bezahlen</string>
     <string name="woopos_reader_unknown">Status des Lesegeräts unbekannt</string>
     <string name="woopos_checkout">Bezahlen</string>
-    <string name="woopos_reader_disconnected">Lesegerät nicht verbunden</string>
     <string name="woopos_reader_connected">Lesegerät verbunden</string>
     <string name="woopos_exit_pos">POS beenden</string>
     <string name="dashboard_new_widgets_card_button">Neue Abschnitte hinzufügen</string>

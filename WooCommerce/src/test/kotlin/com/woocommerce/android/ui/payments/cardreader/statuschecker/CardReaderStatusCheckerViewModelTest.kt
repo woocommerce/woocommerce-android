@@ -21,6 +21,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
@@ -433,6 +434,75 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
                         param,
                         CardReaderType.EXTERNAL
                     )
+                )
+        }
+
+    @Test
+    fun `given woo pos connection and onboarding failed with error, when vm init, then navigates to onboarding`() =
+        testBlocking {
+            // GIVEN
+            val param = CardReaderFlowParam.WooPosConnection
+            val onboardingState = CardReaderOnboardingState.StripeAccountRejected(
+                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+            )
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingState)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isInstanceOf(CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java)
+        }
+
+    @Test
+    fun `given refund flow and not connected and error, when vm init, then navigates to onboarding with fail`() =
+        testBlocking {
+            // GIVEN
+            val orderId = 1L
+            val param = CardReaderFlowParam.PaymentOrRefund.Refund(orderId = orderId, BigDecimal.TEN)
+            whenever(cardReaderManager.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+            val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
+                dueDate = 0L,
+                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                version = pluginVersion,
+                countryCode = countryCode
+            )
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingError)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isEqualTo(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding(
+                        CardReaderOnboardingParams.Failed(param, onboardingError),
+                        CardReaderType.EXTERNAL
+                    )
+                )
+        }
+
+    @Test
+    fun `given card reader hub flow and not connected and error, when vm init, then navigates to onboarding with fail`() =
+        testBlocking {
+            // GIVEN
+            val param = CardReaderFlowParam.CardReadersHub()
+            val onboardingError = CardReaderOnboardingState.StripeAccountPendingRequirement(
+                dueDate = 0L,
+                preferredPlugin = PluginType.WOOCOMMERCE_PAYMENTS,
+                version = pluginVersion,
+                countryCode = countryCode
+            )
+            whenever(cardReaderChecker.getOnboardingState()).thenReturn(onboardingError)
+
+            // WHEN
+            val vm = initViewModel(param)
+
+            // THEN
+            assertThat(vm.event.value)
+                .isInstanceOf(
+                    CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding::class.java
                 )
         }
 

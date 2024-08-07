@@ -275,6 +275,7 @@ class DashboardFragment :
             usageTracksEventEmitter.interacted()
             wasPreviouslyStopped = false
         }
+        dashboardViewModel.onResume()
     }
 
     override fun onStop() {
