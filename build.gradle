@@ -124,7 +124,7 @@ ext {
     automatticTracksVersion = '5.0.0'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
-    stripeTerminalVersion = '3.1.1'
+    stripeTerminalVersion = '3.7.1'
     mlkitBarcodeScanningVersion = '17.2.0'
     mlkitTextRecognitionVersion = '16.0.0'
     androidxCameraVersion = '1.2.3'
