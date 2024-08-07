@@ -497,15 +497,7 @@ class AnalyticsHubViewModel @Inject constructor(
                             KEY_GOOGLEADS_SOURCE to VALUE_GOOGLEADS_ENTRY_POINT_TYPE_ANALYTICS_HUB
                         )
                     )
-                    val ctaState = ShowCTAState(
-                        card = AnalyticsCards.GoogleAds,
-                        title = resourceProvider.getString(R.string.analytics_google_ads_cta_title),
-                        description = resourceProvider.getString(R.string.analytics_google_ads_cta_description),
-                        callToActionText = resourceProvider.getString(R.string.analytics_google_ads_cta_action),
-                        isVisible = true,
-                        onCallToActionClickListener = { onGoogleAdsCTAClicked() }
-                    )
-                    updateCardStatus(AnalyticsCards.GoogleAds, ctaState)
+                    updateCardStatus(AnalyticsCards.GoogleAds, buildGoogleAdsCTAViewState())
                 }
 
                 is GoogleAdsState.Error -> {
@@ -749,6 +741,17 @@ class AnalyticsHubViewModel @Inject constructor(
             onFilterSelected = { selectedFilterName ->
                 onGoogleCampaignFilterSelected(googleAdsStats, selectedFilterName)
             }
+        )
+    }
+
+    private fun buildGoogleAdsCTAViewState(): ShowCTAState {
+        return ShowCTAState(
+            card = AnalyticsCards.GoogleAds,
+            title = resourceProvider.getString(R.string.analytics_google_ads_cta_title),
+            description = resourceProvider.getString(R.string.analytics_google_ads_cta_description),
+            callToActionText = resourceProvider.getString(R.string.analytics_google_ads_cta_action),
+            isVisible = true,
+            onCallToActionClickListener = { onGoogleAdsCTAClicked() }
         )
     }
 
