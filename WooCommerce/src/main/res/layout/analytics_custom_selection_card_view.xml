@@ -6,6 +6,12 @@
     android:layout_height="wrap_content"
     tools:context=".ui.analytics.hub.customlistcard.AnalyticsHubCustomSelectionCardView">
 
+    <com.woocommerce.android.ui.analytics.hub.cta.AnalyticsHubUserCallToActionView
+        android:id="@+id/analyticsCallToActionCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/major_100" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/analyticsCustomCardListContainer"
         android:layout_width="match_parent"
