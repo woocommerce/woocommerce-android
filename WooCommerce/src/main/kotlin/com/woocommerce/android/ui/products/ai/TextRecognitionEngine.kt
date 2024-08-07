@@ -27,11 +27,6 @@ class TextRecognitionEngine @Inject constructor(
         const val KOREAN_LANGUAGE_CODE = "ko"
     }
 
-    private val generalTextRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-    private val japaneseTextRecognizer = TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
-    private val chineseTextRecognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
-    private val koreanTextRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
-
     @Suppress("TooGenericExceptionCaught")
     suspend fun processImage(imageUrl: String): Result<List<String>> {
         return try {
@@ -39,10 +34,10 @@ class TextRecognitionEngine @Inject constructor(
             val image = InputImage.fromBitmap(requireNotNull(bitmap), 0)
             val deviceLocale = Locale.getDefault().language
             val result = when (deviceLocale) {
-                JAPANESE_LANGUAGE_CODE -> japaneseTextRecognizer
-                CHINESE_LANGUAGE_CODE -> chineseTextRecognizer
-                KOREAN_LANGUAGE_CODE -> koreanTextRecognizer
-                else -> generalTextRecognizer
+                JAPANESE_LANGUAGE_CODE -> TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
+                CHINESE_LANGUAGE_CODE -> TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+                KOREAN_LANGUAGE_CODE -> TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+                else -> TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
             }.process(image).await()
             Result.success(result.textBlocks.map { it.text })
         } catch (e: Exception) {
