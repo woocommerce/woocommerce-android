@@ -464,10 +464,7 @@ class CardReaderPaymentViewModel
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
-        val flowParam: CardReaderFlowParam.PaymentOrRefund = arguments.paymentOrRefund
-        if (flowParam is CardReaderFlowParam.PaymentOrRefund.Payment &&
-            flowParam.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
-        ) {
+        if (arguments.paymentOrRefund.isPOS()) {
             reFetchOrder()
             onCancelPaymentFlow()
         } else {
@@ -475,6 +472,11 @@ class CardReaderPaymentViewModel
             showPaymentSuccessfulState()
             reFetchOrder()
         }
+    }
+
+    private fun CardReaderFlowParam.PaymentOrRefund.isPOS(): Boolean {
+        return this is CardReaderFlowParam.PaymentOrRefund.Payment &&
+            this.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
     }
 
     @VisibleForTesting
