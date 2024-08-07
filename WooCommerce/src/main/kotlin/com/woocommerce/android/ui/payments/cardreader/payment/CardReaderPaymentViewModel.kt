@@ -146,6 +146,10 @@ class CardReaderPaymentViewModel
 
     private var refetchOrderJob: Job? = null
 
+    private val CardReaderFlowParam.PaymentOrRefund.isPOS: Boolean
+        get() = this is CardReaderFlowParam.PaymentOrRefund.Payment &&
+                this.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             startFlowWhenReaderConnected()
@@ -464,19 +468,16 @@ class CardReaderPaymentViewModel
     ) {
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
-        if (arguments.paymentOrRefund.isPOS()) {
-            reFetchOrder()
-            onCancelPaymentFlow()
+        if (arguments.paymentOrRefund.isPOS) {
+            launch {
+                orderRepository.fetchOrderById(orderId)
+                triggerEvent(Exit)
+            }
         } else {
             triggerEvent(PlayChaChing)
             showPaymentSuccessfulState()
             reFetchOrder()
         }
-    }
-
-    private fun CardReaderFlowParam.PaymentOrRefund.isPOS(): Boolean {
-        return this is CardReaderFlowParam.PaymentOrRefund.Payment &&
-            this.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
     }
 
     @VisibleForTesting
