@@ -8,24 +8,42 @@ import coil.request.ImageRequest.Builder
 import coil.request.SuccessResult
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
+import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
+import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
+import java.util.Locale
 import javax.inject.Inject
 
 class TextRecognitionEngine @Inject constructor(
     @ApplicationContext private val appContext: Context
 ) {
-    private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    private companion object {
+        const val JAPANESE_LANGUAGE_CODE = "ja"
+        const val CHINESE_LANGUAGE_CODE = "zh"
+        const val KOREAN_LANGUAGE_CODE = "ko"
+    }
+
+    private val generalTextRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    private val japaneseTextRecognizer = TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
+    private val chineseTextRecognizer = TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
+    private val koreanTextRecognizer = TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
 
     @Suppress("TooGenericExceptionCaught")
     suspend fun processImage(imageUrl: String): Result<List<String>> {
         return try {
             val bitmap = loadBitmap(imageUrl)
             val image = InputImage.fromBitmap(requireNotNull(bitmap), 0)
-
-            val result = textRecognizer.process(image).await()
+            val deviceLocale = Locale.getDefault().language
+            val result = when (deviceLocale) {
+                JAPANESE_LANGUAGE_CODE -> japaneseTextRecognizer
+                CHINESE_LANGUAGE_CODE -> chineseTextRecognizer
+                KOREAN_LANGUAGE_CODE -> koreanTextRecognizer
+                else -> generalTextRecognizer
+            }.process(image).await()
             Result.success(result.textBlocks.map { it.text })
         } catch (e: Exception) {
             WooLog.d(WooLog.T.AI, "Failed to scan text from image: ${e.message}")
