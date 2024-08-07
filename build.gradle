@@ -108,7 +108,7 @@ ext {
     googlePlayCoreVersion = '1.10.3'
     googlePlayWearableVersion = '18.1.0'
     coroutinesVersion = '1.8.1'
-    lifecycleVersion = '2.6.2'
+    lifecycleVersion = '2.7.0'
     aztecVersion = 'v1.3.45'
     flipperVersion = '0.176.1'
     stateMachineVersion = '0.2.0'
