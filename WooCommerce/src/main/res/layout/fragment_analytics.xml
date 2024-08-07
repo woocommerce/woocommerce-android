@@ -50,15 +50,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-            <com.woocommerce.android.ui.analytics.hub.cta.AnalyticsHubUserCallToActionView
-                android:id="@+id/analyticsCallToActionCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/cards"
                 android:layout_width="match_parent"

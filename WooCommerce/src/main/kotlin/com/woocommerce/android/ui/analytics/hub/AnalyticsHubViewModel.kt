@@ -118,7 +118,6 @@ class AnalyticsHubViewModel @Inject constructor(
             refreshIndicator = NotShowIndicator,
             analyticsDateRangeSelectorState = AnalyticsHubDateRangeSelectorViewState.EMPTY,
             cards = AnalyticsHubCardViewState.LoadingCardsConfiguration,
-            ctaState = AnalyticsHubUserCallToActionViewState.EMPTY,
             showFeedBackBanner = false,
             lastUpdateTimestamp = ""
         )
@@ -830,9 +829,7 @@ class AnalyticsHubViewModel @Inject constructor(
             callToActionText = resourceProvider.getString(R.string.analytics_google_ads_cta_action),
             isVisible = isVisible,
             onCallToActionClickListener = { onGoogleAdsCTAClicked() }
-        ).let { newState ->
-            mutableState.update { it.copy(ctaState = newState) }
-        }
+        )
 
         if (isVisible) {
             tracker.track(
