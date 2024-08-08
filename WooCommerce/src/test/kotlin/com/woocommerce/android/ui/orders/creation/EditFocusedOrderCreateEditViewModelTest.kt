@@ -338,6 +338,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
 
     @Test
     fun `given coupon applied to order, then should disable adding discount to a product`() {
+        // given
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         val order = defaultOrderValue.copy(
             isEditable = true,
@@ -374,11 +375,13 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
+        // then
         assertFalse(lastReceivedState!!.areDiscountButtonsEnabled)
     }
 
     @Test
     fun `given no coupons applied to order, then should enable adding discount to a product`() {
+        // given
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         val order = defaultOrderValue.copy(
             isEditable = true,
@@ -414,11 +417,13 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
+        // then
         assertTrue(lastReceivedState!!.areDiscountButtonsEnabled)
     }
 
     @Test
-    fun `given discount applied to at least item, then should disable adding coupon to the order`() {
+    fun `given discount applied to at least one item, then should disable adding coupon to the order`() {
+        // given
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         val item = Order.Item(
             itemId = 1L,
@@ -448,12 +453,14 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
+        // then
         assertTrue(item.discount > BigDecimal.ZERO)
         assertFalse(lastReceivedState!!.isCouponButtonEnabled)
     }
 
     @Test
     fun `given no discounts applied to order items, then should disable adding coupon to the order`() {
+        // given
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         val item = Order.Item(
             itemId = 1L,
@@ -483,6 +490,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.viewStateData.liveData.observeForever {
             lastReceivedState = it
         }
+        // then
         assertTrue(item.discount == BigDecimal.ZERO)
         assertTrue(lastReceivedState!!.isCouponButtonEnabled)
     }
