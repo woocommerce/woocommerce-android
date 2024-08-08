@@ -846,12 +846,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun updateCouponAndDiscountButtonsState(order: Order) {
         viewState = viewState.copy(
-            isCouponButtonEnabled = order.hasProducts() && order.isEditable && !order.containsDiscounts(),
-            areDiscountButtonsEnabled = order.hasProducts() && order.isEditable && order.couponLines.isEmpty()
+            isCouponButtonEnabled = order.hasProducts() && order.isEditable && order.doesNotContainManualDiscounts(),
+            areDiscountButtonsEnabled = order.hasProducts() && order.isEditable && !order.containsCoupons()
         )
     }
 
     private fun Order.containsDiscounts(): Boolean = items.any { it.discount > BigDecimal.ZERO }
+    private fun Order.containsCoupons(): Boolean = couponLines.isNotEmpty()
+    private fun Order.doesNotContainManualDiscounts() = (!containsDiscounts() || containsCoupons())
 
     private fun updateAddShippingButtonVisibility(order: Order) {
         viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
