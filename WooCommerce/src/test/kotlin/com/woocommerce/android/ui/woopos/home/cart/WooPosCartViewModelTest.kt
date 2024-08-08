@@ -389,6 +389,36 @@ class WooPosCartViewModelTest {
         assertThat(finalState.cartStatus).isEqualTo(WooPosCartStatus.EMPTY)
     }
 
+    @Test
+    fun `given non-empty cart, when ProductsLoading event received, then cart should be cleared`() = runTest {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+        )
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(ParentToChildrenEvent.ProductsLoading)
+
+        // THEN
+        assertThat(states).hasSizeGreaterThan(1)
+        val finalState = states.last()
+        assertThat(finalState.body).isInstanceOf(WooPosCartState.Body.Empty::class.java)
+        assertThat(finalState.cartStatus).isEqualTo(WooPosCartStatus.EMPTY)
+    }
+
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
             childrenToParentEventSender,
