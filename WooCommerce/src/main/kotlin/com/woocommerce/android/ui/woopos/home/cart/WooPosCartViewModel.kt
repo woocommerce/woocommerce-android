@@ -83,13 +83,15 @@ class WooPosCartViewModel @Inject constructor(
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
             }
 
-            WooPosCartUIEvent.ClearAllClicked -> {
-                val currentState = _state.value
-                _state.value = currentState.copy(
-                    body = WooPosCartState.Body.Empty
-                )
-            }
+            WooPosCartUIEvent.ClearAllClicked -> clearCart()
         }
+    }
+
+    private fun clearCart() {
+        val currentState = _state.value
+        _state.value = currentState.copy(
+            body = WooPosCartState.Body.Empty
+        )
     }
 
     private fun goToTotals() {
@@ -135,6 +137,10 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.CheckoutClicked -> {
                         // Do nothing
+                    }
+
+                    ParentToChildrenEvent.ProductsLoading -> {
+                        clearCart()
                     }
                 }
             }
