@@ -290,6 +290,7 @@ fun ExpandableProductCard(
     }
 }
 
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 fun ExtendedProductCardContent(
     state: State<OrderCreateEditViewModel.ViewState?>,

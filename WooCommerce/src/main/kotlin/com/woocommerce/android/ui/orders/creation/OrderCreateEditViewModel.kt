@@ -853,7 +853,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun Order.containsDiscounts(): Boolean = items.any { it.discount > BigDecimal.ZERO }
 
-
     private fun updateAddShippingButtonVisibility(order: Order) {
         viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
     }
