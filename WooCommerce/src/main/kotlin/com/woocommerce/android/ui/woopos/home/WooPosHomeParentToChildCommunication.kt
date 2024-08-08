@@ -22,6 +22,7 @@ sealed class ParentToChildrenEvent {
     data class ItemClickedInProductSelector(val productId: Long) : ParentToChildrenEvent()
     data class CheckoutClicked(val productIds: List<Long>) : ParentToChildrenEvent()
     data object OrderSuccessfullyPaid : ParentToChildrenEvent()
+    data object ProductsLoading : ParentToChildrenEvent()
 }
 
 interface WooPosParentToChildrenEventReceiver {

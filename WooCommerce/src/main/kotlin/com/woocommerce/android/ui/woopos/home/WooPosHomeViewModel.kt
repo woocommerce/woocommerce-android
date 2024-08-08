@@ -142,6 +142,11 @@ class WooPosHomeViewModel @Inject constructor(
                     WooPosHomeState.ScreenPositionState.Checkout.Paid -> value
                 }
             }
+
+            ChildToParentEvent.ProductsStatusChanged.Loading -> {
+                sendEventToChildren(ParentToChildrenEvent.ProductsLoading)
+                _state.value.screenPositionState
+            }
         }
         _state.value = _state.value.copy(screenPositionState = newScreenPositionState)
     }
