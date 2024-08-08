@@ -403,7 +403,11 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
         viewModel.viewState.test {
             // THEN
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.FullScreen)
+            verify(fromChildToParentEventSender).sendToParent(
+                ChildToParentEvent.ProductsStatusChanged.FullScreen(
+                    isProductsLoading = false
+                )
+            )
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -430,7 +434,11 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
         viewModel.viewState.test {
             // THEN
-            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsStatusChanged.WithCart)
+            verify(fromChildToParentEventSender).sendToParent(
+                ChildToParentEvent.ProductsStatusChanged.WithCart(
+                    isProductsLoading = false
+                )
+            )
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -748,41 +756,42 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `given simple products banner displayed, when learn more clicked, then appropriate event is triggered`() = runTest {
-        // GIVEN
-        val products = listOf(
-            ProductTestUtils.generateProduct(
-                productId = 1,
-                productName = "Product 1",
-                amount = "10.0",
-                productType = "simple"
-            ),
-            ProductTestUtils.generateProduct(
-                productId = 2,
-                productName = "Product 2",
-                amount = "20.0",
-                productType = "simple"
-            ).copy(firstImageUrl = "https://test.com")
-        )
+    fun `given simple products banner displayed, when learn more clicked, then appropriate event is triggered`() =
+        runTest {
+            // GIVEN
+            val products = listOf(
+                ProductTestUtils.generateProduct(
+                    productId = 1,
+                    productName = "Product 1",
+                    amount = "10.0",
+                    productType = "simple"
+                ),
+                ProductTestUtils.generateProduct(
+                    productId = 2,
+                    productName = "Product 2",
+                    amount = "20.0",
+                    productType = "simple"
+                ).copy(firstImageUrl = "https://test.com")
+            )
 
-        whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
+            whenever(productsDataSource.loadSimpleProducts(any())).thenReturn(
+                flowOf(
+                    WooPosProductsDataSource.ProductsResult.Remote(
+                        Result.success(products)
+                    )
                 )
             )
-        )
-        whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
-            flowOf(false)
-        )
+            whenever(posPreferencesRepository.isSimpleProductsOnlyBannerWasHiddenByUser).thenReturn(
+                flowOf(false)
+            )
 
-        // WHEN
-        val viewModel = createViewModel()
-        viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked)
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked)
 
-        // THEN
-        verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
-    }
+            // THEN
+            verify(fromChildToParentEventSender).sendToParent(ChildToParentEvent.ProductsDialogInfoIconClicked)
+        }
 
     private fun createViewModel() =
         WooPosProductsViewModel(
