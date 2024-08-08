@@ -18,7 +18,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
-import com.woocommerce.android.extensions.calculateTotal
+import com.woocommerce.android.extensions.calculateTotalSubtotal
+import com.woocommerce.android.extensions.calculateTotalTaxes
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
@@ -660,8 +661,9 @@ class IssueRefundViewModel @Inject constructor(
                 var newItem = it.copy(quantity = newQuantity, maxQuantity = maxQuantities[uniqueId] ?: 0f)
 
                 // Update the subtotal and taxes based on the new quantity
-                val (subtotal, taxes) = newItem.calculateTotal()
-                newItem = newItem.copy(subtotal = formatCurrency(subtotal), taxes = formatCurrency(taxes))
+                val subtotal = formatCurrency(newItem.calculateTotalSubtotal())
+                val taxes = formatCurrency(newItem.calculateTotalTaxes())
+                newItem = newItem.copy(subtotal = subtotal, taxes = taxes)
 
                 newItems.add(newItem)
             } else {
