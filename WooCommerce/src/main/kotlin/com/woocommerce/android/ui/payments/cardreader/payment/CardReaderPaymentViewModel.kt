@@ -470,7 +470,7 @@ class CardReaderPaymentViewModel
         appPrefs.setCardReaderSuccessfulPaymentTime()
         if (arguments.paymentOrRefund.isPOS) {
             launch {
-                orderRepository.fetchOrderById(orderId)
+                syncOrderStatus(orderId)
                 triggerEvent(Exit)
             }
         } else {
@@ -478,6 +478,10 @@ class CardReaderPaymentViewModel
             showPaymentSuccessfulState()
             reFetchOrder()
         }
+    }
+
+    private suspend fun syncOrderStatus(orderId: Long) {
+        orderRepository.fetchOrderById(orderId)
     }
 
     @VisibleForTesting
