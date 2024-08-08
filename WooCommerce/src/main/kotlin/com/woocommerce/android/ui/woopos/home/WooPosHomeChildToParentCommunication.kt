@@ -29,10 +29,12 @@ sealed class ChildToParentEvent {
         data object Empty : CartStatusChanged()
         data object NotEmpty : CartStatusChanged()
     }
+
     sealed class ProductsStatusChanged : ChildToParentEvent() {
-        data object Loading : ProductsStatusChanged()
-        data object FullScreen : ProductsStatusChanged()
-        data object WithCart : ProductsStatusChanged()
+        abstract val isProductsLoading: Boolean
+
+        data class FullScreen(override val isProductsLoading: Boolean) : ProductsStatusChanged()
+        data class WithCart(override val isProductsLoading: Boolean) : ProductsStatusChanged()
     }
 }
 

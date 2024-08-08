@@ -194,11 +194,17 @@ class WooPosProductsViewModel @Inject constructor(
     private fun notifyParentAboutStatusChange(newState: WooPosProductsViewState) {
         sendEventToParent(
             when (newState) {
-                is WooPosProductsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart
+                is WooPosProductsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart(
+                    isProductsLoading = newState.reloadingProductsWithPullToRefresh
+                )
 
                 is WooPosProductsViewState.Empty,
-                is WooPosProductsViewState.Error -> ChildToParentEvent.ProductsStatusChanged.FullScreen
-                is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.Loading
+                is WooPosProductsViewState.Error -> ChildToParentEvent.ProductsStatusChanged.FullScreen(
+                    isProductsLoading = newState.reloadingProductsWithPullToRefresh
+                )
+                is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.FullScreen(
+                    isProductsLoading = true
+                )
             }
         )
     }
