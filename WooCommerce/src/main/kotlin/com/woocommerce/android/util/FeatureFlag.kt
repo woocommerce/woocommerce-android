@@ -18,7 +18,6 @@ enum class FeatureFlag {
     GOOGLE_ADS_M1,
     GOOGLE_ADS_ANALYTICS_HUB_M1,
     PRODUCT_CREATION_WITH_AI_V2,
-    PRODUCT_CREATION_WITH_AI_V2_M3,
     SHOW_INBOX_CTA;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -39,7 +38,6 @@ enum class FeatureFlag {
             INBOX,
             GOOGLE_ADS_ANALYTICS_HUB_M1,
             SHOW_INBOX_CTA,
-            PRODUCT_CREATION_WITH_AI_V2_M3,
             GOOGLE_ADS_M1 -> true
         }
     }
