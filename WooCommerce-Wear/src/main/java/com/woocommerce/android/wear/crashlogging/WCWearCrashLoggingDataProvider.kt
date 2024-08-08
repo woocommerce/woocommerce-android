@@ -32,6 +32,8 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
 
     private val crashLoggingUser = MutableStateFlow(accountStore.account?.toCrashLoggingUser())
 
+    override val user: Flow<CrashLoggingUser?> = crashLoggingUser
+    override val sentryDSN: String = BuildConfig.SENTRY_DSN
     override val buildType = BuildConfig.BUILD_TYPE
     override val enableCrashLoggingLogs = BuildConfig.DEBUG
     override val releaseName: ReleaseName = if (BuildConfig.DEBUG) {
@@ -55,10 +57,8 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
 
     override fun shouldDropWrappingException(module: String, type: String, value: String) = false
 
-    override val sentryDSN: String
-        get() = TODO("Not yet implemented")
-    override val user: Flow<CrashLoggingUser?>
-        get() = TODO("Not yet implemented")
+
+
     override val applicationContextProvider: Flow<Map<String, String>>
         get() = TODO("Not yet implemented")
     override val locale: Locale?
