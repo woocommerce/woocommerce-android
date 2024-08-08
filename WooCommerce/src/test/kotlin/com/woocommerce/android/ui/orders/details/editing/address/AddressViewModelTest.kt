@@ -56,12 +56,8 @@ class AddressViewModelTest : BaseUnitTest() {
         on { getStates(newCountry.code) } doReturn listOf(newState)
     }
 
-    private val addressViewModel = AddressViewModel(
-        savedStateHandle,
-        selectedSite,
-        dataStore,
-        GetLocations(dataStore)
-    )
+    private lateinit var addressViewModel: AddressViewModel
+
     private val viewStateObserver: Observer<ViewState> = mock()
     private val shippingAddress = CreateShippingLabelTestUtils.generateAddress().copy(
         country = testCountry,
@@ -70,6 +66,12 @@ class AddressViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        addressViewModel = AddressViewModel(
+            savedStateHandle,
+            selectedSite,
+            dataStore,
+            GetLocations(dataStore)
+        )
         addressViewModel.viewStateData.liveData.observeForever(viewStateObserver)
         addressViewModel.shouldEnableDoneButton.observeForever(mock())
     }

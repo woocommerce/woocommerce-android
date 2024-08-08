@@ -199,6 +199,7 @@
         <service
             android:name="org.wordpress.android.login.LoginWpcomService"
             android:exported="false"
+            android:foregroundServiceType="shortService"
             android:label="Login to WPCOM Service" />
 
         <meta-data
