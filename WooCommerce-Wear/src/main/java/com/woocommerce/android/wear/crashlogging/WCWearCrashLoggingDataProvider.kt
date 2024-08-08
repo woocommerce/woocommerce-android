@@ -8,9 +8,6 @@ import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.wear.di.AppCoroutineScope
-import java.util.Locale
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +17,9 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
+import java.util.Locale
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class WCWearCrashLoggingDataProvider @Inject constructor(
@@ -56,8 +56,6 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
     ) = emptyMap<ExtraKnownKey, String>()
 
     override fun shouldDropWrappingException(module: String, type: String, value: String) = false
-
-
 
     override val applicationContextProvider: Flow<Map<String, String>>
         get() = TODO("Not yet implemented")

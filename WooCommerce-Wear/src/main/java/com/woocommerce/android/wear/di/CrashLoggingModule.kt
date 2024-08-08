@@ -11,9 +11,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.fluxc.logging.FluxCCrashLogger
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
