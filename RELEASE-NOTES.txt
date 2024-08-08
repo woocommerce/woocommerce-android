@@ -9,6 +9,7 @@
 - [*****] [Internal] Update Androidx-fragment from 1.6.2 to 1.8.2 [https://github.com/woocommerce/woocommerce-android/pull/12231]
 - [*****] [Internal] Update Material to 1.12.0 and Transition to 1.5.1 [https://github.com/woocommerce/woocommerce-android/pull/12237]
 - [*****] [Internal] Update Stripe Terminal SDK from 3.1.1 to 3.7.1 [https://github.com/woocommerce/woocommerce-android/pull/12239]
+- [***] Fix logic behind handling enabled/disabled states of "+ Add coupon" and "+ Add discount" buttons in the Order creation/edition flow [https://github.com/woocommerce/woocommerce-android/pull/12263].
 
 19.8
 -----
