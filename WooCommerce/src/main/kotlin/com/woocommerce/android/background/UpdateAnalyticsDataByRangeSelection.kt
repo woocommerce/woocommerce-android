@@ -3,6 +3,7 @@ package com.woocommerce.android.background
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 class UpdateAnalyticsDataByRangeSelection @Inject constructor(
     private val analyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
-    private val analyticsRepository: AnalyticsRepository
+    private val analyticsRepository: AnalyticsRepository,
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
     @Suppress("LongMethod")
     suspend operator fun invoke(
@@ -34,49 +36,87 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                                 selectedRange,
                                 AnalyticsRepository.FetchStrategy.ForceNew
                             )
-                            result is AnalyticsRepository.RevenueResult.RevenueData
+                            val isSuccess = result is AnalyticsRepository.RevenueResult.RevenueData
+                            if (isSuccess) {
+                                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                                    selectedRange,
+                                    AnalyticsUpdateDataStore.AnalyticData.REVENUE
+                                )
+                            }
+                            isSuccess
                         }
                     }
+
                     AnalyticsCards.Orders -> {
                         async {
                             val result = analyticsRepository.fetchOrdersData(
                                 selectedRange,
                                 AnalyticsRepository.FetchStrategy.ForceNew
                             )
-                            result is AnalyticsRepository.OrdersResult.OrdersData
+                            val isSuccess = result is AnalyticsRepository.OrdersResult.OrdersData
+                            if (isSuccess) {
+                                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                                    selectedRange,
+                                    AnalyticsUpdateDataStore.AnalyticData.ORDERS
+                                )
+                            }
+                            isSuccess
                         }
                     }
+
                     AnalyticsCards.Products -> {
                         async {
                             val result = analyticsRepository.fetchProductsData(
                                 selectedRange,
                                 AnalyticsRepository.FetchStrategy.ForceNew
                             )
-                            result is AnalyticsRepository.ProductsResult.ProductsData
+                            val isSuccess = result is AnalyticsRepository.ProductsResult.ProductsData
+                            if (isSuccess) {
+                                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                                    selectedRange,
+                                    AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+                                )
+                            }
+                            isSuccess
                         }
                     }
+
                     AnalyticsCards.Session -> {
                         async {
                             val result = analyticsRepository.fetchVisitorsData(
                                 selectedRange,
                                 AnalyticsRepository.FetchStrategy.ForceNew
                             )
-                            result is AnalyticsRepository.VisitorsResult.VisitorsData ||
-                                result is AnalyticsRepository.VisitorsResult.VisitorsNotSupported
+                            when (result) {
+                                is AnalyticsRepository.VisitorsResult.VisitorsData -> {
+                                    analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                                        selectedRange,
+                                        AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                                    )
+                                    true
+                                }
+                                is AnalyticsRepository.VisitorsResult.VisitorsNotSupported -> true
+                                else -> {
+                                    false
+                                }
+                            }
                         }
                     }
+
                     AnalyticsCards.Bundles -> {
                         async {
                             val result = analyticsRepository.fetchProductBundlesStats(selectedRange)
                             result is AnalyticsRepository.BundlesResult.BundlesData
                         }
                     }
+
                     AnalyticsCards.GiftCards -> {
                         async {
                             val result = analyticsRepository.fetchGiftCardsStats(selectedRange)
                             result is AnalyticsRepository.GiftCardResult.GiftCardData
                         }
                     }
+
                     AnalyticsCards.GoogleAds -> {
                         async {
                             val result = analyticsRepository.fetchGoogleAdsStats(selectedRange)
@@ -85,7 +125,7 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                     }
                 }
             }
-            asyncCalls.awaitAll().all { succeed -> succeed }
+            asyncCalls.awaitAll().all { it }
         }
     }
 }

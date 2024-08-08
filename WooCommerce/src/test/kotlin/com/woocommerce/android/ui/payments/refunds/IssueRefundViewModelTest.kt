@@ -27,6 +27,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -168,7 +169,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -198,7 +199,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
@@ -231,7 +232,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
@@ -264,7 +265,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
@@ -297,7 +298,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -331,7 +332,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -365,7 +366,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -416,7 +417,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -467,7 +468,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -518,7 +519,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
@@ -549,7 +550,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
@@ -576,7 +577,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -600,7 +601,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -622,7 +623,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val chargeId = "charge_id"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -645,7 +646,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[]"
+                metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
@@ -665,7 +666,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[]"
+                metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(resourceProvider.getString(R.string.order_refunds_manual_refund))
@@ -689,7 +690,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[]"
+                metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(resourceProvider.getString(any())).thenReturn("")
@@ -715,7 +716,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
@@ -755,7 +756,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(networkStatus.isConnected()).thenReturn(false)
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
@@ -784,7 +785,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -839,7 +840,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             val cardLast4 = "1234"
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[{\"key\"=\"_charge_id\", \"value\"=\"$chargeId\"}]"
+                metaData = listOf(WCMetaData(id = 0, key = "_charge_id", value = chargeId))
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(paymentChargeRepository.fetchCardDataUsedForOrderPayment(chargeId)).thenReturn(
@@ -893,7 +894,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[]"
+                metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
             whenever(resourceProvider.getString(any())).thenReturn("")
@@ -915,7 +916,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[]"
+                metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
 
@@ -934,7 +935,7 @@ class IssueRefundViewModelTest : BaseUnitTest() {
         testBlocking {
             val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
                 paymentMethod = "cod",
-                metaData = "[]"
+                metaData = emptyList()
             )
             whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
 
