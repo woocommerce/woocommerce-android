@@ -13,9 +13,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.utils.BuildConfigWrapper
 
 @Singleton
 class WCWearCrashLoggingDataProvider @Inject constructor(
@@ -23,12 +27,25 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
     @AppCoroutineScope private val appScope: CoroutineScope,
     dispatcher: Dispatcher,
 ) : CrashLoggingDataProvider {
+
+    init { dispatcher.register(this) }
+
+    private val crashLoggingUser = MutableStateFlow(accountStore.account?.toCrashLoggingUser())
+
     override val buildType = BuildConfig.BUILD_TYPE
     override val enableCrashLoggingLogs = BuildConfig.DEBUG
     override val releaseName: ReleaseName = if (BuildConfig.DEBUG) {
         ReleaseName.SetByApplication(DEBUG_RELEASE_NAME)
     } else {
         ReleaseName.SetByTracksLibrary
+    }
+
+    @Suppress("unused", "unused_parameter")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAccountChanged(event: AccountStore.OnAccountChanged) {
+        appScope.launch {
+            crashLoggingUser.emit(accountStore.account.toCrashLoggingUser())
+        }
     }
 
     override fun provideExtrasForEvent(
@@ -55,6 +72,16 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
 
     override fun extraKnownKeys(): List<ExtraKnownKey> {
         TODO("Not yet implemented")
+    }
+
+    private fun AccountModel.toCrashLoggingUser(): CrashLoggingUser? {
+        if (userId == 0L) return null
+
+        return CrashLoggingUser(
+            userID = userId.toString(),
+            email = email,
+            username = userName
+        )
     }
 
     companion object {
