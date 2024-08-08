@@ -845,8 +845,14 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun updateCouponButtonVisibility(order: Order) {
-        viewState = viewState.copy(isCouponButtonEnabled = order.hasProducts() && order.isEditable)
+        viewState = viewState.copy(
+            isCouponButtonEnabled = order.hasProducts() && order.isEditable && !order.containsDiscounts(),
+            areDiscountButtonsEnabled = order.hasProducts() && order.isEditable && order.couponLines.isEmpty()
+        )
     }
+
+    private fun Order.containsDiscounts(): Boolean = items.any { it.discount > BigDecimal.ZERO }
+
 
     private fun updateAddShippingButtonVisibility(order: Order) {
         viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
@@ -2040,6 +2046,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
+        val areDiscountButtonsEnabled: Boolean = false,
         val isAddShippingButtonEnabled: Boolean = false,
         val isAddGiftCardButtonEnabled: Boolean = false,
         val shouldDisplayAddGiftCardButton: Boolean = false,
