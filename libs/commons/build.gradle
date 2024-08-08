@@ -1,47 +1,6 @@
-import io.sentry.android.gradle.extensions.InstrumentationFeature
-
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'io.sentry.android.gradle'
-}
-
-repositories {
-    maven {
-        url 'https://a8c-libs.s3.amazonaws.com/android'
-        content {
-            includeGroup "com.automattic"
-            includeGroup "com.automattic.tracks"
-        }
-    }
-}
-
-sentry {
-    includeSourceContext = true
-    autoUploadSourceContext = true
-    tracingInstrumentation {
-        enabled = true
-        features = [InstrumentationFeature.DATABASE]
-        logcat {
-            enabled = false
-        }
-    }
-    autoInstallation {
-        enabled = false
-    }
-    includeDependenciesReport = false
-    /* Sentry won't send source context or add performance instrumentations for debug builds
-    so we can save build times. Sending events will still work in debug builds
-    (if enabled in WCCrashLoggingDataProvider).
-    */
-    ignoredBuildTypes = ["debug"]
-
-    /* Additional source directories to be included in the source context. For now, manually:
-    https://github.com/getsentry/sentry-android-gradle-plugin/issues/685
-     */
-    additionalSourceDirsForSourceContext = [
-            '../libs/cardreader/src/main/java',
-    ]
 }
 
 android {
@@ -60,10 +19,4 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-}
-
-dependencies {
-    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
-    implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
 }
