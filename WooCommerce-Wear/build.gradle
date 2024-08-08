@@ -4,6 +4,7 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'com.google.dagger.hilt.android'
     id 'com.google.devtools.ksp'
+    id 'io.sentry.android.gradle'
 }
 
 repositories {
@@ -14,6 +15,8 @@ repositories {
             includeGroup "org.wordpress.fluxc"
             includeGroup "org.wordpress.fluxc.plugins"
             includeGroup "org.wordpress.wellsql"
+            includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
         }
     }
     mavenCentral()
@@ -113,6 +116,8 @@ dependencies {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
+    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
+    implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
 
     // WearOS
     implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
