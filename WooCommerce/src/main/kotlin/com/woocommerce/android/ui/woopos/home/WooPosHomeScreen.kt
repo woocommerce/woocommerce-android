@@ -236,7 +236,7 @@ private fun HandleProductsInfoDialog(
         BoxOverlay(state = currentState) {
             // no op
         }
-        ProductInfoDialog(
+        WooPosProductInfoDialog(
             state = currentState,
             onDismissRequest = {
                 isDialogVisible = false
