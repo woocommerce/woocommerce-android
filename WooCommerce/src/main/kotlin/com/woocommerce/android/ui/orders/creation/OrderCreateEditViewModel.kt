@@ -467,7 +467,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             isEditable = order.isEditable
                         )
                         monitorOrderChanges()
-                        updateCouponButtonVisibility(order)
+                        updateCouponAndDiscountButtonsState(order)
                         updateAddShippingButtonVisibility(order)
                         updateAddGiftCardButtonVisibility(order)
                         handleCouponEditResult()
@@ -844,7 +844,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun updateCouponButtonVisibility(order: Order) {
+    private fun updateCouponAndDiscountButtonsState(order: Order) {
         viewState = viewState.copy(
             isCouponButtonEnabled = order.hasProducts() && order.isEditable && !order.containsDiscounts(),
             areDiscountButtonsEnabled = order.hasProducts() && order.isEditable && order.couponLines.isEmpty()
@@ -1514,7 +1514,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                     updateStatus.order
                                 }
                             }.also {
-                                updateCouponButtonVisibility(it)
+                                updateCouponAndDiscountButtonsState(it)
                                 updateAddShippingButtonVisibility(it)
                                 updateAddGiftCardButtonVisibility(it)
                             }
