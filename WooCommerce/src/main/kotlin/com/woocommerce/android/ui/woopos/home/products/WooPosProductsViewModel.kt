@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -134,12 +133,7 @@ class WooPosProductsViewModel @Inject constructor(
                                 }
                             }
 
-                            else -> {
-                                val error = result.productsResult.exceptionOrNull()
-                                val errorMessage = error?.message ?: "Unknown error"
-                                WooLog.e(WooLog.T.POS, "Loading simple products failed - $errorMessage", error)
-                                WooPosProductsViewState.Error()
-                            }
+                            else -> WooPosProductsViewState.Error()
                         }
                     }
                 }
