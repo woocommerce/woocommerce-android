@@ -287,11 +287,11 @@ class IssueRefundViewModel @Inject constructor(
             val maxQuantity = maxQuantities[it.itemId] ?: 0f
             val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity.toInt())
             ProductRefundListItem(
-                it,
-                maxQuantity,
-                selectedQuantity,
-                formatCurrency(BigDecimal.ZERO),
-                formatCurrency(BigDecimal.ZERO)
+                orderItem = it,
+                maxQuantity = maxQuantity,
+                quantity = selectedQuantity,
+                subtotal = formatCurrency(BigDecimal.ZERO),
+                taxes = formatCurrency(BigDecimal.ZERO)
             )
         }
         updateRefundItems(items)
