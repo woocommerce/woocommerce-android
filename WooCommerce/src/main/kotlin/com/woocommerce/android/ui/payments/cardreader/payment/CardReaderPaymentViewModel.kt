@@ -148,7 +148,7 @@ class CardReaderPaymentViewModel
 
     private val CardReaderFlowParam.PaymentOrRefund.isPOS: Boolean
         get() = this is CardReaderFlowParam.PaymentOrRefund.Payment &&
-                this.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+            this.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
 
     fun start() {
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
