@@ -30,6 +30,7 @@ sealed class ChildToParentEvent {
         data object NotEmpty : CartStatusChanged()
     }
     sealed class ProductsStatusChanged : ChildToParentEvent() {
+        data object Loading : ProductsStatusChanged()
         data object FullScreen : ProductsStatusChanged()
         data object WithCart : ProductsStatusChanged()
     }

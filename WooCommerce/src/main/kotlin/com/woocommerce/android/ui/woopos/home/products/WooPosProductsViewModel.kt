@@ -203,8 +203,8 @@ class WooPosProductsViewModel @Inject constructor(
                 is WooPosProductsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart
 
                 is WooPosProductsViewState.Empty,
-                is WooPosProductsViewState.Error,
-                is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.FullScreen
+                is WooPosProductsViewState.Error -> ChildToParentEvent.ProductsStatusChanged.FullScreen
+                is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.Loading
             }
         )
     }
