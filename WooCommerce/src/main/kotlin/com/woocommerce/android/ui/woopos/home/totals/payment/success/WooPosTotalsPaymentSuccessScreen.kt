@@ -167,7 +167,7 @@ private fun CheckMarkIcon(
     modifier: Modifier = Modifier,
 ) {
     val size by animateDpAsState(
-        targetValue = if (animationStarted) 156.dp else 0.dp,
+        targetValue = if (animationStarted) 164.dp else 0.dp,
         label = "Check mark size"
     )
 
