@@ -3,6 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 19.9
 -----
+- [*] Added subtotal and taxes fields to each refund item on the refund screen. [https://github.com/woocommerce/woocommerce-android/pull/12235]
 - [*****] [Internal] Update Android material from 1.9.0 to 1.10.0 [https://github.com/woocommerce/woocommerce-android/pull/12186]
 - [*****] [Internal] Update Android-core from 1.12.0 to 1.13.1 [https://github.com/woocommerce/woocommerce-android/pull/12229]
 - [*****] [Internal] Update Android-lifecycle from 2.6.2 to 2.7.0 [https://github.com/woocommerce/woocommerce-android/pull/12230]
