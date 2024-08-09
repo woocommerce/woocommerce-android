@@ -4,7 +4,7 @@ package com.woocommerce.android.ui.woopos.common.composeui
 
 import androidx.compose.ui.graphics.Color
 
-object WooColors {
+object WooPOSColors {
     val Purple0 = Color(0xFFF2EDFF)
     val Purple10 = Color(0xFFF7EDF7)
     val Purple15 = Color(0xFFE5CFE8)
