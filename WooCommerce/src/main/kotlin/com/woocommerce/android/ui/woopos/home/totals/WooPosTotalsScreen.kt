@@ -252,7 +252,6 @@ private fun TotalsErrorScreen(
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     WooPosErrorScreen(
-        icon = Icons.Default.Error,
         message = stringResource(R.string.woopos_totals_main_error_label),
         reason = errorMessage,
         primaryButton = Button(
