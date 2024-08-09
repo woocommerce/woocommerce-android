@@ -47,20 +47,20 @@ private val LightColorPalette = lightColors(
 )
 
 private val DarkCustomColors = CustomColors(
-    loadingSkeleton = Color(0xFF616161),
-    border = Color(0xFF8D8D8D),
-    success = Color(0xFF06B166),
-    error = Color(0xFFBE4400),
-    paymentSuccessBackground = Color(0xFF74C758),
-    paymentSuccessText = Color(0xFFF2EBFF)
+    loadingSkeleton = WooPOSColors.DarkLoadingSkeleton,
+    border = WooPOSColors.DarkBorder,
+    success = WooPOSColors.DarkSuccess,
+    error = WooPOSColors.DarkError,
+    paymentSuccessBackground = WooPOSColors.DarkSuccessBackground,
+    paymentSuccessText = WooPOSColors.DarkSuccessText
 )
 
 private val LightCustomColors = CustomColors(
-    loadingSkeleton = Color(0xFFE1E1E1),
-    border = Color(0xFFC6C6C8),
-    success = Color(0xFF03D479),
-    error = Color(0xFFF16618),
-    paymentSuccessBackground = Color(0xFF98F179),
+    loadingSkeleton = WooPOSColors.LightLoadingSkeleton,
+    border = WooPOSColors.LightBorder,
+    success = WooPOSColors.LightSuccess,
+    error = WooPOSColors.LightError,
+    paymentSuccessBackground = WooPOSColors.LightSuccessBackground,
     paymentSuccessText = WooPOSColors.Purple90
 )
 
