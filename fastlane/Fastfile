@@ -335,15 +335,12 @@ platform :android do
   # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
   #
   desc 'Prepare a new hotfix branch cut from the previous tag, and bump the version'
-  lane :new_hotfix_release do |options|
-    UI.user_error!('A `version_name` must be provided when calling this lane') if options[:version_name].nil?
-    UI.user_error!('A `version_code` must be provided when calling this lane') if options[:version_code].nil?
-
+  lane :new_hotfix_release do |version_name:, version_code:, skip_confirm: false|
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
 
-    new_version = options[:version_name]
-    version_code_new = options[:version_code]
+    new_version = version_name
+    version_code_new = version_code
     # Parse the provided version into an AppVersion object
     parsed_version = VERSION_FORMATTER.parse(new_version)
     previous_version = VERSION_FORMATTER.release_version(VERSION_CALCULATOR.previous_patch_version(version: parsed_version))
@@ -362,9 +359,7 @@ platform :android do
     MESSAGE
 
     UI.important(message)
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Check tags
     UI.user_error!("The version `#{new_version}` tag already exists!") if git_tag_exists(tag: new_version)
