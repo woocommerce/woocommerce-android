@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -59,6 +61,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.WooPosHomeState
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -116,6 +119,20 @@ private fun WooPosCartScreen(
             )
         }
     }
+    val cartOverlayIntensityAnimated by animateFloatAsState(
+        when (state.body) {
+            WooPosCartState.Body.Empty -> .6f
+            is WooPosCartState.Body.WithItems -> 0f
+        },
+        label = "cartOverlayAnimated"
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
+            )
+    )
 }
 
 @Composable

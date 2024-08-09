@@ -117,24 +117,12 @@ private fun WooPosHomeScreen(
         label = "totalsWidthAnimatedDp"
     )
 
-    val cartOverlayIntensityAnimated by animateFloatAsState(
-        when (state.screenPositionState) {
-            is WooPosHomeState.ScreenPositionState.Cart.Visible.Empty -> .6f
-            WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
-            WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-            WooPosHomeState.ScreenPositionState.Checkout.Paid,
-            WooPosHomeState.ScreenPositionState.Cart.Hidden -> 0f
-        },
-        label = "cartOverlayAnimated"
-    )
-
     val scrollState = buildScrollStateForNavigationBetweenState(state.screenPositionState)
     WooPosHomeScreen(
         state = state,
         scrollState = scrollState,
         productsWidthDp = productsWidthAnimatedDp,
         cartWidthDp = cartWidthDp,
-        cartOverlayIntensity = cartOverlayIntensityAnimated,
         totalsWidthDp = totalsWidthAnimatedDp,
         onHomeUIEvent,
     )
@@ -146,7 +134,6 @@ private fun WooPosHomeScreen(
     scrollState: ScrollState,
     productsWidthDp: Dp,
     cartWidthDp: Dp,
-    cartOverlayIntensity: Float,
     totalsWidthDp: Dp,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
@@ -171,14 +158,6 @@ private fun WooPosHomeScreen(
                     WooPosHomeScreenCart(
                         modifier = Modifier
                             .width(cartWidthDp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(cartWidthDp)
-                            .fillMaxHeight()
-                            .background(
-                                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                            )
                     )
                 }
             }
