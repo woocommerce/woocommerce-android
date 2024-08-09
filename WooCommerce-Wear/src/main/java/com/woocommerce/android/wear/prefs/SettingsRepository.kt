@@ -10,7 +10,7 @@ import com.woocommerce.android.wear.datastore.DataStoreType
 import com.woocommerce.commons.DataParameters.APP_SETTINGS
 import com.woocommerce.commons.WearAppSettings
 import javax.inject.Inject
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 
 class SettingsRepository @Inject constructor(
@@ -25,15 +25,15 @@ class SettingsRepository @Inject constructor(
             ?: return
 
         storeSettingsKey(
-            key = SettingsKey.CrashReportEnabled,
+            key = SettingsType.CrashReportEnabled,
             value = settings.crashReportEnabled
         )
     }
 
-    fun <T> fetchSettingsValue(key: SettingsKey<T>): Flow<T> =
-        settingsDataStore.data.mapNotNull { it[key.prefsKey] }
+    suspend fun <T> fetchSettingsValue(key: SettingsType<T>): T =
+        settingsDataStore.data.mapNotNull { it[key.prefsKey] }.first()
 
-    private suspend fun <T> storeSettingsKey(key: SettingsKey<T>, value: T) {
+    private suspend fun <T> storeSettingsKey(key: SettingsType<T>, value: T) {
         settingsDataStore.edit { it[key.prefsKey] = value }
     }
 }
