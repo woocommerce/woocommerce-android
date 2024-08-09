@@ -1,0 +1,2 @@
+19.8:
+Dalam pembaruan teranyar, kami telah menambahkan tombol pada analitik Google Campaign agar bisa lebih mudah membuat kampanye berbayar. Formulir Dukungan Kontak sekarang menyertakan kolom Alamat Situs. Gunakan ilustrasi pembayaran langsung yang lebih baik dalam mode lanskap, dan manfaatkan pembaruan latar belakang untuk daftar pesanan dan analitik dasbor.
