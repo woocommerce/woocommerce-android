@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-23 09:54:04+0000
+Translation-Revision-Date: 2024-08-06 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="woopos_success_screen_total">成功支付 %1$s</string>
+    <string name="woopos_new_order_button">新订单</string>
+    <string name="woopos_dialog_products_info_button_label">确定</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理中创建订单</string>
+    <string name="woopos_dialog_products_info_secondary_message">要接受非简单产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
+    <string name="woopos_dialog_products_info_primary_message">POS 目前仅可用于简单实体产品。\n其他产品类型（如可变产品和虚拟产品）将在今后的更新中得到支持。</string>
+    <string name="woopos_dialog_products_info_heading">为何看不到我的产品？</string>
+    <string name="woopos_banner_simple_products_info_content_description">信息</string>
+    <string name="woopos_banner_simple_products_close_content_description">关闭</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">了解更多</string>
+    <string name="woopos_banner_simple_products_only_message">POS 目前仅兼容简单实体产品。 其他产品类型（如可变产品和虚拟产品）将在今后的更新中受到支持。 </string>
+    <string name="woopos_banner_simple_products_only_title">仅显示简单产品</string>
+    <string name="support_request_site_address">站点地址</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">添加付费广告活动</string>
+    <string name="analytics_google_ads_cta_description">通过 Google Ads 推动销售并增加流量。</string>
+    <string name="analytics_google_ads_cta_title">Google 广告活动</string>
+    <string name="google_ads_campaign_created_success_done_button">完成</string>
+    <string name="google_ads_campaign_created_success_description">您的新广告活动已创建。 您的销售工作将迎来激动人心的时刻！</string>
+    <string name="google_ads_campaign_created_success_title">准备就绪！</string>
+    <string name="woopos_totals_order_creation_error">无法创建订单</string>
+    <string name="woopos_products_loading_error_retry_button">重试</string>
+    <string name="woopos_error_icon_content_description">错误指示图标</string>
+    <string name="woopos_products_loading_error_message">再试一次？</string>
+    <string name="woopos_products_loading_error_title">加载产品时出错</string>
+    <string name="woopos_products_empty_list_message_two">POS 目前仅支持简单产品</string>
+    <string name="woopos_products_empty_list_message">POS 目前仅支持简单产品 – \n创建一个以开始。</string>
+    <string name="woopos_products_empty_list_title">未找到受支持的产品</string>
+    <string name="woopos_products_empty_list_image_description">无任何产品</string>
+    <string name="woopos_splash_message">让我们为客户服务</string>
+    <string name="woopos_splash_title">开始</string>
+    <string name="woopos_get_support_title">获取支持</string>
+    <string name="woopos_reader_disconnected">连接您的读卡器</string>
+    <string name="ai_product_creation_photo_removed">照片已删除</string>
+    <string name="ai_product_creation_image_scanned_subtitle">正在扫描图片</string>
+    <string name="ai_product_creation_image_selected_subtitle">照片文字已添加到起始信息中</string>
+    <string name="ai_product_creation_image_scan_subtitle">添加从照片扫描的文字</string>
+    <string name="analytics_google_ads_filter_clicks">点击次数</string>
+    <string name="analytics_google_ads_filter_impressions">展示次数</string>
+    <string name="analytics_google_ads_filter_conversion">转化</string>
+    <string name="analytics_google_ads_filter_spend">支出</string>
+    <string name="analytics_google_ads_filter_total_sales">总销售额</string>
+    <string name="analytics_google_ads_metric_card_title">指标</string>
+    <string name="analytics_total_sales_subtitle_value">总销售额：%1$s</string>
+    <string name="analytics_spend_subtitle_value">支出：%1$s</string>
+    <string name="analytics_custom_list_selection_button_description">筛选条件选择</string>
     <string name="woopos_cart_empty_content_description">购物车为空</string>
     <string name="woopos_cart_empty_subtitle">点击产品以\n将其添加到购物车</string>
     <string name="woopos_totals_main_error_label">无法加载总计。</string>
@@ -21,7 +67,6 @@ Language: zh_CN
     <string name="product_creation_ai_preview_generate_again">再次生成</string>
     <string name="product_creation_ai_preview_undo_edits">撤销编辑</string>
     <string name="product_creation_ai_preview_variant_selector">第 %1$d 个选项，共 %2$d 个</string>
-    <string name="analytics_spend_value">支出：%1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">查看所有广告活动</string>
     <string name="dashboard_google_ads_card_create_campaign_button">创建广告活动</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">点击次数</string>
@@ -54,7 +99,6 @@ Language: zh_CN
     <string name="more_menu_button_customers">客户</string>
     <string name="ai_product_creation_scanning_photo_error">尝试扫描照片上的文本时出错。 请重试</string>
     <string name="ai_product_creation_scanning_image">正在扫描图片</string>
-    <string name="ai_product_creation_image_selected_subtitle">照片将添加到产品中</string>
     <string name="ai_product_creation_image_selected">照片已选择</string>
     <string name="ai_product_creation_remove_image">删除照片</string>
     <string name="ai_product_creation_replace_image">替换照片</string>
@@ -76,7 +120,6 @@ Language: zh_CN
     <string name="woopos_payment_total_label">总计</string>
     <string name="woopos_payment_tax_label">税费</string>
     <string name="woopos_payment_subtotal_label">小计</string>
-    <string name="woopos_new_transaction_button">新交易</string>
     <string name="woopos_payment_successful_label">付款成功</string>
     <string name="woopos_payment_failed_please_try_again">付款失败。 请重试。</string>
     <string name="woopos_cart_back_content_description">购物车图标</string>
@@ -96,7 +139,6 @@ Language: zh_CN
     <string name="woopos_checkout_button">结账</string>
     <string name="woopos_reader_unknown">读卡器状态未知</string>
     <string name="woopos_checkout">结账</string>
-    <string name="woopos_reader_disconnected">读卡器已断开连接</string>
     <string name="woopos_reader_connected">读卡器已连接</string>
     <string name="woopos_exit_pos">退出 POS 机</string>
     <string name="dashboard_new_widgets_card_button">添加新板块</string>

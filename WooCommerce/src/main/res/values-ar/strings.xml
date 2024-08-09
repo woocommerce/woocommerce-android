@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-23 13:54:04+0000
+Translation-Revision-Date: 2024-08-06 21:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="woopos_success_screen_total">تم سداد دفعة قدرها ⁦%1$s⁩ بنجاح</string>
+    <string name="woopos_new_order_button">طلب جديد</string>
+    <string name="woopos_dialog_products_info_button_label">موافق</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ إنشاء طلب في إدارة المتجر</string>
+    <string name="woopos_dialog_products_info_secondary_message">لتلقي دفعة مقابل منتج غير بسيط، اخرج من نقطة البيع وأنشئ طلبًا جديدًا من علامة تبويب الطلبات.</string>
+    <string name="woopos_dialog_products_info_primary_message">لا يمكن استخدام إلا المنتجات المادية البسيطة التي تتضمن نقطة بيع الآن.\nأما أنواع المنتجات الأخرى، مثل: المنتجات المتغيرة والظاهرية، ستتوفر في التحديثات المستقبلية.</string>
+    <string name="woopos_dialog_products_info_heading">لماذا يتعذر علي رؤية منتجاتي؟</string>
+    <string name="woopos_banner_simple_products_info_content_description">معلومات</string>
+    <string name="woopos_banner_simple_products_close_content_description">إغلاق</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">معرفة المزيد</string>
+    <string name="woopos_banner_simple_products_only_message">تكون المنتجات المادية البسيطة فقط متوافقة مع نقطة بيع الآن. أما أنواع المنتجات الأخرى، مثل: المنتجات المتغيرة والظاهرية، ستصبح متوفرة في التحديثات المستقبلية. </string>
+    <string name="woopos_banner_simple_products_only_title">إظهار المنتجات البسيطة فقط</string>
+    <string name="support_request_site_address">عنوان الموقع</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">إضافة حملة مدفوعة</string>
+    <string name="analytics_google_ads_cta_description">يمكنك زيادة المبيعات وإنشاء مزيد من حركة المرور باستخدام إعلانات غوغل.</string>
+    <string name="analytics_google_ads_cta_title">حملات غوغل</string>
+    <string name="google_ads_campaign_created_success_done_button">تم</string>
+    <string name="google_ads_campaign_created_success_description">تم إنشاء حملتك الجديدة. أوقات مشوقة في انتظار مبيعاتك!</string>
+    <string name="google_ads_campaign_created_success_title">كل شيء جاهز الآن!</string>
+    <string name="woopos_totals_order_creation_error">يتعذر إنشاء الطلب</string>
+    <string name="woopos_products_loading_error_retry_button">إعادة المحاولة</string>
+    <string name="woopos_error_icon_content_description">أيقونة إشارة الخطأ</string>
+    <string name="woopos_products_loading_error_message">هل تريد محاولة أخرى؟</string>
+    <string name="woopos_products_loading_error_title">خطأ في أثناء تحميل المنتجات</string>
+    <string name="woopos_products_empty_list_message_two">لا يدعم POS حاليًا سوى المنتجات البسيطة</string>
+    <string name="woopos_products_empty_list_message">لا يدعم POS حاليًا سوى المنتجات البسيطة - \nأنشئ واحدًا هنا للبدء.</string>
+    <string name="woopos_products_empty_list_title">لم يتم العثور على منتجات مدعومة</string>
+    <string name="woopos_products_empty_list_image_description">لا توجد منتجات</string>
+    <string name="woopos_splash_message">لنقدم خدمات إلى بعض العملاء</string>
+    <string name="woopos_splash_title">تشغيل</string>
+    <string name="woopos_get_support_title">الحصول على الدعم</string>
+    <string name="woopos_reader_disconnected">توصيل القارئ الخاص بك</string>
+    <string name="ai_product_creation_photo_removed">تمت إزالة الصورة</string>
+    <string name="ai_product_creation_image_scanned_subtitle">مسح الصورة ضوئيًا</string>
+    <string name="ai_product_creation_image_selected_subtitle">تمت إضافة صورة إلى معلومات البدء</string>
+    <string name="ai_product_creation_image_scan_subtitle">إضافة نص ممسوح ضوئيًا من صورة</string>
+    <string name="analytics_google_ads_filter_clicks">مرات النقر</string>
+    <string name="analytics_google_ads_filter_impressions">الانطباعات</string>
+    <string name="analytics_google_ads_filter_conversion">تحويل</string>
+    <string name="analytics_google_ads_filter_spend">إنفاق</string>
+    <string name="analytics_google_ads_filter_total_sales">إجمالي المبيعات</string>
+    <string name="analytics_google_ads_metric_card_title">مقياس</string>
+    <string name="analytics_total_sales_subtitle_value">إجمالي المبيعات: ⁦%1$s⁩</string>
+    <string name="analytics_spend_subtitle_value">الإنفاق: ⁦%1$s⁩</string>
+    <string name="analytics_custom_list_selection_button_description">تحديد عامل التصفية</string>
     <string name="woopos_cart_empty_content_description">سلة التسوق فارغة</string>
     <string name="woopos_cart_empty_subtitle">النقر على منتج إلى\nإضافته إلى عربة التسوق</string>
     <string name="woopos_totals_main_error_label">يتعذر تحميل الإجماليات</string>
@@ -21,7 +67,6 @@ Language: ar
     <string name="product_creation_ai_preview_generate_again">الإنشاء مجددًا</string>
     <string name="product_creation_ai_preview_undo_edits">التراجع عن عمليات التحرير</string>
     <string name="product_creation_ai_preview_variant_selector">خيار ⁦%1$d⁩ من ⁦%2$d⁩</string>
-    <string name="analytics_spend_value">الإنفاق: ⁦%1$s⁩</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">مشاهدة كل الحملات</string>
     <string name="dashboard_google_ads_card_create_campaign_button">إنشاء حملة</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">النقرات</string>
@@ -54,7 +99,6 @@ Language: ar
     <string name="more_menu_button_customers">العملاء</string>
     <string name="ai_product_creation_scanning_photo_error">خطأ في أثناء محاولة مسح النص ضوئيًا من الصورة. يرجى المحاولة مجددًا</string>
     <string name="ai_product_creation_scanning_image">مسح الصورة ضوئيًا</string>
-    <string name="ai_product_creation_image_selected_subtitle">ستتم إضافة الصورة إلى المنتج</string>
     <string name="ai_product_creation_image_selected">تم تحديد الصورة</string>
     <string name="ai_product_creation_remove_image">إزالة صورة</string>
     <string name="ai_product_creation_replace_image">استبدال صورة</string>
@@ -76,7 +120,6 @@ Language: ar
     <string name="woopos_payment_total_label">الإجمالي</string>
     <string name="woopos_payment_tax_label">الضريبة</string>
     <string name="woopos_payment_subtotal_label">الإجمالي الفرعي</string>
-    <string name="woopos_new_transaction_button">معاملة جديدة</string>
     <string name="woopos_payment_successful_label">تمت عملية الدفع بنجاح</string>
     <string name="woopos_payment_failed_please_try_again">فشلت عملية الدفع. يرجى المحاولة مجددًا.</string>
     <string name="woopos_cart_back_content_description">أيقونة عربة التسوق</string>
@@ -96,7 +139,6 @@ Language: ar
     <string name="woopos_checkout_button">السداد</string>
     <string name="woopos_reader_unknown">حالة القارئ مجهولة</string>
     <string name="woopos_checkout">السداد</string>
-    <string name="woopos_reader_disconnected">تم فصل القارئ</string>
     <string name="woopos_reader_connected">تم اتصال القارئ</string>
     <string name="woopos_exit_pos">إنهاء POS</string>
     <string name="dashboard_new_widgets_card_button">إضافة أقسام جديدة</string>

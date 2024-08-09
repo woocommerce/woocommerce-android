@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-23 16:54:04+0000
+Translation-Revision-Date: 2024-08-07 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="woopos_success_screen_total">תשלום של ⁦%1$s⁩ חויב בהצלחה</string>
+    <string name="woopos_new_order_button">הזמנה חדשה</string>
+    <string name="woopos_dialog_products_info_button_label">אישור</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ ליצור הזמנה בניהול החנות</string>
+    <string name="woopos_dialog_products_info_secondary_message">כדי לגבות תשלום במוצר שאינו מוצר פשוט, יש לצאת מ-POS וליצור הזמנה חדשה מלשונית ההזמנות.</string>
+    <string name="woopos_dialog_products_info_primary_message">נכון לעכשיו, ניתן להשתמש ב-POS רק עבור מוצרים פיזיים פשוטים.\nסוגי מוצרים אחרים, כמו מוצרים עם סוגים או מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד.</string>
+    <string name="woopos_dialog_products_info_heading">למה המוצרים שלי לא מופיעים?</string>
+    <string name="woopos_banner_simple_products_info_content_description">מידע</string>
+    <string name="woopos_banner_simple_products_close_content_description">לסגור</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">למידע נוסף</string>
+    <string name="woopos_banner_simple_products_only_message">רק מוצרים פיזיים פשוטים תואמים ל-POS כרגע. סוגי מוצרים אחרים, כמו מוצרים עם סוגים או מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד. </string>
+    <string name="woopos_banner_simple_products_only_title">מציג רק מוצרים פשוטים</string>
+    <string name="support_request_site_address">כתובת האתר</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google ל-WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">להוסיף קמפיין בתשלום</string>
+    <string name="analytics_google_ads_cta_description">לעודד מכירות ולהגדיל את התעבורה עם Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">קמפיינים של Google</string>
+    <string name="google_ads_campaign_created_success_done_button">בוצע</string>
+    <string name="google_ads_campaign_created_success_description">הקמפיין החדש שלך נוצר. העתיד של המכירות שלך ורוד!</string>
+    <string name="google_ads_campaign_created_success_title">מוכן לפעולה!</string>
+    <string name="woopos_totals_order_creation_error">לא ניתן היה ליצור את ההזמנה</string>
+    <string name="woopos_products_loading_error_retry_button">לנסות שוב</string>
+    <string name="woopos_error_icon_content_description">סמל שמציין שגיאה</string>
+    <string name="woopos_products_loading_error_message">רוצה לנסות שוב?</string>
+    <string name="woopos_products_loading_error_title">שגיאה בטעינת המוצרים</string>
+    <string name="woopos_products_empty_list_message_two">האפשרות POS נתמכת כרגע במוצרים פשוטים בלבד</string>
+    <string name="woopos_products_empty_list_message">האפשרות POS נתמכת כרגע במוצרים פשוטים בלבד – \nיש ליצור אחד כזה כדי להתחיל.</string>
+    <string name="woopos_products_empty_list_title">לא נמצאו מוצרים נתמכים</string>
+    <string name="woopos_products_empty_list_image_description">אין מוצרים</string>
+    <string name="woopos_splash_message">זה הזמן להעניק ללקוחות שירות</string>
+    <string name="woopos_splash_title">מתחילים כאן</string>
+    <string name="woopos_get_support_title">לקבלת תמיכה</string>
+    <string name="woopos_reader_disconnected">לחבר את הקורא</string>
+    <string name="ai_product_creation_photo_removed">התמונה הוסרה</string>
+    <string name="ai_product_creation_image_scanned_subtitle">סורק את התמונה</string>
+    <string name="ai_product_creation_image_selected_subtitle">טקסט התמונה נוסף לפרטי ההתחלה</string>
+    <string name="ai_product_creation_image_scan_subtitle">להוסיף טקסט שנסרק מתמונה</string>
+    <string name="analytics_google_ads_filter_clicks">קליקים</string>
+    <string name="analytics_google_ads_filter_impressions">צפיות</string>
+    <string name="analytics_google_ads_filter_conversion">המרה</string>
+    <string name="analytics_google_ads_filter_spend">הוצאה</string>
+    <string name="analytics_google_ads_filter_total_sales">סך כל המכירות</string>
+    <string name="analytics_google_ads_metric_card_title">מדד</string>
+    <string name="analytics_total_sales_subtitle_value">סך כל המכירות: ⁦%1$s⁩</string>
+    <string name="analytics_spend_subtitle_value">הוצאה: ⁦%1$s⁩</string>
+    <string name="analytics_custom_list_selection_button_description">לסנן בחירה</string>
     <string name="woopos_cart_empty_content_description">עגלת הקניות ריקה</string>
     <string name="woopos_cart_empty_subtitle">יש להקיש על מוצר כדי\nלהוסיף את המוצר לעגלה</string>
     <string name="woopos_totals_main_error_label">לא ניתן היה לטעון סך כל</string>
@@ -21,7 +67,6 @@ Language: he_IL
     <string name="product_creation_ai_preview_generate_again">ליצור שוב</string>
     <string name="product_creation_ai_preview_undo_edits">לבטל שינויים</string>
     <string name="product_creation_ai_preview_variant_selector">אפשרות ⁦%1$d⁩ מתוך ⁦%2$d⁩</string>
-    <string name="analytics_spend_value">הוצאה: ⁦%1$s⁩</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">להציג את כל הקמפיינים</string>
     <string name="dashboard_google_ads_card_create_campaign_button">ליצור קמפיין</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">קליקים</string>
@@ -54,7 +99,6 @@ Language: he_IL
     <string name="more_menu_button_customers">לקוחות</string>
     <string name="ai_product_creation_scanning_photo_error">אירעה שגיאה במהלך הניסיון לסרוק את הטקסט מהתמונה. יש לנסות שוב</string>
     <string name="ai_product_creation_scanning_image">סורק את התמונה</string>
-    <string name="ai_product_creation_image_selected_subtitle">התמונה תתווסף למוצר</string>
     <string name="ai_product_creation_image_selected">התמונה נבחרה</string>
     <string name="ai_product_creation_remove_image">להסיר את התמונה</string>
     <string name="ai_product_creation_replace_image">להחליף את התמונה</string>
@@ -76,7 +120,6 @@ Language: he_IL
     <string name="woopos_payment_total_label">סכום כולל</string>
     <string name="woopos_payment_tax_label">מס</string>
     <string name="woopos_payment_subtotal_label">סכום ביניים</string>
-    <string name="woopos_new_transaction_button">עסקה חדשה</string>
     <string name="woopos_payment_successful_label">התשלום בוצע בהצלחה</string>
     <string name="woopos_payment_failed_please_try_again">התשלום נכשל. יש לנסות שוב.</string>
     <string name="woopos_cart_back_content_description">סמל \'עגלת קניות\'</string>
@@ -96,7 +139,6 @@ Language: he_IL
     <string name="woopos_checkout_button">תשלום בקופה</string>
     <string name="woopos_reader_unknown">הסטטוס של הקורא לא ידוע</string>
     <string name="woopos_checkout">קופה</string>
-    <string name="woopos_reader_disconnected">הקורא מנותק</string>
     <string name="woopos_reader_connected">הקורא חובר</string>
     <string name="woopos_exit_pos">לצאת מ-POS</string>
     <string name="dashboard_new_widgets_card_button">להוסיף מקטעים חדשים</string>

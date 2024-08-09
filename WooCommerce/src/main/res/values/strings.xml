@@ -3609,6 +3609,7 @@
     <string name="support_request_title">Let\'s get this sorted</string>
     <string name="support_request_description">Let us know your site address (URL) and tell us as much as you can about the problem, and we will be in touch soon.</string>
     <string name="support_request_subject">Subject</string>
+    <string name="support_request_site_address">Site Address</string>
     <string name="support_request_submit">Submit Support Request</string>
     <string name="support_request_message">Message</string>
     <string name="support_request_message_hint">Write something</string>
@@ -4217,7 +4218,7 @@
     <string name="woopos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
-    <string name="woopos_new_transaction_button">New transaction</string>
+    <string name="woopos_new_order_button">New order</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
@@ -4236,8 +4237,10 @@
     <string name="woopos_products_loading_error_title">Error loading products</string>
     <string name="woopos_products_loading_error_message">Give it another go?</string>
     <string name="woopos_error_icon_content_description">Error indication icon</string>
-    <string name="woopos_products_loading_error_retry_button">Rerty</string>
+    <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
+    <string name="woopos_success_screen_total">A payment of %1$s was successfully made</string>
+
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>

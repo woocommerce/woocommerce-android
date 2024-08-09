@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-22 12:54:04+0000
+Translation-Revision-Date: 2024-08-08 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="woopos_success_screen_total">Un paiement de %1$s a été effectué avec succès</string>
+    <string name="woopos_new_order_button">Nouvelle commande</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Créer une commande dans la gestion de la boutique</string>
+    <string name="woopos_dialog_products_info_secondary_message">Pour accepter un paiement pour un produit non simple, quittez le PDV et créez une nouvelle commande depuis l’onglet Commandes.</string>
+    <string name="woopos_dialog_products_info_primary_message">Seuls les produits physiques simples peuvent être utilisés avec le PDV actuellement.\nD’autres types de produits, tels que les produits virtuels et variables, seront disponibles dans les mises à jour à venir.</string>
+    <string name="woopos_dialog_products_info_heading">Pourquoi ne puis-je pas voir mes produits ?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Informations</string>
+    <string name="woopos_banner_simple_products_close_content_description">Fermer</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Lire la suite</string>
+    <string name="woopos_banner_simple_products_only_message">Seuls les produits physiques simples sont compatibles avec le PDV actuellement. D’autres types de produits, tels que les produits virtuels et variables, seront disponibles dans les mises à jour à venir. </string>
+    <string name="woopos_banner_simple_products_only_title">Affichage des produits simples uniquement</string>
+    <string name="support_request_site_address">Adresse du site</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google pour WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Ajouter une campagne payante</string>
+    <string name="analytics_google_ads_cta_description">Multipliez les ventes et générez plus de trafic avec Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Campagnes Google</string>
+    <string name="google_ads_campaign_created_success_done_button">Terminé</string>
+    <string name="google_ads_campaign_created_success_description">Votre nouvelle campagne a été créée. L’aventure attend vos ventes !</string>
+    <string name="google_ads_campaign_created_success_title">Tout est prêt !</string>
+    <string name="woopos_totals_order_creation_error">Impossible de créer la commande</string>
+    <string name="woopos_products_loading_error_retry_button">Réessayer</string>
+    <string name="woopos_error_icon_content_description">Icône d’indication d’erreur</string>
+    <string name="woopos_products_loading_error_message">On réessaie ?</string>
+    <string name="woopos_products_loading_error_title">Erreur lors du chargement des produits</string>
+    <string name="woopos_products_empty_list_message_two">Le PDV ne prend actuellement en charge que les produits simples</string>
+    <string name="woopos_products_empty_list_message">Le PDV ne prend actuellement en charge que les produits simples – \ncréez-en un pour commencer.</string>
+    <string name="woopos_products_empty_list_title">Aucun produit pris en charge trouvé</string>
+    <string name="woopos_products_empty_list_image_description">Aucun produit</string>
+    <string name="woopos_splash_message">Servir davantage de clients</string>
+    <string name="woopos_splash_title">Démarrage</string>
+    <string name="woopos_get_support_title">Obtenir de l’aide</string>
+    <string name="woopos_reader_disconnected">Se connecter à votre lecteur</string>
+    <string name="ai_product_creation_photo_removed">Photo supprimée</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Scan de l’image</string>
+    <string name="ai_product_creation_image_selected_subtitle">Texte de la photo ajouté aux infos de démarrage</string>
+    <string name="ai_product_creation_image_scan_subtitle">Ajouter du texte scanné depuis une photo</string>
+    <string name="analytics_google_ads_filter_clicks">Clics</string>
+    <string name="analytics_google_ads_filter_impressions">Impressions</string>
+    <string name="analytics_google_ads_filter_conversion">Conversion</string>
+    <string name="analytics_google_ads_filter_spend">Dépense</string>
+    <string name="analytics_google_ads_filter_total_sales">Total des ventes</string>
+    <string name="analytics_google_ads_metric_card_title">Unité de mesure</string>
+    <string name="analytics_total_sales_subtitle_value">Total des ventes : %1$s</string>
+    <string name="analytics_spend_subtitle_value">Dépense : %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Sélection des filtres</string>
     <string name="woopos_cart_empty_content_description">Le panier est vide</string>
     <string name="woopos_cart_empty_subtitle">Appuyer sur un produit pour\nl’ajouter au panier</string>
     <string name="woopos_totals_main_error_label">Impossible de charger les totaux</string>
@@ -21,7 +67,6 @@ Language: fr
     <string name="product_creation_ai_preview_generate_again">Générer à nouveau</string>
     <string name="product_creation_ai_preview_undo_edits">Annuler les modifications</string>
     <string name="product_creation_ai_preview_variant_selector">Option %1$d sur %2$d</string>
-    <string name="analytics_spend_value">Dépense : %1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">Afficher toutes les campagnes</string>
     <string name="dashboard_google_ads_card_create_campaign_button">Créer une campagne</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">Clics</string>
@@ -54,7 +99,6 @@ Language: fr
     <string name="more_menu_button_customers">Clients</string>
     <string name="ai_product_creation_scanning_photo_error">Erreur lors du scan du texte sur la photo. Veuillez réessayer</string>
     <string name="ai_product_creation_scanning_image">Scan de l’image</string>
-    <string name="ai_product_creation_image_selected_subtitle">La photo sera ajoutée au produit</string>
     <string name="ai_product_creation_image_selected">Photo sélectionnée</string>
     <string name="ai_product_creation_remove_image">Supprimer la photo</string>
     <string name="ai_product_creation_replace_image">Remplacer la photo</string>
@@ -76,7 +120,6 @@ Language: fr
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_tax_label">Taxe</string>
     <string name="woopos_payment_subtotal_label">Sous-total</string>
-    <string name="woopos_new_transaction_button">Nouvelle transaction</string>
     <string name="woopos_payment_successful_label">Paiement réussi</string>
     <string name="woopos_payment_failed_please_try_again">Échec du paiement. Veuillez réessayer.</string>
     <string name="woopos_cart_back_content_description">Icône du panier</string>
@@ -96,7 +139,6 @@ Language: fr
     <string name="woopos_checkout_button">Validation de la commande</string>
     <string name="woopos_reader_unknown">État du lecteur inconnu</string>
     <string name="woopos_checkout">Validation de la commande</string>
-    <string name="woopos_reader_disconnected">Lecteur déconnecté</string>
     <string name="woopos_reader_connected">Lecteur connecté</string>
     <string name="woopos_exit_pos">Quitter le PDV</string>
     <string name="dashboard_new_widgets_card_button">Ajouter de nouvelles sections</string>

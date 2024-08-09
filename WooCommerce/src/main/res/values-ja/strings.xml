@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-23 09:54:04+0000
+Translation-Revision-Date: 2024-08-07 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="woopos_success_screen_total">%1$sの支払いが正常に行われました</string>
+    <string name="woopos_new_order_button">新しい注文</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ ストア管理で注文を作成</string>
+    <string name="woopos_dialog_products_info_secondary_message">シンプルな商品以外の支払いを受け取るには、POS を終了して注文タブから新しい注文を作成します。</string>
+    <string name="woopos_dialog_products_info_primary_message">現在、POS で使用できるのはシンプルな物理的商品のみです。\nバリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。</string>
+    <string name="woopos_dialog_products_info_heading">商品が表示されないのはなぜですか ?</string>
+    <string name="woopos_banner_simple_products_info_content_description">情報</string>
+    <string name="woopos_banner_simple_products_close_content_description">閉じる</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">さらに詳しく</string>
+    <string name="woopos_banner_simple_products_only_message">現在、POS で対応できるのはシンプルな物理的商品のみです。 バリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。 </string>
+    <string name="woopos_banner_simple_products_only_title">シンプルな商品のみ表示中</string>
+    <string name="support_request_site_address">サイトのアドレス</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">有料キャンペーンを追加</string>
+    <string name="analytics_google_ads_cta_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう。</string>
+    <string name="analytics_google_ads_cta_title">Google キャンペーン</string>
+    <string name="google_ads_campaign_created_success_done_button">完了</string>
+    <string name="google_ads_campaign_created_success_description">新しいキャンペーンが作成されました。 販売の楽しい時期がやってきます !</string>
+    <string name="google_ads_campaign_created_success_title">準備完了 !</string>
+    <string name="woopos_totals_order_creation_error">注文を作成できませんでした</string>
+    <string name="woopos_products_loading_error_retry_button">再試行</string>
+    <string name="woopos_error_icon_content_description">エラー表示アイコン</string>
+    <string name="woopos_products_loading_error_message">もう一度試しますか ?</string>
+    <string name="woopos_products_loading_error_title">商品の読み込み中にエラーが発生しました</string>
+    <string name="woopos_products_empty_list_message_two">現在、POS はシンプルな商品のみに対応しています</string>
+    <string name="woopos_products_empty_list_message">現在、POS はシンプルな商品のみに対応しています – \n作成して開始します。</string>
+    <string name="woopos_products_empty_list_title">サポート対象の商品が見つかりません</string>
+    <string name="woopos_products_empty_list_image_description">商品なし</string>
+    <string name="woopos_splash_message">お客様にサービスを提供しましょう</string>
+    <string name="woopos_splash_title">開始</string>
+    <string name="woopos_get_support_title">サポートを受ける</string>
+    <string name="woopos_reader_disconnected">リーダーを接続</string>
+    <string name="ai_product_creation_photo_removed">写真が削除されました</string>
+    <string name="ai_product_creation_image_scanned_subtitle">画像をスキャンしています</string>
+    <string name="ai_product_creation_image_selected_subtitle">開始情報に写真テキストを追加しました</string>
+    <string name="ai_product_creation_image_scan_subtitle">写真からスキャンしたテキストを追加</string>
+    <string name="analytics_google_ads_filter_clicks">クリック数</string>
+    <string name="analytics_google_ads_filter_impressions">インプレッション</string>
+    <string name="analytics_google_ads_filter_conversion">コンバージョン</string>
+    <string name="analytics_google_ads_filter_spend">利用額 </string>
+    <string name="analytics_google_ads_filter_total_sales">合計売上高</string>
+    <string name="analytics_google_ads_metric_card_title">メトリック</string>
+    <string name="analytics_total_sales_subtitle_value">合計売上高: %1$s</string>
+    <string name="analytics_spend_subtitle_value">利用額: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">フィルター選択</string>
     <string name="woopos_cart_empty_content_description">お買い物カゴが空です</string>
     <string name="woopos_cart_empty_subtitle">商品をタップして\nお買い物カゴに追加します</string>
     <string name="woopos_totals_main_error_label">合計を読み込めませんでした</string>
@@ -21,7 +67,6 @@ Language: ja_JP
     <string name="product_creation_ai_preview_generate_again">もう一度生成</string>
     <string name="product_creation_ai_preview_undo_edits">編集を元に戻す</string>
     <string name="product_creation_ai_preview_variant_selector">オプション%1$d/%2$d</string>
-    <string name="analytics_spend_value">利用額: %1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">すべてのキャンペーンを表示</string>
     <string name="dashboard_google_ads_card_create_campaign_button">キャンペーンを作成</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">クリック数</string>
@@ -54,7 +99,6 @@ Language: ja_JP
     <string name="more_menu_button_customers">顧客</string>
     <string name="ai_product_creation_scanning_photo_error">写真からテキストを読み取ろうとしてエラーが発生しました。 もう一度お試しください</string>
     <string name="ai_product_creation_scanning_image">画像をスキャンしています</string>
-    <string name="ai_product_creation_image_selected_subtitle">写真が商品に追加されます</string>
     <string name="ai_product_creation_image_selected">写真が選択されました</string>
     <string name="ai_product_creation_remove_image">写真を削除</string>
     <string name="ai_product_creation_replace_image">写真を置換</string>
@@ -76,7 +120,6 @@ Language: ja_JP
     <string name="woopos_payment_total_label">合計</string>
     <string name="woopos_payment_tax_label">税</string>
     <string name="woopos_payment_subtotal_label">小計</string>
-    <string name="woopos_new_transaction_button">新規トランザクション</string>
     <string name="woopos_payment_successful_label">支払いに成功しました</string>
     <string name="woopos_payment_failed_please_try_again">支払いに失敗しました。 もう一度お試しください。</string>
     <string name="woopos_cart_back_content_description">お買い物カゴアイコン</string>
@@ -96,7 +139,6 @@ Language: ja_JP
     <string name="woopos_checkout_button">購入手続き</string>
     <string name="woopos_reader_unknown">Reader ステータス不明</string>
     <string name="woopos_checkout">購入手続き</string>
-    <string name="woopos_reader_disconnected">Reader 切断済み</string>
     <string name="woopos_reader_connected">Reader 接続済み</string>
     <string name="woopos_exit_pos">POS を終了</string>
     <string name="dashboard_new_widgets_card_button">新しいセクションを追加</string>

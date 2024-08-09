@@ -73,10 +73,10 @@ class WooPosIsEnabled @Inject constructor(
             is CardReaderOnboardingState.StripeAccountOverdueRequirement,
             is CardReaderOnboardingState.StripeAccountRejected,
             is CardReaderOnboardingState.StripeAccountUnderReview,
+            is CardReaderOnboardingState.StripeAccountPendingRequirement,
             CardReaderOnboardingState.WcpayNotActivated,
             CardReaderOnboardingState.WcpayNotInstalled -> false
 
-            is CardReaderOnboardingState.StripeAccountPendingRequirement,
             is CardReaderOnboardingState.OnboardingCompleted -> true
         }
 

@@ -102,12 +102,12 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given ipp onboarding is Pending Requirements, then return true`() = testBlocking {
+    fun `given ipp onboarding is Pending Requirements, then return false`() = testBlocking {
         val onboardingCompleted = mock<CardReaderOnboardingState.StripeAccountPendingRequirement>()
         whenever(onboardingCompleted.preferredPlugin).thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
         whenever(cardReaderOnboardingChecker.getOnboardingState()).thenReturn(onboardingCompleted)
 
-        assertTrue(sut())
+        assertFalse(sut())
     }
 
     @Test

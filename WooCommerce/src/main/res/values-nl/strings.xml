@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-24 09:54:03+0000
+Translation-Revision-Date: 2024-08-08 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="woopos_success_screen_total">Een betaling van %1$s is voldaan</string>
+    <string name="woopos_new_order_button">Nieuwe bestelling</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Maak een bestelling aan in het winkelbeheer</string>
+    <string name="woopos_dialog_products_info_secondary_message">Verlaat POS en maak een nieuwe bestelling aan vanuit het tabblad Bestellingen om betalingen te ontvangen voor een niet-simpel product.</string>
+    <string name="woopos_dialog_products_info_primary_message">Alleen simpele fysieke producten zijn momenteel beschikbaar met POS.\nAndere producttypen, zoals variabel en virtueel, worden in toekomstige updates beschikbaar.</string>
+    <string name="woopos_dialog_products_info_heading">Waarom kan ik mijn producten niet zien?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Informatie</string>
+    <string name="woopos_banner_simple_products_close_content_description">Sluiten</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Meer informatie</string>
+    <string name="woopos_banner_simple_products_only_message">Alleen simpele fysieke producten zijn momenteel compatibel met POS. Andere producttypen, zoals variabel en virtueel, worden in toekomstige updates beschikbaar. </string>
+    <string name="woopos_banner_simple_products_only_title">Alleen simpele producten weergeven</string>
+    <string name="support_request_site_address">Websiteadres</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google voor WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Betaalde campagne toevoegen</string>
+    <string name="analytics_google_ads_cta_description">Stimuleer je verkoop en genereer meer verkeer met Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Google-campagnes</string>
+    <string name="google_ads_campaign_created_success_done_button">Gereed</string>
+    <string name="google_ads_campaign_created_success_description">Je nieuwe campagne is gemaakt. Er komen geweldige momenten aan voor jouw omzet!</string>
+    <string name="google_ads_campaign_created_success_title">Klaar voor de start!</string>
+    <string name="woopos_totals_order_creation_error">Bestelling kan niet worden aangemaakt</string>
+    <string name="woopos_products_loading_error_retry_button">Probeer het opnieuw</string>
+    <string name="woopos_error_icon_content_description">Foutpictogram</string>
+    <string name="woopos_products_loading_error_message">Nog een keertje proberen?</string>
+    <string name="woopos_products_loading_error_title">Fout bij laden van producten</string>
+    <string name="woopos_products_empty_list_message_two">POS ondersteunt momenteel alleen simpele producten</string>
+    <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele producten – \nmaak er een aan om te beginnen.</string>
+    <string name="woopos_products_empty_list_title">Geen ondersteunde producten gevonden</string>
+    <string name="woopos_products_empty_list_image_description">Geen producten</string>
+    <string name="woopos_splash_message">Laten we wat klanten helpen</string>
+    <string name="woopos_splash_title">Aan de slag</string>
+    <string name="woopos_get_support_title">Vraag om ondersteuning</string>
+    <string name="woopos_reader_disconnected">Verbind je lezer</string>
+    <string name="ai_product_creation_photo_removed">Foto verwijderd</string>
+    <string name="ai_product_creation_image_scanned_subtitle">Afbeelding scannen</string>
+    <string name="ai_product_creation_image_selected_subtitle">Afbeeldingstekst toegevoegd aan startinformatie</string>
+    <string name="ai_product_creation_image_scan_subtitle">Voeg tekst toe die van een afbeelding is gescand</string>
+    <string name="analytics_google_ads_filter_clicks">Klikken</string>
+    <string name="analytics_google_ads_filter_impressions">Impressies</string>
+    <string name="analytics_google_ads_filter_conversion">Conversie</string>
+    <string name="analytics_google_ads_filter_spend">Uitgeven</string>
+    <string name="analytics_google_ads_filter_total_sales">Totale omzet</string>
+    <string name="analytics_google_ads_metric_card_title">Meetwaarde</string>
+    <string name="analytics_total_sales_subtitle_value">Totale omzet: %1$s</string>
+    <string name="analytics_spend_subtitle_value">Uitgaven: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">Filterselectie</string>
     <string name="woopos_cart_empty_content_description">Winkelwagen is leeg</string>
     <string name="woopos_cart_empty_subtitle">Tik op een product om het\ntoe te voegen aan de winkelwagen</string>
     <string name="woopos_totals_main_error_label">Kan totalen niet laden</string>
@@ -21,7 +67,6 @@ Language: nl
     <string name="product_creation_ai_preview_generate_again">Opnieuw genereren</string>
     <string name="product_creation_ai_preview_undo_edits">Wijzigingen verwijderen</string>
     <string name="product_creation_ai_preview_variant_selector">Optie %1$d van %2$d</string>
-    <string name="analytics_spend_value">Uitgaven: %1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">Alle campagnes weergeven</string>
     <string name="dashboard_google_ads_card_create_campaign_button">Campagne aanmaken</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">Klikken</string>
@@ -54,7 +99,6 @@ Language: nl
     <string name="more_menu_button_customers">Klanten</string>
     <string name="ai_product_creation_scanning_photo_error">Error while trying to scan the text from the photo. Probeer het nog eens</string>
     <string name="ai_product_creation_scanning_image">Scanning image</string>
-    <string name="ai_product_creation_image_selected_subtitle">Photo will be added to product</string>
     <string name="ai_product_creation_image_selected">Foto geselecteerd</string>
     <string name="ai_product_creation_remove_image">Foto verwijderen</string>
     <string name="ai_product_creation_replace_image">Foto vervangen</string>
@@ -76,7 +120,6 @@ Language: nl
     <string name="woopos_payment_total_label">Totaal</string>
     <string name="woopos_payment_tax_label">Belasting</string>
     <string name="woopos_payment_subtotal_label">Subtotaal</string>
-    <string name="woopos_new_transaction_button">Nieuwe transactie</string>
     <string name="woopos_payment_successful_label">Betaling gelukt</string>
     <string name="woopos_payment_failed_please_try_again">Betaling mislukt. Probeer het opnieuw.</string>
     <string name="woopos_cart_back_content_description">Winkelwagenpictogram</string>
@@ -96,7 +139,6 @@ Language: nl
     <string name="woopos_checkout_button">Afrekenen</string>
     <string name="woopos_reader_unknown">Status van lezer is onbekend</string>
     <string name="woopos_checkout">Afrekenen</string>
-    <string name="woopos_reader_disconnected">Verbinding met lezer is verbroken</string>
     <string name="woopos_reader_connected">Verbonden met lezer</string>
     <string name="woopos_exit_pos">POS verlaten</string>
     <string name="dashboard_new_widgets_card_button">Nieuwe delen toevoegen</string>
