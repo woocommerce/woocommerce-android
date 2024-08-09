@@ -20,6 +20,17 @@ data class CustomColors(
     val error: Color,
     val paymentSuccessBackground: Color,
     val paymentSuccessText: Color,
+    val wooPrimary: Color,
+    val wooPrimaryVariant: Color,
+    val wooSecondary: Color,
+    val wooBackground: Color,
+    val wooSurface: Color,
+    val wooError: Color,
+    val wooOnPrimary: Color,
+    val wooOnSecondary: Color,
+    val wooOnBackground: Color,
+    val wooOnSurface: Color,
+    val wooOnError: Color,
 )
 
 private val DarkColorPalette = darkColors(
@@ -53,6 +64,17 @@ private val DarkCustomColors = CustomColors(
     error = Color(0xFFBE4400),
     paymentSuccessBackground = Color(0xFF74C758),
     paymentSuccessText = Color(0xFFF2EBFF),
+    wooPrimary = Color(0xFF6200EE),
+    wooPrimaryVariant = Color(0xFF3700B3),
+    wooSecondary = Color(0xFF03DAC5),
+    wooBackground = Color(0xFF121212),
+    wooSurface = Color(0xFF121212),
+    wooError = Color(0xFFB00020),
+    wooOnPrimary = Color.White,
+    wooOnSecondary = Color.Black,
+    wooOnBackground = Color.White,
+    wooOnSurface = Color.White,
+    wooOnError = Color.White,
 )
 
 private val LightCustomColors = CustomColors(
@@ -62,6 +84,17 @@ private val LightCustomColors = CustomColors(
     error = Color(0xFFF16618),
     paymentSuccessBackground = Color(0xFF98F179),
     paymentSuccessText = Color(0xFF271B3D),
+    wooPrimary = Color(0xFF6200EE),
+    wooPrimaryVariant = Color(0xFF3700B3),
+    wooSecondary = Color(0xFF03DAC5),
+    wooBackground = Color(0xFFFFFFFF),
+    wooSurface = Color(0xFFFFFFFF),
+    wooError = Color(0xFFB00020),
+    wooOnPrimary = Color.White,
+    wooOnSecondary = Color.Black,
+    wooOnBackground = Color.Black,
+    wooOnSurface = Color.Black,
+    wooOnError = Color.White,
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {
