@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 13:54:04+0000
+Translation-Revision-Date: 2024-08-08 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="woopos_success_screen_total">En betalning för %1$s återbetalades utan problem.</string>
+    <string name="woopos_new_order_button">Ny beställning</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Skapa en beställning i butikshantering</string>
+    <string name="woopos_dialog_products_info_heading">Varför kan jag inte se mina produkter?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Info</string>
+    <string name="woopos_banner_simple_products_close_content_description">Stäng</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Lär dig mer</string>
+    <string name="woopos_dialog_products_info_secondary_message">För att ta betalt för en icke-enkel produkt, lämna POS och skapa en ny beställning från fliken Beställningar.</string>
+    <string name="woopos_dialog_products_info_primary_message">Endast enkla fysiska produkter kan användas med POS just nu.\nAndra produkttyper, till exempel rörliga och virtuella, kommer att bli tillgängliga i framtida uppdateringar.</string>
+    <string name="woopos_banner_simple_products_only_message">Endast enkla fysiska produkter är kompatibla med POS just nu. Andra produkttyper, till exempel rörliga och virtuella, kommer att bli tillgängliga i framtida uppdateringar. </string>
+    <string name="woopos_banner_simple_products_only_title">Visar endast enkla produkter</string>
+    <string name="support_request_site_address">Webbplatsadress</string>
+    <string name="analytics_google_ads_cta_action">Lägg till betald kampanj</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google för WooCommerce</string>
+    <string name="analytics_google_ads_cta_description">Öka försäljningen och generera mer trafik med Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Google-kampanjer</string>
     <string name="google_ads_campaign_created_success_done_button">Klar</string>
     <string name="google_ads_campaign_created_success_description">Din nya kampanj har skapats. Spännande tider väntar för din försäljning!</string>
     <string name="woopos_totals_order_creation_error">Kunde inte skapa beställning</string>
@@ -102,7 +119,6 @@ Language: sv_SE
     <string name="woopos_payment_total_label">Totalt</string>
     <string name="woopos_payment_tax_label">Moms</string>
     <string name="woopos_payment_subtotal_label">Delsumma</string>
-    <string name="woopos_new_transaction_button">Ny transaktion</string>
     <string name="woopos_payment_successful_label">Betalning lyckades</string>
     <string name="woopos_payment_failed_please_try_again">Betalning misslyckades. Försök igen.</string>
     <string name="woopos_cart_back_content_description">Varukorgsikon</string>
