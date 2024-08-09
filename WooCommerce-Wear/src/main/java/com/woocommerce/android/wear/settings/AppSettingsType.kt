@@ -3,15 +3,13 @@ package com.woocommerce.android.wear.settings
 import android.content.SharedPreferences
 import com.woocommerce.commons.prefs.PreferenceUtils
 
-sealed class AppSettings<T>(
-    private val preferences: SharedPreferences
-) {
+sealed class AppSettings<T>() {
     abstract var value: T
     abstract val key: String
 
     data class CrashReportEnabled(
         private val preferences: SharedPreferences
-    ) : AppSettings<Boolean>(preferences) {
+    ) : AppSettings<Boolean>() {
         override val key = this::class.simpleName.orEmpty()
 
         override var value: Boolean
