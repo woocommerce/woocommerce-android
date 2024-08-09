@@ -39,7 +39,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonLarge
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
@@ -251,7 +251,7 @@ private fun TotalsErrorScreen(
     errorMessage: String,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
-    WooPosErrorState(
+    WooPosErrorScreen(
         icon = Icons.Default.Error,
         message = stringResource(R.string.woopos_totals_main_error_label),
         reason = errorMessage,

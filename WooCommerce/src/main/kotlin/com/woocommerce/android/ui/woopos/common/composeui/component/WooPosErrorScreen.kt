@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 
 @Composable
-fun WooPosErrorState(
+fun WooPosErrorScreen(
     modifier: Modifier = Modifier,
     icon: Painter = painterResource(id = R.drawable.woo_pos_ic_error),
     message: String,
