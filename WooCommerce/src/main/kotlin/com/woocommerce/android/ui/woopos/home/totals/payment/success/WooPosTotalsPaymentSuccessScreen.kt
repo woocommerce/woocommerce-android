@@ -207,11 +207,7 @@ private fun CheckMarkIcon(
 fun WooPosPaymentSuccessScreenPreview() {
     WooPosTheme {
         WooPosPaymentSuccessScreen(
-            state = WooPosTotalsViewState.PaymentSuccess(
-                orderSubtotalText = "$11.98",
-                orderTotalText = "$13.18",
-                orderTaxText = "$1.20"
-            ),
+            state = WooPosTotalsViewState.PaymentSuccess(orderTotalText = "$13.18"),
             bottomAnimationStarted = true,
             iconAnimationStarted = true,
             onNewTransactionClicked = {}
