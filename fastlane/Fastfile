@@ -275,7 +275,7 @@ platform :android do
   # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
   desc 'Updates a release branch for a new beta release'
-  lane :new_beta_release do |options|
+  lane :new_beta_release do |skip_confirm: false, include_wear_app: false|
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
 
@@ -293,9 +293,7 @@ platform :android do
     MESSAGE
 
     UI.important(message)
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Bump the release version and build code
     UI.message 'Bumping beta version and build code...'
@@ -308,13 +306,10 @@ platform :android do
     UI.success("Done! New Beta Version: #{version_name_current}. New Build Code: #{build_code_current}")
 
     UI.important('Pushing changes to remote and triggering the beta build')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     push_to_git_remote(tags: false)
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
