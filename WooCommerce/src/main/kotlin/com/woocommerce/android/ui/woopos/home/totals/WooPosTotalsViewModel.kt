@@ -78,7 +78,6 @@ class WooPosTotalsViewModel @Inject constructor(
                     childrenToParentEventSender.sendToParent(
                         ChildToParentEvent.NewTransactionClicked
                     )
-                    uiState.value = InitialState
                 }
             }
             is WooPosTotalsUIEvent.RetryOrderCreationClicked -> {
