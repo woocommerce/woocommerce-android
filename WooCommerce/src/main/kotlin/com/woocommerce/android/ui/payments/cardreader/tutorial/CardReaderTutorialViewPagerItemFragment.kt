@@ -8,24 +8,25 @@ import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderTutorialViewpagerItemBinding
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.util.UiHelpers
 import org.wordpress.android.util.DisplayUtils
 
 /**
  * Displays a single image and text label in the card reader tutorial view pager
  */
-class CardReaderTutorialViewPagerItemFragment : Fragment(R.layout.fragment_card_reader_tutorial_viewpager_item) {
+class CardReaderTutorialViewPagerItemFragment :
+    Fragment(R.layout.fragment_card_reader_tutorial_viewpager_item) {
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         arguments?.let { args ->
             val binding = FragmentCardReaderTutorialViewpagerItemBinding.bind(view)
             binding.labelTextView.setText(args.getInt(ARG_LABEL_ID))
             binding.detailTextView.setText(args.getInt(ARG_DETAIL_ID))
 
-            // hide images in landscape
-            if (DisplayUtils.isLandscape(context)) {
-                binding.imageView.hide()
-            } else {
-                binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
-            }
+            UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+                binding.imageView,
+                args.getInt(ARG_DRAWABLE_ID)
+            )
         }
     }
 
