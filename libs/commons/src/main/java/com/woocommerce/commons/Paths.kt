@@ -4,7 +4,8 @@ enum class MessagePath(val value: String) {
     REQUEST_SITE("/request-site"),
     REQUEST_STATS("/request-stats"),
     REQUEST_ORDERS("/request-orders"),
-    REQUEST_ORDER_PRODUCTS("/request-order-products")
+    REQUEST_ORDER_PRODUCTS("/request-order-products"),
+    REQUEST_APP_SETTINGS("/request-app-settings")
 }
 
 enum class DataPath(val value: String) {
@@ -12,7 +13,8 @@ enum class DataPath(val value: String) {
     STATS_DATA("/stats-data"),
     ORDERS_DATA("/orders-data"),
     ORDER_PRODUCTS_DATA("/order-products-data"),
-    ANALYTICS_DATA("/analytics-data")
+    ANALYTICS_DATA("/analytics-data"),
+    APP_SETTINGS_DATA("/app-settings-data")
 }
 
 enum class DataParameters(val value: String) {
