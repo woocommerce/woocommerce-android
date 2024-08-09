@@ -8,11 +8,13 @@ import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.PutDataMapRequest
+import com.woocommerce.android.wear.prefs.SettingsRepository
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.orders.OrdersRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
 import com.woocommerce.commons.DataParameters
 import com.woocommerce.commons.DataPath
+import com.woocommerce.commons.DataPath.APP_SETTINGS_DATA
 import com.woocommerce.commons.DataPath.ORDERS_DATA
 import com.woocommerce.commons.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.DataPath.SITE_DATA
@@ -30,6 +32,7 @@ class PhoneConnectionRepository @Inject constructor(
     private val loginRepository: LoginRepository,
     private val statsRepository: StatsRepository,
     private val ordersRepository: OrdersRepository,
+    private val settingsRepository: SettingsRepository,
     private val capabilityClient: CapabilityClient,
     private val dataClient: DataClient,
     private val messageClient: MessageClient,
@@ -47,6 +50,7 @@ class PhoneConnectionRepository @Inject constructor(
                 STATS_DATA.value -> statsRepository.receiveStatsDataFromPhone(dataMap)
                 ORDERS_DATA.value -> ordersRepository.receiveOrdersDataFromPhone(dataMap)
                 ORDER_PRODUCTS_DATA.value -> ordersRepository.receiveOrderProductsDataFromPhone(dataMap)
+                APP_SETTINGS_DATA.value -> settingsRepository.receiveAppSettingsDataFromPhone(dataMap)
                 else -> Log.d(TAG, "Unknown path data received")
             }
         }
