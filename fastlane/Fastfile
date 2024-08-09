@@ -689,7 +689,7 @@ platform :android do
     )
 
     message = "This build triggered a release build on <code>#{branch}</code>:<br>- #{build_url}"
-    buildkite_annotate(style: 'info', context: 'trigger-release-build-doandroid', message: message) if is_ci
+    buildkite_annotate(style: 'info', context: 'trigger-release-build', message: message) if is_ci
   end
 
   #####################################################################################
