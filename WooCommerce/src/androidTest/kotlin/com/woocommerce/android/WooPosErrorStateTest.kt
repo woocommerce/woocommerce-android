@@ -1,7 +1,5 @@
 package com.woocommerce.android
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -40,7 +38,6 @@ class WooPosErrorStateTest {
         composeTestRule.setContent {
             WooPosTheme {
                 WooPosErrorScreen(
-                    icon = Icons.Default.Error,
                     message = testMessage,
                     reason = testReason
                 )
@@ -64,7 +61,6 @@ class WooPosErrorStateTest {
         composeTestRule.setContent {
             WooPosTheme {
                 WooPosErrorScreen(
-                    icon = Icons.Default.Error,
                     message = "Test Message",
                     reason = "Test Reason",
                     primaryButton = primaryButton,
