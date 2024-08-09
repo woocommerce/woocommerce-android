@@ -19,17 +19,7 @@ data class CustomColors(
     val success: Color,
     val error: Color,
     val paymentSuccessBackground: Color,
-    val paymentSuccessText: Color,
-    val wooPurple0: Color,
-    val wooPurple10: Color,
-    val wooPurple15: Color,
-    val wooPurple20: Color,
-    val wooPurple30: Color,
-    val wooPurple40: Color,
-    val wooPurple50: Color,
-    val wooPurple60: Color,
-    val wooPurple80: Color,
-    val wooPurple90: Color,
+    val paymentSuccessText: Color
 )
 
 private val DarkColorPalette = darkColors(
@@ -41,15 +31,15 @@ private val DarkColorPalette = darkColors(
     surface = WooPOSColors.SurfaceDarkBlack,
     onSurface = WooPOSColors.White,
     background = WooPOSColors.SurfaceDarkBlack,
-    onBackground = WooPOSColors.White,
+    onBackground = WooPOSColors.White
 )
 
 private val LightColorPalette = lightColors(
     primary = WooPOSColors.Purple50,
     primaryVariant = WooPOSColors.PrimaryVariantDarkBlue,
     onPrimary = WooPOSColors.White,
-    secondary = Color(0xFF004B3E),
-    secondaryVariant = Color(0xFF50575E),
+    secondary = WooPOSColors.SecondaryLightGreen,
+    secondaryVariant = WooPOSColors.SecondaryVariantLightGray,
     surface = WooPOSColors.White,
     onSurface = WooPOSColors.Black,
     background = WooPOSColors.Gray0,
@@ -62,17 +52,7 @@ private val DarkCustomColors = CustomColors(
     success = Color(0xFF06B166),
     error = Color(0xFFBE4400),
     paymentSuccessBackground = Color(0xFF74C758),
-    paymentSuccessText = Color(0xFFF2EBFF),
-    wooPurple0 = WooPOSColors.Purple0,
-    wooPurple10 = WooPOSColors.Purple10,
-    wooPurple15 = WooPOSColors.Purple15,
-    wooPurple20 = WooPOSColors.Purple20,
-    wooPurple30 = WooPOSColors.Purple30,
-    wooPurple40 = WooPOSColors.Purple40,
-    wooPurple50 = WooPOSColors.Purple40,
-    wooPurple60 = WooPOSColors.Purple60,
-    wooPurple80 = WooPOSColors.Purple80,
-    wooPurple90 = WooPOSColors.Purple90,
+    paymentSuccessText = Color(0xFFF2EBFF)
 )
 
 private val LightCustomColors = CustomColors(
@@ -81,17 +61,7 @@ private val LightCustomColors = CustomColors(
     success = Color(0xFF03D479),
     error = Color(0xFFF16618),
     paymentSuccessBackground = Color(0xFF98F179),
-    paymentSuccessText = WooPOSColors.Purple90,
-    wooPurple0 = WooPOSColors.Purple0,
-    wooPurple10 = WooPOSColors.Purple10,
-    wooPurple15 = WooPOSColors.Purple15,
-    wooPurple20 = WooPOSColors.Purple20,
-    wooPurple30 = WooPOSColors.Purple30,
-    wooPurple40 = WooPOSColors.Purple40,
-    wooPurple50 = WooPOSColors.Purple40,
-    wooPurple60 = WooPOSColors.Purple60,
-    wooPurple80 = WooPOSColors.Purple80,
-    wooPurple90 = WooPOSColors.Purple90,
+    paymentSuccessText = WooPOSColors.Purple90
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {

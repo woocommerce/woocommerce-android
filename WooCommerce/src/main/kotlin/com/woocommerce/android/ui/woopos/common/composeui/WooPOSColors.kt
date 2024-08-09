@@ -2,10 +2,10 @@
 
 package com.woocommerce.android.ui.woopos.common.composeui
 
+import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 
 object WooPOSColors {
-    val Purple0 = Color(0xFFF2EDFF)
     val Purple10 = Color(0xFFF7EDF7)
     val Purple15 = Color(0xFFE5CFE8)
     val Purple20 = Color(0xFFC792E0)
@@ -21,6 +21,9 @@ object WooPOSColors {
     val SecondaryDarkGreen = Color(0xFF0A9400)
     val SecondaryVariantDarkGray = Color(0xFF8D8D8D)
     val SurfaceDarkBlack = Color(0xFF121212)
+
+    val SecondaryLightGreen = Color(0xFF004B3E)
+    val SecondaryVariantLightGray = Color(0xFF50575E)
 
     val White = Color(0xFFFFFFFF)
     val Gray0 = Color(0xFFF6F7F7)
