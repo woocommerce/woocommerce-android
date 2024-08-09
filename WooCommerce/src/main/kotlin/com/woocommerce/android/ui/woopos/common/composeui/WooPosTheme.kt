@@ -29,21 +29,21 @@ private val DarkColorPalette = darkColors(
     secondary = WooPOSColors.SecondaryDarkGreen,
     secondaryVariant = WooPOSColors.SecondaryVariantDarkGray,
     surface = WooPOSColors.SurfaceDarkBlack,
-    onSurface = WooPOSColors.White,
+    onSurface = Color.White,
     background = WooPOSColors.SurfaceDarkBlack,
-    onBackground = WooPOSColors.White
+    onBackground = Color.White
 )
 
 private val LightColorPalette = lightColors(
     primary = WooPOSColors.Purple50,
     primaryVariant = WooPOSColors.PrimaryVariantDarkBlue,
-    onPrimary = WooPOSColors.White,
+    onPrimary = Color.White,
     secondary = WooPOSColors.SecondaryLightGreen,
     secondaryVariant = WooPOSColors.SecondaryVariantLightGray,
-    surface = WooPOSColors.White,
-    onSurface = WooPOSColors.Black,
+    surface = Color.White,
+    onSurface = Color.Black,
     background = WooPOSColors.Gray0,
-    onBackground = WooPOSColors.Black
+    onBackground = Color.Black
 )
 
 private val DarkCustomColors = CustomColors(
