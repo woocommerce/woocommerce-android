@@ -9,7 +9,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -39,7 +39,7 @@ class WooPosErrorStateTest {
 
         composeTestRule.setContent {
             WooPosTheme {
-                WooPosErrorState(
+                WooPosErrorScreen(
                     icon = Icons.Default.Error,
                     message = testMessage,
                     reason = testReason
@@ -63,7 +63,7 @@ class WooPosErrorStateTest {
 
         composeTestRule.setContent {
             WooPosTheme {
-                WooPosErrorState(
+                WooPosErrorScreen(
                     icon = Icons.Default.Error,
                     message = "Test Message",
                     reason = "Test Reason",
