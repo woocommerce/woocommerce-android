@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 09:54:04+0000
+Translation-Revision-Date: 2024-08-08 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="woopos_success_screen_total">Een betaling van %1$s is voldaan</string>
+    <string name="woopos_new_order_button">Nieuwe bestelling</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Maak een bestelling aan in het winkelbeheer</string>
+    <string name="woopos_dialog_products_info_secondary_message">Verlaat POS en maak een nieuwe bestelling aan vanuit het tabblad Bestellingen om betalingen te ontvangen voor een niet-simpel product.</string>
+    <string name="woopos_dialog_products_info_primary_message">Alleen simpele fysieke producten zijn momenteel beschikbaar met POS.\nAndere producttypen, zoals variabel en virtueel, worden in toekomstige updates beschikbaar.</string>
+    <string name="woopos_dialog_products_info_heading">Waarom kan ik mijn producten niet zien?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Informatie</string>
+    <string name="woopos_banner_simple_products_close_content_description">Sluiten</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Meer informatie</string>
+    <string name="woopos_banner_simple_products_only_message">Alleen simpele fysieke producten zijn momenteel compatibel met POS. Andere producttypen, zoals variabel en virtueel, worden in toekomstige updates beschikbaar. </string>
+    <string name="woopos_banner_simple_products_only_title">Alleen simpele producten weergeven</string>
+    <string name="support_request_site_address">Websiteadres</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google voor WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Betaalde campagne toevoegen</string>
+    <string name="analytics_google_ads_cta_description">Stimuleer je verkoop en genereer meer verkeer met Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Google-campagnes</string>
     <string name="google_ads_campaign_created_success_done_button">Gereed</string>
     <string name="google_ads_campaign_created_success_description">Je nieuwe campagne is gemaakt. Er komen geweldige momenten aan voor jouw omzet!</string>
     <string name="google_ads_campaign_created_success_title">Klaar voor de start!</string>
@@ -103,7 +120,6 @@ Language: nl
     <string name="woopos_payment_total_label">Totaal</string>
     <string name="woopos_payment_tax_label">Belasting</string>
     <string name="woopos_payment_subtotal_label">Subtotaal</string>
-    <string name="woopos_new_transaction_button">Nieuwe transactie</string>
     <string name="woopos_payment_successful_label">Betaling gelukt</string>
     <string name="woopos_payment_failed_please_try_again">Betaling mislukt. Probeer het opnieuw.</string>
     <string name="woopos_cart_back_content_description">Winkelwagenpictogram</string>
