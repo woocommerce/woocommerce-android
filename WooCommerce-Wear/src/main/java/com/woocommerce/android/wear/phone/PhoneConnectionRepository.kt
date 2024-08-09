@@ -8,7 +8,7 @@ import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.PutDataMapRequest
-import com.woocommerce.android.wear.prefs.SettingsRepository
+import com.woocommerce.android.wear.settings.SettingsRepository
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.orders.OrdersRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
