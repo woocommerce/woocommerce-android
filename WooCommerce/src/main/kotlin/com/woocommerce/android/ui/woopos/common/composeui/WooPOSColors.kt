@@ -24,12 +24,5 @@ object WooPOSColors {
 
     val White = Color(0xFFFFFFFF)
     val Gray0 = Color(0xFFF6F7F7)
-    val Gray5 = Color(0xFFDCDCDE)
-    val Gray6 = Color(0xFFF2F2F7)
-    val Gray20 = Color(0xFFB4B1B8)
-    val Gray40 = Color(0xFF787C82)
-    val Gray60 = Color(0xFF51565F)
-    val Gray70 = Color(0xFF3D444B)
-    val Gray80 = Color(0xFF2C3338)
     val Black = Color(0xFF000000)
 }
