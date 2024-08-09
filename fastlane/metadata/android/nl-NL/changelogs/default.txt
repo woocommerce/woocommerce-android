@@ -1,0 +1,2 @@
+19.8:
+In onze nieuwste update hebben we een knop toegevoegd in de analyse van Google-campagnes om makkelijker betaalde campagnes aan te maken. Het contactformulier van de ondersteuning bevat nu een veld voor het websiteadres. Illustraties voor fysieke betalingen werken nu naadloos in landschapmodus, en je kan je voordeel doen met achtergrondupdates voor bestellijsten en analyses op het dashboard.

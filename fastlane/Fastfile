@@ -634,9 +634,7 @@ platform :android do
       skip_upload_changelogs: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
-      # We're retaining version 16.4 - 480 because 16.5 increases the minSDKVersion from Android 7 to Android 8
-      version_codes_to_retain: app == WEAR_APP ? nil : [480]
+      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
     create_gh_release(app: app, version: version) if options[:create_release]
