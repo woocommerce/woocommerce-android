@@ -128,7 +128,6 @@ class WooPosToolbarViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        super.onCleared()
         debounceJob?.cancel()
     }
 }
