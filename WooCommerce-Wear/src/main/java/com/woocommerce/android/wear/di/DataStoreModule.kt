@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.wear.datastore.DataStoreQualifier
 import com.woocommerce.android.wear.datastore.DataStoreType.LOGIN
 import com.woocommerce.android.wear.datastore.DataStoreType.ORDERS
+import com.woocommerce.android.wear.datastore.DataStoreType.SETTINGS
 import com.woocommerce.android.wear.datastore.DataStoreType.STATS
 import dagger.Module
 import dagger.Provides
@@ -50,6 +51,17 @@ class DataStoreModule {
         @AppCoroutineScope appCoroutineScope: CoroutineScope
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = { appContext.preferencesDataStoreFile(ORDERS.typeName) },
+        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
+    )
+
+    @Provides
+    @Singleton
+    @DataStoreQualifier(SETTINGS)
+    fun providePrefsDataStore(
+        appContext: Context,
+        @AppCoroutineScope appCoroutineScope: CoroutineScope
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
+        produceFile = { appContext.preferencesDataStoreFile(SETTINGS.typeName) },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 }
