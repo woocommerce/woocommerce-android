@@ -39,5 +39,8 @@ enum class DataParameters(val value: String) {
 
     // Analytics data
     ANALYTICS_TRACK("analytics-track"),
-    ANALYTICS_PARAMETERS("analytics-parameters")
+    ANALYTICS_PARAMETERS("analytics-parameters"),
+
+    // App Settings
+    APP_SETTINGS("app_settings")
 }
