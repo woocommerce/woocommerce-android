@@ -230,10 +230,8 @@ platform :android do
   # @example Running the lane
   #          bundle exec fastlane update_play_store_strings version:10.3
   #
-  lane :update_play_store_strings do |version: nil|
+  lane :update_play_store_strings do |version: release_version_current|
     ensure_git_status_clean
-
-    version ||= release_version_current
 
     app_metadata_source_path = METADATA_SOURCE_DIR_PATH[MOBILE_APP]
     files = {
