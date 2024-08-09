@@ -8,6 +8,7 @@ import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.wear.di.AppCoroutineScope
+import com.woocommerce.android.wear.ui.login.LoginRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,11 +21,14 @@ import org.wordpress.android.fluxc.store.AccountStore
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.map
 
 @Singleton
 class WCWearCrashLoggingDataProvider @Inject constructor(
     private val accountStore: AccountStore,
     @AppCoroutineScope private val appScope: CoroutineScope,
+    private val providedLocale: Locale,
+    loginRepository: LoginRepository,
     dispatcher: Dispatcher,
 ) : CrashLoggingDataProvider {
 
@@ -41,6 +45,7 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
     } else {
         ReleaseName.SetByTracksLibrary
     }
+    override val locale: Locale get() = providedLocale
 
     @Suppress("unused", "unused_parameter")
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -57,10 +62,20 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
 
     override fun shouldDropWrappingException(module: String, type: String, value: String) = false
 
-    override val applicationContextProvider: Flow<Map<String, String>>
-        get() = TODO("Not yet implemented")
-    override val locale: Locale?
-        get() = TODO("Not yet implemented")
+    override val applicationContextProvider: Flow<Map<String, String>> =
+        loginRepository.selectedSiteFlow
+        .map { site ->
+            site?.let {
+                mutableMapOf<String, String>(
+                    SITE_URL_KEY to site.url
+                ).apply {
+                    site.siteId.takeIf { it != 0L }?.toString()?.let {
+                        this[SITE_ID_KEY] = it
+                    }
+                }
+            }.orEmpty()
+        }
+
     override val performanceMonitoringConfig: PerformanceMonitoringConfig
         get() = TODO("Not yet implemented")
 
@@ -68,9 +83,7 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun extraKnownKeys(): List<ExtraKnownKey> {
-        TODO("Not yet implemented")
-    }
+    override fun extraKnownKeys(): List<ExtraKnownKey> = emptyList()
 
     private fun AccountModel.toCrashLoggingUser(): CrashLoggingUser? {
         if (userId == 0L) return null
@@ -83,6 +96,8 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
     }
 
     companion object {
+        const val SITE_ID_KEY = "site_id"
+        const val SITE_URL_KEY = "site_url"
         const val DEBUG_RELEASE_NAME = "debug"
     }
 }
