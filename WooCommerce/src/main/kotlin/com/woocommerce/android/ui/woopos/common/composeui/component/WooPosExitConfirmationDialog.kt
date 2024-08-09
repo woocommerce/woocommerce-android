@@ -71,7 +71,8 @@ fun WooPosExitConfirmationDialog(
                     // no op
                 },
                 indication = null,
-                interactionSource = remember { MutableInteractionSource() }),
+                interactionSource = remember { MutableInteractionSource() }
+            ),
         contentAlignment = Alignment.Center
     ) {
         AnimatedVisibility(
@@ -171,4 +172,3 @@ fun WooPosExitConfirmationDialogPreview() {
         )
     }
 }
-
