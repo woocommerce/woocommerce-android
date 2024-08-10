@@ -1,2 +1,0 @@
-19.8:
-I vår senaste uppdatering har vi lagt till en knapp i Google-kampanjanalysen som gör det enklare att skapa betalkampanjer. Kontakta support-formuläret inkluderar nu ett Webbplatsadress-fält. Ta del av sömlösa illustrationer av personliga betalningar i liggande läge och dra nytta av bakgrundsuppdateringar för beställningslistor och adminpanelsanalyser.

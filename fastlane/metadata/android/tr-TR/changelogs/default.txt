@@ -1,2 +1,0 @@
-19.8:
-En son güncellememizde daha kolay ücretli kampanya oluşturma deneyimi için Google Kampanya analizlerine bir düğme ekledik. Desteğe Ulaşın Formu artık Site Adresi alanı içeriyor. Yatay modda sorunsuz şahsen ödeme illüstrasyonlarının keyfini çıkarın ve sipariş listeleri ve pano analizleri için arkaplan güncellemelerinden yararlanın.
