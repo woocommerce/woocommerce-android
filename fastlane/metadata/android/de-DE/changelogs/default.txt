@@ -1,2 +1,0 @@
-19.8:
-Bei unserem letzten Update haben wir einen Button zu den Analysen für Google-Kampagnen hinzugefügt, um die Erstellung kostenpflichtiger Kampagnen zu erleichtern. Das Formular „Support kontaktieren“ enthält nun ein Feld für die Website-Adresse. Genieße makellose Darstellungen persönlicher Zahlungen im Querformat und profitiere von Hintergrundupdates für Bestelllisten und Dashboard-Analysen.
