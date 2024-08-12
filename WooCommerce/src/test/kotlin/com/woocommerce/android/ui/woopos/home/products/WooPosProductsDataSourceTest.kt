@@ -31,9 +31,27 @@ class WooPosProductsDataSourceTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val sampleProducts = listOf(
-        mock<Product> { on { price }.thenReturn(BigDecimal(1)) },
-        mock<Product> { on { price }.thenReturn(BigDecimal(2)) },
-        mock<Product> { on { price }.thenReturn(BigDecimal(3)) },
+        ProductTestUtils.generateProduct(
+            productId = 1,
+            productName = "Product 1",
+            amount = "10.0",
+            productType = "simple",
+            isDownloadable = false,
+        ),
+        ProductTestUtils.generateProduct(
+            productId = 2,
+            productName = "Product 2",
+            amount = "20.0",
+            productType = "simple",
+            isDownloadable = false,
+        ).copy(firstImageUrl = "https://test.com"),
+        ProductTestUtils.generateProduct(
+            productId = 2,
+            productName = "Product 2",
+            amount = "20.0",
+            productType = "simple",
+            isDownloadable = false,
+        ).copy(firstImageUrl = "https://test.com")
     )
 
     private val handler: ProductListHandler = mock()
@@ -56,6 +74,27 @@ class WooPosProductsDataSourceTest {
         // THEN
         verify(productStore).deleteProductsForSite(anyOrNull())
     }
+
+    @Test
+    fun `given cached and remote products, when loadSimpleProducts called, then should emit remote products after cached products`() =
+        runTest {
+            // GIVEN
+            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+            whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
+            whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
+            val sut = WooPosProductsDataSource(handler, productStore, site)
+
+            // WHEN
+            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+
+            // THEN
+            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
+            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+
+            assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
+            assertThat(remoteResult.productsResult.isSuccess).isTrue()
+            assertThat(remoteResult.productsResult.getOrNull()).containsExactlyElementsOf(sampleProducts)
+        }
 
     @Test
     fun `given cached products, when loadSimpleProducts called, then should emit cached products first`() = runTest {
