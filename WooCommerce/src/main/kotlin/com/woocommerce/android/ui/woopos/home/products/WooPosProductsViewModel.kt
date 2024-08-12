@@ -158,13 +158,13 @@ class WooPosProductsViewModel @Inject constructor(
 
     private suspend fun List<Product>.toContentState() = WooPosProductsViewState.Content(
         products = map { product ->
-                WooPosProductsListItem(
-                    id = product.remoteId,
-                    name = product.name,
-                    price = priceFormat(product.price),
-                    imageUrl = product.firstImageUrl,
-                )
-            },
+            WooPosProductsListItem(
+                id = product.remoteId,
+                name = product.name,
+                price = priceFormat(product.price),
+                imageUrl = product.firstImageUrl,
+            )
+        },
         loadingMore = false,
         reloadingProductsWithPullToRefresh = false,
         bannerState = WooPosProductsViewState.Content.BannerState(
