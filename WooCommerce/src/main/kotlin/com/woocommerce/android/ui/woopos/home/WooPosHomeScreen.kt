@@ -26,10 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -37,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConfirmationDialog
@@ -208,38 +204,13 @@ private fun HandleProductsInfoDialog(
     state: ProductsInfoDialog,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
-    // isDialogVisible is mainly used to restore dialog after process death
-    var isDialogVisible by rememberSaveable {
-        mutableStateOf(false)
-    }
-    isDialogVisible = when (state) {
-        /**
-         * We can't set isDialogVisible to false directly because the dialog's state can be hidden for two different reasons:
-         * 1. The user explicitly closed the dialog.
-         * 2. After a process death and activity recreation, the dialog's state is reset to Hidden, as its initial state is Hidden.
-         *
-         * In the second scenario, isDialogVisible will be true if the dialog was visible before the process death,
-         * since rememberSaveable retains this value across process death and activity recreation.
-         */
-        ProductsInfoDialog.Hidden -> isDialogVisible
-        is ProductsInfoDialog.Visible -> true
-    }
-    if (isDialogVisible) {
-        val currentState = state as? ProductsInfoDialog.Visible ?: ProductsInfoDialog.Visible(
-            header = R.string.woopos_dialog_products_info_heading,
-            primaryMessage = R.string.woopos_dialog_products_info_primary_message,
-            secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
-            primaryButton = ProductsInfoDialog.Visible.PrimaryButton(
-                label = R.string.woopos_dialog_products_info_button_label
-            )
-        )
-        BoxOverlay(state = currentState) {
+    if (state is ProductsInfoDialog.Visible) {
+        BoxOverlay(state = state) {
             // no op
         }
         WooPosProductInfoDialog(
-            state = currentState,
+            state = state,
             onDismissRequest = {
-                isDialogVisible = false
                 onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
             }
         )

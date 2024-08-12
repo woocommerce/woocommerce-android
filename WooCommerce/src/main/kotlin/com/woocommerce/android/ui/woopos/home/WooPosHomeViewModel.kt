@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.woopos.home
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,13 +14,16 @@ import javax.inject.Inject
 class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
+    savedState: SavedStateHandle,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(
-        WooPosHomeState(
+    private val _state = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = WooPosHomeState(
             screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Hidden,
             productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden,
             exitConfirmationDialog = null
-        )
+        ),
+        key = "homeViewState"
     )
     val state: StateFlow<WooPosHomeState> = _state
 
