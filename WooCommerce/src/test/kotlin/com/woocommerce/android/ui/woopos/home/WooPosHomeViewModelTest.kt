@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,10 +21,16 @@ import kotlin.test.assertTrue
 class WooPosHomeViewModelTest {
     @Rule
     @JvmField
+    val rule = InstantTaskExecutorRule()
+
+    @Rule
+    @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
+
+    private val savedState: SavedStateHandle = SavedStateHandle()
 
     @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =
@@ -226,6 +234,7 @@ class WooPosHomeViewModelTest {
 
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
-        parentToChildrenEventSender
+        parentToChildrenEventSender,
+        savedState
     )
 }
