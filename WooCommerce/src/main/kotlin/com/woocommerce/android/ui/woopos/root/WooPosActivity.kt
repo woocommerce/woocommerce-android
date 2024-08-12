@@ -63,11 +63,10 @@ private fun Modifier.gesturesOrButtonsNavigationPadding(): Modifier {
     }
 }
 
+// That seems to be different on different devices, but 48dp is a common upper value
+private const val GESTURE_NAVIGATION_BAR_HEIGHT = 48
 private fun WindowInsetsCompat.isGestureNavigation(): Boolean {
     val bottomInset = getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
 
-    // That seems to be different on different devices, but 48dp is a common upper value
-    val gestureNavigationBarHeight = 48
-    return bottomInset <= gestureNavigationBarHeight
+    return bottomInset <= GESTURE_NAVIGATION_BAR_HEIGHT
 }
-
