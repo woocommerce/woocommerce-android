@@ -18,7 +18,8 @@ enum class FeatureFlag {
     GOOGLE_ADS_M1,
     GOOGLE_ADS_ANALYTICS_HUB_M1,
     PRODUCT_CREATION_WITH_AI_V2,
-    SHOW_INBOX_CTA;
+    SHOW_INBOX_CTA,
+    ENDLESS_CAMPAIGNS_SUPPORT;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -29,7 +30,8 @@ enum class FeatureFlag {
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE,
+            ENDLESS_CAMPAIGNS_SUPPORT -> PackageUtils.isDebugBuild()
 
             PRODUCT_CREATION_WITH_AI_V2,
             CONNECTIVITY_TOOL,

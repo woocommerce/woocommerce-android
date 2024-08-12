@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIM
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -64,7 +65,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             ),
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false,
-            isEndlessCampaign = true,
+            isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled(),
         )
     )
 
@@ -146,7 +147,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                     it.bottomSheetCampaignStartDateMillis,
                     newDuration
                 ),
-                isEndlessCampaign = isEndlessCampaign
+                isEndlessCampaign = isEndlessCampaign && FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
             )
         }
         fetchAdForecast()
