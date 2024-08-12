@@ -24,11 +24,12 @@ class WooPosProductsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val priceFormat: WooPosFormatPrice,
-    private val preferencesRepository: WooPosPreferencesRepository
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
+    private val _viewState =
+        MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
         .onEach { notifyParentAboutStatusChange(it) }
         .stateIn(
