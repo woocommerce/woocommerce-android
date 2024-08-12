@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -116,6 +117,20 @@ private fun WooPosCartScreen(
             )
         }
     }
+    val cartOverlayIntensityAnimated by animateFloatAsState(
+        when (state.body) {
+            WooPosCartState.Body.Empty -> .6f
+            is WooPosCartState.Body.WithItems -> 0f
+        },
+        label = "cartOverlayAnimated"
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
+            )
+    )
 }
 
 @Composable

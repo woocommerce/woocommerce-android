@@ -30,8 +30,6 @@ class WooPosHomeViewModelTest {
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
 
-    private val savedState: SavedStateHandle = SavedStateHandle()
-
     @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =
         runTest {
@@ -232,9 +230,22 @@ class WooPosHomeViewModelTest {
         assertFalse((viewModel.state.value.productsInfoDialog is WooPosHomeState.ProductsInfoDialog.Visible))
     }
 
+    @Test
+    fun `given home screen is at checkout, when products are updated, then should not modify screen position`() {
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(
+                ChildToParentEvent.CheckoutClicked(listOf(1)),
+                ChildToParentEvent.ProductsStatusChanged.FullScreen
+            )
+        )
+        val viewModel = createViewModel()
+
+        assertTrue(viewModel.state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout)
+    }
+
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender,
-        savedState
+        SavedStateHandle()
     )
 }

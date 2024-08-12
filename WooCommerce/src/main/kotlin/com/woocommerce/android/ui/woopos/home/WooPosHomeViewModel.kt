@@ -14,16 +14,16 @@ import javax.inject.Inject
 class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
-    savedState: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val _state = savedState.getStateFlow(
+    private val _state = savedStateHandle.getStateFlow(
         scope = viewModelScope,
+        key = "home_state",
         initialValue = WooPosHomeState(
             screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Hidden,
             productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden,
             exitConfirmationDialog = null
-        ),
-        key = "homeViewState"
+        )
     )
     val state: StateFlow<WooPosHomeState> = _state
 
@@ -137,17 +137,23 @@ class WooPosHomeViewModel @Inject constructor(
     }
 
     private fun handleProductsStatusChanged(event: ChildToParentEvent.ProductsStatusChanged) {
+        val screenPosition = _state.value.screenPositionState
         val newScreenPositionState = when (event) {
-            ChildToParentEvent.ProductsStatusChanged.FullScreen -> WooPosHomeState.ScreenPositionState.Cart.Hidden
+            ChildToParentEvent.ProductsStatusChanged.FullScreen -> {
+                when (screenPosition) {
+                    is WooPosHomeState.ScreenPositionState.Cart -> WooPosHomeState.ScreenPositionState.Cart.Hidden
+                    is WooPosHomeState.ScreenPositionState.Checkout -> screenPosition
+                }
+            }
             ChildToParentEvent.ProductsStatusChanged.WithCart -> {
-                when (val value = _state.value.screenPositionState) {
+                when (screenPosition) {
                     WooPosHomeState.ScreenPositionState.Cart.Hidden ->
                         WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
 
                     WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
                     WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
                     WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-                    WooPosHomeState.ScreenPositionState.Checkout.Paid -> value
+                    WooPosHomeState.ScreenPositionState.Checkout.Paid -> screenPosition
                 }
             }
         }
