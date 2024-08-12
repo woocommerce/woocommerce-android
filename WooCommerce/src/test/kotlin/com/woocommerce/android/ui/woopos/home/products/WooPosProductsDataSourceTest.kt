@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,6 +22,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.Test
+import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
 class WooPosProductsDataSourceTest {
@@ -78,7 +80,27 @@ class WooPosProductsDataSourceTest {
         runTest {
             // GIVEN
             whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
-            whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
+            whenever(handler.productsFlow).thenReturn(
+                flowOf(
+                    listOf(
+                        ProductTestUtils.generateProduct(
+                            productId = 1,
+                            productName = "Product 1",
+                            amount = "10.0",
+                            productType = "simple",
+                            customStatus = "private",
+                            isDownloadable = false,
+                        ),
+                        ProductTestUtils.generateProduct(
+                            productId = 2,
+                            productName = "Product 2",
+                            amount = "20.0",
+                            productType = "simple",
+                            isDownloadable = false,
+                        ).copy(firstImageUrl = "https://test.com")
+                    )
+                )
+            )
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
             val sut = WooPosProductsDataSource(handler, productStore, site)
 
@@ -87,11 +109,8 @@ class WooPosProductsDataSourceTest {
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
-            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
 
-            assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
-            assertThat(remoteResult.productsResult.isSuccess).isTrue()
-            assertThat(remoteResult.productsResult.getOrNull()).containsExactlyElementsOf(sampleProducts)
+            assertFalse(cachedResult.products.any { it.remoteId == 1L })
         }
 
     @Test
@@ -113,5 +132,23 @@ class WooPosProductsDataSourceTest {
         assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
         assertThat(remoteResult.productsResult.isFailure).isTrue()
         assertThat(remoteResult.productsResult.exceptionOrNull()).isEqualTo(exception)
+    }
+
+    @Test
+    fun `given cached products, when loadSimpleProducts called, then filter in only published products`() = runTest {
+        // GIVEN
+        whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+        whenever(site.getOrNull()).thenReturn(SiteModel())
+        whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
+        whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
+        val sut = WooPosProductsDataSource(handler, productStore, site)
+
+        // WHEN
+        val result = sut.loadSimpleProducts(forceRefreshProducts = false).first()
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
+        val cachedResult = result as WooPosProductsDataSource.ProductsResult.Cached
+        assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
     }
 }
