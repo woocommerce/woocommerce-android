@@ -489,7 +489,7 @@ class AppPrefsTest {
                 remoteSiteId = 0L,
                 selfHostedSiteId = 0L,
             )
-        ).isFalse
+        ).isTrue()
     }
 
     @Test
