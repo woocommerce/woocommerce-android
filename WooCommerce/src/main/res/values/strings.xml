@@ -216,8 +216,6 @@
     <string name="login_store_address">Log In</string>
     <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
-    <string name="login_with_qr_code">Scan QR code to login</string>
-    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
     <string name="login_application_passwords_help">What are Application Passwords?</string>
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
