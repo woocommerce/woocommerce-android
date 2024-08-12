@@ -40,10 +40,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
 
         ViewCompat.setTransitionName(
             viewBinding.root,
-            String.format(
-                context.getString(R.string.order_card_transition_name),
-                product.remoteId
-            )
+            context.getString(R.string.order_card_transition_name, product.remoteId.toString()),
         )
     }
 

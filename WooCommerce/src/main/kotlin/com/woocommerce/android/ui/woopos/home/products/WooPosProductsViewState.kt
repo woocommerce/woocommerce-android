@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import kotlinx.parcelize.Parcelize
 
 sealed class WooPosProductsViewState(
     open val reloadingProductsWithPullToRefresh: Boolean,
@@ -32,10 +30,9 @@ sealed class WooPosProductsViewState(
         WooPosProductsViewState(reloadingProductsWithPullToRefresh)
 }
 
-@Parcelize
 data class WooPosProductsListItem(
     val id: Long,
     val name: String,
     val price: String,
     val imageUrl: String?,
-) : Parcelable
+)

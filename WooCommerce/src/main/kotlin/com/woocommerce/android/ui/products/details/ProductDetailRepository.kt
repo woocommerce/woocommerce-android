@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.details
 
-import com.google.gson.Gson
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ERROR
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
@@ -57,8 +56,7 @@ class ProductDetailRepository @Inject constructor(
     private val globalAttributeStore: WCGlobalAttributeStore,
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore,
-    private val coroutineDispatchers: CoroutineDispatchers,
-    private val gson: Gson
+    private val coroutineDispatchers: CoroutineDispatchers
 ) {
     private var continuationUpdateProduct: Continuation<Pair<Boolean, WCProductStore.ProductError?>>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
@@ -303,12 +301,8 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
-    fun getProductMetadata(remoteProductId: Long): Map<String, Any>? {
-        val metadata = getCachedWCProductModel(remoteProductId)?.metadata ?: return null
-        val metadataArray = gson.fromJson(metadata, Array<WCMetaData>::class.java)
-
-        return metadataArray?.filter { metadataItem -> metadataItem.key.isNullOrEmpty().not() }
-            ?.associate { metadataItem -> metadataItem.key!! to metadataItem.value }
+    fun getProductMetadata(remoteProductId: Long): List<WCMetaData>? {
+        return getCachedWCProductModel(remoteProductId)?.parsedMetaData ?: return null
     }
 
     @SuppressWarnings("unused")
