@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.products
 
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.util.WooLog
@@ -13,6 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
+import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,12 +40,12 @@ class WooPosProductsDataSource @Inject constructor(
 
         emit(
             ProductsResult.Cached(
-                handler.productsFlow.first().filter { product -> product.price != null }
+                handler.productsFlow.first().applyPosProductFilter()
             )
         )
 
         if (result.isSuccess) {
-            val remoteProducts = handler.productsFlow.first().filter { it.price != null }
+            val remoteProducts = handler.productsFlow.first().applyPosProductFilter()
             emit(ProductsResult.Remote(Result.success(remoteProducts)))
         } else {
             val error = result.exceptionOrNull()
@@ -55,7 +58,7 @@ class WooPosProductsDataSource @Inject constructor(
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore()
         if (result.isSuccess) {
-            Result.success(handler.productsFlow.first().filter { it.price != null })
+            Result.success(handler.productsFlow.first().applyPosProductFilter())
         } else {
             val error = result.exceptionOrNull()
             val errorMessage = error?.message ?: "Unknown error"
@@ -68,4 +71,21 @@ class WooPosProductsDataSource @Inject constructor(
         data class Cached(val products: List<Product>) : ProductsResult()
         data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()
     }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun List<Product>.applyPosProductFilter() = this.filter { product ->
+        isProductPublished(product) &&
+            isProductHasAPrice(product) &&
+            isProductNotVirtual(product) &&
+            isProductNotDownloadable(product)
+    }
+
+    private fun isProductNotDownloadable(product: Product) = !product.isDownloadable
+
+    private fun isProductNotVirtual(product: Product) = !product.isVirtual
+
+    private fun isProductHasAPrice(product: Product) =
+        (product.price != null && product.price.compareTo(BigDecimal.ZERO) != 0)
+
+    private fun isProductPublished(product: Product) = product.status == ProductStatus.PUBLISH
 }
