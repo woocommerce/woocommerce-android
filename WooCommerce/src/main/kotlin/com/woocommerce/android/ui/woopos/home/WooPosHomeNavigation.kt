@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
-import androidx.compose.animation.fadeOut
+import android.view.animation.OvershootInterpolator
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -18,10 +19,17 @@ fun NavGraphBuilder.homeScreen(
 ) {
     composable(
         route = HOME_ROUTE,
-        enterTransition = { slideInVertically(initialOffsetY = { -it }) },
-        exitTransition = { fadeOut() },
-        popEnterTransition = { slideInVertically(initialOffsetY = { -it }) },
-        popExitTransition = { fadeOut() }
+        enterTransition = {
+            slideInVertically(
+                initialOffsetY = { -it },
+                animationSpec = tween(
+                    durationMillis = 1000,
+                    easing = {
+                        OvershootInterpolator(2f).getInterpolation(it)
+                    }
+                )
+            )
+        }
     ) {
         WooPosHomeScreen(onNavigationEvent)
     }

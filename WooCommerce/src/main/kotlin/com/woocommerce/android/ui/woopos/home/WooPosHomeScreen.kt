@@ -135,7 +135,11 @@ private fun WooPosHomeScreen(
     totalsWidthDp: Dp,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.surface)
+    ) {
         Row(
             modifier = Modifier
                 .horizontalScroll(scrollState, enabled = false)
