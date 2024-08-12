@@ -5,8 +5,11 @@ import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.yarolegovich.wellsql.WellSql
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.WellSqlConfig.Companion.ADDON_WOOCOMMERCE
+import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 
 @HiltAndroidApp
 open class WooCommerceWear : Application() {
@@ -18,5 +21,13 @@ open class WooCommerceWear : Application() {
         super.onCreate()
         WellSql.init(WellSqlConfig(applicationContext, ADDON_WOOCOMMERCE))
         crashLogging.initialize()
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onUnexpectedError(event: OnUnexpectedError) {
+        with(event) {
+            crashLogging.sendReport(exception = exception, message = "FluxC: ${exception.message}: $description")
+        }
     }
 }
