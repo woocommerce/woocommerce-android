@@ -7,9 +7,7 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderTutorialViewpagerItemBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.util.UiHelpers
-import org.wordpress.android.util.DisplayUtils
 
 /**
  * Displays a single image and text label in the card reader tutorial view pager
