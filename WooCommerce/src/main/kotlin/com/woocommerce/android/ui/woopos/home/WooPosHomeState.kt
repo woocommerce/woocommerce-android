@@ -20,6 +20,7 @@ data class WooPosHomeState(
             sealed class Visible : Cart() {
                 @Parcelize
                 data object Empty : Cart()
+
                 @Parcelize
                 data object NotEmpty : Cart()
             }
@@ -32,6 +33,7 @@ data class WooPosHomeState(
         sealed class Checkout : ScreenPositionState() {
             @Parcelize
             data object NotPaid : Checkout()
+
             @Parcelize
             data object Paid : Checkout()
         }
@@ -61,10 +63,13 @@ data class WooPosHomeState(
 data object WooPosExitConfirmationDialog : Parcelable {
     @IgnoredOnParcel
     val title: Int = R.string.woopos_exit_confirmation_title
+
     @IgnoredOnParcel
     val message: Int = R.string.woopos_exit_confirmation_message
+
     @IgnoredOnParcel
     val confirmButton: Int = R.string.woopos_exit_confirmation_confirm_button
+
     @IgnoredOnParcel
     val dismissButton: Int = R.string.woopos_exit_confirmation_dismiss_button
 }
