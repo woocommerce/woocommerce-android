@@ -88,6 +88,7 @@ steps:
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
         artifact_paths:
           - "**/build/test-results/*/*.xml"
+          - "**/build/reports/pitest/**/*"
 
       - label: "Instrumented tests"
         command: .buildkite/commands/run-instrumented-tests.sh

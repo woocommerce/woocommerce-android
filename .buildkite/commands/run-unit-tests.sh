@@ -33,4 +33,7 @@ echo "--- ⚒️ Generating and uploading code coverage"
 echo "--- 🧪 Copying test logs for test collector"
 mkdir WooCommerce/build/buildkite-test-analytics && cp WooCommerce/build/test-results/*.xml WooCommerce/build/buildkite-test-analytics
 
+echo "--- 👽 Running mutation tests"
+./gradlew pitestJalapenoDebug
+
 exit $TESTS_EXIT_STATUS

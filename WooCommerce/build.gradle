@@ -14,7 +14,10 @@ plugins {
     id 'com.google.devtools.ksp'
     id "com.google.protobuf"
     id "com.osacky.fladle"
+    id "pl.droidsonroids.pitest"
 }
+
+apply from: '../config/gradle/pitest.gradle'
 
 fladle {
     variant = "vanillaDebug"
@@ -147,8 +150,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
         coreLibraryDesugaringEnabled true
     }
 
@@ -217,6 +220,7 @@ android {
 
     testOptions {
         animationsDisabled = true
+        unitTests.returnDefaultValues = true
     }
 }
 
@@ -352,7 +356,7 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation "junit:junit:$jUnitVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
-    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation("androidx.arch.core:core-testing:2.1.0", {
