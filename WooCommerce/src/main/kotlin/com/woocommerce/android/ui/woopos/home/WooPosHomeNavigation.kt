@@ -7,7 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
-const val HOME_ROUTE = "home"
+private const val HOME_ROUTE = "home"
 
 fun NavController.navigateToHomeScreen() {
     navigate(HOME_ROUTE)
