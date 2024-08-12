@@ -112,7 +112,7 @@ class AddressViewModelTest : BaseUnitTest() {
             addressViewModel.start(
                 mapOf(SHIPPING to shippingAddress)
             )
-            verify(dataStore, times(2)).fetchCountriesAndStates(selectedSite.get())
+            verify(dataStore, times(0)).fetchCountriesAndStates(selectedSite.get())
         }
     }
 
