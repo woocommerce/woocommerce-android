@@ -21,11 +21,11 @@ import kotlin.test.assertTrue
 class WooPosHomeViewModelTest {
     @Rule
     @JvmField
-    val rule = InstantTaskExecutorRule()
+    val coroutinesTestRule = WooPosCoroutineTestRule()
 
     @Rule
     @JvmField
-    val coroutinesTestRule = WooPosCoroutineTestRule()
+    val rule = InstantTaskExecutorRule()
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
