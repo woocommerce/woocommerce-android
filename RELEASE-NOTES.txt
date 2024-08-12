@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 20.0
 -----
-
+- [*] Fixed missing pictures in card reader tutorial on tablets [https://github.com/woocommerce/woocommerce-android/pull/12274]
 
 19.9
 -----
