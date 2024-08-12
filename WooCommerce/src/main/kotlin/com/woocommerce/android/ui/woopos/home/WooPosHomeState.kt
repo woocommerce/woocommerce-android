@@ -15,32 +15,32 @@ data class WooPosHomeState(
     @Parcelize
     sealed class ScreenPositionState : Parcelable {
         @Parcelize
-        sealed class Cart : ScreenPositionState(), Parcelable {
+        sealed class Cart : ScreenPositionState() {
             @Parcelize
-            sealed class Visible : Cart(), Parcelable {
+            sealed class Visible : Cart() {
                 @Parcelize
-                data object Empty : Cart(), Parcelable
+                data object Empty : Cart()
                 @Parcelize
-                data object NotEmpty : Cart(), Parcelable
+                data object NotEmpty : Cart()
             }
 
             @Parcelize
-            data object Hidden : Cart(), Parcelable
+            data object Hidden : Cart()
         }
 
         @Parcelize
         sealed class Checkout : ScreenPositionState() {
             @Parcelize
-            data object NotPaid : Checkout(), Parcelable
+            data object NotPaid : Checkout()
             @Parcelize
-            data object Paid : Checkout(), Parcelable
+            data object Paid : Checkout()
         }
     }
 
     @Parcelize
     sealed class ProductsInfoDialog : Parcelable {
         @Parcelize
-        data object Hidden : ProductsInfoDialog(), Parcelable
+        data object Hidden : ProductsInfoDialog()
 
         @Parcelize
         data class Visible(
@@ -48,7 +48,7 @@ data class WooPosHomeState(
             @StringRes val primaryMessage: Int,
             @StringRes val secondaryMessage: Int,
             val primaryButton: PrimaryButton,
-        ) : ProductsInfoDialog(), Parcelable {
+        ) : ProductsInfoDialog() {
             @Parcelize
             data class PrimaryButton(
                 @StringRes val label: Int,
