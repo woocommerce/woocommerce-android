@@ -1,17 +1,12 @@
 package com.woocommerce.android.ui.woopos.home
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -205,40 +200,14 @@ private fun HandleProductsInfoDialog(
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
     if (state is ProductsInfoDialog.Visible) {
-        BoxOverlay(state = state) {
-            // no op
-        }
         WooPosProductInfoDialog(
             state = state,
+            onOutsideOfDialogClicked = {
+                onHomeUIEvent(WooPosHomeUIEvent.OnOutsideOfProductInfoDialogClicked)
+            },
             onDismissRequest = {
                 onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
             }
-        )
-    }
-}
-
-@Composable
-private fun BoxOverlay(
-    state: ProductsInfoDialog,
-    onClick: () -> Unit,
-) {
-    AnimatedVisibility(
-        visible = state is ProductsInfoDialog.Visible,
-        enter = fadeIn(initialAlpha = 0.3f),
-        exit = fadeOut(targetAlpha = 0.0f)
-    ) {
-        Box(
-            modifier = Modifier
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    onClick()
-                }
-                .fillMaxSize()
-                .background(
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
-                )
         )
     }
 }
