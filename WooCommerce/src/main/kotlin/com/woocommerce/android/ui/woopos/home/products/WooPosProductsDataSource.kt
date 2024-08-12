@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductListHandler
@@ -36,12 +35,6 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
         val result = handler.loadFromCacheAndFetch(
             searchType = ProductListHandler.SearchType.DEFAULT,
             filters = mapOf(WCProductStore.ProductFilterOption.TYPE to ProductType.SIMPLE.value)
-        )
-
-        emit(
-            ProductsResult.Cached(
-                handler.productsFlow.first().applyPosProductFilter()
-            )
         )
 
         if (result.isSuccess) {

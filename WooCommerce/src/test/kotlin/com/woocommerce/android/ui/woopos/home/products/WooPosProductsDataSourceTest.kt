@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -16,8 +15,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCProductStore
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -44,8 +41,8 @@ class WooPosProductsDataSourceTest {
             isDownloadable = false,
         ).copy(firstImageUrl = "https://test.com"),
         ProductTestUtils.generateProduct(
-            productId = 2,
-            productName = "Product 2",
+            productId = 3,
+            productName = "Product 3",
             amount = "20.0",
             productType = "simple",
             isDownloadable = false,
@@ -53,8 +50,20 @@ class WooPosProductsDataSourceTest {
     )
 
     private val additionalProducts = listOf(
-        mock<Product> { on { price }.thenReturn(BigDecimal(4)) },
-        mock<Product> { on { price }.thenReturn(BigDecimal(5)) }
+        ProductTestUtils.generateProduct(
+            productId = 4,
+            productName = "Product 4",
+            amount = "10.0",
+            productType = "simple",
+            isDownloadable = false,
+        ),
+        ProductTestUtils.generateProduct(
+            productId = 5,
+            productName = "Product 5",
+            amount = "20.0",
+            productType = "simple",
+            isDownloadable = false,
+        ).copy(firstImageUrl = "https://test.com"),
     )
 
     private val handler: ProductListHandler = mock()
@@ -84,27 +93,6 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given cached and remote products, when loadSimpleProducts called, then should emit remote products after cached products`() =
-        runTest {
-            // GIVEN
-            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
-            whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
-            whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
-            val sut = WooPosProductsDataSource(handler, productStore, site)
-
-            // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
-
-            // THEN
-            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
-            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
-
-            assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
-            assertThat(remoteResult.productsResult.isSuccess).isTrue()
-            assertThat(remoteResult.productsResult.getOrNull()).containsExactlyElementsOf(sampleProducts)
-        }
-
-    @Test
     fun `given cached products, when loadSimpleProducts called, then should emit cached products first`() = runTest {
         // GIVEN
         whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
@@ -130,17 +118,17 @@ class WooPosProductsDataSourceTest {
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
             val sut = WooPosProductsDataSource(handler)
 
-        // WHEN
-        val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+            // WHEN
+            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
 
-        // THEN
-        val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
-        val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+            // THEN
+            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
+            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
 
-        assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
-        assertThat(remoteResult.productsResult.isFailure).isTrue()
-        assertThat(remoteResult.productsResult.exceptionOrNull()).isEqualTo(exception)
-    }
+            assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
+            assertThat(remoteResult.productsResult.isSuccess).isTrue()
+            assertThat(remoteResult.productsResult.getOrNull()).containsExactlyElementsOf(sampleProducts)
+        }
 
     @Test
     fun `given remote load fails, when loadSimpleProducts called, then should emit cached products and then error`() =
@@ -226,7 +214,6 @@ class WooPosProductsDataSourceTest {
     fun `given remote products, when loadSimpleProducts called, then filter in only published products`() = runTest {
         // GIVEN
         whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
-        whenever(site.getOrNull()).thenReturn(SiteModel())
         whenever(handler.productsFlow).thenReturn(
             flowOf(
                 listOf(
@@ -248,7 +235,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
         )
-        val sut = WooPosProductsDataSource(handler, productStore, site)
+        val sut = WooPosProductsDataSource(handler)
 
         // WHEN
         val flow = sut.loadSimpleProducts(forceRefreshProducts = true).toList()
@@ -284,7 +271,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
-            val sut = WooPosProductsDataSource(handler, productStore, site)
+            val sut = WooPosProductsDataSource(handler)
 
             // WHEN
             val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
@@ -321,7 +308,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
-            val sut = WooPosProductsDataSource(handler, productStore, site)
+            val sut = WooPosProductsDataSource(handler)
 
             // WHEN
             val flow = sut.loadSimpleProducts(forceRefreshProducts = true).toList()
@@ -359,7 +346,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
-            val sut = WooPosProductsDataSource(handler, productStore, site)
+            val sut = WooPosProductsDataSource(handler)
 
             // WHEN
             val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
@@ -398,7 +385,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
-            val sut = WooPosProductsDataSource(handler, productStore, site)
+            val sut = WooPosProductsDataSource(handler)
 
             // WHEN
             val flow = sut.loadSimpleProducts(forceRefreshProducts = true).toList()
@@ -435,7 +422,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
-            val sut = WooPosProductsDataSource(handler, productStore, site)
+            val sut = WooPosProductsDataSource(handler)
 
             // WHEN
             val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
@@ -473,7 +460,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
             whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
-            val sut = WooPosProductsDataSource(handler, productStore, site)
+            val sut = WooPosProductsDataSource(handler)
 
             // WHEN
             val flow = sut.loadSimpleProducts(forceRefreshProducts = true).toList()
