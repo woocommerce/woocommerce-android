@@ -108,7 +108,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     LOGIN_JETPACK_CONNECT_COMPLETED(siteless = true),
     LOGIN_JETPACK_CONNECT_DISMISSED(siteless = true),
     LOGIN_JETPACK_CONNECTION_VERIFICATION_FAILED(siteless = true),
-    LOGIN_WITH_QR_CODE_BUTTON_TAPPED(siteless = true),
     LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
     LOGIN_PROLOGUE_STARTING_A_NEW_STORE_TAPPED(siteless = true),
     LOGIN_MALFORMED_APP_LOGIN_LINK(siteless = true),
