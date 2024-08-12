@@ -950,7 +950,16 @@ platform :android do
   lane :build_and_instrumented_test do
     gradle(tasks: %w[assembleVanillaDebug assembleVanillaDebugAndroidTest])
 
-    gradle(task: 'runFlank')
+    annotation_ctx = 'firebase-test-woocommerce-vanilla-debug'
+    begin
+      gradle(task: 'runFlank')
+      sh("buildkite-agent annotation remove --context '#{annotation_ctx}' || true") if is_ci?
+    rescue StandardError
+      details_url = sh('jq', '.[].webLink', '../build/instrumented-tests/matrix_ids.json', '-r')
+      message = "Firebase Tests failed. Failure details can be seen [here in Firebase Console](#{details_url})"
+      sh('buildkite-agent', 'annotate', message, '--style', 'error', '--context', annotation_ctx) if is_ci?
+      UI.test_failure!(message)
+    end
   end
 
   #####################################################################################
