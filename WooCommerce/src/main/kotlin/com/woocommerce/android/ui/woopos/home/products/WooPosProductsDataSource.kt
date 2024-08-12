@@ -20,18 +20,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WooPosProductsDataSource @Inject constructor(
-    private val handler: ProductListHandler,
-    private val productStore: WCProductStore,
-    private val site: SelectedSite,
-) {
+class WooPosProductsDataSource @Inject constructor(private val handler: ProductListHandler) {
+    private val productCache = mutableListOf<Product>()
+
     val hasMorePages: Boolean
         get() = handler.canLoadMore.get()
 
     fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         if (forceRefreshProducts) {
-            productStore.deleteProductsForSite(site.get())
+            productCache.clear()
         }
+
+        emit(ProductsResult.Cached(productCache))
 
         val result = handler.loadFromCacheAndFetch(
             searchType = ProductListHandler.SearchType.DEFAULT,
@@ -46,25 +46,37 @@ class WooPosProductsDataSource @Inject constructor(
 
         if (result.isSuccess) {
             val remoteProducts = handler.productsFlow.first().applyPosProductFilter()
+            productCache.clear()
+            productCache.addAll(remoteProducts)
             emit(ProductsResult.Remote(Result.success(remoteProducts)))
         } else {
-            val error = result.exceptionOrNull()
-            val errorMessage = error?.message ?: "Unknown error"
-            WooLog.e(WooLog.T.POS, "Loading simple products failed - $errorMessage", error)
-            emit(ProductsResult.Remote(Result.failure(result.exceptionOrNull()!!)))
+            result.logFailure()
+            emit(
+                ProductsResult.Remote(
+                    Result.failure(
+                        result.exceptionOrNull() ?: Exception("Unknown error")
+                    )
+                )
+            )
         }
     }.flowOn(Dispatchers.IO).take(2)
 
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore()
         if (result.isSuccess) {
-            Result.success(handler.productsFlow.first().applyPosProductFilter())
+            val moreProducts = handler.productsFlow.first().applyPosProductFilter()
+            productCache.addAll(moreProducts)
+            Result.success(moreProducts)
         } else {
-            val error = result.exceptionOrNull()
-            val errorMessage = error?.message ?: "Unknown error"
-            WooLog.e(WooLog.T.POS, "Loading more products failed - $errorMessage", error)
-            Result.failure(error!!)
+            result.logFailure()
+            Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
         }
+    }
+
+    private fun Result<Unit>.logFailure() {
+        val error = exceptionOrNull()
+        val errorMessage = error?.message ?: "Unknown error"
+        WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage", error)
     }
 
     sealed class ProductsResult {

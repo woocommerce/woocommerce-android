@@ -10,6 +10,7 @@ import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -24,7 +25,7 @@ object OrderTestUtils {
     private const val TEST_ORDER_STATUS_COUNT = 20
 
     fun generateOrder(
-        metadata: String = "",
+        metadata: List<WCMetaData> = emptyList(),
         paymentMethod: String = "",
         datePaid: String = "2018-02-02T16:11:13Z",
         lineItems: String = ""

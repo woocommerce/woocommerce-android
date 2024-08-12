@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 09:54:03+0000
+Translation-Revision-Date: 2024-08-07 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="woopos_success_screen_total">%1$s tutarındaki bir ödeme başarıyla alındı</string>
+    <string name="woopos_new_order_button">Yeni sipariş</string>
+    <string name="woopos_dialog_products_info_button_label">Tamam</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Mağaza yönetiminde sipariş oluşturun</string>
+    <string name="woopos_dialog_products_info_secondary_message">Temel olmayan bir ürünün ödemesini almak için POS\'tan çıkın ve siparişler sekmesinden yeni sipariş oluşturun.</string>
+    <string name="woopos_dialog_products_info_primary_message">Şu anda POS ile yalnızca basit fiziksel ürünler kullanılabiliyor.\nDeğişken ve sanal gibi diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak.</string>
+    <string name="woopos_dialog_products_info_heading">Ürünlerimi neden göremiyorum?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Bilgi</string>
+    <string name="woopos_banner_simple_products_close_content_description">Kapat</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Daha fazla bilgi edinin</string>
+    <string name="woopos_banner_simple_products_only_message">Şu anda POS ile yalnızca basit fiziksel ürünler uyumlu. Değişken ve sanal gibi diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak. </string>
+    <string name="woopos_banner_simple_products_only_title">Yalnızca basit ürünler gösteriliyor</string>
+    <string name="support_request_site_address">Site Adresi</string>
+    <string name="analytics_google_ads_cta_web_view_title">WooCommerce İçin Google</string>
+    <string name="analytics_google_ads_cta_action">Ücretli kampanya ekle</string>
+    <string name="analytics_google_ads_cta_description">Google Ads ile satışları teşvik edin ve trafiği artırın.</string>
+    <string name="analytics_google_ads_cta_title">Google Kampanyaları</string>
     <string name="google_ads_campaign_created_success_done_button">Tamam</string>
     <string name="google_ads_campaign_created_success_description">Yeni kampanyanız oluşturuldu. Önümüzdeki günlerde satışlarınızla ilgili harika gelişmeler olacak!</string>
     <string name="google_ads_campaign_created_success_title">Her Şey Hazır!</string>
@@ -103,7 +120,6 @@ Language: tr
     <string name="woopos_payment_total_label">Toplam</string>
     <string name="woopos_payment_tax_label">Vergi</string>
     <string name="woopos_payment_subtotal_label">Ara Toplam</string>
-    <string name="woopos_new_transaction_button">Yeni işlem</string>
     <string name="woopos_payment_successful_label">Ödeme başarılı</string>
     <string name="woopos_payment_failed_please_try_again">Ödeme başarısız. Lütfen tekrar deneyin.</string>
     <string name="woopos_cart_back_content_description">Sepet simgesi</string>

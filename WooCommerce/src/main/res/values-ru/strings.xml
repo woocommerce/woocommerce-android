@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 17:54:04+0000
+Translation-Revision-Date: 2024-08-06 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="woopos_success_screen_total">Платёж в сумме %1$s выполнен успешно</string>
+    <string name="woopos_new_order_button">Новый заказ</string>
+    <string name="woopos_dialog_products_info_button_label">ОК</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Создать заказ в разделе «Управление магазином»</string>
+    <string name="woopos_dialog_products_info_secondary_message">Чтобы принять платёж за товар, не относящийся к простым, выйдите из POS и создайте новый заказ в таблице заказов.</string>
+    <string name="woopos_dialog_products_info_primary_message">В данный момент POS поддерживает только простые материальные товары.\nДругие типы товаров, в частности виртуальные и вариативные товары, станут доступны в ближайших обновлениях.</string>
+    <string name="woopos_dialog_products_info_heading">Почему я не вижу свои товары?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Информация</string>
+    <string name="woopos_banner_simple_products_close_content_description">Закрыть</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Подробнее</string>
+    <string name="woopos_banner_simple_products_only_message">В данный момент POS поддерживает только простые материальные товары. Другие типы товаров, в частности виртуальные и вариативные товары, станут доступны в ближайших обновлениях. </string>
+    <string name="woopos_banner_simple_products_only_title">Только простые товары</string>
+    <string name="support_request_site_address">Адрес сайта</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google для WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Добавить платную кампанию</string>
+    <string name="analytics_google_ads_cta_description">Повышайте продажи и привлекайте больше посетителей при помощи Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Кампании Google</string>
     <string name="google_ads_campaign_created_success_done_button">Готово</string>
     <string name="google_ads_campaign_created_success_description">Ваша новая кампания создана. Впереди у вас удачный сезон продаж!</string>
     <string name="google_ads_campaign_created_success_title">Всё готово!</string>
@@ -103,7 +120,6 @@ Language: ru
     <string name="woopos_payment_total_label">Итого</string>
     <string name="woopos_payment_tax_label">Налог</string>
     <string name="woopos_payment_subtotal_label">Подытог</string>
-    <string name="woopos_new_transaction_button">Новая транзакция</string>
     <string name="woopos_payment_successful_label">Оплата прошла успешно</string>
     <string name="woopos_payment_failed_please_try_again">Платёж не выполнен. Повторите попытку.</string>
     <string name="woopos_cart_back_content_description">Значок корзины</string>
