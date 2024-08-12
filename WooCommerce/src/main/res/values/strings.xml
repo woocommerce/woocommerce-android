@@ -4185,7 +4185,7 @@
     Woo POS
     -->
     <string name="woopos_exit_pos">Exit POS</string>
-    <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_unknown">Reader Status Unknown</string>
