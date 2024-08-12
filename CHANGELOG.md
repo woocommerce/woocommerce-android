@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 19.9
+We've enhanced your refund experience! Now, each refund item on the refund screen includes detailed subtotal and taxes fields, giving you clearer insights into your transactions. Update now to enjoy smoother, more transparent refunds!
+
 ## 19.8
 In our latest update, we've added a button in Google Campaign analytics for easier paid campaign creation. The Contact Support Form now includes a Site Address field. Enjoy seamless in-person payments illustrations in landscape mode, and benefit from background updates for order lists and dashboard analytics.
 

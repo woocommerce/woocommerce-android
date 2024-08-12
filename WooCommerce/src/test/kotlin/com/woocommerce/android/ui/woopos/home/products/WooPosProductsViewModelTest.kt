@@ -789,6 +789,6 @@ class WooPosProductsViewModelTest {
             productsDataSource,
             fromChildToParentEventSender,
             priceFormat,
-            posPreferencesRepository
+            posPreferencesRepository,
         )
 }

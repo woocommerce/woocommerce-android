@@ -1,21 +1,14 @@
 package com.woocommerce.android.ui.woopos.home
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,10 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -37,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
@@ -106,24 +95,12 @@ private fun WooPosHomeScreen(
         label = "totalsWidthAnimatedDp"
     )
 
-    val cartOverlayIntensityAnimated by animateFloatAsState(
-        when (state.screenPositionState) {
-            is WooPosHomeState.ScreenPositionState.Cart.Visible.Empty -> .6f
-            WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
-            WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-            WooPosHomeState.ScreenPositionState.Checkout.Paid,
-            WooPosHomeState.ScreenPositionState.Cart.Hidden -> 0f
-        },
-        label = "cartOverlayAnimated"
-    )
-
     val scrollState = buildScrollStateForNavigationBetweenState(state.screenPositionState)
     WooPosHomeScreen(
         state = state,
         scrollState = scrollState,
         productsWidthDp = productsWidthAnimatedDp,
         cartWidthDp = cartWidthDp,
-        cartOverlayIntensity = cartOverlayIntensityAnimated,
         totalsWidthDp = totalsWidthAnimatedDp,
         onHomeUIEvent,
     )
@@ -145,7 +122,6 @@ private fun WooPosHomeScreen(
     scrollState: ScrollState,
     productsWidthDp: Dp,
     cartWidthDp: Dp,
-    cartOverlayIntensity: Float,
     totalsWidthDp: Dp,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
@@ -170,14 +146,6 @@ private fun WooPosHomeScreen(
                     WooPosHomeScreenCart(
                         modifier = Modifier
                             .width(cartWidthDp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(cartWidthDp)
-                            .fillMaxHeight()
-                            .background(
-                                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                            )
                     )
                 }
             }
@@ -207,66 +175,15 @@ private fun HandleProductsInfoDialog(
     state: ProductsInfoDialog,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit
 ) {
-    // isDialogVisible is mainly used to restore dialog after process death
-    var isDialogVisible by rememberSaveable {
-        mutableStateOf(false)
-    }
-    isDialogVisible = when (state) {
-        /**
-         * We can't set isDialogVisible to false directly because the dialog's state can be hidden for two different reasons:
-         * 1. The user explicitly closed the dialog.
-         * 2. After a process death and activity recreation, the dialog's state is reset to Hidden, as its initial state is Hidden.
-         *
-         * In the second scenario, isDialogVisible will be true if the dialog was visible before the process death,
-         * since rememberSaveable retains this value across process death and activity recreation.
-         */
-        ProductsInfoDialog.Hidden -> isDialogVisible
-        is ProductsInfoDialog.Visible -> true
-    }
-    if (isDialogVisible) {
-        val currentState = state as? ProductsInfoDialog.Visible ?: ProductsInfoDialog.Visible(
-            header = R.string.woopos_dialog_products_info_heading,
-            primaryMessage = R.string.woopos_dialog_products_info_primary_message,
-            secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
-            primaryButton = ProductsInfoDialog.Visible.PrimaryButton(
-                label = R.string.woopos_dialog_products_info_button_label
-            )
-        )
-        BoxOverlay(state = currentState) {
-            // no op
-        }
+    if (state is ProductsInfoDialog.Visible) {
         WooPosProductInfoDialog(
-            state = currentState,
+            state = state,
+            onOutsideOfDialogClicked = {
+                onHomeUIEvent(WooPosHomeUIEvent.OnOutsideOfProductInfoDialogClicked)
+            },
             onDismissRequest = {
-                isDialogVisible = false
                 onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
             }
-        )
-    }
-}
-
-@Composable
-private fun BoxOverlay(
-    state: ProductsInfoDialog,
-    onClick: () -> Unit,
-) {
-    AnimatedVisibility(
-        visible = state is ProductsInfoDialog.Visible,
-        enter = fadeIn(initialAlpha = 0.3f),
-        exit = fadeOut(targetAlpha = 0.0f)
-    ) {
-        Box(
-            modifier = Modifier
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    onClick()
-                }
-                .fillMaxSize()
-                .background(
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.3f)
-                )
         )
     }
 }

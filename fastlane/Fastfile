@@ -59,7 +59,7 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
 # URL of the GlotPress project containing the app's strings
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
 # URL of the GlotPress project containing the Play Store metadata (title, keywords, release notes, …)
-GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
+GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = "#{GLOTPRESS_APP_STRINGS_PROJECT_URL}/release-notes/".freeze
 
 APP_PACKAGE_NAME = 'com.woocommerce.android'
 GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
@@ -230,10 +230,8 @@ platform :android do
   # @example Running the lane
   #          bundle exec fastlane update_play_store_strings version:10.3
   #
-  lane :update_play_store_strings do |version: nil|
+  lane :update_play_store_strings do |version: release_version_current|
     ensure_git_status_clean
-
-    version ||= release_version_current
 
     app_metadata_source_path = METADATA_SOURCE_DIR_PATH[MOBILE_APP]
     files = {
@@ -277,7 +275,7 @@ platform :android do
   # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
   desc 'Updates a release branch for a new beta release'
-  lane :new_beta_release do |options|
+  lane :new_beta_release do |skip_confirm: false, include_wear_app: false|
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
 
@@ -295,9 +293,7 @@ platform :android do
     MESSAGE
 
     UI.important(message)
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Bump the release version and build code
     UI.message 'Bumping beta version and build code...'
@@ -310,13 +306,10 @@ platform :android do
     UI.success("Done! New Beta Version: #{version_name_current}. New Build Code: #{build_code_current}")
 
     UI.important('Pushing changes to remote and triggering the beta build')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     push_to_git_remote(tags: false)
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
@@ -342,51 +335,44 @@ platform :android do
   # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
   #
   desc 'Prepare a new hotfix branch cut from the previous tag, and bump the version'
-  lane :new_hotfix_release do |options|
-    UI.user_error!('A `version_name` must be provided when calling this lane') if options[:version_name].nil?
-    UI.user_error!('A `version_code` must be provided when calling this lane') if options[:version_code].nil?
-
+  lane :new_hotfix_release do |version_name:, version_code:, skip_confirm: false|
     # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
 
-    new_version = options[:version_name]
-    version_code_new = options[:version_code]
     # Parse the provided version into an AppVersion object
-    parsed_version = VERSION_FORMATTER.parse(new_version)
+    parsed_version = VERSION_FORMATTER.parse(version_name)
     previous_version = VERSION_FORMATTER.release_version(VERSION_CALCULATOR.previous_patch_version(version: parsed_version))
 
     # Check versions
     message = <<-MESSAGE
 
       Current release version: #{release_version_current}
-      New hotfix version: #{new_version}
+      New hotfix version: #{version_name}
 
       Current build code: #{build_code_current}
-      New build code: #{version_code_new}
+      New build code: #{version_code}
 
       Branching from tag: #{previous_version}
 
     MESSAGE
 
     UI.important(message)
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Check tags
-    UI.user_error!("The version `#{new_version}` tag already exists!") if git_tag_exists(tag: new_version)
+    UI.user_error!("The version `#{version_name}` tag already exists!") if git_tag_exists(tag: version_name)
     UI.user_error!("Version #{previous_version} is not tagged! A hotfix branch cannot be created.") unless git_tag_exists(tag: previous_version)
 
     # Create the hotfix branch
     UI.message('Creating hotfix branch...')
-    Fastlane::Helper::GitHelper.create_branch("release/#{new_version}", from: previous_version)
+    Fastlane::Helper::GitHelper.create_branch("release/#{version_name}", from: previous_version)
     UI.success("Done! New hotfix branch is: #{git_branch}")
 
     # Bump the hotfix version and build code and write it to the `version.properties` file
     UI.message('Bumping hotfix version and build code...')
     VERSION_FILE.write_version(
-      version_name: new_version,
-      version_code: version_code_new
+      version_name: version_name,
+      version_code: version_code
     )
     commit_version_bump
     UI.success("Done! New Release Version: #{release_version_current}. New Build Code: #{build_code_current}")
@@ -634,9 +620,7 @@ platform :android do
       skip_upload_changelogs: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
-      # We're retaining version 16.4 - 480 because 16.5 increases the minSDKVersion from Android 7 to Android 8
-      version_codes_to_retain: app == WEAR_APP ? nil : [480]
+      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
     create_gh_release(app: app, version: version) if options[:create_release]
