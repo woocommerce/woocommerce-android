@@ -15,8 +15,9 @@ data class WooPosHomeState(
     @Parcelize
     sealed class ScreenPositionState : Parcelable {
         @Parcelize
-        sealed class Cart : ScreenPositionState() {
-            sealed class Visible : Cart() {
+        sealed class Cart : ScreenPositionState(), Parcelable {
+            @Parcelize
+            sealed class Visible : Cart(), Parcelable {
                 @Parcelize
                 data object Empty : Cart(), Parcelable
                 @Parcelize
