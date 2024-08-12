@@ -9,7 +9,7 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
 
 @ActivityRetainedScoped
-class WooPosGetSupportFacade @Inject constructor(): DefaultLifecycleObserver {
+class WooPosGetSupportFacade @Inject constructor() : DefaultLifecycleObserver {
     private var activity: AppCompatActivity? = null
 
     override fun onCreate(owner: LifecycleOwner) {

@@ -171,10 +171,14 @@ class WooPosToolbarViewModelTest {
     fun `when get support clicked, then should open support form`() {
         val viewModel = createViewModel()
 
-        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(WooPosToolbarState.Menu.MenuItem(
-            title = R.string.woopos_get_support_title,
-            icon = R.drawable.woopos_ic_get_support,
-        )))
+        viewModel.onUiEvent(
+            WooPosToolbarUIEvent.MenuItemClicked(
+                WooPosToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_get_support_title,
+                    icon = R.drawable.woopos_ic_get_support,
+                )
+            )
+        )
 
         verify(getSupportFacade).openSupportForm()
     }

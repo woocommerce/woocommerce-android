@@ -25,6 +25,7 @@ import javax.inject.Inject
 class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var wooPosCardReaderFacade: WooPosCardReaderFacade
+
     @Inject
     lateinit var wooPosGetSupportFacade: WooPosGetSupportFacade
 
