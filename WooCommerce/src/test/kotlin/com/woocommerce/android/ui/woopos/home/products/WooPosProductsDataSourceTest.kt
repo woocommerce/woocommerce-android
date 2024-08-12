@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -14,7 +13,6 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.math.BigDecimal
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.Test
 import kotlin.test.assertFalse
