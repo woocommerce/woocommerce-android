@@ -4188,7 +4188,7 @@
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout">Checkout</string>
-    <string name="woopos_reader_unknown">Reader Status Unknown</string>
+    <string name="woopos_reader_unknown">Reader status unknown</string>
     <string name="woopos_checkout_button">Check out</string>
     <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
     <string name="woopos_cart_title">Cart</string>
