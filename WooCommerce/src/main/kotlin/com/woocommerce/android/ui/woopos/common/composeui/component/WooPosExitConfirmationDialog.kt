@@ -150,7 +150,7 @@ fun WooPosExitConfirmationDialog(
                             modifier = modifier
                                 .padding(16.dp.toAdaptivePadding())
                                 .size(40.dp),
-                            tint = MaterialTheme.colors.onSurface
+                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
