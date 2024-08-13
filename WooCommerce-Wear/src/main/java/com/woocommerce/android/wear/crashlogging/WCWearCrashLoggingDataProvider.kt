@@ -12,6 +12,7 @@ import com.woocommerce.android.wear.ui.login.LoginRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -21,7 +22,6 @@ import org.wordpress.android.fluxc.store.AccountStore
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.coroutines.flow.map
 
 @Singleton
 class WCWearCrashLoggingDataProvider @Inject constructor(
@@ -64,17 +64,17 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
 
     override val applicationContextProvider: Flow<Map<String, String>> =
         loginRepository.selectedSiteFlow
-        .map { site ->
-            site?.let {
-                mutableMapOf<String, String>(
-                    SITE_URL_KEY to site.url
-                ).apply {
-                    site.siteId.takeIf { it != 0L }?.toString()?.let {
-                        this[SITE_ID_KEY] = it
+            .map { site ->
+                site?.let {
+                    mutableMapOf<String, String>(
+                        SITE_URL_KEY to site.url
+                    ).apply {
+                        site.siteId.takeIf { it != 0L }?.toString()?.let {
+                            this[SITE_ID_KEY] = it
+                        }
                     }
-                }
-            }.orEmpty()
-        }
+                }.orEmpty()
+            }
 
     override val performanceMonitoringConfig: PerformanceMonitoringConfig
         get() = TODO("Not yet implemented")
