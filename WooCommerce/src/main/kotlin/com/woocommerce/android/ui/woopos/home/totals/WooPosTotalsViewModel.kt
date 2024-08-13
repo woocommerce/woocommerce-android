@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog
@@ -131,14 +132,20 @@ class WooPosTotalsViewModel @Inject constructor(
                     onSuccess = { order ->
                         dataState.value = dataState.value.copy(orderId = order.id)
                         uiState.value = buildWooPosTotalsViewState(order)
-                        analyticsTracker.track()
+                        analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)
                     },
                     onFailure = { error ->
                         WooLog.e(T.POS, "Order creation failed - $error")
                         uiState.value = WooPosTotalsViewState.Error(
                             resourceProvider.getString(R.string.woopos_totals_order_creation_error)
                         )
-                        analyticsTracker.track()
+                        analyticsTracker.track(
+                            WooPosAnalyticsEvent.Error.OrderCreationError(
+                                errorContext = WooPosTotalsViewModel::class,
+                                errorType = error::class.simpleName,
+                                errorDescription = error.message
+                            )
+                        )
                     }
                 )
         }
