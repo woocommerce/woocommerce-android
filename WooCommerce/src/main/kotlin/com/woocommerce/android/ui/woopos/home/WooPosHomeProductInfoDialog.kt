@@ -107,7 +107,7 @@ fun WooPosProductInfoDialog(
                         shape = RoundedCornerShape(8.dp),
                         elevation = 8.dp,
                         modifier = Modifier
-                            .padding(16.dp)
+                            .padding(16.dp.toAdaptivePadding())
                             .fillMaxWidth()
                     ) {
                         Box(
@@ -127,7 +127,7 @@ fun WooPosProductInfoDialog(
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                                     modifier = Modifier
-                                        .padding(bottom = 16.dp)
+                                        .padding(bottom = 16.dp.toAdaptivePadding())
                                         .constrainAs(header) {
                                             top.linkTo(closeIcon.bottom)
                                             start.linkTo(parent.start)
@@ -172,13 +172,13 @@ fun WooPosProductInfoDialog(
                                         ),
                                         color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                                         textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(bottom = 16.dp)
+                                        modifier = Modifier.padding(bottom = 16.dp.toAdaptivePadding())
                                     )
                                     Box(
                                         Modifier
                                             .clip(RoundedCornerShape(8.dp))
                                             .background(color = MaterialTheme.colors.background)
-                                            .padding(16.dp),
+                                            .padding(16.dp.toAdaptivePadding()),
                                         contentAlignment = Alignment.Center,
                                     ) {
                                         Column(
@@ -194,7 +194,7 @@ fun WooPosProductInfoDialog(
                                             )
                                         }
                                     }
-                                    Spacer(modifier = Modifier.height(40.dp))
+                                    Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
                                     OutlinedButton(
                                         onClick = {
                                             animVisibleState.targetState = false
