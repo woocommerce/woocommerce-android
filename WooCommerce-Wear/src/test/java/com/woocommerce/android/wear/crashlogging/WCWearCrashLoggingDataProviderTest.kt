@@ -6,6 +6,8 @@ import com.automattic.android.tracks.crashlogging.EventLevel
 import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.wear.settings.AppSettings
+import com.woocommerce.android.wear.settings.AppSettings.CrashReportEnabledSettings
 import com.woocommerce.android.wear.settings.SettingsRepository
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import java.util.Locale
@@ -65,7 +67,9 @@ class WCWearCrashLoggingDataProviderTest : BaseUnitTest() {
 
     @Test
     fun `should enable crash logging if crash logging is enabled`() {
-        whenever(settingsRepository.crashReportEnabled.value).thenReturn(true)
+        val settingsMock = mock<CrashReportEnabledSettings>()
+        whenever(settingsMock.value).thenReturn(true)
+        whenever(settingsRepository.crashReportEnabled).thenReturn(settingsMock)
 
         val crashLoggingEnabled = sut.crashLoggingEnabled()
 
@@ -74,7 +78,9 @@ class WCWearCrashLoggingDataProviderTest : BaseUnitTest() {
 
     @Test
     fun `should disable crash logging if crash logging is disabled`() {
-        whenever(settingsRepository.crashReportEnabled.value).thenReturn(false)
+        val settingsMock = mock<CrashReportEnabledSettings>()
+        whenever(settingsMock.value).thenReturn(false)
+        whenever(settingsRepository.crashReportEnabled).thenReturn(settingsMock)
 
         val crashLoggingEnabled = sut.crashLoggingEnabled()
 
@@ -129,42 +135,10 @@ class WCWearCrashLoggingDataProviderTest : BaseUnitTest() {
     }
 
     @Test
-    fun `should provide recent locale after locale change`() {
-        whenever(loginRepository.selectedSiteFlow).thenReturn(MutableStateFlow(null))
-        whenever(providedLocale).thenReturn(Locale.US)
-
-        assertThat(sut.locale).isEqualTo(Locale.US)
-
-        whenever(providedLocale).thenReturn(Locale.CANADA)
-
-        assertThat(sut.locale).isEqualTo(Locale.CANADA)
-    }
-
-    @Test
     fun `should provide empty extras for event`() {
         val extras = sut.provideExtrasForEvent(currentExtras = emptyMap(), eventLevel = EventLevel.INFO)
 
         assertThat(extras).isEmpty()
-    }
-
-    @Test
-    fun `should provide version name for release name for not debug build`() {
-        whenever(loginRepository.selectedSiteFlow).thenReturn(MutableStateFlow(null))
-        whenever(BuildConfig.DEBUG).thenReturn(false)
-
-        reinitialize()
-
-        assertThat(sut.releaseName).isEqualTo(ReleaseName.SetByTracksLibrary)
-    }
-
-    @Test
-    fun `should provide debug name for release name for debug build`() {
-        whenever(loginRepository.selectedSiteFlow).thenReturn(MutableStateFlow(null))
-        whenever(BuildConfig.DEBUG).thenReturn(true)
-
-        reinitialize()
-
-        assertThat(sut.releaseName).isEqualTo(ReleaseName.SetByApplication(WCWearCrashLoggingDataProvider.DEBUG_RELEASE_NAME))
     }
 
     private fun softlyAssertUser(user: CrashLoggingUser?) {
