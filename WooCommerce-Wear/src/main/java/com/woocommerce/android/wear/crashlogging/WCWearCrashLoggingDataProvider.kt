@@ -11,6 +11,7 @@ import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.wear.di.AppCoroutineScope
 import com.woocommerce.android.wear.settings.AppSettings
+import com.woocommerce.android.wear.settings.SettingsRepository
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +33,7 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
     private val appContext: Context,
     private val accountStore: AccountStore,
     private val providedLocale: Locale,
+    private val settingsRepository: SettingsRepository,
     loginRepository: LoginRepository,
     dispatcher: Dispatcher,
 ) : CrashLoggingDataProvider {
@@ -83,10 +85,7 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
     override val performanceMonitoringConfig: PerformanceMonitoringConfig
         get() = PerformanceMonitoringConfig.Disabled
 
-    override fun crashLoggingEnabled(): Boolean {
-        val preferences = PreferenceManager.getDefaultSharedPreferences(appContext)
-        return AppSettings.CrashReportEnabledSettings(preferences).value
-    }
+    override fun crashLoggingEnabled() = settingsRepository.crashReportEnabled.value
 
     override fun extraKnownKeys(): List<ExtraKnownKey> = emptyList()
 
