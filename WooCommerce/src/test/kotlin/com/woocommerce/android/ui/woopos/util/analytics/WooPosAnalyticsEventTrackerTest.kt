@@ -21,7 +21,7 @@ class WooPosAnalyticsEventTrackerTest {
     @Test
     fun `given an event, when track is called, then it should track the event via wrapper`() = runTest {
         // GIVEN
-        val event = WooPosAnalyticsEvent.Event.Test
+        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart
 
         // WHEN
         tracker.track(event)
@@ -36,7 +36,7 @@ class WooPosAnalyticsEventTrackerTest {
     @Test
     fun `given an err, when track is called, then it should track the error via wrapper`() = runTest {
         // GIVEN
-        val error = WooPosAnalyticsEvent.Error.Test(
+        val error = WooPosAnalyticsEvent.Error.OrderCreationError(
             errorContext = Any::class,
             errorType = "test",
             errorDescription = "test",
@@ -58,7 +58,7 @@ class WooPosAnalyticsEventTrackerTest {
     @Test
     fun `given an event and common properties, when track is called, then it should track the event with common properties`() = runTest {
         // GIVEN
-        val event = WooPosAnalyticsEvent.Event.Test
+        val event = WooPosAnalyticsEvent.Event.ItemAddedToCart
         val commonProperties = mapOf("test" to "test")
         whenever(commonPropertiesProvider.commonProperties).thenReturn(commonProperties)
 
@@ -75,7 +75,7 @@ class WooPosAnalyticsEventTrackerTest {
     @Test
     fun `given an error and common properties, when track is called, then it should track the event with common properties`() = runTest {
         // GIVEN
-        val error = WooPosAnalyticsEvent.Error.Test(
+        val error = WooPosAnalyticsEvent.Error.OrderCreationError(
             errorContext = Any::class,
             errorType = "test",
             errorDescription = "test",
