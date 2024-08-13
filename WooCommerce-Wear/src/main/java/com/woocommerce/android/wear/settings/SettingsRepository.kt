@@ -12,10 +12,10 @@ import javax.inject.Inject
 class SettingsRepository @Inject constructor(
     private val appContext: Context
 ) {
+    private val gson by lazy { Gson() }
+
     private val preferences
         get() = PreferenceManager.getDefaultSharedPreferences(appContext)
-
-    private val gson by lazy { Gson() }
 
     val crashReportEnabled: CrashReportEnabledSettings
         get() = CrashReportEnabledSettings(preferences)
@@ -26,6 +26,6 @@ class SettingsRepository @Inject constructor(
             ?.let { gson.fromJson(it, WearAppSettings::class.java) }
             ?: return
 
-        CrashReportEnabledSettings(preferences).value = settings.crashReportEnabled
+        crashReportEnabled.value = settings.crashReportEnabled
     }
 }

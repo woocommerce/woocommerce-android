@@ -3,19 +3,13 @@ package com.woocommerce.android.wear.crashlogging
 import android.content.Context
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
-import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.woocommerce.android.BaseUnitTest
-import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.wear.settings.AppSettings
 import com.woocommerce.android.wear.settings.AppSettings.CrashReportEnabledSettings
 import com.woocommerce.android.wear.settings.SettingsRepository
 import com.woocommerce.android.wear.ui.login.LoginRepository
-import java.util.Locale
-import kotlin.test.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
@@ -26,6 +20,8 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import java.util.Locale
+import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WCWearCrashLoggingDataProviderTest : BaseUnitTest() {
