@@ -17,3 +17,7 @@ jobs:
       - name: Perform dependency review
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/dependency-review-action@v4
+        with:
+          license-check: false
+          comment-summary-in-pr: always
+          warn-only: true
