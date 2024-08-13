@@ -16,9 +16,12 @@ jobs:
       - name: Setup Gradle to generate and submit dependency graphs
         uses: gradle/actions/dependency-submission@v3
       - name: Perform dependency review
+        id: review
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/dependency-review-action@v4
         with:
           license-check: false
           comment-summary-in-pr: always
           warn-only: true
+
+      - run: echo ${{ steps.review.outputs.dependency-changes }}
