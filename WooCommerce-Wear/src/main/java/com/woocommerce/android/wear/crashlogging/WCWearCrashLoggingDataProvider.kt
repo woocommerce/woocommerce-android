@@ -1,6 +1,5 @@
 package com.woocommerce.android.wear.crashlogging
 
-import android.content.Context
 import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
@@ -28,7 +27,6 @@ import javax.inject.Singleton
 @Singleton
 class WCWearCrashLoggingDataProvider @Inject constructor(
     @AppCoroutineScope private val appScope: CoroutineScope,
-    private val appContext: Context,
     private val accountStore: AccountStore,
     private val providedLocale: Locale,
     private val settingsRepository: SettingsRepository,

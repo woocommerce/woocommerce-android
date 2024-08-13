@@ -1,6 +1,5 @@
 package com.woocommerce.android.wear.crashlogging
 
-import android.content.Context
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
 import com.woocommerce.android.BaseUnitTest
@@ -27,7 +26,6 @@ import kotlin.test.Test
 class WCWearCrashLoggingDataProviderTest : BaseUnitTest() {
     private lateinit var sut: WCWearCrashLoggingDataProvider
 
-    private val appContext: Context = mock()
     private val accountStore: AccountStore = mock()
     private val providedLocale: Locale = mock()
     private val settingsRepository: SettingsRepository = mock()
@@ -38,7 +36,6 @@ class WCWearCrashLoggingDataProviderTest : BaseUnitTest() {
     fun setUp() {
         sut = WCWearCrashLoggingDataProvider(
             appScope = TestScope(coroutinesTestRule.testDispatcher),
-            appContext = appContext,
             accountStore = accountStore,
             providedLocale = providedLocale,
             settingsRepository = settingsRepository,
