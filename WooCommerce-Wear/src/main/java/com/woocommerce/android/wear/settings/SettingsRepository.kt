@@ -22,6 +22,6 @@ class SettingsRepository @Inject constructor(
             ?.let { gson.fromJson(it, WearAppSettings::class.java) }
             ?: return
 
-        AppSettings.CrashReportEnabled(preferences).value = settings.crashReportEnabled
+        AppSettings.CrashReportEnabledSettings(preferences).value = settings.crashReportEnabled
     }
 }

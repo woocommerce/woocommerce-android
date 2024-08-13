@@ -85,7 +85,7 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
 
     override fun crashLoggingEnabled(): Boolean {
         val preferences = PreferenceManager.getDefaultSharedPreferences(appContext)
-        return AppSettings.CrashReportEnabled(preferences).value
+        return AppSettings.CrashReportEnabledSettings(preferences).value
     }
 
     override fun extraKnownKeys(): List<ExtraKnownKey> = emptyList()
