@@ -15,22 +15,25 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
     }
 
     sealed class Error : WooPosAnalyticsEvent() {
-        abstract val errorContext: KClass<Any>
+        abstract val errorContext: KClass<out Any>
         abstract val errorType: String?
         abstract val errorDescription: String?
 
-        data class Test(
-            override val errorContext: KClass<Any>,
+        data class OrderCreationError(
+            override val errorContext: KClass<out Any>,
             override val errorType: String?,
             override val errorDescription: String?,
         ) : Error() {
-            override val name: String = "WOO_POS_TEST_ERROR"
+            override val name: String = "order_creation_failed"
         }
     }
 
     sealed class Event : WooPosAnalyticsEvent() {
-        data object Test : Event() {
-            override val name: String = "WOO_POS_TEST_EVENT"
+        data object ItemAddedToCart : Event() {
+            override val name: String = "item_added_to_cart"
+        }
+        data object OrderCreationSuccess : Event() {
+            override val name: String = "order_creation_success"
         }
     }
 }
