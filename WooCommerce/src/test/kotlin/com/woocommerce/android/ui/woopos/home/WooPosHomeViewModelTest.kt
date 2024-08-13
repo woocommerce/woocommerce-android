@@ -235,7 +235,7 @@ class WooPosHomeViewModelTest {
         whenever(childrenToParentEventReceiver.events).thenReturn(
             flowOf(
                 ChildToParentEvent.CheckoutClicked(listOf(1)),
-                ChildToParentEvent.ProductsStatusChanged.FullScreen
+                ChildToParentEvent.ProductsStatusChanged.FullScreen(isProductsLoading = false)
             )
         )
         val viewModel = createViewModel()
