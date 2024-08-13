@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,7 +14,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -117,24 +115,12 @@ private fun WooPosHomeScreen(
         label = "totalsWidthAnimatedDp"
     )
 
-    val cartOverlayIntensityAnimated by animateFloatAsState(
-        when (state.screenPositionState) {
-            is WooPosHomeState.ScreenPositionState.Cart.Visible.Empty -> .6f
-            WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
-            WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-            WooPosHomeState.ScreenPositionState.Checkout.Paid,
-            WooPosHomeState.ScreenPositionState.Cart.Hidden -> 0f
-        },
-        label = "cartOverlayAnimated"
-    )
-
     val scrollState = buildScrollStateForNavigationBetweenState(state.screenPositionState)
     WooPosHomeScreen(
         state = state,
         scrollState = scrollState,
         productsWidthDp = productsWidthAnimatedDp,
         cartWidthDp = cartWidthDp,
-        cartOverlayIntensity = cartOverlayIntensityAnimated,
         totalsWidthDp = totalsWidthAnimatedDp,
         onHomeUIEvent,
     )
@@ -146,7 +132,6 @@ private fun WooPosHomeScreen(
     scrollState: ScrollState,
     productsWidthDp: Dp,
     cartWidthDp: Dp,
-    cartOverlayIntensity: Float,
     totalsWidthDp: Dp,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
@@ -171,14 +156,6 @@ private fun WooPosHomeScreen(
                     WooPosHomeScreenCart(
                         modifier = Modifier
                             .width(cartWidthDp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(cartWidthDp)
-                            .fillMaxHeight()
-                            .background(
-                                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                            )
                     )
                 }
             }
@@ -236,7 +213,7 @@ private fun HandleProductsInfoDialog(
         BoxOverlay(state = currentState) {
             // no op
         }
-        ProductInfoDialog(
+        WooPosProductInfoDialog(
             state = currentState,
             onDismissRequest = {
                 isDialogVisible = false

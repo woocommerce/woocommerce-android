@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-30 12:54:04+0000
+Translation-Revision-Date: 2024-08-08 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="woopos_success_screen_total">Un paiement de %1$s a été effectué avec succès</string>
+    <string name="woopos_new_order_button">Nouvelle commande</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Créer une commande dans la gestion de la boutique</string>
+    <string name="woopos_dialog_products_info_secondary_message">Pour accepter un paiement pour un produit non simple, quittez le PDV et créez une nouvelle commande depuis l’onglet Commandes.</string>
+    <string name="woopos_dialog_products_info_primary_message">Seuls les produits physiques simples peuvent être utilisés avec le PDV actuellement.\nD’autres types de produits, tels que les produits virtuels et variables, seront disponibles dans les mises à jour à venir.</string>
+    <string name="woopos_dialog_products_info_heading">Pourquoi ne puis-je pas voir mes produits ?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Informations</string>
+    <string name="woopos_banner_simple_products_close_content_description">Fermer</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Lire la suite</string>
+    <string name="woopos_banner_simple_products_only_message">Seuls les produits physiques simples sont compatibles avec le PDV actuellement. D’autres types de produits, tels que les produits virtuels et variables, seront disponibles dans les mises à jour à venir. </string>
+    <string name="woopos_banner_simple_products_only_title">Affichage des produits simples uniquement</string>
+    <string name="support_request_site_address">Adresse du site</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google pour WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Ajouter une campagne payante</string>
+    <string name="analytics_google_ads_cta_description">Multipliez les ventes et générez plus de trafic avec Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Campagnes Google</string>
     <string name="google_ads_campaign_created_success_done_button">Terminé</string>
     <string name="google_ads_campaign_created_success_description">Votre nouvelle campagne a été créée. L’aventure attend vos ventes !</string>
     <string name="google_ads_campaign_created_success_title">Tout est prêt !</string>
@@ -103,7 +120,6 @@ Language: fr
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_tax_label">Taxe</string>
     <string name="woopos_payment_subtotal_label">Sous-total</string>
-    <string name="woopos_new_transaction_button">Nouvelle transaction</string>
     <string name="woopos_payment_successful_label">Paiement réussi</string>
     <string name="woopos_payment_failed_please_try_again">Échec du paiement. Veuillez réessayer.</string>
     <string name="woopos_cart_back_content_description">Icône du panier</string>
