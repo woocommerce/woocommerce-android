@@ -1,9 +1,5 @@
 name: Submit dependencies to GitHub Dependency Graph
-on:
-  push:
-    branches:
-      - trunk
-      - release/*
+on: [push, pull_request]
 permissions:
   contents: write
 jobs:
@@ -18,3 +14,6 @@ jobs:
       - run: cp gradle.properties-example gradle.properties
       - name: Setup Gradle to generate and submit dependency graphs
         uses: gradle/actions/dependency-submission@v3
+      - name: Perform dependency review
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/dependency-review-action@v4
