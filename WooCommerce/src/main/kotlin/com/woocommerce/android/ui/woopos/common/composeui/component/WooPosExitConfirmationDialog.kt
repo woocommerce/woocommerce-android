@@ -78,11 +78,11 @@ fun WooPosExitConfirmationDialog(
         AnimatedVisibility(
             visibleState = animVisibleState,
             enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
-                initialOffsetY = { it / 8 }, // Slide in from 1/8 below the center
+                initialOffsetY = { it / 8 },
                 animationSpec = tween(300)
             ),
             exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
-                targetOffsetY = { it / 8 }, // Slide out to 1/8 below the center
+                targetOffsetY = { it / 8 },
                 animationSpec = tween(300)
             ),
         ) {
