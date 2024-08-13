@@ -52,7 +52,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 @Composable
 fun WooPosProductInfoDialog(
     state: WooPosHomeState.ProductsInfoDialog.Visible,
-    onOutsideOfDialogClicked: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     val animVisibleState = remember { MutableTransitionState(false) }
@@ -71,7 +70,7 @@ fun WooPosProductInfoDialog(
             .background(Color.Black.copy(alpha = 0.3f))
             .clickable(
                 onClick = {
-                    onOutsideOfDialogClicked()
+                    animVisibleState.targetState = false
                 },
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
@@ -233,7 +232,6 @@ fun ProductInfoDialogPreview() {
                         label = R.string.woopos_dialog_products_info_button_label
                     )
                 ),
-                onOutsideOfDialogClicked = {},
                 onDismissRequest = {},
             )
         }
