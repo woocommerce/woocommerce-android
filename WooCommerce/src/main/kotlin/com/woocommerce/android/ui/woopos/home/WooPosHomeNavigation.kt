@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home
 
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -23,9 +24,10 @@ fun NavGraphBuilder.homeScreen(
             slideInVertically(
                 initialOffsetY = { -it },
                 animationSpec = tween(
-                    durationMillis = 1000,
-                    easing = {
-                        OvershootInterpolator(2f).getInterpolation(it)
+                    durationMillis = 800,
+                    easing = { time ->
+                        val accelerateDecelerate = AccelerateDecelerateInterpolator().getInterpolation(time)
+                        OvershootInterpolator(1.5f).getInterpolation(accelerateDecelerate)
                     }
                 )
             )
