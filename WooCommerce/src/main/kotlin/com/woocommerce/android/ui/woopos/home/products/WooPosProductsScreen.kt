@@ -527,7 +527,12 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
 @Composable
 @WooPosPreview
 fun WooPosProductsScreenLoadingPreview() {
-    val productState = MutableStateFlow(WooPosProductsViewState.Loading(true))
+    val productState = MutableStateFlow(
+        WooPosProductsViewState.Loading(
+            reloadingProductsWithPullToRefresh = true,
+            withCart = false
+        )
+    )
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,
