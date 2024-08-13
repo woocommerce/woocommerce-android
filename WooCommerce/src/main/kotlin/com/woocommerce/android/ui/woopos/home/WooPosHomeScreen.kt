@@ -178,9 +178,6 @@ private fun HandleProductsInfoDialog(
     if (state is ProductsInfoDialog.Visible) {
         WooPosProductInfoDialog(
             state = state,
-            onOutsideOfDialogClicked = {
-                onHomeUIEvent(WooPosHomeUIEvent.OnOutsideOfProductInfoDialogClicked)
-            },
             onDismissRequest = {
                 onHomeUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
             }

@@ -66,10 +66,6 @@ class WooPosHomeViewModel @Inject constructor(
                     productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden
                 )
             }
-
-            WooPosHomeUIEvent.OnOutsideOfProductInfoDialogClicked -> {
-                // Do nothing as we do not want to dismiss the dialog on outside click
-            }
         }
     }
 
