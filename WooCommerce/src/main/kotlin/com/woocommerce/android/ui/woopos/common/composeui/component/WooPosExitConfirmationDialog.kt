@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,96 +61,102 @@ fun WooPosExitConfirmationDialog(
                 }
             }
     }
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
-            .clickable(
-                onClick = {
-                    // no op
-                },
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ),
-        contentAlignment = Alignment.Center
+    AnimatedVisibility(
+        visibleState = animVisibleState,
+        enter = fadeIn(initialAlpha = 0.3f),
+        exit = fadeOut(targetAlpha = 0.0f)
     ) {
-        AnimatedVisibility(
-            visibleState = animVisibleState,
-            enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
-                initialOffsetY = { it / 8 },
-                animationSpec = tween(300)
-            ),
-            exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
-                targetOffsetY = { it / 8 },
-                animationSpec = tween(300)
-            ),
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
+                .clickable(
+                    onClick = {
+                        animVisibleState.targetState = false
+                    },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Card(
-                shape = RoundedCornerShape(24.dp),
-                elevation = 8.dp,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 150.dp.toAdaptivePadding())
+            AnimatedVisibility(
+                visibleState = animVisibleState,
+                enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
+                    initialOffsetY = { it / 8 },
+                    animationSpec = tween(300)
+                ),
+                exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
+                    targetOffsetY = { it / 8 },
+                    animationSpec = tween(300)
+                ),
             ) {
-                Box(
-                    modifier = modifier.padding(40.dp.toAdaptivePadding())
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = 8.dp,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 150.dp.toAdaptivePadding())
                 ) {
-                    Column(
-                        modifier = modifier.padding(16.dp.toAdaptivePadding()),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Box(
+                        modifier = modifier.padding(40.dp.toAdaptivePadding())
                     ) {
-                        Spacer(modifier = modifier.height(48.dp.toAdaptivePadding()))
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.h4,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colors.onSurface
-                        )
-                        Spacer(modifier = modifier.height(16.dp.toAdaptivePadding()))
-                        Text(
-                            text = message,
-                            style = MaterialTheme.typography.h5,
-                            color = MaterialTheme.colors.onSurface
-                        )
-                        Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
-                        Button(
-                            onClick = {
-                                onExit()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = MaterialTheme.colors.primary
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = modifier
-                                .fillMaxWidth()
+                        Column(
+                            modifier = modifier.padding(16.dp.toAdaptivePadding()),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            Spacer(modifier = modifier.height(48.dp.toAdaptivePadding()))
                             Text(
-                                text = dismissButtonText,
+                                text = title,
+                                style = MaterialTheme.typography.h4,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colors.onSurface
+                            )
+                            Spacer(modifier = modifier.height(16.dp.toAdaptivePadding()))
+                            Text(
+                                text = message,
                                 style = MaterialTheme.typography.h5,
-                                color = MaterialTheme.colors.onPrimary,
+                                color = MaterialTheme.colors.onSurface
+                            )
+                            Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
+                            Button(
+                                onClick = {
+                                    onExit()
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = MaterialTheme.colors.primary
+                                ),
+                                shape = RoundedCornerShape(8.dp),
                                 modifier = modifier
-                                    .padding(20.dp.toAdaptivePadding())
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = dismissButtonText,
+                                    style = MaterialTheme.typography.h5,
+                                    color = MaterialTheme.colors.onPrimary,
+                                    modifier = modifier
+                                        .padding(20.dp.toAdaptivePadding())
+                                )
+                            }
+                        }
+
+                        IconButton(
+                            onClick = {
+                                animVisibleState.targetState = false
+                            },
+                            modifier = modifier
+                                .align(Alignment.TopEnd)
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(
+                                    id = R.string.woopos_exit_dialog_confirmation_close_content_description
+                                ),
+                                modifier = modifier
+                                    .padding(16.dp.toAdaptivePadding())
+                                    .size(40.dp),
+                                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                             )
                         }
-                    }
-
-                    IconButton(
-                        onClick = {
-                            animVisibleState.targetState = false
-                        },
-                        modifier = modifier
-                            .align(Alignment.TopEnd)
-                    ) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = stringResource(
-                                id = R.string.woopos_exit_dialog_confirmation_close_content_description
-                            ),
-                            modifier = modifier
-                                .padding(16.dp.toAdaptivePadding())
-                                .size(40.dp),
-                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                        )
                     }
                 }
             }
