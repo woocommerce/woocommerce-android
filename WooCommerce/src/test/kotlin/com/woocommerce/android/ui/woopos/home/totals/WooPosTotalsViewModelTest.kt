@@ -429,7 +429,36 @@ class WooPosTotalsViewModelTest {
 
     @Test
     fun `when order is created, then should track order creation success`() {
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                )
+            )
+        )
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(Result.success(order))
+        }
 
+        createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
     }
 
     @Test
@@ -456,7 +485,15 @@ class WooPosTotalsViewModelTest {
             totalsRepository = totalsRepository,
         )
 
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Error.OrderCreationError(WooPosTotalsViewModel::class, Exception::class.java.simpleName, errorMessage))
+        verify(
+            analyticsTracker
+        ).track(
+            WooPosAnalyticsEvent.Error.OrderCreationError(
+                WooPosTotalsViewModel::class,
+                Exception::class.java.simpleName,
+                errorMessage
+            )
+        )
     }
 
     private fun createViewModel(
