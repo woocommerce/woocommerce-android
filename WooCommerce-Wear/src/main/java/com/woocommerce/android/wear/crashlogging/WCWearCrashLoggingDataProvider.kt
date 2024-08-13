@@ -1,7 +1,6 @@
 package com.woocommerce.android.wear.crashlogging
 
 import android.content.Context
-import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.crashlogging.CrashLoggingDataProvider
 import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel
@@ -10,7 +9,6 @@ import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.wear.di.AppCoroutineScope
-import com.woocommerce.android.wear.settings.AppSettings
 import com.woocommerce.android.wear.settings.SettingsRepository
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import kotlinx.coroutines.CoroutineScope
