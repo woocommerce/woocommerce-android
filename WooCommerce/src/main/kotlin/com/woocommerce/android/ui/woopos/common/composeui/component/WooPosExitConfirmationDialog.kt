@@ -130,7 +130,7 @@ fun WooPosExitConfirmationDialog(
                                 style = MaterialTheme.typography.h5,
                                 color = MaterialTheme.colors.onPrimary,
                                 modifier = modifier
-                                    .padding(22.dp.toAdaptivePadding())
+                                    .padding(20.dp.toAdaptivePadding())
                             )
                         }
                     }
@@ -148,7 +148,7 @@ fun WooPosExitConfirmationDialog(
                                 id = R.string.woopos_exit_dialog_confirmation_close_content_description
                             ),
                             modifier = modifier
-                                .padding(16.dp)
+                                .padding(16.dp.toAdaptivePadding())
                                 .size(40.dp),
                             tint = MaterialTheme.colors.onSurface
                         )
