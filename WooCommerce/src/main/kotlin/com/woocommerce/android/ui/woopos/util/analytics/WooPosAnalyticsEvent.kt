@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.util.analytics
 import com.woocommerce.android.analytics.IAnalyticsEvent
 import kotlin.reflect.KClass
 
-sealed class WooPosAnalytics : IAnalyticsEvent {
+sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
     override val siteless: Boolean = false
     override val isPosEvent: Boolean = true
 
@@ -14,7 +14,7 @@ sealed class WooPosAnalytics : IAnalyticsEvent {
         _properties.putAll(additionalProperties)
     }
 
-    sealed class Error : WooPosAnalytics() {
+    sealed class Error : WooPosAnalyticsEvent() {
         abstract val errorContext: KClass<Any>
         abstract val errorType: String?
         abstract val errorDescription: String?
@@ -28,7 +28,7 @@ sealed class WooPosAnalytics : IAnalyticsEvent {
         }
     }
 
-    sealed class Event : WooPosAnalytics() {
+    sealed class Event : WooPosAnalyticsEvent() {
         data object Test : Event() {
             override val name: String = "WOO_POS_TEST_EVENT"
         }
@@ -37,7 +37,7 @@ sealed class WooPosAnalytics : IAnalyticsEvent {
 
 internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, String>) {
     when (this) {
-        is WooPosAnalytics -> addProperties(additionalProperties)
+        is WooPosAnalyticsEvent -> addProperties(additionalProperties)
         else -> error("Cannot add properties to non-WooPosAnalytics event")
     }
 }
