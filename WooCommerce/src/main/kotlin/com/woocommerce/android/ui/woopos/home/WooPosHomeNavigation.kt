@@ -27,6 +27,7 @@ fun NavGraphBuilder.homeScreen(
                     durationMillis = 800,
                     easing = { time ->
                         val accelerateDecelerate = AccelerateDecelerateInterpolator().getInterpolation(time)
+                        @Suppress("MagicNumber")
                         OvershootInterpolator(1.5f).getInterpolation(accelerateDecelerate)
                     }
                 )
