@@ -92,12 +92,7 @@ fun WooPosProductInfoDialog(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(
-                        start = 100.dp.toAdaptivePadding(),
-                        end = 100.dp.toAdaptivePadding(),
-                        top = 100.dp.toAdaptivePadding(),
-                        bottom = 100.dp.toAdaptivePadding()
-                    )
+                    .padding(100.dp.toAdaptivePadding())
             ) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -205,10 +200,7 @@ fun WooPosProductInfoDialog(
                                     ) {
                                         Text(
                                             modifier = Modifier
-                                                .padding(
-                                                    top = 22.dp.toAdaptivePadding(),
-                                                    bottom = 22.dp.toAdaptivePadding(),
-                                                ),
+                                                .padding(vertical = 20.dp.toAdaptivePadding()),
                                             fontWeight = FontWeight.Bold,
                                             style = MaterialTheme.typography.h5,
                                             text = stringResource(id = state.primaryButton.label)
