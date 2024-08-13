@@ -145,7 +145,7 @@ fun WooPosExitConfirmationDialog(
                         Icon(
                             Icons.Default.Close,
                             contentDescription = stringResource(
-                                id = R.string.woopos_exit_confirmation_close_content_description
+                                id = R.string.woopos_exit_dialog_confirmation_close_content_description
                             ),
                             modifier = modifier
                                 .padding(16.dp)
