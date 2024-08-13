@@ -77,7 +77,7 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
             }
 
     override val performanceMonitoringConfig: PerformanceMonitoringConfig
-        get() = TODO("Not yet implemented")
+        get() = PerformanceMonitoringConfig.Disabled
 
     override fun crashLoggingEnabled(): Boolean {
         TODO("Not yet implemented")
