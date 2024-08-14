@@ -197,39 +197,34 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
                 is SharePaymentUrlViaQr -> {
                     val action =
-                        SelectPaymentMethodFragmentDirections
-                            .actionSelectPaymentMethodFragmentToScanToPayDialogFragment(
-                                event.paymentUrl
-                            )
-                    findNavController().navigate(action)
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToScanToPayDialogFragment(
+                            event.paymentUrl
+                        )
+                    findNavController().navigateSafely(action)
                 }
-
                 is NavigateToCardReaderPaymentFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
                             event.cardReaderFlowParam,
                             event.cardReaderType
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
-
                 is NavigateToCardReaderHubFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
                             event.cardReaderFlowParam
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
-
                 is NavigateToCardReaderRefundFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderRefundFlow(
                             event.cardReaderFlowParam,
                             event.cardReaderType
                         )
-                    findNavController().navigate(action)
+                    findNavController().navigateSafely(action)
                 }
-
                 is NavigateBackToOrderList -> {
                     val action = if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
@@ -263,11 +258,10 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
                 is NavigateToChangeDueCalculatorScreen -> {
                     val action =
-                        SelectPaymentMethodFragmentDirections
-                            .actionSelectPaymentMethodFragmentToChangeDueCalculatorFragment(
-                                orderId = event.order.id
-                            )
-                    findNavController().navigate(action)
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToChangeDueCalculatorFragment(
+                            orderId = event.order.id
+                        )
+                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateToTapToPaySummary -> {
