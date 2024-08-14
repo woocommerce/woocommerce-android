@@ -322,13 +322,12 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 startDate.formatToMMMdd()
             )
 
-            else -> "$totalBudgetWithCurrency, ${
-                resourceProvider.getString(
+            else ->
+                "$totalBudgetWithCurrency, " + resourceProvider.getString(
                     R.string.blaze_campaign_preview_days_duration,
                     durationInDays,
                     startDate.formatToMMMdd()
                 )
-            }"
         }
     }
 
