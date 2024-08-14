@@ -9,6 +9,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.joinToUrl
 import kotlinx.coroutines.flow.catch
@@ -141,7 +142,8 @@ class BlazeRepository @Inject constructor(
             spentBudget = 0f,
             currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
             durationInDays = DEFAULT_CAMPAIGN_DURATION,
-            startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
+            startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow,
+            isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
         )
 
         val product = productDetailRepository.getProduct(productId)
@@ -397,6 +399,7 @@ class BlazeRepository @Inject constructor(
         val currencyCode: String,
         val durationInDays: Int,
         val startDate: Date,
+        val isEndlessCampaign: Boolean
     ) : Parcelable {
         val endDate: Date
             get() = Date(startDate.time + durationInDays.days.inWholeMilliseconds)

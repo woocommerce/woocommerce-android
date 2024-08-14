@@ -315,12 +315,22 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             totalBudget.toBigDecimal(),
             currencyCode
         )
-        val duration = resourceProvider.getString(
-            R.string.blaze_campaign_preview_days_duration,
-            durationInDays,
-            startDate.formatToMMMdd()
-        )
-        return "$totalBudgetWithCurrency, $duration"
+        return when {
+            isEndlessCampaign -> resourceProvider.getString(
+                R.string.blaze_campaign_preview_days_duration_endless,
+                totalBudgetWithCurrency,
+                startDate.formatToMMMdd()
+            )
+
+            else -> "$totalBudgetWithCurrency, ${
+                resourceProvider.getString(
+                    R.string.blaze_campaign_preview_days_duration,
+                    durationInDays,
+                    startDate.formatToMMMdd()
+                )
+            }"
+
+        }
     }
 
     data class CampaignPreviewUiState(

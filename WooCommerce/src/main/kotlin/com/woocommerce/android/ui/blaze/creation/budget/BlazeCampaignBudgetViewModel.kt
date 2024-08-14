@@ -99,6 +99,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                     durationInDays = budgetUiState.value.durationInDays,
                     startDate = Date(budgetUiState.value.confirmedCampaignStartDateMillis),
                     currencyCode = budgetUiState.value.currencyCode,
+                    isEndlessCampaign = budgetUiState.value.isEndlessCampaign
                 )
             )
         )
