@@ -16,6 +16,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -32,6 +34,7 @@ class WooPosCartViewModel @Inject constructor(
     private val getProductById: WooPosGetProductById,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
+    private val analyticsTracker: WooPosAnalyticsTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -127,6 +130,7 @@ class WooPosCartViewModel @Inject constructor(
                                 )
                             )
                         }
+                        analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart)
                     }
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
