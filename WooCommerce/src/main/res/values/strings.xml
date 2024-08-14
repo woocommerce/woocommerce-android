@@ -3875,6 +3875,7 @@
     <string name="blaze_campaign_status_scheduled">Scheduled</string>
     <string name="blaze_campaign_status_rejected">Rejected</string>
     <string name="blaze_campaign_status_canceled">Canceled</string>
+    <string name="blaze_campaign_status_suspended">Suspended</string>
     <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_clicks">Clicks</string>
     <string name="blaze_campaign_status_budget">Budget</string>
