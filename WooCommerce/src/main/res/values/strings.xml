@@ -4182,10 +4182,10 @@
     Woo POS
     -->
     <string name="woopos_exit_pos">Exit POS</string>
-    <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout">Checkout</string>
-    <string name="woopos_reader_unknown">Reader Status Unknown</string>
+    <string name="woopos_reader_unknown">Reader status unknown</string>
     <string name="woopos_checkout_button">Check out</string>
     <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
     <string name="woopos_cart_title">Cart</string>
@@ -4217,9 +4217,9 @@
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
-    <string name="woopos_payment_tax_label">Tax</string>
+    <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
-    <string name="woopos_payment_collect_payment_label">Collect Card Payment</string>
+    <string name="woopos_payment_collect_payment_label">Collect card payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
