@@ -329,7 +329,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     startDate.formatToMMMdd()
                 )
             }"
-
         }
     }
 
