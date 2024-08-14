@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -64,6 +63,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductListReached
@@ -205,6 +205,7 @@ private fun ProductsToolbar(
                     }
                 }
             }
+
             else -> {
                 // no op
             }
@@ -244,7 +245,7 @@ private fun ProductsList(
     onEndOfProductsListReached: () -> Unit,
 ) {
     val listState = rememberLazyListState()
-    LazyColumn(
+    WooPosLazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(2.dp),
         state = listState,
@@ -269,14 +270,14 @@ private fun ProductsList(
             Spacer(modifier = Modifier.height(104.dp))
         }
     }
-    InfiniteListHandler(listState) {
+    InfiniteListHandler(listState, state) {
         onEndOfProductsListReached()
     }
 }
 
 @Composable
 fun ProductsLoadingIndicator() {
-    LazyColumn(
+    WooPosLazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(2.dp),
     ) {
@@ -447,6 +448,7 @@ fun ProductsError(onRetryClicked: () -> Unit) {
 @Composable
 private fun InfiniteListHandler(
     listState: LazyListState,
+    state: WooPosProductsViewState.Content,
     onEndOfProductsListReached: () -> Unit
 ) {
     val buffer = 5
@@ -460,7 +462,7 @@ private fun InfiniteListHandler(
         }
     }
 
-    LaunchedEffect(loadMore) {
+    LaunchedEffect(state.reloadingProductsWithPullToRefresh) {
         snapshotFlow { loadMore.value }
             .distinctUntilChanged()
             .filter { it }
@@ -527,7 +529,12 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
 @Composable
 @WooPosPreview
 fun WooPosProductsScreenLoadingPreview() {
-    val productState = MutableStateFlow(WooPosProductsViewState.Loading(true))
+    val productState = MutableStateFlow(
+        WooPosProductsViewState.Loading(
+            reloadingProductsWithPullToRefresh = true,
+            withCart = false
+        )
+    )
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,

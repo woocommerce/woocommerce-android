@@ -3,6 +3,7 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -57,6 +57,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 
@@ -81,6 +82,7 @@ private fun WooPosCartScreen(
                 top = 40.dp.toAdaptivePadding(),
                 bottom = 16.dp.toAdaptivePadding()
             )
+            .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
         Column {
@@ -115,6 +117,20 @@ private fun WooPosCartScreen(
             )
         }
     }
+    val cartOverlayIntensityAnimated by animateFloatAsState(
+        when (state.body) {
+            WooPosCartState.Body.Empty -> .6f
+            is WooPosCartState.Body.WithItems -> 0f
+        },
+        label = "cartOverlayAnimated"
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
+            )
+    )
 }
 
 @Composable
@@ -151,9 +167,8 @@ private fun CartBodyWithItems(
     val listState = rememberLazyListState()
     ScrollToBottomHandler(items, listState)
 
-    LazyColumn(
+    WooPosLazyColumn(
         modifier = Modifier
-            .fillMaxSize()
             .padding(horizontal = 16.dp.toAdaptivePadding()),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),

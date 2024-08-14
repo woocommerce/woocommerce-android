@@ -1,9 +1,21 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+20.0
+-----
+- [*] Disable QR code scanning from login flow [https://github.com/woocommerce/woocommerce-android/pull/12303]
+- [*] Fixed the hidden “Write with AI” issue that occurs when the keyboard is open. [https://github.com/woocommerce/woocommerce-android/pull/12311]
+
 19.9
 -----
-- [*] [Internal] Update Android material from 1.9.0 to 1.10.0 [https://github.com/woocommerce/woocommerce-android/pull/12186]
+- [*] Added subtotal and taxes fields to each refund item on the refund screen. [https://github.com/woocommerce/woocommerce-android/pull/12235]
+- [*****] [Internal] Update Android material from 1.9.0 to 1.10.0 [https://github.com/woocommerce/woocommerce-android/pull/12186]
+- [*****] [Internal] Update Android-core from 1.12.0 to 1.13.1 [https://github.com/woocommerce/woocommerce-android/pull/12229]
+- [*****] [Internal] Update Android-lifecycle from 2.6.2 to 2.7.0 [https://github.com/woocommerce/woocommerce-android/pull/12230]
+- [*****] [Internal] Update Androidx-fragment from 1.6.2 to 1.8.2 [https://github.com/woocommerce/woocommerce-android/pull/12231]
+- [*****] [Internal] Update Material to 1.12.0 and Transition to 1.5.1 [https://github.com/woocommerce/woocommerce-android/pull/12237]
+- [*****] [Internal] Update Stripe Terminal SDK from 3.1.1 to 3.7.1 [https://github.com/woocommerce/woocommerce-android/pull/12239]
+- [***] Fix logic behind handling enabled/disabled states of "+ Add coupon" and "+ Add discount" buttons in the Order creation/edition flow [https://github.com/woocommerce/woocommerce-android/pull/12263].
 
 19.8
 -----
