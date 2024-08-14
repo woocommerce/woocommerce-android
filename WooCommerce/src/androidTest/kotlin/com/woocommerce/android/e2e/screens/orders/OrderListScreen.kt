@@ -83,6 +83,17 @@ class OrderListScreen : Screen(R.id.ordersList) {
     }
 
     fun assertOrderCard(order: OrderData): OrderListScreen {
+        // Wait for the order card to appear first. This is sometimes
+        // flaky on Firebase because of low emulator performance.
+        waitForElementToBeDisplayed(
+            Espresso.onView(
+                    Matchers.allOf(
+                        ViewMatchers.withId(R.id.orderNum),
+                        ViewMatchers.withText("#${order.id}")
+                    )
+            )
+        )
+
         // Using quite a complex matcher to make sure that all expected
         // order details belong to the same order card.
         Espresso.onView(
