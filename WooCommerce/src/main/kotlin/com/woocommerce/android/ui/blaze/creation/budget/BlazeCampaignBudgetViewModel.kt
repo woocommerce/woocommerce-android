@@ -17,7 +17,6 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIM
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -67,11 +66,11 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             campaignDurationDisplayText = getCampaignDurationDisplayDate(
                 startDateMillis = navArgs.budget.startDate.time,
                 duration = navArgs.budget.durationInDays,
-                isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
+                isEndlessCampaign = navArgs.budget.isEndlessCampaign
             ),
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false,
-            isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled(),
+            isEndlessCampaign = navArgs.budget.isEndlessCampaign,
         )
     )
 
