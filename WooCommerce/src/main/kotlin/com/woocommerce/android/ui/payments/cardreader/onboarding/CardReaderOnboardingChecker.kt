@@ -48,6 +48,7 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResul
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_TERMS_OF_SERVICE
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.RESTRICTED_SOON
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.PENDING_VERIFICATION
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType
@@ -226,6 +227,14 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
+        if (paymentAccount.status == PENDING_VERIFICATION) {
+            return OnboardingCompleted(
+                preferredPlugin.type,
+                preferredPlugin.info?.version,
+                requireNotNull(countryCode)
+            )
+        }
+
         if (
             !isCashOnDeliveryDisabledStateSkipped() &&
             !cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
@@ -384,6 +393,7 @@ class CardReaderOnboardingChecker @Inject constructor(
 
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status != COMPLETE && paymentAccount.status != ENABLED
+            && paymentAccount.status != PENDING_VERIFICATION
 
     private fun updateSharedPreferences(
         status: CardReaderOnboardingStatus,
