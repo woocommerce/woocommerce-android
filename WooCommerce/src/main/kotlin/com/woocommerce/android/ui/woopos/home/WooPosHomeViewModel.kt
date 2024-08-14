@@ -20,7 +20,7 @@ class WooPosHomeViewModel @Inject constructor(
         scope = viewModelScope,
         key = "home_state",
         initialValue = WooPosHomeState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Hidden,
+            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
             productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden,
             exitConfirmationDialog = null
         )
