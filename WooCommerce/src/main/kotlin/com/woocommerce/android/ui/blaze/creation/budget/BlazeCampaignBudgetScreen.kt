@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.budget
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -206,10 +207,10 @@ private fun EditBudgetSection(
             )
         }
         Text(
-            modifier = Modifier.padding(top = 40.dp),
+            modifier = Modifier.padding(top = 24.dp),
             text = stringResource(id = R.string.blaze_campaign_budget_daily_spend, state.dailySpending),
             color = colorResource(id = color.color_on_surface_medium),
-            style = MaterialTheme.typography.subtitle1,
+            style = MaterialTheme.typography.h6,
         )
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
@@ -365,6 +366,31 @@ private fun EditDurationBottomSheet(
             style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.SemiBold,
         )
+        AnimatedVisibility(isEndlessCampaign.not()) {
+            Column {
+                Text(
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                        .fillMaxWidth(),
+                    text = stringResource(
+                        id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
+                        sliderPosition.toInt()
+                    ),
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center
+                )
+                Slider(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = sliderPosition,
+                    valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
+                    onValueChange = { sliderPosition = it },
+                    colors = SliderDefaults.colors(
+                        inactiveTrackColor = colorResource(id = color.divider_color)
+                    )
+                )
+            }
+        }
         Row(
             modifier = Modifier.padding(top = 40.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -383,31 +409,8 @@ private fun EditDurationBottomSheet(
                 )
             )
         }
-        if (isEndlessCampaign.not()) {
-            Text(
-                modifier = Modifier
-                    .padding(top = 40.dp)
-                    .fillMaxWidth(),
-                text = stringResource(
-                    id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
-                    sliderPosition.toInt()
-                ),
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center
-            )
-            Slider(
-                modifier = Modifier.fillMaxWidth(),
-                value = sliderPosition,
-                valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
-                onValueChange = { sliderPosition = it },
-                colors = SliderDefaults.colors(
-                    inactiveTrackColor = colorResource(id = color.divider_color)
-                )
-            )
-        }
         Row(
-            modifier = Modifier.padding(top = 40.dp),
+            modifier = Modifier.padding(top = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
