@@ -87,8 +87,8 @@ fun WooPosErrorScreen(
                     text = it.text,
                     onClick = it.click,
                     modifier = Modifier
-                        .fillMaxWidth(0.7f)
-                        .height(56.dp)
+                        .fillMaxWidth()
+                        .height(80.dp)
                 )
                 Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
             }
@@ -98,8 +98,8 @@ fun WooPosErrorScreen(
                     text = it.text,
                     onClick = it.click,
                     modifier = Modifier
-                        .fillMaxWidth(0.7f)
-                        .height(56.dp)
+                        .fillMaxWidth()
+                        .height(80.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
             }
