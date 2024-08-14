@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIM
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -66,11 +66,11 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             campaignDurationDisplayText = getCampaignDurationDisplayDate(
                 startDateMillis = navArgs.budget.startDate.time,
                 duration = navArgs.budget.durationInDays,
-                isEndlessCampaign = true
+                isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
             ),
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false,
-            isEndlessCampaign = true,
+            isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled(),
         )
     )
 
@@ -152,7 +152,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 campaignDurationDisplayText = getCampaignDurationDisplayDate(
                     it.bottomSheetCampaignStartDateMillis,
                     duration,
-                    ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
+                    isEndlessCampaign
                 ),
                 isEndlessCampaign = isEndlessCampaign
             )
@@ -168,14 +168,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     fun onStartDateChanged(newStartDateMillis: Long) {
         budgetUiState.update {
-            it.copy(
-                bottomSheetCampaignStartDateMillis = newStartDateMillis,
-                campaignDurationDisplayText = getCampaignDurationDisplayDate(
-                    newStartDateMillis,
-                    it.durationInDays,
-                    ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
-                )
-            )
+            it.copy(bottomSheetCampaignStartDateMillis = newStartDateMillis)
         }
     }
 

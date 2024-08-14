@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
@@ -391,23 +392,25 @@ private fun EditDurationBottomSheet(
                 )
             }
         }
-        Row(
-            modifier = Modifier.padding(top = 40.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_label),
-                style = MaterialTheme.typography.body1,
-            )
-            Switch(
-                checked = isEndlessCampaign,
-                onCheckedChange = { isEndlessCampaign = it },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = colorResource(id = color.color_primary),
-                    checkedTrackColor = colorResource(id = color.color_primary)
+        if (FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()) {
+            Row(
+                modifier = Modifier.padding(top = 40.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_label),
+                    style = MaterialTheme.typography.body1,
                 )
-            )
+                Switch(
+                    checked = isEndlessCampaign,
+                    onCheckedChange = { isEndlessCampaign = it },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = colorResource(id = color.color_primary),
+                        checkedTrackColor = colorResource(id = color.color_primary)
+                    )
+                )
+            }
         }
         Row(
             modifier = Modifier.padding(top = 16.dp),
