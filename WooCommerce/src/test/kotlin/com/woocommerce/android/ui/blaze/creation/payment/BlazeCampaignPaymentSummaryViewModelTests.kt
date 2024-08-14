@@ -87,7 +87,7 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
 
         val state = viewModel.viewState.getOrAwaitValue()
 
-        assertThat(state.budgetFormatted).isEqualTo(
+        assertThat(state.displayBudget).isEqualTo(
             currencyFormatter.formatCurrency(
                 amount = campaignDetails.budget.totalBudget.toBigDecimal(),
                 currencyCode = campaignDetails.budget.currencyCode

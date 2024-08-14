@@ -3956,6 +3956,7 @@
     <string name="blaze_campaign_budget_duration_endless_label">Run until I stop it</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
     <string name="blaze_campaign_budget_error_fetching_forecast">Failed to estimate impressions. Retry?</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s weekly</string>
 
     <!--
     Blaze campaign edit-ad screen
