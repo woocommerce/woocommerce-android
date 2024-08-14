@@ -205,6 +205,7 @@ private fun ProductsToolbar(
                     }
                 }
             }
+
             else -> {
                 // no op
             }
@@ -269,7 +270,7 @@ private fun ProductsList(
             Spacer(modifier = Modifier.height(104.dp))
         }
     }
-    InfiniteListHandler(listState) {
+    InfiniteListHandler(listState, state) {
         onEndOfProductsListReached()
     }
 }
@@ -447,6 +448,7 @@ fun ProductsError(onRetryClicked: () -> Unit) {
 @Composable
 private fun InfiniteListHandler(
     listState: LazyListState,
+    state: WooPosProductsViewState.Content,
     onEndOfProductsListReached: () -> Unit
 ) {
     val buffer = 5
@@ -460,7 +462,7 @@ private fun InfiniteListHandler(
         }
     }
 
-    LaunchedEffect(loadMore) {
+    LaunchedEffect(state.reloadingProductsWithPullToRefresh) {
         snapshotFlow { loadMore.value }
             .distinctUntilChanged()
             .filter { it }
