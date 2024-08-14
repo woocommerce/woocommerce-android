@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.ceil
 import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
@@ -131,9 +132,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     fun onBudgetUpdated(sliderValue: Float) {
+        val budgetRounded = ceil(sliderValue)
         budgetUiState.update {
             it.copy(
-                totalBudget = sliderValue,
+                totalBudget = budgetRounded,
                 dailySpending = formatDailySpend(sliderValue / it.durationInDays)
             )
         }
