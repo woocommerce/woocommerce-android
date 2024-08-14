@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SAVE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -16,9 +17,10 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIM
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -35,10 +37,12 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val currencyFormatter: CurrencyFormatter,
     private val repository: BlazeRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_DATE_LIMIT_IN_DAYS = 60
+        const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
     }
 
     private val navArgs: BlazeCampaignBudgetFragmentArgs by savedStateHandle.navArgs()
@@ -59,13 +63,14 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             durationRangeMax = CAMPAIGN_MAX_DURATION.toFloat(),
             confirmedCampaignStartDateMillis = navArgs.budget.startDate.time,
             bottomSheetCampaignStartDateMillis = navArgs.budget.startDate.time,
-            campaignDurationDates = getCampaignDurationDisplayDate(
-                navArgs.budget.startDate.time,
-                navArgs.budget.durationInDays
+            campaignDurationDisplayText = getCampaignDurationDisplayDate(
+                startDateMillis = navArgs.budget.startDate.time,
+                duration = navArgs.budget.durationInDays,
+                isEndlessCampaign = true
             ),
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false,
-            isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled(),
+            isEndlessCampaign = true,
         )
     )
 
@@ -134,20 +139,22 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     }
 
     fun onApplyDurationTapped(newDuration: Int, isEndlessCampaign: Boolean) {
-        val currentDailySpend = calculateDailySpending(newDuration)
+        val duration = if (isEndlessCampaign) WEEKLY_DURATION else newDuration
+        val currentDailySpend = calculateDailySpending(duration)
         budgetUiState.update {
             it.copy(
-                durationInDays = newDuration,
-                budgetRangeMin = newDuration * CAMPAIGN_MINIMUM_DAILY_SPEND,
-                budgetRangeMax = newDuration * CAMPAIGN_MAXIMUM_DAILY_SPEND,
+                durationInDays = duration,
+                budgetRangeMin = duration * CAMPAIGN_MINIMUM_DAILY_SPEND,
+                budgetRangeMax = duration * CAMPAIGN_MAXIMUM_DAILY_SPEND,
                 dailySpending = formatDailySpend(currentDailySpend),
-                totalBudget = newDuration * currentDailySpend,
+                totalBudget = duration * currentDailySpend,
                 confirmedCampaignStartDateMillis = it.bottomSheetCampaignStartDateMillis,
-                campaignDurationDates = getCampaignDurationDisplayDate(
+                campaignDurationDisplayText = getCampaignDurationDisplayDate(
                     it.bottomSheetCampaignStartDateMillis,
-                    newDuration
+                    duration,
+                    ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
                 ),
-                isEndlessCampaign = isEndlessCampaign && FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
+                isEndlessCampaign = isEndlessCampaign
             )
         }
         fetchAdForecast()
@@ -163,9 +170,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         budgetUiState.update {
             it.copy(
                 bottomSheetCampaignStartDateMillis = newStartDateMillis,
-                campaignDurationDates = getCampaignDurationDisplayDate(
+                campaignDurationDisplayText = getCampaignDurationDisplayDate(
                     newStartDateMillis,
-                    it.durationInDays
+                    it.durationInDays,
+                    ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
                 )
             )
         }
@@ -209,9 +217,20 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         }
     }
 
-    private fun getCampaignDurationDisplayDate(startDateMillis: Long, duration: Int): String {
-        val endDate = Date(startDateMillis + duration.days.inWholeMilliseconds)
-        return "${Date(startDateMillis).formatToMMMdd()} - ${endDate.formatToMMMddYYYY()}"
+    private fun getCampaignDurationDisplayDate(
+        startDateMillis: Long,
+        duration: Int,
+        isEndlessCampaign: Boolean
+    ): String {
+        return if (isEndlessCampaign) {
+            resourceProvider.getString(
+                R.string.blaze_campaign_budget_duration_section_endless_campaign_value,
+                Date(startDateMillis).formatToMMMdd()
+            )
+        } else {
+            val endDate = Date(startDateMillis + duration.days.inWholeMilliseconds)
+            "${Date(startDateMillis).formatToMMMdd()} - ${endDate.formatToMMMddYYYY()}"
+        }
     }
 
     private fun formatDailySpend(dailySpend: Float) =
@@ -239,7 +258,7 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val showCampaignDurationBottomSheet: Boolean,
         val confirmedCampaignStartDateMillis: Long,
         val bottomSheetCampaignStartDateMillis: Long,
-        val campaignDurationDates: String,
+        val campaignDurationDisplayText: String,
         val isEndlessCampaign: Boolean,
     ) : Parcelable
 

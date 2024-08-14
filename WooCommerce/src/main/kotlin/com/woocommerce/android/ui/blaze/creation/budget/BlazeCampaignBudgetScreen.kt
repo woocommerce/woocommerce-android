@@ -146,7 +146,7 @@ private fun CampaignBudgetScreen(
                     modifier = Modifier.weight(1f)
                 )
                 EditDurationSection(
-                    campaignDurationDates = state.campaignDurationDates,
+                    campaignDurationText = state.campaignDurationDisplayText,
                     onEditDurationTapped = {
                         onEditDurationTapped()
                         coroutineScope.launch { modalSheetState.show() }
@@ -259,7 +259,7 @@ private fun EditBudgetSection(
 
 @Composable
 private fun EditDurationSection(
-    campaignDurationDates: String,
+    campaignDurationText: String,
     onEditDurationTapped: () -> Unit,
     onUpdateTapped: () -> Unit,
 ) {
@@ -282,7 +282,7 @@ private fun EditDurationSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = campaignDurationDates,
+                    text = campaignDurationText,
                     style = MaterialTheme.typography.subtitle2,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -461,7 +461,7 @@ private fun CampaignBudgetScreenPreview() {
             ),
             confirmedCampaignStartDateMillis = Date().time,
             bottomSheetCampaignStartDateMillis = Date().time,
-            campaignDurationDates = "Dec 13 - Dec 20, 2023",
+            campaignDurationDisplayText = "Dec 13 - Dec 20, 2023",
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false,
             isEndlessCampaign = true

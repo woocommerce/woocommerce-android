@@ -3941,6 +3941,7 @@
     <string name="blaze_campaign_budget_daily_spend">%1$s daily</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimated people reached per day</string>
     <string name="blaze_campaign_budget_duration_section_title">Duration</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Starting from %1$s</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
     <string name="blaze_campaign_budget_impressions_title">Impressions</string>
