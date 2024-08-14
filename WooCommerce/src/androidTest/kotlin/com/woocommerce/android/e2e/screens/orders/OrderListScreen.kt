@@ -87,10 +87,10 @@ class OrderListScreen : Screen(R.id.ordersList) {
         // flaky on Firebase because of low emulator performance.
         waitForElementToBeDisplayed(
             Espresso.onView(
-                    Matchers.allOf(
-                        ViewMatchers.withId(R.id.orderNum),
-                        ViewMatchers.withText("#${order.id}")
-                    )
+                Matchers.allOf(
+                    ViewMatchers.withId(R.id.orderNum),
+                    ViewMatchers.withText("#${order.id}")
+                )
             )
         )
 
