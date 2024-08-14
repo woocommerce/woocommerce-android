@@ -33,9 +33,13 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
     }
 
+    Loading()
+
     when (state.value) {
-        is WooPosSplashState.Loading -> Loading()
-        is WooPosSplashState.Loaded -> onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
+        is WooPosSplashState.Loading -> {}
+        is WooPosSplashState.Loaded -> {
+            onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
+        }
     }
 }
 

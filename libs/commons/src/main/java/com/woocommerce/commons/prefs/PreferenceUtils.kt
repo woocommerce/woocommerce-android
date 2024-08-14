@@ -1,4 +1,4 @@
-package com.woocommerce.android.util
+package com.woocommerce.commons.prefs
 
 import android.content.SharedPreferences
 

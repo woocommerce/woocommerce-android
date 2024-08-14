@@ -3,7 +3,8 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 20.0
 -----
-
+- [*] Disable QR code scanning from login flow [https://github.com/woocommerce/woocommerce-android/pull/12303]
+- [*] Fixed the hidden “Write with AI” issue that occurs when the keyboard is open. [https://github.com/woocommerce/woocommerce-android/pull/12311]
 
 19.9
 -----
