@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-30 09:54:04+0000
+Translation-Revision-Date: 2024-08-07 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="woopos_success_screen_total">Dana senilai %1$s berhasil dibayarkan</string>
+    <string name="woopos_new_order_button">Pesanan baru</string>
+    <string name="woopos_dialog_products_info_button_label">Oke</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Buat pesanan di manajemen toko</string>
+    <string name="woopos_dialog_products_info_secondary_message">Untuk memproses pembayaran atas produk non-sederhana, keluar dari POS, kemudian buat pesanan baru dari tab pesanan.</string>
+    <string name="woopos_dialog_products_info_heading">Mengapa produk saya tidak muncul?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Info</string>
+    <string name="woopos_banner_simple_products_close_content_description">Tutup</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Baca selengkapnya</string>
+    <string name="woopos_banner_simple_products_only_title">Menunjukkan produk sederhana saja</string>
+    <string name="woopos_dialog_products_info_primary_message">Saat ini, hanya produk fisik sederhana yang dapat menggunakan POS.\nJenis produk lain, seperti variabel dan virtual, akan tersedia dalam pembaruan mendatang.</string>
+    <string name="woopos_banner_simple_products_only_message">Saat ini, hanya produk fisik sederhana yang kompatibel dengan POS. Jenis produk lain, seperti variabel dan virtual, akan tersedia dalam pembaruan mendatang. </string>
+    <string name="support_request_site_address">Alamat Situs</string>
+    <string name="analytics_google_ads_cta_action">Tambahkan kampanye berbayar</string>
+    <string name="analytics_google_ads_cta_description">Tingkatkan penjualan dan tarik lebih banyak pengunjung dengan Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Kampanye Google</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
     <string name="google_ads_campaign_created_success_done_button">Selesai</string>
     <string name="google_ads_campaign_created_success_description">Kampanye baru sudah dibuat. Bersiaplah, penjualan Anda akan meroket!</string>
     <string name="google_ads_campaign_created_success_title">Semua Siap!</string>
@@ -103,7 +120,6 @@ Language: id
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_tax_label">Pajak</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
-    <string name="woopos_new_transaction_button">Transaksi baru</string>
     <string name="woopos_payment_successful_label">Pembayaran berhasil</string>
     <string name="woopos_payment_failed_please_try_again">Pembayaran gagal. Coba lagi.</string>
     <string name="woopos_cart_back_content_description">Ikon keranjang</string>

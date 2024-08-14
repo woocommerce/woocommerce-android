@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 09:54:04+0000
+Translation-Revision-Date: 2024-08-07 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="woopos_success_screen_total">%1$sの支払いが正常に行われました</string>
+    <string name="woopos_new_order_button">新しい注文</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ ストア管理で注文を作成</string>
+    <string name="woopos_dialog_products_info_secondary_message">シンプルな商品以外の支払いを受け取るには、POS を終了して注文タブから新しい注文を作成します。</string>
+    <string name="woopos_dialog_products_info_primary_message">現在、POS で使用できるのはシンプルな物理的商品のみです。\nバリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。</string>
+    <string name="woopos_dialog_products_info_heading">商品が表示されないのはなぜですか ?</string>
+    <string name="woopos_banner_simple_products_info_content_description">情報</string>
+    <string name="woopos_banner_simple_products_close_content_description">閉じる</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">さらに詳しく</string>
+    <string name="woopos_banner_simple_products_only_message">現在、POS で対応できるのはシンプルな物理的商品のみです。 バリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。 </string>
+    <string name="woopos_banner_simple_products_only_title">シンプルな商品のみ表示中</string>
+    <string name="support_request_site_address">サイトのアドレス</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">有料キャンペーンを追加</string>
+    <string name="analytics_google_ads_cta_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう。</string>
+    <string name="analytics_google_ads_cta_title">Google キャンペーン</string>
     <string name="google_ads_campaign_created_success_done_button">完了</string>
     <string name="google_ads_campaign_created_success_description">新しいキャンペーンが作成されました。 販売の楽しい時期がやってきます !</string>
     <string name="google_ads_campaign_created_success_title">準備完了 !</string>
@@ -103,7 +120,6 @@ Language: ja_JP
     <string name="woopos_payment_total_label">合計</string>
     <string name="woopos_payment_tax_label">税</string>
     <string name="woopos_payment_subtotal_label">小計</string>
-    <string name="woopos_new_transaction_button">新規トランザクション</string>
     <string name="woopos_payment_successful_label">支払いに成功しました</string>
     <string name="woopos_payment_failed_please_try_again">支払いに失敗しました。 もう一度お試しください。</string>
     <string name="woopos_cart_back_content_description">お買い物カゴアイコン</string>

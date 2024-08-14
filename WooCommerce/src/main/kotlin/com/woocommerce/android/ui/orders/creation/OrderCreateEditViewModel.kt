@@ -467,7 +467,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             isEditable = order.isEditable
                         )
                         monitorOrderChanges()
-                        updateCouponButtonVisibility(order)
+                        updateCouponAndDiscountButtonsState(order)
                         updateAddShippingButtonVisibility(order)
                         updateAddGiftCardButtonVisibility(order)
                         handleCouponEditResult()
@@ -844,9 +844,16 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun updateCouponButtonVisibility(order: Order) {
-        viewState = viewState.copy(isCouponButtonEnabled = order.hasProducts() && order.isEditable)
+    private fun updateCouponAndDiscountButtonsState(order: Order) {
+        viewState = viewState.copy(
+            isCouponButtonEnabled = order.hasProducts() && order.isEditable && order.doesNotContainManualDiscounts(),
+            areDiscountButtonsEnabled = order.hasProducts() && order.isEditable && !order.containsCoupons()
+        )
     }
+
+    private fun Order.containsDiscounts(): Boolean = items.any { it.discount > BigDecimal.ZERO }
+    private fun Order.containsCoupons(): Boolean = couponLines.isNotEmpty()
+    private fun Order.doesNotContainManualDiscounts() = (!containsDiscounts() || containsCoupons())
 
     private fun updateAddShippingButtonVisibility(order: Order) {
         viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
@@ -1508,7 +1515,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                     updateStatus.order
                                 }
                             }.also {
-                                updateCouponButtonVisibility(it)
+                                updateCouponAndDiscountButtonsState(it)
                                 updateAddShippingButtonVisibility(it)
                                 updateAddGiftCardButtonVisibility(it)
                             }
@@ -2040,6 +2047,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
+        val areDiscountButtonsEnabled: Boolean = false,
         val isAddShippingButtonEnabled: Boolean = false,
         val isAddGiftCardButtonEnabled: Boolean = false,
         val shouldDisplayAddGiftCardButton: Boolean = false,

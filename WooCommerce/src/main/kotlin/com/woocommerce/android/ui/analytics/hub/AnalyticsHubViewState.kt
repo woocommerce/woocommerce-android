@@ -7,7 +7,6 @@ data class AnalyticsViewState(
     val refreshIndicator: RefreshIndicator,
     val analyticsDateRangeSelectorState: AnalyticsHubDateRangeSelectorViewState,
     val cards: AnalyticsHubCardViewState,
-    val ctaState: AnalyticsHubUserCallToActionViewState,
     val showFeedBackBanner: Boolean,
     val lastUpdateTimestamp: String
 )
