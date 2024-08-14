@@ -197,7 +197,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
                 is SharePaymentUrlViaQr -> {
                     val action =
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToScanToPayDialogFragment(
+                        SelectPaymentMethodFragmentDirections.
+                        actionSelectPaymentMethodFragmentToScanToPayDialogFragment(
                             event.paymentUrl
                         )
                     findNavController().navigateSafely(action)
@@ -205,7 +206,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
                 is NavigateToCardReaderPaymentFlow -> {
                     val action =
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
+                        SelectPaymentMethodFragmentDirections.
+                        actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
                             event.cardReaderFlowParam,
                             event.cardReaderType
                         )
@@ -214,7 +216,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
                 is NavigateToCardReaderHubFlow -> {
                     val action =
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
+                        SelectPaymentMethodFragmentDirections.
+                        actionSelectPaymentMethodFragmentToCardReaderHubFlow(
                             event.cardReaderFlowParam
                         )
                     findNavController().navigateSafely(action)
