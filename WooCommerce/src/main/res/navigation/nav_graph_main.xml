@@ -18,6 +18,9 @@
     <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
     <include app:graph="@navigation/nav_graph_order_creations" />
 
+    <action
+        android:id="@+id/action_global_blazeCampaignListFragment"
+        app:destination="@id/blazeCampaignListFragment" />
     <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.dashboard.DashboardFragment"
