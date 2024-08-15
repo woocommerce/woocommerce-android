@@ -6,6 +6,7 @@
 - [*] Fixed missing pictures in card reader tutorial on tablets [https://github.com/woocommerce/woocommerce-android/pull/12274]
 - [*] Disable QR code scanning from login flow [https://github.com/woocommerce/woocommerce-android/pull/12303]
 - [*] Fixed the hidden “Write with AI” issue that occurs when the keyboard is open. [https://github.com/woocommerce/woocommerce-android/pull/12311]
+- [*] Allowed collecting card-present payments for orders with `failed` status [https://github.com/woocommerce/woocommerce-android/pull/12349]
 
 19.9
 -----
