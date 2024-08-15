@@ -78,7 +78,247 @@ class StatsUITest : TestBase() {
 
     @Retry(numberOfTimes = 2)
     @Test
-    fun e2eStatsSummary() {
+    fun e2eStatsSummary00() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary01() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary02() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary03() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary04() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary05() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary06() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary07() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary08() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary09() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary10() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary11() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary12() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary13() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary14() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary15() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary16() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary17() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary18() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary18() {
+        DashboardScreen()
+            .stats.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertStatsSummary(todayStats)
+            .stats.switchToStatsDashboardWeekTab(composeTestRule)
+            .assertStatsSummary(weekStats)
+            .stats.switchToStatsDashboardYearTab(composeTestRule)
+            .assertStatsSummary(yearStats)
+    }
+
+    @Retry(numberOfTimes = 2)
+    @Test
+    fun e2eStatsSummary19() {
         DashboardScreen()
             .stats.switchToStatsDashboardTodayTab(composeTestRule)
             .assertStatsSummary(todayStats)
