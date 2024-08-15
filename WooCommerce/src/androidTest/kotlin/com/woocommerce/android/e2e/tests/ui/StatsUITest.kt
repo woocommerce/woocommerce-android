@@ -9,6 +9,7 @@ import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.util.MocksReader
 import com.woocommerce.android.e2e.helpers.util.StatsSummaryData
+import com.woocommerce.android.e2e.rules.Retry
 import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
@@ -76,8 +77,8 @@ class StatsUITest : TestBase() {
     )
 
     @Ignore(
-        """    
-        This became flaky after the last dashboard changes. 
+        """
+        This became flaky after the last dashboard changes.
         https://github.com/woocommerce/woocommerce-android/issues/12111
         """
     )
@@ -93,8 +94,8 @@ class StatsUITest : TestBase() {
     }
 
     @Ignore(
-        """    
-        This became flaky after the last dashboard changes. 
+        """
+        This became flaky after the last dashboard changes.
         https://github.com/woocommerce/woocommerce-android/issues/12111
         """
     )
@@ -107,7 +108,7 @@ class StatsUITest : TestBase() {
             .assertTopPerformers(topPerformersJSONArray, composeTestRule)
     }
 
-    @Ignore("This became flaky after combining Compose and View on the dashboard")
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eStatsTapChart() {
         DashboardScreen()
