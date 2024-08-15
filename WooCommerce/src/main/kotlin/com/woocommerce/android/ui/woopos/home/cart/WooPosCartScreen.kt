@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -358,17 +359,13 @@ private fun ProductItem(
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.semantics(mergeDescendants = false) {
-                        contentDescription = ""
-                    }
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
                 Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
                 Text(
                     text = item.price,
                     style = MaterialTheme.typography.body1,
-                    modifier = Modifier.semantics(mergeDescendants = false) {
-                        contentDescription = ""
-                    }
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             }
 
@@ -388,7 +385,6 @@ private fun ProductItem(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
                         tint = MaterialTheme.colors.onBackground,
-                        // Avoid redundant content description as it's already set on the IconButton
                         contentDescription = null,
                     )
                 }
