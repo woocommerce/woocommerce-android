@@ -8,7 +8,6 @@ import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_SITE_ID
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
@@ -32,12 +31,13 @@ class PreconditionCheckWorker @AssistedInject constructor(
         val type = LocalNotificationType.fromString(inputData.getString(LOCAL_NOTIFICATION_TYPE))
         val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
         return when (type) {
+            LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER -> proceedIfValidSite(siteId)
 
             null -> cancelWork("Notification type is null. Cancelling work.")
         }
     }
 
-    private fun proceedIfFreeTrialAndMatchesSite(siteId: Long): Result {
+    private fun proceedIfValidSite(siteId: Long): Result {
         if (siteId == 0L) {
             val message = "Site id is missing. Cancelling local notification work."
             crashLogging.sendReport(
@@ -48,14 +48,10 @@ class PreconditionCheckWorker @AssistedInject constructor(
         }
 
         val notificationLinkedSite = siteStore.getSiteBySiteId(siteId)
-        return if (notificationLinkedSite.isFreeTrial) {
-            Result.success()
+        return if (notificationLinkedSite == null) {
+            cancelWork("The site linked to the notifications doesn't exist in the db. Cancelling work.")
         } else {
-            if (notificationLinkedSite == null) {
-                cancelWork("The site linked to the notifications doesn't exist in the db. Cancelling work.")
-            } else {
-                cancelWork("Store plan upgraded. Cancelling work.")
-            }
+            Result.success()
         }
     }
 
