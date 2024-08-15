@@ -76,12 +76,6 @@ class StatsUITest : TestBase() {
         visitors = "12000",
     )
 
-    @Ignore(
-        """
-        This became flaky after the last dashboard changes.
-        https://github.com/woocommerce/woocommerce-android/issues/12111
-        """
-    )
     @Retry(numberOfTimes = 2)
     @Test
     fun e2eStatsSummary() {
