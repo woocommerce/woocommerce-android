@@ -157,25 +157,21 @@ fun WooPosProductInfoDialog(
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.padding(bottom = 16.dp)
                                 )
-                                Box(
-                                    Modifier
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
                                         .clip(RoundedCornerShape(8.dp))
                                         .background(color = MaterialTheme.colors.background)
                                         .padding(16.dp),
-                                    contentAlignment = Alignment.Center,
                                 ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text(
-                                            text = stringResource(id = state.secondaryMessage),
-                                            style = MaterialTheme.typography.subtitle1,
-                                            textAlign = TextAlign.Center,
-                                            fontWeight = FontWeight.Normal,
-                                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
-                                        )
-                                    }
+                                    Text(
+                                        text = stringResource(id = state.secondaryMessage),
+                                        style = MaterialTheme.typography.subtitle1,
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.Normal,
+                                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                                    )
                                 }
                                 Spacer(modifier = Modifier.height(40.dp))
                                 OutlinedButton(
