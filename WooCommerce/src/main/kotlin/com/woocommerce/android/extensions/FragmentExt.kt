@@ -21,12 +21,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlin.math.abs
 
-
 private fun NavController.getBackStackEntryOrNull(@IdRes destinationId: Int): NavBackStackEntry? {
     return try {
         getBackStackEntry(destinationId)
     } catch (e: IllegalArgumentException) {
-        WooLog.w(WooLog.T.UTILS, "No destination with ID $destinationId is on the NavController's back stack" + e.message)
+        WooLog.w(
+            WooLog.T.UTILS,
+            "No destination with ID $destinationId is on the NavController's back stack. ${e.message}"
+        )
         null
     }
 }
@@ -181,12 +183,6 @@ fun Fragment.handleNotice(key: String, entryId: Int? = null, handler: () -> Unit
     }
 }
 
-/**
- * A helper function that apply a flow observation to changes of the Fragment view vertical offset,
- * making possible to keep the FAB button pinned into the same position as the view is scrolled
- *
- * @param [fabButton] The FAB button to be pinned in place using the App Bar Layout as reference
- */
 fun Fragment.pinFabAboveBottomNavigationBar(fabButton: FloatingActionButton) {
     val appBarLayout = (requireActivity().findViewById<View>(R.id.app_bar_layout) as AppBarLayout)
     appBarLayout.verticalOffsetChanges()
