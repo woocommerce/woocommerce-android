@@ -10,7 +10,7 @@ import com.woocommerce.android.FeedbackPrefs.FeedbackPrefKey.LAST_FEEDBACK_DATE
 import com.woocommerce.android.extensions.greaterThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.util.PreferenceUtils
+import com.woocommerce.commons.prefs.PreferenceUtils
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
