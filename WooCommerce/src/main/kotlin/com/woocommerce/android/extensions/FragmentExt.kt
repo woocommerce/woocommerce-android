@@ -4,6 +4,8 @@ import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.datepicker.CalendarConstraints
@@ -14,9 +16,20 @@ import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlin.math.abs
+
+
+private fun NavController.getBackStackEntryOrNull(@IdRes destinationId: Int): NavBackStackEntry? {
+    return try {
+        getBackStackEntry(destinationId)
+    } catch (e: IllegalArgumentException) {
+        WooLog.w(WooLog.T.UTILS, "No destination with ID $destinationId is on the NavController's back stack" + e.message)
+        null
+    }
+}
 
 /**
  * A helper function that sets the submitted key-value pair in the Fragment's SavedStateHandle. The value can be
@@ -30,7 +43,7 @@ import kotlin.math.abs
  */
 fun <T> Fragment.navigateBackWithResult(key: String, result: T, @IdRes destinationId: Int? = null) {
     val entry = if (destinationId != null) {
-        findNavController().getBackStackEntry(destinationId)
+        findNavController().getBackStackEntryOrNull(destinationId)
     } else {
         findNavController().previousBackStackEntry
     }
@@ -57,7 +70,7 @@ fun <T> Fragment.navigateToParentWithResult(key: String, result: T, @IdRes child
     if (findNavController().currentDestination?.id != childId) {
         findNavController().popBackStack(childId, false)
     }
-    navigateBackWithResult(key, result, null)
+    navigateBackWithResult(key, result)
 }
 
 /**
@@ -87,13 +100,13 @@ fun Fragment.navigateBackWithNotice(key: String, @IdRes destinationId: Int? = nu
  */
 fun <T> Fragment.handleResult(key: String, entryId: Int? = null, handler: (T) -> Unit) {
     val entry = if (entryId != null) {
-        findNavController().getBackStackEntry(entryId)
+        findNavController().getBackStackEntryOrNull(entryId)
     } else {
         findNavController().currentBackStackEntry
     }
 
     entry?.savedStateHandle?.let { saveState ->
-        saveState.getLiveData<T?>(key).observe(this.viewLifecycleOwner) {
+        saveState.getLiveData<T?>(key).observe(viewLifecycleOwner) {
             it?.let {
                 handler(it)
                 saveState.set(key, null)
@@ -153,13 +166,13 @@ fun Fragment.handleDialogNotice(key: String, entryId: Int, handler: () -> Unit) 
  */
 fun Fragment.handleNotice(key: String, entryId: Int? = null, handler: () -> Unit) {
     val entry = if (entryId != null) {
-        findNavController().getBackStackEntry(entryId)
+        findNavController().getBackStackEntryOrNull(entryId)
     } else {
         findNavController().currentBackStackEntry
     }
 
     entry?.savedStateHandle?.let { saveState ->
-        saveState.getLiveData<String>(key).observe(this.viewLifecycleOwner) {
+        saveState.getLiveData<String>(key).observe(viewLifecycleOwner) {
             it?.let {
                 handler()
                 saveState.set(key, null)
