@@ -39,7 +39,7 @@ class WCWearCrashLoggingDataProvider @Inject constructor(
     private val crashLoggingUser = MutableStateFlow(accountStore.account?.toCrashLoggingUser())
 
     override val user: Flow<CrashLoggingUser?> = crashLoggingUser
-    override val sentryDSN: String = BuildConfig.SENTRY_DSN
+    override val sentryDSN: String = BuildConfig.WEAR_SENTRY_DSN
     override val buildType = BuildConfig.BUILD_TYPE
     override val enableCrashLoggingLogs = BuildConfig.DEBUG
     override val releaseName: ReleaseName = if (BuildConfig.DEBUG) {
