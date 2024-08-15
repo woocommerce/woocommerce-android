@@ -15,9 +15,7 @@ sealed class LocalNotification(
     open val data: String? = null
     val id = type.hashCode()
 
-    abstract fun getDescriptionString(resourceProvider: ResourceProvider): String
+    open fun getTitleString(resourceProvider: ResourceProvider) = resourceProvider.getString(title)
 
-    open fun getTitleString(resourceProvider: ResourceProvider): String {
-        return resourceProvider.getString(title)
-    }
+    open fun getDescriptionString(resourceProvider: ResourceProvider) = resourceProvider.getString(description)
 }
