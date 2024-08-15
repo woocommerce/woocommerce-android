@@ -18,3 +18,6 @@ steps:
       bundle exec fastlane complete_code_freeze skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
     agents:
         queue: "tumblr-metal"
+    retry:
+      manual:
+        allowed: false

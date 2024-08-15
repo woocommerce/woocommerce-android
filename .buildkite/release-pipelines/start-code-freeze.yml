@@ -15,3 +15,6 @@ steps:
       bundle exec fastlane start_code_freeze skip_confirm:true
     agents:
         queue: "tumblr-metal"
+    retry:
+      manual:
+        allowed: false
