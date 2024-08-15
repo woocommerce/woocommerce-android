@@ -358,9 +358,18 @@ private fun ProductItem(
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.semantics(mergeDescendants = false) {
+                        contentDescription = ""
+                    }
                 )
                 Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                Text(text = item.price, style = MaterialTheme.typography.body1)
+                Text(
+                    text = item.price,
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.semantics(mergeDescendants = false) {
+                        contentDescription = ""
+                    }
+                )
             }
 
             if (canRemoveItems) {
