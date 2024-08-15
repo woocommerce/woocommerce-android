@@ -25,7 +25,7 @@ data class CustomColors(
 private val DarkColorPalette = darkColors(
     primary = Color(0xFF9C70D3),
     primaryVariant = Color(0xFF3700B3),
-    onPrimary = Color.White,
+    onPrimary = Color.Black,
     secondary = Color(0xFF0A9400),
     secondaryVariant = Color(0xFF8D8D8D),
     surface = Color(0xFF121212),
