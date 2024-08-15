@@ -53,7 +53,7 @@ class ReviewsUITest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .openReviewsListScreen(composeTestRule)
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eReviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()

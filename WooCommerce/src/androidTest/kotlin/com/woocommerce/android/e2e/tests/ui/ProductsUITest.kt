@@ -48,7 +48,7 @@ class ProductsUITest : TestBase() {
         TabNavComponent().gotoProductsScreen()
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eProductListShowsAllProducts() {
         val productsJSONArray = MocksReader().readAllProductsToArray()

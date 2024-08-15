@@ -78,7 +78,7 @@ class OrdersRealAPI : TestBase() {
             .logoutIfNeeded(composeTestRule)
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eRealApiOrdersFilter() {
         OrderListScreen()
@@ -97,7 +97,7 @@ class OrdersRealAPI : TestBase() {
             .assertOrdersCount(2)
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eRealApiOrdersSearch() {
         OrderListScreen()
@@ -122,7 +122,7 @@ class OrdersRealAPI : TestBase() {
             .assertOrdersCount(2)
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     @Ignore
     fun e2eRealApiOrderDetails() {

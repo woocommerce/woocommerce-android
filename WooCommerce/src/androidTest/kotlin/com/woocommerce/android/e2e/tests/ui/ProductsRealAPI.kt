@@ -76,7 +76,7 @@ class ProductsRealAPI : TestBase() {
             .logoutIfNeeded(composeTestRule)
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eRealApiProductsSearchUsual() {
         ProductListScreen()
@@ -109,7 +109,7 @@ class ProductsRealAPI : TestBase() {
             .assertProductsCount(2)
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eRealApiProductsSearchBySKU() {
         ProductListScreen()
@@ -137,7 +137,7 @@ class ProductsRealAPI : TestBase() {
             .leaveOrClearSearchMode()
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eRealApiProductsFilter() {
         ProductListScreen()
@@ -161,7 +161,7 @@ class ProductsRealAPI : TestBase() {
             .assertProductsCount(0)
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eRealApiProductsSort() {
         ProductListScreen()

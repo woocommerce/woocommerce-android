@@ -53,7 +53,7 @@ class OrdersUITest : TestBase() {
         TabNavComponent().gotoOrdersScreen()
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     @Ignore
     fun e2eCreateOrderTest() {

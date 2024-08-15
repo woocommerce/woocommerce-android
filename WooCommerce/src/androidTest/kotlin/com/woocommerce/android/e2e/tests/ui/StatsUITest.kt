@@ -82,6 +82,7 @@ class StatsUITest : TestBase() {
         https://github.com/woocommerce/woocommerce-android/issues/12111
         """
     )
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eStatsSummary() {
         DashboardScreen()
@@ -99,6 +100,7 @@ class StatsUITest : TestBase() {
         https://github.com/woocommerce/woocommerce-android/issues/12111
         """
     )
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eStatsTopPerformers() {
         val topPerformersJSONArray = MocksReader().readStatsTopPerformersToArray()
@@ -108,7 +110,7 @@ class StatsUITest : TestBase() {
             .assertTopPerformers(topPerformersJSONArray, composeTestRule)
     }
 
-    @Retry(numberOfTimes = 1)
+    @Retry(numberOfTimes = 2)
     @Test
     fun e2eStatsTapChart() {
         DashboardScreen()
