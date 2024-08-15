@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-30 16:54:05+0000
+Translation-Revision-Date: 2024-08-06 21:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="woopos_success_screen_total">تم سداد دفعة قدرها ⁦%1$s⁩ بنجاح</string>
+    <string name="woopos_new_order_button">طلب جديد</string>
+    <string name="woopos_dialog_products_info_button_label">موافق</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ إنشاء طلب في إدارة المتجر</string>
+    <string name="woopos_dialog_products_info_secondary_message">لتلقي دفعة مقابل منتج غير بسيط، اخرج من نقطة البيع وأنشئ طلبًا جديدًا من علامة تبويب الطلبات.</string>
+    <string name="woopos_dialog_products_info_primary_message">لا يمكن استخدام إلا المنتجات المادية البسيطة التي تتضمن نقطة بيع الآن.\nأما أنواع المنتجات الأخرى، مثل: المنتجات المتغيرة والظاهرية، ستتوفر في التحديثات المستقبلية.</string>
+    <string name="woopos_dialog_products_info_heading">لماذا يتعذر علي رؤية منتجاتي؟</string>
+    <string name="woopos_banner_simple_products_info_content_description">معلومات</string>
+    <string name="woopos_banner_simple_products_close_content_description">إغلاق</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">معرفة المزيد</string>
+    <string name="woopos_banner_simple_products_only_message">تكون المنتجات المادية البسيطة فقط متوافقة مع نقطة بيع الآن. أما أنواع المنتجات الأخرى، مثل: المنتجات المتغيرة والظاهرية، ستصبح متوفرة في التحديثات المستقبلية. </string>
+    <string name="woopos_banner_simple_products_only_title">إظهار المنتجات البسيطة فقط</string>
+    <string name="support_request_site_address">عنوان الموقع</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">إضافة حملة مدفوعة</string>
+    <string name="analytics_google_ads_cta_description">يمكنك زيادة المبيعات وإنشاء مزيد من حركة المرور باستخدام إعلانات غوغل.</string>
+    <string name="analytics_google_ads_cta_title">حملات غوغل</string>
     <string name="google_ads_campaign_created_success_done_button">تم</string>
     <string name="google_ads_campaign_created_success_description">تم إنشاء حملتك الجديدة. أوقات مشوقة في انتظار مبيعاتك!</string>
     <string name="google_ads_campaign_created_success_title">كل شيء جاهز الآن!</string>
@@ -103,7 +120,6 @@ Language: ar
     <string name="woopos_payment_total_label">الإجمالي</string>
     <string name="woopos_payment_tax_label">الضريبة</string>
     <string name="woopos_payment_subtotal_label">الإجمالي الفرعي</string>
-    <string name="woopos_new_transaction_button">معاملة جديدة</string>
     <string name="woopos_payment_successful_label">تمت عملية الدفع بنجاح</string>
     <string name="woopos_payment_failed_please_try_again">فشلت عملية الدفع. يرجى المحاولة مجددًا.</string>
     <string name="woopos_cart_back_content_description">أيقونة عربة التسوق</string>
