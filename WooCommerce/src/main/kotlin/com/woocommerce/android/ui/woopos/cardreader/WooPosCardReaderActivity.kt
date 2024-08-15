@@ -26,8 +26,41 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             R.id.woopos_card_reader_nav_host_fragment
         ) as NavHostFragment
 
+        if (savedInstanceState != null) {
+            restoreState(navHostFragment)
+        }
+
         observeEvents(navHostFragment)
         observeResult(navHostFragment)
+    }
+
+    private fun restoreState(navHostFragment: NavHostFragment) {
+        viewModel.event.observe(this) { event ->
+            when (event) {
+                is WooPosCardReaderEvent.Connection -> {
+                    val navController = navHostFragment.navController
+                    val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow).apply {
+                        setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
+                    }
+                    navController.setGraph(
+                        graph,
+                        CardReaderStatusCheckerDialogFragmentArgs(
+                            cardReaderFlowParam = event.cardReaderFlowParam,
+                            cardReaderType = event.cardReaderType,
+                        ).toBundle()
+                    )
+                }
+
+                is WooPosCardReaderEvent.Payment -> {
+                    val navController = navHostFragment.navController
+                    val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow)
+                    navController.setGraph(
+                        graph,
+                        SelectPaymentMethodFragmentArgs(cardReaderFlowParam = event.cardReaderFlowParam).toBundle()
+                    )
+                }
+            }
+        }
     }
 
     private fun observeResult(navHostFragment: NavHostFragment) {
