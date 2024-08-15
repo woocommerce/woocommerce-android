@@ -37,7 +37,20 @@ fun NavController.navigateSafely(
         extras: FragmentNavigator.Extras?
     ) {
         try {
-            navigate(directions.actionId, directions.arguments, navOptions, extras)
+            val actionId = directions.actionId
+            val currentId = currentDestination?.id
+            val action = currentId?.let { graph.findNode(it)?.getAction(actionId) }
+
+            if (action != null && currentDestination != null) {
+                navigate(directions.actionId, directions.arguments, navOptions, extras)
+            } else {
+                WooLog.w(WooLog.T.UTILS, "Invalid action ID $actionId given current ID $currentId")
+            }
+        } catch (e: IllegalStateException) {
+            WooLog.w(
+                WooLog.T.UTILS,
+                "No current destination found. Ensure a navigation graph has been set $this. ${e.message}"
+            )
         } catch (e: IllegalArgumentException) {
             if (BuildConfig.DEBUG) {
                 throw e
