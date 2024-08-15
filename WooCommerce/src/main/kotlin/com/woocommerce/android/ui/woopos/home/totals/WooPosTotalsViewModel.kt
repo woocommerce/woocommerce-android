@@ -61,8 +61,12 @@ class WooPosTotalsViewModel @Inject constructor(
     private var debounceJob: Job? = null
 
     init {
+        viewModelScope.launch {
+            handleRestoreState(savedState)
+        }
         listenUpEvents()
     }
+
 
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
@@ -100,6 +104,17 @@ class WooPosTotalsViewModel @Inject constructor(
             else -> Unit
         }
     }
+
+    private suspend fun handleRestoreState(savedState: SavedStateHandle) {
+        val restoredState = savedState.get<TotalsDataState>(KEY_STATE)
+        restoredState?.let {
+            dataState.value = it
+            if (it.orderId != EMPTY_ORDER_ID) {
+                collectPayment()
+            }
+        }
+    }
+
 
     private fun listenUpEvents() {
         viewModelScope.launch {
