@@ -1667,7 +1667,7 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
 
             assertThat(result).isEqualTo(
                 CardReaderOnboardingState.OnboardingCompleted(
-                    PluginType.STRIPE_EXTENSION_GATEWAY,
+                    STRIPE_EXTENSION_GATEWAY,
                     stripePluginVersion,
                     countryCode
                 )
