@@ -4187,7 +4187,7 @@
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_unknown">Reader status unknown</string>
     <string name="woopos_checkout_button">Check out</string>
-    <string name="woopos_remove_item_from_cart_content_description">Remove %s from cart</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Remove %s from cart</string>
     <string name="woopos_product_item_content_description">Product %s, Price %s</string>
     <string name="woopos_cart_item_content_description">Product in cart %s, Price %s</string>
     <string name="woopos_cart_title">Cart</string>

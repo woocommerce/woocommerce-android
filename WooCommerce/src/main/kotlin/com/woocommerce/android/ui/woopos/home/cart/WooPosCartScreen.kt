@@ -373,7 +373,7 @@ private fun ProductItem(
                 Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
 
                 val removeButtonContentDescription = stringResource(
-                    id = R.string.woopos_remove_item_from_cart_content_description,
+                    id = R.string.woopos_remove_item_button_from_cart_content_description,
                     item.name
                 )
                 IconButton(
