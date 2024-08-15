@@ -4,6 +4,7 @@ import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +27,7 @@ class UpdateAnalyticsDataByRangeSelectionTest : BaseUnitTest() {
 
     private val analyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
     private val analyticsRepository: AnalyticsRepository = mock()
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
     private val defaultVisibleCards = listOf(
         AnalyticCardConfiguration(
@@ -62,7 +64,8 @@ class UpdateAnalyticsDataByRangeSelectionTest : BaseUnitTest() {
 
     private val sut = UpdateAnalyticsDataByRangeSelection(
         analyticsCardsConfiguration = analyticsCardsConfiguration,
-        analyticsRepository = analyticsRepository
+        analyticsRepository = analyticsRepository,
+        analyticsUpdateDataStore = analyticsUpdateDataStore
     )
 
     private val defaultRangeSelection = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
@@ -213,5 +216,49 @@ class UpdateAnalyticsDataByRangeSelectionTest : BaseUnitTest() {
         val result = sut.invoke(defaultRangeSelection, listOf(AnalyticsCards.Products))
 
         assertTrue(result)
+    }
+
+    @Test
+    fun `save last update only for success requests`() = runTest {
+        whenever(analyticsCardsConfiguration.invoke()).doReturn(flowOf(defaultVisibleCards))
+        whenever(
+            analyticsRepository.fetchRevenueData(
+                defaultRangeSelection,
+                AnalyticsRepository.FetchStrategy.ForceNew
+            )
+        ).doReturn(AnalyticsRepository.RevenueResult.RevenueData(mock()))
+        whenever(analyticsRepository.fetchGiftCardsStats(defaultRangeSelection))
+            .doReturn(AnalyticsRepository.GiftCardResult.GiftCardData(mock()))
+        whenever(analyticsRepository.fetchProductBundlesStats(defaultRangeSelection))
+            .doReturn(AnalyticsRepository.BundlesResult.BundlesData(mock()))
+        whenever(
+            analyticsRepository.fetchOrdersData(
+                defaultRangeSelection,
+                AnalyticsRepository.FetchStrategy.ForceNew
+            )
+        ).doReturn(AnalyticsRepository.OrdersResult.OrdersError)
+        whenever(
+            analyticsRepository.fetchProductsData(
+                defaultRangeSelection,
+                AnalyticsRepository.FetchStrategy.ForceNew
+            )
+        ).doReturn(AnalyticsRepository.ProductsResult.ProductsData(mock()))
+
+        val result = sut.invoke(defaultRangeSelection, listOf(AnalyticsCards.Products))
+
+        assertFalse(result)
+
+        verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
+            defaultRangeSelection,
+            AnalyticsUpdateDataStore.AnalyticData.REVENUE
+        )
+        verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
+            defaultRangeSelection,
+            AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+        )
+        verify(analyticsUpdateDataStore, never()).storeLastAnalyticsUpdate(
+            defaultRangeSelection,
+            AnalyticsUpdateDataStore.AnalyticData.ORDERS
+        )
     }
 }

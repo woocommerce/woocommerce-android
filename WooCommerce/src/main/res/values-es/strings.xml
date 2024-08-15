@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 19:54:05+0000
+Translation-Revision-Date: 2024-08-08 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="woopos_success_screen_total">Se ha efectuado correctamente un pago de %1$s</string>
+    <string name="woopos_new_order_button">Nuevo pedido</string>
+    <string name="woopos_dialog_products_info_button_label">Aceptar</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Crear un pedido en la gestión de la tienda</string>
+    <string name="woopos_dialog_products_info_secondary_message">Para aceptar el pago de un producto no sencillo, sal de TPV y crea un nuevo pedido desde la pestaña de pedidos.</string>
+    <string name="woopos_dialog_products_info_primary_message">En estos momentos, solo se pueden utilizar productos físicos sencillos con TPV.\nOtros tipos de productos, como los variables y los virtuales, estarán disponibles en futuras actualizaciones.</string>
+    <string name="woopos_dialog_products_info_heading">¿Por qué no puedo ver mis productos?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Información</string>
+    <string name="woopos_banner_simple_products_close_content_description">Cerrar</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Más información</string>
+    <string name="woopos_banner_simple_products_only_message">En estos momentos, solo los productos físicos sencillos son compatibles con TPV. Otros tipos de productos, como los variables y los virtuales, estarán disponibles en futuras actualizaciones. </string>
+    <string name="woopos_banner_simple_products_only_title">Mostrar solo productos sencillos</string>
+    <string name="support_request_site_address">Dirección del sitio</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google para WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Añadir campaña de pago</string>
+    <string name="analytics_google_ads_cta_description">Dirige las ventas y genera más tráfico con Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Campañas de Google</string>
     <string name="google_ads_campaign_created_success_done_button">Hecho</string>
     <string name="google_ads_campaign_created_success_description">Se ha creado tu nueva campaña. ¡Se avecinan momentos emocionantes para tus ventas!</string>
     <string name="google_ads_campaign_created_success_title">¡Todo listo!</string>
@@ -103,7 +120,6 @@ Language: es
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_tax_label">Impuesto</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
-    <string name="woopos_new_transaction_button">Nueva transacción</string>
     <string name="woopos_payment_successful_label">Pago correcto</string>
     <string name="woopos_payment_failed_please_try_again">Error de pago. Inténtalo de nuevo.</string>
     <string name="woopos_cart_back_content_description">Icono de carrito</string>

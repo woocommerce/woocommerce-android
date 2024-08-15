@@ -47,7 +47,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 
 @Composable
-fun ProductInfoDialog(
+fun WooPosProductInfoDialog(
     state: WooPosHomeState.ProductsInfoDialog.Visible,
     onDismissRequest: () -> Unit,
 ) {
@@ -131,7 +131,7 @@ fun ProductInfoDialog(
                                 Icon(
                                     modifier = Modifier.size(35.dp),
                                     imageVector = Icons.Default.Close,
-                                    tint = MaterialTheme.colors.secondaryVariant.copy(alpha = 0.30f),
+                                    tint = MaterialTheme.colors.onSurface,
                                     contentDescription = stringResource(
                                         id = R.string.woopos_banner_simple_products_close_content_description
                                     ),
@@ -214,7 +214,7 @@ fun ProductInfoDialogPreview() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            ProductInfoDialog(
+            WooPosProductInfoDialog(
                 state = WooPosHomeState.ProductsInfoDialog.Visible(
                     header = R.string.woopos_dialog_products_info_heading,
                     primaryMessage = R.string.woopos_dialog_products_info_primary_message,

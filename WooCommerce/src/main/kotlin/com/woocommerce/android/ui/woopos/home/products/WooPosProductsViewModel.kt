@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,11 +24,12 @@ class WooPosProductsViewModel @Inject constructor(
     private val productsDataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val priceFormat: WooPosFormatPrice,
-    private val preferencesRepository: WooPosPreferencesRepository
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
+    private val _viewState =
+        MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading(withCart = true))
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
         .onEach { notifyParentAboutStatusChange(it) }
         .stateIn(
@@ -41,7 +41,8 @@ class WooPosProductsViewModel @Inject constructor(
     init {
         loadProducts(
             forceRefreshProducts = false,
-            withPullToRefresh = false
+            withPullToRefresh = false,
+            withCart = true,
         )
     }
 
@@ -58,14 +59,16 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
                 loadProducts(
                     forceRefreshProducts = true,
-                    withPullToRefresh = true
+                    withPullToRefresh = true,
+                    withCart = true,
                 )
             }
 
             WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
                 loadProducts(
                     forceRefreshProducts = false,
-                    withPullToRefresh = false
+                    withPullToRefresh = false,
+                    withCart = false,
                 )
             }
 
@@ -106,13 +109,14 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun loadProducts(
         forceRefreshProducts: Boolean,
-        withPullToRefresh: Boolean
+        withPullToRefresh: Boolean,
+        withCart: Boolean
     ) {
         viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
                 buildProductsReloadingState()
             } else {
-                WooPosProductsViewState.Loading()
+                WooPosProductsViewState.Loading(withCart = withCart)
             }
 
             productsDataSource.loadSimpleProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
@@ -134,12 +138,7 @@ class WooPosProductsViewModel @Inject constructor(
                                 }
                             }
 
-                            else -> {
-                                val error = result.productsResult.exceptionOrNull()
-                                val errorMessage = error?.message ?: "Unknown error"
-                                WooLog.e(WooLog.T.POS, "Loading simple products failed - $errorMessage", error)
-                                WooPosProductsViewState.Error()
-                            }
+                            else -> WooPosProductsViewState.Error()
                         }
                     }
                 }
@@ -203,8 +202,14 @@ class WooPosProductsViewModel @Inject constructor(
                 is WooPosProductsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart
 
                 is WooPosProductsViewState.Empty,
-                is WooPosProductsViewState.Error,
-                is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.FullScreen
+                is WooPosProductsViewState.Error -> ChildToParentEvent.ProductsStatusChanged.FullScreen
+                is WooPosProductsViewState.Loading -> {
+                    if (newState.withCart) {
+                        ChildToParentEvent.ProductsStatusChanged.WithCart
+                    } else {
+                        ChildToParentEvent.ProductsStatusChanged.FullScreen
+                    }
+                }
             }
         )
     }

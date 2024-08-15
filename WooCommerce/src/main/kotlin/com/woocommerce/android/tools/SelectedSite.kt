@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.di.SiteComponent
 import com.woocommerce.android.di.SiteComponent.Builder
-import com.woocommerce.android.util.PreferenceUtils
+import com.woocommerce.commons.prefs.PreferenceUtils
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
