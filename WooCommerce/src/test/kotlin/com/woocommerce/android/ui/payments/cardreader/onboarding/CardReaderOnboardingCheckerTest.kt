@@ -1632,7 +1632,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             verify(cardReaderTrackingInfoKeeper).setCountry(eq("US"))
         }
 
-
     @Test
     fun `when stripe account pending verification, then ONBOARDING_COMPLETED returned`() = testBlocking {
         whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
@@ -1674,7 +1673,6 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
                 )
             )
         }
-
 
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
