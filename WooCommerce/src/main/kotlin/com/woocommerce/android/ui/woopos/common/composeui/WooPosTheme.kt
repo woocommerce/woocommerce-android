@@ -22,6 +22,7 @@ data class CustomColors(
     val paymentSuccessText: Color,
     val paymentSuccessIcon: Color,
     val paymentSuccessIconBackground: Color,
+    val dialogSubtitleHighlightBackground: Color = Color(0x14747480),
 )
 
 private val DarkColorPalette = darkColors(

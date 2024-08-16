@@ -18,11 +18,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -83,8 +85,9 @@ fun WooPosProductInfoDialog(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Card(
+            Surface(
                 shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colors.background,
                 elevation = 8.dp,
                 modifier = Modifier
                     .padding(16.dp)
@@ -93,8 +96,9 @@ fun WooPosProductInfoDialog(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(40.dp.toAdaptivePadding()),
-                    contentAlignment = Alignment.Center
+                        .background(MaterialTheme.colors.background)
+                        .padding(56.dp.toAdaptivePadding()),
+                    contentAlignment = Alignment.Center,
                 ) {
                     ConstraintLayout(
                         modifier = Modifier.fillMaxWidth()
@@ -159,7 +163,7 @@ fun WooPosProductInfoDialog(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(color = MaterialTheme.colors.background)
+                                    .background(color = WooPosTheme.colors.dialogSubtitleHighlightBackground)
                                     .padding(16.dp),
                             ) {
                                 Text(
@@ -175,9 +179,11 @@ fun WooPosProductInfoDialog(
                                 onClick = {
                                     animVisibleState.targetState = false
                                 },
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth(),
                                 border = BorderStroke(2.dp, MaterialTheme.colors.primary),
                                 shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(backgroundColor = MaterialTheme.colors.background),
                             ) {
                                 Text(
                                     modifier = Modifier
