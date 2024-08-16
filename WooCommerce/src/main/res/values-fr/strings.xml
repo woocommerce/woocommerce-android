@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-08 11:54:03+0000
+Translation-Revision-Date: 2024-08-13 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="woopos_success_screen_total">Un paiement de %1$s a été effectué avec succès</string>
     <string name="woopos_new_order_button">Nouvelle commande</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
@@ -1698,7 +1698,7 @@ Language: fr
     <string name="card_reader_interac_refund_refund_payment">Rembourser le paiement</string>
     <string name="card_reader_interac_refund_refund_failed_header">Remboursement échoué</string>
     <string name="card_reader_interac_refund_refund_loading_header">Prêt à rembourser le paiement</string>
-    <string name="copy">Copier</string>
+    <string name="copy" tools:override="true">Copier</string>
     <string name="coupons_list_search_hint">Recherche codes promo</string>
     <string name="coupon_details_share_formatting_failure">Impossible de générer le message de partage du code promo</string>
     <string name="coupon_details_share_coupon_error">Erreur lors du partage du code promo.</string>
@@ -2959,7 +2959,7 @@ Language: fr
     <string name="orderdetail_empty_address">Aucune adresse spécifiée</string>
     <string name="login_need_help_finding_connected_email">Besoin d\'aide pour trouver l\'adresse e-mail avec laquelle vous vous êtes connecté ?</string>
     <string name="enter_wordpress_site">Le site Web à cette adresse n\'est pas un site WordPress. WordPress doit être installé sur le site pour que nous puissions nous y connecter.</string>
-    <string name="enter_email_for_site">Connectez-vous à WordPress.com pour accéder à &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">Connectez-vous à WordPress.com pour accéder à &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambie</string>
     <string name="country_mapping_YE">Yémen</string>
@@ -3555,8 +3555,8 @@ Language: fr
     <string name="login_configure_link">Lisez les %1$sinstructions de configuration%2$s.</string>
     <string name="login_jetpack_required">Cette application nécessite de connecter Jetpack à votre boutique.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Entrez l\'adresse de la boutique WooCommerce que vous aimeriez connecter.</string>
-    <string name="enter_email_wordpress_com">Connectez-vous avec l’adresse e-mail de votre compte WordPress.com afin de gérer toutes vos boutiques WooCommerce.</string>
+    <string name="enter_site_address" content_override="true">Entrez l\'adresse de la boutique WooCommerce que vous aimeriez connecter.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Connectez-vous avec l’adresse e-mail de votre compte WordPress.com afin de gérer toutes vos boutiques WooCommerce.</string>
     <string name="already_logged_in_wpcom">Vous êtes déjà connecté à votre compte WordPress.com. Vous ne pouvez pas ajouter un site WordPress.com lié à un autre compte.</string>
     <string name="cant_open_url">Impossible d\'ouvrir le lien</string>
     <string name="error_no_sms_app">Application SMS introuvable</string>
@@ -3602,17 +3602,17 @@ Language: fr
     <string name="notification_channel_general_title">Général</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>En cours</item>
