@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,22 +34,21 @@ fun WooPosErrorScreen(
     message: String,
     reason: String,
     primaryButton: Button? = null,
-    secondaryButton: Button? = null
+    secondaryButton: Button? = null,
+    adaptToScreenHeight: Boolean = false,
 ) {
-    Box(
-        modifier = modifier
+    Column(
+        modifier = modifier.fillMaxSize()
             .clip(RoundedCornerShape(16.dp))
-            .padding(32.dp)
+            .padding(32.dp.toAdaptivePadding()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.let { if (adaptToScreenHeight) it.weight(1f) else it },
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
-            Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-
             Icon(
                 modifier = Modifier.size(64.dp),
                 painter = icon,
@@ -72,15 +70,12 @@ fun WooPosErrorScreen(
                 text = reason,
                 style = MaterialTheme.typography.h5
             )
-
-            Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 32.dp)
-                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
             primaryButton?.let {
                 WooPosButton(
@@ -101,7 +96,6 @@ fun WooPosErrorScreen(
                         .fillMaxWidth()
                         .height(80.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
             }
         }
     }
@@ -127,6 +121,57 @@ fun WooPosErrorStatePreview() {
                 text = stringResource(R.string.cancel),
                 click = { }
             )
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosErrorStateSingleButtonPreview() {
+    WooPosTheme {
+        WooPosErrorScreen(
+            message = stringResource(R.string.woopos_totals_main_error_label),
+            reason = "Reason",
+            primaryButton = Button(
+                text = stringResource(R.string.retry),
+                click = { }
+            ),
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosErrorStateSingleButtonAdaptToScreenHeightPreview() {
+    WooPosTheme {
+        WooPosErrorScreen(
+            message = stringResource(R.string.woopos_totals_main_error_label),
+            reason = "Reason",
+            primaryButton = Button(
+                text = stringResource(R.string.retry),
+                click = { }
+            ),
+            adaptToScreenHeight = true,
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosErrorStateAdaptToScreenHeightPreview() {
+    WooPosTheme {
+        WooPosErrorScreen(
+            message = stringResource(R.string.woopos_totals_main_error_label),
+            reason = "Reason",
+            primaryButton = Button(
+                text = stringResource(R.string.retry),
+                click = { }
+            ),
+            secondaryButton = Button(
+                text = stringResource(R.string.cancel),
+                click = { }
+            ),
+            adaptToScreenHeight = true,
         )
     }
 }

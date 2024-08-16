@@ -22,7 +22,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -256,7 +255,8 @@ private fun TotalsErrorScreen(
         primaryButton = Button(
             text = stringResource(R.string.retry),
             click = { onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked) }
-        )
+        ),
+        adaptToScreenHeight = true,
     )
 }
 
