@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-06 09:54:04+0000
+Translation-Revision-Date: 2024-08-13 09:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="woopos_success_screen_total">Платёж в сумме %1$s выполнен успешно</string>
     <string name="woopos_new_order_button">Новый заказ</string>
     <string name="woopos_dialog_products_info_button_label">ОК</string>
@@ -1698,7 +1698,7 @@ Language: ru
     <string name="card_reader_interac_refund_refund_payment">Возместить платёж</string>
     <string name="card_reader_interac_refund_refund_failed_header">Возврат не выполнен</string>
     <string name="card_reader_interac_refund_refund_loading_header">Подготовка к возврату платежа</string>
-    <string name="copy">Копировать</string>
+    <string name="copy" tools:override="true">Копировать</string>
     <string name="coupons_list_search_hint">Поиск купонов</string>
     <string name="coupon_details_share_formatting_failure">Не удалось создать сообщение для отправки кода купона</string>
     <string name="coupon_details_share_coupon_error">Ошибка при отправке кода купона.</string>
@@ -2959,7 +2959,7 @@ Language: ru
     <string name="orderdetail_empty_address">Адрес не указан</string>
     <string name="login_need_help_finding_connected_email">Не можете вспомнить адрес эл. почты, указанный при регистрации?</string>
     <string name="enter_wordpress_site">Расположенный по этому адресу веб-сайт не имеет отношения к платформе WordPress. Чтобы подключиться к нему, необходимо установить WordPress.</string>
-    <string name="enter_email_for_site">Войдите на WordPress.com, чтобы подключиться к &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">Войдите на WordPress.com, чтобы подключиться к &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">Зимбабве</string>
     <string name="country_mapping_ZM">Замбия</string>
     <string name="country_mapping_YE">Йемен</string>
@@ -3555,8 +3555,8 @@ Language: ru
     <string name="login_configure_link">Ознакомьтесь с %1$sинструкциями по настройке%2$s.</string>
     <string name="login_jetpack_required">Для подключения к вашему магазину этому приложению требуется Jetpack.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>
-    <string name="enter_email_wordpress_com">Для управления магазинами WooCommerce выполните вход, указав адрес электронной почты своей учётной записи WordPress.com.</string>
+    <string name="enter_site_address" content_override="true">Введите адрес магазина WooCommerce, к которому требуется подключиться.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Для управления магазинами WooCommerce выполните вход, указав адрес электронной почты своей учётной записи WordPress.com.</string>
     <string name="already_logged_in_wpcom">Вы уже вошли в учетную запись WordPress.com. Вы не можете добавить сайт WordPress.com, привязанный к другой учетной записи.</string>
     <string name="cant_open_url">Не удаётся открыть ссылку</string>
     <string name="error_no_sms_app">Не найдено приложение для отправки SMS</string>
@@ -3602,17 +3602,17 @@ Language: ru
     <string name="notification_channel_general_title">Общее</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>В обработке</item>
