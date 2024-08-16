@@ -231,7 +231,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-analytics'
 
-    implementation 'com.google.android.gms:play-services-auth:20.2.0'
+    implementation 'com.google.android.gms:play-services-auth:21.2.0'
 
     // Support library
     implementation "androidx.core:core-ktx:$coreKtxVersion"
