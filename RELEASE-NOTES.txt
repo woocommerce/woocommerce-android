@@ -1,6 +1,10 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+20.1
+-----
+
+
 20.0
 -----
 - [*] Fixed missing pictures in card reader tutorial on tablets [https://github.com/woocommerce/woocommerce-android/pull/12274]
