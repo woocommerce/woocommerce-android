@@ -70,6 +70,7 @@ fun WooPosErrorScreen(
                 text = reason,
                 style = MaterialTheme.typography.h5
             )
+            Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
         }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
