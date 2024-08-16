@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -183,7 +182,9 @@ fun WooPosProductInfoDialog(
                                     .fillMaxWidth(),
                                 border = BorderStroke(2.dp, MaterialTheme.colors.primary),
                                 shape = RoundedCornerShape(8.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(backgroundColor = MaterialTheme.colors.background),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    backgroundColor = MaterialTheme.colors.background
+                                ),
                             ) {
                                 Text(
                                     modifier = Modifier
