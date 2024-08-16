@@ -33,6 +33,17 @@ class ReviewsListScreen : Screen(R.id.reviewsList) {
     }
 
     fun assertReviewCard(review: ReviewData): ReviewsListScreen {
+        // Wait for the review card to appear first. This is sometimes
+        // flaky on Firebase because of low emulator performance.
+        waitForElementToBeDisplayed(
+            Espresso.onView(
+                Matchers.allOf(
+                    ViewMatchers.withId(R.id.notif_title),
+                    ViewMatchers.withText(review.title)
+                )
+            )
+        )
+
         // Assert that review has an expected hierarchy and content
         Espresso.onView(
             Matchers.allOf(

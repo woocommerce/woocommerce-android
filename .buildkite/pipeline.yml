@@ -87,7 +87,7 @@ steps:
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
         artifact_paths:
-          - "**/build/test-results/*/*.xml"
+          - "**/build/test-results/merged-test-results.xml"
 
       - label: "Instrumented tests"
         command: .buildkite/commands/run-instrumented-tests.sh

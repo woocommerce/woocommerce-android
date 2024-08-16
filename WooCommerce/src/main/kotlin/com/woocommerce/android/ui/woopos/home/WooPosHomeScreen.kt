@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,10 +11,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -117,24 +114,12 @@ private fun WooPosHomeScreen(
         label = "totalsWidthAnimatedDp"
     )
 
-    val cartOverlayIntensityAnimated by animateFloatAsState(
-        when (state.screenPositionState) {
-            is WooPosHomeState.ScreenPositionState.Cart.Visible.Empty -> .6f
-            WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
-            WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-            WooPosHomeState.ScreenPositionState.Checkout.Paid,
-            WooPosHomeState.ScreenPositionState.Cart.Hidden -> 0f
-        },
-        label = "cartOverlayAnimated"
-    )
-
     val scrollState = buildScrollStateForNavigationBetweenState(state.screenPositionState)
     WooPosHomeScreen(
         state = state,
         scrollState = scrollState,
         productsWidthDp = productsWidthAnimatedDp,
         cartWidthDp = cartWidthDp,
-        cartOverlayIntensity = cartOverlayIntensityAnimated,
         totalsWidthDp = totalsWidthAnimatedDp,
         onHomeUIEvent,
     )
@@ -146,51 +131,32 @@ private fun WooPosHomeScreen(
     scrollState: ScrollState,
     productsWidthDp: Dp,
     cartWidthDp: Dp,
-    cartOverlayIntensity: Float,
     totalsWidthDp: Dp,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
+    ) {
         Row(
             modifier = Modifier
                 .horizontalScroll(scrollState, enabled = false)
                 .fillMaxWidth(),
         ) {
-            Row(modifier = Modifier.width(productsWidthDp)) {
-                WooPosHomeScreenProducts(
-                    modifier = Modifier
-                        .width(productsWidthDp)
-                )
-            }
-            Row(
+            WooPosHomeScreenProducts(
                 modifier = Modifier
-                    .width(cartWidthDp)
+                    .width(productsWidthDp)
+            )
+            WooPosHomeScreenCart(
+                modifier = Modifier
                     .background(MaterialTheme.colors.surface)
-            ) {
-                Box {
-                    WooPosHomeScreenCart(
-                        modifier = Modifier
-                            .width(cartWidthDp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .width(cartWidthDp)
-                            .fillMaxHeight()
-                            .background(
-                                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensity),
-                            )
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier.width(totalsWidthDp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                WooPosHomeScreenTotals(
-                    modifier = Modifier
-                        .width(totalsWidthDp)
-                )
-            }
+                    .width(cartWidthDp)
+            )
+            WooPosHomeScreenTotals(
+                modifier = Modifier
+                    .width(totalsWidthDp)
+            )
         }
 
         WooPosHomeScreenToolbar(

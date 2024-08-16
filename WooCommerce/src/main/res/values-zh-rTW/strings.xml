@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-30 12:54:04+0000
+Translation-Revision-Date: 2024-08-07 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="woopos_success_screen_total">已成功支付「%1$s」的款項</string>
+    <string name="woopos_new_order_button">新訂單</string>
+    <string name="woopos_dialog_products_info_button_label">確定</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理建立訂單</string>
+    <string name="woopos_dialog_products_info_secondary_message">若要針對簡單商品以外的品項收款，請將 POS 結束，然後從訂單分頁建立新訂單。</string>
+    <string name="woopos_dialog_products_info_primary_message">目前只有簡單實體商品能使用 POS。\n待未來更新後，將可提供多款式與虛擬商品等其他商品種類的資訊。</string>
+    <string name="woopos_dialog_products_info_heading">為什麼我無法查看自己的商品？</string>
+    <string name="woopos_banner_simple_products_info_content_description">資訊</string>
+    <string name="woopos_banner_simple_products_close_content_description">關閉</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">深入了解</string>
+    <string name="woopos_banner_simple_products_only_message">目前 POS 僅與簡單實體商品相容。 待未來更新後，將可提供多款式與虛擬商品等其他商品種類的資訊。 </string>
+    <string name="woopos_banner_simple_products_only_title">僅顯示簡單商品</string>
+    <string name="support_request_site_address">網站位址</string>
+    <string name="analytics_google_ads_cta_web_view_title">WooCommerce 的 Google 整合服務</string>
+    <string name="analytics_google_ads_cta_action">新增付費廣告活動</string>
+    <string name="analytics_google_ads_cta_description">運用 Google Ads 刺激銷售額並帶來更多流量。</string>
+    <string name="analytics_google_ads_cta_title">Google 廣告活動</string>
     <string name="google_ads_campaign_created_success_done_button">完成</string>
     <string name="google_ads_campaign_created_success_description">已建立你的新行銷活動。 令人興奮的行銷活動即將展開！</string>
     <string name="google_ads_campaign_created_success_title">準備就緒！</string>
@@ -103,7 +120,6 @@ Language: zh_TW
     <string name="woopos_payment_total_label">總計</string>
     <string name="woopos_payment_tax_label">稅金</string>
     <string name="woopos_payment_subtotal_label">小計</string>
-    <string name="woopos_new_transaction_button">新交易</string>
     <string name="woopos_payment_successful_label">付款成功</string>
     <string name="woopos_payment_failed_please_try_again">付款失敗。 請再試一次。</string>
     <string name="woopos_cart_back_content_description">購物車圖示</string>
