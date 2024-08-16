@@ -12,7 +12,6 @@ import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginMagicLinkSentImprovedBinding
-import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginListener
@@ -36,7 +35,6 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
     }
 
     private var mLoginListener: LoginListener? = null
-    private lateinit var qrCodeLoginListener: QrCodeLoginListener
     private var mEmail: String? = null
     private var mAllowPassword = false
 
@@ -56,9 +54,6 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (activity is QrCodeLoginListener) {
-            qrCodeLoginListener = activity as QrCodeLoginListener
-        }
         if (activity is LoginListener) {
             mLoginListener = activity as LoginListener
         }
@@ -82,7 +77,6 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
             }
         }
         binding.email.text = mEmail
-        binding.magicLinkSentScanQrCode.setOnClickListener { qrCodeLoginListener.onScanQrCodeClicked(TAG) }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -97,6 +91,7 @@ class LoginMagicLinkSentImprovedFragment : Fragment(R.layout.fragment_login_magi
                 mLoginListener?.helpMagicLinkSent(mEmail)
                 true
             }
+
             else -> false
         }
     }
