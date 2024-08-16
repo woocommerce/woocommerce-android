@@ -1,8 +1,1 @@
-- [*] Fixed missing pictures in card reader tutorial on tablets [https://github.com/woocommerce/woocommerce-android/pull/12274]
-- [*] Disable QR code scanning from login flow [https://github.com/woocommerce/woocommerce-android/pull/12303]
-- [*] Fixed the hidden “Write with AI” issue that occurs when the keyboard is open. [https://github.com/woocommerce/woocommerce-android/pull/12311]
-- [*] Allowed collecting card-present payments for orders with `failed` status [https://github.com/woocommerce/woocommerce-android/pull/12349]
-- [*] [Internal] [Login] Switched back to using the `/token` endpoint for WordPress.com authentication, this fixes an issue where the SMS OTP is not triggered automatically after submitting the password [https://github.com/woocommerce/woocommerce-android/pull/12319]
-- [*] [Internal] [WEAR] Introduces Sentry support to the Wear app
-
-
+We’ve improved your WooCommerce experience with several key updates: card reader tutorial images are now visible on tablets, QR code scanning is disabled during login, and the “Write with AI” issue with the keyboard has been fixed. Plus, you can now process card-present payments for orders marked as failed.
