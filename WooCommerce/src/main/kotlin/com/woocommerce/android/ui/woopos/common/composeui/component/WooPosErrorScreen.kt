@@ -76,7 +76,7 @@ fun WooPosErrorScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
+                .padding(top = 16.dp, end = 16.dp, start = 16.dp)
         ) {
             primaryButton?.let {
                 WooPosButton(
@@ -86,10 +86,9 @@ fun WooPosErrorScreen(
                         .fillMaxWidth()
                         .height(80.dp)
                 )
-                Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
             }
-
             secondaryButton?.let {
+                Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
                 WooPosButton(
                     text = it.text,
                     onClick = it.click,
@@ -98,6 +97,7 @@ fun WooPosErrorScreen(
                         .height(80.dp)
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
         }
     }
 }
