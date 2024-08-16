@@ -366,7 +366,7 @@ class ProductFilterListViewModel @Inject constructor(
                 STOCK_STATUS,
                 resourceProvider.getString(R.string.product_stock_status),
                 addDefaultFilterOption(
-                    CoreProductStockStatus.values().map {
+                    CoreProductStockStatus.FILTERABLE_VALUES.map {
                         FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                             resourceProvider.getString(ProductStockStatus.fromString(it.value).stringResource),
                             filterOptionItemValue = it.value,
