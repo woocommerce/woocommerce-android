@@ -49,13 +49,6 @@ sentry {
     (if enabled in WCCrashLoggingDataProvider).
     */
     ignoredBuildTypes = ["debug"]
-
-    /* Additional source directories to be included in the source context. For now, manually:
-    https://github.com/getsentry/sentry-android-gradle-plugin/issues/685
-     */
-    additionalSourceDirsForSourceContext = [
-            '../libs/cardreader/src/main/java',
-    ]
 }
 
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
