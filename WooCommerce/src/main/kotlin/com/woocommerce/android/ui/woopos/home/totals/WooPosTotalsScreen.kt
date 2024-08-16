@@ -202,15 +202,9 @@ private fun TotalsGridRow(
 
 @Composable
 private fun TotalsLoading() {
-    Column(
-        modifier = Modifier
-            .background(
-                color = MaterialTheme.colors.background,
-                shape = RoundedCornerShape(16.dp),
-            )
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier
