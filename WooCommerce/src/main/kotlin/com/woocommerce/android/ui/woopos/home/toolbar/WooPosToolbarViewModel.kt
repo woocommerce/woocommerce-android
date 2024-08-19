@@ -16,8 +16,6 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOut
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -36,8 +34,6 @@ class WooPosToolbarViewModel @Inject constructor(
         )
     )
     val state: StateFlow<WooPosToolbarState> = _state
-
-    private var debounceJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -91,10 +87,10 @@ class WooPosToolbarViewModel @Inject constructor(
 
     private fun handleOnCardReaderStatusClicked() {
         when (_state.value.cardReaderStatus) {
-            WooPosToolbarState.WooPosCardReaderStatus.Connected -> debounce {
-                cardReaderFacade.connectToReader()
+            WooPosToolbarState.WooPosCardReaderStatus.Connected -> {
+
             }
-            WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> TODO()
+            WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> cardReaderFacade.connectToReader()
         }
     }
 
@@ -102,16 +98,6 @@ class WooPosToolbarViewModel @Inject constructor(
         return when (status) {
             is Connected -> WooPosToolbarState.WooPosCardReaderStatus.Connected
             is NotConnected, Connecting -> WooPosToolbarState.WooPosCardReaderStatus.NotConnected
-        }
-    }
-
-    private fun debounce(block: () -> Unit) {
-        if (debounceJob?.isActive == true) {
-            return
-        }
-        debounceJob = viewModelScope.launch {
-            block()
-            delay(DEBOUNCE_TIME_MS)
         }
     }
 
@@ -126,11 +112,5 @@ class WooPosToolbarViewModel @Inject constructor(
                 icon = R.drawable.woopos_ic_exit_pos,
             ),
         )
-
-        private const val DEBOUNCE_TIME_MS = 800L
-    }
-
-    override fun onCleared() {
-        debounceJob?.cancel()
     }
 }

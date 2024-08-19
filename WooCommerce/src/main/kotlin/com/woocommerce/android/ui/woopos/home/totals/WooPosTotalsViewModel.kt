@@ -20,8 +20,6 @@ import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -61,8 +59,6 @@ class WooPosTotalsViewModel @Inject constructor(
         key = KEY_STATE,
     )
 
-    private var debounceJob: Job? = null
-
     init {
         listenUpEvents()
     }
@@ -70,10 +66,8 @@ class WooPosTotalsViewModel @Inject constructor(
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.CollectPaymentClicked -> {
-                debounce {
-                    viewModelScope.launch {
-                        collectPayment()
-                    }
+                viewModelScope.launch {
+                    collectPayment()
                 }
             }
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> {
@@ -169,13 +163,4 @@ class WooPosTotalsViewModel @Inject constructor(
         val productIds: List<Long> = emptyList()
     ) : Parcelable
 
-    private fun debounce(destinationFunction: suspend () -> Unit) {
-        if (debounceJob?.isActive == true) {
-            return
-        }
-        debounceJob = viewModelScope.launch {
-            destinationFunction()
-            delay(DEBOUNCE_TIME_MS)
-        }
-    }
 }
