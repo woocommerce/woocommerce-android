@@ -1,0 +1,2 @@
+19.9:
+Vi har förbättrat återbetalningsupplevelsen. Alla återbetalningsobjekt på återbetalningsskärmen inkluderar nu detaljerade delsummor och momsfält, vilket ger dig tydligare insikter om dina transaktioner. Uppdatera nu och ta del av smidigare och mer transparenta återbetalningar.
