@@ -397,11 +397,12 @@ private fun ProductItem(
                     val removeButtonContentDescription = stringResource(
                         id = R.string.woopos_remove_item_button_from_cart_content_description,
                         item.name
-                    ) IconButton (
+                    )
+                    IconButton(
                         onClick = { onRemoveClicked(item) },
-                    modifier = Modifier
-                        .size(24.dp)
-                        .semantics { contentDescription = removeButtonContentDescription }) {
+                        modifier = Modifier
+                            .size(24.dp)
+                            .semantics { contentDescription = removeButtonContentDescription }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
                             tint = MaterialTheme.colors.onBackground,
