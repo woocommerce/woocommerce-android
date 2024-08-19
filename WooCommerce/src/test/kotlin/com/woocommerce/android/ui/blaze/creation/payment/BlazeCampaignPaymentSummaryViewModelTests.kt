@@ -34,7 +34,8 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
                 spentBudget = 0f,
                 currencyCode = "$",
                 durationInDays = 7,
-                startDate = Date()
+                startDate = Date(),
+                isEndlessCampaign = false
             ),
             targetingParameters = TargetingParameters(),
             destinationParameters = BlazeRepository.DestinationParameters(
@@ -61,7 +62,8 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
             blazeRepository = blazeRepository,
             currencyFormatter = currencyFormatter,
             analyticsTrackerWrapper = mock(),
-            dashboardRepository = mock()
+            dashboardRepository = mock(),
+            resourceProvider = mock(),
         )
     }
 
