@@ -40,7 +40,6 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
-        private const val DEBOUNCE_TIME_MS = 800L
         private const val KEY_STATE = "woo_pos_totals_data_state"
         private val InitialState = WooPosTotalsViewState.Loading
     }
