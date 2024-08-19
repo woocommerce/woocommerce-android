@@ -110,7 +110,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
         verify(cardReaderFacade).connectToReader()
@@ -140,9 +140,9 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
         advanceUntilIdle()
 
         // THEN
@@ -156,11 +156,11 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
         advanceUntilIdle()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
         advanceUntilIdle()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
         advanceUntilIdle()
 
         // THEN

@@ -10,8 +10,8 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.ConnectToAReaderClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.MenuItemClicked
+import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnCardReaderStatusClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
@@ -63,7 +63,7 @@ class WooPosToolbarViewModel @Inject constructor(
                 )
             }
 
-            ConnectToAReaderClicked -> handleConnectToReaderButtonClicked()
+            OnCardReaderStatusClicked -> handleOnCardReaderStatusClicked()
 
             is MenuItemClicked -> handleMenuItemClicked(event)
 
@@ -89,11 +89,12 @@ class WooPosToolbarViewModel @Inject constructor(
         _state.value = _state.value.copy(menu = WooPosToolbarState.Menu.Hidden)
     }
 
-    private fun handleConnectToReaderButtonClicked() {
-        if (_state.value.cardReaderStatus != WooPosToolbarState.WooPosCardReaderStatus.Connected) {
-            debounce {
+    private fun handleOnCardReaderStatusClicked() {
+        when (_state.value.cardReaderStatus) {
+            WooPosToolbarState.WooPosCardReaderStatus.Connected -> debounce {
                 cardReaderFacade.connectToReader()
             }
+            WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> TODO()
         }
     }
 
