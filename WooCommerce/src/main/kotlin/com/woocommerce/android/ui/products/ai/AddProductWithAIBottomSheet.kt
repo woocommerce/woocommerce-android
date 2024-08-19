@@ -50,7 +50,6 @@ import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 
 class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
@@ -77,13 +76,9 @@ class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
 
     private fun showAICreationFlow() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_ENTRY_POINT_TAPPED)
-        val action = when (FeatureFlag.PRODUCT_CREATION_WITH_AI_V2.isEnabled()) {
-            true ->
-                AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragmentV2()
-            else ->
-                AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragment()
-        }
-        findNavController().navigateSafely(action)
+        findNavController().navigateSafely(
+            AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragmentV2()
+        )
     }
 
     private fun showManualCreationFlow() {
@@ -127,13 +122,9 @@ private fun AddProductWithAIContent(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100))
             )
 
-            val subtitleId = when (FeatureFlag.PRODUCT_CREATION_WITH_AI_V2.isEnabled()) {
-                true -> R.string.product_creation_ai_entry_sheet_ai_option_subtitle_v2
-                else -> R.string.product_creation_ai_entry_sheet_ai_option_subtitle
-            }
             BottomSheetButton(
                 title = stringResource(id = R.string.product_creation_ai_entry_sheet_ai_option_title),
-                subtitle = stringResource(id = subtitleId),
+                subtitle = stringResource(id = R.string.product_creation_ai_entry_sheet_ai_option_subtitle_v2),
                 icon = painterResource(id = R.drawable.ic_ai),
                 onClick = onAIClick,
                 iconTint = MaterialTheme.colors.primary
