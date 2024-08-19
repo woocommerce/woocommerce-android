@@ -161,5 +161,4 @@ class WooPosTotalsViewModel @Inject constructor(
         val orderId: Long = EMPTY_ORDER_ID,
         val productIds: List<Long> = emptyList()
     ) : Parcelable
-
 }
