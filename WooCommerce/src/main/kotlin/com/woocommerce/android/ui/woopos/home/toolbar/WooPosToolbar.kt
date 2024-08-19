@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +43,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -75,6 +79,11 @@ private fun WooPosFloatingToolbar(
     val cardReaderStatus = state.value.cardReaderStatus
     val menu = state.value.menu
 
+    val labels = getToolbarAccessibilityLabels(
+        cardReaderStatus = cardReaderStatus,
+        menuCardDisabled = menu is Menu.Visible
+    )
+
     Box(modifier = Modifier.fillMaxSize()) {
         MenuOverlay(
             modifier = Modifier
@@ -83,7 +92,10 @@ private fun WooPosFloatingToolbar(
                 .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ) { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) },
+                ) { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
+                .semantics {
+                    contentDescription = labels.floatingToolbarMenuOverlayContentDescription
+                },
             isVisible = menu is Menu.Visible,
         )
 
@@ -93,10 +105,11 @@ private fun WooPosFloatingToolbar(
             when (menu) {
                 is Menu.Hidden -> {
                     Toolbar(
-                        modifier = Modifier.constrainAs(toolbar) {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                        },
+                        modifier = Modifier
+                            .constrainAs(toolbar) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                            },
                         cardReaderStatus = cardReaderStatus,
                         menuCardDisabled = false,
                         onUIEvent = onUIEvent
@@ -105,10 +118,11 @@ private fun WooPosFloatingToolbar(
 
                 is Menu.Visible -> {
                     Toolbar(
-                        modifier = Modifier.constrainAs(toolbar) {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                        },
+                        modifier = Modifier
+                            .constrainAs(toolbar) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                            },
                         cardReaderStatus = cardReaderStatus,
                         menuCardDisabled = true,
                         onUIEvent = onUIEvent
@@ -116,10 +130,14 @@ private fun WooPosFloatingToolbar(
 
                     val marginBetweenCards = 8.dp.toAdaptivePadding()
                     PopUpMenu(
-                        modifier = Modifier.constrainAs(popupMenu) {
-                            bottom.linkTo(toolbar.top, margin = marginBetweenCards)
-                            start.linkTo(toolbar.start)
-                        },
+                        modifier = Modifier
+                            .constrainAs(popupMenu) {
+                                bottom.linkTo(toolbar.top, margin = marginBetweenCards)
+                                start.linkTo(toolbar.start)
+                            }
+                            .semantics {
+                                contentDescription = labels.floatingToolbarPopUpMenuOpenContentDescription
+                            },
                         menuItems = menu.items,
                         onClick = { menuItem ->
                             onUIEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
@@ -152,6 +170,8 @@ private fun Toolbar(
     cardReaderStatus: WooPosCardReaderStatus,
     onUIEvent: (WooPosToolbarUIEvent) -> Unit
 ) {
+    val labels = getToolbarAccessibilityLabels(cardReaderStatus, menuCardDisabled)
+
     ConstraintLayout(modifier = modifier) {
         val (menuCard, cardReaderStatusCard) = createRefs()
         val marginBetweenCards = 8.dp.toAdaptivePadding()
@@ -163,6 +183,9 @@ private fun Toolbar(
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
+                }
+                .semantics {
+                    contentDescription = labels.cardReaderStatusContentDescription
                 },
             state = cardReaderStatus,
         ) { onUIEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked) }
@@ -174,6 +197,14 @@ private fun Toolbar(
                     top.linkTo(cardReaderStatusCard.top)
                     bottom.linkTo(cardReaderStatusCard.bottom)
                     height = Dimension.fillToConstraints
+                }
+                .semantics {
+                    contentDescription = if (menuCardDisabled) {
+                        labels.floatingToolbarPopUpMenuOpenContentDescription
+                    } else {
+                        labels.floatingToolbarPopUpMenuContentDescription
+                    }
+                    stateDescription = labels.floatingToolbarPopUpMenuStateDescription
                 },
             menuCardDisabled = menuCardDisabled,
         ) { onUIEvent(WooPosToolbarUIEvent.OnToolbarMenuClicked) }
@@ -369,6 +400,67 @@ private fun Circle(
         modifier = Modifier
             .size(size)
             .background(color = color, shape = CircleShape)
+    )
+}
+
+@Composable
+private fun getToolbarAccessibilityLabels(
+    cardReaderStatus: WooPosCardReaderStatus,
+    menuCardDisabled: Boolean
+): ToolbarAccessibilityLabels {
+    val floatingToolbarPopUpMenuOpenContentDescription = stringResource(
+        id = R.string.woopos_floating_toolbar_pop_up_menu_open_content_description
+    )
+
+    val cardReaderStatusContentDescription = when (cardReaderStatus) {
+        WooPosCardReaderStatus.Connected -> stringResource(
+            id = R.string.woopos_floating_toolbar_card_reader_connected_status_content_description
+        )
+        WooPosCardReaderStatus.NotConnected -> stringResource(
+            id = R.string.woopos_floating_toolbar_card_reader_not_connected_status_content_description
+        )
+    }
+    val floatingToolbarMenuOverlayContentDescription = when (menuCardDisabled) {
+        true -> {
+            stringResource(id = R.string.woopos_floating_toolbar_overlay_menu_content_description)
+        }
+        false -> {
+            ""
+        }
+    }
+
+    val floatingToolbarPopUpMenuContentDescription = when (menuCardDisabled) {
+        true -> {
+            stringResource(
+                id = R.string.woopos_floating_toolbar_pop_up_menu_open_content_description
+            )
+        }
+        false -> {
+            stringResource(
+                id = R.string.woopos_floating_toolbar_pop_up_menu_content_description
+            )
+        }
+    }
+
+    val floatingToolbarPopUpMenuStateDescription = when (menuCardDisabled) {
+        true -> {
+            stringResource(
+                id = R.string.woopos_floating_toolbar_menu_disabled_content_description
+            )
+        }
+        false -> {
+            stringResource(
+                id = R.string.woopos_floating_toolbar_menu_enabled_content_description
+            )
+        }
+    }
+
+    return ToolbarAccessibilityLabels(
+        cardReaderStatusContentDescription = cardReaderStatusContentDescription,
+        floatingToolbarPopUpMenuStateDescription = floatingToolbarPopUpMenuStateDescription,
+        floatingToolbarMenuOverlayContentDescription = floatingToolbarMenuOverlayContentDescription,
+        floatingToolbarPopUpMenuContentDescription = floatingToolbarPopUpMenuContentDescription,
+        floatingToolbarPopUpMenuOpenContentDescription = floatingToolbarPopUpMenuOpenContentDescription
     )
 }
 
