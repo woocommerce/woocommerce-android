@@ -1,7 +1,7 @@
 package com.woocommerce.android.wear.settings
 
 import android.content.Context
-import androidx.preference.PreferenceManager
+import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import com.google.android.gms.wearable.DataMap
 import com.google.gson.Gson
 import com.woocommerce.android.wear.settings.AppSettings.CrashReportEnabledSettings
@@ -14,8 +14,7 @@ class SettingsRepository @Inject constructor(
 ) {
     private val gson by lazy { Gson() }
 
-    private val preferences
-        get() = PreferenceManager.getDefaultSharedPreferences(appContext)
+    private val preferences by lazy { getDefaultSharedPreferences(appContext) }
 
     val crashReportEnabled: CrashReportEnabledSettings
         get() = CrashReportEnabledSettings(preferences)

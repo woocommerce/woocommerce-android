@@ -13,7 +13,7 @@ sealed class AppSettings<T> {
         override val key = this::class.simpleName.orEmpty()
 
         override var value: Boolean
-            get() = PreferenceUtils.getBoolean(preferences, key, false)
+            get() = PreferenceUtils.getBoolean(preferences, key, true)
             set(value) = PreferenceUtils.setBoolean(preferences, key, value)
     }
 }

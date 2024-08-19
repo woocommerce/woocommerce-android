@@ -51,6 +51,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,7 +64,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
@@ -338,8 +340,14 @@ private fun ProductItem(
     item: WooPosProductsListItem,
     onItemClicked: (item: WooPosProductsListItem) -> Unit
 ) {
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_content_description,
+        item.name,
+        item.price
+    )
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .semantics { contentDescription = itemContentDescription },
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {
@@ -358,7 +366,7 @@ private fun ProductItem(
                 fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                contentDescription = stringResource(id = R.string.woopos_product_image_description),
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(112.dp)
             )
@@ -433,7 +441,7 @@ fun ProductsError(onRetryClicked: () -> Unit) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        WooPosErrorState(
+        WooPosErrorScreen(
             modifier = Modifier.width(640.dp),
             message = stringResource(id = R.string.woopos_products_loading_error_title),
             reason = stringResource(id = R.string.woopos_products_loading_error_message),
