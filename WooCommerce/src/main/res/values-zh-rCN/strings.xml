@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-06 11:54:03+0000
+Translation-Revision-Date: 2024-08-13 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="woopos_success_screen_total">成功支付 %1$s</string>
     <string name="woopos_new_order_button">新订单</string>
     <string name="woopos_dialog_products_info_button_label">确定</string>
@@ -1698,7 +1698,7 @@ Language: zh_CN
     <string name="card_reader_interac_refund_refund_payment">退款</string>
     <string name="card_reader_interac_refund_refund_failed_header">退款失败</string>
     <string name="card_reader_interac_refund_refund_loading_header">正在准备退款</string>
-    <string name="copy">复制</string>
+    <string name="copy" tools:override="true">复制</string>
     <string name="coupons_list_search_hint">搜索优惠券</string>
     <string name="coupon_details_share_formatting_failure">无法生成优惠券代码共享信息</string>
     <string name="coupon_details_share_coupon_error">共享优惠券代码时出错。</string>
@@ -2959,7 +2959,7 @@ Language: zh_CN
     <string name="orderdetail_empty_address">未指定地址</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
-    <string name="enter_email_for_site">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">津巴布韦</string>
     <string name="country_mapping_ZM">赞比亚</string>
     <string name="country_mapping_YE">也门</string>
@@ -3555,8 +3555,8 @@ Language: zh_CN
     <string name="login_configure_link">请查看%1$s配置说明%2$s。</string>
     <string name="login_jetpack_required">这款应用程序需要安装 Jetpack 才能关联您的商店。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">输入您要关联的 WooCommerce 商店的地址。</string>
-    <string name="enter_email_wordpress_com">使用您的 WordPress.com 帐户电子邮件地址登录，管理您的 WooCommerce 商店。</string>
+    <string name="enter_site_address" content_override="true">输入您要关联的 WooCommerce 商店的地址。</string>
+    <string name="enter_email_wordpress_com" content_override="true">使用您的 WordPress.com 帐户电子邮件地址登录，管理您的 WooCommerce 商店。</string>
     <string name="already_logged_in_wpcom">您已登录 WordPress.com 帐户，不能添加被其他帐户绑定的 WordPress.com 站点。</string>
     <string name="cant_open_url">无法打开链接</string>
     <string name="error_no_sms_app">未找到任何短信应用程序</string>
@@ -3602,17 +3602,17 @@ Language: zh_CN
     <string name="notification_channel_general_title">常规</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>正在处理</item>
