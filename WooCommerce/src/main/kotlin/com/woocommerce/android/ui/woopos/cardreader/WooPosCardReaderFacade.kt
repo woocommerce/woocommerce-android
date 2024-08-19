@@ -38,7 +38,7 @@ class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderMa
                 WooPosCardReaderPaymentResult.Failure
             }
 
-            paymentContinuation?.resume(paymentResult!!)
+            paymentContinuation!!.resume(paymentResult!!)
         }
     }
 
