@@ -381,7 +381,7 @@ private fun CampaignPropertyItem(
             Modifier
                 .padding(end = 16.dp)
                 .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
                 text = item.displayTitle,
