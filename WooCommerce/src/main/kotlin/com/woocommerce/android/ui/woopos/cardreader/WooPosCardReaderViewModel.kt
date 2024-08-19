@@ -22,7 +22,7 @@ class WooPosCardReaderViewModel @Inject constructor(
                 if (orderId != -1L) {
                     WooPosCardReaderMode.Payment(orderId)
                 } else {
-                    val errorMessage = " Tried collecting payment with invalid orderId"
+                    val errorMessage = "Tried collecting payment with invalid orderId"
                     WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderViewModel - $errorMessage")
                     error(errorMessage)
                 }
