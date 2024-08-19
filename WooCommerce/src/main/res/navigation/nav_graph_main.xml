@@ -780,7 +780,7 @@
             app:popUpTo="@id/addProductWithAIBottomSheet"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragmentV2"
+            android:id="@+id/action_addProductWithAIBottomSheet_to_aiProductPromptFragment"
             app:destination="@id/AiProductPromptFragment" />
     </dialog>
     <fragment

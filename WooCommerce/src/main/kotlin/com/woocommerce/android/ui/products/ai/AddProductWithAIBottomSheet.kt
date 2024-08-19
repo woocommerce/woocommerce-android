@@ -77,7 +77,7 @@ class AddProductWithAIBottomSheet : WCBottomSheetDialogFragment() {
     private fun showAICreationFlow() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_ENTRY_POINT_TAPPED)
         findNavController().navigateSafely(
-            AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAddProductWithAIFragmentV2()
+            AddProductWithAIBottomSheetDirections.actionAddProductWithAIBottomSheetToAiProductPromptFragment()
         )
     }
 
