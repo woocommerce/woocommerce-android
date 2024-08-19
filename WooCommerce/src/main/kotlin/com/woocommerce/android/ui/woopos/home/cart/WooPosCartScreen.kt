@@ -384,9 +384,12 @@ private fun ProductItem(
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clearAndSetSemantics { })
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
                     Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                    Text(text = item.price, style = MaterialTheme.typography.body1,
+                    Text(
+                        text = item.price,
+                        style = MaterialTheme.typography.body1,
                         modifier = Modifier.clearAndSetSemantics { }
                     )
                 }
@@ -402,7 +405,8 @@ private fun ProductItem(
                         onClick = { onRemoveClicked(item) },
                         modifier = Modifier
                             .size(24.dp)
-                            .semantics { contentDescription = removeButtonContentDescription }) {
+                            .semantics { contentDescription = removeButtonContentDescription }
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
                             tint = MaterialTheme.colors.onBackground,
