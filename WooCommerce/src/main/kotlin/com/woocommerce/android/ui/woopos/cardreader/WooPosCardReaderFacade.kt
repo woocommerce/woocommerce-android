@@ -44,7 +44,6 @@ class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderMa
 
     override fun onDestroy(owner: LifecycleOwner) {
         activity = null
-        paymentContinuation = null
         paymentResultLauncher = null
     }
 
