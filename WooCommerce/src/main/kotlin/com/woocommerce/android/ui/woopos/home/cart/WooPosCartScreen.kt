@@ -324,17 +324,11 @@ private fun ProductItem(
     canRemoveItems: Boolean,
     onRemoveClicked: (item: WooPosCartState.Body.WithItems.Item) -> Unit
 ) {
-    var isVisible by remember { mutableStateOf(false) }
-
     val elevation by animateDpAsState(
-        targetValue = if (isVisible) 4.dp else 0.dp,
+        targetValue = if (item.isAppearanceAnimationPlayed) 4.dp else 0.dp,
         animationSpec = tween(durationMillis = 300, delayMillis = 300),
         label = "elevation"
     )
-
-    LaunchedEffect(item) {
-        isVisible = true
-    }
 
     val itemContentDescription = stringResource(
         id = R.string.woopos_cart_item_content_description,
@@ -344,7 +338,7 @@ private fun ProductItem(
 
     AnimatedVisibility(
         modifier = modifier,
-        visible = isVisible,
+        visible = item.isAppearanceAnimationPlayed,
         enter = fadeIn(
             animationSpec = tween(durationMillis = 300)
         )
@@ -439,19 +433,22 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             imageUrl = "",
                             name = "VW California, VW California VW California, VW California VW California, " +
                                 "VW California VW California, VW California,VW California",
-                            price = "€50,000"
+                            price = "€50,000",
+                            isAppearanceAnimationPlayed = true
                         ),
                         WooPosCartState.Body.WithItems.Item(
                             id = WooPosCartState.Body.WithItems.Item.Id(productId = 2L, itemNumber = 2),
                             imageUrl = "",
                             name = "VW California",
-                            price = "$150,000"
+                            price = "$150,000",
+                            isAppearanceAnimationPlayed = true
                         ),
                         WooPosCartState.Body.WithItems.Item(
                             id = WooPosCartState.Body.WithItems.Item.Id(productId = 3L, itemNumber = 3),
                             imageUrl = "",
                             name = "VW California",
-                            price = "€250,000"
+                            price = "€250,000",
+                            isAppearanceAnimationPlayed = true
                         )
                     )
                 ),

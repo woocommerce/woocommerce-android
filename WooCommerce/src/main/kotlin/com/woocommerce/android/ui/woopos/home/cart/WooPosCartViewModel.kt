@@ -227,6 +227,7 @@ class WooPosCartViewModel @Inject constructor(
             id = WooPosCartState.Body.WithItems.Item.Id(productId = remoteId, itemNumber = itemNumber),
             name = name,
             price = formatPrice(price),
-            imageUrl = firstImageUrl
+            imageUrl = firstImageUrl,
+            isAppearanceAnimationPlayed = false,
         )
 }
