@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.budget
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -407,7 +408,12 @@ private fun EditDurationBottomSheet(
                     onCheckedChange = { isEndlessCampaign = it },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = colorResource(id = color.color_primary),
-                        checkedTrackColor = colorResource(id = color.color_primary)
+                        checkedTrackColor = colorResource(id = color.color_primary),
+                        uncheckedThumbColor =
+                        when {
+                            isSystemInDarkTheme() -> colorResource(id = color.color_on_surface_medium)
+                            else -> MaterialTheme.colors.onSurface
+                        }
                     )
                 )
             }
