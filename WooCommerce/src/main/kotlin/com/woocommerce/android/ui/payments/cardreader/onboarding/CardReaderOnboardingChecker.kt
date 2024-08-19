@@ -228,15 +228,8 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
-        if (paymentAccount.status == PENDING_VERIFICATION) {
-            return OnboardingCompleted(
-                preferredPlugin.type,
-                preferredPlugin.info?.version,
-                requireNotNull(countryCode)
-            )
-        }
-
         if (
+            paymentAccount.status == PENDING_VERIFICATION &&
             !isCashOnDeliveryDisabledStateSkipped() &&
             !cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
         ) {
@@ -290,7 +283,6 @@ class CardReaderOnboardingChecker @Inject constructor(
                     )
                 }
             }
-
             else -> {
                 getPreferredPlugin(stripePluginInfo, wcPayPluginInfo)
             }
