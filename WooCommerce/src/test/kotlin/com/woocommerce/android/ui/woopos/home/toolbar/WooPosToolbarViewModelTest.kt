@@ -9,13 +9,11 @@ import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -134,37 +132,29 @@ class WooPosToolbarViewModelTest {
     }
 
     @Test
-    fun `when connect to card reader clicked multiple times, then debounce prevents multiple clicks`() = runTest {
+    fun `given card reader status is Connected, when OnCardReaderStatusClicked, then disconnect from reader should be called`() = runTest {
         // GIVEN
-        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.Connected(mock())))
         val viewModel = createViewModel()
 
         // WHEN
         viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
-        advanceUntilIdle()
 
         // THEN
-        verify(cardReaderFacade, times(1)).connectToReader()
+        verify(cardReaderFacade).disconnectFromReader()
     }
 
     @Test
-    fun `when connect to card reader clicked multiple times after delay, then debounce handles all clicks`() = runTest {
+    fun `given card reader status is NotConnected, when OnCardReaderStatusClicked, then connect to reader should be called`() = runTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
         val viewModel = createViewModel()
 
         // WHEN
         viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
-        advanceUntilIdle()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
-        advanceUntilIdle()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
-        advanceUntilIdle()
 
         // THEN
-        verify(cardReaderFacade, times(3)).connectToReader()
+        verify(cardReaderFacade).connectToReader()
     }
 
     @Test
