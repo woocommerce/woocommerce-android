@@ -88,7 +88,9 @@ class WooPosToolbarViewModel @Inject constructor(
     private fun handleOnCardReaderStatusClicked() {
         when (_state.value.cardReaderStatus) {
             WooPosToolbarState.WooPosCardReaderStatus.Connected -> {
-
+                viewModelScope.launch {
+                    cardReaderFacade.disconnectFromReader()
+                }
             }
             WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> cardReaderFacade.connectToReader()
         }

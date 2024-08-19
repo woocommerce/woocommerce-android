@@ -18,7 +18,9 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @ActivityRetainedScoped
-class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderManager) : DefaultLifecycleObserver {
+class WooPosCardReaderFacade @Inject constructor(
+    private val cardReaderManager: CardReaderManager
+) : DefaultLifecycleObserver {
     private var paymentContinuation: Continuation<WooPosCardReaderPaymentResult>? = null
     private var paymentResultLauncher: ActivityResultLauncher<Intent>? = null
     private var activity: AppCompatActivity? = null
@@ -63,5 +65,9 @@ class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderMa
             }
             paymentResultLauncher!!.launch(intent)
         }
+    }
+
+    suspend fun disconnectFromReader() {
+        cardReaderManager.disconnectReader()
     }
 }
