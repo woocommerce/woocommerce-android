@@ -415,7 +415,6 @@ private fun ProductItem(
         }
     }
 }
-}
 
 @Composable
 @WooPosPreview
