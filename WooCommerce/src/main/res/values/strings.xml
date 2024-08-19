@@ -4239,6 +4239,16 @@
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
     <string name="woopos_success_screen_total">A payment of %1$s was successfully made</string>
 
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Dimmed background. Tap to close the menu.</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Card reader connected</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Card reader not connected. Double tap to connect</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menu Enabled</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menu Disabled</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Toolbar with card reader status. Double tap to interact.</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Toolbar with card reader status. Menu is open. Double tap to interact.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Open toolbar menu</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Popup menu with options. Swipe to navigate through items.</string>
+
 
     <string name="customers_details_customer_section">Customer</string>
     <string name="customers_details_orders_section">Orders</string>
