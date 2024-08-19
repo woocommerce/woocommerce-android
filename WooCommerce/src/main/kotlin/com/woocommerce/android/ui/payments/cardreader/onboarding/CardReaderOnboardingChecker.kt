@@ -394,8 +394,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             paymentAccount.status == REJECTED_OTHER
 
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status != COMPLETE && paymentAccount.status != ENABLED &&
-            paymentAccount.status != PENDING_VERIFICATION
+        paymentAccount.status !in listOf(COMPLETE, ENABLED, PENDING_VERIFICATION)
 
     private fun updateSharedPreferences(
         status: CardReaderOnboardingStatus,
