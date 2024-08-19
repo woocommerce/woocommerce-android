@@ -334,7 +334,7 @@ private fun ProductItem(
                 fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                contentDescription = stringResource(R.string.woopos_product_image_description),
+                contentDescription = "${stringResource(R.string.woopos_product_image_description)} ${item.name}",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(64.dp)
             )
