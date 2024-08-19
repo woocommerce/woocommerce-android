@@ -1,0 +1,2 @@
+19.9:
+Hemos mejorado la experiencia de reembolso. A partir de ahora, los elementos de reembolso de la pantalla de reembolso incluirán campos detallados de impuestos y subtotal para que tengas más información sobre tus transacciones. Actualiza ahora para aumentar la transparencia y la fluidez de tus transacciones.
