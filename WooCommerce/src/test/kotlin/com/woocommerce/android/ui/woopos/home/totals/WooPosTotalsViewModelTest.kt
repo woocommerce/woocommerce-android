@@ -223,11 +223,14 @@ class WooPosTotalsViewModelTest {
             on { getString(any()) }.thenReturn(errorMessage)
         }
 
+        val savedState = createMockSavedStateHandle()
+
         // WHEN
         val viewModel = createViewModel(
             resourceProvider = resourceProvider,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             totalsRepository = totalsRepository,
+            savedState = savedState,
         )
 
         // THEN
@@ -357,16 +360,19 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `when order is created, then should track order creation success`() {
+    fun `when order is created, then should track order creation success`() = runTest {
+        // GIVEN
         val productIds = listOf(1L, 2L, 3L)
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
+
         val order = Order.getEmptyOrder(
             dateCreated = Date(),
             dateModified = Date()
         ).copy(
+            id = 123L,
             totalTax = BigDecimal("2.00"),
             items = listOf(
                 Order.Item.EMPTY.copy(
@@ -380,14 +386,33 @@ class WooPosTotalsViewModelTest {
                 )
             )
         )
+
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(Result.success(order))
         }
 
-        createViewModel(
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
         )
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(
+            WooPosTotalsViewState.Totals(
+                orderSubtotalText = "3.00$",
+                orderTaxText = "2.00$",
+                orderTotalText = "5.00$"
+            )
+        )
+        verify(totalsRepository).createOrderWithProducts(productIds)
     }
 
     @Test
