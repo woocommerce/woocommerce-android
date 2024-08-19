@@ -4197,6 +4197,8 @@
     <string name="woopos_banner_simple_products_only_message_learn_more">Learn more</string>
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
+    <string name="woopos_banner_simple_products_content_description">Simple products only banner</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Double tap to learn more</string>
 
     <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
     <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\nOther product types, such as variable and virtual, will be available in future updates.</string>
