@@ -780,23 +780,9 @@
             app:popUpTo="@id/addProductWithAIBottomSheet"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
-            app:destination="@id/addProductWithAIFragment" />
-        <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragmentV2"
             app:destination="@id/AiProductPromptFragment" />
     </dialog>
-    <fragment
-        android:id="@+id/addProductWithAIFragment"
-        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragment"
-        android:label="AddProductWithAIFragment">
-        <action
-            android:id="@+id/action_addProductWithAIFragment_to_AIProductNameBottomSheetFragment"
-            app:destination="@id/aiProductNameBottomSheetFragment" />
-        <action
-            android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
-            app:destination="@id/packagePhotoBottomSheetFragment" />
-    </fragment>
     <fragment
         android:id="@+id/AiProductPromptFragment"
         android:name="com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptFragment"
@@ -817,24 +803,6 @@
             app:argType="com.woocommerce.android.model.Image"
             app:nullable="true" />
     </fragment>
-    <dialog
-        android:id="@+id/aiProductNameBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
-        android:label="AIProductNameBottomSheetFragment">
-        <argument
-            android:name="initialName"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-    </dialog>
-    <dialog
-        android:id="@+id/packagePhotoBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ai.PackagePhotoBottomSheetFragment"
-        android:label="PackagePhotoBottomSheetFragment">
-        <argument
-            android:name="imageUrl"
-            app:argType="string" />
-    </dialog>
     <fragment
         android:id="@+id/blazeCampaignListFragment"
         android:name="com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListFragment"
