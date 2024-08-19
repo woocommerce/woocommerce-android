@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -114,10 +113,6 @@ private fun TotalsLoaded(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colors.background,
-                    shape = RoundedCornerShape(16.dp),
-                )
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -200,15 +195,9 @@ private fun TotalsGridRow(
 
 @Composable
 private fun TotalsLoading() {
-    Column(
-        modifier = Modifier
-            .background(
-                color = MaterialTheme.colors.background,
-                shape = RoundedCornerShape(16.dp),
-            )
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier
