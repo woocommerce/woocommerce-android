@@ -229,7 +229,6 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (isInUndefinedState(paymentAccount)) return GenericError
 
         if (
-            paymentAccount.status == PENDING_VERIFICATION &&
             !isCashOnDeliveryDisabledStateSkipped() &&
             !cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
         ) {
