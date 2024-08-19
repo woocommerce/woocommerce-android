@@ -11,18 +11,20 @@ import javax.inject.Inject
 class WooPosCardReaderViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
-    init {
-        when (val mode = savedStateHandle.get<WooPosCardReaderMode>(WOO_POS_CARD_READER_MODE_KEY)) {
+    val cardReaderMode: WooPosCardReaderMode = savedStateHandle.get<WooPosCardReaderMode>(WOO_POS_CARD_READER_MODE_KEY).run {
+        when(this) {
             is WooPosCardReaderMode.Connection -> {
-                triggerEvent(WooPosCardReaderEvent.Connection)
+                WooPosCardReaderMode.Connection
             }
-
             is WooPosCardReaderMode.Payment -> {
-                if (mode.orderId != -1L) {
-                    triggerEvent(WooPosCardReaderEvent.Payment(mode.orderId))
+                if (orderId != -1L) {
+                    WooPosCardReaderMode.Payment(orderId)
+                } else {
+                    val errorMessage = " Tried collecting payment with invalid orderId"
+                    WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderViewModel - $errorMessage")
+                    error(errorMessage)
                 }
             }
-
             null -> {
                 val errorMessage = "WooPosCardReaderMode not found in savedStateHandle"
                 WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderViewModel - $errorMessage")
