@@ -10,6 +10,8 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -49,6 +51,7 @@ class WooPosTotalsViewModelTest {
     }
 
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
@@ -424,6 +427,75 @@ class WooPosTotalsViewModelTest {
             verify(cardReaderFacade, times(5)).collectPayment(any())
         }
 
+    @Test
+    fun `when order is created, then should track order creation success`() {
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                )
+            )
+        )
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(Result.success(order))
+        }
+
+        createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+    }
+
+    @Test
+    fun `when fails to create order, then should track order creation failure`() = runTest {
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val errorMessage = "Order creation failed"
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
+                Result.failure(Exception(errorMessage))
+            )
+        }
+
+        val resourceProvider: ResourceProvider = mock {
+            on { getString(any()) }.thenReturn(errorMessage)
+        }
+
+        createViewModel(
+            resourceProvider = resourceProvider,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        verify(
+            analyticsTracker
+        ).track(
+            WooPosAnalyticsEvent.Error.OrderCreationError(
+                WooPosTotalsViewModel::class,
+                Exception::class.java.simpleName,
+                errorMessage
+            )
+        )
+    }
+
     private fun createViewModel(
         resourceProvider: ResourceProvider = mock(),
         parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock(),
@@ -438,6 +510,7 @@ class WooPosTotalsViewModelTest {
         cardReaderFacade,
         totalsRepository,
         priceFormat,
-        savedState
+        analyticsTracker,
+        savedState,
     )
 }

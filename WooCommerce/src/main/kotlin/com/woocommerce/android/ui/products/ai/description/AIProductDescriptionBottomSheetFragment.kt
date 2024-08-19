@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.copyToClipboard
@@ -25,6 +26,11 @@ class AIProductDescriptionBottomSheetFragment : WCBottomSheetDialogFragment() {
     }
 
     private val viewModel: AIProductDescriptionViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.Woo_Theme_BottomSheetDialog_Resizeable)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {

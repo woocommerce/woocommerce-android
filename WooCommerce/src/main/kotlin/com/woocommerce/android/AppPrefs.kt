@@ -43,9 +43,9 @@ import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.promobanner.PromoBannerType
-import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
+import com.woocommerce.commons.prefs.PreferenceUtils
 import java.util.Calendar
 import java.util.Date
 

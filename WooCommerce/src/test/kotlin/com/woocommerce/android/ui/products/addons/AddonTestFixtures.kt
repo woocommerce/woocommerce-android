@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.addons
 
+import com.google.gson.Gson
 import com.woocommerce.android.model.Order.Item.Attribute
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.util.UnitTestUtils.jsonFileAs
@@ -7,7 +8,10 @@ import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*
 import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.addons.RemoteAddonDto
+import org.wordpress.android.fluxc.model.get
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAddonMapper
 
@@ -49,14 +53,15 @@ object AddonTestFixtures {
             .apply {
                 attributes = "[]"
                 status = "draft"
-                metadata = "mocks/product_addon_metadata.json".jsonFileToString() ?: ""
             }
     }
 
     val defaultProductAddonList by lazy {
-        defaultWCProductModel
-            .addons
-            ?.map { remoteAddonDto -> RemoteAddonMapper.toDomain(remoteAddonDto) }
+        "mocks/product_addon_metadata.json".jsonFileToString()
+            ?.let { Gson().fromJson(it, Array<WCMetaData>::class.java).toList() }
+            ?.let { it[WCMetaData.AddOnsMetadataKeys.ADDONS_METADATA_KEY] }
+            ?.let { RemoteAddonDto.fromMetaDataValue(it.value) }
+            ?.map { RemoteAddonMapper.toDomain(it) }
             .orEmpty()
     }
 

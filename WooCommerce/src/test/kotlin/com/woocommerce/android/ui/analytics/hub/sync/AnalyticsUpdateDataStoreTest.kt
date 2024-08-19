@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics.hub.sync
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
@@ -170,6 +171,127 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         // Then
         assertThat(timestampUpdate).isNotNull()
         assertThat(timestampUpdate).isEqualTo(2000)
+    }
+
+    @Test
+    fun `given observe should emit last update for all data sources, when a data source is missing then return null`() = testBlocking {
+        // Given
+        val selectedSiteId = 1
+        val lastUpdateTimestamp = 2000L
+        val rangeId = defaultSelectionData.selectionType.identifier
+        val presentKey =
+            "${selectedSiteId}${AnalyticsUpdateDataStore.AnalyticData.REVENUE}$rangeId"
+
+        val analyticsPreferences = mock<Preferences> {
+            on { get(longPreferencesKey(presentKey)) } doReturn lastUpdateTimestamp
+        }
+
+        createAnalyticsUpdateScenarioWith(analyticsPreferences, selectedSiteId)
+
+        // When
+        var timestampUpdate: Long? = null
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = listOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            )
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNull()
+    }
+
+    @Test
+    fun `given observe should emit last update for all data sources, when all data source are present then return the oldest timestamp`() = testBlocking {
+        // Given
+        val selectedSiteId = 1
+        val oldLastUpdateTimestamp = 2000L
+        val newLastUpdateTimestamp = 2500L
+        val rangeId = defaultSelectionData.selectionType.identifier
+        val keyRevenue =
+            "${selectedSiteId}${AnalyticsUpdateDataStore.AnalyticData.REVENUE}$rangeId"
+        val keyVisitors =
+            "${selectedSiteId}${AnalyticsUpdateDataStore.AnalyticData.VISITORS}$rangeId"
+
+        val analyticsPreferences = mock<Preferences> {
+            on { get(longPreferencesKey(keyRevenue)) } doReturn newLastUpdateTimestamp
+            on { get(longPreferencesKey(keyVisitors)) } doReturn oldLastUpdateTimestamp
+        }
+
+        createAnalyticsUpdateScenarioWith(analyticsPreferences, selectedSiteId)
+
+        // When
+        var timestampUpdate: Long? = null
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = listOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            )
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNotNull()
+        assertThat(timestampUpdate).isEqualTo(oldLastUpdateTimestamp)
+    }
+
+    @Test
+    fun `given observe should emit last update, when all data sources are not required, if a data source is missing then return the available last update`() = testBlocking {
+        // Given
+        val selectedSiteId = 1
+        val lastUpdateTimestamp = 2000L
+        val rangeId = defaultSelectionData.selectionType.identifier
+        val presentKey =
+            "${selectedSiteId}${AnalyticsUpdateDataStore.AnalyticData.REVENUE}$rangeId"
+
+        val analyticsPreferences = mock<Preferences> {
+            on { get(longPreferencesKey(presentKey)) } doReturn lastUpdateTimestamp
+        }
+
+        createAnalyticsUpdateScenarioWith(analyticsPreferences, selectedSiteId)
+
+        // When
+        var timestampUpdate: Long? = null
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = listOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            ),
+            shouldAllDataBePresent = false
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNotNull()
+        assertThat(timestampUpdate).isEqualTo(lastUpdateTimestamp)
+    }
+
+    private fun createAnalyticsUpdateScenarioWith(
+        analyticsPreferences: Preferences,
+        selectedSiteId: Int
+    ) {
+        dataStore = mock {
+            on { data } doReturn flowOf(analyticsPreferences)
+        }
+
+        currentTimeProvider = mock()
+
+        val selectedSite: SelectedSite = mock {
+            on { getSelectedSiteId() } doReturn selectedSiteId
+        }
+
+        sut = AnalyticsUpdateDataStore(
+            dataStore = dataStore,
+            currentTimeProvider = currentTimeProvider,
+            selectedSite = selectedSite
+        )
     }
 
     private fun createAnalyticsUpdateScenarioWith(
