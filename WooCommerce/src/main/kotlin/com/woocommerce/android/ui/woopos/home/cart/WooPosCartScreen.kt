@@ -366,7 +366,9 @@ private fun ProductItem(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
                         tint = MaterialTheme.colors.onBackground,
-                        contentDescription = "Remove item",
+                        contentDescription = "${stringResource(
+                            id = R.string.woopos_remove_cart_item_content_description
+                        )} ${item.name}",
                     )
                 }
             }
