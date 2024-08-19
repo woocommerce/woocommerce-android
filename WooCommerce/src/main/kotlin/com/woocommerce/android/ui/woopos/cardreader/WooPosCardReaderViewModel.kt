@@ -11,8 +11,10 @@ import javax.inject.Inject
 class WooPosCardReaderViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
-    val cardReaderMode: WooPosCardReaderMode = savedStateHandle.get<WooPosCardReaderMode>(WOO_POS_CARD_READER_MODE_KEY).run {
-        when(this) {
+    val cardReaderMode: WooPosCardReaderMode = savedStateHandle.get<WooPosCardReaderMode>(
+        WOO_POS_CARD_READER_MODE_KEY
+    ).run {
+        when (this) {
             is WooPosCardReaderMode.Connection -> {
                 WooPosCardReaderMode.Connection
             }

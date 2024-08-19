@@ -9,12 +9,13 @@ import kotlinx.parcelize.Parcelize
 sealed class WooPosCardReaderMode(
     val cardReaderFlowParam: CardReaderFlowParam,
     val cardReaderType: CardReaderType
-): Parcelable {
+) : Parcelable {
     @Parcelize
     data object Connection : WooPosCardReaderMode(
         cardReaderFlowParam = CardReaderFlowParam.WooPosConnection,
         cardReaderType = CardReaderType.EXTERNAL
     )
+
     @Parcelize
     data class Payment(val orderId: Long) : WooPosCardReaderMode(
         cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(
