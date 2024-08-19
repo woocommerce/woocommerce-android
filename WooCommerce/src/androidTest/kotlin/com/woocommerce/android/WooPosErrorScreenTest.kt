@@ -1,7 +1,5 @@
 package com.woocommerce.android
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -9,7 +7,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -19,7 +17,7 @@ import org.junit.runner.RunWith
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class WooPosErrorStateTest {
+class WooPosErrorScreenTest {
 
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -39,8 +37,7 @@ class WooPosErrorStateTest {
 
         composeTestRule.setContent {
             WooPosTheme {
-                WooPosErrorState(
-                    icon = Icons.Default.Error,
+                WooPosErrorScreen(
                     message = testMessage,
                     reason = testReason
                 )
@@ -63,8 +60,7 @@ class WooPosErrorStateTest {
 
         composeTestRule.setContent {
             WooPosTheme {
-                WooPosErrorState(
-                    icon = Icons.Default.Error,
+                WooPosErrorScreen(
                     message = "Test Message",
                     reason = "Test Reason",
                     primaryButton = primaryButton,
