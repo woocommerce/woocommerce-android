@@ -195,7 +195,9 @@ private fun CheckMarkIcon(
         Icon(
             imageVector = Icons.Default.Check,
             tint = WooPosTheme.colors.success,
-            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
+            contentDescription = stringResource(
+                id = R.string.woopos_payment_successful_checkmark_icon_content_description
+            ),
             modifier = Modifier
                 .size(iconSize)
         )
