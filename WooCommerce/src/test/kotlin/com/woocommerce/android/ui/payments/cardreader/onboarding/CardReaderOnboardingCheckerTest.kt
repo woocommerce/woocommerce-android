@@ -1674,6 +1674,22 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `when status is pending verification and COD is disabled, then CashOnDeliveryDisabled returned`() = testBlocking {
+        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPaymentAccountStatus.PENDING_VERIFICATION,
+                hasPendingRequirements = false,
+                hadOverdueRequirements = false
+            )
+        )
+        whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).thenReturn(false)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+    }
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
         hasPendingRequirements: Boolean = false,
