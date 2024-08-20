@@ -531,9 +531,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_JETPACK_SETUP_TAP_SUPPORT = "support"
         const val VALUE_JETPACK_SETUP_TAP_TRY_AGAIN = "try_again"
 
-        // -- Login with WordPress.com account flow
-        const val VALUE_LOGIN_WITH_WORDPRESS_COM = "wordpress_com"
-
         // -- Upsell banner
         const val KEY_BANNER_SOURCE = "source"
         const val KEY_BANNER_CAMPAIGN_NAME = "campaign_name"
