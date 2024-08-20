@@ -16,9 +16,9 @@ sealed class LocalNotification(
     open val data: String? = null
     val id = type.hashCode()
 
-    open fun getTitleString(resourceProvider: ResourceProvider) = resourceProvider.getString(title)
+    fun getTitleString(resourceProvider: ResourceProvider) = resourceProvider.getString(title)
 
-    open fun getDescriptionString(resourceProvider: ResourceProvider) = resourceProvider.getString(description)
+    fun getDescriptionString(resourceProvider: ResourceProvider) = resourceProvider.getString(description)
 
     data class BlazeNoCampaignReminderNotification(
         override val siteId: Long,
