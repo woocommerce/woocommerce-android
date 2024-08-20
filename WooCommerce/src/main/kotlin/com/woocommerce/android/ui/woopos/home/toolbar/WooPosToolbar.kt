@@ -216,6 +216,7 @@ private fun MenuButtonWithPopUpMenu(
     menuCardDisabled: Boolean,
     onClick: () -> Unit
 ) {
+    val menuContentDescription = stringResource(id = R.string.woopos_menu_toolbar_content_description)
     Card(
         modifier = modifier,
         backgroundColor = MaterialTheme.colors.surface,
@@ -223,6 +224,7 @@ private fun MenuButtonWithPopUpMenu(
         shape = RoundedCornerShape(8.dp),
     ) {
         TextButton(
+            modifier = Modifier.semantics { contentDescription = menuContentDescription },
             onClick = onClick,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.textButtonColors(

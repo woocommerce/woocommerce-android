@@ -72,6 +72,7 @@ repositories {
             includeGroup "com.automattic"
             includeGroup "com.automattic.tracks"
             includeGroup "com.gravatar"
+            includeGroup "org.wordpress.aztec"
         }
     }
     maven {
@@ -281,13 +282,13 @@ dependencies {
         exclude group: "org.wordpress", module: "fluxc"
     }
 
-    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:$aztecVersion") {
+    implementation("org.wordpress:aztec:$aztecVersion") {
         exclude group: "com.android.volley"
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:glide-loader:$aztecVersion") {
+    implementation("org.wordpress.aztec:glide-loader:$aztecVersion") {
         exclude group: "com.android.volley"
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"

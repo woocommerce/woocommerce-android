@@ -44,6 +44,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -316,9 +319,15 @@ private fun ProductItem(
     canRemoveItems: Boolean,
     onRemoveClicked: (item: WooPosCartState.Body.WithItems.Item) -> Unit
 ) {
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_content_description,
+        item.name,
+        item.price
+    )
     Card(
         modifier = modifier
-            .height(64.dp),
+            .height(64.dp)
+            .semantics { contentDescription = itemContentDescription },
         elevation = 4.dp,
         shape = RoundedCornerShape(8.dp),
     ) {
@@ -334,8 +343,8 @@ private fun ProductItem(
                 fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                contentDescription = "${stringResource(R.string.woopos_product_image_description)} ${item.name}",
                 contentScale = ContentScale.Crop,
+                contentDescription = null,
                 modifier = Modifier.size(64.dp)
             )
 
@@ -349,26 +358,34 @@ private fun ProductItem(
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
                 Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                Text(text = item.price, style = MaterialTheme.typography.body1)
+                Text(
+                    text = item.price,
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.clearAndSetSemantics { }
+                )
             }
 
             if (canRemoveItems) {
                 Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
 
+                val removeButtonContentDescription = stringResource(
+                    id = R.string.woopos_remove_item_button_from_cart_content_description,
+                    item.name
+                )
                 IconButton(
                     onClick = { onRemoveClicked(item) },
                     modifier = Modifier
                         .size(24.dp)
+                        .semantics { contentDescription = removeButtonContentDescription }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
                         tint = MaterialTheme.colors.onBackground,
-                        contentDescription = "${stringResource(
-                            id = R.string.woopos_remove_cart_item_content_description
-                        )} ${item.name}",
+                        contentDescription = null,
                     )
                 }
             }
