@@ -58,6 +58,9 @@ fun WooPosProductInfoDialog(
     val primaryButtonContentDescription = stringResource(
         id = R.string.woopos_banner_simple_products_dialog_primary_button_content_description
     )
+    val dialogBackgroundContentDescription = stringResource(
+        id = R.string.woopos_dialog_products_info_background_content_description
+    )
 
     val animVisibleState = remember { MutableTransitionState(false) }
         .apply { targetState = true }
@@ -89,6 +92,9 @@ fun WooPosProductInfoDialog(
                     top = 100.dp.toAdaptivePadding(),
                     bottom = 100.dp.toAdaptivePadding()
                 )
+                .semantics {
+                    contentDescription = dialogBackgroundContentDescription
+                }
         ) {
             Box(
                 modifier = Modifier
