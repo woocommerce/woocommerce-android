@@ -35,8 +35,7 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
         )
 
         if (result.isSuccess) {
-            val remoteProducts = handler.productsFlow.first().filter { it.price != null }
-            productCache = remoteProducts.toList()
+            productCache = handler.productsFlow.first().filterUnsupportedProducts()
             emit(ProductsResult.Remote(Result.success(productCache)))
         } else {
             result.logFailure()
@@ -53,14 +52,15 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore()
         if (result.isSuccess) {
-            val moreProducts = handler.productsFlow.first().filter { it.price != null }
-            productCache = moreProducts.toList()
+            productCache = handler.productsFlow.first().filterUnsupportedProducts()
             Result.success(productCache)
         } else {
             result.logFailure()
             Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
         }
     }
+
+    private fun List<Product>.filterUnsupportedProducts() = this.filter { it.price != null }
 
     private fun Result<Unit>.logFailure() {
         val error = exceptionOrNull()
