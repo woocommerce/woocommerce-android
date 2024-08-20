@@ -33,7 +33,7 @@ class LocalNotificationScheduler @Inject constructor(
 
         workManager
             .beginUniqueWork(
-                LOCAL_NOTIFICATION_WORK_NAME + notification.type.value + notification.siteId,
+                LOCAL_NOTIFICATION_WORK_NAME + notification.tag,
                 REPLACE,
                 buildPreconditionCheckWorkRequest(notification)
             )
