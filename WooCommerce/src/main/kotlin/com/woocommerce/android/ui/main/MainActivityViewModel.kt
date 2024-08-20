@@ -264,7 +264,7 @@ class MainActivityViewModel @Inject constructor(
             )
             LocalNotificationType.fromString(notification.tag)?.let {
                 when (it) {
-                    BLAZE_NO_CAMPAIGN_REMINDER -> triggerEvent(ShowAllCampaigns)
+                    BLAZE_NO_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
                 }
             }
         }
@@ -314,7 +314,7 @@ class MainActivityViewModel @Inject constructor(
     ) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
-    object ShowAllCampaigns : Event()
+    object LaunchBlazeCampaignCreation : Event()
 
     sealed class RestartActivityEvent : Event()
     data class RestartActivityForLocalNotification(val notification: Notification) : RestartActivityEvent()
