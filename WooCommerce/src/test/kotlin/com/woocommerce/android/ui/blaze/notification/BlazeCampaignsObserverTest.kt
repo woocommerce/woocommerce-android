@@ -43,7 +43,7 @@ class BlazeCampaignsObserverTest {
     }
 
     @Test
-    fun whenNotificationShownBefore_notificationIsNotScheduled() = runTest {
+    fun `when notification shown before, then don't schedule notification`() = runTest {
         initBlazeCampaignsObserver(notificationShownBefore = true)
 
         blazeCampaignsObserver.observeAndScheduleNotifications()
@@ -52,7 +52,7 @@ class BlazeCampaignsObserverTest {
     }
 
     @Test
-    fun whenNoCampaign_notificationIsNotScheduled() = runTest {
+    fun `when no campaign, then don't schedule notification`() = runTest {
         initBlazeCampaignsObserver(campaigns = emptyList())
 
         blazeCampaignsObserver.observeAndScheduleNotifications()
@@ -61,7 +61,7 @@ class BlazeCampaignsObserverTest {
     }
 
     @Test
-    fun whenNoActiveCampaign_notificationIsNotScheduled() = runTest {
+    fun `when no active campaign, then don't schedule notification`() = runTest {
         initBlazeCampaignsObserver(campaigns = listOf(BLAZE_CAMPAIGN_ENTITY.copy(uiStatus = "rejected")))
 
         blazeCampaignsObserver.observeAndScheduleNotifications()
@@ -70,7 +70,7 @@ class BlazeCampaignsObserverTest {
     }
 
     @Test
-    fun whenCanceledWithZeroImpressionCampaign_notificationIsNotScheduled() = runTest {
+    fun `when canceled with zero Impression campaign, then don't schedule the notification`() = runTest {
         initBlazeCampaignsObserver(
             campaigns = listOf(BLAZE_CAMPAIGN_ENTITY.copy(uiStatus = "canceled", impressions = 0))
         )
@@ -81,7 +81,7 @@ class BlazeCampaignsObserverTest {
     }
 
     @Test
-    fun whenActiveCampaign_notificationIsScheduled() = runTest {
+    fun `when active campaign, schedule the notification`() = runTest {
         val campaign1 = BLAZE_CAMPAIGN_ENTITY
         val campaign2 = BLAZE_CAMPAIGN_ENTITY.copy(durationInDays = 8)
         val campaign3 = BLAZE_CAMPAIGN_ENTITY.copy(uiStatus = "completed")
