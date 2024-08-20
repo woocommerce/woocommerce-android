@@ -17,14 +17,14 @@ import javax.inject.Singleton
 
 @Singleton
 class WooPosProductsDataSource @Inject constructor(private val handler: ProductListHandler) {
-    private val productCache = mutableListOf<Product>()
+    private var productCache: List<Product> = emptyList()
 
     val hasMorePages: Boolean
         get() = handler.canLoadMore.get()
 
     fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         if (forceRefreshProducts) {
-            productCache.clear()
+            productCache = emptyList()
         }
 
         emit(ProductsResult.Cached(productCache))
@@ -36,9 +36,8 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
 
         if (result.isSuccess) {
             val remoteProducts = handler.productsFlow.first().filter { it.price != null }
-            productCache.clear()
-            productCache.addAll(remoteProducts)
-            emit(ProductsResult.Remote(Result.success(remoteProducts)))
+            productCache = remoteProducts.toList()
+            emit(ProductsResult.Remote(Result.success(productCache)))
         } else {
             result.logFailure()
             emit(
@@ -55,8 +54,8 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
         val result = handler.loadMore()
         if (result.isSuccess) {
             val moreProducts = handler.productsFlow.first().filter { it.price != null }
-            productCache.addAll(moreProducts)
-            Result.success(moreProducts)
+            productCache = moreProducts.toList()
+            Result.success(productCache)
         } else {
             result.logFailure()
             Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
