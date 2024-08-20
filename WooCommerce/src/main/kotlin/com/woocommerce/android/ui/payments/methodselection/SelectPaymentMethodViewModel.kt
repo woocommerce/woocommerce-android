@@ -79,6 +79,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val appPrefs: AppPrefs = AppPrefs,
     private val paymentsUtils: PaymentUtils,
+    private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -113,6 +114,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             }.also { order ->
                                 _order.value = order
                                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
+
+                                logOrderCurrencyMismatchWithSiteSettings(
+                                    storeCurrency = getSiteCurrencyCode(),
+                                    orderCurrency = order.currency
+                                )
                             }
 
                             when (param.paymentType) {
