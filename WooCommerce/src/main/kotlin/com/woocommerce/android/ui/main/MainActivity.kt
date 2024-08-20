@@ -80,7 +80,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForL
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForPushNotification
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
-import com.woocommerce.android.ui.main.MainActivityViewModel.ShowAllCampaigns
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
@@ -781,7 +780,6 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                ShowAllCampaigns -> showAllCampaigns()
                 is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
@@ -809,6 +807,10 @@ class MainActivity :
 
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
                 is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
+                MainActivityViewModel.LaunchBlazeCampaignCreation -> {
+                    // Propagate it to the DashboardBlazeCard
+                    event.isHandled = false
+                }
             }
         }
 
@@ -1002,10 +1004,6 @@ class MainActivity :
             launchedFromNotification = launchedFromNotification
         )
         navController.navigateSafely(action)
-    }
-
-    private fun showAllCampaigns() {
-        navController.navigateSafely(NavGraphMainDirections.actionGlobalBlazeCampaignListFragment())
     }
 
     private fun shortcutOpenOrderCreation() {
