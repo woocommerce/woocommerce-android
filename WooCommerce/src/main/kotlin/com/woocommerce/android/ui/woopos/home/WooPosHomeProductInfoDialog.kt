@@ -35,7 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -50,18 +52,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosProductInfoDialog(
     state: WooPosHomeState.ProductsInfoDialog.Visible,
     onDismissRequest: () -> Unit,
 ) {
-    val focusRequester = remember { FocusRequester() }
-    val dialogContentDescription = stringResource(
-        id = R.string.woopos_banner_simple_products_dialog_content_description
-    )
-    val combinedContentDescription = "$dialogContentDescription\n${stringResource(id = state.header)}" +
-        "\n${stringResource(id = state.primaryMessage)}\n${stringResource(id = state.secondaryMessage)}"
+    val dialogContentDescription = getCombinedContentDescription(state = state)
     val primaryButtonContentDescription = stringResource(
         id = R.string.woopos_banner_simple_products_dialog_primary_button_content_description
     )
@@ -100,9 +98,8 @@ fun WooPosProductInfoDialog(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .focusRequester(focusRequester)
-                    .semantics {
-                        contentDescription = combinedContentDescription
+                    .semantics(mergeDescendants = true) {
+                        contentDescription = dialogContentDescription
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -143,13 +140,17 @@ fun WooPosProductInfoDialog(
                                 onClick = {
                                     animVisibleState.targetState = false
                                 },
-                                modifier = Modifier.constrainAs(closeIcon) {
-                                    top.linkTo(parent.top)
-                                    end.linkTo(parent.end)
-                                }
+                                modifier = Modifier
+                                    .constrainAs(closeIcon) {
+                                        top.linkTo(parent.top)
+                                        end.linkTo(parent.end)
+                                    }
+                                    .focusable(enabled = false)
                             ) {
                                 Icon(
-                                    modifier = Modifier.size(35.dp),
+                                    modifier = Modifier
+                                        .size(35.dp)
+                                        .focusable(enabled = false),
                                     imageVector = Icons.Default.Close,
                                     tint = MaterialTheme.colors.onSurface,
                                     contentDescription = stringResource(
@@ -225,12 +226,18 @@ fun WooPosProductInfoDialog(
                         }
                     }
                 }
-                LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
-                }
             }
         }
     }
+}
+
+@Composable
+private fun getCombinedContentDescription(state: WooPosHomeState.ProductsInfoDialog.Visible): String {
+    val dialogContentDescription = stringResource(
+        id = R.string.woopos_banner_simple_products_dialog_content_description
+    )
+    return "$dialogContentDescription\n${stringResource(id = state.header)}" +
+        "\n${stringResource(id = state.primaryMessage)}\n${stringResource(id = state.secondaryMessage)}"
 }
 
 @WooPosPreview
