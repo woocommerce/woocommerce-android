@@ -504,6 +504,15 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     }
 
     @Test
+    fun `given card_declined with incorrect_pin, when terminal exception thrown, then incorrect pin type returned`() {
+        setupStripeApiCardDeclined("incorrect_pin")
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.IncorrectPin)
+    }
+
+    @Test
     fun `given card_declined with pin_try_exceeded, when terminal exception thrown, then too many pin type returned`() {
         setupStripeApiCardDeclined("pin_try_exceeded")
 
