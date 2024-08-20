@@ -41,8 +41,10 @@ data class WooPosHomeState(
 
     @Parcelize
     sealed class ProductsInfoDialog : Parcelable {
+        @Parcelize
         data object Hidden : ProductsInfoDialog()
 
+        @Parcelize
         data class Visible(
             @StringRes val header: Int,
             @StringRes val primaryMessage: Int,
