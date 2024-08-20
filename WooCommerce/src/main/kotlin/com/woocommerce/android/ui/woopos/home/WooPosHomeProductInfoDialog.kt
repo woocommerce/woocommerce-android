@@ -171,7 +171,7 @@ fun WooPosProductInfoDialog(
                                     Box(
                                         Modifier
                                             .clip(RoundedCornerShape(8.dp))
-                                            .background(color = MaterialTheme.colors.background)
+                                            .background(color = WooPosTheme.colors.dialogSubtitleHighlightBackground)
                                             .padding(16.dp.toAdaptivePadding()),
                                         contentAlignment = Alignment.Center,
                                     ) {
