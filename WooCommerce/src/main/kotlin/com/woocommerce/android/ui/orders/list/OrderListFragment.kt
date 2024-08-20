@@ -297,7 +297,7 @@ class OrderListFragment :
             adjustLayoutForTablet()
         } else {
             adjustLayoutForNonTablet(savedInstanceState)
-            savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1)
+            savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1) // TODO
         }
     }
 
@@ -316,7 +316,7 @@ class OrderListFragment :
     }
 
     private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1) != -1) {
+        if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1) != -1) {// used to be tablet and now is phone
             displayDetailPaneOnly()
         } else {
             displayListPaneOnly()
@@ -353,12 +353,23 @@ class OrderListFragment :
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
-            val navHostFragment = childFragmentManager.findFragmentById(R.id.detailPaneContainer) as? NavHostFragment
-            val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
-            outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
+        if (findNavController().currentDestination?.id == R.id.orders) {
+            // We need to check we are in the order list fragment because onSaveInstanceState
+            // is called in all the fragments in the back stack.
+            if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+                // it's tablet
+                val navHostFragment =
+                    childFragmentManager.findFragmentById(R.id.detailPaneContainer) as? NavHostFragment
+                val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
+                outState.putInt(
+                    CURRENT_NAV_DESTINATION,
+                    currentDestinationId ?: -1
+                )
+            }
         }
     }
+
+
 
     override fun onDestroyView() {
         disableSearchListeners()
