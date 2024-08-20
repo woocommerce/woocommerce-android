@@ -9,6 +9,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,7 +34,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +56,16 @@ fun WooPosProductInfoDialog(
     state: WooPosHomeState.ProductsInfoDialog.Visible,
     onDismissRequest: () -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
+    val dialogContentDescription = stringResource(
+        id = R.string.woopos_banner_simple_products_dialog_content_description
+    )
+    val combinedContentDescription = "$dialogContentDescription\n${stringResource(id = state.header)}" +
+        "\n${stringResource(id = state.primaryMessage)}\n${stringResource(id = state.secondaryMessage)}"
+    val primaryButtonContentDescription = stringResource(
+        id = R.string.woopos_banner_simple_products_dialog_primary_button_content_description
+    )
+
     val animVisibleState = remember { MutableTransitionState(false) }
         .apply { targetState = true }
     LaunchedEffect(animVisibleState) {
@@ -83,7 +98,12 @@ fun WooPosProductInfoDialog(
                 )
         ) {
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .focusRequester(focusRequester)
+                    .semantics {
+                        contentDescription = combinedContentDescription
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Card(
@@ -182,7 +202,11 @@ fun WooPosProductInfoDialog(
                                     onClick = {
                                         animVisibleState.targetState = false
                                     },
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .semantics {
+                                            contentDescription = primaryButtonContentDescription
+                                        },
                                     border = BorderStroke(2.dp, MaterialTheme.colors.primary),
                                     shape = RoundedCornerShape(8.dp),
                                 ) {
@@ -200,6 +224,9 @@ fun WooPosProductInfoDialog(
                             }
                         }
                     }
+                }
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
                 }
             }
         }
