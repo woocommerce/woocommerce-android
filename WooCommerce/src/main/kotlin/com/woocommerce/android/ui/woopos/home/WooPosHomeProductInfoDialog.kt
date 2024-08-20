@@ -18,11 +18,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -80,123 +81,121 @@ fun WooPosProductInfoDialog(
                     end = 100.dp.toAdaptivePadding(),
                     top = 100.dp.toAdaptivePadding(),
                     bottom = 100.dp.toAdaptivePadding()
-                )
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colors.background,
+                elevation = 8.dp,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
             ) {
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = 8.dp,
+                Box(
                     modifier = Modifier
-                        .padding(16.dp)
                         .fillMaxWidth()
+                        .background(MaterialTheme.colors.background)
+                        .padding(56.dp.toAdaptivePadding()),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(40.dp.toAdaptivePadding()),
-                        contentAlignment = Alignment.Center
+                    ConstraintLayout(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        ConstraintLayout(
-                            modifier = Modifier.fillMaxWidth()
+                        val (header, closeIcon, content) = createRefs()
+
+                        Text(
+                            text = stringResource(id = state.header),
+                            style = MaterialTheme.typography.h4,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                            modifier = Modifier
+                                .padding(bottom = 16.dp)
+                                .constrainAs(header) {
+                                    top.linkTo(closeIcon.bottom)
+                                    start.linkTo(parent.start)
+                                    end.linkTo(parent.end)
+                                    width = Dimension.preferredWrapContent
+                                }
+                        )
+
+                        IconButton(
+                            onClick = {
+                                animVisibleState.targetState = false
+                            },
+                            modifier = Modifier.constrainAs(closeIcon) {
+                                top.linkTo(parent.top)
+                                end.linkTo(parent.end)
+                            }
                         ) {
-                            val (header, closeIcon, content) = createRefs()
-
-                            Text(
-                                text = stringResource(id = state.header),
-                                style = MaterialTheme.typography.h4,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
-                                modifier = Modifier
-                                    .padding(bottom = 16.dp)
-                                    .constrainAs(header) {
-                                        top.linkTo(closeIcon.bottom)
-                                        start.linkTo(parent.start)
-                                        end.linkTo(parent.end)
-                                        width = Dimension.preferredWrapContent
-                                    }
+                            Icon(
+                                modifier = Modifier.size(35.dp),
+                                imageVector = Icons.Default.Close,
+                                tint = MaterialTheme.colors.onSurface,
+                                contentDescription = stringResource(
+                                    id = R.string.woopos_banner_simple_products_close_content_description
+                                ),
                             )
+                        }
 
-                            IconButton(
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.constrainAs(content) {
+                                top.linkTo(header.bottom)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(id = state.primaryMessage),
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 24.sp,
+                                    lineHeight = 32.sp
+                                ),
+                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(bottom = 16.dp)
+                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(color = WooPosTheme.colors.dialogSubtitleHighlightBackground)
+                                    .padding(16.dp),
+                            ) {
+                                Text(
+                                    text = stringResource(id = state.secondaryMessage),
+                                    style = MaterialTheme.typography.subtitle1,
+                                    textAlign = TextAlign.Center,
+                                    fontWeight = FontWeight.Normal,
+                                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(40.dp))
+                            OutlinedButton(
                                 onClick = {
                                     animVisibleState.targetState = false
                                 },
-                                modifier = Modifier.constrainAs(closeIcon) {
-                                    top.linkTo(parent.top)
-                                    end.linkTo(parent.end)
-                                }
-                            ) {
-                                Icon(
-                                    modifier = Modifier.size(35.dp),
-                                    imageVector = Icons.Default.Close,
-                                    tint = MaterialTheme.colors.onSurface,
-                                    contentDescription = stringResource(
-                                        id = R.string.woopos_banner_simple_products_close_content_description
-                                    ),
-                                )
-                            }
-
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.constrainAs(content) {
-                                    top.linkTo(header.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                }
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                border = BorderStroke(2.dp, MaterialTheme.colors.primary),
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    backgroundColor = MaterialTheme.colors.background
+                                ),
                             ) {
                                 Text(
-                                    text = stringResource(id = state.primaryMessage),
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 24.sp,
-                                        lineHeight = 32.sp
-                                    ),
-                                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp)
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 22.dp.toAdaptivePadding(),
+                                            bottom = 22.dp.toAdaptivePadding(),
+                                        ),
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.h5,
+                                    text = stringResource(id = state.primaryButton.label)
                                 )
-                                Box(
-                                    Modifier
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(color = MaterialTheme.colors.background)
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text(
-                                            text = stringResource(id = state.secondaryMessage),
-                                            style = MaterialTheme.typography.subtitle1,
-                                            textAlign = TextAlign.Center,
-                                            fontWeight = FontWeight.Normal,
-                                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
-                                        )
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(40.dp))
-                                OutlinedButton(
-                                    onClick = {
-                                        animVisibleState.targetState = false
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    border = BorderStroke(2.dp, MaterialTheme.colors.primary),
-                                    shape = RoundedCornerShape(8.dp),
-                                ) {
-                                    Text(
-                                        modifier = Modifier
-                                            .padding(
-                                                top = 22.dp.toAdaptivePadding(),
-                                                bottom = 22.dp.toAdaptivePadding(),
-                                            ),
-                                        fontWeight = FontWeight.Bold,
-                                        style = MaterialTheme.typography.h5,
-                                        text = stringResource(id = state.primaryButton.label)
-                                    )
-                                }
                             }
                         }
                     }
