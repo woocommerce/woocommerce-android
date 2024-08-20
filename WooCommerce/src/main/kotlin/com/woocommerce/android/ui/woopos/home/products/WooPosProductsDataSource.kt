@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
@@ -18,13 +20,14 @@ import javax.inject.Singleton
 @Singleton
 class WooPosProductsDataSource @Inject constructor(private val handler: ProductListHandler) {
     private var productCache: List<Product> = emptyList()
+    private val cacheMutex = Mutex()
 
     val hasMorePages: Boolean
         get() = handler.canLoadMore.get()
 
     fun loadSimpleProducts(forceRefreshProducts: Boolean): Flow<ProductsResult> = flow {
         if (forceRefreshProducts) {
-            productCache = emptyList()
+            updateProductCache(emptyList())
         }
 
         emit(ProductsResult.Cached(productCache))
@@ -35,7 +38,8 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
         )
 
         if (result.isSuccess) {
-            productCache = handler.productsFlow.first().filterUnsupportedProducts()
+            val remoteProducts = handler.productsFlow.first().filterValidProducts()
+            updateProductCache(remoteProducts)
             emit(ProductsResult.Remote(Result.success(productCache)))
         } else {
             result.logFailure()
@@ -52,7 +56,8 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore()
         if (result.isSuccess) {
-            productCache = handler.productsFlow.first().filterUnsupportedProducts()
+            val moreProducts = handler.productsFlow.first().filterValidProducts()
+            updateProductCache(moreProducts)
             Result.success(productCache)
         } else {
             result.logFailure()
@@ -60,7 +65,13 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
         }
     }
 
-    private fun List<Product>.filterUnsupportedProducts() = this.filter { it.price != null }
+    private fun List<Product>.filterValidProducts(): List<Product> {
+        return this.filter { it.price != null }
+    }
+
+    private suspend fun updateProductCache(newList: List<Product>) {
+        cacheMutex.withLock { productCache = newList }
+    }
 
     private fun Result<Unit>.logFailure() {
         val error = exceptionOrNull()
