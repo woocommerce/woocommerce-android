@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.Conne
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.MenuItemClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
+import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class WooPosToolbarViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
+    private val getSupportFacade: WooPosGetSupportFacade,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosToolbarState(
@@ -75,7 +77,7 @@ class WooPosToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
-            R.string.woopos_get_support_title -> TODO()
+            R.string.woopos_get_support_title -> getSupportFacade.openSupportForm()
             R.string.woopos_exit_confirmation_title ->
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)

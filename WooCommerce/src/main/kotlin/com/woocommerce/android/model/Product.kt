@@ -89,6 +89,8 @@ data class Product(
     val isConfigurable: Boolean = false,
     val minAllowedQuantity: Int?,
     val maxAllowedQuantity: Int?,
+    val bundleMinSize: Float?,
+    val bundleMaxSize: Float?,
     val groupOfQuantity: Int?,
     val combineVariationQuantities: Boolean?
 ) : Parcelable, IProduct {
@@ -585,6 +587,8 @@ fun WCProductModel.toAppModel(): Product {
         isConfigurable = isConfigurable,
         minAllowedQuantity = this.getMinAllowedQuantity(),
         maxAllowedQuantity = this.maxAllowedQuantity(),
+        bundleMinSize = this.bundleMinSize,
+        bundleMaxSize = this.bundleMaxSize,
         groupOfQuantity = this.groupOfQuantity(),
         combineVariationQuantities = this.combineVariationQuantities
     )

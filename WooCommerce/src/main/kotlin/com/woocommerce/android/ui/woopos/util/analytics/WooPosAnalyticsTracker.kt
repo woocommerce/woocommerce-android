@@ -14,14 +14,14 @@ class WooPosAnalyticsTracker @Inject constructor(
         withContext(Dispatchers.IO) {
             analytics.addProperties(commonPropertiesProvider.commonProperties)
             when (analytics) {
-                is WooPosAnalytics.Event -> {
+                is WooPosAnalyticsEvent.Event -> {
                     analyticsTrackerWrapper.track(
                         analytics,
                         analytics.properties
                     )
                 }
 
-                is WooPosAnalytics.Error -> {
+                is WooPosAnalyticsEvent.Error -> {
                     analyticsTrackerWrapper.track(
                         analytics,
                         analytics.properties,
