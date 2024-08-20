@@ -152,7 +152,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun buildSuccessState(
+    private suspend fun buildSuccessState(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,
         isPaymentCollectableWithTapToPay: Boolean,
@@ -496,10 +496,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun formatOrderTotal(total: BigDecimal): String {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+    private suspend fun formatOrderTotal(total: BigDecimal): String {
+        val currencyCode = getSiteCurrencyCode()
         return currencyFormatter.formatCurrency(total, currencyCode)
     }
+
+    private suspend fun getSiteCurrencyCode() =
+        withContext(dispatchers.io) {
+            wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+        }
 
     private fun isWooPOSPaymentFlow() = with(navArgs.cardReaderFlowParam) {
         this is Payment && paymentType == WOO_POS
