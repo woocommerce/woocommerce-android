@@ -39,7 +39,7 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     }
 
     @Parcelize
-    object NonPurchasableProducts: ProductRestriction() {
+    object NonPurchasableProducts : ProductRestriction() {
         override fun invoke(product: Product): Boolean {
             return product.status != ProductStatus.PUBLISH && product.status != ProductStatus.PRIVATE
         }
