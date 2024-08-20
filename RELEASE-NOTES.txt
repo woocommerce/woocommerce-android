@@ -3,8 +3,8 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 20.1
 -----
-
 - [*****] [Internal] Update Aztec from v1.3.45 to v2.1.4 [https://github.com/woocommerce/woocommerce-android/pull/12316]
+- [*] Fixed a rare crash in the order editing screen. [https://github.com/woocommerce/woocommerce-android/pull/12382]
 
 20.0
 -----
