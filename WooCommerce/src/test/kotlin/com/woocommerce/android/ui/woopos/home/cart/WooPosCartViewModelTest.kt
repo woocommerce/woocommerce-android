@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -19,6 +21,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.test.Test
@@ -51,6 +54,8 @@ class WooPosCartViewModelTest {
     private val formatPrice: WooPosFormatPrice = mock {
         onBlocking { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")
     }
+
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private val savedState: SavedStateHandle = SavedStateHandle()
 
@@ -359,6 +364,30 @@ class WooPosCartViewModelTest {
             assertThat(toolbar.isClearAllButtonVisible).isFalse()
         }
 
+    @Test
+    fun `when item added to cart, then should track analytics event`() = runTest {
+        // GIVEN
+        val product = ProductTestUtils.generateProduct(
+            productId = 23L,
+            productName = "title",
+            amount = "10.0"
+        ).copy(firstImageUrl = "url")
+
+        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
+        val sut = createSut()
+        sut.state.captureValues()
+
+        // WHEN
+        parentToChildrenEventsMutableFlow.emit(
+            ParentToChildrenEvent.ItemClickedInProductSelector(product.remoteId)
+        )
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemAddedToCart)
+    }
+
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
             childrenToParentEventSender,
@@ -366,6 +395,7 @@ class WooPosCartViewModelTest {
             getProductById,
             resourceProvider,
             formatPrice,
+            analyticsTracker,
             savedState
         )
     }

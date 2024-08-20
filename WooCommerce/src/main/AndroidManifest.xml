@@ -294,6 +294,14 @@
             </intent-filter>
 
             <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/request-app-settings"
+                    android:scheme="wear" />
+            </intent-filter>
+
+            <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
                 <data
                     android:host="*"

@@ -42,6 +42,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -186,6 +188,7 @@ private fun MenuButtonWithPopUpMenu(
     menuCardDisabled: Boolean,
     onClick: () -> Unit
 ) {
+    val menuContentDescription = stringResource(id = R.string.woopos_menu_toolbar_content_description)
     Card(
         modifier = modifier,
         backgroundColor = MaterialTheme.colors.surface,
@@ -193,6 +196,7 @@ private fun MenuButtonWithPopUpMenu(
         shape = RoundedCornerShape(8.dp),
     ) {
         TextButton(
+            modifier = Modifier.semantics { contentDescription = menuContentDescription },
             onClick = onClick,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.textButtonColors(
@@ -208,7 +212,7 @@ private fun MenuButtonWithPopUpMenu(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 repeat(3) {
-                    Circle(size = 4.dp, color = MaterialTheme.colors.primary)
+                    Circle(size = 4.dp, color = MaterialTheme.colors.onSurface)
                     if (it < 2) {
                         Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
                     }
@@ -293,7 +297,7 @@ private fun CardReaderStatusButton(
         label = "TextColorTransition"
     ) { status ->
         when (status) {
-            WooPosCardReaderStatus.Connected -> MaterialTheme.colors.secondary
+            WooPosCardReaderStatus.Connected -> MaterialTheme.colors.onSurface
             WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.primary
         }
     }

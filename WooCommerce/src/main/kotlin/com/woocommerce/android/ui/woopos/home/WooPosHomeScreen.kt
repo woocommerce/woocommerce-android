@@ -6,7 +6,6 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -125,39 +124,29 @@ private fun WooPosHomeScreen(
     totalsWidthDp: Dp,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
+    ) {
         Row(
             modifier = Modifier
                 .horizontalScroll(scrollState, enabled = false)
                 .fillMaxWidth(),
         ) {
-            Row(modifier = Modifier.width(productsWidthDp)) {
-                WooPosHomeScreenProducts(
-                    modifier = Modifier
-                        .width(productsWidthDp)
-                )
-            }
-            Row(
+            WooPosHomeScreenProducts(
                 modifier = Modifier
-                    .width(cartWidthDp)
+                    .width(productsWidthDp)
+            )
+            WooPosHomeScreenCart(
+                modifier = Modifier
                     .background(MaterialTheme.colors.surface)
-            ) {
-                Box {
-                    WooPosHomeScreenCart(
-                        modifier = Modifier
-                            .width(cartWidthDp)
-                    )
-                }
-            }
-            Row(
-                modifier = Modifier.width(totalsWidthDp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                WooPosHomeScreenTotals(
-                    modifier = Modifier
-                        .width(totalsWidthDp)
-                )
-            }
+                    .width(cartWidthDp)
+            )
+            WooPosHomeScreenTotals(
+                modifier = Modifier
+                    .width(totalsWidthDp)
+            )
         }
 
         WooPosHomeScreenToolbar(
