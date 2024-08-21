@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -75,6 +74,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -362,8 +362,6 @@ class OrderListFragment :
             }
         }
     }
-
-
 
     override fun onDestroyView() {
         disableSearchListeners()
