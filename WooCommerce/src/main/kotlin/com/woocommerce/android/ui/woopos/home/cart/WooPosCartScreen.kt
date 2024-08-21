@@ -334,21 +334,21 @@ private fun ProductItem(
 
     val elevation by animateDpAsState(
         targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 400, delayMillis = 300),
+        animationSpec = tween(durationMillis = 150, delayMillis = 100),
         label = "elevation"
     )
 
     val itemHeight = 64.dp
     val offsetY by animateDpAsState(
         targetValue = if (hasAnimationStarted) 0.dp else -itemHeight,
-        animationSpec = tween(durationMillis = 100),
+        animationSpec = tween(durationMillis = 70),
         label = "offsetY"
     )
 
     val alpha by animateFloatAsState(
         targetValue = if (hasAnimationStarted) 1f else 0f,
         animationSpec = tween(
-            durationMillis = 400,
+            durationMillis = 200,
             easing = LinearEasing
         ),
         label = "alpha"
