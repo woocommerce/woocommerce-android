@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -64,7 +65,7 @@ class WooPosBannerTest : TestBase() {
     }
 
     @Test
-    fun testWooPosBannerIsDisplayedOnProductsScreen()  = runTest {
+    fun testWooPosSimpleProductsOnlyBannerIsDisplayedOnProductsScreen()  = runTest {
 
         composeTestRule.waitUntil(5000) {
             try {
@@ -79,6 +80,25 @@ class WooPosBannerTest : TestBase() {
 
         composeTestRule.onNodeWithTag(
             "woo_pos_simple_products_banner"
+        ).assertIsDisplayed()
+    }
+
+    @Test
+    fun testWooPosSimpleProductsOnlyBannerTitleIsDisplayedOnBanner()  = runTest {
+
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+
+        composeTestRule.onNodeWithText(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_title)
         ).assertIsDisplayed()
     }
 
