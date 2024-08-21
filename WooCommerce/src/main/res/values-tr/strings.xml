@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 09:54:03+0000
+Translation-Revision-Date: 2024-08-14 09:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_success_screen_total">%1$s tutarındaki bir ödeme başarıyla alındı</string>
+    <string name="woopos_new_order_button">Yeni sipariş</string>
+    <string name="woopos_dialog_products_info_button_label">Tamam</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Mağaza yönetiminde sipariş oluşturun</string>
+    <string name="woopos_dialog_products_info_secondary_message">Temel olmayan bir ürünün ödemesini almak için POS\'tan çıkın ve siparişler sekmesinden yeni sipariş oluşturun.</string>
+    <string name="woopos_dialog_products_info_primary_message">Şu anda POS ile yalnızca basit fiziksel ürünler kullanılabiliyor.\nDeğişken ve sanal gibi diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak.</string>
+    <string name="woopos_dialog_products_info_heading">Ürünlerimi neden göremiyorum?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Bilgi</string>
+    <string name="woopos_banner_simple_products_close_content_description">Kapat</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Daha fazla bilgi edinin</string>
+    <string name="woopos_banner_simple_products_only_message">Şu anda POS ile yalnızca basit fiziksel ürünler uyumlu. Değişken ve sanal gibi diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak. </string>
+    <string name="woopos_banner_simple_products_only_title">Yalnızca basit ürünler gösteriliyor</string>
+    <string name="support_request_site_address">Site Adresi</string>
+    <string name="analytics_google_ads_cta_web_view_title">WooCommerce İçin Google</string>
+    <string name="analytics_google_ads_cta_action">Ücretli kampanya ekle</string>
+    <string name="analytics_google_ads_cta_description">Google Ads ile satışları teşvik edin ve trafiği artırın.</string>
+    <string name="analytics_google_ads_cta_title">Google Kampanyaları</string>
     <string name="google_ads_campaign_created_success_done_button">Tamam</string>
     <string name="google_ads_campaign_created_success_description">Yeni kampanyanız oluşturuldu. Önümüzdeki günlerde satışlarınızla ilgili harika gelişmeler olacak!</string>
     <string name="google_ads_campaign_created_success_title">Her Şey Hazır!</string>
     <string name="woopos_totals_order_creation_error">Sipariş oluşturulamadı</string>
-    <string name="woopos_products_loading_error_retry_button">Yeniden dene</string>
+    <string name="woopos_products_loading_error_retry_button">Tekrar dene</string>
     <string name="woopos_error_icon_content_description">Hata göstergesi simgesi</string>
     <string name="woopos_products_loading_error_message">Bir kez daha denemek ister misiniz?</string>
     <string name="woopos_products_loading_error_title">Ürünler yüklenirken hata oluştu</string>
@@ -103,7 +120,6 @@ Language: tr
     <string name="woopos_payment_total_label">Toplam</string>
     <string name="woopos_payment_tax_label">Vergi</string>
     <string name="woopos_payment_subtotal_label">Ara Toplam</string>
-    <string name="woopos_new_transaction_button">Yeni işlem</string>
     <string name="woopos_payment_successful_label">Ödeme başarılı</string>
     <string name="woopos_payment_failed_please_try_again">Ödeme başarısız. Lütfen tekrar deneyin.</string>
     <string name="woopos_cart_back_content_description">Sepet simgesi</string>
@@ -1682,7 +1698,7 @@ Language: tr
     <string name="card_reader_interac_refund_refund_payment">Geri ödeme yap</string>
     <string name="card_reader_interac_refund_refund_failed_header">Para iadesi yapılamadı</string>
     <string name="card_reader_interac_refund_refund_loading_header">Ödeme için geri ödeme hazırlanıyor</string>
-    <string name="copy">Kopyala</string>
+    <string name="copy" tools:override="true">Kopyala</string>
     <string name="coupons_list_search_hint">Kuponları ara</string>
     <string name="coupon_details_share_formatting_failure">Kupon kodu paylaşım mesajı oluşturulamıyor</string>
     <string name="coupon_details_share_coupon_error">Kupon kodu paylaşılırken hata oluştu.</string>
@@ -2943,7 +2959,7 @@ Language: tr
     <string name="orderdetail_empty_address">Adres belirtilmedi</string>
     <string name="login_need_help_finding_connected_email">Bağlanırken kullandığınız e-postayı bulmak için yardıma mı ihtiyacınız var?</string>
     <string name="enter_wordpress_site">Bu adresteki web sitesi bir WordPress sitesi değil. Siteyle bağlantı kurabilmemiz için sitede WordPress yüklü olmalıdır.</string>
-    <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
+    <string name="enter_email_for_site" content_override="true">&lt;b&gt;%1$s&lt;/b&gt; ile bağlanmak için WordPress.com hesabınıza giriş yapın</string>
     <string name="country_mapping_ZW">Zimbabve</string>
     <string name="country_mapping_ZM">Zambiya</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -3539,8 +3555,8 @@ Language: tr
     <string name="login_configure_link">%1$sYapılandırma talimatlarını%2$s okuyun.</string>
     <string name="login_jetpack_required">Bu uygulama Jetpack\'in mağazanıza bağlanmasını gerektiriyor.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Bağlanmak istediğiniz WooCommerce mağazasının adresini girin.</string>
-    <string name="enter_email_wordpress_com">WooCommerce mağazalarınızı yönetmek için WordPress.com hesabınızın e-posta adresi ile oturum açın.</string>
+    <string name="enter_site_address" content_override="true">Bağlanmak istediğiniz WooCommerce mağazasının adresini girin.</string>
+    <string name="enter_email_wordpress_com" content_override="true">WooCommerce mağazalarınızı yönetmek için WordPress.com hesabınızın e-posta adresi ile oturum açın.</string>
     <string name="already_logged_in_wpcom">Zaten WordPress.com hesabınıza giriş yapmış durumdasınız, başka bir hesapla ilişkişi WordPress.com hesabını ekleyemezsiniz.</string>
     <string name="cant_open_url">Bağlantı açılamıyor</string>
     <string name="error_no_sms_app">SMS uygulaması bulunmadı</string>
@@ -3586,17 +3602,17 @@ Language: tr
     <string name="notification_channel_general_title">Genel</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>İşlemde</item>

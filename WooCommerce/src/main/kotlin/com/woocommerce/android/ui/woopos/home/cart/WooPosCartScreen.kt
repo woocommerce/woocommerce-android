@@ -2,7 +2,9 @@
 
 package com.woocommerce.android.ui.woopos.home.cart
 
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -16,10 +18,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -34,9 +36,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -44,6 +49,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,6 +65,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 
@@ -73,7 +82,7 @@ fun WooPosCartScreen(modifier: Modifier = Modifier) {
 private fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
-    onUIEvent: (WooPosCartUIEvent) -> Unit
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -81,6 +90,7 @@ private fun WooPosCartScreen(
                 top = 40.dp.toAdaptivePadding(),
                 bottom = 16.dp.toAdaptivePadding()
             )
+            .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
         Column {
@@ -99,7 +109,8 @@ private fun WooPosCartScreen(
                     CartBodyWithItems(
                         items = state.body.itemsInCart,
                         areItemsRemovable = state.areItemsRemovable,
-                    ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(it)) }
+                        onUIEvent = onUIEvent,
+                    )
                 }
             }
         }
@@ -115,6 +126,20 @@ private fun WooPosCartScreen(
             )
         }
     }
+    val cartOverlayIntensityAnimated by animateFloatAsState(
+        when (state.body) {
+            WooPosCartState.Body.Empty -> .6f
+            is WooPosCartState.Body.WithItems -> 0f
+        },
+        label = "cartOverlayAnimated"
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
+            )
+    )
 }
 
 @Composable
@@ -140,20 +165,20 @@ fun CartBodyEmpty() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartBodyWithItems(
     items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
-    onItemRemoved: (item: WooPosCartState.Body.WithItems.Item) -> Unit
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
 
     val listState = rememberLazyListState()
     ScrollToBottomHandler(items, listState)
 
-    LazyColumn(
+    WooPosLazyColumn(
         modifier = Modifier
-            .fillMaxSize()
             .padding(horizontal = 16.dp.toAdaptivePadding()),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
@@ -166,9 +191,10 @@ private fun CartBodyWithItems(
         ) { item ->
             ProductItem(
                 modifier = Modifier.animateItemPlacement(),
-                item,
-                areItemsRemovable
-            ) { onItemRemoved(item) }
+                item = item,
+                canRemoveItems = areItemsRemovable,
+                onUIEvent = onUIEvent,
+            )
         }
         item {
             Spacer(modifier = Modifier.height(72.dp))
@@ -299,12 +325,54 @@ private fun ProductItem(
     modifier: Modifier = Modifier,
     item: WooPosCartState.Body.WithItems.Item,
     canRemoveItems: Boolean,
-    onRemoveClicked: (item: WooPosCartState.Body.WithItems.Item) -> Unit
+    onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
+    var hasAnimationStarted by remember { mutableStateOf(item.isAppearanceAnimationPlayed) }
+    LaunchedEffect(Unit) {
+        hasAnimationStarted = true
+    }
+
+    val elevation by animateDpAsState(
+        targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
+        animationSpec = tween(durationMillis = 150, delayMillis = 100),
+        label = "elevation"
+    )
+
+    val itemHeight = 64.dp
+    val offsetY by animateDpAsState(
+        targetValue = if (hasAnimationStarted) 0.dp else -itemHeight,
+        animationSpec = tween(durationMillis = 70),
+        label = "offsetY"
+    )
+
+    val alpha by animateFloatAsState(
+        targetValue = if (hasAnimationStarted) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 200,
+            easing = LinearEasing
+        ),
+        label = "alpha"
+    )
+
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_content_description,
+        item.name,
+        item.price
+    )
+
+    LaunchedEffect(alpha) {
+        if (alpha == 1f) {
+            onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
+        }
+    }
+
     Card(
         modifier = modifier
-            .height(64.dp),
-        elevation = 4.dp,
+            .offset(y = offsetY)
+            .height(itemHeight)
+            .semantics { contentDescription = itemContentDescription }
+            .graphicsLayer(alpha = alpha),
+        elevation = elevation,
         shape = RoundedCornerShape(8.dp),
     ) {
         Row(
@@ -319,7 +387,7 @@ private fun ProductItem(
                 fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                contentDescription = stringResource(R.string.woopos_product_image_description),
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(64.dp)
             )
@@ -334,24 +402,34 @@ private fun ProductItem(
                     style = MaterialTheme.typography.body1,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
                 Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                Text(text = item.price, style = MaterialTheme.typography.body1)
+                Text(
+                    text = item.price,
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.clearAndSetSemantics { }
+                )
             }
 
             if (canRemoveItems) {
                 Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
 
+                val removeButtonContentDescription = stringResource(
+                    id = R.string.woopos_remove_item_button_from_cart_content_description,
+                    item.name
+                )
                 IconButton(
-                    onClick = { onRemoveClicked(item) },
+                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
                     modifier = Modifier
                         .size(24.dp)
+                        .semantics { contentDescription = removeButtonContentDescription }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
                         tint = MaterialTheme.colors.onBackground,
-                        contentDescription = "Remove item",
+                        contentDescription = null,
                     )
                 }
             }
@@ -379,19 +457,22 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             imageUrl = "",
                             name = "VW California, VW California VW California, VW California VW California, " +
                                 "VW California VW California, VW California,VW California",
-                            price = "€50,000"
+                            price = "€50,000",
+                            isAppearanceAnimationPlayed = true
                         ),
                         WooPosCartState.Body.WithItems.Item(
                             id = WooPosCartState.Body.WithItems.Item.Id(productId = 2L, itemNumber = 2),
                             imageUrl = "",
                             name = "VW California",
-                            price = "$150,000"
+                            price = "$150,000",
+                            isAppearanceAnimationPlayed = true
                         ),
                         WooPosCartState.Body.WithItems.Item(
                             id = WooPosCartState.Body.WithItems.Item.Id(productId = 3L, itemNumber = 3),
                             imageUrl = "",
                             name = "VW California",
-                            price = "€250,000"
+                            price = "€250,000",
+                            isAppearanceAnimationPlayed = true
                         )
                     )
                 ),
@@ -420,19 +501,22 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             id = WooPosCartState.Body.WithItems.Item.Id(productId = 1L, itemNumber = 1),
                             imageUrl = "",
                             name = "VW California",
-                            price = "€50,000"
+                            price = "€50,000",
+                            isAppearanceAnimationPlayed = true
                         ),
                         WooPosCartState.Body.WithItems.Item(
                             id = WooPosCartState.Body.WithItems.Item.Id(productId = 2L, itemNumber = 2),
                             imageUrl = "",
                             name = "VW California",
-                            price = "$150,000"
+                            price = "$150,000",
+                            isAppearanceAnimationPlayed = true
                         ),
                         WooPosCartState.Body.WithItems.Item(
                             id = WooPosCartState.Body.WithItems.Item.Id(productId = 3L, itemNumber = 3),
                             imageUrl = "",
                             name = "VW California",
-                            price = "€250,000"
+                            price = "€250,000",
+                            isAppearanceAnimationPlayed = true
                         )
                     )
                 ),

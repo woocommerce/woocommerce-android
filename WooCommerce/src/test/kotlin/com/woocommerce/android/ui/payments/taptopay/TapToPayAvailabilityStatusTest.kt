@@ -16,7 +16,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class TapToPayAvailabilityStatusTest {
     private val systemVersionUtilsWrapper = mock<SystemVersionUtilsWrapper> {
-        on { isAtLeastQ() }.thenReturn(true)
+        on { isAtLeastR() }.thenReturn(true)
     }
     private val cardReaderCountryConfigProvider: CardReaderCountryConfigProvider = mock {
         on { provideCountryConfigFor("US") }.thenReturn(CardReaderConfigForUSA)
@@ -45,7 +45,7 @@ class TapToPayAvailabilityStatusTest {
     fun `given device has no NFC, when invoking, then nfc disabled returned`() {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(false)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
 
         val result = availabilityStatus.invoke()
 
@@ -56,7 +56,7 @@ class TapToPayAvailabilityStatusTest {
     fun `given device has no Google Play Services, when invoking, then GPS not available`() {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(false)
-        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
 
         val result = availabilityStatus.invoke()
 
@@ -64,10 +64,10 @@ class TapToPayAvailabilityStatusTest {
     }
 
     @Test
-    fun `given device has os less than Android 9, when invoking, then system is not supported returned`() {
+    fun `given device has os less than Android 10, when invoking, then system is not supported returned`() {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(false)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(false)
 
         val result = availabilityStatus.invoke()
 
@@ -78,7 +78,7 @@ class TapToPayAvailabilityStatusTest {
     fun `given country other than US, when invoking, then country is not supported returned`() {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
         whenever(wooStore.getStoreCountryCode(siteModel)).thenReturn("RU")
 
         val result = availabilityStatus.invoke()
@@ -90,7 +90,7 @@ class TapToPayAvailabilityStatusTest {
     fun `given device satisfies all the requirements, when invoking, then tpp available returned`() {
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
-        whenever(systemVersionUtilsWrapper.isAtLeastQ()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
 
         val result = availabilityStatus.invoke()
 

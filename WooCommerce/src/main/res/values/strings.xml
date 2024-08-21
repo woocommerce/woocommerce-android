@@ -216,8 +216,6 @@
     <string name="login_store_address">Log In</string>
     <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
-    <string name="login_with_qr_code">Scan QR code to login</string>
-    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
     <string name="login_application_passwords_help">What are Application Passwords?</string>
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
@@ -3495,7 +3493,6 @@
     <string name="login_magic_links_email_sent">We just sent a magic link to</string>
     <string name="login_magic_links_email_sent_to_unknown_email">We just sent a magic link to your account\'s email address</string>
     <string name="login_site_picker_try_another_address">Try another address</string>
-    <string name="or_scan_qr_code_to_log_in">Scan QR code to log in</string>
     <string name="or_use_password_below_qr_code_scan_option">Or log in with password</string>
     <!--
     Stats widgets
@@ -3799,6 +3796,12 @@
     <string name="shipping_notice_dismiss">Dismiss</string>
 
     <!--
+   Local Notifications
+   -->
+    <string name="local_notification_blaze_no_campaign_reminder_title">Boost your sales</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
+
+    <!--
     First product published congratulatory feature
     -->
     <string name="first_product_celebration_title">First product created 🎉</string>
@@ -3878,6 +3881,7 @@
     <string name="blaze_campaign_status_scheduled">Scheduled</string>
     <string name="blaze_campaign_status_rejected">Rejected</string>
     <string name="blaze_campaign_status_canceled">Canceled</string>
+    <string name="blaze_campaign_status_suspended">Suspended</string>
     <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_clicks">Clicks</string>
     <string name="blaze_campaign_status_budget">Budget</string>
@@ -4190,12 +4194,14 @@
     Woo POS
     -->
     <string name="woopos_exit_pos">Exit POS</string>
-    <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout">Checkout</string>
-    <string name="woopos_reader_unknown">Reader Status Unknown</string>
+    <string name="woopos_reader_unknown">Reader status unknown</string>
     <string name="woopos_checkout_button">Check out</string>
-    <string name="woopos_remove_item_from_cart_content_description">Remove item from cart</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Remove %s from cart</string>
+    <string name="woopos_product_item_content_description">Product %s, Price %s</string>
+    <string name="woopos_cart_item_content_description">Product in cart %s, Price %s</string>
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
@@ -4213,21 +4219,23 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
-    <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
-    <string name="woopos_exit_confirmation_confirm_button">Exit</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
+    <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
+    <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
+    <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_items_in_cart">%d item</string>
     <string name="woopos_items_in_cart_multiple">%d items</string>
-    <string name="woopos_product_image_description">Product Image</string>
     <string name="woopos_products_screen_title">Products</string>
     <string name="woopos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
-    <string name="woopos_payment_tax_label">Tax</string>
+    <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
-    <string name="woopos_payment_collect_payment_label">Collect Card Payment</string>
+    <string name="woopos_payment_collect_payment_label">Collect card payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>

@@ -72,6 +72,7 @@ repositories {
             includeGroup "com.automattic"
             includeGroup "com.automattic.tracks"
             includeGroup "com.gravatar"
+            includeGroup "org.wordpress.aztec"
         }
     }
     maven {
@@ -240,6 +241,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
+    implementation "androidx.transition:transition-ktx:$transitionVersion"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation("androidx.browser:browser:1.5.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
@@ -280,13 +282,13 @@ dependencies {
         exclude group: "org.wordpress", module: "fluxc"
     }
 
-    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:$aztecVersion") {
+    implementation("org.wordpress:aztec:$aztecVersion") {
         exclude group: "com.android.volley"
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation("com.github.wordpress-mobile.WordPress-Aztec-Android:glide-loader:$aztecVersion") {
+    implementation("org.wordpress.aztec:glide-loader:$aztecVersion") {
         exclude group: "com.android.volley"
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
@@ -325,6 +327,10 @@ dependencies {
     implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'
 
     implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
+    implementation "com.google.android.gms:play-services-mlkit-text-recognition-japanese:$mlkitTextRecognitionVersion"
+    implementation "com.google.android.gms:play-services-mlkit-text-recognition-chinese:$mlkitTextRecognitionVersion"
+    implementation "com.google.android.gms:play-services-mlkit-text-recognition-korean:$mlkitTextRecognitionVersion"
+
     implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
 
     implementation "com.google.zxing:core:3.5.3"
@@ -400,7 +406,7 @@ dependencies {
     }
 
     // ViewModel and LiveData
-    implementation "androidx.fragment:fragment-ktx:1.6.1"
+    implementation "androidx.fragment:fragment-ktx:1.8.2"
     implementation "androidx.activity:activity-ktx:1.8.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"

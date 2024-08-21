@@ -1,10 +1,11 @@
 package com.woocommerce.android.ui.woopos.home
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,10 +14,13 @@ import javax.inject.Inject
 class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val _state = MutableStateFlow(
-        WooPosHomeState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Hidden,
+    private val _state = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        key = "home_state",
+        initialValue = WooPosHomeState(
+            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
             productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden,
             exitConfirmationDialog = null
         )
@@ -129,17 +133,23 @@ class WooPosHomeViewModel @Inject constructor(
     }
 
     private fun handleProductsStatusChanged(event: ChildToParentEvent.ProductsStatusChanged) {
+        val screenPosition = _state.value.screenPositionState
         val newScreenPositionState = when (event) {
-            ChildToParentEvent.ProductsStatusChanged.FullScreen -> WooPosHomeState.ScreenPositionState.Cart.Hidden
+            ChildToParentEvent.ProductsStatusChanged.FullScreen -> {
+                when (screenPosition) {
+                    is WooPosHomeState.ScreenPositionState.Cart -> WooPosHomeState.ScreenPositionState.Cart.Hidden
+                    is WooPosHomeState.ScreenPositionState.Checkout -> screenPosition
+                }
+            }
             ChildToParentEvent.ProductsStatusChanged.WithCart -> {
-                when (val value = _state.value.screenPositionState) {
+                when (screenPosition) {
                     WooPosHomeState.ScreenPositionState.Cart.Hidden ->
                         WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
 
                     WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
                     WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
                     WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-                    WooPosHomeState.ScreenPositionState.Checkout.Paid -> value
+                    WooPosHomeState.ScreenPositionState.Checkout.Paid -> screenPosition
                 }
             }
         }

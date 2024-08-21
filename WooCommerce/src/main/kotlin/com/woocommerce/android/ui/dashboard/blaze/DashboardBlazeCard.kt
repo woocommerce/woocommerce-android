@@ -55,12 +55,14 @@ import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.launch
 
 @Composable
 fun DashboardBlazeCard(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    activityViewModel: MainActivityViewModel,
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
     viewModel: DashboardBlazeViewModel = viewModelWithFactory { factory: DashboardBlazeViewModel.Factory ->
@@ -77,6 +79,7 @@ fun DashboardBlazeCard(
     }
 
     HandleEvents(
+        activityViewModel.event,
         viewModel.event,
         blazeCampaignCreationDispatcher
     )
@@ -84,6 +87,7 @@ fun DashboardBlazeCard(
 
 @Composable
 private fun HandleEvents(
+    activityEvent: LiveData<MultiLiveEvent.Event>,
     event: LiveData<MultiLiveEvent.Event>,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
@@ -93,6 +97,16 @@ private fun HandleEvents(
     val campaignDetailsTitle = stringResource(id = R.string.blaze_campaign_details_title)
 
     DisposableEffect(event, navController, lifecycleOwner) {
+        val activityObserver = Observer { event: MultiLiveEvent.Event ->
+            when (event) {
+                is MainActivityViewModel.LaunchBlazeCampaignCreation -> coroutineScope.launch {
+                    blazeCampaignCreationDispatcher.startCampaignCreation(
+                        source = BlazeFlowSource.LOCAL_NOTIFICATION_NO_CAMPAIGN_REMINDER
+                    )
+                }
+            }
+        }
+
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
                 is DashboardBlazeViewModel.LaunchBlazeCampaignCreation -> coroutineScope.launch {
@@ -120,9 +134,11 @@ private fun HandleEvents(
             }
         }
 
+        activityEvent.observe(lifecycleOwner, activityObserver)
         event.observe(lifecycleOwner, observer)
 
         onDispose {
+            event.removeObserver(activityObserver)
             event.removeObserver(observer)
         }
     }

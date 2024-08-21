@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 19:54:05+0000
+Translation-Revision-Date: 2024-08-14 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_success_screen_total">Se ha efectuado correctamente un pago de %1$s</string>
+    <string name="woopos_new_order_button">Nuevo pedido</string>
+    <string name="woopos_dialog_products_info_button_label">Aceptar</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Crear un pedido en la gestión de la tienda</string>
+    <string name="woopos_dialog_products_info_secondary_message">Para aceptar el pago de un producto no sencillo, sal de TPV y crea un nuevo pedido desde la pestaña de pedidos.</string>
+    <string name="woopos_dialog_products_info_primary_message">En estos momentos, solo se pueden utilizar productos físicos sencillos con TPV.\nOtros tipos de productos, como los variables y los virtuales, estarán disponibles en futuras actualizaciones.</string>
+    <string name="woopos_dialog_products_info_heading">¿Por qué no puedo ver mis productos?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Información</string>
+    <string name="woopos_banner_simple_products_close_content_description">Cerrar</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Más información</string>
+    <string name="woopos_banner_simple_products_only_message">En estos momentos, solo los productos físicos sencillos son compatibles con TPV. Otros tipos de productos, como los variables y los virtuales, estarán disponibles en futuras actualizaciones. </string>
+    <string name="woopos_banner_simple_products_only_title">Mostrar solo productos sencillos</string>
+    <string name="support_request_site_address">Dirección del sitio</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google para WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Añadir campaña de pago</string>
+    <string name="analytics_google_ads_cta_description">Dirige las ventas y genera más tráfico con Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Campañas de Google</string>
     <string name="google_ads_campaign_created_success_done_button">Hecho</string>
     <string name="google_ads_campaign_created_success_description">Se ha creado tu nueva campaña. ¡Se avecinan momentos emocionantes para tus ventas!</string>
     <string name="google_ads_campaign_created_success_title">¡Todo listo!</string>
@@ -103,7 +120,6 @@ Language: es
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_tax_label">Impuesto</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
-    <string name="woopos_new_transaction_button">Nueva transacción</string>
     <string name="woopos_payment_successful_label">Pago correcto</string>
     <string name="woopos_payment_failed_please_try_again">Error de pago. Inténtalo de nuevo.</string>
     <string name="woopos_cart_back_content_description">Icono de carrito</string>
@@ -1682,7 +1698,7 @@ Language: es
     <string name="card_reader_interac_refund_refund_payment">Pago del reembolso</string>
     <string name="card_reader_interac_refund_refund_failed_header">No se ha podido realizar el reembolso.</string>
     <string name="card_reader_interac_refund_refund_loading_header">El pago del reembolso se está preparando.</string>
-    <string name="copy">Copiar</string>
+    <string name="copy" tools:override="true">Copiar</string>
     <string name="coupons_list_search_hint">Buscar cupones</string>
     <string name="coupon_details_share_formatting_failure">No se puede generar un mensaje de uso compartido del código de cupón</string>
     <string name="coupon_details_share_coupon_error">Se ha producido un error al compartir el código de cupón.</string>
@@ -2943,7 +2959,7 @@ Language: es
     <string name="orderdetail_empty_address">No se ha indicado ninguna dirección</string>
     <string name="login_need_help_finding_connected_email">¿Necesitas ayuda para saber la dirección de correo electrónico con la que te conectaste?</string>
     <string name="enter_wordpress_site">Esta dirección no pertenece a un sitio de WordPress. El sitio debe tener instalado WordPress para que podamos conectarnos a él.</string>
-    <string name="enter_email_for_site">Iniciar sesión en WordPress.com para conectarse a &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">Iniciar sesión en WordPress.com para conectarse a &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">Zimbabue</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -3539,8 +3555,8 @@ Language: es
     <string name="login_configure_link">Lee las %1$sinstrucciones de configuración%2$s.</string>
     <string name="login_jetpack_required">Esta aplicación requiere que Jetpack esté conectado a tu tienda.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Introduce la dirección de la tienda de WooCommerce que quieres conectar.</string>
-    <string name="enter_email_wordpress_com">Accede con la dirección de correo electrónico de tu cuenta de WordPress.com para gestionar tus tiendas WooCommerce.</string>
+    <string name="enter_site_address" content_override="true">Introduce la dirección de la tienda de WooCommerce que quieres conectar.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Accede con la dirección de correo electrónico de tu cuenta de WordPress.com para gestionar tus tiendas WooCommerce.</string>
     <string name="already_logged_in_wpcom">Ya estás registrado en una cuenta de WordPress.com, no se puede agregar un sitio de WordPress.com a otra cuenta.</string>
     <string name="cant_open_url">No fue posible abrir el enlace</string>
     <string name="error_no_sms_app">No se ha encontrado ninguna aplicación de SMS.</string>
@@ -3586,17 +3602,17 @@ Language: es
     <string name="notification_channel_general_title">General</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>Se está procesando</item>

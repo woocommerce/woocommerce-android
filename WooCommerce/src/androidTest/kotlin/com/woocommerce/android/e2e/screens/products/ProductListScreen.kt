@@ -140,6 +140,17 @@ class ProductListScreen : Screen {
     }
 
     fun assertProductCard(product: ProductData): ProductListScreen {
+        // Wait for the product card to appear first. This is sometimes
+        // flaky on Firebase because of low emulator performance.
+        waitForElementToBeDisplayed(
+            Espresso.onView(
+                Matchers.allOf(
+                    ViewMatchers.withId(R.id.productName),
+                    ViewMatchers.withText(product.name)
+                )
+            )
+        )
+
         // If a product has an SKU, value will be prefixed with "SKU :" on screen.
         // If a product has no SKU, the field won't be shown at all.
         val expectedSKU = if (product.sku.isEmpty()) "" else "SKU: ${product.sku}"

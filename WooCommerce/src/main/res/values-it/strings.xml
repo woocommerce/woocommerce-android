@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 11:54:15+0000
+Translation-Revision-Date: 2024-08-13 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_success_screen_total">Un pagamento di %1$s è stato effettuato correttamente</string>
+    <string name="woopos_new_order_button">Nuovo ordine</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Crea un ordine nella gestione del negozio</string>
+    <string name="woopos_dialog_products_info_secondary_message">Per ricevere il pagamento di un prodotto non semplice, esci da POS e crea un nuovo ordire dalla scheda degli ordini.</string>
+    <string name="woopos_dialog_products_info_primary_message">Al momento solo i prodotti fisici semplici possono essere utilizzati con POS.\nAltri tipi di prodotti, come quelli variabili e quelli virtuali, saranno disponibili in seguito a futuri aggiornamenti.</string>
+    <string name="woopos_dialog_products_info_heading">Perché non riesco a visualizzare i miei prodotti?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Informazioni</string>
+    <string name="woopos_banner_simple_products_close_content_description">Chiudi</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Scopri di più</string>
+    <string name="woopos_banner_simple_products_only_message">Al momento solo i prodotti fisici semplici sono compatibili con POS. Altri tipi di prodotti, come quelli variabili e quelli virtuali, saranno disponibili in seguito a futuri aggiornamenti. </string>
+    <string name="woopos_banner_simple_products_only_title">Visualizzazione dei soli prodotti semplici</string>
+    <string name="support_request_site_address">Indirizzo del sito</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google per WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Aggiungi campagna a pagamento</string>
+    <string name="analytics_google_ads_cta_description">Aumenta le vendite e genera più traffico con Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Campagne Google</string>
     <string name="google_ads_campaign_created_success_done_button">Fatto</string>
     <string name="google_ads_campaign_created_success_description">La tua nuova campagna è stata creata. Grandi notizie per le tue vendite.</string>
     <string name="google_ads_campaign_created_success_title">Tutto pronto!</string>
@@ -103,7 +120,6 @@ Language: it
     <string name="woopos_payment_total_label">Totale</string>
     <string name="woopos_payment_tax_label">Imposta</string>
     <string name="woopos_payment_subtotal_label">Subtotale</string>
-    <string name="woopos_new_transaction_button">Nuova transazione</string>
     <string name="woopos_payment_successful_label">Pagamento avvenuto correttamente</string>
     <string name="woopos_payment_failed_please_try_again">Pagamento non riuscito. Riprova.</string>
     <string name="woopos_cart_back_content_description">Icona della carta</string>
@@ -1682,7 +1698,7 @@ Language: it
     <string name="card_reader_interac_refund_refund_payment">Rimborsa il pagamento</string>
     <string name="card_reader_interac_refund_refund_failed_header">Rimborso non riuscito</string>
     <string name="card_reader_interac_refund_refund_loading_header">Preparazione dell\'esecuzione del rimborso del pagamento</string>
-    <string name="copy">Copia</string>
+    <string name="copy" tools:override="true">Copia</string>
     <string name="coupons_list_search_hint">Cerca codici promozionali</string>
     <string name="coupon_details_share_formatting_failure">Impossibile generare il messaggio per la condivisione del codice promozionale</string>
     <string name="coupon_details_share_coupon_error">Errore durante la condivisione del codice promozionale.</string>
@@ -2943,7 +2959,7 @@ Language: it
     <string name="orderdetail_empty_address">Nessun indirizzo specificato</string>
     <string name="login_need_help_finding_connected_email">Ti serve aiuto per trovare l\'e-mail con cui ti sei collegato?</string>
     <string name="enter_wordpress_site">Il sito web su questo indirizzo non è un sito WordPress. Per poterci collegare a esso, il sito deve avere WordPress installato.</string>
-    <string name="enter_email_for_site">Accedi con WordPress.com per collegarti a &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">Accedi con WordPress.com per collegarti a &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -3539,8 +3555,8 @@ Language: it
     <string name="login_configure_link">Leggi le %1$sistruzioni di configurazione%2$s.</string>
     <string name="login_jetpack_required">Questa app richiede che Jetpack sia connesso al tuo negozio.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Immetti l\'indirizzo del negozio WooCommerce che desideri connettere.</string>
-    <string name="enter_email_wordpress_com">Accedi con l\'indirizzo e-mail dell\'account WordPress.com per gestire i negozi WooCommerce.</string>
+    <string name="enter_site_address" content_override="true">Immetti l\'indirizzo del negozio WooCommerce che desideri connettere.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Accedi con l\'indirizzo e-mail dell\'account WordPress.com per gestire i negozi WooCommerce.</string>
     <string name="already_logged_in_wpcom">Sei già connesso a un account WordPress.com, non puoi aggiungere un sito WordPress.com legato a un altro account.</string>
     <string name="cant_open_url">Impossibile aprire il link</string>
     <string name="error_no_sms_app">Nessuna app per SMS trovata</string>
@@ -3586,17 +3602,17 @@ Language: it
     <string name="notification_channel_general_title">Generale</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>In elaborazione</item>

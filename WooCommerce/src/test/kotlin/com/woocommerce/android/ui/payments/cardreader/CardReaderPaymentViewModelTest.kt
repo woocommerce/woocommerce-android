@@ -4427,6 +4427,58 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             verify(cardReaderManager, never()).collectPayment(any())
         }
 
+    @Test
+    fun `given point of sale, when payment captured, then should not show success state`() {
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(
+                readerType = EXTERNAL,
+                cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(
+                    orderId = ORDER_ID,
+                    paymentType = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+                )
+            )
+
+            viewModel.start()
+
+            assertThat(viewModel.viewStateData.value).isNotInstanceOfAny(
+                BuiltInReaderPaymentSuccessfulState::class.java,
+                ExternalReaderPaymentSuccessfulState::class.java,
+                ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java,
+                BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState::class.java,
+            )
+        }
+    }
+
+    @Test
+    fun `given point of sale, when payment captured, then should exit`() {
+        testBlocking {
+            whenever(cardReaderManager.collectPayment(any())).thenAnswer {
+                flow { emit(PaymentCompleted("")) }
+            }
+
+            initViewModel(
+                readerType = EXTERNAL,
+                cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(
+                    orderId = ORDER_ID,
+                    paymentType = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+                )
+            )
+
+            val events = mutableListOf<Event>()
+            viewModel.event.observeForever {
+                events.add(it)
+            }
+
+            viewModel.start()
+
+            assertThat(events[0]).isInstanceOf(Exit::class.java)
+        }
+    }
+
     private suspend fun simulateFetchOrderJobState(inProgress: Boolean) {
         if (inProgress) {
             whenever(orderRepository.fetchOrderById(any())).doSuspendableAnswer {
@@ -4466,11 +4518,13 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
     private fun initViewModel(
         readerType: CardReaderType,
-        savedStateValue: Pair<String, Any>? = null
+        savedStateValue: Pair<String, Any>? = null,
+        cardReaderFlowParam: CardReaderFlowParam.PaymentOrRefund =
+            CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
     ) {
         viewModel = CardReaderPaymentViewModel(
             CardReaderPaymentDialogFragmentArgs(
-                CardReaderFlowParam.PaymentOrRefund.Payment(ORDER_ID, ORDER),
+                cardReaderFlowParam,
                 readerType,
             ).toSavedStateHandle().also {
                 if (savedStateValue != null) it[savedStateValue.first] = savedStateValue.second

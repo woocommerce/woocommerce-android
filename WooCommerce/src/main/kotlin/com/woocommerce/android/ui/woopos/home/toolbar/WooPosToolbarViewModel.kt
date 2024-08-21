@@ -14,7 +14,10 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.Conne
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.MenuItemClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
+import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,6 +27,7 @@ import javax.inject.Inject
 class WooPosToolbarViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
+    private val getSupportFacade: WooPosGetSupportFacade,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosToolbarState(
@@ -32,6 +36,8 @@ class WooPosToolbarViewModel @Inject constructor(
         )
     )
     val state: StateFlow<WooPosToolbarState> = _state
+
+    private var debounceJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -71,7 +77,7 @@ class WooPosToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
-            R.string.woopos_get_support_title -> TODO()
+            R.string.woopos_get_support_title -> getSupportFacade.openSupportForm()
             R.string.woopos_exit_confirmation_title ->
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
@@ -85,7 +91,9 @@ class WooPosToolbarViewModel @Inject constructor(
 
     private fun handleConnectToReaderButtonClicked() {
         if (_state.value.cardReaderStatus != WooPosToolbarState.WooPosCardReaderStatus.Connected) {
-            cardReaderFacade.connectToReader()
+            debounce {
+                cardReaderFacade.connectToReader()
+            }
         }
     }
 
@@ -93,6 +101,16 @@ class WooPosToolbarViewModel @Inject constructor(
         return when (status) {
             is Connected -> WooPosToolbarState.WooPosCardReaderStatus.Connected
             is NotConnected, Connecting -> WooPosToolbarState.WooPosCardReaderStatus.NotConnected
+        }
+    }
+
+    private fun debounce(block: () -> Unit) {
+        if (debounceJob?.isActive == true) {
+            return
+        }
+        debounceJob = viewModelScope.launch {
+            block()
+            delay(DEBOUNCE_TIME_MS)
         }
     }
 
@@ -107,5 +125,11 @@ class WooPosToolbarViewModel @Inject constructor(
                 icon = R.drawable.woopos_ic_exit_pos,
             ),
         )
+
+        private const val DEBOUNCE_TIME_MS = 800L
+    }
+
+    override fun onCleared() {
+        debounceJob?.cancel()
     }
 }

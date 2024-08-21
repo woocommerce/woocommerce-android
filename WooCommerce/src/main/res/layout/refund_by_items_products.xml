@@ -24,7 +24,7 @@
         android:layout_marginEnd="@dimen/minor_00"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_products"
-        app:layout_constraintBottom_toTopOf="@+id/issueRefund_lblSubtotal"/>
+        app:layout_constraintBottom_toTopOf="@id/issueRefund_lblSubtotal"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/issueRefund_lblSubtotal"
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/minor_50"
         android:text="@string/taxes"
-        app:layout_constraintEnd_toStartOf="@+id/issueRefund_taxesTotal"
+        app:layout_constraintEnd_toStartOf="@id/issueRefund_taxesTotal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_subtotal" />
 
@@ -72,15 +72,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/major_100"
-        android:layout_marginStart="@dimen/minor_00"
-        android:layout_marginEnd="@dimen/minor_00"
         android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
         android:drawablePadding="@dimen/major_100"
-        tools:text="@string/order_refunds_shipping_refund_variable_notice"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="@+id/issueRefund_taxesTotal"
-        app:layout_constraintStart_toStartOf="@+id/issueRefund_lblTaxes"
-        app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/issueRefund_taxesTotal"
+        tools:text="@string/order_refunds_shipping_refund_variable_notice" />
 
     <View
         android:id="@+id/issueRefund_dividerBelowTaxes"
@@ -89,7 +86,7 @@
         android:layout_marginTop="@dimen/major_75"
         android:layout_marginEnd="@dimen/minor_00"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/issueRefund_lblProductsTotal"
+        app:layout_constraintBottom_toTopOf="@id/issueRefund_lblProductsTotal"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_refundNotice"
         app:srcCompat="@drawable/list_divider" />
 
@@ -102,7 +99,7 @@
         android:layout_marginBottom="@dimen/major_75"
         android:text="@string/order_refunds_products_refund"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/issueRefund_productsTotal"
+        app:layout_constraintEnd_toStartOf="@id/issueRefund_productsTotal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes" />
 
@@ -124,4 +121,10 @@
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="issueRefund_refundNotice,issueRefund_dividerBelowList,issueRefund_dividerBelowTaxes,issueRefund_taxesTotal,issueRefund_subtotal,issueRefund_productsTotal,issueRefund_lblProductsTotal,issueRefund_lblTaxes,issueRefund_lblSubtotal" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/issueRefundSubtotalTaxesGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="issueRefund_taxesTotal,issueRefund_subtotal,issueRefund_lblTaxes,issueRefund_lblSubtotal" />
 </androidx.constraintlayout.widget.ConstraintLayout>
