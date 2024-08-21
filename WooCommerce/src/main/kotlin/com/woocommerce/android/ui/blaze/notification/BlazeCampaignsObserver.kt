@@ -5,7 +5,6 @@ import com.woocommerce.android.extensions.daysLater
 import com.woocommerce.android.notifications.local.LocalNotification.BlazeNoCampaignReminderNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -41,19 +40,12 @@ class BlazeCampaignsObserver @Inject constructor(
     }
 
     private fun scheduleNotification(campaigns: List<BlazeCampaignsDao.BlazeCampaignEntity>) {
-        val activeCampaigns = campaigns.filter { campaign ->
-            CampaignStatusUi.fromString(campaign.uiStatus).let { status ->
-                status == CampaignStatusUi.Active ||
-                    status == CampaignStatusUi.Completed ||
-                    (status == CampaignStatusUi.Canceled && campaign.impressions > 0)
-            }
-        }
-        if (activeCampaigns.isEmpty()) {
-            // There are no campaigns that were successfully created and started. Skip scheduling the notification.
+        if (campaigns.isEmpty()) {
+            // There are no campaigns. Skip scheduling the notification.
             return
         }
 
-        val delayForNotification = calculateDelayForNotification(activeCampaigns)
+        val delayForNotification = calculateDelayForNotification(campaigns)
 
         localNotificationScheduler.scheduleNotification(
             BlazeNoCampaignReminderNotification(selectedSite.get().siteId, delayForNotification)
