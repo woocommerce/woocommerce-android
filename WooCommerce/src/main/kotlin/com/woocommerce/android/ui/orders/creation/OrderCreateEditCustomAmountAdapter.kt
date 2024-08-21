@@ -28,6 +28,13 @@ class OrderCreateEditCustomAmountAdapter(
         holder.bind(getItem(position))
     }
 
+    var isLocked: Boolean = false
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     inner class CustomAmountViewHolder(private val binding: OrderCreationCustomAmountItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         private val safePosition: Int?

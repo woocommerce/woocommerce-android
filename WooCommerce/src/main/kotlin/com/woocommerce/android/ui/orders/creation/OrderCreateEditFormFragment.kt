@@ -1267,6 +1267,7 @@ class OrderCreateEditFormFragment :
         customAmountsSection.apply {
             isLocked = false
             isEachAddButtonEnabled = true
+            content.customAmountAdapter?.isLocked = false
         }
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             sharedViewModel.onProductSelectionStateChanged(true)
@@ -1296,6 +1297,7 @@ class OrderCreateEditFormFragment :
         customAmountsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
+            content.customAmountAdapter?.isLocked = true
         }
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             sharedViewModel.onProductSelectionStateChanged(false)
