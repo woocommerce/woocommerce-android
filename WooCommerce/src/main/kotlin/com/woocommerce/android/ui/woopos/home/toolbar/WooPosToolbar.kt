@@ -400,7 +400,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                 menu = Menu.Visible(
                     listOf(
                         Menu.MenuItem(
-                            title = R.string.woopos_exit_confirmation_message,
+                            title = R.string.woopos_exit_confirmation_title,
                             icon = R.drawable.woopos_ic_exit_pos,
                         ),
                         Menu.MenuItem(
