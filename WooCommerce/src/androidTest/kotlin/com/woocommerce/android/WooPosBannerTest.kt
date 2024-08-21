@@ -68,8 +68,7 @@ class WooPosBannerTest : TestBase() {
     }
 
     @Test
-    fun testWooPosSimpleProductsOnlyBannerIsDisplayedOnProductsScreen()  = runTest {
-
+    fun testWooPosSimpleProductsOnlyBannerIsDisplayedOnProductsScreen() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -77,6 +76,7 @@ class WooPosBannerTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -87,8 +87,7 @@ class WooPosBannerTest : TestBase() {
     }
 
     @Test
-    fun testWooPosSimpleProductsOnlyBannerTitleAndMessageIsDisplayedOnBanner()  = runTest {
-
+    fun testWooPosSimpleProductsOnlyBannerTitleAndMessageIsDisplayedOnBanner() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -96,6 +95,7 @@ class WooPosBannerTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -105,15 +105,14 @@ class WooPosBannerTest : TestBase() {
         ).assertIsDisplayed()
 
         composeTestRule.onNodeWithText(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message)
-                + " "
-                + composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message_learn_more)
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message) +
+                " " +
+                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message_learn_more)
         ).assertIsDisplayed()
     }
 
     @Test
-    fun testWooPosSimpleProductsOnlyBannerOpensProductInfoDialogWhenClickedOnLearnMore()  = runTest {
-
+    fun testWooPosSimpleProductsOnlyBannerOpensProductInfoDialogWhenClickedOnLearnMore() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -121,14 +120,15 @@ class WooPosBannerTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
 
         composeTestRule.onNodeWithText(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message)
-                + " "
-                + composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message_learn_more)
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message) +
+                " " +
+                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message_learn_more)
         ).performClick()
 
         composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
@@ -136,8 +136,7 @@ class WooPosBannerTest : TestBase() {
     }
 
     @Test
-    fun testWooPosSimpleProductsOnlyBannerIsDismissedWhenClosed()  = runTest {
-
+    fun testWooPosSimpleProductsOnlyBannerIsDismissedWhenClosed() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -145,6 +144,7 @@ class WooPosBannerTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -157,5 +157,4 @@ class WooPosBannerTest : TestBase() {
             "woo_pos_simple_products_banner"
         ).assertIsNotDisplayed()
     }
-
 }

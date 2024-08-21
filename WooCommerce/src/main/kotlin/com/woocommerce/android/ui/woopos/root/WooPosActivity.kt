@@ -11,10 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
