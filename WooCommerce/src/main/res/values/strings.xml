@@ -3796,6 +3796,12 @@
     <string name="shipping_notice_dismiss">Dismiss</string>
 
     <!--
+   Local Notifications
+   -->
+    <string name="local_notification_blaze_no_campaign_reminder_title">Boost your sales</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
+
+    <!--
     First product published congratulatory feature
     -->
     <string name="first_product_celebration_title">First product created 🎉</string>
