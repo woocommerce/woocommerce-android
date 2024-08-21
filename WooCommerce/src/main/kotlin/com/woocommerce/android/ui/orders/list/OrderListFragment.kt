@@ -316,12 +316,18 @@ class OrderListFragment :
     }
 
     private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null && savedInstanceState.getBoolean(LAST_WINDOW_SIZE_WAS_LARGER_THAN_COMPACT, false)) {
+        if (wasLastWindowSizeLargerThanCompact(savedInstanceState)) {
             displayDetailPaneOnly()
         } else {
             displayListPaneOnly()
         }
     }
+
+    private fun wasLastWindowSizeLargerThanCompact(savedInstanceState: Bundle?) =
+        savedInstanceState != null && savedInstanceState.getBoolean(
+            LAST_WINDOW_SIZE_WAS_LARGER_THAN_COMPACT,
+            false
+        )
 
     private fun displayListPaneOnly() {
         _binding?.detailPaneContainer?.visibility = View.GONE
