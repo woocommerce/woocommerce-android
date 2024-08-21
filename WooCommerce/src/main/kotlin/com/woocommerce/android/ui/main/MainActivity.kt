@@ -1176,7 +1176,6 @@ class MainActivity :
         navController.navigateSafely(
             directions = action,
             extras = extras,
-            navOptions = NavOptions.Builder().setLaunchSingleTop(true).setRestoreState(false).build()
         )
     }
 
