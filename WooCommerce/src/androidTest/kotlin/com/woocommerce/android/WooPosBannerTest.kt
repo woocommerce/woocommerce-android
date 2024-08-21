@@ -4,7 +4,9 @@ package com.woocommerce.android
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -146,6 +148,29 @@ class WooPosBannerTest : TestBase() {
 
         composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun testWooPosSimpleProductsOnlyBannerIsDismissedWhenClosed()  = runTest {
+
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
+        ).performClick()
+
+        composeTestRule.onNodeWithTag(
+            "woo_pos_simple_products_banner"
+        ).assertIsNotDisplayed()
     }
 
 }
