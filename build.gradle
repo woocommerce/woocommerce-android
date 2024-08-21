@@ -9,6 +9,7 @@ plugins {
     id 'com.android.application' apply false
     id 'org.jetbrains.kotlin.android' apply false
     id 'com.google.dagger.hilt.android' apply false
+    id 'androidx.navigation.safeargs.kotlin' apply false
     id 'com.google.gms.google-services' apply false
     id 'com.google.devtools.ksp' apply false
 }
@@ -109,7 +110,7 @@ ext {
     googlePlayWearableVersion = '18.1.0'
     coroutinesVersion = '1.8.1'
     lifecycleVersion = '2.7.0'
-    aztecVersion = 'v1.3.45'
+    aztecVersion = 'v2.1.4'
     flipperVersion = '0.176.1'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.13.1'
@@ -119,7 +120,7 @@ ext {
     hiltJetpackVersion = '1.1.0'
     wordPressUtilsVersion = '3.5.0'
     mediapickerVersion = '0.3.1'
-    wordPressLoginVersion = '1.17.0'
+    wordPressLoginVersion = '1.18.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '5.0.0'
     workManagerVersion = '2.7.1'

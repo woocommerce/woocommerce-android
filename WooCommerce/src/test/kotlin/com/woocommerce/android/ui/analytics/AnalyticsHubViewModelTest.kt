@@ -748,7 +748,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     fun `when last update information changes, then update view state as expected`() = testBlocking {
         val lastUpdateTimestamp = 123456789L
         whenever(
-            observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())
+            observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any(), shouldAllDataBePresent = eq(true))
         ).thenReturn(flowOf(lastUpdateTimestamp))
         whenever(dateUtils.getDateOrTimeFromMillis(lastUpdateTimestamp)).thenReturn("9:35 AM")
         configureVisibleCards()
@@ -845,7 +845,13 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 isVisible = true
             )
         )
-        whenever(observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())).thenReturn(flowOf(null))
+        whenever(
+            observeLastUpdate.invoke(
+                selectedRange = any(),
+                analyticDataList = any(),
+                shouldAllDataBePresent = eq(true)
+            )
+        ).thenReturn(flowOf(null))
         configureVisibleCards(configuration)
         configureSuccessfulStatsResponse()
 
@@ -889,8 +895,11 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
                 title = AnalyticsCards.Session.name,
                 isVisible = true
             )
+
         )
-        whenever(observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())).thenReturn(flowOf(null))
+        whenever(
+            observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any(), shouldAllDataBePresent = eq(true))
+        ).thenReturn(flowOf(null))
         configureVisibleCards(configuration)
         configureSuccessfulStatsResponse()
 
@@ -930,7 +939,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
         val expectedVisibleCards = configuration.filter { it.isVisible }.map { it.card }
 
-        whenever(observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())).thenReturn(flowOf(null))
+        whenever(
+            observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any(), shouldAllDataBePresent = eq(true))
+        ).thenReturn(flowOf(null))
         configureVisibleCards(configuration)
         configureSuccessfulStatsResponse()
 
@@ -972,7 +983,13 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
             val expectedVisibleCards = configuration.filter { it.isVisible }.map { it.card }
 
-            whenever(observeLastUpdate.invoke(selectedRange = any(), analyticDataList = any())).thenReturn(flowOf(null))
+            whenever(
+                observeLastUpdate.invoke(
+                    selectedRange = any(),
+                    analyticDataList = any(),
+                    shouldAllDataBePresent = eq(true)
+                )
+            ).thenReturn(flowOf(null))
             configureVisibleCards(configuration)
             configureSuccessfulStatsResponse()
 

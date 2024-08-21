@@ -297,6 +297,8 @@
     <color name="blaze_campaign_status_completed_text">@color/blaze_blue_60</color>
     <color name="blaze_campaign_status_rejected_background">@color/blaze_red_5</color>
     <color name="blaze_campaign_status_rejected_text">@color/blaze_red_6</color>
+    <color name="blaze_campaign_status_suspended_background">@color/blaze_red_6</color>
+    <color name="blaze_campaign_status_suspended_text">@color/white</color>
     <color name="blaze_campaign_bottom_sheet_highlight_background">@color/woo_gray_6</color>
     <color name="blaze_campaign_preview_header_background">@color/woo_gray_0</color>
     <color name="blaze_campaign_preview_shop_now_button">@color/woo_gray_0</color>
