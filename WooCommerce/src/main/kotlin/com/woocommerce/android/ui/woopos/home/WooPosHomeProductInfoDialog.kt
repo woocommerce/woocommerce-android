@@ -34,6 +34,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -76,6 +77,7 @@ fun WooPosProductInfoDialog(
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .testTag("woo_pos_product_info_dialog")
                 .padding(
                     start = 100.dp.toAdaptivePadding(),
                     end = 100.dp.toAdaptivePadding(),
