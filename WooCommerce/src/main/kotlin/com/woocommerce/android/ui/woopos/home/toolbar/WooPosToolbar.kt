@@ -212,7 +212,7 @@ private fun MenuButtonWithPopUpMenu(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 repeat(3) {
-                    Circle(size = 4.dp, color = MaterialTheme.colors.primary)
+                    Circle(size = 4.dp, color = MaterialTheme.colors.onSurface)
                     if (it < 2) {
                         Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
                     }
@@ -297,7 +297,7 @@ private fun CardReaderStatusButton(
         label = "TextColorTransition"
     ) { status ->
         when (status) {
-            WooPosCardReaderStatus.Connected -> MaterialTheme.colors.secondary
+            WooPosCardReaderStatus.Connected -> MaterialTheme.colors.onSurface
             WooPosCardReaderStatus.NotConnected -> MaterialTheme.colors.primary
         }
     }
@@ -400,7 +400,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                 menu = Menu.Visible(
                     listOf(
                         Menu.MenuItem(
-                            title = R.string.woopos_exit_confirmation_message,
+                            title = R.string.woopos_exit_confirmation_title,
                             icon = R.drawable.woopos_ic_exit_pos,
                         ),
                         Menu.MenuItem(
