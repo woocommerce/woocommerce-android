@@ -38,13 +38,12 @@ class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderMa
                 WooPosCardReaderPaymentResult.Failure
             }
 
-            paymentContinuation?.resume(paymentResult!!)
+            paymentContinuation!!.resume(paymentResult!!)
         }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
         activity = null
-        paymentContinuation = null
         paymentResultLauncher = null
     }
 

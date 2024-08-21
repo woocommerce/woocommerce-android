@@ -17,6 +17,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -25,12 +26,16 @@ class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var wooPosCardReaderFacade: WooPosCardReaderFacade
 
+    @Inject
+    lateinit var wooPosGetSupportFacade: WooPosGetSupportFacade
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
         lifecycle.addObserver(wooPosCardReaderFacade)
+        lifecycle.addObserver(wooPosGetSupportFacade)
 
         setContent {
             WooPosTheme {

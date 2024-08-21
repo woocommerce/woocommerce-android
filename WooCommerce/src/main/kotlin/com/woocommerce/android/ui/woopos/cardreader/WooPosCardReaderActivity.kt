@@ -26,7 +26,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             R.id.woopos_card_reader_nav_host_fragment
         ) as NavHostFragment
 
-        observeEvents(navHostFragment)
+        setupNavGraph(navHostFragment)
         observeResult(navHostFragment)
     }
 
@@ -37,7 +37,9 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         ) { requestKey, bundle ->
             when (requestKey) {
                 WOO_POS_CARD_PAYMENT_REQUEST_KEY -> {
-                    val result = bundle.parcelable<WooPosCardReaderPaymentResult>(WOO_POS_CARD_PAYMENT_RESULT_KEY)
+                    val result = bundle.parcelable<WooPosCardReaderPaymentResult>(
+                        WOO_POS_CARD_PAYMENT_RESULT_KEY
+                    )
                     setResult(
                         RESULT_OK,
                         Intent().apply { putExtra(WOO_POS_CARD_PAYMENT_RESULT_KEY, result) }
@@ -71,31 +73,30 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         }
     }
 
-    private fun observeEvents(navHostFragment: NavHostFragment) {
-        viewModel.event.observe(this) { event ->
-            when (event) {
-                is WooPosCardReaderEvent.Connection -> {
-                    val navController = navHostFragment.navController
-                    val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow).apply {
+    private fun setupNavGraph(navHostFragment: NavHostFragment) {
+        when (val mode = viewModel.cardReaderMode) {
+            is WooPosCardReaderMode.Payment -> {
+                val navController = navHostFragment.navController
+                val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow)
+                navController.setGraph(
+                    graph,
+                    SelectPaymentMethodFragmentArgs(cardReaderFlowParam = mode.cardReaderFlowParam).toBundle()
+                )
+            }
+
+            WooPosCardReaderMode.Connection -> {
+                val navController = navHostFragment.navController
+                val graph =
+                    navController.navInflater.inflate(R.navigation.nav_graph_payment_flow).apply {
                         setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
                     }
-                    navController.setGraph(
-                        graph,
-                        CardReaderStatusCheckerDialogFragmentArgs(
-                            cardReaderFlowParam = event.cardReaderFlowParam,
-                            cardReaderType = event.cardReaderType,
-                        ).toBundle()
-                    )
-                }
-
-                is WooPosCardReaderEvent.Payment -> {
-                    val navController = navHostFragment.navController
-                    val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow)
-                    navController.setGraph(
-                        graph,
-                        SelectPaymentMethodFragmentArgs(cardReaderFlowParam = event.cardReaderFlowParam).toBundle()
-                    )
-                }
+                navController.setGraph(
+                    graph,
+                    CardReaderStatusCheckerDialogFragmentArgs(
+                        cardReaderFlowParam = mode.cardReaderFlowParam,
+                        cardReaderType = mode.cardReaderType,
+                    ).toBundle()
+                )
             }
         }
     }

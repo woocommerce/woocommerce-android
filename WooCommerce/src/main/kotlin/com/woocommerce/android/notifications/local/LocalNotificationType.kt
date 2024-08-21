@@ -1,8 +1,7 @@
 package com.woocommerce.android.notifications.local
 
 enum class LocalNotificationType(val value: String) {
-    // A sample notification type to keep detekt happy, this should be removed when adding real notifications
-    UNUSED("unused");
+    BLAZE_NO_CAMPAIGN_REMINDER("blaze_no_campaign_reminder");
     override fun toString() = value
 
     companion object {

@@ -3796,6 +3796,12 @@
     <string name="shipping_notice_dismiss">Dismiss</string>
 
     <!--
+   Local Notifications
+   -->
+    <string name="local_notification_blaze_no_campaign_reminder_title">Boost your sales</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
+
+    <!--
     First product published congratulatory feature
     -->
     <string name="first_product_celebration_title">First product created 🎉</string>
@@ -4208,8 +4214,10 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
-    <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
-    <string name="woopos_exit_confirmation_confirm_button">Exit</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
+    <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
+    <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_items_in_cart">%d item</string>
