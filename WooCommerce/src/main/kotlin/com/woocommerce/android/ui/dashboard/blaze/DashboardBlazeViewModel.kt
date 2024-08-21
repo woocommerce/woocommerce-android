@@ -156,7 +156,8 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                         name = string.blaze_campaign_status_clicks,
                         value = campaign.clicks.toString()
                     )
-                )
+                ),
+                isEndlessCampaign = campaign.isEndlessCampaign
             ),
             onCampaignClicked = {
                 parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)

@@ -13,6 +13,7 @@ data class BlazeCampaignUi(
     val product: BlazeProductUi,
     val status: CampaignStatusUi?,
     val stats: List<BlazeCampaignStat>,
+    val isEndlessCampaign: Boolean
 )
 
 data class BlazeCampaignStat(

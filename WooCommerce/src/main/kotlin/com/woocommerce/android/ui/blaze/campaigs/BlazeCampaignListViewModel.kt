@@ -139,7 +139,8 @@ class BlazeCampaignListViewModel @Inject constructor(
                         name = R.string.blaze_campaign_status_budget,
                         value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
                     )
-                )
+                ),
+                isEndlessCampaign = campaignEntity.isEndlessCampaign
             ),
             onCampaignClicked = { onCampaignClicked(campaignEntity.campaignId) }
         )

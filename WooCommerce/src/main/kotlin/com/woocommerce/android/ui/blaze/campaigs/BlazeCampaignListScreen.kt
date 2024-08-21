@@ -246,6 +246,7 @@ fun BlazeCampaignListScreenPreview() {
                                 value = 1000.toString()
                             ),
                         ),
+                        isEndlessCampaign = false,
                     ),
                     onCampaignClicked = {}
                 )

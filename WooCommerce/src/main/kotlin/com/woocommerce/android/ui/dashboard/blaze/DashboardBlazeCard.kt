@@ -346,6 +346,7 @@ fun MyStoreBlazeViewCampaignPreview() {
                         value = 1000.toString()
                     ),
                 ),
+                isEndlessCampaign = false
             ),
             onCampaignClicked = {},
             onCreateCampaignClicked = {},
