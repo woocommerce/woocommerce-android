@@ -82,7 +82,6 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun List<Product>.applyPosProductFilter() = this.filter { product ->
-        isProductPublished(product) &&
             isProductHasAPrice(product) &&
             isProductNotVirtual(product) &&
             isProductNotDownloadable(product)
@@ -94,6 +93,4 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
 
     private fun isProductHasAPrice(product: Product) =
         (product.price != null && product.price.compareTo(BigDecimal.ZERO) != 0)
-
-    private fun isProductPublished(product: Product) = product.status == ProductStatus.PUBLISH
 }
