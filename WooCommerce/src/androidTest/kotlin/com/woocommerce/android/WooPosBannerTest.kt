@@ -87,7 +87,7 @@ class WooPosBannerTest : TestBase() {
     }
 
     @Test
-    fun testWooPosSimpleProductsOnlyBannerTitleIsDisplayedOnBanner()  = runTest {
+    fun testWooPosSimpleProductsOnlyBannerTitleAndMessageIsDisplayedOnBanner()  = runTest {
 
         composeTestRule.waitUntil(5000) {
             try {
@@ -103,21 +103,6 @@ class WooPosBannerTest : TestBase() {
         composeTestRule.onNodeWithText(
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_title)
         ).assertIsDisplayed()
-    }
-
-    @Test
-    fun testWooPosSimpleProductsOnlyBannerMessageIsDisplayedOnBanner()  = runTest {
-
-        composeTestRule.waitUntil(5000) {
-            try {
-                composeTestRule.onNodeWithTag("product_list")
-                    .assertExists()
-                    .assertIsDisplayed()
-                true
-            } catch (e: AssertionError) {
-                false
-            }
-        }
 
         composeTestRule.onNodeWithText(
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_only_message)
