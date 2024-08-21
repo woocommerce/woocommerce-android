@@ -82,7 +82,7 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun List<Product>.applyPosProductFilter() = this.filter { product ->
-            isProductHasAPrice(product) &&
+        isProductHasAPrice(product) &&
             isProductNotVirtual(product) &&
             isProductNotDownloadable(product)
     }
