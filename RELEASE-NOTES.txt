@@ -5,6 +5,7 @@
 -----
 
 - [*****] [Internal] Update Aztec from v1.3.45 to v2.1.4 [https://github.com/woocommerce/woocommerce-android/pull/12316]
+- [**] Fixed Orders screen being stuck at skeleton loading view in certain scenarios [https://github.com/woocommerce/woocommerce-android/pull/12387]
 
 20.0
 -----
