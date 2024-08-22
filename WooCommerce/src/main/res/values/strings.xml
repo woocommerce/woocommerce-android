@@ -3740,7 +3740,7 @@
     <string name="more_menu_button_wc_admin_description">Manage more on admin</string>
 
     <string name="more_menu_button_payments">Payments</string>
-    <string name="more_menu_button_payments_description">Join the mobile payments</string>
+    <string name="more_menu_button_payments_description">Take payments on the go</string>
 
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
@@ -3794,6 +3794,12 @@
     <string name="shipping_notice_banner_instructions_content">Shipping to countries that follow European Union (EU) customs rules now requires you clearly describe every item. For example, if you are sending clothing, you must indicate what type of clothing (e.g., men\’s shirts, girl\’s vest, boy\’s jacket) for the description to be acceptable. Otherwise, shipments may be delayed or interrupted at customs.</string>
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
+
+    <!--
+   Local Notifications
+   -->
+    <string name="local_notification_blaze_no_campaign_reminder_title">Boost your sales</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
 
     <!--
     First product published congratulatory feature
@@ -4208,8 +4214,10 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
-    <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
-    <string name="woopos_exit_confirmation_confirm_button">Exit</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
+    <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
+    <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_items_in_cart">%d item</string>
