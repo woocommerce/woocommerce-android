@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.variations.picker
 
 import androidx.lifecycle.Observer
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -38,8 +39,9 @@ class VariationPickerViewModelTest : BaseUnitTest() {
             onBlocking { getVariationsFlow(any()) } doReturn flowOf(emptyList())
         }
 
+        val productMock = mock<Product>()
         variationRepository = mock {
-
+            onBlocking { getProduct(any()) } doReturn productMock
         }
 
         val savedState = navArgs.toSavedStateHandle()
