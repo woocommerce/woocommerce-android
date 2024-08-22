@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -175,7 +174,7 @@ private fun CartBodyWithItems(
     Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
 
     val listState = rememberLazyListState()
-    ScrollToBottomHandler(items, listState)
+    ScrollToTopHandler(items, listState)
 
     WooPosLazyColumn(
         modifier = Modifier
@@ -203,7 +202,7 @@ private fun CartBodyWithItems(
 }
 
 @Composable
-private fun ScrollToBottomHandler(
+private fun ScrollToTopHandler(
     items: List<WooPosCartState.Body.WithItems.Item>,
     listState: LazyListState
 ) {
@@ -211,7 +210,7 @@ private fun ScrollToBottomHandler(
     val itemsInCartSize = items.size
     LaunchedEffect(itemsInCartSize) {
         if (itemsInCartSize > previousItemsCount.intValue) {
-            listState.animateScrollToItem(itemsInCartSize - 1)
+            listState.animateScrollToItem(0)
         }
         previousItemsCount.intValue = itemsInCartSize
     }
@@ -334,15 +333,8 @@ private fun ProductItem(
 
     val elevation by animateDpAsState(
         targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 150, delayMillis = 100),
+        animationSpec = tween(durationMillis = 200, delayMillis = 100),
         label = "elevation"
-    )
-
-    val itemHeight = 64.dp
-    val offsetY by animateDpAsState(
-        targetValue = if (hasAnimationStarted) 0.dp else -itemHeight,
-        animationSpec = tween(durationMillis = 70),
-        label = "offsetY"
     )
 
     val alpha by animateFloatAsState(
@@ -368,8 +360,7 @@ private fun ProductItem(
 
     Card(
         modifier = modifier
-            .offset(y = offsetY)
-            .height(itemHeight)
+            .height(64.dp)
             .semantics { contentDescription = itemContentDescription }
             .graphicsLayer(alpha = alpha),
         elevation = elevation,
