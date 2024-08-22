@@ -297,6 +297,9 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_AIThankYouNoteBottomSheetFragment"
             app:destination="@id/AIThankYouNoteBottomSheetFragment" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_customFieldsFragment"
+            app:destination="@id/customFieldsFragment" />
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -647,6 +650,17 @@
             android:name="remoteNoteId"
             android:defaultValue="0L"
             app:argType="long" />
+    </fragment>
+    <fragment
+        android:id="@+id/customFieldsFragment"
+        android:name="com.woocommerce.android.ui.customfields.CustomFieldsFragment">
+        <argument
+            android:name="parentItemId"
+            app:argType="long" />
+        <argument
+            android:name="parentItemType"
+            app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType"
+            android:defaultValue="ORDER" />
     </fragment>
     <action
         android:id="@+id/action_global_item_selector_dialog"
