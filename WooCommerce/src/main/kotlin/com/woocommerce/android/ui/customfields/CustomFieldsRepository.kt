@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.customfields
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
-import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
+import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.store.MetaDataStore
 import javax.inject.Inject
 
@@ -13,11 +13,11 @@ class CustomFieldsRepository @Inject constructor(
 ) {
     fun observeDisplayableCustomFields(
         parentItemId: Long,
-    ) = metaDataStore.observeDisplayableMetaData(selectedSite.get(), parentItemId)
+    ): Flow<List<CustomField>> = metaDataStore.observeDisplayableMetaData(selectedSite.get(), parentItemId)
 
     suspend fun refreshCustomFields(
         parentItemId: Long,
-        parentItemType: MetaDataParentItemType
+        parentItemType: CustomFieldParentItemType
     ): Result<Unit> {
         return metaDataStore.refreshMetaData(
             site = selectedSite.get(),
