@@ -608,7 +608,8 @@ class OrderCreateEditFormFragment :
     }
 
     private fun productAddedCustomAmountUnset(binding: FragmentOrderCreateEditFormBinding) {
-        if (viewModel.viewStateData.liveData.value?.isEditable == true) {
+        val isEditable = viewModel.viewStateData.liveData.value?.isEditable == true
+        if (isEditable) {
             if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
                 binding.productsSection.showAddProductsHeaderActions()
             } else {
@@ -630,6 +631,7 @@ class OrderCreateEditFormFragment :
                 onClickListener = { navigateToCustomAmountsDialog() }
             )
         )
+        binding.customAmountsSection.isEachAddButtonEnabled = isEditable
     }
 
     private fun productAndCustomAmountAdded(binding: FragmentOrderCreateEditFormBinding) {
