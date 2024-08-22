@@ -2204,29 +2204,17 @@
     <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="ai_product_creation_add_name_title">Add your product name</string>
     <string name="ai_product_creation_product_prompt_title">Starting information</string>
-    <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
     <string name="ai_product_creation_product_prompt_subtitle">Tell us about your product, what it is and what makes it unique, then let the AI work its magic.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Product name</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
     <string name="ai_product_creation_prompt_placeholder">For example: Black cotton t-shirt, soft fabric, durable stitching, unique design</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
     <string name="ai_product_creation_read_text_from_photo_button">Read text from product photo</string>
     <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
-    <string name="product_creation_ai_about_product_title">About your product</string>
-    <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Add key features, benefits, or details to help your product get found online.</string>
-    <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
-    <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
     <string name="product_creation_ai_preview_title">Preview</string>
     <string name="product_creation_ai_preview_subtitle">You can edit or regenerate your product details before saving.</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">You can always change the below details later.</string>
     <string name="product_creation_ai_preview_name_description_sections">Name, Summary &amp; Description</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
     <string name="product_creation_ai_preview_short_description_section">Product short description</string>
-    <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_variant_selector">Option %1$d of %2$d</string>
     <string name="product_creation_ai_preview_undo_edits">Undo edits</string>
@@ -2234,17 +2222,14 @@
     <string name="product_creation_ai_select_previous_option">Select previous option</string>
     <string name="product_creation_ai_select_next_option">Select next option</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>
-    <string name="product_creation_ai_tone_description">Set the tone and voice to shape your product\'s presentation that aligns with your brand.</string>
     <string name="product_creation_ai_tone_casual">Casual</string>
     <string name="product_creation_ai_tone_formal">Formal</string>
     <string name="product_creation_ai_tone_flowery">Flowery</string>
     <string name="product_creation_ai_tone_convincing">Convincing</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
     <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
     <string name="product_creation_package_photo_keywords_section">Keywords</string>
     <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
-    <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
     <string name="product_filter_explore_plugin">Explore!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
     <string name="product_creation_survey_title">We value your input!</string>
@@ -3846,20 +3831,6 @@
     <string name="ai_order_thank_you_note_dialog_share_button">Share</string>
     <string name="ai_order_thank_you_note_dialog_failed_title">Unable to create Thank-you note. Please use the button below to retry.</string>
     <string name="ai_order_thank_you_note_copy_label">Thank-you note generated by AI</string>
-
-
-    <!--
-    AI Product name description
-    -->
-    <string name="ai_product_name_sheet_title">Product name</string>
-    <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
-    <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
-    <string name="ai_product_name_sheet_generate_button">Write it for me</string>
-    <string name="ai_product_name_sheet_regenerate_button">Regenerate</string>
-    <string name="ai_product_name_sheet_error_message">There was a problem generating the product name. Please try again.</string>
-    <string name="ai_product_name_copy_label">Product name generated by AI</string>
-    <string name="ai_product_name_copy_success">Product name copied to clipboard.</string>
-    <string name="ai_product_name_copy_error">Error copying product name to clipboard.</string>
 
     <!--
     My Store Blaze view
