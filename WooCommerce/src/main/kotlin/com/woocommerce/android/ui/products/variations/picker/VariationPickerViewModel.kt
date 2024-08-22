@@ -59,9 +59,9 @@ class VariationPickerViewModel @Inject constructor(
     ) { variations, loadingState ->
         ViewState(
             loadingState = loadingState,
-            variations = variations.filter { variation ->
-                allowedVariations.isEmpty() || variation.remoteVariationId in allowedVariations
-            }.map { it.toVariationListItem() }
+            variations = variations
+                .filter { allowedVariations.isEmpty() || it.isValid(allowedVariations) }
+                .map { it.toVariationListItem() }
         )
     }.asLiveData()
 
@@ -97,6 +97,9 @@ class VariationPickerViewModel @Inject constructor(
             imageUrl = image?.source,
             attributes = attributes.toList()
         )
+
+    private fun ProductVariation.isValid(allowedVariations: Set<Long>) =
+        remoteVariationId in allowedVariations && attributes.isNotEmpty()
 
     data class VariationListItem(
         val id: Long,
