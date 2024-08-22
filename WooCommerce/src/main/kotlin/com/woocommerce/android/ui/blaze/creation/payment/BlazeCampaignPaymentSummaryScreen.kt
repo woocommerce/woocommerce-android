@@ -93,7 +93,7 @@ fun BlazeCampaignPaymentSummaryScreen(
                 onCancelClick = onBackClick,
                 modifier = Modifier.padding(paddingValues)
             )
-            else -> PaymenSummaryContent(
+            else -> PaymentSummaryContent(
                 state = state,
                 onSubmitCampaign = onSubmitCampaign,
                 modifier = Modifier.padding(paddingValues)
@@ -103,7 +103,7 @@ fun BlazeCampaignPaymentSummaryScreen(
 }
 
 @Composable
-private fun PaymenSummaryContent(
+private fun PaymentSummaryContent(
     state: BlazeCampaignPaymentSummaryViewModel.ViewState,
     onSubmitCampaign: () -> Unit,
     modifier: Modifier = Modifier,

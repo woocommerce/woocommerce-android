@@ -12,20 +12,20 @@ msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
-msgid "Introduces the new Woo WearOS app featuring instant updates on store data and orders at glance!"
+msgid "In this update, we’ve made a few small bug fixes and enhancements to ensure a smoother experience. Thanks for using our app, and stay tuned for more exciting features coming soon!"
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_200"
+msgid ""
+"20.0:\n"
+"We’ve improved your WooCommerce experience with several key updates: card reader tutorial images are now visible on tablets, QR code scanning is disabled during login, and the “Write with AI” issue with the keyboard has been fixed. Plus, you can now process card-present payments for orders marked as failed.\n"
+msgstr ""
+
 msgctxt "release_note_199"
 msgid ""
 "19.9:\n"
 "We've enhanced your refund experience! Now, each refund item on the refund screen includes detailed subtotal and taxes fields, giving you clearer insights into your transactions. Update now to enjoy smoother, more transparent refunds!\n"
-msgstr ""
-
-msgctxt "release_note_198"
-msgid ""
-"19.8:\n"
-"In our latest update, we've added a button in Google Campaign analytics for easier paid campaign creation. The Contact Support Form now includes a Site Address field. Enjoy seamless in-person payments illustrations in landscape mode, and benefit from background updates for order lists and dashboard analytics.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
