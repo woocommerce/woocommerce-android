@@ -85,46 +85,54 @@ private fun WooPosCartScreen(
 ) {
     Box(
         modifier = modifier
-            .padding(
-                top = 40.dp.toAdaptivePadding(),
-                bottom = 16.dp.toAdaptivePadding()
-            )
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        Column {
-            CartToolbar(
-                toolbar = state.toolbar,
-                onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
-                onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
-            )
+        Column(
+            modifier = modifier
+                .padding(
+                    top = 40.dp.toAdaptivePadding(),
+                    bottom = 16.dp.toAdaptivePadding()
+                )
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                CartToolbar(
+                    toolbar = state.toolbar,
+                    onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
+                    onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
+                )
 
-            when (state.body) {
-                WooPosCartState.Body.Empty -> {
-                    CartBodyEmpty()
-                }
+                when (state.body) {
+                    WooPosCartState.Body.Empty -> {
+                        CartBodyEmpty()
+                    }
 
-                is WooPosCartState.Body.WithItems -> {
-                    CartBodyWithItems(
-                        items = state.body.itemsInCart,
-                        areItemsRemovable = state.areItemsRemovable,
-                        onUIEvent = onUIEvent,
-                    )
+                    is WooPosCartState.Body.WithItems -> {
+                        CartBodyWithItems(
+                            items = state.body.itemsInCart,
+                            areItemsRemovable = state.areItemsRemovable,
+                            onUIEvent = onUIEvent,
+                        )
+                    }
                 }
             }
-        }
 
-        if (state.isCheckoutButtonVisible) {
-            WooPosButton(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp.toAdaptivePadding()),
-                text = stringResource(R.string.woopos_checkout_button),
-                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
-            )
+            if (state.isCheckoutButtonVisible) {
+                WooPosButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp.toAdaptivePadding()),
+                    text = stringResource(R.string.woopos_checkout_button),
+                    onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+                )
+            }
         }
+        CartOverlay(state)
     }
+}
+
+@Composable
+private fun CartOverlay(state: WooPosCartState) {
     val cartOverlayIntensityAnimated by animateFloatAsState(
         when (state.body) {
             WooPosCartState.Body.Empty -> .6f
@@ -194,9 +202,6 @@ private fun CartBodyWithItems(
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
             )
-        }
-        item {
-            Spacer(modifier = Modifier.height(72.dp))
         }
     }
 }
