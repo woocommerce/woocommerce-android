@@ -198,7 +198,7 @@ class WooPosCartViewModelTest {
         }
 
     @Test
-    fun `given non empty cart in process, when 2 items added and the first removed and third item added, then third will have item number 3`() =
+    fun `given non empty cart in process, when 2 items added and the first removed and third item added, then third will have item number 2`() =
         runTest {
             // GIVEN
             val product1 = ProductTestUtils.generateProduct(
@@ -253,8 +253,8 @@ class WooPosCartViewModelTest {
             // THEN
             val itemsInCart = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart
             assertThat(itemsInCart).hasSize(2)
-            assertThat(itemsInCart[0].id.itemNumber).isEqualTo(2)
-            assertThat(itemsInCart[1].id.itemNumber).isEqualTo(3)
+            assertThat(itemsInCart[0].id.itemNumber).isEqualTo(3)
+            assertThat(itemsInCart[1].id.itemNumber).isEqualTo(2)
         }
 
     @Test

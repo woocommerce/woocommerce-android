@@ -138,7 +138,7 @@ class WooPosCartViewModel @Inject constructor(
 
                             is WooPosCartState.Body.WithItems -> _state.value.copy(
                                 body = currentState.copy(
-                                    itemsInCart = currentState.itemsInCart + itemClicked.await()
+                                    itemsInCart = listOf(itemClicked.await()) + currentState.itemsInCart
                                 )
                             )
                         }
