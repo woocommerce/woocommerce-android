@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -49,13 +48,13 @@ fun WooPosLazyColumn(
         }
 
         if (showShadow.value) {
-            Surface(
+            Card(
                 modifier = modifier
                     .fillMaxWidth()
                     .height(0.5.dp)
                     .align(Alignment.TopCenter),
                 elevation = 4.dp.toAdaptivePadding(),
-                color = MaterialTheme.colors.onBackground.copy(alpha = 0.1f)
+                backgroundColor = MaterialTheme.colors.onBackground.copy(alpha = 0.1f)
             ) {}
         }
     }
