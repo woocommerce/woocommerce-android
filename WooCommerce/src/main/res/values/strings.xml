@@ -4205,12 +4205,17 @@
     <string name="woopos_banner_simple_products_only_message_learn_more">Learn more</string>
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
+    <string name="woopos_banner_simple_products_content_description">Simple products only banner</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Double tap to learn more</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Simple products only dialog</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
 
     <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
     <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\nOther product types, such as variable and virtual, will be available in future updates.</string>
     <string name="woopos_dialog_products_info_secondary_message">To take payment for a non-simple product, exit POS and create a new order from the orders tab.</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Create an order in store management</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
@@ -4222,10 +4227,12 @@
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_items_in_cart">%d item</string>
     <string name="woopos_items_in_cart_multiple">%d items</string>
+    <string name="woopos_remove_cart_item_content_description">Remove this item from the cart</string>
     <string name="woopos_products_screen_title">Products</string>
     <string name="woopos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Payment successful checkmark icon</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
@@ -4248,6 +4255,16 @@
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
     <string name="woopos_success_screen_total">A payment of %1$s was successfully made</string>
+
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Dimmed background. Tap to close the menu.</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Card reader connected</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Card reader not connected. Double tap to connect</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menu Enabled</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menu Disabled</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Toolbar with card reader status. Double tap to interact.</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Toolbar with card reader status. Menu is open. Double tap to interact.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Open toolbar menu</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Popup menu with options. Swipe to navigate through items.</string>
 
 
     <string name="customers_details_customer_section">Customer</string>

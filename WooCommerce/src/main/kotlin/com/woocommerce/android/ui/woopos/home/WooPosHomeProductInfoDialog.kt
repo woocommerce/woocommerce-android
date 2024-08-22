@@ -10,6 +10,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -53,6 +56,14 @@ fun WooPosProductInfoDialog(
     state: WooPosHomeState.ProductsInfoDialog.Visible,
     onDismissRequest: () -> Unit,
 ) {
+    val dialogContentDescription = getCombinedContentDescription(state = state)
+    val primaryButtonContentDescription = stringResource(
+        id = R.string.woopos_banner_simple_products_dialog_primary_button_content_description
+    )
+    val dialogBackgroundContentDescription = stringResource(
+        id = R.string.woopos_dialog_products_info_background_content_description
+    )
+
     val animVisibleState = remember { MutableTransitionState(false) }
         .apply { targetState = true }
     LaunchedEffect(animVisibleState) {
@@ -78,7 +89,10 @@ fun WooPosProductInfoDialog(
                     },
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
-                ),
+                )
+                .semantics {
+                    contentDescription = dialogBackgroundContentDescription
+                },
             contentAlignment = Alignment.Center
         ) {
             AnimatedVisibility(
@@ -98,7 +112,11 @@ fun WooPosProductInfoDialog(
                         .padding(100.dp.toAdaptivePadding())
                 ) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .semantics(mergeDescendants = true) {
+                                contentDescription = dialogContentDescription
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Card(
@@ -142,9 +160,12 @@ fun WooPosProductInfoDialog(
                                             top.linkTo(parent.top)
                                             end.linkTo(parent.end)
                                         }
+                                            .focusable(enabled = false)
                                     ) {
                                         Icon(
-                                            modifier = Modifier.size(35.dp),
+                                            modifier = Modifier
+                                                .size(35.dp)
+                                                .focusable(enabled = false),
                                             imageVector = Icons.Default.Close,
                                             tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
                                             contentDescription = stringResource(
@@ -199,7 +220,11 @@ fun WooPosProductInfoDialog(
                                             onClick = {
                                                 animVisibleState.targetState = false
                                             },
-                                            modifier = Modifier.fillMaxWidth(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .semantics {
+                                                    contentDescription = primaryButtonContentDescription
+                                                },
                                             border = BorderStroke(2.dp, MaterialTheme.colors.primary),
                                             shape = RoundedCornerShape(8.dp),
                                         ) {
@@ -220,6 +245,15 @@ fun WooPosProductInfoDialog(
             }
         }
     }
+}
+
+@Composable
+private fun getCombinedContentDescription(state: WooPosHomeState.ProductsInfoDialog.Visible): String {
+    val dialogContentDescription = stringResource(
+        id = R.string.woopos_banner_simple_products_dialog_content_description
+    )
+    return "$dialogContentDescription\n${stringResource(id = state.header)}" +
+        "\n${stringResource(id = state.primaryMessage)}\n${stringResource(id = state.secondaryMessage)}"
 }
 
 @WooPosPreview
