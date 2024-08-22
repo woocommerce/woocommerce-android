@@ -3740,7 +3740,7 @@
     <string name="more_menu_button_wc_admin_description">Manage more on admin</string>
 
     <string name="more_menu_button_payments">Payments</string>
-    <string name="more_menu_button_payments_description">Join the mobile payments</string>
+    <string name="more_menu_button_payments_description">Take payments on the go</string>
 
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
@@ -3794,6 +3794,12 @@
     <string name="shipping_notice_banner_instructions_content">Shipping to countries that follow European Union (EU) customs rules now requires you clearly describe every item. For example, if you are sending clothing, you must indicate what type of clothing (e.g., men\’s shirts, girl\’s vest, boy\’s jacket) for the description to be acceptable. Otherwise, shipments may be delayed or interrupted at customs.</string>
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
+
+    <!--
+   Local Notifications
+   -->
+    <string name="local_notification_blaze_no_campaign_reminder_title">Boost your sales</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
 
     <!--
     First product published congratulatory feature
