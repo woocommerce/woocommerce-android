@@ -51,7 +51,7 @@ class WooPosCardReaderFacade @Inject constructor(
 
     fun connectToReader() {
         val intent = WooPosCardReaderActivity.buildIntentForCardReaderConnection(activity!!).apply {
-            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         activity!!.startActivity(intent)
     }
@@ -60,7 +60,7 @@ class WooPosCardReaderFacade @Inject constructor(
         return suspendCancellableCoroutine { continuation ->
             paymentContinuation = continuation
             val intent = WooPosCardReaderActivity.buildIntentForPayment(activity!!, orderId).apply {
-                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             paymentResultLauncher!!.launch(intent)
         }
