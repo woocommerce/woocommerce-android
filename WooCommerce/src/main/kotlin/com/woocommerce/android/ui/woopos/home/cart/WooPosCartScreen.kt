@@ -41,7 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -129,21 +128,26 @@ private fun WooPosCartScreen(
                 )
             }
         }
-        val cartOverlayIntensityAnimated by animateFloatAsState(
-            when (state.body) {
-                WooPosCartState.Body.Empty -> .6f
-                is WooPosCartState.Body.WithItems -> 0f
-            },
-            label = "cartOverlayAnimated"
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
-                )
-        )
+        CartOverlay(state)
     }
+}
+
+@Composable
+private fun CartOverlay(state: WooPosCartState) {
+    val cartOverlayIntensityAnimated by animateFloatAsState(
+        when (state.body) {
+            WooPosCartState.Body.Empty -> .6f
+            is WooPosCartState.Body.WithItems -> 0f
+        },
+        label = "cartOverlayAnimated"
+    )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
+            )
+    )
 }
 
 @Composable
