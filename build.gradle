@@ -100,7 +100,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '3085-f78956bd80503fde10eccd2b279e0ba676c14a2c'
+    fluxCVersion = 'trunk-55fcd348a202609bc5503039aa607a394e472c12'
     glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -120,7 +120,7 @@ ext {
     hiltJetpackVersion = '1.1.0'
     wordPressUtilsVersion = '3.5.0'
     mediapickerVersion = '0.3.1'
-    wordPressLoginVersion = 'trunk-ac70b6dc3eb96595601c6ffc1edc596168228762'
+    wordPressLoginVersion = '1.18.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '5.0.0'
     workManagerVersion = '2.7.1'
