@@ -299,7 +299,7 @@ private fun EditDurationSection(
 private fun ImpressionsInfoBottomSheet(
     onDoneTapped: () -> Unit,
 ) {
-    Column {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Row(
             modifier = Modifier.padding(
                 start = 16.dp,
@@ -351,7 +351,11 @@ private fun EditDurationBottomSheet(
     }
 
     var sliderPosition by remember { mutableStateOf(budgetUiState.durationInDays.toFloat()) }
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
             style = MaterialTheme.typography.h6,
