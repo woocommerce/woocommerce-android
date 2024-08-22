@@ -161,7 +161,7 @@ class WooPosHomeViewModel @Inject constructor(
             return
         }
 
-        // Prevent cart state changes from interrupting the checkout process
+        // Abort further processing of CartStatusChanged events if the checkout process is in the NotPaid state.
         if (_state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.NotPaid) {
             return
         }
