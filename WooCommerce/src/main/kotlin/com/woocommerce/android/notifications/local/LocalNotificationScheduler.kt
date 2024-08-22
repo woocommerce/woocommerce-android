@@ -29,11 +29,11 @@ class LocalNotificationScheduler @Inject constructor(
     private val workManager = WorkManager.getInstance(appContext)
 
     fun scheduleNotification(notification: LocalNotification) {
-        cancelScheduledNotification(notification.type)
+        cancelScheduledNotification(notification.tag)
 
         workManager
             .beginUniqueWork(
-                LOCAL_NOTIFICATION_WORK_NAME + notification.type.value,
+                LOCAL_NOTIFICATION_WORK_NAME + notification.tag,
                 REPLACE,
                 buildPreconditionCheckWorkRequest(notification)
             )
@@ -57,7 +57,7 @@ class LocalNotificationScheduler @Inject constructor(
         )
         return OneTimeWorkRequestBuilder<PreconditionCheckWorker>()
             .setInputData(conditionData)
-            .addTag(notification.type.value)
+            .addTag(notification.tag)
             .setInitialDelay(notification.delay, notification.delayUnit)
             .build()
     }
@@ -72,12 +72,12 @@ class LocalNotificationScheduler @Inject constructor(
             LOCAL_NOTIFICATION_SITE_ID to notification.siteId
         )
         return OneTimeWorkRequestBuilder<LocalNotificationWorker>()
-            .addTag(notification.type.value)
+            .addTag(notification.tag)
             .setInputData(notificationData)
             .build()
     }
 
-    fun cancelScheduledNotification(type: LocalNotificationType) {
-        workManager.cancelAllWorkByTag(type.value)
+    private fun cancelScheduledNotification(tag: String) {
+        workManager.cancelAllWorkByTag(tag)
     }
 }

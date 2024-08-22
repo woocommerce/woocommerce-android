@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +43,7 @@ fun WooPosBanner(
     onClose: () -> Unit,
     onLearnMore: () -> Unit
 ) {
+    val bannerContentDescription = getGroupedContentDescription(title, message)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -48,6 +52,10 @@ fun WooPosBanner(
                 end = 2.dp.toAdaptivePadding(),
                 bottom = 16.dp.toAdaptivePadding()
             )
+            .semantics {
+                contentDescription = bannerContentDescription
+            }
+            .focusable()
     ) {
         Card(
             shape = RoundedCornerShape(8.dp),
@@ -164,6 +172,16 @@ fun WooPosBanner(
             }
         }
     }
+}
+
+@Composable
+private fun getGroupedContentDescription(title: String, message: String): String {
+    val bannerContentDescription = stringResource(id = R.string.woopos_banner_simple_products_content_description)
+    val learnMoreContentDescription = stringResource(
+        id = R.string.woopos_banner_simple_products_learn_more_content_description
+    )
+    val combinedContentDescription = "$bannerContentDescription\n$title\n$message\n$learnMoreContentDescription"
+    return combinedContentDescription
 }
 
 @WooPosPreview
