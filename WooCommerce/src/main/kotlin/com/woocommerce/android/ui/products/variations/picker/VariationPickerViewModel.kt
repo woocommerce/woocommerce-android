@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -31,10 +32,18 @@ class VariationPickerViewModel @Inject constructor(
     }
 
     private val navArgs: VariationPickerFragmentArgs by savedState.navArgs()
+    private val allowedVariations = navArgs.allowedVatiations?.toSet()
 
     private val loadingState = MutableStateFlow(LoadingState.IDLE)
-
-    private val allowedVariations = navArgs.allowedVatiations?.toSet()
+    private val loadingWithDebounce
+        get() = loadingState.withIndex().debounce {
+            if (it.index != 0 && it.value == LoadingState.IDLE) {
+                // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
+                STATE_UPDATE_DELAY
+            } else {
+                0L
+            }
+        }.map { it.value }
 
     init {
         viewModelScope.launch {
@@ -46,30 +55,13 @@ class VariationPickerViewModel @Inject constructor(
 
     val viewSate = combine(
         variationListHandler.getVariationsFlow(navArgs.productId),
-        loadingState.withIndex()
-            .debounce {
-                if (it.index != 0 && it.value == LoadingState.IDLE) {
-                    // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
-                    STATE_UPDATE_DELAY
-                } else {
-                    0L
-                }
-            }
-            .map { it.value }
+        loadingWithDebounce
     ) { variations, loadingState ->
         ViewState(
             loadingState = loadingState,
             variations = variations.filter { variation ->
                 allowedVariations?.let { it.isEmpty() || variation.remoteVariationId in it } ?: true
-            }
-                .map { variation ->
-                    VariationListItem(
-                        id = variation.remoteVariationId,
-                        title = variation.getName(),
-                        imageUrl = variation.image?.source,
-                        attributes = variation.attributes.toList()
-                    )
-                }
+            }.map { it.toVariationListItem() }
         )
     }.asLiveData()
 
@@ -97,6 +89,14 @@ class VariationPickerViewModel @Inject constructor(
             )
         )
     }
+
+    private fun ProductVariation.toVariationListItem() =
+        VariationListItem(
+            id = remoteVariationId,
+            title = getName(),
+            imageUrl = image?.source,
+            attributes = attributes.toList()
+        )
 
     data class VariationListItem(
         val id: Long,
