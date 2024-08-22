@@ -4,9 +4,11 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -20,12 +22,15 @@ import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
 class VariationPickerViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val variationListHandler: VariationListHandler
+    private val variationListHandler: VariationListHandler,
+    private val variationRepository: VariationSelectorRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val STATE_UPDATE_DELAY = 100L
@@ -45,6 +50,11 @@ class VariationPickerViewModel @Inject constructor(
             }
         }.map { it.value }
 
+    private val parentProductFlow: Flow<Product?> = flow {
+        val fetchedProduct = variationRepository.getProduct(navArgs.productId)
+        emit(fetchedProduct)
+    }
+
     init {
         viewModelScope.launch {
             loadingState.value = LoadingState.LOADING
@@ -55,13 +65,14 @@ class VariationPickerViewModel @Inject constructor(
 
     val viewSate = combine(
         variationListHandler.getVariationsFlow(navArgs.productId),
+        parentProductFlow,
         loadingWithDebounce
-    ) { variations, loadingState ->
+    ) { variations, parentProduct, loadingState ->
         ViewState(
             loadingState = loadingState,
             variations = variations
                 .filter { allowedVariations.isEmpty() || it.remoteVariationId in allowedVariations }
-                .map { it.toVariationListItem() }
+                .map { it.toVariationListItem(parentProduct) }
         )
     }.asLiveData()
 
@@ -90,10 +101,10 @@ class VariationPickerViewModel @Inject constructor(
         )
     }
 
-    private fun ProductVariation.toVariationListItem() =
+    private fun ProductVariation.toVariationListItem(parentProduct: Product?) =
         VariationListItem(
             id = remoteVariationId,
-            title = getName(),
+            title = getName(parentProduct),
             imageUrl = image?.source,
             attributes = attributes
                 .takeIf { it.isNotEmpty() }
