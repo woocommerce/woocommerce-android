@@ -36,7 +36,7 @@ class IsGoogleForWooEnabled @Inject constructor(
             val plugin = activePlugins.getJSONObject(i)
             val currentPluginName = plugin.optString("plugin")
             val currentPluginVersion = plugin.optString("version")
-            if (currentPluginName == GOOGLE_FOR_WOO_PLUGIN_NAME &&
+            if (currentPluginName.contains(GOOGLE_FOR_WOO_PLUGIN_NAME) &&
                 currentPluginVersion.isVersionAtLeast(GOOGLE_FOR_WOO_PLUGIN_MIN_VERSION)
             ) {
                 return true
