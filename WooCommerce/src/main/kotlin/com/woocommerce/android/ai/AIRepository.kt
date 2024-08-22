@@ -1,6 +1,5 @@
 package com.woocommerce.android.ai
 
-import com.google.gson.Gson
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.tools.SelectedSite
@@ -22,8 +21,6 @@ class AIRepository @Inject constructor(
         const val PRODUCT_SHARING_FEATURE = "woo_android_share_product"
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
         const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
-        const val PRODUCT_NAME_FEATURE = "woo_android_product_name"
-        const val PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE = "woo_android_product_details_from_scanned_texts"
         const val ORDER_DETAIL_THANK_YOU_NOTE = "woo_android_order_detail_thank_you_note"
     }
 
@@ -53,33 +50,6 @@ class AIRepository @Inject constructor(
             languageISOCode
         )
         return fetchJetpackAIQuery(prompt, PRODUCT_DESCRIPTION_FEATURE)
-    }
-
-    suspend fun generateProductName(
-        keywords: String,
-        languageISOCode: String = "en"
-    ): Result<String> {
-        val prompt = AIPrompts.generateProductNamePrompt(
-            keywords,
-            languageISOCode
-        )
-
-        return fetchJetpackAIQuery(prompt, PRODUCT_NAME_FEATURE)
-    }
-
-    suspend fun generateProductNameAndDescription(
-        keywords: String,
-        languageISOCode: String = "en"
-    ): Result<AIProductDetailsResult> {
-        val prompt = AIPrompts.generateProductNameAndDescriptionPrompt(
-            keywords,
-            languageISOCode
-        )
-
-        return fetchJetpackAIQuery(prompt, PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE, ResponseFormat.JSON)
-            .mapCatching { json ->
-                Gson().fromJson(json, AIProductDetailsResult::class.java)
-            }
     }
 
     @Suppress("LongParameterList", "MagicNumber")
@@ -192,11 +162,6 @@ class AIRepository @Inject constructor(
         val errorMessage: String,
         val errorType: String
     ) : Exception(errorMessage)
-
-    data class AIProductDetailsResult(
-        val name: String,
-        val description: String
-    )
 
     private fun JetpackAIQueryResponse.Error.mapToException() =
         JetpackAICompletionsException(
