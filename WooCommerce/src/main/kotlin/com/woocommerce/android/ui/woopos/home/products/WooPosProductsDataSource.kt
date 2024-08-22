@@ -70,10 +70,6 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
         }
     }
 
-    private fun List<Product>.filterValidProducts(): List<Product> {
-        return this.filter { it.price != null }
-    }
-
     private suspend fun updateProductCache(newList: List<Product>) {
         cacheMutex.withLock { productCache = newList }
     }
