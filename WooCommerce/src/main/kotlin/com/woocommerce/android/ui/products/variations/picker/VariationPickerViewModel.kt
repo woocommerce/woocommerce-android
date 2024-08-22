@@ -106,10 +106,7 @@ class VariationPickerViewModel @Inject constructor(
             id = remoteVariationId,
             title = getName(parentProduct),
             imageUrl = image?.source,
-            attributes = attributes
-                .takeIf { it.isNotEmpty() }
-                ?.toList()
-                ?: listOf(VariantOption.empty)
+            attributes = attributes.toList()
         )
 
     data class VariationListItem(
