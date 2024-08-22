@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
@@ -85,13 +84,7 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
         WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage", error)
     }
 
-    sealed class ProductsResult {
-        data class Cached(val products: List<Product>) : ProductsResult()
-        data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun List<Product>.applyPosProductFilter() = this.filter { product ->
+    private fun List<Product>.applyPosProductFilter() = this.filter { product ->
         isProductHasAPrice(product) &&
             isProductNotVirtual(product) &&
             isProductNotDownloadable(product)
@@ -103,4 +96,9 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
 
     private fun isProductHasAPrice(product: Product) =
         (product.price != null && product.price.compareTo(BigDecimal.ZERO) != 0)
+
+    sealed class ProductsResult {
+        data class Cached(val products: List<Product>) : ProductsResult()
+        data class Remote(val productsResult: Result<List<Product>>) : ProductsResult()
+    }
 }
