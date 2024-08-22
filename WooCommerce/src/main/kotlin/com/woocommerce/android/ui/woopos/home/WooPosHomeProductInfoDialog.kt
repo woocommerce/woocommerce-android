@@ -9,6 +9,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -74,154 +76,164 @@ fun WooPosProductInfoDialog(
     }
     AnimatedVisibility(
         visibleState = animVisibleState,
-        enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
-            initialOffsetY = { it / 8 }, // Slide in from 1/8 below the center
-            animationSpec = tween(300)
-        ),
-        exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
-            targetOffsetY = { it / 8 }, // Slide out to 1/8 below the center
-            animationSpec = tween(300)
-        ),
+        enter = fadeIn(initialAlpha = 0.3f),
+        exit = fadeOut(targetAlpha = 0.0f)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    start = 100.dp.toAdaptivePadding(),
-                    end = 100.dp.toAdaptivePadding(),
-                    top = 100.dp.toAdaptivePadding(),
-                    bottom = 100.dp.toAdaptivePadding()
-                )
-                .semantics {
-                    contentDescription = dialogBackgroundContentDescription
-                }
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .semantics(mergeDescendants = true) {
-                        contentDescription = dialogContentDescription
+                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
+                .clickable(
+                    onClick = {
+                        animVisibleState.targetState = false
                     },
-                contentAlignment = Alignment.Center
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            AnimatedVisibility(
+                visibleState = animVisibleState,
+                enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
+                    initialOffsetY = { it / 8 },
+                    animationSpec = tween(300)
+                ),
+                exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
+                    targetOffsetY = { it / 8 },
+                    animationSpec = tween(300)
+                ),
             ) {
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    elevation = 8.dp,
+                Box(
                     modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
+                        .fillMaxSize()
+                        .padding(100.dp.toAdaptivePadding())
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(40.dp.toAdaptivePadding()),
+                            .fillMaxSize()
+                            .semantics(mergeDescendants = true) {
+                                contentDescription = dialogContentDescription
+                            },
                         contentAlignment = Alignment.Center
                     ) {
-                        ConstraintLayout(
-                            modifier = Modifier.fillMaxWidth()
+                        Card(
+                            shape = RoundedCornerShape(24.dp),
+                            elevation = 8.dp,
+                            modifier = Modifier
+                                .padding(16.dp.toAdaptivePadding())
+                                .fillMaxWidth()
                         ) {
-                            val (header, closeIcon, content) = createRefs()
-
-                            Text(
-                                text = stringResource(id = state.header),
-                                style = MaterialTheme.typography.h4,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                            Box(
                                 modifier = Modifier
-                                    .padding(bottom = 16.dp)
-                                    .constrainAs(header) {
-                                        top.linkTo(closeIcon.bottom)
-                                        start.linkTo(parent.start)
-                                        end.linkTo(parent.end)
-                                        width = Dimension.preferredWrapContent
-                                    }
-                            )
-
-                            IconButton(
-                                onClick = {
-                                    animVisibleState.targetState = false
-                                },
-                                modifier = Modifier
-                                    .constrainAs(closeIcon) {
-                                        top.linkTo(parent.top)
-                                        end.linkTo(parent.end)
-                                    }
-                                    .focusable(enabled = false)
+                                    .fillMaxWidth()
+                                    .padding(40.dp.toAdaptivePadding()),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(35.dp)
-                                        .focusable(enabled = false),
-                                    imageVector = Icons.Default.Close,
-                                    tint = MaterialTheme.colors.onSurface,
-                                    contentDescription = stringResource(
-                                        id = R.string.woopos_banner_simple_products_close_content_description
-                                    ),
-                                )
-                            }
-
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.constrainAs(content) {
-                                    top.linkTo(header.bottom)
-                                    start.linkTo(parent.start)
-                                    end.linkTo(parent.end)
-                                }
-                            ) {
-                                Text(
-                                    text = stringResource(id = state.primaryMessage),
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 24.sp,
-                                        lineHeight = 32.sp
-                                    ),
-                                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(bottom = 16.dp)
-                                )
-                                Box(
-                                    Modifier
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(color = MaterialTheme.colors.background)
-                                        .padding(16.dp),
-                                    contentAlignment = Alignment.Center,
+                                ConstraintLayout(
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = Modifier.fillMaxWidth()
+                                    val (header, closeIcon, content) = createRefs()
+
+                                    Text(
+                                        text = stringResource(id = state.header),
+                                        style = MaterialTheme.typography.h4,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                                        modifier = Modifier
+                                            .padding(bottom = 16.dp.toAdaptivePadding())
+                                            .constrainAs(header) {
+                                                top.linkTo(closeIcon.bottom)
+                                                start.linkTo(parent.start)
+                                                end.linkTo(parent.end)
+                                                width = Dimension.preferredWrapContent
+                                            }
+                                    )
+
+                                    IconButton(
+                                        onClick = {
+                                            animVisibleState.targetState = false
+                                        },
+                                        modifier = Modifier.constrainAs(closeIcon) {
+                                            top.linkTo(parent.top)
+                                            end.linkTo(parent.end)
+                                        }
+                                            .focusable(enabled = false)
                                     ) {
-                                        Text(
-                                            text = stringResource(id = state.secondaryMessage),
-                                            style = MaterialTheme.typography.subtitle1,
-                                            textAlign = TextAlign.Center,
-                                            fontWeight = FontWeight.Normal,
-                                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                                        Icon(
+                                            modifier = Modifier
+                                                .size(35.dp)
+                                                .focusable(enabled = false),
+                                            imageVector = Icons.Default.Close,
+                                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                                            contentDescription = stringResource(
+                                                id = R.string.woopos_banner_simple_products_close_content_description
+                                            ),
                                         )
                                     }
-                                }
-                                Spacer(modifier = Modifier.height(40.dp))
-                                OutlinedButton(
-                                    onClick = {
-                                        animVisibleState.targetState = false
-                                    },
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .semantics {
-                                            contentDescription = primaryButtonContentDescription
-                                        },
-                                    border = BorderStroke(2.dp, MaterialTheme.colors.primary),
-                                    shape = RoundedCornerShape(8.dp),
-                                ) {
-                                    Text(
-                                        modifier = Modifier
-                                            .padding(
-                                                top = 22.dp.toAdaptivePadding(),
-                                                bottom = 22.dp.toAdaptivePadding(),
+
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier.constrainAs(content) {
+                                            top.linkTo(header.bottom)
+                                            start.linkTo(parent.start)
+                                            end.linkTo(parent.end)
+                                        }
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = state.primaryMessage),
+                                            style = TextStyle(
+                                                fontWeight = FontWeight.Normal,
+                                                fontSize = 24.sp,
+                                                lineHeight = 32.sp
                                             ),
-                                        fontWeight = FontWeight.Bold,
-                                        style = MaterialTheme.typography.h5,
-                                        text = stringResource(id = state.primaryButton.label)
-                                    )
+                                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.padding(bottom = 16.dp.toAdaptivePadding())
+                                        )
+                                        Box(
+                                            Modifier
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(
+                                                    color = WooPosTheme.colors.dialogSubtitleHighlightBackground
+                                                )
+                                                .padding(16.dp.toAdaptivePadding()),
+                                            contentAlignment = Alignment.Center,
+                                        ) {
+                                            Column(
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Text(
+                                                    text = stringResource(id = state.secondaryMessage),
+                                                    style = MaterialTheme.typography.subtitle1,
+                                                    textAlign = TextAlign.Center,
+                                                    fontWeight = FontWeight.Normal,
+                                                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                                                )
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
+                                        OutlinedButton(
+                                            onClick = {
+                                                animVisibleState.targetState = false
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .semantics {
+                                                    contentDescription = primaryButtonContentDescription
+                                                },
+                                            border = BorderStroke(2.dp, MaterialTheme.colors.primary),
+                                            shape = RoundedCornerShape(8.dp),
+                                        ) {
+                                            Text(
+                                                modifier = Modifier
+                                                    .padding(vertical = 20.dp.toAdaptivePadding()),
+                                                fontWeight = FontWeight.Bold,
+                                                style = MaterialTheme.typography.h5,
+                                                text = stringResource(id = state.primaryButton.label)
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

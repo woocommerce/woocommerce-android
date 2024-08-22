@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Notification
@@ -29,6 +30,7 @@ class LocalNotificationWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val wooNotificationBuilder: WooNotificationBuilder,
+    private val appsPrefsWrapper: AppPrefsWrapper,
     private val wooLogWrapper: WooLogWrapper
 ) : CoroutineWorker(appContext, workerParams) {
 
@@ -47,6 +49,8 @@ class LocalNotificationWorker @AssistedInject constructor(
                 notificationTappedIntent = getIntent(notification),
             )
 
+            setNotificationShown(type, siteId)
+
             AnalyticsTracker.track(
                 LOCAL_NOTIFICATION_DISPLAYED,
                 mapOf(
@@ -64,6 +68,16 @@ class LocalNotificationWorker @AssistedInject constructor(
         return Intent(appContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             putExtra(MainActivity.FIELD_LOCAL_NOTIFICATION, notification)
+        }
+    }
+
+    private fun setNotificationShown(type: String, siteId: Long) {
+        when (LocalNotificationType.fromString(type)) {
+            LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER -> {
+                appsPrefsWrapper.setBlazeNoCampaignReminderShown(siteId)
+            }
+
+            else -> {}
         }
     }
 

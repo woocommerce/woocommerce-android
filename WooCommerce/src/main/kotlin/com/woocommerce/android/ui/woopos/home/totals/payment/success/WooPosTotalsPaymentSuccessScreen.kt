@@ -190,14 +190,12 @@ private fun CheckMarkIcon(
         modifier = modifier
             .size(size)
             .shadow(8.dp, CircleShape)
-            .background(MaterialTheme.colors.background, CircleShape)
+            .background(WooPosTheme.colors.paymentSuccessIconBackground, CircleShape)
     ) {
         Icon(
             imageVector = Icons.Default.Check,
-            tint = WooPosTheme.colors.success,
-            contentDescription = stringResource(
-                id = R.string.woopos_payment_successful_checkmark_icon_content_description
-            ),
+            tint = WooPosTheme.colors.paymentSuccessIcon,
+            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
             modifier = Modifier
                 .size(iconSize)
         )

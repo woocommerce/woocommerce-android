@@ -15,6 +15,8 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.local.LocalNotificationType
+import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -260,6 +262,11 @@ class MainActivityViewModel @Inject constructor(
                 AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
                 mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
             )
+            LocalNotificationType.fromString(notification.tag)?.let {
+                when (it) {
+                    BLAZE_NO_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
+                }
+            }
         }
     }
 
@@ -307,6 +314,7 @@ class MainActivityViewModel @Inject constructor(
     ) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
+    object LaunchBlazeCampaignCreation : Event()
 
     sealed class RestartActivityEvent : Event()
     data class RestartActivityForLocalNotification(val notification: Notification) : RestartActivityEvent()
