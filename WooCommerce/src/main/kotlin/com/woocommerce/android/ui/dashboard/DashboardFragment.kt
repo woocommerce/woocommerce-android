@@ -9,6 +9,7 @@ import androidx.annotation.OptIn
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -53,6 +54,7 @@ import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
@@ -77,6 +79,7 @@ class DashboardFragment :
     }
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
+    private val mainActivityViewModel: MainActivityViewModel by activityViewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -127,6 +130,7 @@ class DashboardFragment :
             setContent {
                 WooThemeWithBackground {
                     DashboardContainer(
+                        mainActivityViewModel = mainActivityViewModel,
                         dashboardViewModel = dashboardViewModel,
                         blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                     )

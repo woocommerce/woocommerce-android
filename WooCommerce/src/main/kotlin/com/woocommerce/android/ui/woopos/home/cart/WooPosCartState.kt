@@ -30,6 +30,7 @@ data class WooPosCartState(
                 val name: String,
                 val price: String,
                 val imageUrl: String?,
+                val isAppearanceAnimationPlayed: Boolean,
             ) : Parcelable {
                 @Parcelize
                 data class Id(val productId: Long, val itemNumber: Int) : Parcelable
