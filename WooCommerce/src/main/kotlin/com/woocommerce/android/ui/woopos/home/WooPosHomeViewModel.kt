@@ -161,6 +161,11 @@ class WooPosHomeViewModel @Inject constructor(
             return
         }
 
+        // Prevent cart state changes from interrupting the checkout process
+        if (_state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.NotPaid) {
+            return
+        }
+
         val newScreenPositionState = when (event) {
             ChildToParentEvent.CartStatusChanged.Empty -> WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
             ChildToParentEvent.CartStatusChanged.NotEmpty -> WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
