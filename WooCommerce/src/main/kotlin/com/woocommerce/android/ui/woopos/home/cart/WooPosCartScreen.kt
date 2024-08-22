@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -175,7 +173,6 @@ private fun CartBodyWithItems(
     Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
 
     val listState = rememberLazyListState()
-    ScrollToBottomHandler(items, listState)
 
     WooPosLazyColumn(
         modifier = Modifier
@@ -199,21 +196,6 @@ private fun CartBodyWithItems(
         item {
             Spacer(modifier = Modifier.height(72.dp))
         }
-    }
-}
-
-@Composable
-private fun ScrollToBottomHandler(
-    items: List<WooPosCartState.Body.WithItems.Item>,
-    listState: LazyListState
-) {
-    val previousItemsCount = remember { mutableIntStateOf(0) }
-    val itemsInCartSize = items.size
-    LaunchedEffect(itemsInCartSize) {
-        if (itemsInCartSize > previousItemsCount.intValue) {
-            listState.animateScrollToItem(itemsInCartSize - 1)
-        }
-        previousItemsCount.intValue = itemsInCartSize
     }
 }
 
