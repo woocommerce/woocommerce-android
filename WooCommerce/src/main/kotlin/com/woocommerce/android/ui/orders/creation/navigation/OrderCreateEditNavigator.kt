@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.creation.navigation
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.configuration.Flow
@@ -136,6 +137,6 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToGiftCardFragment(target.giftCard)
             }
         }
-        navController.navigate(action)
+        navController.navigateSafely(action)
     }
 }
