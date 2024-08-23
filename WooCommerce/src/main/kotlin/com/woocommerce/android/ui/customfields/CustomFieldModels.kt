@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.customfields
 
-import android.util.Patterns
 import androidx.core.util.PatternsCompat
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import java.util.regex.Pattern
 
 typealias CustomField = WCMetaData
 
@@ -30,9 +30,19 @@ enum class CustomFieldContentType {
             return when {
                 PatternsCompat.WEB_URL.matcher(value).matches() -> URL
                 PatternsCompat.EMAIL_ADDRESS.matcher(value).matches() -> EMAIL
-                value.startsWith("tel://") || Patterns.PHONE.matcher(value).matches() -> PHONE
+                value.startsWith("tel://") || phonePattern.matcher(value).matches() -> PHONE
                 else -> TEXT
             }
+        }
+
+        private val phonePattern by lazy {
+            // Copied from android.util.Patterns.PHONE to make it work with tests
+            Pattern.compile(
+                // sdd = space, dot, or dash
+                "(\\+[0-9]+[\\- .]*)?" + // +<digits><sdd>*
+                    "(\\([0-9]+\\)[\\- .]*)?" + // (<digits>)<sdd>*
+                    "([0-9][0-9\\- .]+[0-9])" // <digit><digit|sdd>+<digit>
+            )
         }
     }
 }
