@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.customfields
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -39,7 +40,7 @@ class CustomFieldsViewModel @Inject constructor(
         launch {
             isLoading.value = true
             repository.refreshCustomFields(args.parentItemId, args.parentItemType).onFailure {
-                // Handle error
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_loading_error))
             }
             isLoading.value = false
         }

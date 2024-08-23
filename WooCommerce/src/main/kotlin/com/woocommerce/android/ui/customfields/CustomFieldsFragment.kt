@@ -7,20 +7,25 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CustomFieldsFragment : BaseFragment() {
     private val viewModel: CustomFieldsViewModel by viewModels()
 
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
     override val activityAppBarStatus = AppBarStatus.Hidden
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
             CustomFieldsScreen(
                 viewModel = viewModel
@@ -36,6 +41,7 @@ class CustomFieldsFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is CustomFieldsViewModel.CustomFieldValueClicked -> handleValueClick(event.field)
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }

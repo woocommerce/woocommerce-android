@@ -4270,4 +4270,5 @@
     Custom Fields
     -->
     <string name="custom_fields_list_title">Custom Fields</string>
+    <string name="custom_fields_list_loading_error">Error while loading custom fields</string>
 </resources>
