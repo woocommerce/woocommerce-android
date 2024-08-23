@@ -24,12 +24,16 @@ fun WooPosBackgroundOverlay(
         enter = fadeIn(initialAlpha = 0.3f),
         exit = fadeOut(targetAlpha = 0.0f)
     ) {
-        Box(modifier = modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onClick() })
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.2f))
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    onClick()
+                }
+        )
     }
 }
