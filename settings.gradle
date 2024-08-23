@@ -46,6 +46,11 @@ pluginManagement {
         id "com.google.protobuf" version gradle.ext.protobufVersion
         id "com.autonomousapps.dependency-analysis" version gradle.ext.dependencyAnalysisVersion
         id "com.osacky.fladle" version gradle.ext.fladleVersion
+        id 'com.android.test' version '8.5.1'
+        id 'org.jetbrains.kotlin.android' version '1.9.22'
+        id 'androidx.baselineprofile' version '1.2.3'
+        id 'com.android.application' version '8.5.1'
+        id 'androidx.baselineprofile' version '1.2.3'
     }
 }
 
@@ -80,3 +85,4 @@ gradle.ext {
 apply from: './config/gradle/include_builds.gradle'
 apply from: './config/gradle/gradle_build_cache.gradle'
 include ':WooCommerce-Wear'
+include ':baselineprofile'
