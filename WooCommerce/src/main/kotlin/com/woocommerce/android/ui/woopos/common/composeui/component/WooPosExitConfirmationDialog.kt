@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -57,10 +55,7 @@ fun WooPosExitConfirmationDialog(
             Box(
                 modifier = modifier.padding(40.dp.toAdaptivePadding())
             ) {
-                Column(
-                    modifier = modifier.padding(16.dp.toAdaptivePadding()),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Spacer(modifier = modifier.height(48.dp.toAdaptivePadding()))
                     Text(
                         text = title,
@@ -75,25 +70,14 @@ fun WooPosExitConfirmationDialog(
                         color = MaterialTheme.colors.onSurface
                     )
                     Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
-                    Button(
+                    WooPosButton(
+                        modifier = modifier
+                            .fillMaxWidth(),
                         onClick = {
                             onExit()
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.colors.primary
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = dismissButtonText,
-                            style = MaterialTheme.typography.h5,
-                            color = MaterialTheme.colors.onPrimary,
-                            modifier = modifier
-                                .padding(20.dp.toAdaptivePadding())
-                        )
-                    }
+                        text = dismissButtonText
+                    )
                 }
 
                 IconButton(
