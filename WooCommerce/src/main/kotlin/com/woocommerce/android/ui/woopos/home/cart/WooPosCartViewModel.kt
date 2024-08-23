@@ -44,15 +44,10 @@ class WooPosCartViewModel @Inject constructor(
         key = "cartViewState"
     )
 
-    // State Flow Implementation
     val state: LiveData<WooPosCartState> = _state
         .scan(_state.value) { previousState, newState ->
-            if (previousState == newState) {
-                newState
-            } else {
-                updateParentCartStatusIfCartChanged(previousState, newState)
-                newState
-            }
+            updateParentCartStatusIfCartChanged(previousState, newState)
+            newState
         }
         .distinctUntilChanged()
         .asLiveData(viewModelScope.coroutineContext)
