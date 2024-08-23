@@ -161,11 +161,6 @@ class WooPosHomeViewModel @Inject constructor(
             return
         }
 
-        // Abort further processing of CartStatusChanged events if the checkout process is in the NotPaid state.
-        if (_state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.NotPaid) {
-            return
-        }
-
         val newScreenPositionState = when (event) {
             ChildToParentEvent.CartStatusChanged.Empty -> WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
             ChildToParentEvent.CartStatusChanged.NotEmpty -> WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
