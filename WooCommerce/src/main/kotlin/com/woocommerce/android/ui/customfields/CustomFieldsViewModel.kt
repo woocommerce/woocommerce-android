@@ -26,7 +26,7 @@ class CustomFieldsViewModel @Inject constructor(
         isLoading
     ) { customFields, isLoading ->
         UiState(
-            customFields = customFields,
+            customFields = customFields.map { CustomFieldUiModel(it) },
             isLoading = isLoading
         )
     }.asLiveData()
@@ -45,8 +45,14 @@ class CustomFieldsViewModel @Inject constructor(
         }
     }
 
+    fun onCustomFieldValueClicked(field: CustomFieldUiModel) {
+        triggerEvent(CustomFieldValueClicked(field))
+    }
+
     data class UiState(
-        val customFields: List<CustomField>,
+        val customFields: List<CustomFieldUiModel>,
         val isLoading: Boolean
     )
+
+    data class CustomFieldValueClicked(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
 }

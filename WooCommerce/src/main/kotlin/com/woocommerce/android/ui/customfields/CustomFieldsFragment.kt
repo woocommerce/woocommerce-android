@@ -9,6 +9,8 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,10 +35,20 @@ class CustomFieldsFragment : BaseFragment() {
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is CustomFieldsViewModel.CustomFieldValueClicked -> handleValueClick(event.field)
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }
             }
+        }
+    }
+
+    private fun handleValueClick(field: CustomFieldUiModel) {
+        when (field.contentType) {
+            CustomFieldContentType.URL -> ChromeCustomTabUtils.launchUrl(requireContext(), field.value)
+            CustomFieldContentType.EMAIL -> ActivityUtils.sendEmail(requireContext(), field.value)
+            CustomFieldContentType.PHONE -> ActivityUtils.dialPhoneNumber(requireContext(), field.value)
+            CustomFieldContentType.TEXT -> error("Values of type TEXT should not be clickable")
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -23,13 +24,17 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.UrlAnnotation
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
@@ -37,6 +42,7 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
         CustomFieldsScreen(
             state = state,
             onPullToRefresh = viewModel::onPullToRefresh,
+            onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
             onBackClick = viewModel::onBackClick
         )
     }
@@ -47,6 +53,7 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
 private fun CustomFieldsScreen(
     state: CustomFieldsViewModel.UiState,
     onPullToRefresh: () -> Unit,
+    onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -69,6 +76,7 @@ private fun CustomFieldsScreen(
                 items(state.customFields) { customField ->
                     CustomFieldItem(
                         customField = customField,
+                        onValueClicked = onCustomFieldValueClicked,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Divider()
@@ -84,9 +92,11 @@ private fun CustomFieldsScreen(
     }
 }
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 private fun CustomFieldItem(
-    customField: CustomField,
+    customField: CustomFieldUiModel,
+    onValueClicked: (CustomFieldUiModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -101,11 +111,29 @@ private fun CustomFieldItem(
                 style = MaterialTheme.typography.subtitle2
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = customField.valueAsString,
+
+            val text = buildAnnotatedString {
+                if (customField.contentType != CustomFieldContentType.TEXT) {
+                    pushUrlAnnotation(UrlAnnotation(customField.value))
+                    pushStyle(SpanStyle(color = MaterialTheme.colors.primary))
+                }
+                append(customField.valueStrippedHtml)
+            }
+            ClickableText(
+                text = text,
+                style = MaterialTheme.typography.body2.copy(
+                    color = MaterialTheme.colors.onSurface
+                ),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.body2
+                onClick = { offset ->
+                    text.getUrlAnnotations(
+                        start = offset,
+                        end = offset
+                    ).firstOrNull()?.let { _ ->
+                        onValueClicked(customField)
+                    }
+                }
             )
         }
     }
@@ -115,21 +143,27 @@ private fun CustomFieldItem(
 @Preview
 @Composable
 private fun CustomFieldsScreenPreview() {
-    CustomFieldsScreen(
-        state = CustomFieldsViewModel.UiState(
-            customFields = listOf(
-                WCMetaData(0, "key1", "Value 1"),
-                WCMetaData(1, "key2", "Value 2"),
-                WCMetaData(
-                    id = 2,
-                    key = "key3",
-                    value = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-                        "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-                )
+    WooThemeWithBackground {
+        CustomFieldsScreen(
+            state = CustomFieldsViewModel.UiState(
+                customFields = listOf(
+                    CustomFieldUiModel(CustomField(0, "key1", "Value 1")),
+                    CustomFieldUiModel(CustomField(1, "key2", "Value 2")),
+                    CustomFieldUiModel(
+                        CustomField(
+                            id = 2,
+                            key = "key3",
+                            value = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+                                "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                        )
+                    ),
+                    CustomFieldUiModel(CustomField(3, "key4", "https://url.com")),
+                ),
+                isLoading = false
             ),
-            isLoading = false
-        ),
-        onPullToRefresh = {},
-        onBackClick = {}
-    )
+            onPullToRefresh = {},
+            onCustomFieldValueClicked = {},
+            onBackClick = {}
+        )
+    }
 }
