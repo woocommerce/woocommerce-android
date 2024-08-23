@@ -1,1 +1,7 @@
-We’ve improved your WooCommerce experience with several key updates: card reader tutorial images are now visible on tablets, QR code scanning is disabled during login, and the “Write with AI” issue with the keyboard has been fixed. Plus, you can now process card-present payments for orders marked as failed.
+- [*****] [Internal] Update Aztec from v1.3.45 to v2.1.4 [https://github.com/woocommerce/woocommerce-android/pull/12316]
+- [**] Fixed Orders screen being stuck at skeleton loading view in certain scenarios [https://github.com/woocommerce/woocommerce-android/pull/12387]
+- [*] Handle incorrect pin error for UK and Canadian stores during IPP [https://github.com/woocommerce/woocommerce-android/pull/12375]
+- [*] [Internal] Fixed an issue with date formatting for the Blaze campaign creation API request [https://github.com/woocommerce/woocommerce-android/pull/12372]
+- [*] Fixed a rare crash in the order editing screen. [https://github.com/woocommerce/woocommerce-android/pull/12382]
+- [*] Fixed the blaze budget screens that are unusable on small screens. [https://github.com/woocommerce/woocommerce-android/pull/12402]
+
