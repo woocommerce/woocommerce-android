@@ -5,16 +5,15 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -26,6 +25,7 @@ class WooPosToolbarViewModelTest {
     private val cardReaderFacade: WooPosCardReaderFacade = mock {
         onBlocking { readerStatus }.thenReturn(flowOf(CardReaderStatus.NotConnected()))
     }
+    private val getSupportFacade: WooPosGetSupportFacade = mock()
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
 
     @Test
@@ -108,7 +108,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
         verify(cardReaderFacade).connectToReader()
@@ -132,41 +132,50 @@ class WooPosToolbarViewModelTest {
     }
 
     @Test
-    fun `when connect to card reader clicked multiple times, then debounce prevents multiple clicks`() = runTest {
+    fun `given card reader status is Connected, when OnCardReaderStatusClicked, then disconnect from reader should be called`() = runTest {
         // GIVEN
-        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.Connected(mock())))
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
-        advanceUntilIdle()
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
-        verify(cardReaderFacade, times(1)).connectToReader()
+        verify(cardReaderFacade).disconnectFromReader()
     }
 
     @Test
-    fun `when connect to card reader clicked multiple times after delay, then debounce handles all clicks`() = runTest {
+    fun `given card reader status is NotConnected, when OnCardReaderStatusClicked, then connect to reader should be called`() = runTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
         val viewModel = createViewModel()
 
         // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
-        advanceUntilIdle()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
-        advanceUntilIdle()
-        viewModel.onUiEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked)
-        advanceUntilIdle()
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
 
         // THEN
-        verify(cardReaderFacade, times(3)).connectToReader()
+        verify(cardReaderFacade).connectToReader()
+    }
+
+    @Test
+    fun `when get support clicked, then should open support form`() {
+        val viewModel = createViewModel()
+
+        viewModel.onUiEvent(
+            WooPosToolbarUIEvent.MenuItemClicked(
+                WooPosToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_get_support_title,
+                    icon = R.drawable.woopos_ic_get_support,
+                )
+            )
+        )
+
+        verify(getSupportFacade).openSupportForm()
     }
 
     private fun createViewModel() = WooPosToolbarViewModel(
         cardReaderFacade,
-        childrenToParentEventSender
+        childrenToParentEventSender,
+        getSupportFacade,
     )
 }

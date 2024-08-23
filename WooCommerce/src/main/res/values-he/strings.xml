@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-07 17:54:04+0000
+Translation-Revision-Date: 2024-08-14 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="woopos_success_screen_total">תשלום של ⁦%1$s⁩ חויב בהצלחה</string>
     <string name="woopos_new_order_button">הזמנה חדשה</string>
     <string name="woopos_dialog_products_info_button_label">אישור</string>
@@ -1698,7 +1698,7 @@ Language: he_IL
     <string name="card_reader_interac_refund_refund_payment">להנפיק החזר כספי על תשלום</string>
     <string name="card_reader_interac_refund_refund_failed_header">ההחזר הכספי נכשל</string>
     <string name="card_reader_interac_refund_refund_loading_header">מתכונן לביצוע החזר כספי עבור התשלום</string>
-    <string name="copy">להעתיק</string>
+    <string name="copy" tools:override="true">להעתיק</string>
     <string name="coupons_list_search_hint">לחפש קופונים</string>
     <string name="coupon_details_share_formatting_failure">לא ניתן ליצור הודעה לשיתוף של קוד הקופון</string>
     <string name="coupon_details_share_coupon_error">שגיאה בשיתוף קוד הקופון.</string>
@@ -2959,7 +2959,7 @@ Language: he_IL
     <string name="orderdetail_empty_address">לא צוינה כתובת</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
-    <string name="enter_email_for_site">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
     <string name="country_mapping_ZW">זימבבואה</string>
     <string name="country_mapping_ZM">זמביה</string>
     <string name="country_mapping_YE">תימן</string>
@@ -3555,8 +3555,8 @@ Language: he_IL
     <string name="login_configure_link">קריאת %1$sהוראות ההגדרה%2$s.</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
     <string name="at_username">‎@‎%s‎</string>
-    <string name="enter_site_address">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>
-    <string name="enter_email_wordpress_com">עליך להתחבר באמצעות כתובת האימייל של החשבון שלך ב-WordPress.com כדי לנהל את החנויות שלך ב-WooCommerce.</string>
+    <string name="enter_site_address" content_override="true">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>
+    <string name="enter_email_wordpress_com" content_override="true">עליך להתחבר באמצעות כתובת האימייל של החשבון שלך ב-WordPress.com כדי לנהל את החנויות שלך ב-WooCommerce.</string>
     <string name="already_logged_in_wpcom">כבר התחברת לחשבון שלך ב-WordPress.com. אין באפשרותך להוסיף אתר WordPress.com שקשור לחשבון אחר.</string>
     <string name="cant_open_url">אי אפשר לפתוח את הקישור</string>
     <string name="error_no_sms_app">לא נמצאה אפליקציה של הודעות טקסט</string>

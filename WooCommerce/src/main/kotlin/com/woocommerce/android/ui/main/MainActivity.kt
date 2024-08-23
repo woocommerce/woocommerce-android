@@ -807,6 +807,10 @@ class MainActivity :
 
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
                 is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
+                MainActivityViewModel.LaunchBlazeCampaignCreation -> {
+                    // Propagate it to the DashboardBlazeCard
+                    event.isHandled = false
+                }
             }
         }
 
@@ -1173,7 +1177,10 @@ class MainActivity :
             remoteNoteId
         )
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(directions = action, extras = extras)
+        navController.navigateSafely(
+            directions = action,
+            extras = extras,
+        )
     }
 
     override fun showFeedbackSurvey() {
