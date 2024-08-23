@@ -1,0 +1,2 @@
+20.0:
+Vi har förbättrat din WooCommerce-upplevelse med flera viktiga uppdateringar: instruktionsbilder för kortläsare är nu synliga på surfplattor, QR-kodskanning är inaktiverad under inloggning och "Skriv med AI"-problemet med tangentbordet har åtgärdats. Dessutom kan du nu behandla kortbetalningar för beställningar som har markerats som misslyckade.

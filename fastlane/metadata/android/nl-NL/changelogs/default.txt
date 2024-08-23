@@ -1,0 +1,2 @@
+20.0:
+We hebben je WooCommerce-ervaring verbeterd met een aantal belangrijke updates: de afbeeldingen in de tutorial voor kaartlezers zijn nu zichtbaar op tablets, tijdens inloggen is de QR-codescanner uitgeschakeld en het probleem met 'Schrijf met AI' met het toetsenbord is verholpen. Daarnaast kan je nu fysieke kaartbetalingen verwerken voor bestellingen die als mislukt zijn gemarkeerd.

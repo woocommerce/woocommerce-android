@@ -1,0 +1,2 @@
+20.0:
+Abbiamo migliorato la tua esperienza WooCommerce con diversi aggiornamenti chiave: le immagini dei tutorial del lettore di carte sono ora visibili sui tablet, la scansione dei codici QR è disabilitata durante l'accesso e il problema "Scrivi con IA" con la tastiera è stato risolto. Inoltre, ora puoi elaborare i pagamenti con carta di credito per gli ordini contrassegnati come falliti.
