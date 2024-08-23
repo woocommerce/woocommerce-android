@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -86,46 +85,54 @@ private fun WooPosCartScreen(
 ) {
     Box(
         modifier = modifier
-            .padding(
-                top = 40.dp.toAdaptivePadding(),
-                bottom = 16.dp.toAdaptivePadding()
-            )
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        Column {
-            CartToolbar(
-                toolbar = state.toolbar,
-                onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
-                onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
-            )
+        Column(
+            modifier = modifier
+                .padding(
+                    top = 40.dp.toAdaptivePadding(),
+                    bottom = 16.dp.toAdaptivePadding()
+                )
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                CartToolbar(
+                    toolbar = state.toolbar,
+                    onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
+                    onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
+                )
 
-            when (state.body) {
-                WooPosCartState.Body.Empty -> {
-                    CartBodyEmpty()
-                }
+                when (state.body) {
+                    WooPosCartState.Body.Empty -> {
+                        CartBodyEmpty()
+                    }
 
-                is WooPosCartState.Body.WithItems -> {
-                    CartBodyWithItems(
-                        items = state.body.itemsInCart,
-                        areItemsRemovable = state.areItemsRemovable,
-                        onUIEvent = onUIEvent,
-                    )
+                    is WooPosCartState.Body.WithItems -> {
+                        CartBodyWithItems(
+                            items = state.body.itemsInCart,
+                            areItemsRemovable = state.areItemsRemovable,
+                            onUIEvent = onUIEvent,
+                        )
+                    }
                 }
             }
-        }
 
-        if (state.isCheckoutButtonVisible) {
-            WooPosButton(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp.toAdaptivePadding()),
-                text = stringResource(R.string.woopos_checkout_button),
-                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
-            )
+            if (state.isCheckoutButtonVisible) {
+                WooPosButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp.toAdaptivePadding()),
+                    text = stringResource(R.string.woopos_checkout_button),
+                    onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+                )
+            }
         }
+        CartOverlay(state)
     }
+}
+
+@Composable
+private fun CartOverlay(state: WooPosCartState) {
     val cartOverlayIntensityAnimated by animateFloatAsState(
         when (state.body) {
             WooPosCartState.Body.Empty -> .6f
@@ -175,7 +182,7 @@ private fun CartBodyWithItems(
     Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
 
     val listState = rememberLazyListState()
-    ScrollToBottomHandler(items, listState)
+    ScrollToTopHandler(items, listState)
 
     WooPosLazyColumn(
         modifier = Modifier
@@ -196,14 +203,11 @@ private fun CartBodyWithItems(
                 onUIEvent = onUIEvent,
             )
         }
-        item {
-            Spacer(modifier = Modifier.height(72.dp))
-        }
     }
 }
 
 @Composable
-private fun ScrollToBottomHandler(
+private fun ScrollToTopHandler(
     items: List<WooPosCartState.Body.WithItems.Item>,
     listState: LazyListState
 ) {
@@ -211,7 +215,7 @@ private fun ScrollToBottomHandler(
     val itemsInCartSize = items.size
     LaunchedEffect(itemsInCartSize) {
         if (itemsInCartSize > previousItemsCount.intValue) {
-            listState.animateScrollToItem(itemsInCartSize - 1)
+            listState.animateScrollToItem(0)
         }
         previousItemsCount.intValue = itemsInCartSize
     }
@@ -269,7 +273,6 @@ private fun CartToolbar(
                     start = 16.dp.toAdaptivePadding(),
                     end = 4.dp,
                     top = 4.dp,
-                    bottom = 4.dp
                 )
         )
 
@@ -334,15 +337,8 @@ private fun ProductItem(
 
     val elevation by animateDpAsState(
         targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 150, delayMillis = 100),
+        animationSpec = tween(durationMillis = 200, delayMillis = 100),
         label = "elevation"
-    )
-
-    val itemHeight = 64.dp
-    val offsetY by animateDpAsState(
-        targetValue = if (hasAnimationStarted) 0.dp else -itemHeight,
-        animationSpec = tween(durationMillis = 70),
-        label = "offsetY"
     )
 
     val alpha by animateFloatAsState(
@@ -368,8 +364,7 @@ private fun ProductItem(
 
     Card(
         modifier = modifier
-            .offset(y = offsetY)
-            .height(itemHeight)
+            .height(64.dp)
             .semantics { contentDescription = itemContentDescription }
             .graphicsLayer(alpha = alpha),
         elevation = elevation,
