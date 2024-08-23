@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-14 09:54:03+0000
+Translation-Revision-Date: 2024-08-22 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">選單</string>
+    <string name="woopos_cart_item_content_description">購物車「%s」中的商品，價格為 %s</string>
+    <string name="woopos_product_item_content_description">商品「%s」的價格為 %s</string>
+    <string name="blaze_campaign_status_suspended">已暫停</string>
     <string name="woopos_success_screen_total">已成功支付「%1$s」的款項</string>
     <string name="woopos_new_order_button">新訂單</string>
     <string name="woopos_dialog_products_info_button_label">確定</string>
@@ -124,7 +128,6 @@ Language: zh_TW
     <string name="woopos_payment_failed_please_try_again">付款失敗。 請再試一次。</string>
     <string name="woopos_cart_back_content_description">購物車圖示</string>
     <string name="woopos_products_screen_title">商品</string>
-    <string name="woopos_product_image_description">商品圖片</string>
     <string name="woopos_items_in_cart">%d 個品項</string>
     <string name="woopos_clear_cart_button">清除</string>
     <string name="more_menu_button_google_description">運用 Google Ads 刺激銷售額並帶來更多流量</string>
@@ -135,7 +138,7 @@ Language: zh_TW
     <string name="woopos_exit_confirmation_confirm_button">結束</string>
     <string name="woopos_exit_confirmation_message">你確定要結束 POS 嗎？</string>
     <string name="woopos_exit_confirmation_title">結束 POS</string>
-    <string name="woopos_remove_item_from_cart_content_description">從購物車移除項目</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">從購物車移除「%s」</string>
     <string name="woopos_checkout_button">結帳</string>
     <string name="woopos_reader_unknown">讀卡機狀態不明</string>
     <string name="woopos_checkout">結帳</string>
@@ -1295,7 +1298,6 @@ Language: zh_TW
     <string name="login_application_passwords_help">什麼是應用程式密碼？</string>
     <string name="login_application_passwords_unavailable">你的網站 %1$s 似乎已停用應用程式密碼功能。\n 若要使用 WooCommerce 應用程式，請啟用此功能。</string>
     <string name="login_open_installation_page">開啟安裝頁面</string>
-    <string name="not_a_valid_qr_code">掃進來的 QR code 不是 WooCommerce 代碼</string>
     <string name="review_reply_failure">傳送回覆時發生錯誤</string>
     <string name="review_reply_success">回覆已傳送！</string>
     <string name="wc_reply">回覆</string>
@@ -1370,7 +1372,6 @@ Language: zh_TW
     <string name="domain_picker_subtitle">這是人們在網際網路上找到你的地方。 不用擔心，之後還能修改。</string>
     <string name="analytics_visitors_subtitle">訪客數</string>
     <string name="or_use_password_below_qr_code_scan_option">或使用密碼登入</string>
-    <string name="or_scan_qr_code_to_log_in">掃描 QR 碼登入</string>
     <string name="simulated_reader_toast">模擬讀卡機已停用</string>
     <string name="simulated_reader_key">模擬讀卡機金鑰</string>
     <string name="variations_bulk_update_stock_quantity_success">更新的庫存數量</string>
@@ -1423,7 +1424,6 @@ Language: zh_TW
     <string name="qr_code_login_scanner_title">相機條碼掃描器</string>
     <string name="dev_options">開發人員選項</string>
     <string name="login_2fa_not_supported_self_hosted_site">自助託管網站不支援 2FA。 請使用應用程式密碼。</string>
-    <string name="login_with_qr_code">掃描 QR 碼登入</string>
     <string name="show_password_content_description">顯示密碼</string>
     <string name="hide_password_content_description">隱藏密碼</string>
     <string name="stats_widget_last_updated_message">始於 %1$s</string>

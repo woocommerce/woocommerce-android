@@ -1,2 +1,2 @@
-19.9:
-Melhoramos a experiência de reembolso! Agora as informações sobre suas transações são mais claras: cada item reembolsado que aparece na tela de reembolso inclui um subtotal detalhado e um campo com taxas. Atualize agora para aproveitar reembolsos mais tranquilos e transparentes!
+20.0
+Fizemos várias atualizações para melhorar a experiência no WooCommerce: imagens do tutorial do leitor de cartão ficam visíveis em tablets, a leitura de código QR é desativada no login e o problema de "Escrever com IA" no teclado foi resolvido. Além disso, você pode processar os pagamentos de vale-presente em pedidos "Com falha".

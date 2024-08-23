@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-13 09:54:03+0000
+Translation-Revision-Date: 2024-08-21 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">Menu</string>
+    <string name="woopos_cart_item_content_description">Produit dans le panier %s, Prix %s</string>
+    <string name="woopos_product_item_content_description">Produit %s, Prix %s</string>
+    <string name="blaze_campaign_status_suspended">En suspens</string>
     <string name="woopos_success_screen_total">Un paiement de %1$s a été effectué avec succès</string>
     <string name="woopos_new_order_button">Nouvelle commande</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
@@ -118,13 +122,12 @@ Language: fr
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Laissez-nous générer les détails du produit à votre place</string>
     <string name="woopos_payment_collect_payment_label">Percevoir un paiement par carte</string>
     <string name="woopos_payment_total_label">Total</string>
-    <string name="woopos_payment_tax_label">Taxe</string>
+    <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_subtotal_label">Sous-total</string>
     <string name="woopos_payment_successful_label">Paiement réussi</string>
     <string name="woopos_payment_failed_please_try_again">Échec du paiement. Veuillez réessayer.</string>
     <string name="woopos_cart_back_content_description">Icône du panier</string>
     <string name="woopos_products_screen_title">Produits</string>
-    <string name="woopos_product_image_description">Image produit</string>
     <string name="woopos_items_in_cart">%d élément</string>
     <string name="woopos_clear_cart_button">Effacer</string>
     <string name="more_menu_button_google_description">Multiplier les ventes et générer plus de trafic avec Google Ads</string>
@@ -135,7 +138,7 @@ Language: fr
     <string name="woopos_exit_confirmation_confirm_button">Quitter</string>
     <string name="woopos_exit_confirmation_message">Voulez-vous vraiment quitter le PDV ?</string>
     <string name="woopos_exit_confirmation_title">Quitter le PDV</string>
-    <string name="woopos_remove_item_from_cart_content_description">Retirer l’élément du panier</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Retirer %s du panier</string>
     <string name="woopos_checkout_button">Validation de la commande</string>
     <string name="woopos_reader_unknown">État du lecteur inconnu</string>
     <string name="woopos_checkout">Validation de la commande</string>
@@ -1295,7 +1298,6 @@ Language: fr
     <string name="login_application_passwords_help">Que sont les mots de passe d\'applications ?</string>
     <string name="login_application_passwords_unavailable">Il semblerait que la fonctionnalité Mots de passe d\'applications s\'affiche sur votre site %1$s.\n Veuillez l’activer pour utiliser l’application WooCommerce.</string>
     <string name="login_open_installation_page">Ouvrir la page d\'installation</string>
-    <string name="not_a_valid_qr_code">Le code QR scanné n\'est pas un code WooCommerce</string>
     <string name="review_reply_failure">Une erreur s\'est produite lors de l\'envoi de la réponse</string>
     <string name="review_reply_success">Réponse envoyée !</string>
     <string name="wc_reply">Répondre</string>
@@ -1370,7 +1372,6 @@ Language: fr
     <string name="domain_picker_subtitle">C’est ici que les internautes vous trouveront sur Internet. Pas d’inquiétude, vous pourrez modifier ceci ultérieurement.</string>
     <string name="analytics_visitors_subtitle">Visiteurs</string>
     <string name="or_use_password_below_qr_code_scan_option">Ou connectez-vous avec un mot de passe</string>
-    <string name="or_scan_qr_code_to_log_in">Scannez le code QR pour vous connecter</string>
     <string name="simulated_reader_toast">Le simulateur de lecteur de carte a été désactivé</string>
     <string name="simulated_reader_key">Simulateur de lecteur de carte</string>
     <string name="variations_bulk_update_stock_quantity_success">Mise à jour de la quantité en stock</string>
@@ -1423,7 +1424,6 @@ Language: fr
     <string name="qr_code_login_scanner_title">Lecteur de codes-barres de l’appareil photo</string>
     <string name="dev_options">Options pour les développeurs</string>
     <string name="login_2fa_not_supported_self_hosted_site">L’authentification à deux facteurs n’est pas prise en charge pour les sites auto-hébergés. Utilisez un mot de passe d’application.</string>
-    <string name="login_with_qr_code">Scanner le code QR pour se connecter</string>
     <string name="show_password_content_description">Afficher le mot de passe</string>
     <string name="hide_password_content_description">Cacher le mot de passe</string>
     <string name="stats_widget_last_updated_message">À partir du %1$s</string>

@@ -1,2 +1,2 @@
-19.9 :
-Nous avons amélioré votre expérience de remboursement ! Désormais, chaque remboursement sur l’écran dédié comprend des champs détaillant le sous-total et les taxes. Vous obtenez ainsi des tendances plus claires concernant vos transactions. Effectuez la mise à jour pour profiter de remboursements plus transparents et plus fluides !
+Version 20.0 :
+Plusieurs mises à jour clés améliorent votre expérience de WooCommerce : les images du didacticiel du lecteur de cartes s’affichent désormais sur les tablettes, le scan du code QR est désactivé pendant la connexion et le problème de rédaction à l’aide de l’IA avec le clavier est à présent résolu. En outre, vous pouvez désormais traiter les paiements par carte pour les commandes signalées comme ayant échoué.

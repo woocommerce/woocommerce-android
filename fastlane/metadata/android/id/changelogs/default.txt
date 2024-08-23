@@ -1,2 +1,2 @@
-19.9:
-Proses pengembalian dana kini lebih mulus. Tiap item pada layar pengembalian dana sekarang dilengkapi kolom subtotal dan pajak terperinci sehingga Anda punya gambaran lebih jelas seputar transaksi. Perbarui sekarang untuk menikmati pengembalian dana yang lebih mulus dan transparan!
+20.0:
+Kami telah menyempurnakan pengalaman WooCommerce melalui sejumlah pembaruan penting: gambar tutorial pembaca kartu kini dapat dilihat di tablet, pemindaian kode QR dinonaktifkan selama login, dan masalah “Tulis dengan AI” pada keyboard telah diatasi. Selain itu, Anda kini juga dapat memproses pembayaran dengan kartu untuk pesanan yang dinyatakan gagal.

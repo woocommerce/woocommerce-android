@@ -1,2 +1,2 @@
-19.9:
-İade deneyiminizi geliştirdik! Artık iade ekranındaki her bir iade öğesine ayrıntılı ara toplamlar ve vergiler alanları dahil olduğundan işlemlerinize dair daha net içgörüler elde edebilirsiniz. Daha sorunsuz, daha şeffaf iadelerin keyfini çıkarmak için hemen güncelleyin!
+20.0:
+WooCommerce deneyiminizi birkaç önemli güncellemeyle iyileştirdik: Kart okuyucu eğitici görselleri artık tabletlerde görünüyor, QR kodu taraması oturum açma sırasında devre dışı bırakıldı ve klavyedeki "Yapay zeka ile yaz" sorunu düzeltildi. Ayrıca başarısız olarak işaretlenen siparişlerin card-present ödemelerini artık işleyebilirsiniz.
