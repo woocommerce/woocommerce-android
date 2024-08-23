@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.customfields
 
 import androidx.core.util.PatternsCompat
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.util.HtmlUtils
 import java.util.regex.Pattern
 
 typealias CustomField = WCMetaData
@@ -13,8 +14,8 @@ data class CustomFieldUiModel(
         get() = customField.key
     val value
         get() = customField.valueAsString
-    val valueStrippedHtml
-        get() = customField.valueStrippedHtml
+    val valueStrippedHtml: String
+        get() = HtmlUtils.fastStripHtml(value)
 
     val contentType: CustomFieldContentType = CustomFieldContentType.fromMetadataValue(value)
 }
