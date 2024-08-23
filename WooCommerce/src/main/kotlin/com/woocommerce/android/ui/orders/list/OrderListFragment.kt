@@ -93,7 +93,7 @@ class OrderListFragment :
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
         private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.40f
-        private const val CURRENT_NAV_DESTINATION = "current_nav_destination"
+        private const val LAST_WINDOW_SIZE_WAS_LARGER_THAN_COMPACT = "last_window_size_was_larger_than_compact"
         private const val HANDLER_DELAY = 200L
     }
 
@@ -293,11 +293,11 @@ class OrderListFragment :
     }
 
     private fun adjustUiForDeviceType(savedInstanceState: Bundle?) {
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+        if (requireContext().windowSizeClass > WindowSizeClass.Compact) {
             adjustLayoutForTablet()
         } else {
             adjustLayoutForNonTablet(savedInstanceState)
-            savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1)
+            savedInstanceState?.putBoolean(LAST_WINDOW_SIZE_WAS_LARGER_THAN_COMPACT, false)
         }
     }
 
@@ -316,12 +316,18 @@ class OrderListFragment :
     }
 
     private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1) != -1) {
+        if (wasLastWindowSizeLargerThanCompact(savedInstanceState)) {
             displayDetailPaneOnly()
         } else {
             displayListPaneOnly()
         }
     }
+
+    private fun wasLastWindowSizeLargerThanCompact(savedInstanceState: Bundle?) =
+        savedInstanceState != null && savedInstanceState.getBoolean(
+            LAST_WINDOW_SIZE_WAS_LARGER_THAN_COMPACT,
+            false
+        )
 
     private fun displayListPaneOnly() {
         _binding?.detailPaneContainer?.visibility = View.GONE
@@ -353,10 +359,13 @@ class OrderListFragment :
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
-            val navHostFragment = childFragmentManager.findFragmentById(R.id.detailPaneContainer) as? NavHostFragment
-            val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
-            outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
+        if (findNavController().currentDestination?.id == R.id.orders) {
+            // We want to check if [OrderListFragment] is the current destination (at the top of the backstack),
+            // because onSaveInstanceState hook is called in all the fragments in the back stack on config change,
+            // even if they are not being recreated.
+            if (requireContext().windowSizeClass > WindowSizeClass.Compact) {
+                outState.putBoolean(LAST_WINDOW_SIZE_WAS_LARGER_THAN_COMPACT, true)
+            }
         }
     }
 
