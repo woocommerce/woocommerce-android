@@ -1,12 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.WooPosCardReaderStatus
@@ -84,18 +82,14 @@ private fun WooPosFloatingToolbar(
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        MenuOverlay(
+        WooPosBackgroundOverlay(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
                 .semantics {
                     contentDescription = labels.floatingToolbarMenuOverlayContentDescription
                 },
             isVisible = menu is Menu.Visible,
+            onClick = { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
         )
 
         ConstraintLayout(modifier = modifier) {
@@ -145,20 +139,6 @@ private fun WooPosFloatingToolbar(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun MenuOverlay(
-    modifier: Modifier,
-    isVisible: Boolean,
-) {
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = fadeIn(initialAlpha = 0.3f),
-        exit = fadeOut(targetAlpha = 0.0f)
-    ) {
-        Box(modifier = modifier)
     }
 }
 

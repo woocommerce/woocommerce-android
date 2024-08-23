@@ -40,22 +40,19 @@ data class WooPosHomeState(
     }
 
     @Parcelize
-    sealed class ProductsInfoDialog : Parcelable {
+    data class ProductsInfoDialog(
+        val header: Int = R.string.woopos_dialog_products_info_heading,
+        val primaryMessage: Int = R.string.woopos_dialog_products_info_primary_message,
+        val secondaryMessage: Int = R.string.woopos_dialog_products_info_secondary_message,
+        val primaryButton: PrimaryButton = PrimaryButton(
+            label = R.string.woopos_dialog_products_info_button_label,
+        ),
+        val isVisible: Boolean,
+    ) : Parcelable {
         @Parcelize
-        data object Hidden : ProductsInfoDialog()
-
-        @Parcelize
-        data class Visible(
-            @StringRes val header: Int,
-            @StringRes val primaryMessage: Int,
-            @StringRes val secondaryMessage: Int,
-            val primaryButton: PrimaryButton,
-        ) : ProductsInfoDialog() {
-            @Parcelize
-            data class PrimaryButton(
-                @StringRes val label: Int,
-            ) : Parcelable
-        }
+        data class PrimaryButton(
+            @StringRes val label: Int,
+        ) : Parcelable
     }
 }
 

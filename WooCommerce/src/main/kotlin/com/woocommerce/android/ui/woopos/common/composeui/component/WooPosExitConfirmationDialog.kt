@@ -95,10 +95,12 @@ fun WooPosExitConfirmationDialog(
                     elevation = 8.dp,
                     modifier = modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 150.dp.toAdaptivePadding())
                 ) {
                     Box(
-                        modifier = modifier.padding(40.dp.toAdaptivePadding())
+                        modifier = modifier.padding(
+                            horizontal = 190.dp.toAdaptivePadding(),
+                            vertical = 40.dp.toAdaptivePadding()
+                        )
                     ) {
                         Column(
                             modifier = modifier.padding(16.dp.toAdaptivePadding()),
