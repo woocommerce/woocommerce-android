@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -91,7 +93,8 @@ private fun CampaignBudgetScreen(
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
+        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded },
+        skipHalfExpanded = true,
     )
 
     Scaffold(
@@ -164,10 +167,9 @@ private fun EditBudgetSection(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(
-            start = 28.dp,
-            end = 28.dp
-        ),
+        modifier = modifier
+            .padding(start = 28.dp, end = 28.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
@@ -297,7 +299,7 @@ private fun EditDurationSection(
 private fun ImpressionsInfoBottomSheet(
     onDoneTapped: () -> Unit,
 ) {
-    Column {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Row(
             modifier = Modifier.padding(
                 start = 16.dp,
@@ -349,7 +351,11 @@ private fun EditDurationBottomSheet(
     }
 
     var sliderPosition by remember { mutableStateOf(budgetUiState.durationInDays.toFloat()) }
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
             style = MaterialTheme.typography.h6,
