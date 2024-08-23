@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.customfields
+package com.woocommerce.android.ui.customfields.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,8 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.customfields.CustomFieldContentType
+import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils

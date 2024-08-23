@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.customfields
+package com.woocommerce.android.ui.customfields.list
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +35,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.customfields.CustomField
+import com.woocommerce.android.ui.customfields.CustomFieldContentType
+import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 
 @Composable
 fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {

@@ -1,8 +1,10 @@
-package com.woocommerce.android.ui.customfields
+package com.woocommerce.android.ui.customfields.list
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.customfields.CustomFieldUiModel
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs

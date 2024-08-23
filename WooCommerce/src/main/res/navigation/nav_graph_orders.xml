@@ -653,7 +653,7 @@
     </fragment>
     <fragment
         android:id="@+id/customFieldsFragment"
-        android:name="com.woocommerce.android.ui.customfields.CustomFieldsFragment">
+        android:name="com.woocommerce.android.ui.customfields.list.CustomFieldsFragment">
         <argument
             android:name="parentItemId"
             app:argType="long" />
