@@ -18,6 +18,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.DuplicateTransaction
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.ExpiredCard
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.Fraud
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.IncorrectPin
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.IncorrectPostalCode
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.InsufficientFunds
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.InvalidAccount
@@ -103,9 +104,11 @@ internal class PaymentErrorMapper {
 
             "invalid_amount" -> InvalidAmount
 
-            "invalid_pin",
             "offline_pin_required",
             "online_or_offline_pin_required" -> PinRequired
+
+            "invalid_pin",
+            "incorrect_pin" -> IncorrectPin
 
             "pin_try_exceeded" -> TooManyPinTries
 
