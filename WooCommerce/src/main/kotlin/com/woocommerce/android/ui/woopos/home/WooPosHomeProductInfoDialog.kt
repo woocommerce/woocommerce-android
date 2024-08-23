@@ -194,15 +194,7 @@ fun ProductInfoDialogPreview() {
             contentAlignment = Alignment.Center
         ) {
             WooPosProductInfoDialog(
-                state = WooPosHomeState.ProductsInfoDialog(
-                    header = R.string.woopos_dialog_products_info_heading,
-                    primaryMessage = R.string.woopos_dialog_products_info_primary_message,
-                    secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
-                    primaryButton = WooPosHomeState.ProductsInfoDialog.PrimaryButton(
-                        label = R.string.woopos_dialog_products_info_button_label
-                    ),
-                    isVisible = true
-                ),
+                state = WooPosHomeState.ProductsInfoDialog(isVisible = true),
                 onDismissRequest = {},
             )
         }

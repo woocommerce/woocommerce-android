@@ -104,15 +104,14 @@ private fun WooPosHomeScreen(
         onHomeUIEvent,
     )
 
-    state.exitConfirmationDialog?.let {
-        WooPosExitConfirmationDialog(
-            title = stringResource(id = it.title),
-            message = stringResource(id = it.message),
-            dismissButtonText = stringResource(id = it.confirmButton),
-            onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
-            onExit = { onNavigationEvent(WooPosNavigationEvent.ExitPosClicked) }
-        )
-    }
+    WooPosExitConfirmationDialog(
+        isVisible = state.exitConfirmationDialog.isVisible,
+        title = stringResource(id = state.exitConfirmationDialog.title),
+        message = stringResource(id = state.exitConfirmationDialog.message),
+        dismissButtonText = stringResource(id = state.exitConfirmationDialog.confirmButton),
+        onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
+        onExit = { onNavigationEvent(WooPosNavigationEvent.ExitPosClicked) }
+    )
 }
 
 @Composable
@@ -236,7 +235,8 @@ fun WooPosHomeCartScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
-                productsInfoDialog = ProductsInfoDialog(isVisible = false)
+                productsInfoDialog = ProductsInfoDialog(isVisible = false),
+                exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},
@@ -251,7 +251,8 @@ fun WooPosHomeCartEmptyScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
-                productsInfoDialog = ProductsInfoDialog(isVisible = false)
+                productsInfoDialog = ProductsInfoDialog(isVisible = false),
+                exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},
@@ -266,7 +267,8 @@ fun WooPosHomeCheckoutScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
-                productsInfoDialog = ProductsInfoDialog(isVisible = false)
+                productsInfoDialog = ProductsInfoDialog(isVisible = false),
+                exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},
@@ -281,7 +283,8 @@ fun WooPosHomeCheckoutPaidScreenPreview() {
         WooPosHomeScreen(
             state = WooPosHomeState(
                 screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.Paid,
-                productsInfoDialog = ProductsInfoDialog(isVisible = false)
+                productsInfoDialog = ProductsInfoDialog(isVisible = false),
+                exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),
             onHomeUIEvent = { },
             onNavigationEvent = {},

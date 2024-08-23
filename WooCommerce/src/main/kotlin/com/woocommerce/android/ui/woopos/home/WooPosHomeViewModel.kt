@@ -21,7 +21,7 @@ class WooPosHomeViewModel @Inject constructor(
         initialValue = WooPosHomeState(
             screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
             productsInfoDialog = WooPosHomeState.ProductsInfoDialog(isVisible = false),
-            exitConfirmationDialog = null
+            exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false)
         )
     )
     val state: StateFlow<WooPosHomeState> = _state
@@ -50,14 +50,16 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is WooPosHomeState.ScreenPositionState.Cart -> {
                         _state.value = _state.value.copy(
-                            exitConfirmationDialog = WooPosExitConfirmationDialog
+                            exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = true)
                         )
                     }
                 }
             }
 
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
-                _state.value = _state.value.copy(exitConfirmationDialog = null)
+                _state.value = _state.value.copy(
+                    exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false)
+                )
             }
 
             WooPosHomeUIEvent.DismissProductsInfoDialog -> {
@@ -108,7 +110,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     ChildToParentEvent.ExitPosClicked -> {
                         _state.value = _state.value.copy(
-                            exitConfirmationDialog = WooPosExitConfirmationDialog
+                            exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = true)
                         )
                     }
 

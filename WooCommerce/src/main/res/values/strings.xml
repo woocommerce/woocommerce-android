@@ -4195,6 +4195,7 @@
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
     <string name="woopos_exit_dialog_confirmation_confirm_button">Exit</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_items_in_cart">%d item</string>
