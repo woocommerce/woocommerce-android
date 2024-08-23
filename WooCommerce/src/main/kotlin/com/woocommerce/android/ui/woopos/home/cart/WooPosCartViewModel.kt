@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,12 +44,18 @@ class WooPosCartViewModel @Inject constructor(
         key = "cartViewState"
     )
 
+    // State Flow Implementation
     val state: LiveData<WooPosCartState> = _state
         .scan(_state.value) { previousState, newState ->
-            updateParentCartStatusIfCartChanged(previousState, newState)
-            newState
+            if (previousState == newState) {
+                newState
+            } else {
+                updateParentCartStatusIfCartChanged(previousState, newState)
+                newState
+            }
         }
-        .asLiveData()
+        .distinctUntilChanged()
+        .asLiveData(viewModelScope.coroutineContext)
         .map { updateCartStatusDependingOnItems(it) }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
