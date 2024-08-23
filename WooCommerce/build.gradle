@@ -220,6 +220,10 @@ android {
     testOptions {
         animationsDisabled = true
     }
+
+    baselineProfile {
+        dexLayoutOptimization = true
+    }
 }
 
 dependencies {
