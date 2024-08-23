@@ -23,7 +23,8 @@ class SelectPaymentMethodCurrencyMissMatchLogTest {
 
         // THEN
         val expectedMessage =
-            "⚠️ Order currency: EUR differs from store's currency: USD which can lead to payment methods being unavailable"
+            "⚠️ Order currency: EUR differs from store's currency: " +
+                "USD which can lead to payment methods being unavailable"
         verify(wooLogWrapper).w(WooLog.T.ORDERS, expectedMessage)
     }
 
