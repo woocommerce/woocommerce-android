@@ -104,10 +104,10 @@ internal class PaymentErrorMapper {
 
             "invalid_amount" -> InvalidAmount
 
-            "invalid_pin",
             "offline_pin_required",
             "online_or_offline_pin_required" -> PinRequired
 
+            "invalid_pin",
             "incorrect_pin" -> IncorrectPin
 
             "pin_try_exceeded" -> TooManyPinTries
