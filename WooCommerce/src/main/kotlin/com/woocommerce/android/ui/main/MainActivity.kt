@@ -1177,7 +1177,10 @@ class MainActivity :
             remoteNoteId
         )
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(directions = action, extras = extras)
+        navController.navigateSafely(
+            directions = action,
+            extras = extras,
+        )
     }
 
     override fun showFeedbackSurvey() {

@@ -319,6 +319,20 @@ class CardReaderPaymentErrorMapperTest {
     }
 
     @Test
+    fun `given IncorrectPin error and hw reader, when map to ui error, then IncorrectPin error returned`() {
+        // GIVEN
+        val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.IncorrectPin
+
+        // WHEN
+        val result = mapper.mapPaymentErrorToUiError(error, config, false)
+
+        // THEN
+        assertThat(result).isEqualTo(PaymentFlowError.Declined.IncorrectPin)
+        assertThat((result as PaymentFlowError.Declined.IncorrectPin).message)
+            .isEqualTo(UiStringRes(R.string.card_reader_payment_failed_incorrect_pin))
+    }
+
+    @Test
     fun `given TooManyPinTries error, when map to ui error, then TooManyPinTries error returned`() {
         // GIVEN
         val error = CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.TooManyPinTries
