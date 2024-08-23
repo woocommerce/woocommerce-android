@@ -187,7 +187,7 @@ private fun Toolbar(
                     contentDescription = labels.cardReaderStatusContentDescription
                 },
             state = cardReaderStatus,
-        ) { onUIEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked) }
+        ) { onUIEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked) }
 
         MenuButtonWithPopUpMenu(
             modifier = Modifier
