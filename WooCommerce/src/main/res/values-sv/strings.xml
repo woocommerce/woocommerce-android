@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-08 11:54:03+0000
+Translation-Revision-Date: 2024-08-20 07:53:28+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">Meny</string>
+    <string name="woopos_cart_item_content_description">Produkt i varukorg %s, pris %s</string>
+    <string name="woopos_product_item_content_description">Produkt %s, pris %s</string>
+    <string name="blaze_campaign_status_suspended">Avstängd</string>
     <string name="woopos_success_screen_total">En betalning för %1$s återbetalades utan problem.</string>
     <string name="woopos_new_order_button">Ny beställning</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
@@ -117,26 +121,25 @@ Language: sv_SE
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Låt oss generera produktinformation åt dig</string>
     <string name="ai_product_creation_product_prompt_subtitle">Berätta för oss om din produkt, vad det är och vad som gör produkten unik, och låt sedan AI:n göra sitt jobb.</string>
     <string name="woopos_payment_total_label">Totalt</string>
-    <string name="woopos_payment_tax_label">Moms</string>
     <string name="woopos_payment_subtotal_label">Delsumma</string>
     <string name="woopos_payment_successful_label">Betalning lyckades</string>
     <string name="woopos_payment_failed_please_try_again">Betalning misslyckades. Försök igen.</string>
     <string name="woopos_cart_back_content_description">Varukorgsikon</string>
     <string name="woopos_products_screen_title">Produkter</string>
-    <string name="woopos_product_image_description">Produktbild</string>
     <string name="more_menu_button_google">Google för WooCommerce</string>
     <string name="no_quantity_rules">Inga regler för antal</string>
     <string name="more_menu_button_google_description">Öka försäljningen och generera mer trafik med Google Ads</string>
     <string name="woopos_payment_collect_payment_label">Ta emot kortbetalning</string>
     <string name="woopos_clear_cart_button">Rensa</string>
     <string name="woopos_items_in_cart">%d artikel</string>
+    <string name="woopos_payment_tax_label">Momser</string>
     <string name="blaze_campaign_preview_audience_section_title">Målgrupp</string>
     <string name="woopos_exit_confirmation_dismiss_button">Avbryt</string>
     <string name="woopos_exit_confirmation_confirm_button">Avsluta</string>
     <string name="woopos_exit_confirmation_message">Är du säker på att du vill avsluta POS?</string>
     <string name="woopos_exit_confirmation_title">Avsluta POS</string>
     <string name="woopos_checkout_button">Kassa</string>
-    <string name="woopos_remove_item_from_cart_content_description">Ta bort vara från varukorg</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Ta bort %s från varukorg</string>
     <string name="dashboard_new_widgets_card_button">Lägg till nya sektioner</string>
     <string name="dashboard_product_stock_empty_products">Inga produkter hittades för den valda lagerstatusen</string>
     <string name="woopos_reader_connected">Läsare ansluten</string>
@@ -261,7 +264,7 @@ Language: sv_SE
     <string name="more_menu_button_subscriptions_description">Hantera din prenumeration</string>
     <string name="more_menu_button_subscriptions">Prenumerationer</string>
     <string name="upgrades_title">Prenumerationer</string>
-    <string name="store_onboarding_launch_store_rendering_preview_label">Renderar förhandsgranskning…</string>
+    <string name="store_onboarding_launch_store_rendering_preview_label">Tolkar förhandsgranskning …</string>
     <string name="plugin_state_inactive">Inaktivt</string>
     <string name="plugin_state_update_available">Uppdatering tillgänglig (%s)</string>
     <string name="product_removing_category_dialog_title">Tar bort kategori</string>
@@ -430,9 +433,9 @@ Language: sv_SE
     <string name="blaze_campaign_budget_daily_spend">%1$s dagligen</string>
     <string name="blaze_campaign_budget_subtitle">Hur mycket skulle du vilja spendera på din produktmarknadsföringskampanj?</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Föreslaget av AI</string>
-    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="blaze_campaign_budget_impressions_title">Visningar</string>
     <string name="blaze_campaign_budget_reach_forecast">Uppskattat antal personer som nås per dag</string>
+    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="product_creation_survey_button_dont_show_again">Visa det inte igen</string>
     <string name="product_creation_survey_button_remind_me_later">Påminn mig senare</string>
     <string name="product_creation_survey_description">Har du tid en minut? Hjälp oss att förbättra våra AI-assisterade funktioner genom lite snabb feedback.</string>
@@ -776,9 +779,9 @@ Language: sv_SE
     <string name="store_onboarding_wcpay_instructions_content_step_1_content">Dina WooPayments-aviseringar kommer att skickas till e-postadressen som är kopplad till ditt WordPress.com-konto. Föredrar du att använda ett nytt konto? &lt;a href=\'learnMore\'&gt;&lt;u&gt;Mer information finns här.&lt;/u&gt;&lt;/a&gt;</string>
     <string name="store_onboarding_wcpay_instructions_title">Hantera betalningar utan ansträngning med WooPayments, allt på en och samma plats. Ta emot kortbetalningar, Apple Pay-betalningar, personliga betalningar och över 135 olika valutor, helt utan installationskostnader eller månadsavgifter.</string>
     <string name="store_onboarding_name_your_store_dialog_failure">Det gick inte att spara butiksnamnet. Försök igen.</string>
-    <string name="settings_name_your_store_dialog_loading">Sparar nytt butiksnamn…</string>
     <string name="settings_name_your_store_dialog_success">Butiksnamn inställt.</string>
     <string name="store_onboarding_name_your_store_dialog_success">Butiksnamn inställt. \n För att ändra igen, gå till butiksinställningarna.</string>
+    <string name="settings_name_your_store_dialog_loading">Sparar nytt butiksnamn …</string>
     <string name="store_onboarding_name_your_store_dialog_title">Uppdatera butiksnamn</string>
     <string name="store_onboarding_task_woopayments_celebration_message">Grattis! Du har gått igenom konfigurationen och ditt betalningssystem är redo att användas.</string>
     <string name="store_onboarding_task_woopayments_celebration_header">Du gjorde det!</string>
@@ -1115,10 +1118,10 @@ Language: sv_SE
     <string name="login_site_credentials_web_authorization_connection_rejected">Det går inte att logga in eftersom lösenordsskapandet i appen inte godkänts.</string>
     <string name="card_reader_tap_to_pay_share_feedback">Dela feedback</string>
     <string name="card_reader_tap_to_pay_description">Använd din telefon för att ta emot kort\nbetalningar Prova nu.</string>
-    <string name="loading">Laddar…</string>
     <string name="login_store_address">Logga in</string>
     <string name="login_site_credentials_fetching_site_failed">Ett fel inträffade när webbsidan skulle hämtas</string>
     <string name="login_site_credentials_use_web_authorization">Testa igen med sidan med Adminpanelen</string>
+    <string name="loading">Laddar in …</string>
     <string name="upgrades_plan_ended_name">%s har avslutats</string>
     <string name="upgrades_current_plan_ended_caption">Din prenumeration har avslutats och du har begränsad åtkomst till alla funktionerna.</string>
     <string name="free_trial_days_left_plural">%1$d dagar</string>
@@ -1202,13 +1205,13 @@ Language: sv_SE
     <string name="jetpack_benefits_fetching_status">Hämtar Jetpack-status</string>
     <string name="jetpack_benefits_modal_multiple_stores_subtitle">Få åtkomst till alla dina WooCommerce-butiker.</string>
     <string name="login_magic_links_email_sent_to_unknown_email">Vi har precis skickat en magisk länk till e-postadressen för ditt konto</string>
-    <string name="domain_registration_registering_domain_name_progress_dialog_message">Registrerar domännamn…</string>
     <string name="domain_registration_country_picker_dialog_title">Välj land</string>
     <string name="domain_registration_state_picker_dialog_title">Välj delstat</string>
     <string name="card_reader_hub_actions_category_header">ÅTGÄRDER</string>
     <string name="domain_registration_generic_error">Ett fel uppstod under domänregistrering</string>
     <string name="card_reader_tap_to_pay_explanation_title">Ta emot kortbetalningar\nmed din telefon</string>
     <string name="card_reader_tap_to_pay_explanation_screen_title">Tryck för att betala</string>
+    <string name="domain_registration_registering_domain_name_progress_dialog_message">Registrerar domännamn …</string>
     <string name="domain_contact_information_phone_number_hint">Telefon</string>
     <string name="domain_contact_information_country_code_hint">Landskod</string>
     <string name="domain_contact_information_country_hint">Land</string>
@@ -1284,7 +1287,6 @@ Language: sv_SE
     <string name="card_reader_connect_connecting_built_in_header">Förbereder för betalning</string>
     <string name="domain">Domän</string>
     <string name="card_reader_connect_scanning_built_in_hint">Det går snabbt</string>
-    <string name="card_reader_connect_scanning_built_in_header">Förbereder den inbyggda läsaren…</string>
     <string name="card_reader_payment_collect_payment_built_in_state">Den inbyggda läsaren är redo</string>
     <string name="card_reader_type_selection_tap_to_pay">Tryck för att betala</string>
     <string name="analytics_conversion_subtitle">Omvandlingsfrekvens</string>
@@ -1292,10 +1294,10 @@ Language: sv_SE
     <string name="analytics_session_no_data">Inga sessioner denna period</string>
     <string name="date_compared_to">Jämfört med</string>
     <string name="card_reader_type_selection_bluetooth_reader">Kortläsare</string>
+    <string name="card_reader_connect_scanning_built_in_header">Förbereder inbyggd läsare …</string>
     <string name="login_application_passwords_help">Vad är applikationslösenord?</string>
     <string name="login_application_passwords_unavailable">Det verkar som att funktionen Applikationslösenord är inaktiverad på din webbplats %1$s.\n Aktivera den om du vill använda WooCommerce-appen.</string>
     <string name="login_open_installation_page">Öppna installationssida</string>
-    <string name="not_a_valid_qr_code">Skannad QR-kod är inte en WooCommerce-kod</string>
     <string name="review_reply_success">Svar skickat!</string>
     <string name="review_reply_failure">Det uppstod ett fel när svaret skulle skickas</string>
     <string name="wc_reply">Svara</string>
@@ -1370,7 +1372,6 @@ Language: sv_SE
     <string name="analytics_visitors_subtitle">Besökare</string>
     <string name="domain_picker_subtitle">Det är här människor kommer hitta dig på Internet. Oroa dig inte, du kan ändra detta senare.</string>
     <string name="or_use_password_below_qr_code_scan_option">Eller logga in med lösenord</string>
-    <string name="or_scan_qr_code_to_log_in">Skanna QR-kod för att logga in</string>
     <string name="simulated_reader_key">Simulerad läsarnyckel</string>
     <string name="variations_bulk_update_current_stock_quantity">Nuvarande lagerantal är %d</string>
     <string name="simulated_reader_toast">Den simulerade kortläsaren har inaktiverats</string>
@@ -1417,7 +1418,6 @@ Language: sv_SE
     <string name="login_account_mismatch_connect_jetpack">Anslut Jetpack till ditt konto</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Kontakta webbplatsens ägare för en inbjudan till webbplatsen som butikschef eller administratör för att använda appen.</string>
     <string name="enable_card_reader">Aktivera simulerad kortläsare</string>
-    <string name="login_with_qr_code">Skanna QR-kod för att logga in</string>
     <string name="show_password_content_description">Visa lösenord</string>
     <string name="hide_password_content_description">Dölj lösenord</string>
     <string name="qr_code_login_edit_camera_permission">Redigera behörigheter</string>
@@ -1693,7 +1693,7 @@ Language: sv_SE
     <string name="card_reader_interac_refund_refund_failed_duplicate_transaction">En identisk återbetalning skickades nyligen</string>
     <string name="card_reader_interac_refund_refund_failed_generic">Återbetalningen avvisades av ospecificerad anledning</string>
     <string name="card_reader_interac_refund_refund_failed_unknown">Återbetalningen avvisades av okänd anledning</string>
-    <string name="copy">Kopiera</string>
+    <string name="copy" tools:override="true">Kopiera</string>
     <string name="card_reader_interac_refund_refund_completed_header">Återbetalning lyckades</string>
     <string name="card_reader_interac_refund_refund_failed_header">Återbetalning misslyckades</string>
     <string name="card_reader_interac_refund_refund_processing_state">Behandlar återbetalning</string>
@@ -2003,7 +2003,7 @@ Language: sv_SE
     <string name="order_detail_use_as_shipping_address">Använd som leveransadress</string>
     <string name="product_description_hint_with_title">Berätta mer om %s …</string>
     <string name="card_reader_detail_connected_readers_name_clipboard">Läsarens serienummer kopierad till urklipp</string>
-    <string name="product_description_hint_no_title">Beskriv din produkt för dina framtida kunder…</string>
+    <string name="product_description_hint_no_title">Beskriv din produkt för dina framtida kunder …</string>
     <string name="order_detail_add_shipping_address">Lägg till leveransadress</string>
     <string name="order_detail_add_billing_address">Lägg till faktureringsadress</string>
     <string name="order_detail_billing_address_section">Faktureringsadress</string>
@@ -2677,7 +2677,6 @@ Language: sv_SE
     <string name="orderdetail_product_lineitem_sku_value">SKU: %1$s</string>
     <string name="product_variation_options">%1$s (%2$s alternativ)</string>
     <string name="shipping_labels">Fraktetiketter</string>
-    <string name="product_add_category_dialog_message">Vänta…</string>
     <string name="product_add_category_dialog_title">Lägger till kategori</string>
     <string name="product_category_parent">Överordnad kategori</string>
     <string name="product_category_name">Kategorinamn</string>
@@ -2691,6 +2690,7 @@ Language: sv_SE
     <string name="product_category_empty">Lägg till kategori</string>
     <string name="product_categories">Kategorier</string>
     <string name="orderdetail_customer_name_default">Gäst</string>
+    <string name="product_add_category_dialog_message">Vänta …</string>
     <string name="settings_privacy_policy_ca">Integritetsnotis för användare i Kalifornien</string>
     <string name="keep_changes">Behåll ändringar</string>
     <string name="product_sale_date_to">Fram till %1$s</string>
@@ -2812,7 +2812,7 @@ Language: sv_SE
     <string name="product_sold_individually">Begränsa till en per order</string>
     <string name="product_sku_summary">Hjälper att enkelt identifiera den här produkten</string>
     <string name="product_inventory_empty">Lägg till lager</string>
-    <string name="orderlist_loading">Kollar upp din beställning…</string>
+    <string name="orderlist_loading">Kollar upp dina beställningar …</string>
     <string name="product_detail_editable_text_hint">Ange text</string>
     <string name="product_description_empty">Beskriv din produkt</string>
     <string name="product_description">Beskrivning</string>
@@ -2847,7 +2847,6 @@ Language: sv_SE
     <string name="settings_image_optimization_message">Ändra storlek på och komprimera bilder för snabbare uppladdning</string>
     <string name="image_source_device_chooser">Välj från enheten</string>
     <string name="product_images_upload_channel_title">Uppladdningar</string>
-    <string name="product_images_uploading_single_notif_message">Laddar upp bild…</string>
     <string name="product_images_camera_error">Det går inte att komma åt kameran</string>
     <string name="product_image_remove_confirmation">Är du säker på att du vill ta bort den här bilden?</string>
     <string name="product_image_capture_failed">Det gick inte att ta bilden</string>
@@ -2855,6 +2854,7 @@ Language: sv_SE
     <string name="product_image_service_error_uploading">Det gick inte att ladda upp produktbilden</string>
     <string name="product_image_error_removing">Det gick inte att ta bort produktbilden</string>
     <string name="product_images_uploading_multi_notif_message">Laddar upp bilder … %1$d av %2$d</string>
+    <string name="product_images_uploading_single_notif_message">Laddar upp bild …</string>
     <string name="login_discovery_error_generic">Vi kunde inte komma åt din webbplats. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_ssl">Vi kunde inte komma åt din webbplats på grund av ett problem med &lt;b&gt;SSL-certifikatet&lt;/b&gt;. För att lösa detta behöver du kontakta ditt webbhotell.</string>
     <string name="login_discovery_error_http_auth">Vi kunde inte komma åt din webbplats eftersom det kräver &lt;b&gt;HTTP-autentisering&lt;/b&gt;. För att lösa detta behöver du kontakta ditt webbhotell.</string>
@@ -2924,8 +2924,8 @@ Language: sv_SE
     <string name="orderdetail_issue_refund_button">Utfärda återbetalning</string>
     <string name="order_refunds_amount_refund_error">Något gick fel med återbetalningen. Var vänlig försök igen.</string>
     <string name="order_refunds_amount_refund_successful">Återbetalningen har skickats.</string>
-    <string name="order_refunds_amount_refund_progress_message">Din återbetalning för %s behandlas. Vänligen vänta …</string>
     <string name="orderdetail_refund_detail">%1$s via %2$s</string>
+    <string name="order_refunds_amount_refund_progress_message">Din återbetalning för %s behandlas. Vänta …</string>
     <string name="settings_enable_v4_stats_title">Förbättrad statistik</string>
     <string name="beta_features">Betafunktioner</string>
     <string name="orderdetail_payment_summary_onhold">Väntar på betalning via %s</string>
@@ -3095,7 +3095,7 @@ Language: sv_SE
     <string name="country_mapping_JM">Jamaica</string>
     <string name="country_mapping_CI">Elfenbenskusten</string>
     <string name="country_mapping_IT">Italien</string>
-    <string name="enter_email_for_site"> Logga in med WordPress.com för att ansluta till &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true"> Logga in med WordPress.com för att ansluta till &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_IL">Israel</string>
     <string name="country_mapping_IM">Isle of Man</string>
     <string name="country_mapping_IE">Irland</string>
@@ -3341,7 +3341,7 @@ Language: sv_SE
     <string name="orderdetail_note_public">Till kund</string>
     <string name="button_update_instructions">Uppdatera instruktioner</string>
     <string name="search">Sök</string>
-    <string name="login_verifying_site">Verifierar webbplats…</string>
+    <string name="login_verifying_site">Verifierar webbplats …</string>
     <string name="refresh_button">Uppdatera</string>
     <string name="more_notifications">och %d mer.</string>
     <string name="new_notifications">%d nya aviseringar</string>
@@ -3385,7 +3385,6 @@ Language: sv_SE
     <string name="site_address_login_title">Webbplatsens inloggningsadress</string>
     <string name="email_address_login_title">E-postadress för inloggning</string>
     <string name="login_email_button_signup">Har du inget konto? %1$sRegistrera dig%2$s</string>
-    <string name="signup_with_google_progress">Registrering via Google…</string>
     <string name="google_error_timeout">Det tog för lång tid för Google att svara. Du kan behöva vänta tills du har en stabilare internetuppkoppling.</string>
     <string name="signup_with_google_button">Registrering med Google</string>
     <string name="signup_with_email_button">Registrering med e-postadress</string>
@@ -3431,6 +3430,7 @@ Language: sv_SE
     <string name="httppassword">HTTP-lösenord</string>
     <string name="httpuser">HTTP-användarnamn</string>
     <string name="enter_wpcom_or_jetpack_site">Ange en webbplats som ligger på WordPress.com eller en WordPress-webbplats på egen server som är ansluten till Jetpack</string>
+    <string name="signup_with_google_progress">Registrerar med Google …</string>
     <string name="alternatively">Alternativt:</string>
     <string name="notification_channel_general_title">Allmänt</string>
     <string name="at_username">\@%s</string>
@@ -3578,7 +3578,7 @@ Language: sv_SE
     <string name="dashboard_action_view_order">Visa order</string>
     <string name="dashboard_stats_error">Det gick inte att hämta data</string>
     <string name="dashboard_stats_orders">Ordrar</string>
-    <string name="enter_email_wordpress_com">Logga in med e-postadressen för ditt WordPress.com-konto för att hantera dina WooCommerce-butiker.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Logga in med e-postadressen för ditt WordPress.com-konto för att hantera dina WooCommerce-butiker.</string>
     <string name="error_no_email_app">Ingen app för e-post hittades</string>
     <string name="error_no_phone_app">Ingen telefonappen hittades</string>
     <string name="error_cant_open_url">Kan inte öppna länken</string>
@@ -3594,7 +3594,7 @@ Language: sv_SE
     <string name="details">Detaljer</string>
     <string name="taxes">Momser</string>
     <string name="settings_footer">Skapad med kärlek av Automattic. %1$s</string>
-    <string name="enter_site_address">Ange adressen till den WooCommerce-butik som du vill ansluta.</string>
+    <string name="enter_site_address" content_override="true">Ange adressen till den WooCommerce-butik som du vill ansluta.</string>
     <string name="orderdetail_note_private">Privat</string>
     <string name="connect_site">Anslut en webbplats</string>
     <string name="dashboard_top_performers_total_orders">Totalt antal beställningar: %s</string>
@@ -3602,17 +3602,17 @@ Language: sv_SE
     <string name="login_configure_link">Läs %1$skonfigurationsinstruktionerna%2$s.</string>
     <string name="enter_verification_code">Nästan där! Ange verifieringskoden för WordPress.com från din autentiseringsapp.</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>Behandlas</item>

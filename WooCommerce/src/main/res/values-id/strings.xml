@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-07 09:54:03+0000
+Translation-Revision-Date: 2024-08-21 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">Menu</string>
+    <string name="woopos_cart_item_content_description">Produk di keranjang %s, Harga %s</string>
+    <string name="woopos_product_item_content_description">Produk %s, Harga %s</string>
+    <string name="blaze_campaign_status_suspended">Ditangguhkan</string>
     <string name="woopos_success_screen_total">Dana senilai %1$s berhasil dibayarkan</string>
     <string name="woopos_new_order_button">Pesanan baru</string>
     <string name="woopos_dialog_products_info_button_label">Oke</string>
@@ -27,12 +31,12 @@ Language: id
     <string name="google_ads_campaign_created_success_description">Kampanye baru sudah dibuat. Bersiaplah, penjualan Anda akan meroket!</string>
     <string name="google_ads_campaign_created_success_title">Semua Siap!</string>
     <string name="woopos_totals_order_creation_error">Tidak dapat membuat pesanan</string>
-    <string name="woopos_products_loading_error_retry_button">Coba lagi</string>
     <string name="woopos_error_icon_content_description">Ikon indikasi error</string>
     <string name="woopos_products_loading_error_message">Ingin mencoba sekali lagi?</string>
     <string name="woopos_products_loading_error_title">Terjadi error saat memuat produk</string>
     <string name="woopos_products_empty_list_message_two">POS saat ini hanya mendukung produk sederhana</string>
     <string name="woopos_products_empty_list_message">POS saat ini hanya mendukung produk sederhana – \nbuat untuk memulai.</string>
+    <string name="woopos_products_loading_error_retry_button">Coba lagi</string>
     <string name="woopos_products_empty_list_title">Produk yang didukung tidak ditemukan</string>
     <string name="woopos_products_empty_list_image_description">Tidak ada produk</string>
     <string name="woopos_splash_message">Mari layani pelanggan</string>
@@ -118,25 +122,24 @@ Language: id
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Kami buatkan detail produk untuk Anda.</string>
     <string name="woopos_payment_collect_payment_label">Terima Pembayaran dengan Kartu</string>
     <string name="woopos_payment_total_label">Total</string>
-    <string name="woopos_payment_tax_label">Pajak</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_successful_label">Pembayaran berhasil</string>
     <string name="woopos_payment_failed_please_try_again">Pembayaran gagal. Coba lagi.</string>
     <string name="woopos_cart_back_content_description">Ikon keranjang</string>
     <string name="woopos_products_screen_title">Produk</string>
-    <string name="woopos_product_image_description">Gambar Produk</string>
     <string name="more_menu_button_google">Google untuk WooCommerce</string>
     <string name="no_quantity_rules">Tidak Ada Aturan Jumlah</string>
     <string name="more_menu_button_google_description">Tingkatkan penjualan dan dorong lalu lintas dengan Google Ads</string>
     <string name="woopos_items_in_cart">%d item</string>
     <string name="woopos_clear_cart_button">Hapus</string>
+    <string name="woopos_payment_tax_label">Pajak</string>
     <string name="blaze_campaign_preview_audience_section_title">Audiens</string>
     <string name="woopos_exit_confirmation_dismiss_button">Batal</string>
     <string name="woopos_exit_confirmation_confirm_button">Keluar</string>
     <string name="woopos_exit_confirmation_message">Anda yakin ingin keluar dari POS?</string>
     <string name="woopos_exit_confirmation_title">Keluar dari POS</string>
-    <string name="woopos_remove_item_from_cart_content_description">Hapus item dari keranjang</string>
     <string name="woopos_checkout_button">Checkout</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Hapus %s dari keranjang</string>
     <string name="woopos_reader_unknown">Status Pembaca Tidak Diketahui</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_connected">Pembaca Terhubung</string>
@@ -1295,7 +1298,6 @@ Language: id
     <string name="login_application_passwords_help">Apa itu Kata Sandi Aplikasi?</string>
     <string name="login_application_passwords_unavailable">Sepertinya fitur Kata Sandi Aplikasi dinonaktifkan di situs Anda %1$s.\n Aktifkan Kata Sandi untuk menggunakan aplikasi WooCommerce.</string>
     <string name="login_open_installation_page">Buka halaman instalasi</string>
-    <string name="not_a_valid_qr_code">Kode QR yang dipindai bukan kode WooCommerce</string>
     <string name="wc_reply">Balas</string>
     <string name="review_reply_success">Balasan dikirim!</string>
     <string name="review_reply_failure">Terjadi kendala saat mengirimkan balasan</string>
@@ -1369,7 +1371,6 @@ Language: id
     <string name="login_jetpack_installation_screen_title">Hubungkan Toko</string>
     <string name="analytics_visitors_subtitle">Pengunjung</string>
     <string name="domain_picker_subtitle">Inilah tempat orang-orang dapat menemukan Anda di Internet. Jangan khawatir! Anda dapat mengubahnya kembali.</string>
-    <string name="or_scan_qr_code_to_log_in">Pindai kode QR untuk login</string>
     <string name="simulated_reader_toast">Pembaca Kartu Simulasi telah dinonaktifkan</string>
     <string name="simulated_reader_key">Kunci Pembaca Simulasi</string>
     <string name="variations_bulk_update_stock_quantity_success">Jumlah stok diperbarui</string>
@@ -1422,7 +1423,6 @@ Language: id
     <string name="qr_code_login_scanner_title">Pemindai Barcode Kamera</string>
     <string name="dev_options">Pilihan Pengembang</string>
     <string name="login_2fa_not_supported_self_hosted_site">2FA tidak didukung untuk situs yang dihosting sendiri. Gunakan kata sandi aplikasi.</string>
-    <string name="login_with_qr_code">Pindai kode QR untuk login</string>
     <string name="show_password_content_description">Tunjukkan kata sandi</string>
     <string name="hide_password_content_description">Sembunyikan password</string>
     <string name="qr_code_login_edit_camera_permission">Edit izin</string>
@@ -1693,7 +1693,7 @@ Language: id
     <string name="card_reader_interac_refund_refund_failed_fraud">Coba metode pengembalian dana lainnya</string>
     <string name="card_reader_interac_refund_refund_failed_unknown">Pengembalian dana ditolak untuk alasan yang tidak diketahui</string>
     <string name="card_reader_interac_refund_refund_failed_unexpected_error_state">Maaf, pengembalian dana ini tidak dapat diproses.</string>
-    <string name="copy">Salin</string>
+    <string name="copy" tools:override="true">Salin</string>
     <string name="card_reader_interac_refund_refund_completed_header">Pengembalian dana berhasil</string>
     <string name="card_reader_interac_refund_refund_processing_state">Memproses pengembalian dana</string>
     <string name="card_reader_interac_refund_refund_payment">Pembayaran pengembalian dana</string>
@@ -3095,7 +3095,7 @@ Language: id
     <string name="country_mapping_JM">Jamaika</string>
     <string name="country_mapping_CI">Pantai Gading</string>
     <string name="country_mapping_IT">Italia</string>
-    <string name="enter_email_for_site">Login dengan WordPress.com untuk terhubung ke &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">Login dengan WordPress.com untuk terhubung ke &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_IL">Israel</string>
     <string name="country_mapping_IM">Pulau Man</string>
     <string name="country_mapping_IE">Irlandia</string>
@@ -3560,7 +3560,7 @@ Language: id
     <string name="login_avatar_content_description">Foto profil Anda</string>
     <string name="login_connected_store">Toko yang terhubung</string>
     <string name="login_jetpack_required">Aplikasi ini memerlukan Jetpack agar dapat terhubung ke toko Anda.</string>
-    <string name="enter_email_wordpress_com">Login dengan alamat email akun WordPress.com Anda untuk mengelola toko WooCommerce.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Login dengan alamat email akun WordPress.com Anda untuk mengelola toko WooCommerce.</string>
     <string name="error_no_sms_app">Tidak ada aplikasi SMS</string>
     <string name="error_no_email_app">Tidak ada aplikasi email</string>
     <string name="error_no_phone_app">Tidak ada aplikasi telepon</string>
@@ -3593,7 +3593,7 @@ Language: id
     <string name="all">Semua</string>
     <string name="app_name">WooCommerce</string>
     <string name="settings_footer">Dibuat dengan penuh cinta oleh Automattic. %1$s</string>
-    <string name="enter_site_address">Masukkan alamat toko WooCommerce yang ingin dihubungkan.</string>
+    <string name="enter_site_address" content_override="true">Masukkan alamat toko WooCommerce yang ingin dihubungkan.</string>
     <string name="orderdetail_note_private">Pribadi</string>
     <string name="connect_site">Hubungkan situs</string>
     <string name="dashboard_top_performers_empty">Tidak ada aktivitas dalam periode ini</string>
@@ -3602,17 +3602,17 @@ Language: id
     <string name="login_configure_link">Baca %1$sinstruksi konfigurasi%2$s.</string>
     <string name="enter_verification_code">Hampir selesai! Masukkan kode verifikasi untuk WordPress.com dari aplikasi pengautentikasi.</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>Dalam Proses</item>

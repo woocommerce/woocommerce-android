@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-06 21:54:03+0000
+Translation-Revision-Date: 2024-08-21 15:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">القائمة</string>
+    <string name="woopos_cart_item_content_description">المنتج في عربة التسوق %s، السعر %s</string>
+    <string name="woopos_product_item_content_description">المنتج %s، السعر %s</string>
+    <string name="blaze_campaign_status_suspended">معلَّق</string>
     <string name="woopos_success_screen_total">تم سداد دفعة قدرها ⁦%1$s⁩ بنجاح</string>
     <string name="woopos_new_order_button">طلب جديد</string>
     <string name="woopos_dialog_products_info_button_label">موافق</string>
@@ -118,13 +122,12 @@ Language: ar
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">السماح لنا بإنشاء تفاصيل المنتج من أجلك</string>
     <string name="woopos_payment_collect_payment_label">تحصيل المدفوعات بالبطاقة</string>
     <string name="woopos_payment_total_label">الإجمالي</string>
-    <string name="woopos_payment_tax_label">الضريبة</string>
+    <string name="woopos_payment_tax_label">الضرائب</string>
     <string name="woopos_payment_subtotal_label">الإجمالي الفرعي</string>
     <string name="woopos_payment_successful_label">تمت عملية الدفع بنجاح</string>
     <string name="woopos_payment_failed_please_try_again">فشلت عملية الدفع. يرجى المحاولة مجددًا.</string>
     <string name="woopos_cart_back_content_description">أيقونة عربة التسوق</string>
     <string name="woopos_products_screen_title">المنتجات</string>
-    <string name="woopos_product_image_description">صورة المنتج</string>
     <string name="woopos_items_in_cart">%d من العناصر</string>
     <string name="woopos_clear_cart_button">مسح</string>
     <string name="more_menu_button_google_description">زيادة المبيعات وإنشاء مزيد من حركة المرور باستخدام Google Ads</string>
@@ -135,7 +138,7 @@ Language: ar
     <string name="woopos_exit_confirmation_confirm_button">إنهاء</string>
     <string name="woopos_exit_confirmation_message">هل تريد بالتأكيد إنهاء POS؟</string>
     <string name="woopos_exit_confirmation_title">إنهاء POS</string>
-    <string name="woopos_remove_item_from_cart_content_description">إزالة عنصر من عربة التسوق</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">إزالة %s من عربة التسوق</string>
     <string name="woopos_checkout_button">السداد</string>
     <string name="woopos_reader_unknown">حالة القارئ مجهولة</string>
     <string name="woopos_checkout">السداد</string>
@@ -1295,7 +1298,6 @@ Language: ar
     <string name="login_application_passwords_help">ما المقصود بكلمات مرور التطبيقات؟</string>
     <string name="login_application_passwords_unavailable">يبدو أن ميزة كلمات مرور التطبيقات قد تم تعطيلها في موقعك ⁦%1$s⁩.\n يرجى تمكينها لاستخدام تطبيق WooCommerce.</string>
     <string name="login_open_installation_page">فتح صفحة التثبيت</string>
-    <string name="not_a_valid_qr_code">رمز Qr الذي تم مسحه ضوئيًا ليس رمز WooCommerce</string>
     <string name="review_reply_failure">لقد حدث خطأ عند إرسال الرد</string>
     <string name="review_reply_success">تم إرسال الإجابة</string>
     <string name="wc_reply">إجابة</string>
@@ -1370,7 +1372,6 @@ Language: ar
     <string name="domain_picker_subtitle">هذا هو المكان الذي سيجدك فيه الأشخاص على الإنترنت. لا داعي للقلق، يمكنك تغييره لاحقًا.</string>
     <string name="analytics_visitors_subtitle">الزائرون</string>
     <string name="or_use_password_below_qr_code_scan_option">أو تسجيل الدخول باستخدام كلمة المرور</string>
-    <string name="or_scan_qr_code_to_log_in">مسح رمز الاستجابة السريعة ضوئيًا لتسجيل الدخول</string>
     <string name="simulated_reader_toast">تم تعطيل قارئ البطاقات المحاكي</string>
     <string name="simulated_reader_key">مفتاح القارئ المحاكي</string>
     <string name="variations_bulk_update_stock_quantity_success">كمية المخزون التي تم تحديثها</string>
@@ -1423,7 +1424,6 @@ Language: ar
     <string name="qr_code_login_scanner_title">الماسح الضوئي للكود الشريطي للكاميرا</string>
     <string name="dev_options">خيارات المطور</string>
     <string name="login_2fa_not_supported_self_hosted_site">المصادقة الثنائية (2FA) غير مدعومة في المواقع المستضافة ذاتيًا.  يُرجى استخدام كلمة مرور التطبيق.</string>
-    <string name="login_with_qr_code">مسح رمز الاستجابة السريعة لتسجيل الدخول</string>
     <string name="show_password_content_description">عرض كلمة المرور</string>
     <string name="hide_password_content_description">إخفاء كلمة المرور</string>
     <string name="stats_widget_last_updated_message">بدءًا من ⁦%1$s⁩</string>
@@ -1698,7 +1698,7 @@ Language: ar
     <string name="card_reader_interac_refund_refund_payment">عملية الدفع الخاصة باسترداد المبالغ المدفوعة</string>
     <string name="card_reader_interac_refund_refund_failed_header">فشلت عملية استرداد الأموال</string>
     <string name="card_reader_interac_refund_refund_loading_header">الاستعداد لدفع عملية رد المبالغ المدفوعة</string>
-    <string name="copy">نسخ</string>
+    <string name="copy" tools:override="true">نسخ</string>
     <string name="coupons_list_search_hint">البحث عن القسائم</string>
     <string name="coupon_details_share_formatting_failure">يتعذر إنشاء رسالة مشاركة رمز القسيمة</string>
     <string name="coupon_details_share_coupon_error">حدث خطأ في أثناء مشاركة رمز القسيمة.</string>
@@ -2959,7 +2959,7 @@ Language: ar
     <string name="orderdetail_empty_address">لم يتم تحديد أي عنوان</string>
     <string name="login_need_help_finding_connected_email">هل تحتاج إلى مساعدة على العثور على البريد الإلكتروني التي تواصلت معه؟</string>
     <string name="enter_wordpress_site">موقع الويب الموجود على هذا العنوان ليس موقع وردبرس. لكي نتصل بالموقع، يجب تثبيته على وردبرس.</string>
-    <string name="enter_email_for_site">تسجيل الدخول باستخدام ووردبريس للاتصال بـ &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">تسجيل الدخول باستخدام ووردبريس للاتصال بـ &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
     <string name="country_mapping_ZW">زيمبابوي</string>
     <string name="country_mapping_ZM">زامبيا</string>
     <string name="country_mapping_YE">اليمن</string>
@@ -3555,8 +3555,8 @@ Language: ar
     <string name="login_configure_link">اقرأ ⁦%1$s⁩إرشادات التكوين⁦%2$s⁩.</string>
     <string name="login_jetpack_required">يتطلب هذا التطبيق اتصال Jetpack بمتجرك.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Enter the address of the WooCommerce store you\'d like to connect.</string>
-    <string name="enter_email_wordpress_com">قم بتسجيل الدخول باستخدام عنوان البريد الإلكتروني لحساب وردبرس.كوم الخاص بك لإدارة متاجر WooCommerce الخاصة بك.</string>
+    <string name="enter_site_address" content_override="true">Enter the address of the WooCommerce store you\'d like to connect.</string>
+    <string name="enter_email_wordpress_com" content_override="true">قم بتسجيل الدخول باستخدام عنوان البريد الإلكتروني لحساب وردبرس.كوم الخاص بك لإدارة متاجر WooCommerce الخاصة بك.</string>
     <string name="already_logged_in_wpcom">أنت قيد تسجيل الدخول بالفعل إلى حساب وردبرس.كوم، ولا يمكنك إضافة موقع وردبرس.كوم مرتبط بحساب آخر.</string>
     <string name="cant_open_url">يتعذر فتح الرابط</string>
     <string name="error_no_sms_app">لم يتم العثور على تطبيق SMS</string>
@@ -3602,17 +3602,17 @@ Language: ar
     <string name="notification_channel_general_title">عام</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>قيد المعالجة</item>

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-08 11:54:04+0000
+Translation-Revision-Date: 2024-08-22 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">Menu</string>
+    <string name="woopos_cart_item_content_description">Product in winkelwagen %s, prijs %s</string>
+    <string name="woopos_product_item_content_description">Product %s, prijs %s</string>
+    <string name="blaze_campaign_status_suspended">Opgeschort</string>
     <string name="woopos_success_screen_total">Een betaling van %1$s is voldaan</string>
     <string name="woopos_new_order_button">Nieuwe bestelling</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
@@ -27,7 +31,7 @@ Language: nl
     <string name="google_ads_campaign_created_success_description">Je nieuwe campagne is gemaakt. Er komen geweldige momenten aan voor jouw omzet!</string>
     <string name="google_ads_campaign_created_success_title">Klaar voor de start!</string>
     <string name="woopos_totals_order_creation_error">Bestelling kan niet worden aangemaakt</string>
-    <string name="woopos_products_loading_error_retry_button">Probeer het opnieuw</string>
+    <string name="woopos_products_loading_error_retry_button">Opnieuw proberen</string>
     <string name="woopos_error_icon_content_description">Foutpictogram</string>
     <string name="woopos_products_loading_error_message">Nog een keertje proberen?</string>
     <string name="woopos_products_loading_error_title">Fout bij laden van producten</string>
@@ -118,13 +122,12 @@ Language: nl
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Laat ons productgegevens voor je genereren</string>
     <string name="woopos_payment_collect_payment_label">Pinbetaling aannemen</string>
     <string name="woopos_payment_total_label">Totaal</string>
-    <string name="woopos_payment_tax_label">Belasting</string>
+    <string name="woopos_payment_tax_label">Belastingen</string>
     <string name="woopos_payment_subtotal_label">Subtotaal</string>
     <string name="woopos_payment_successful_label">Betaling gelukt</string>
     <string name="woopos_payment_failed_please_try_again">Betaling mislukt. Probeer het opnieuw.</string>
     <string name="woopos_cart_back_content_description">Winkelwagenpictogram</string>
     <string name="woopos_products_screen_title">Producten</string>
-    <string name="woopos_product_image_description">Productafbeelding</string>
     <string name="woopos_items_in_cart">%d items</string>
     <string name="woopos_clear_cart_button">Wissen</string>
     <string name="more_menu_button_google_description">Verkoop meer en genereer meer verkeer met Google Ads</string>
@@ -135,7 +138,7 @@ Language: nl
     <string name="woopos_exit_confirmation_confirm_button">Afsluiten</string>
     <string name="woopos_exit_confirmation_message">Weet je zeker dat je POS wilt afsluiten?</string>
     <string name="woopos_exit_confirmation_title">POS afsluiten</string>
-    <string name="woopos_remove_item_from_cart_content_description">Artikel uit winkelwagen verwijderen</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Verwijder %s uit winkelwagen</string>
     <string name="woopos_checkout_button">Afrekenen</string>
     <string name="woopos_reader_unknown">Status van lezer is onbekend</string>
     <string name="woopos_checkout">Afrekenen</string>
@@ -156,6 +159,7 @@ Language: nl
     <string name="order_creation_shipping_edit">Verzending bewerken</string>
     <string name="order_creation_shipping_title_edit">Verzending bewerken</string>
     <string name="cash_payments_order_note_adding_error">Error adding order note</string>
+    <string name="cash_payments_order_note_text">De bestelling is met cash betaald. De klant betaalde %s. Het wisselgeld was %s.</string>
     <string name="cash_payments_mark_order_as_complete">Bestelling markeren als voltooid</string>
     <string name="cash_payments_record_transaction_details">Noteer transactiedetails in bestelnotitie</string>
     <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
@@ -168,6 +172,7 @@ Language: nl
     <string name="dashboard_coupons_card_empty_view_message">Geen coupon gebruikt gedurende deze periode</string>
     <string name="dashboard_coupons_view_all_button">Alle coupons</string>
     <string name="dashboard_coupons_card_header_uses">Toepassingen</string>
+    <string name="dashboard_coupons_card_header_coupons">Coupons</string>
     <string name="my_store_widget_product_stock_title">Voorraad</string>
     <string name="dashboard_action_view_all_messages">Alle berichten bekijken</string>
     <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
@@ -1293,7 +1298,6 @@ Language: nl
     <string name="login_application_passwords_help">Wat zijn applicatiewachtwoorden?</string>
     <string name="login_application_passwords_unavailable">Het lijkt erop dat de functie Applicatiewachtwoorden is uitgeschakeld op je site %1$s.\n Schakel dit in om de WooCommerce-app te kunnen gebruiken.</string>
     <string name="login_open_installation_page">Installatiepagina openen</string>
-    <string name="not_a_valid_qr_code">De ingescande QR-code is geen WooCommerce code</string>
     <string name="review_reply_failure">Er is een fout opgetreden bij het versturen van de reactie.</string>
     <string name="review_reply_success">Antwoord verstuurd!</string>
     <string name="wc_reply">Antwoord</string>
@@ -1368,7 +1372,6 @@ Language: nl
     <string name="domain_picker_subtitle">Dit is de plek waar mensen je online kunnen vinden. Maak je geen zorgen, je kan dit later altijd veranderen.</string>
     <string name="analytics_visitors_subtitle">Bezoekers</string>
     <string name="or_use_password_below_qr_code_scan_option">Of log in met een wachtwoord</string>
-    <string name="or_scan_qr_code_to_log_in">Scan de QR-code om in te loggen</string>
     <string name="simulated_reader_toast">Gesimuleerde kaartlezer is uitgeschakeld</string>
     <string name="simulated_reader_key">Sleutel gesimuleerde lezer</string>
     <string name="variations_bulk_update_stock_quantity_success">Aantal op voorraad bijgewerkt</string>
@@ -1421,7 +1424,6 @@ Language: nl
     <string name="qr_code_login_scanner_title">Barcodescanner van camera</string>
     <string name="dev_options">Ontwikkelaarsopties</string>
     <string name="login_2fa_not_supported_self_hosted_site">2FA wordt niet ondersteund voor zelf-gehoste sites. Gebruik een app-wachtwoord.</string>
-    <string name="login_with_qr_code">Scan de QR-code om in te loggen</string>
     <string name="show_password_content_description">Wachtwoord weergeven</string>
     <string name="hide_password_content_description">Wachtwoord verbergen</string>
     <string name="stats_widget_last_updated_message">Vanaf %1$s</string>
@@ -1696,7 +1698,7 @@ Language: nl
     <string name="card_reader_interac_refund_refund_payment">Betaling terugbetalen</string>
     <string name="card_reader_interac_refund_refund_failed_header">Terugbetaling mislukt</string>
     <string name="card_reader_interac_refund_refund_loading_header">Aan het voorbereiden op terugbetaling</string>
-    <string name="copy">Kopieer</string>
+    <string name="copy" tools:override="true">Kopieer</string>
     <string name="coupons_list_search_hint">Zoek coupons</string>
     <string name="coupon_details_share_formatting_failure">Kon deelbericht voor couponcode niet genereren</string>
     <string name="coupon_details_share_coupon_error">Fout bij delen van couponcode.</string>
@@ -2957,7 +2959,7 @@ Language: nl
     <string name="orderdetail_empty_address">Geen adres opgegeven.</string>
     <string name="login_need_help_finding_connected_email">Heb je hulp nodig bij het vinden van de e-mail waarmee je hebt ingelogd?</string>
     <string name="enter_wordpress_site">De website op dit adres is geen WordPress-site. Om er verbinding mee te kunnen maken, moet WordPress geïnstalleerd zijn.</string>
-    <string name="enter_email_for_site">Log in met WordPress.com om verbinding te maken met &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">Log in met WordPress.com om verbinding te maken met &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambia</string>
     <string name="country_mapping_YE">Yemen</string>
@@ -3553,8 +3555,8 @@ Language: nl
     <string name="login_configure_link">Lees de %1$sconfiguratie-instructies%2$s.</string>
     <string name="login_jetpack_required">Om deze app te gebruiken, moet Jetpack aan je winkel zijn gekoppeld.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Voer het adres van de WooCommerce-winkel die je wilt koppelen in.</string>
-    <string name="enter_email_wordpress_com">Log in met het e-mailadres van je WordPress.com-account om je WooCommerce-winkels te beheren.</string>
+    <string name="enter_site_address" content_override="true">Voer het adres van de WooCommerce-winkel die je wilt koppelen in.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Log in met het e-mailadres van je WordPress.com-account om je WooCommerce-winkels te beheren.</string>
     <string name="already_logged_in_wpcom">Je bent al aangemeld bij een WordPress.com-account. Je kunt geen WordPress.com-site toevoegen die is gekoppeld aan een ander account.</string>
     <string name="cant_open_url">De link kan niet worden geopend</string>
     <string name="error_no_sms_app">Er is geen app voor sms gevonden</string>
@@ -3600,17 +3602,17 @@ Language: nl
     <string name="notification_channel_general_title">Algemeen</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>Bezig met verwerken</item>
