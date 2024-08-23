@@ -1,9 +1,9 @@
 package com.woocommerce.android.baselineprofile
 
+import android.annotation.SuppressLint
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -33,17 +33,18 @@ import org.junit.runner.RunWith
  **/
 @RunWith(AndroidJUnit4::class)
 @LargeTest
+@SuppressLint("NewApi")
 class BaselineProfileGenerator {
 
     @get:Rule
     val rule = BaselineProfileRule()
 
     @Test
+    @Suppress("TooGenericExceptionThrown")
     fun generate() {
         // The application id for the running build variant is read from the instrumentation arguments.
         rule.collect(
-            packageName = InstrumentationRegistry.getArguments().getString("targetAppId")
-                ?: throw Exception("targetAppId not passed as instrumentation runner arg"),
+            packageName = PACKAGE_NAME,
 
             // See: https://d.android.com/topic/performance/baselineprofiles/dex-layout-optimizations
             includeInStartupProfile = true

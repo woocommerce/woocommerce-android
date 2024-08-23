@@ -6,9 +6,40 @@ plugins {
     id 'androidx.baselineprofile'
 }
 
+repositories {
+    maven {
+        url 'https://a8c-libs.s3.amazonaws.com/android'
+        content {
+            includeGroup "org.wordpress"
+            includeGroup "org.wordpress.fluxc"
+            includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.wellsql"
+            includeGroup "org.wordpress.mediapicker"
+            includeGroup "com.automattic"
+            includeGroup "com.automattic.tracks"
+            includeGroup "com.gravatar"
+            includeGroup "org.wordpress.aztec"
+        }
+    }
+    maven {
+        url 'https://zendesk.jfrog.io/zendesk/repo'
+        content {
+            includeGroup "com.zendesk"
+            includeGroup "com.zendesk.belvedere2"
+        }
+    }
+    maven {
+        url "https://jitpack.io"
+        content {
+            includeModule("com.github.chrisbanes", "PhotoView")
+            includeModule("com.github.PhilJay", "MPAndroidChart")
+        }
+    }
+}
+
 android {
     namespace 'com.woocommerce.android.baselineprofile'
-    compileSdk 34
+    compileSdk gradle.ext.compileSdkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -16,12 +47,12 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_1_8
     }
 
     defaultConfig {
-        minSdk 28
-        targetSdk 34
+        minSdk gradle.ext.minSdkVersion
+        targetSdk gradle.ext.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -31,8 +62,6 @@ android {
     flavorDimensions += ["buildType"]
     productFlavors {
         vanilla { dimension = "buildType" }
-        wasabi { dimension = "buildType" }
-        jalapeno { dimension = "buildType" }
     }
 
     // This code creates the gradle managed device used to generate baseline profiles.
@@ -55,10 +84,10 @@ baselineProfile {
 }
 
 dependencies {
-    implementation 'androidx.test.ext:junit:1.2.1'
-    implementation 'androidx.test.espresso:espresso-core:3.6.1'
-    implementation 'androidx.test.uiautomator:uiautomator:2.3.0'
-    implementation 'androidx.benchmark:benchmark-macro-junit4:1.2.4'
+    implementation "androidx.test.ext:junit:$jUnitExtVersion"
+    implementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    implementation "androidx.test.uiautomator:uiautomator:$uiautomatorVersion"
+    implementation "androidx.benchmark:benchmark-macro-junit4:$benchmarkVersion"
 }
 
 androidComponents {
