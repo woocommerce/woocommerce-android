@@ -62,14 +62,11 @@ data class WooPosHomeState(
 @Parcelize
 data object WooPosExitConfirmationDialog : Parcelable {
     @IgnoredOnParcel
-    val title: Int = R.string.woopos_exit_confirmation_title
+    val title: Int = R.string.woopos_exit_dialog_confirmation_title
 
     @IgnoredOnParcel
-    val message: Int = R.string.woopos_exit_confirmation_message
+    val message: Int = R.string.woopos_exit_dialog_confirmation_message
 
     @IgnoredOnParcel
-    val confirmButton: Int = R.string.woopos_exit_confirmation_confirm_button
-
-    @IgnoredOnParcel
-    val dismissButton: Int = R.string.woopos_exit_confirmation_dismiss_button
+    val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
 }

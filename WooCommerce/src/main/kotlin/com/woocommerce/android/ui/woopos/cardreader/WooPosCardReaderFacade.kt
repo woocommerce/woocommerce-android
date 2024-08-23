@@ -18,7 +18,9 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
 @ActivityRetainedScoped
-class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderManager) : DefaultLifecycleObserver {
+class WooPosCardReaderFacade @Inject constructor(
+    private val cardReaderManager: CardReaderManager
+) : DefaultLifecycleObserver {
     private var paymentContinuation: Continuation<WooPosCardReaderPaymentResult>? = null
     private var paymentResultLauncher: ActivityResultLauncher<Intent>? = null
     private var activity: AppCompatActivity? = null
@@ -38,24 +40,33 @@ class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderMa
                 WooPosCardReaderPaymentResult.Failure
             }
 
-            paymentContinuation?.resume(paymentResult!!)
+            paymentContinuation!!.resume(paymentResult!!)
         }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
         activity = null
-        paymentContinuation = null
         paymentResultLauncher = null
     }
 
     fun connectToReader() {
-        activity!!.startActivity(WooPosCardReaderActivity.buildIntentForCardReaderConnection(activity!!))
+        val intent = WooPosCardReaderActivity.buildIntentForCardReaderConnection(activity!!).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        activity!!.startActivity(intent)
     }
 
     suspend fun collectPayment(orderId: Long): WooPosCardReaderPaymentResult {
         return suspendCancellableCoroutine { continuation ->
             paymentContinuation = continuation
-            paymentResultLauncher!!.launch(WooPosCardReaderActivity.buildIntentForPayment(activity!!, orderId))
+            val intent = WooPosCardReaderActivity.buildIntentForPayment(activity!!, orderId).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+            paymentResultLauncher!!.launch(intent)
         }
+    }
+
+    suspend fun disconnectFromReader() {
+        cardReaderManager.disconnectReader()
     }
 }

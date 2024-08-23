@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConfirmationDialog
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
@@ -64,17 +64,6 @@ private fun WooPosHomeScreen(
 ) {
     BackHandler {
         onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
-    }
-
-    state.exitConfirmationDialog?.let {
-        WooPosConfirmationDialog(
-            title = stringResource(id = it.title),
-            message = stringResource(id = it.message),
-            confirmButtonText = stringResource(id = it.confirmButton),
-            dismissButtonText = stringResource(id = it.dismissButton),
-            onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
-            onConfirm = { onNavigationEvent(WooPosNavigationEvent.ExitPosClicked) }
-        )
     }
 
     val current = LocalConfiguration.current
@@ -114,6 +103,16 @@ private fun WooPosHomeScreen(
         totalsWidthDp = totalsWidthAnimatedDp,
         onHomeUIEvent,
     )
+
+    state.exitConfirmationDialog?.let {
+        WooPosExitConfirmationDialog(
+            title = stringResource(id = it.title),
+            message = stringResource(id = it.message),
+            dismissButtonText = stringResource(id = it.confirmButton),
+            onDismissRequest = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
+            onExit = { onNavigationEvent(WooPosNavigationEvent.ExitPosClicked) }
+        )
+    }
 }
 
 @Composable
