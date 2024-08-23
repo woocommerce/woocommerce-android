@@ -4183,7 +4183,7 @@
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
 
     <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
-    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\nOther product types, such as variable and virtual, will be available in future updates.</string>
+    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\n\nOther product types, such as variable and virtual, will be available in future updates.</string>
     <string name="woopos_dialog_products_info_secondary_message">To take payment for a non-simple product, exit POS and create a new order from the orders tab.</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Create an order in store management</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>

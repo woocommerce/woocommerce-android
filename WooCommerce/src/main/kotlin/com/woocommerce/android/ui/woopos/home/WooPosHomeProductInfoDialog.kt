@@ -26,11 +26,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
@@ -98,7 +96,7 @@ fun WooPosProductInfoDialog(
                 ) {
                     Icon(
                         modifier = Modifier
-                            .size(35.dp)
+                            .size(40.dp)
                             .focusable(enabled = false),
                         imageVector = Icons.Default.Close,
                         tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
@@ -118,11 +116,7 @@ fun WooPosProductInfoDialog(
                 ) {
                     Text(
                         text = stringResource(id = state.primaryMessage),
-                        style = TextStyle(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 24.sp,
-                            lineHeight = 32.sp
-                        ),
+                        style = MaterialTheme.typography.h5,
                         color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = 16.dp.toAdaptivePadding())

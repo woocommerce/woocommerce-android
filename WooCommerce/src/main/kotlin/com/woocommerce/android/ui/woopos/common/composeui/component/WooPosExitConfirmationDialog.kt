@@ -41,7 +41,7 @@ fun WooPosExitConfirmationDialog(
     WooPosDialogWrapper(
         modifier = modifier
             .fillMaxWidth()
-            .padding(102.dp.toAdaptivePadding()),
+            .padding(148.dp.toAdaptivePadding()),
         isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(
             id = R.string.woopos_dialog_exit_confirmation_background_content_description
@@ -55,10 +55,7 @@ fun WooPosExitConfirmationDialog(
                 .fillMaxWidth()
         ) {
             Box(
-                modifier = modifier.padding(
-                    horizontal = 150.dp.toAdaptivePadding(),
-                    vertical = 40.dp.toAdaptivePadding()
-                )
+                modifier = modifier.padding(40.dp.toAdaptivePadding())
             ) {
                 Column(
                     modifier = modifier.padding(16.dp.toAdaptivePadding()),
