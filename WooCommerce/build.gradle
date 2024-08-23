@@ -224,6 +224,7 @@ android {
     baselineProfile {
         dexLayoutOptimization = true
         saveInSrc = false
+        automaticGenerationDuringBuild = true
     }
 }
 
