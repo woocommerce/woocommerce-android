@@ -3,7 +3,12 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 20.1
 -----
-
+- [*****] [Internal] Update Aztec from v1.3.45 to v2.1.4 [https://github.com/woocommerce/woocommerce-android/pull/12316]
+- [**] Fixed Orders screen being stuck at skeleton loading view in certain scenarios [https://github.com/woocommerce/woocommerce-android/pull/12387]
+- [*] Handle incorrect pin error for UK and Canadian stores during IPP [https://github.com/woocommerce/woocommerce-android/pull/12375]
+- [*] [Internal] Fixed an issue with date formatting for the Blaze campaign creation API request [https://github.com/woocommerce/woocommerce-android/pull/12372]
+- [*] Fixed a rare crash in the order editing screen. [https://github.com/woocommerce/woocommerce-android/pull/12382]
+- [*] Fixed the blaze budget screens that are unusable on small screens. [https://github.com/woocommerce/woocommerce-android/pull/12402]
 
 20.0
 -----
@@ -13,7 +18,6 @@
 - [*] Allowed collecting card-present payments for orders with `failed` status [https://github.com/woocommerce/woocommerce-android/pull/12349]
 - [*] [Internal] [Login] Switched back to using the `/token` endpoint for WordPress.com authentication, this fixes an issue where the SMS OTP is not triggered automatically after submitting the password [https://github.com/woocommerce/woocommerce-android/pull/12319]
 - [*] [Internal] [WEAR] Introduces Sentry support to the Wear app
-
 
 19.9
 -----
