@@ -8,12 +8,13 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CustomFieldsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    repository: CustomFieldsRepository
+    private val repository: CustomFieldsRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val args: CustomFieldsFragmentArgs by savedStateHandle.navArgs()
 
@@ -32,6 +33,16 @@ class CustomFieldsViewModel @Inject constructor(
 
     fun onBackClick() {
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    fun onPullToRefresh() {
+        launch {
+            isLoading.value = true
+            repository.refreshCustomFields(args.parentItemId, args.parentItemType).onFailure {
+                // Handle error
+            }
+            isLoading.value = false
+        }
     }
 
     data class UiState(
