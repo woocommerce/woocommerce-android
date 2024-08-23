@@ -1,2 +1,0 @@
-20.0:
-Wir haben dein WooCommerce-Erlebnis mit verschiedenen wichtigen Updates verbessert: Auf Tablets werden jetzt Bilder zum Tutorial für Kartenlesegeräte angezeigt, das Scannen von QR-Codes ist beim Anmelden deaktiviert und das Problem mit der Tastatur bei „Mit KI schreiben“ wurde behoben. Außerdem kannst du Zahlungen mit vorgelegter Karte (Card Present) für Bestellungen abwickeln, die als fehlgeschlagen markiert sind.
