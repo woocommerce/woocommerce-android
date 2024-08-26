@@ -38,7 +38,6 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.util.AnalyticsUtils
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -142,13 +141,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             presenter.onNotificationsClicked()
         }
 
-        if (PackageUtils.isDebugBuild()) {
-            binding.optionDevelopers.visibility = View.VISIBLE
-            binding.optionDevelopers.setOnClickListener {
-                findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_developerOptionsFragment)
-            }
-        } else {
-            binding.optionDevelopers.visibility = View.GONE
+        binding.optionDevelopers.visibility = View.VISIBLE
+        binding.optionDevelopers.setOnClickListener {
+            findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_developerOptionsFragment)
         }
 
         binding.optionBetaFeatures.setOnClickListener {
