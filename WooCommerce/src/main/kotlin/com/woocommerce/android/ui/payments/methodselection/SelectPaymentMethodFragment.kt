@@ -231,14 +231,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 is NavigateBackToOrderList -> {
-                    val action = if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
-                            orderId = event.order.id
-                        )
+                    if (requireContext().windowSizeClass > WindowSizeClass.Compact) {
+                        findNavController().popBackStack()
                     } else {
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList().run {
+                            findNavController().navigateSafely(this)
+                        }
                     }
-                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateBackToHub -> {
