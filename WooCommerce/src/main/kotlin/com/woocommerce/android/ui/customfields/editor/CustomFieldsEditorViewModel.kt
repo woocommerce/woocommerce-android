@@ -9,8 +9,10 @@ import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -32,14 +34,20 @@ class CustomFieldsEditorViewModel @Inject constructor(
         key = "customField",
         clazz = CustomFieldUiModel::class.java
     )
+    private val showDiscardChangesDialog = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "showDiscardChangesDialog"
+    )
     private val storedValue = MutableStateFlow<CustomField?>(null)
     private val isHtml = storedValue.map { it?.valueStrippedHtml != it?.valueAsString }
 
     val state = combine(
         customFieldDraft.filterNotNull(),
         storedValue,
-        isHtml
-    ) { customField, storedValue, isHtml ->
+        isHtml,
+        showDiscardChangesDialog.mapToState()
+    ) { customField, storedValue, isHtml, discardChangesDialogState ->
         UiState(
             customField = customField,
             showDoneButton = if (storedValue == null) {
@@ -47,7 +55,8 @@ class CustomFieldsEditorViewModel @Inject constructor(
             } else {
                 customField.key != storedValue.key || customField.value != storedValue.valueAsString
             },
-            isHtml = isHtml
+            isHtml = isHtml,
+            discardChangesDialogState = discardChangesDialogState
         )
     }.asLiveData()
 
@@ -91,13 +100,33 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     fun onBackClick() {
-        // TODO: show confirmation dialog if there are unsaved changes
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        if (state.value?.showDoneButton == true) {
+            showDiscardChangesDialog.value = true
+        } else {
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        }
+    }
+
+    private fun Flow<Boolean>.mapToState() = map {
+        if (it) {
+            DiscardChangesDialogState(
+                onDiscard = { triggerEvent(MultiLiveEvent.Event.Exit) },
+                onCancel = { showDiscardChangesDialog.value = false }
+            )
+        } else {
+            null
+        }
     }
 
     data class UiState(
         val customField: CustomFieldUiModel = CustomFieldUiModel("", ""),
         val showDoneButton: Boolean = false,
-        val isHtml: Boolean = false
+        val isHtml: Boolean = false,
+        val discardChangesDialogState: DiscardChangesDialogState? = null
+    )
+
+    data class DiscardChangesDialogState(
+        val onDiscard: () -> Unit,
+        val onCancel: () -> Unit
     )
 }

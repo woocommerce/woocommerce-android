@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -77,6 +78,13 @@ private fun CustomFieldsEditorScreen(
                 label = "Value",
                 placeholderText = "Enter value",
                 minLines = 5
+            )
+        }
+
+        state.discardChangesDialogState?.let {
+            DiscardChangesDialog(
+                discardButton = it.onDiscard,
+                dismissButton = it.onCancel
             )
         }
     }
