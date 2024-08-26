@@ -1,2 +1,0 @@
-20.0
-Fizemos várias atualizações para melhorar a experiência no WooCommerce: imagens do tutorial do leitor de cartão ficam visíveis em tablets, a leitura de código QR é desativada no login e o problema de "Escrever com IA" no teclado foi resolvido. Além disso, você pode processar os pagamentos de vale-presente em pedidos "Com falha".

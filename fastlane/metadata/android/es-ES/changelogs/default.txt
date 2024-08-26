@@ -1,2 +1,0 @@
-20.0:
-Hemos mejorado tu experiencia de WooCommerce con varias actualizaciones clave: las imágenes del tutorial del lector de tarjetas ahora son visibles en tabletas, el escaneo de códigos QR está desactivado durante el acceso y se ha solucionado el problema de «Escribir con IA» con el teclado. Además, ahora puedes procesar pagos con tarjeta para pedidos marcados como fallidos.
