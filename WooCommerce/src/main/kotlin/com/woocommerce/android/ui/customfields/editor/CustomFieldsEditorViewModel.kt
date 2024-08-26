@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.customfields.editor
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -45,7 +47,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
             },
             isHtml = isHtml
         )
-    }
+    }.asLiveData()
 
     init {
         loadStoreValue()
@@ -69,9 +71,15 @@ class CustomFieldsEditorViewModel @Inject constructor(
                 parentItemId = navArgs.parentItemId,
                 customFieldId = it
             )
-        }?.let {
-            storedValue.value = it
+        }?.let { dbValue ->
+            storedValue.value = dbValue
+            customFieldDraft.update { it.copy(id = dbValue.id) }
         }
+    }
+
+    fun onBackClick() {
+        // TODO: show confirmation dialog if there are unsaved changes
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     data class UiState(
