@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_custom_fields"
+    app:startDestination="@id/customFieldsFragment">
+    <argument
+        android:name="parentItemId"
+        app:argType="long" />
+    <argument
+        android:name="parentItemType"
+        app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType" />
+
+    <fragment
+        android:id="@+id/customFieldsFragment"
+        android:name="com.woocommerce.android.ui.customfields.list.CustomFieldsFragment">
+        <argument
+            android:name="parentItemId"
+            app:argType="long" />
+        <argument
+            android:name="parentItemType"
+            app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType" />
+    </fragment>
+
+</navigation>
