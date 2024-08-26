@@ -8,11 +8,12 @@ import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,16 +26,17 @@ class CustomFieldsEditorViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<CustomFieldsEditorFragmentArgs>()
 
-    private val customFieldDraft = savedStateHandle.getStateFlow(
+    private val customFieldDraft = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
-        initialValue = CustomFieldUiModel("", ""),
-        key = "customField"
+        initialValue = null,
+        key = "customField",
+        clazz = CustomFieldUiModel::class.java
     )
     private val storedValue = MutableStateFlow<CustomField?>(null)
     private val isHtml = storedValue.map { it?.valueStrippedHtml != it?.valueAsString }
 
     val state = combine(
-        customFieldDraft,
+        customFieldDraft.filterNotNull(),
         storedValue,
         isHtml
     ) { customField, storedValue, isHtml ->
@@ -50,30 +52,41 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }.asLiveData()
 
     init {
-        loadStoreValue()
+        initState()
     }
 
     fun onKeyChanged(key: String) {
-        customFieldDraft.update { it.copy(key = key) }
+        customFieldDraft.update { it?.copy(key = key) }
     }
 
     fun onValueChanged(value: String) {
-        customFieldDraft.update { it.copy(value = value) }
+        customFieldDraft.update { it?.copy(value = value) }
     }
 
     fun onDoneClicked() {
         TODO()
     }
 
-    private fun loadStoreValue() = launch {
-        navArgs.customFieldId.takeIf { it != -1L }?.let {
-            repository.getCustomFieldById(
-                parentItemId = navArgs.parentItemId,
-                customFieldId = it
-            )
-        }?.let { dbValue ->
+    private fun initState() {
+        if (navArgs.customFieldId == -1L) {
+            customFieldDraft.value = CustomFieldUiModel("", "")
+            return
+        }
+
+        launch {
+            val dbValue = requireNotNull(
+                repository.getCustomFieldById(
+                    parentItemId = navArgs.parentItemId,
+                    customFieldId = navArgs.customFieldId
+                )
+            ) {
+                "Custom field not found in database, this should not happen"
+            }
+
             storedValue.value = dbValue
-            customFieldDraft.update { it.copy(id = dbValue.id) }
+            if (customFieldDraft.value == null) {
+                customFieldDraft.value = CustomFieldUiModel(dbValue)
+            }
         }
     }
 
