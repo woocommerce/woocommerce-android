@@ -232,6 +232,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
                 is NavigateBackToOrderList -> {
                     if (requireContext().windowSizeClass > WindowSizeClass.Compact) {
+                        // in tablet mode the [SelectPaymentMethodFragment] is shown in the details pane.
+                        // We should pop the back stack to show the [OrderDetailsFragment].
                         findNavController().popBackStack()
                     } else {
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList().run {
