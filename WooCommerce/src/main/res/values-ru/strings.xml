@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-13 09:54:03+0000
+Translation-Revision-Date: 2024-08-22 15:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">Меню</string>
+    <string name="woopos_cart_item_content_description">Товар в корзине %s, цена %s</string>
+    <string name="woopos_product_item_content_description">Товар %s, цена %s</string>
+    <string name="blaze_campaign_status_suspended">Приостановлено</string>
     <string name="woopos_success_screen_total">Платёж в сумме %1$s выполнен успешно</string>
     <string name="woopos_new_order_button">Новый заказ</string>
     <string name="woopos_dialog_products_info_button_label">ОК</string>
@@ -118,13 +122,12 @@ Language: ru
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Мы сгенерируем для вас сведения о товаре</string>
     <string name="woopos_payment_collect_payment_label">Получение платежа по карте</string>
     <string name="woopos_payment_total_label">Итого</string>
-    <string name="woopos_payment_tax_label">Налог</string>
+    <string name="woopos_payment_tax_label">Налоги</string>
     <string name="woopos_payment_subtotal_label">Подытог</string>
     <string name="woopos_payment_successful_label">Оплата прошла успешно</string>
     <string name="woopos_payment_failed_please_try_again">Платёж не выполнен. Повторите попытку.</string>
     <string name="woopos_cart_back_content_description">Значок корзины</string>
     <string name="woopos_products_screen_title">Товары</string>
-    <string name="woopos_product_image_description">Изображение товара</string>
     <string name="woopos_items_in_cart">Товары (%d)</string>
     <string name="woopos_clear_cart_button">Очистить</string>
     <string name="more_menu_button_google_description">Повышайте продажи и привлекайте больше посетителей при помощи Google Ads</string>
@@ -135,7 +138,7 @@ Language: ru
     <string name="woopos_exit_confirmation_confirm_button">Выход</string>
     <string name="woopos_exit_confirmation_message">Вы уверены, что хотите закрыть POS?</string>
     <string name="woopos_exit_confirmation_title">Закрыть POS</string>
-    <string name="woopos_remove_item_from_cart_content_description">Удалить товар из корзины</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Удалить %s из корзины</string>
     <string name="woopos_checkout_button">Оформление заказа</string>
     <string name="woopos_reader_unknown">Статус считывающего устройства неизвестен</string>
     <string name="woopos_checkout">Оформление заказа</string>
@@ -1295,7 +1298,6 @@ Language: ru
     <string name="login_application_passwords_help">Что такое пароли приложения?</string>
     <string name="login_application_passwords_unavailable">Кажется, на вашем сайте %1$s отключена функция паролей приложения.\n Включите её, чтобы использовать приложение WooCommerce.</string>
     <string name="login_open_installation_page">Открыть страницу установки</string>
-    <string name="not_a_valid_qr_code">Просканированный QR-код не является кодом WooCommerce</string>
     <string name="review_reply_failure">При отправке ответа произошла ошибка</string>
     <string name="review_reply_success">Ответ отправлен!</string>
     <string name="wc_reply">Ответить</string>
@@ -1370,7 +1372,6 @@ Language: ru
     <string name="domain_picker_subtitle">Это место, где люди найдут вас в Интернете. Не беспокойтесь, вы сможете изменить это позднее.</string>
     <string name="analytics_visitors_subtitle">Посетители</string>
     <string name="or_use_password_below_qr_code_scan_option">Или войти с помощью пароля</string>
-    <string name="or_scan_qr_code_to_log_in">Отсканировать QR-код для входа</string>
     <string name="simulated_reader_toast">Симуляция устройства чтения карт отключена</string>
     <string name="simulated_reader_key">Смоделированный ключ устройства чтения</string>
     <string name="variations_bulk_update_stock_quantity_success">Количество товаров в наличии обновлено</string>
@@ -1423,7 +1424,6 @@ Language: ru
     <string name="qr_code_login_scanner_title">Сканер штрихкодов в камере</string>
     <string name="dev_options">Параметры разработчика</string>
     <string name="login_2fa_not_supported_self_hosted_site">Двухфакторная проверка подлинности не поддерживается для автономных сайтов. Используйте пароль приложения.</string>
-    <string name="login_with_qr_code">Отсканируйте QR-код для входа</string>
     <string name="show_password_content_description">Показать пароль</string>
     <string name="hide_password_content_description">Скрыть пароль</string>
     <string name="stats_widget_last_updated_message">На %1$s</string>

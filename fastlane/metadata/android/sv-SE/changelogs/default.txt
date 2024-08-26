@@ -1,2 +1,2 @@
-19.9:
-Vi har förbättrat återbetalningsupplevelsen. Alla återbetalningsobjekt på återbetalningsskärmen inkluderar nu detaljerade delsummor och momsfält, vilket ger dig tydligare insikter om dina transaktioner. Uppdatera nu och ta del av smidigare och mer transparenta återbetalningar.
+20.0:
+Vi har förbättrat din WooCommerce-upplevelse med flera viktiga uppdateringar: instruktionsbilder för kortläsare är nu synliga på surfplattor, QR-kodskanning är inaktiverad under inloggning och "Skriv med AI"-problemet med tangentbordet har åtgärdats. Dessutom kan du nu behandla kortbetalningar för beställningar som har markerats som misslyckade.
