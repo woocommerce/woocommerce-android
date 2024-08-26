@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -46,55 +44,48 @@ fun WooPosExitConfirmationDialog(
         ),
         onDismissRequest = onDismissRequest,
     ) {
-        Card(
-            shape = RoundedCornerShape(24.dp),
-            elevation = 8.dp,
-            modifier = modifier
-                .fillMaxWidth()
+        Box(
+            modifier = modifier.padding(40.dp.toAdaptivePadding())
         ) {
-            Box(
-                modifier = modifier.padding(40.dp.toAdaptivePadding())
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Spacer(modifier = modifier.height(48.dp.toAdaptivePadding()))
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.h4,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colors.onSurface
-                    )
-                    Spacer(modifier = modifier.height(16.dp.toAdaptivePadding()))
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onSurface
-                    )
-                    Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
-                    WooPosButton(
-                        modifier = modifier
-                            .fillMaxWidth(),
-                        onClick = {
-                            onExit()
-                        },
-                        text = dismissButtonText
-                    )
-                }
-
-                IconButton(
-                    onClick = { onDismissRequest() },
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Spacer(modifier = modifier.height(48.dp.toAdaptivePadding()))
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colors.onSurface
+                )
+                Spacer(modifier = modifier.height(16.dp.toAdaptivePadding()))
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.onSurface
+                )
+                Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
+                WooPosButton(
                     modifier = modifier
-                        .align(Alignment.TopEnd)
-                ) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = stringResource(
-                            id = R.string.woopos_exit_dialog_confirmation_close_content_description
-                        ),
-                        modifier = modifier
-                            .size(40.dp),
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
-                    )
-                }
+                        .fillMaxWidth(),
+                    onClick = {
+                        onExit()
+                    },
+                    text = dismissButtonText
+                )
+            }
+
+            IconButton(
+                onClick = { onDismissRequest() },
+                modifier = modifier
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = stringResource(
+                        id = R.string.woopos_exit_dialog_confirmation_close_content_description
+                    ),
+                    modifier = modifier
+                        .size(40.dp),
+                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                )
             }
         }
     }
