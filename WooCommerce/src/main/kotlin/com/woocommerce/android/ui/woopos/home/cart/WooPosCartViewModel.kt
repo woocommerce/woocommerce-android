@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -57,6 +58,16 @@ class WooPosCartViewModel @Inject constructor(
 
     init {
         listenEventsFromParent()
+    }
+
+    fun onSave() {
+        Log.d("WooPosCartViewModel", "Saving state: ${_state.value}")
+        // Custom save logic can be added here if needed
+    }
+
+    fun onRestore() {
+        Log.d("WooPosCartViewModel", "Restoring state: ${_state.value}")
+        // Custom restore logic if needed
     }
 
     @Suppress("ReturnCount")
