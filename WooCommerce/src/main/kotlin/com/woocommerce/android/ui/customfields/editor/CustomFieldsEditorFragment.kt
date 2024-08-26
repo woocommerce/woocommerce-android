@@ -7,10 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CustomFieldsEditorFragment : BaseFragment() {
+    override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
+
     private val viewModel: CustomFieldsEditorViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
