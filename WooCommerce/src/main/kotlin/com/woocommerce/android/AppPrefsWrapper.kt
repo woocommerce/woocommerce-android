@@ -377,4 +377,10 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getBlazeNoCampaignReminderShown(siteId: Long) = AppPrefs.getBlazeNoCampaignReminderShown(siteId)
+
+    fun setBlazeAbandonedCampaignReminderShown(siteId: Long) {
+        AppPrefs.setBlazeAbandonedCampaignReminderShown(siteId)
+    }
+
+    fun getBlazeAbandonedCampaignReminderShown(siteId: Long) = AppPrefs.getBlazeAbandonedCampaignReminderShown(siteId)
 }
