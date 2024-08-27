@@ -73,7 +73,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     private fun initState() {
-        if (navArgs.customFieldId == -1L) {
+        if (navArgs.customFieldId == -1L && customFieldDraft.value == null) {
             customFieldDraft.value = CustomFieldUiModel("", "")
             return
         }
