@@ -43,7 +43,6 @@ class WooPosActivity : AppCompatActivity() {
         cartViewModel.onRestore() // Restore state manually
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)

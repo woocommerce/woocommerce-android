@@ -24,8 +24,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,11 +44,6 @@ class WooPosCartViewModel @Inject constructor(
     )
 
     val state: LiveData<WooPosCartState> = _state
-        .scan(_state.value) { previousState, newState ->
-            updateParentCartStatusIfCartChanged(previousState, newState)
-            newState
-        }
-        .distinctUntilChanged()
         .asLiveData(viewModelScope.coroutineContext)
         .map { updateCartStatusDependingOnItems(it) }
         .map { updateToolbarState(it) }
@@ -221,19 +214,6 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
         }
-
-    private fun updateParentCartStatusIfCartChanged(previousState: WooPosCartState, newState: WooPosCartState) {
-        if (previousState.body.amountOfItems == newState.body.amountOfItems) return
-        when (newState.body) {
-            is WooPosCartState.Body.Empty -> {
-                sendEventToParent(ChildToParentEvent.CartStatusChanged.Empty)
-            }
-
-            is WooPosCartState.Body.WithItems -> {
-                sendEventToParent(ChildToParentEvent.CartStatusChanged.NotEmpty)
-            }
-        }
-    }
 
     private fun updateCartStatusDependingOnItems(newState: WooPosCartState): WooPosCartState =
         when (newState.body) {
