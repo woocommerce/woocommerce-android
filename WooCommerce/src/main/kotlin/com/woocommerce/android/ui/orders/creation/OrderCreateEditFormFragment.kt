@@ -243,11 +243,7 @@ class OrderCreateEditFormFragment :
             twoPaneModeToolbar.title = getTitle()
             twoPaneModeToolbar.setNavigationIcon(R.drawable.ic_back_24dp)
         } else {
-            val navigationIcon = when (viewModel.mode) {
-                is Creation -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
-                is Edit -> null
-            }
-            mainToolbar.navigationIcon = navigationIcon
+            mainToolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
             mainToolbar.title = getTitle()
         }
         mainToolbar.setNavigationOnClickListener { viewModel.onBackButtonClicked() }
