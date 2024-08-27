@@ -115,7 +115,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     private fun calculateShowButtonState(draft: CustomFieldUiModel, stored: CustomField?): Boolean {
-        if (draft.key.isEmpty() || draft.value.isEmpty()) {
+        if (draft.key.isEmpty()) {
             return false
         }
 

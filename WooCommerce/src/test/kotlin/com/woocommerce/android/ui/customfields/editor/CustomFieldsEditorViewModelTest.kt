@@ -108,12 +108,11 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given creating a new field, when the key and value are not empty, then show done button`() = testBlocking {
+    fun `given creating a new field, when the key is not empty, then show done button`() = testBlocking {
         setup(editing = false)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onKeyChanged("key")
-            viewModel.onValueChanged("value")
         }.last()
 
         assertThat(state.showDoneButton).isTrue()
@@ -125,17 +124,6 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onKeyChanged("")
-        }.last()
-
-        assertThat(state.showDoneButton).isFalse()
-    }
-
-    @Test
-    fun `when value is empty, then hide done button`() = testBlocking {
-        setup(editing = false)
-
-        val state = viewModel.state.runAndCaptureValues {
-            viewModel.onValueChanged("")
         }.last()
 
         assertThat(state.showDoneButton).isFalse()
