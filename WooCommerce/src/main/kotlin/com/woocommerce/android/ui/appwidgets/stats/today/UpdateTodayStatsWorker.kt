@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.appwidgets.IsDeviceBatterySaverActive
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
