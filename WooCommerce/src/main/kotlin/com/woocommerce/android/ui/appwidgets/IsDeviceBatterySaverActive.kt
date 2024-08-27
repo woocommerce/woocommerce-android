@@ -1,12 +1,10 @@
 package com.woocommerce.android.ui.appwidgets
 
 import android.content.Context
-import android.os.Build
 import android.os.PowerManager
+import javax.inject.Inject
 
-class IsDeviceBatterySaverActive(
-
-) {
+class IsDeviceBatterySaverActive @Inject constructor() {
     operator fun invoke(
         context: Context
     ): Boolean {
