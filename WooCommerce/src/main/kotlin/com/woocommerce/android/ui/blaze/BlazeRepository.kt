@@ -277,7 +277,10 @@ class BlazeRepository @Inject constructor(
                         campaignDetails.budget.isEndlessCampaign -> CAMPAIGN_BUDGET_MODE_DAILY
                         else -> CAMPAIGN_BUDGET_MODE_TOTAL
                     },
-                    amount = campaignDetails.budget.totalBudget.toDouble(),
+                    amount = when {
+                        campaignDetails.budget.isEndlessCampaign -> campaignDetails.budget.totalBudget / WEEKLY_DURATION
+                        else -> campaignDetails.budget.totalBudget
+                    }.toDouble(),
                     currency = BLAZE_DEFAULT_CURRENCY_CODE // To be replaced when more currencies are supported
                 ),
                 targetUrl = campaignDetails.destinationParameters.targetUrl,
