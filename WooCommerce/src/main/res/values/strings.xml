@@ -3786,6 +3786,8 @@
    -->
     <string name="local_notification_blaze_no_campaign_reminder_title">Boost your sales</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">Thinking about boosting your sales?</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">Get your products seen by millions with Blaze, or let us resolve any questions you might have</string>
 
     <!--
     First product published congratulatory feature

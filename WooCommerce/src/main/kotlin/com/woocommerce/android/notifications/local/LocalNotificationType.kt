@@ -1,7 +1,8 @@
 package com.woocommerce.android.notifications.local
 
 enum class LocalNotificationType(val value: String) {
-    BLAZE_NO_CAMPAIGN_REMINDER("blaze_no_campaign_reminder");
+    BLAZE_NO_CAMPAIGN_REMINDER("blaze_no_campaign_reminder"),
+    BLAZE_ABANDONED_CAMPAIGN_REMINDER("blaze_abandoned_campaign_reminder");
     override fun toString() = value
 
     companion object {

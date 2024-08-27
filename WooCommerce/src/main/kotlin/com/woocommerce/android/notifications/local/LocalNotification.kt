@@ -34,4 +34,13 @@ sealed class LocalNotification(
         delay = delay,
         delayUnit = TimeUnit.MILLISECONDS
     )
+
+    data class BlazeAbandonedCampaignReminderNotification(override val siteId: Long) : LocalNotification(
+        siteId = siteId,
+        title = R.string.local_notification_blaze_abandoned_campaign_reminder_title,
+        description = R.string.local_notification_blaze_abandoned_campaign_reminder_description,
+        type = LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER,
+        delay = 1,
+        delayUnit = TimeUnit.DAYS
+    )
 }
