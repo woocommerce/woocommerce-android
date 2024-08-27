@@ -50,11 +50,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
     ) { customField, storedValue, isHtml, discardChangesDialogState ->
         UiState(
             customField = customField,
-            showDoneButton = if (storedValue == null) {
-                customField.key.isNotBlank() && customField.value.isNotBlank()
-            } else {
-                customField.key != storedValue.key || customField.value != storedValue.valueAsString
-            },
+            showDoneButton = calculateShowButtonState(customField, storedValue),
             isHtml = isHtml,
             discardChangesDialogState = discardChangesDialogState
         )
@@ -116,6 +112,14 @@ class CustomFieldsEditorViewModel @Inject constructor(
         } else {
             null
         }
+    }
+
+    private fun calculateShowButtonState(draft: CustomFieldUiModel, stored: CustomField?): Boolean {
+        if (draft.key.isEmpty() || draft.value.isEmpty()) {
+            return false
+        }
+
+        return stored == null || stored.key != draft.key || stored.valueAsString != draft.value
     }
 
     data class UiState(
