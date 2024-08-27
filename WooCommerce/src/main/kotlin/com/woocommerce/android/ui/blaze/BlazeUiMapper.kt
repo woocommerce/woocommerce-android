@@ -14,7 +14,7 @@ fun BlazeCampaignModel.toUiState(currencyFormatter: CurrencyFormatter) =
         stats = listOf(
             BlazeCampaignStat(
                 name = R.string.blaze_campaign_status_ctr,
-                value = "$impressions → $clicks"
+                value = "$impressions ➔ $clicks"
             ),
             BlazeCampaignStat(
                 name = getBudgetTitle(this),
