@@ -4,11 +4,11 @@ import android.content.Context
 import android.os.PowerManager
 import javax.inject.Inject
 
-class IsDeviceBatterySaverActive @Inject constructor() {
-    operator fun invoke(
-        context: Context
-    ): Boolean {
-        return context.getSystemService(Context.POWER_SERVICE)
+class IsDeviceBatterySaverActive @Inject constructor(
+    private val appContext: Context
+) {
+    operator fun invoke(): Boolean {
+        return appContext.getSystemService(Context.POWER_SERVICE)
             .run { this as? PowerManager }
             ?.isPowerSaveMode
             ?: false
