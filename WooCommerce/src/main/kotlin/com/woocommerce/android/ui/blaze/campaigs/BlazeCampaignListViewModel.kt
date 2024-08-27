@@ -128,22 +128,39 @@ class BlazeCampaignListViewModel @Inject constructor(
                 status = CampaignStatusUi.fromString(campaignEntity.uiStatus),
                 stats = listOf(
                     BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_impressions,
-                        value = campaignEntity.impressions.toString()
+                        name = R.string.blaze_campaign_status_ctr,
+                        value = "${campaignEntity.impressions} -> ${campaignEntity.clicks}"
                     ),
-                    BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_clicks,
-                        value = campaignEntity.clicks.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_budget,
-                        value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
-                    )
+                    calculateBudgetStat(campaignEntity)
                 ),
                 isEndlessCampaign = campaignEntity.isEndlessCampaign
             ),
             onCampaignClicked = { onCampaignClicked(campaignEntity.campaignId) }
         )
+
+    private fun calculateBudgetStat(campaignEntity: BlazeCampaignEntity): BlazeCampaignStat =
+        when {
+            CampaignStatusUi.fromString(campaignEntity.uiStatus) == CampaignStatusUi.Active -> {
+                if (campaignEntity.isEndlessCampaign) {
+                    BlazeCampaignStat(
+                        name = R.string.blaze_campaign_status_budget_weekly,
+                        value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
+                    )
+                } else {
+                    BlazeCampaignStat(
+                        name = R.string.blaze_campaign_status_budget_remaining,
+                        value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
+                    )
+                }
+            }
+
+            else -> {
+                BlazeCampaignStat(
+                    name = R.string.blaze_campaign_status_budget_total,
+                    value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
+                )
+            }
+        }
 
     private fun onAddNewCampaignClicked() {
         triggerEvent(LaunchBlazeCampaignCreation(BlazeFlowSource.CAMPAIGN_LIST))

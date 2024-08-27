@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.blaze
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
@@ -149,13 +150,9 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                 status = CampaignStatusUi.fromString(campaign.uiStatus),
                 stats = listOf(
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_impressions,
-                        value = campaign.impressions.toString()
+                        name = R.string.blaze_campaign_status_ctr,
+                        value = "${campaign.impressions} -> ${campaign.clicks}"
                     ),
-                    BlazeCampaignStat(
-                        name = string.blaze_campaign_status_clicks,
-                        value = campaign.clicks.toString()
-                    )
                 ),
                 isEndlessCampaign = campaign.isEndlessCampaign
             ),
