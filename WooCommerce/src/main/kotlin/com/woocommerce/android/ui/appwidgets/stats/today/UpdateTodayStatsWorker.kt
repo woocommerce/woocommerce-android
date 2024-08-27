@@ -11,6 +11,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStats
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsAPINotSupportedFailure
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsAuthFailure
@@ -74,7 +75,7 @@ class UpdateTodayStatsWorker @AssistedInject constructor(
         widgetId: Int,
         remoteViews: RemoteViews,
         site: SiteModel?,
-        todayStatsResult: GetWidgetStats.WidgetStatsResult
+        todayStatsResult: WidgetStatsResult
     ): Result {
         return when (todayStatsResult) {
             WidgetStatsBatterySaverActive -> {
@@ -123,22 +124,31 @@ class UpdateTodayStatsWorker @AssistedInject constructor(
                 Result.retry()
             }
             is WidgetStats -> {
-                if (site != null) {
-                    todayStatsWidgetUIHelper.displayInformation(
-                        stats = todayStatsResult,
-                        remoteViews = remoteViews
-                    )
-                    Result.success()
-                } else {
-                    todayStatsWidgetUIHelper.displayError(
-                        remoteViews = remoteViews,
-                        errorMessageRes = R.string.stats_widget_error_no_data,
-                        withRetryButton = true,
-                        widgetId = widgetId
-                    )
-                    Result.retry()
-                }
+                handleStatsAvailable(todayStatsResult, site, remoteViews, widgetId)
             }
+        }
+    }
+
+    private fun handleStatsAvailable(
+        todayStatsResult: WidgetStats,
+        site: SiteModel?,
+        remoteViews: RemoteViews,
+        widgetId: Int
+    ): Result {
+        if (site != null) {
+            todayStatsWidgetUIHelper.displayInformation(
+                stats = todayStatsResult,
+                remoteViews = remoteViews
+            )
+            return Result.success()
+        } else {
+            todayStatsWidgetUIHelper.displayError(
+                remoteViews = remoteViews,
+                errorMessageRes = R.string.stats_widget_error_no_data,
+                withRetryButton = true,
+                widgetId = widgetId
+            )
+            return Result.retry()
         }
     }
 }

@@ -70,7 +70,7 @@ class GetWidgetStats @Inject constructor(
     }
 
     sealed class WidgetStatsResult {
-        data object WidgetStatsBatterySaverActive: WidgetStatsResult()
+        data object WidgetStatsBatterySaverActive : WidgetStatsResult()
         data object WidgetStatsAuthFailure : WidgetStatsResult()
         data object WidgetStatsNetworkFailure : WidgetStatsResult()
         data object WidgetStatsAPINotSupportedFailure : WidgetStatsResult()
