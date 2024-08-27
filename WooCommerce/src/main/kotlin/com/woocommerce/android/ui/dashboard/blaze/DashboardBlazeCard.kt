@@ -350,17 +350,13 @@ fun MyStoreBlazeViewCampaignPreview() {
                 status = CampaignStatusUi.Active,
                 stats = listOf(
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_impressions,
-                        value = 100.toString()
+                        name = R.string.blaze_campaign_status_ctr,
+                        value = "62 -> 12"
                     ),
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_clicks,
-                        value = 10.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = string.blaze_campaign_status_budget,
-                        value = 1000.toString()
-                    ),
+                        name = R.string.blaze_campaign_status_budget_total,
+                        value = "$124"
+                    )
                 ),
                 isEndlessCampaign = false
             ),

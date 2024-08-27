@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.WEEKLY_DURATION
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -42,7 +43,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_DATE_LIMIT_IN_DAYS = 60
-        const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
     }
 
     private val navArgs: BlazeCampaignBudgetFragmentArgs by savedStateHandle.navArgs()

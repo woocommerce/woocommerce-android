@@ -75,5 +75,10 @@ enum class CampaignStatusUi(
                 else -> null
             }
         }
+
+        fun isActive(status: String): Boolean {
+            val campaignStatus = fromString(status)
+            return campaignStatus == Active || campaignStatus == Scheduled || campaignStatus == InModeration
+        }
     }
 }

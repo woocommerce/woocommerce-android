@@ -47,6 +47,7 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MAX_DURATION = 28 // Days
         const val DEFAULT_CAMPAIGN_BUDGET_MODE = "total" // "total" or "daily" for campaigns that run without end date
         const val BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS = 400 // Must be at least 400 x 400 pixels
+        const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
