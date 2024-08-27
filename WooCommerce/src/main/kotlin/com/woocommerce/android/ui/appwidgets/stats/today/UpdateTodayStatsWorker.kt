@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStats
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsAPINotSupportedFailure
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsAuthFailure
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsBatterySaverActive
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsFailure
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsNetworkFailure
 import com.woocommerce.android.util.DateUtils
@@ -76,6 +77,15 @@ class UpdateTodayStatsWorker @AssistedInject constructor(
         todayStatsResult: GetWidgetStats.WidgetStatsResult
     ): Result {
         return when (todayStatsResult) {
+            WidgetStatsBatterySaverActive -> {
+                todayStatsWidgetUIHelper.displayError(
+                    remoteViews = remoteViews,
+                    errorMessageRes = R.string.stats_widget_battery_saver_error,
+                    withRetryButton = false,
+                    widgetId = widgetId
+                )
+                Result.failure()
+            }
             WidgetStatsNetworkFailure -> {
                 todayStatsWidgetUIHelper.displayError(
                     remoteViews = remoteViews,
