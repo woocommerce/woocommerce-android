@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.TypedValue
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -18,7 +17,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,18 +28,6 @@ class WooPosActivity : AppCompatActivity() {
 
     @Inject
     lateinit var wooPosGetSupportFacade: WooPosGetSupportFacade
-
-    private val cartViewModel: WooPosCartViewModel by viewModels()
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        cartViewModel.onSave() // Save state manually
-    }
-
-    override fun onResume() {
-        super.onResume()
-        cartViewModel.onRestore() // Restore state manually
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
