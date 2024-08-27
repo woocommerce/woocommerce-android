@@ -7,6 +7,12 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
+import com.woocommerce.android.ui.appwidgets.IsDeviceBatterySaverActive
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsAPINotSupportedFailure
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsAuthFailure
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsBatterySaverActive
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsFailure
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsNetworkFailure
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -20,6 +26,7 @@ class GetWidgetStats @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
+    private val isDeviceBatterySaverActive: IsDeviceBatterySaverActive,
     private val networkStatus: NetworkStatus
 ) {
     suspend operator fun invoke(
@@ -28,14 +35,15 @@ class GetWidgetStats @Inject constructor(
     ): WidgetStatsResult {
         return withContext(coroutineDispatchers.io) {
             when {
+                isDeviceBatterySaverActive() -> WidgetStatsBatterySaverActive
                 // If user is not logged in, exit the function with WidgetStatsAuthFailure
-                accountRepository.isUserLoggedIn().not() -> WidgetStatsResult.WidgetStatsAuthFailure
+                accountRepository.isUserLoggedIn().not() -> WidgetStatsAuthFailure
                 // If V4 stats is not supported, exit the function with WidgetStatsAPINotSupportedFailure
-                appPrefsWrapper.isV4StatsSupported().not() -> WidgetStatsResult.WidgetStatsAPINotSupportedFailure
+                appPrefsWrapper.isV4StatsSupported().not() -> WidgetStatsAPINotSupportedFailure
                 // If network is not available, exit the function with WidgetStatsNetworkFailure
-                networkStatus.isConnected().not() -> WidgetStatsResult.WidgetStatsNetworkFailure
+                networkStatus.isConnected().not() -> WidgetStatsNetworkFailure
                 // If siteModel is null, exit the function with WidgetStatsFailure
-                siteModel == null -> WidgetStatsResult.WidgetStatsFailure("No site selected")
+                siteModel == null -> WidgetStatsFailure("No site selected")
                 else -> {
                     val areVisitorStatsSupported = siteModel.connectionType == SiteConnectionType.Jetpack
 
@@ -53,7 +61,7 @@ class GetWidgetStats @Inject constructor(
                             WidgetStatsResult.WidgetStats(stats)
                         },
                         onFailure = { error ->
-                            WidgetStatsResult.WidgetStatsFailure(error.message)
+                            WidgetStatsFailure(error.message)
                         }
                     )
                 }
@@ -62,9 +70,10 @@ class GetWidgetStats @Inject constructor(
     }
 
     sealed class WidgetStatsResult {
-        object WidgetStatsAuthFailure : WidgetStatsResult()
-        object WidgetStatsNetworkFailure : WidgetStatsResult()
-        object WidgetStatsAPINotSupportedFailure : WidgetStatsResult()
+        data object WidgetStatsBatterySaverActive: WidgetStatsResult()
+        data object WidgetStatsAuthFailure : WidgetStatsResult()
+        data object WidgetStatsNetworkFailure : WidgetStatsResult()
+        data object WidgetStatsAPINotSupportedFailure : WidgetStatsResult()
         data class WidgetStatsFailure(val errorMessage: String?) : WidgetStatsResult()
         data class WidgetStats(
             private val revenueModel: WCRevenueStatsModel?,
