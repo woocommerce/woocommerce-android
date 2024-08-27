@@ -123,7 +123,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
                             when (param.paymentType) {
                                 SIMPLE, ORDER, ORDER_CREATION, TRY_TAP_TO_PAY -> showPaymentState()
-                                WOO_POS -> onBtReaderClicked()
+                                WOO_POS -> skipScreenDuringPosFlow()
                             }
                         }
                         Unit
@@ -306,6 +306,13 @@ class SelectPaymentMethodViewModel @Inject constructor(
             OrderDurationRecorder.recordCardPaymentStarted()
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_EXTERNAL)
             triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
+        }
+    }
+
+    private fun skipScreenDuringPosFlow() {
+        launch {
+            OrderDurationRecorder.recordCardPaymentStarted()
+            triggerEvent(SkipScreenInPosAndNavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
         }
     }
 

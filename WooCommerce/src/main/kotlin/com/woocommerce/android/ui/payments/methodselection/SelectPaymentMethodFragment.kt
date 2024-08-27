@@ -213,6 +213,17 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     findNavController().navigate(action)
                 }
 
+                is SkipScreenInPosAndNavigateToCardReaderPaymentFlow -> {
+                    if (findNavController().currentDestination?.id == R.id.selectPaymentMethodFragment) {
+                        val action =
+                            SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
+                                event.cardReaderFlowParam,
+                                event.cardReaderType
+                            )
+                        findNavController().navigate(action)
+                    }
+                }
+
                 is NavigateToCardReaderHubFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
