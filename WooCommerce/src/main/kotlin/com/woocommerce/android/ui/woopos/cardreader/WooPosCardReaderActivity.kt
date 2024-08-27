@@ -47,11 +47,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                     finish()
                 }
 
-                else -> {
-                    val errorMessage = "Unknown request key: $requestKey"
-                    WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderActivity - $errorMessage")
-                    error(errorMessage)
-                }
+                else -> logResultListenerError(requestKey)
             }
         }
 
@@ -64,11 +60,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                     finish()
                 }
 
-                else -> {
-                    val errorMessage = "Unknown request key: $requestKey"
-                    WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderActivity - $errorMessage")
-                    error(errorMessage)
-                }
+                else -> logResultListenerError(requestKey)
             }
         }
     }
@@ -99,6 +91,12 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                 )
             }
         }
+    }
+
+    private fun logResultListenerError(requestKey: String) {
+        val errorMessage = "Unknown request key: $requestKey"
+        WooLog.e(WooLog.T.POS, "Error in WooPosCardReaderActivity - $errorMessage")
+        error(errorMessage)
     }
 
     companion object {
