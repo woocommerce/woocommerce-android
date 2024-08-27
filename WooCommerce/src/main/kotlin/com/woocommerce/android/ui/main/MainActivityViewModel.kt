@@ -16,6 +16,7 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.notifications.local.LocalNotificationType
+import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -264,7 +265,8 @@ class MainActivityViewModel @Inject constructor(
             )
             LocalNotificationType.fromString(notification.tag)?.let {
                 when (it) {
-                    BLAZE_NO_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
+                    BLAZE_NO_CAMPAIGN_REMINDER,
+                    BLAZE_ABANDONED_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
                 }
             }
         }
