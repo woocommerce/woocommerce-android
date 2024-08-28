@@ -181,4 +181,34 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             "woo_pos_product_info_dialog"
         ).assertIsNotDisplayed()
     }
+
+    @Test
+    fun testProductInfoDialogIsDismissedWhenPrimaryButtonClicked()  = runTest {
+
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
+        ).performClick()
+
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+        ).performClick()
+
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_button_label)
+        ).performClick()
+
+        composeTestRule.onNodeWithTag(
+            "woo_pos_product_info_dialog"
+        ).assertIsNotDisplayed()
+    }
 }
