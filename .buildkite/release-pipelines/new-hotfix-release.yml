@@ -23,3 +23,7 @@ steps:
       bundle exec fastlane new_hotfix_release version_name:${VERSION} version_code:${VERSION_CODE} skip_confirm:true
     agents:
         queue: "tumblr-metal"
+    retry:
+      manual:
+        # If those jobs fail, one should always prefer re-triggering a new build from ReleaseV2 rather than retrying the individual job from Buildkite
+        allowed: false

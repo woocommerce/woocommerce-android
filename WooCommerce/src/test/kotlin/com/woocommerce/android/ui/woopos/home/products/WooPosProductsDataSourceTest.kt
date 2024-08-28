@@ -99,6 +99,7 @@ class WooPosProductsDataSourceTest {
         val sut = WooPosProductsDataSource(handler)
 
         // WHEN
+        sut.loadSimpleProducts(forceRefreshProducts = false).first()
         val result = sut.loadSimpleProducts(forceRefreshProducts = false).first()
 
         // THEN
@@ -117,6 +118,7 @@ class WooPosProductsDataSourceTest {
             val sut = WooPosProductsDataSource(handler)
 
             // WHEN
+            sut.loadSimpleProducts(forceRefreshProducts = false).first()
             val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
 
             // THEN
@@ -206,6 +208,50 @@ class WooPosProductsDataSourceTest {
             assertThat(cachedResult).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
             val cachedProducts = (cachedResult as WooPosProductsDataSource.ProductsResult.Cached).products
             assertThat(cachedProducts).containsExactlyElementsOf(sampleProducts)
+        }
+
+    @Test
+    fun `given no cached products and remote load fails, when loadSimpleProducts called, then should emit empty cache and then error`() =
+        runTest {
+            // GIVEN
+            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+            whenever(handler.productsFlow).thenReturn(flowOf(emptyList()))
+            val exception = Exception("Remote load failed")
+            whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.failure(exception))
+
+            val sut = WooPosProductsDataSource(handler)
+
+            // WHEN
+            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+
+            // THEN
+            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
+            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+
+            assertThat(cachedResult.products).isEmpty()
+            assertThat(remoteResult.productsResult.isFailure).isTrue()
+            assertThat(remoteResult.productsResult.exceptionOrNull()).isEqualTo(exception)
+        }
+
+    @Test
+    fun `given empty product list from handler, when loadSimpleProducts called, then should emit empty cache and empty remote result`() =
+        runTest {
+            // GIVEN
+            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+            whenever(handler.productsFlow).thenReturn(flowOf(emptyList()))
+            whenever(handler.loadFromCacheAndFetch(any(), any(), any())).thenReturn(Result.success(Unit))
+            val sut = WooPosProductsDataSource(handler)
+
+            // WHEN
+            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+
+            // THEN
+            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
+            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+
+            assertThat(cachedResult.products).isEmpty()
+            assertThat(remoteResult.productsResult.isSuccess).isTrue()
+            assertThat(remoteResult.productsResult.getOrNull()).isEmpty()
         }
 
     @Test

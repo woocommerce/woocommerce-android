@@ -1658,6 +1658,7 @@
     <string name="card_reader_payment_failed_insufficient_funds">Payment declined due to insufficient funds</string>
     <string name="card_reader_payment_failed_invalid_amount">The payment amount is not allowed for the card presented</string>
     <string name="card_reader_payment_failed_pin_required">This card requires a PIN code and thus cannot be processed</string>
+    <string name="card_reader_payment_failed_incorrect_pin">An incorrect PIN has been entered. Try again, or use another means of payment</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">A PIN code is required, but Tap To Pay doesn\'t support it yet. Consider using an external card reader</string>
     <string name="card_reader_payment_failed_too_many_pin_tries">An incorrect PIN has been entered too many times</string>
     <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
@@ -2204,29 +2205,17 @@
     <string name="product_creation_ai_entry_sheet_manual_option_title">Add manually</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Add a product and the details manually</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Powered by AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Learn more&lt;/u&gt;&lt;/a&gt;.</string>
-    <string name="ai_product_creation_add_name_title">Add your product name</string>
     <string name="ai_product_creation_product_prompt_title">Starting information</string>
-    <string name="ai_product_creation_add_name_subtitle">Or, expand your choices by tapping for more name suggestions.</string>
     <string name="ai_product_creation_product_prompt_subtitle">Tell us about your product, what it is and what makes it unique, then let the AI work its magic.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Product name</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">For example: Soft fabric, durable stitching, unique design.</string>
     <string name="ai_product_creation_prompt_placeholder">For example: Black cotton t-shirt, soft fabric, durable stitching, unique design</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Suggest a name</string>
     <string name="ai_product_creation_read_text_from_photo_button">Read text from product photo</string>
     <string name="ai_product_creation_photo_button">Use package photo (Optional)</string>
-    <string name="product_creation_ai_about_product_title">About your product</string>
-    <string name="product_creation_ai_about_product_subtitle">Highlight what makes your product unique, and let AI do the magic.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">For example, Soft fabric, durable stitching, unique design</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Add key features, benefits, or details to help your product get found online.</string>
-    <string name="product_creation_ai_about_product_set_tone">Set tone and voice</string>
-    <string name="product_creation_ai_about_product_continue_button">Create Product Details</string>
     <string name="product_creation_ai_preview_title">Preview</string>
     <string name="product_creation_ai_preview_subtitle">You can edit or regenerate your product details before saving.</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">You can always change the below details later.</string>
     <string name="product_creation_ai_preview_name_description_sections">Name, Summary &amp; Description</string>
     <string name="product_creation_ai_preview_name_section">Product name</string>
     <string name="product_creation_ai_preview_short_description_section">Product short description</string>
-    <string name="product_creation_ai_preview_description_section">Product description</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
     <string name="product_creation_ai_preview_variant_selector">Option %1$d of %2$d</string>
     <string name="product_creation_ai_preview_undo_edits">Undo edits</string>
@@ -2234,17 +2223,14 @@
     <string name="product_creation_ai_select_previous_option">Select previous option</string>
     <string name="product_creation_ai_select_next_option">Select next option</string>
     <string name="product_creation_ai_tone_title">Tone and voice</string>
-    <string name="product_creation_ai_tone_description">Set the tone and voice to shape your product\'s presentation that aligns with your brand.</string>
     <string name="product_creation_ai_tone_casual">Casual</string>
     <string name="product_creation_ai_tone_formal">Formal</string>
     <string name="product_creation_ai_tone_flowery">Flowery</string>
     <string name="product_creation_ai_tone_convincing">Convincing</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Tone selected</string>
     <string name="product_creation_ai_generation_failure_message">Product generation failed. Please try again</string>
     <string name="product_creation_package_photo_keywords_section">Keywords</string>
     <string name="product_creation_package_photo_keywords_info">Tweak your text: Unselect the scans you don\'t need or tap to edit</string>
     <string name="product_creation_package_photo_no_text_detected">No text detected. Please select another packaging photo or enter product details manually.</string>
-    <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
     <string name="product_filter_explore_plugin">Explore!</string>
     <string name="scan_barcode_to_update_inventory_menu_item_title">Scan barcode to update inventory</string>
     <string name="product_creation_survey_title">We value your input!</string>
@@ -3740,7 +3726,7 @@
     <string name="more_menu_button_wc_admin_description">Manage more on admin</string>
 
     <string name="more_menu_button_payments">Payments</string>
-    <string name="more_menu_button_payments_description">Join the mobile payments</string>
+    <string name="more_menu_button_payments_description">Take payments on the go</string>
 
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
@@ -3852,20 +3838,6 @@
     <string name="ai_order_thank_you_note_dialog_share_button">Share</string>
     <string name="ai_order_thank_you_note_dialog_failed_title">Unable to create Thank-you note. Please use the button below to retry.</string>
     <string name="ai_order_thank_you_note_copy_label">Thank-you note generated by AI</string>
-
-
-    <!--
-    AI Product name description
-    -->
-    <string name="ai_product_name_sheet_title">Product name</string>
-    <string name="ai_product_name_sheet_subtitle">Let AI generate captivating titles for you</string>
-    <string name="ai_product_name_sheet_input_description">Tell us what your product is and what makes it unique!</string>
-    <string name="ai_product_name_sheet_generate_button">Write it for me</string>
-    <string name="ai_product_name_sheet_regenerate_button">Regenerate</string>
-    <string name="ai_product_name_sheet_error_message">There was a problem generating the product name. Please try again.</string>
-    <string name="ai_product_name_copy_label">Product name generated by AI</string>
-    <string name="ai_product_name_copy_success">Product name copied to clipboard.</string>
-    <string name="ai_product_name_copy_error">Error copying product name to clipboard.</string>
 
     <!--
     My Store Blaze view
@@ -4211,12 +4183,17 @@
     <string name="woopos_banner_simple_products_only_message_learn_more">Learn more</string>
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
+    <string name="woopos_banner_simple_products_content_description">Simple products only banner</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Double tap to learn more</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Simple products only dialog</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
 
     <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
-    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\nOther product types, such as variable and virtual, will be available in future updates.</string>
+    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\n\nOther product types, such as variable and virtual, will be available in future updates.</string>
     <string name="woopos_dialog_products_info_secondary_message">To take payment for a non-simple product, exit POS and create a new order from the orders tab.</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Create an order in store management</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
@@ -4224,14 +4201,17 @@
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
     <string name="woopos_exit_dialog_confirmation_confirm_button">Exit</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_items_in_cart">%d item</string>
     <string name="woopos_items_in_cart_multiple">%d items</string>
+    <string name="woopos_remove_cart_item_content_description">Remove this item from the cart</string>
     <string name="woopos_products_screen_title">Products</string>
     <string name="woopos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Payment successful checkmark icon</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
@@ -4254,6 +4234,16 @@
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
     <string name="woopos_success_screen_total">A payment of %1$s was successfully made</string>
+
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Dimmed background. Tap to close the menu.</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Card reader connected</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Card reader not connected. Double tap to connect</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menu Enabled</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menu Disabled</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Toolbar with card reader status. Double tap to interact.</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Toolbar with card reader status. Menu is open. Double tap to interact.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Open toolbar menu</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Popup menu with options. Swipe to navigate through items.</string>
 
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4283,4 +4273,10 @@
     <string name="google_ads_campaign_created_success_title">Ready to Go!</string>
     <string name="google_ads_campaign_created_success_description">Your new campaign has been created. Exciting times ahead for your sales!</string>
     <string name="google_ads_campaign_created_success_done_button">Done</string>
+
+    <!--
+    Custom Fields
+    -->
+    <string name="custom_fields_list_title">Custom Fields</string>
+    <string name="custom_fields_list_loading_error">Error while loading custom fields</string>
 </resources>

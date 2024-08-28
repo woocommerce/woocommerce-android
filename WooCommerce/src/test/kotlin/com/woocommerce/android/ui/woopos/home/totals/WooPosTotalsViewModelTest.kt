@@ -16,8 +16,6 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -225,11 +223,14 @@ class WooPosTotalsViewModelTest {
             on { getString(any()) }.thenReturn(errorMessage)
         }
 
+        val savedState = createMockSavedStateHandle()
+
         // WHEN
         val viewModel = createViewModel(
             resourceProvider = resourceProvider,
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             totalsRepository = totalsRepository,
+            savedState = savedState,
         )
 
         // THEN
@@ -308,127 +309,8 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given vm created, when collect payment clicked multiple times within delay, then debounce prevents it`() =
-        runTest {
-            // GIVEN
-            val productIds = listOf(1L, 2L, 3L)
-            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
-            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
-                on { events }.thenReturn(parentToChildrenEventFlow)
-            }
-            val order = Order.getEmptyOrder(
-                dateCreated = Date(),
-                dateModified = Date()
-            ).copy(
-                totalTax = BigDecimal("2.00"),
-                items = listOf(
-                    Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("1.00"),
-                    ),
-                    Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("1.00"),
-                    ),
-                    Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("1.00"),
-                    )
-                )
-            )
-            val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
-                    Result.success(order)
-                )
-            }
-            val priceFormat: WooPosFormatPrice = mock {
-                onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-                onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-                onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
-            }
-            whenever(cardReaderFacade.collectPayment(any())).thenReturn(
-                WooPosCardReaderPaymentResult.Success
-            )
-
-            // WHEN
-            val viewModel = createViewModel(
-                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-                totalsRepository = totalsRepository,
-                priceFormat = priceFormat,
-            )
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-
-            // THEN
-            // Advance time by less than the debounce delay
-            advanceTimeBy(800 / 2)
-            verify(cardReaderFacade, times(1)).collectPayment(any())
-            advanceUntilIdle()
-            verify(cardReaderFacade, times(1)).collectPayment(any())
-        }
-
-    @Test
-    fun `given vm created, when collect payment clicked multiple times after delay, then click event is handled for all of it`() =
-        runTest {
-            // GIVEN
-            val productIds = listOf(1L, 2L, 3L)
-            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
-            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
-                on { events }.thenReturn(parentToChildrenEventFlow)
-            }
-            val order = Order.getEmptyOrder(
-                dateCreated = Date(),
-                dateModified = Date()
-            ).copy(
-                totalTax = BigDecimal("2.00"),
-                items = listOf(
-                    Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("1.00"),
-                    ),
-                    Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("1.00"),
-                    ),
-                    Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("1.00"),
-                    )
-                )
-            )
-            val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
-                    Result.success(order)
-                )
-            }
-            val priceFormat: WooPosFormatPrice = mock {
-                onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
-                onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
-                onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
-            }
-            whenever(cardReaderFacade.collectPayment(any())).thenReturn(
-                WooPosCardReaderPaymentResult.Failure
-            )
-
-            // WHEN
-            val viewModel = createViewModel(
-                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-                totalsRepository = totalsRepository,
-                priceFormat = priceFormat,
-            )
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            advanceUntilIdle()
-            verify(cardReaderFacade, times(1)).collectPayment(any())
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            advanceUntilIdle()
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            advanceUntilIdle()
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            advanceUntilIdle()
-            viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
-            advanceUntilIdle()
-            verify(cardReaderFacade, times(5)).collectPayment(any())
-        }
-
-    @Test
-    fun `when order is created, then should track order creation success`() {
+    fun `when CollectPaymentClicked emillted, then should collect payment`() = runTest {
+        // GIVEN
         val productIds = listOf(1L, 2L, 3L)
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -452,13 +334,85 @@ class WooPosTotalsViewModelTest {
             )
         )
         val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
+                Result.success(order)
+            )
+        }
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+        }
+        whenever(cardReaderFacade.collectPayment(any())).thenReturn(
+            WooPosCardReaderPaymentResult.Success
+        )
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+        viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
+
+        // THEN
+        verify(cardReaderFacade, times(1)).collectPayment(any())
+    }
+
+    @Test
+    fun `when order is created, then should track order creation success`() = runTest {
+        // GIVEN
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            id = 123L,
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                )
+            )
+        )
+
+        val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(Result.success(order))
         }
 
-        createViewModel(
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
         )
+
+        // THEN
+        assertThat(viewModel.state.value).isEqualTo(
+            WooPosTotalsViewState.Totals(
+                orderSubtotalText = "3.00$",
+                orderTaxText = "2.00$",
+                orderTotalText = "5.00$"
+            )
+        )
+        verify(totalsRepository).createOrderWithProducts(productIds)
     }
 
     @Test

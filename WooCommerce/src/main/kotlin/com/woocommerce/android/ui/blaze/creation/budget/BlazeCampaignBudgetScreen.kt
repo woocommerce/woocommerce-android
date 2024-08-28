@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -97,7 +99,8 @@ private fun CampaignBudgetScreen(
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
-        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
+        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded },
+        skipHalfExpanded = true,
     )
 
     Scaffold(
@@ -149,7 +152,9 @@ private fun CampaignBudgetScreen(
                     modifier = Modifier.weight(1f)
                 )
                 EditDurationSection(
-                    campaignDurationText = state.campaignDurationDisplayText,
+                    formattedStartDate = state.formattedStartDate,
+                    formattedEndDate = state.formattedEndDate,
+                    isEndlessCampaign = state.isEndlessCampaign,
                     onEditDurationTapped = {
                         onEditDurationTapped()
                         coroutineScope.launch { modalSheetState.show() }
@@ -170,10 +175,9 @@ private fun EditBudgetSection(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.padding(
-            start = 28.dp,
-            end = 28.dp
-        ),
+        modifier = modifier
+            .padding(start = 28.dp, end = 28.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
@@ -262,7 +266,9 @@ private fun EditBudgetSection(
 
 @Composable
 private fun EditDurationSection(
-    campaignDurationText: String,
+    formattedStartDate: String,
+    formattedEndDate: String,
+    isEndlessCampaign: Boolean,
     onEditDurationTapped: () -> Unit,
     onUpdateTapped: () -> Unit,
 ) {
@@ -284,11 +290,25 @@ private fun EditDurationSection(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = campaignDurationText,
-                    style = MaterialTheme.typography.subtitle2,
-                    fontWeight = FontWeight.SemiBold,
-                )
+                when {
+                    isEndlessCampaign ->
+                        Text(
+                            text = stringResource(
+                                id = R.string.blaze_campaign_budget_duration_section_endless_campaign_value,
+                                formattedStartDate
+                            ),
+                            style = MaterialTheme.typography.subtitle2,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+
+                    else -> {
+                        Text(
+                            text = "$formattedStartDate - $formattedEndDate",
+                            style = MaterialTheme.typography.subtitle2,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
                 WCTextButton(
                     onClick = onEditDurationTapped
                 ) {
@@ -308,7 +328,7 @@ private fun EditDurationSection(
 private fun ImpressionsInfoBottomSheet(
     onDoneTapped: () -> Unit,
 ) {
-    Column {
+    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         Row(
             modifier = Modifier.padding(
                 start = 16.dp,
@@ -362,7 +382,11 @@ private fun EditDurationBottomSheet(
     }
 
     var sliderPosition by remember { mutableFloatStateOf(budgetUiState.durationInDays.toFloat()) }
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text(
             text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
             style = MaterialTheme.typography.h6,
@@ -473,10 +497,11 @@ private fun CampaignBudgetScreenPreview() {
             ),
             confirmedCampaignStartDateMillis = Date().time,
             bottomSheetCampaignStartDateMillis = Date().time,
-            campaignDurationDisplayText = "Dec 13 - Dec 20, 2023",
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false,
-            isEndlessCampaign = true
+            isEndlessCampaign = true,
+            formattedStartDate = "Dec 13",
+            formattedEndDate = "Dec 20, 2023"
         ),
         onBackPressed = {},
         onEditDurationTapped = {},

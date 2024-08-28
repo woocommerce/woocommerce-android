@@ -144,7 +144,7 @@ class BlazeRepository @Inject constructor(
             spentBudget = 0f,
             currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
             durationInDays = DEFAULT_CAMPAIGN_DURATION,
-            startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow,
+            startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
             isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
         )
 

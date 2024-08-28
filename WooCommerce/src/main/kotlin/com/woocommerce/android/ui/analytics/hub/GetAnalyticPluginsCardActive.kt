@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.analytics.hub
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.google.IsGoogleForWooEnabled
-import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.GOOGLE_ADS
@@ -46,7 +45,5 @@ class GetAnalyticPluginsCardActive @Inject constructor(
      * We need a different validation for Google Ads plugin, not only checking if it's active
      */
     private fun SitePluginModel.isValidGoogleAdsPlugin(isGoogleForWooEnabled: Boolean) =
-        name == GOOGLE_ADS.pluginName &&
-            FeatureFlag.GOOGLE_ADS_ANALYTICS_HUB_M1.isEnabled() &&
-            isGoogleForWooEnabled
+        name == GOOGLE_ADS.pluginName && isGoogleForWooEnabled
 }
