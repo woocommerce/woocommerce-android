@@ -126,6 +126,12 @@ private fun InternalAztecEditor(
 
     AndroidView(
         factory = {
+            aztec.visualEditor.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                // Because the editors could have different number of lines, we don't set the minLines
+                // of the source editor, so we set the minHeight instead to match the visual editor
+                aztec.sourceEditor?.minHeight = aztec.visualEditor.height
+            }
+
             aztec.visualEditor.doAfterTextChanged {
                 if (!htmlMode) return@doAfterTextChanged
                 aztec.visualEditor.toHtml().takeIf { it != contentState }?.let {
@@ -144,7 +150,6 @@ private fun InternalAztecEditor(
         update = {
             if (minLines != -1) {
                 aztec.visualEditor.minLines = minLines
-                aztec.sourceEditor?.minLines = minLines
             }
             if (maxLines != Int.MAX_VALUE) {
                 aztec.visualEditor.maxLines = maxLines
