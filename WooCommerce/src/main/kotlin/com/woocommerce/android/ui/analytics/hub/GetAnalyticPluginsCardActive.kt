@@ -46,7 +46,5 @@ class GetAnalyticPluginsCardActive @Inject constructor(
      * We need a different validation for Google Ads plugin, not only checking if it's active
      */
     private fun SitePluginModel.isValidGoogleAdsPlugin(isGoogleForWooEnabled: Boolean) =
-        name == GOOGLE_ADS.pluginName &&
-            FeatureFlag.GOOGLE_ADS_ANALYTICS_HUB_M1.isEnabled() &&
-            isGoogleForWooEnabled
+        name == GOOGLE_ADS.pluginName && isGoogleForWooEnabled
 }
