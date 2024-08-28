@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.appwidgets.IsDeviceBatterySaverActive
+import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats.WidgetStatsResult.WidgetStatsBatterySaverActive
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -156,5 +157,21 @@ class GetWidgetStatsTest : BaseUnitTest() {
 
             // Then the result is WidgetStatsFailure
             assertThat(result).isEqualTo(expected)
+        }
+
+    @Test
+    fun `when the device is in battery saver mode then get stats respond with WidgetStatsBatterySaverActive`() =
+        testBlocking {
+            // Given the user is logged, v4 stats is supported and network is working fine
+            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+            whenever(appPrefsWrapper.isV4StatsSupported()).thenReturn(true)
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(isDeviceBatterySaverActive()).thenReturn(true)
+
+            // When GetWidgetStats is invoked
+            val result = sut.invoke(defaultRange, defaultSiteModel)
+
+            // Then the result is WidgetStatsBatterySaverActive
+            assertThat(result).isEqualTo(WidgetStatsBatterySaverActive)
         }
 }
