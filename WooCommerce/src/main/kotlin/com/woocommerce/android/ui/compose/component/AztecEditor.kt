@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -105,12 +106,10 @@ private fun InternalAztecEditor(
     maxLines: Int = Int.MAX_VALUE
 ) {
     val localContext = LocalContext.current
-
-    var htmlMode by remember { mutableStateOf(true) }
-
-    val listener = remember { createToolbarListener { htmlMode = !htmlMode } }
+    var htmlMode by rememberSaveable { mutableStateOf(true) }
 
     val viewsHolder = remember(LocalContext.current) { aztecViewsProvider(localContext) }
+    val listener = remember { createToolbarListener { htmlMode = !htmlMode } }
     val aztec = remember(LocalContext.current) {
         Aztec.with(viewsHolder.visualEditor, viewsHolder.sourceEditor, viewsHolder.toolbar, listener)
             .setImageGetter(GlideImageLoader(localContext))
