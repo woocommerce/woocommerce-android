@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.drop
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.ITextFormat
+import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.source.SourceViewEditText
 import org.wordpress.aztec.toolbar.IAztecToolbar
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
@@ -112,6 +113,7 @@ private fun InternalAztecEditor(
     val viewsHolder = remember(LocalContext.current) { aztecViewsProvider(localContext) }
     val aztec = remember(LocalContext.current) {
         Aztec.with(viewsHolder.visualEditor, viewsHolder.sourceEditor, viewsHolder.toolbar, listener)
+            .setImageGetter(GlideImageLoader(localContext))
     }
 
     LaunchedEffect(Unit) {
