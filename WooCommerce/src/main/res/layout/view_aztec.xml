@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/visual_editor_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -16,13 +15,6 @@
             android:layout_height="wrap_content"
             android:paddingBottom="52dp"
             android:scrollbars="vertical" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/source_editor_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
         <org.wordpress.aztec.source.SourceViewEditText
             android:id="@+id/sourceEditor"
@@ -32,12 +24,10 @@
             android:paddingBottom="52dp"
             android:scrollbars="vertical"
             android:visibility="gone" />
-    </com.google.android.material.textfield.TextInputLayout>
+    </FrameLayout>
 
     <org.wordpress.aztec.toolbar.AztecToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_gravity="bottom"
-        android:layout_margin="2dp" />
-</FrameLayout>
+        android:layout_height="wrap_content" />
+</LinearLayout>
