@@ -267,21 +267,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { exception ->
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
-                if (FeatureFlag.APP_PASSWORD_TUTORIAL.isEnabled()) {
-                    when (authenticationError?.errorType) {
-                        INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
-                        else -> {
-                            fetchSiteForTutorial(
-                                username = state.username,
-                                password = state.password,
-                                detectedErrorMessage = authenticationError?.errorMessage
-                            )
-                            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
-                        }
+                when (authenticationError?.errorType) {
+                    INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
+                    else -> {
+                        fetchSiteForTutorial(
+                            username = state.username,
+                            password = state.password,
+                            detectedErrorMessage = authenticationError?.errorMessage
+                        )
+                        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
                     }
-                } else {
-                    this.errorDialogMessage.value = authenticationError?.errorMessage
-                        ?: UiStringRes(R.string.error_generic)
                 }
 
                 trackLoginFailure(
