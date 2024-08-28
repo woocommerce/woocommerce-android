@@ -14,7 +14,8 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     NEW_SHIPPING_SUPPORT,
     GOOGLE_ADS_M1,
-    SHOW_INBOX_CTA;
+    SHOW_INBOX_CTA,
+    CUSTOM_FIELDS;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -25,7 +26,8 @@ enum class FeatureFlag {
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE,
+            CUSTOM_FIELDS -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             INBOX,
