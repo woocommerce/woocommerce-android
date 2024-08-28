@@ -997,22 +997,20 @@ class OrderListFragment :
     }
 
     private fun displayTimeoutErrorCard(show: Boolean) {
-        if (FeatureFlag.CONNECTIVITY_TOOL.isEnabled()) {
-            displayErrorTroubleshootingCard(
-                show = show,
-                title = getString(R.string.orderlist_timeout_error_title),
-                message = getString(R.string.orderlist_timeout_error_message),
-                supportContactClick = {
-                    viewModel.changeTroubleshootingBannerVisibility(show = false)
-                    openSupportRequestScreen()
-                },
-                troubleshootingClick = {
-                    viewModel.changeTroubleshootingBannerVisibility(show = false)
-                    viewModel.trackConnectivityTroubleshootClicked()
-                    openConnectivityTool()
-                }
-            )
-        }
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_timeout_error_title),
+            message = getString(R.string.orderlist_timeout_error_message),
+            supportContactClick = {
+                viewModel.changeTroubleshootingBannerVisibility(show = false)
+                openSupportRequestScreen()
+            },
+            troubleshootingClick = {
+                viewModel.changeTroubleshootingBannerVisibility(show = false)
+                viewModel.trackConnectivityTroubleshootClicked()
+                openConnectivityTool()
+            }
+        )
     }
 
     private fun displayErrorTroubleshootingCard(
