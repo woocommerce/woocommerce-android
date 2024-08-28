@@ -10,22 +10,24 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity.Companion.WOO_POS_CARD_PAYMENT_RESULT_KEY
 import com.woocommerce.android.util.parcelable
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
+import javax.inject.Singleton
 
-@ActivityRetainedScoped
+@Singleton
 class WooPosCardReaderFacade @Inject constructor(
     private val cardReaderManager: CardReaderManager
 ) : DefaultLifecycleObserver {
-    private var paymentContinuation: Continuation<WooPosCardReaderPaymentResult>? = null
     private var paymentResultLauncher: ActivityResultLauncher<Intent>? = null
     private var activity: AppCompatActivity? = null
 
     val readerStatus: Flow<CardReaderStatus> = cardReaderManager.readerStatus
+
+    private val _paymentStatus = MutableStateFlow<WooPosCardReaderPaymentStatus>(
+        WooPosCardReaderPaymentStatus.Started
+    )
+    val paymentStatus: Flow<WooPosCardReaderPaymentStatus> = _paymentStatus
 
     override fun onCreate(owner: LifecycleOwner) {
         activity = owner as AppCompatActivity
@@ -33,14 +35,13 @@ class WooPosCardReaderFacade @Inject constructor(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             val paymentResult = if (result.data != null && result.resultCode == AppCompatActivity.RESULT_OK) {
-                result.data!!.parcelable<WooPosCardReaderPaymentResult>(
+                result.data!!.parcelable<WooPosCardReaderPaymentStatus>(
                     WOO_POS_CARD_PAYMENT_RESULT_KEY
                 )
             } else {
-                WooPosCardReaderPaymentResult.Failure
+                WooPosCardReaderPaymentStatus.Failure
             }
-
-            paymentContinuation!!.resume(paymentResult!!)
+            _paymentStatus.value = paymentResult!!
         }
     }
 
@@ -56,14 +57,12 @@ class WooPosCardReaderFacade @Inject constructor(
         activity!!.startActivity(intent)
     }
 
-    suspend fun collectPayment(orderId: Long): WooPosCardReaderPaymentResult {
-        return suspendCancellableCoroutine { continuation ->
-            paymentContinuation = continuation
-            val intent = WooPosCardReaderActivity.buildIntentForPayment(activity!!, orderId).apply {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            }
-            paymentResultLauncher!!.launch(intent)
+    fun collectPayment(orderId: Long) {
+        _paymentStatus.value = WooPosCardReaderPaymentStatus.Started
+        val intent = WooPosCardReaderActivity.buildIntentForPayment(activity!!, orderId).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
+        paymentResultLauncher!!.launch(intent)
     }
 
     suspend fun disconnectFromReader() {
