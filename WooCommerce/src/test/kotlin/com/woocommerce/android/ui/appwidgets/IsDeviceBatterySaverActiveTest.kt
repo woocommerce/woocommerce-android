@@ -3,12 +3,12 @@ package com.woocommerce.android.ui.appwidgets
 import android.content.Context
 import android.os.PowerManager
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlin.test.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class IsDeviceBatterySaverActiveTest : BaseUnitTest() {
