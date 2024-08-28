@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
@@ -48,7 +49,9 @@ class WooPosTotalsViewModelTest {
         )
     }
 
-    private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private val cardReaderFacade: WooPosCardReaderFacade = mock {
+        on { paymentStatus }.thenReturn(MutableStateFlow(WooPosCardReaderPaymentStatus.Unknown))
+    }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private companion object {
@@ -74,7 +77,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given checkoutstarted, when vm created, then order creation is started`() = runTest {
+    fun `given checkout started, when vm created, then order creation is started`() = runTest {
         // GIVEN
         val productIds = listOf(1L, 2L, 3L)
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
@@ -131,7 +134,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given checkoutstarted and successfully created order, when vm created, then totals state correctly calculated`() =
+    fun `given checkout started and successfully created order, when vm created, then totals state correctly calculated`() =
         runTest {
             // GIVEN
             val productIds = listOf(1L, 2L, 3L)
@@ -309,7 +312,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `when CollectPaymentClicked emillted, then should collect payment`() = runTest {
+    fun `when CollectPaymentClicked is emitted, then should collect payment`() = runTest {
         // GIVEN
         val productIds = listOf(1L, 2L, 3L)
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
@@ -343,9 +346,6 @@ class WooPosTotalsViewModelTest {
             onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
             onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
-        whenever(cardReaderFacade.collectPayment(any())).thenReturn(
-            WooPosCardReaderPaymentStatus.Success
-        )
 
         // WHEN
         val viewModel = createViewModel(
@@ -448,6 +448,62 @@ class WooPosTotalsViewModelTest {
                 errorMessage
             )
         )
+    }
+
+    @Test
+    fun `given payment status is success, when payment flow started, then OrderSuccessfullyPaid event and update state to PaymentSuccess`() = runTest {
+        // GIVEN
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            id = 123L,
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
+            )
+        )
+
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(any()) }.thenReturn(Result.success(order))
+        }
+
+        val savedState = createMockSavedStateHandle()
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
+        }
+
+        val paymentStatusFlow = MutableStateFlow<WooPosCardReaderPaymentStatus>(WooPosCardReaderPaymentStatus.Unknown)
+        whenever(cardReaderFacade.paymentStatus).thenReturn(paymentStatusFlow)
+
+        val viewModel = createViewModel(
+            savedState = savedState,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            childrenToParentEventSender = childrenToParentEventSender,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
+        paymentStatusFlow.value = WooPosCardReaderPaymentStatus.Success
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isEqualTo(
+            WooPosTotalsViewState.PaymentSuccess(orderTotalText = "$3.00")
+        )
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
     }
 
     private fun createViewModel(
