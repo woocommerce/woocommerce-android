@@ -40,7 +40,8 @@ fun OutlinedAztecEditor(
     modifier: Modifier = Modifier,
     label: String? = null,
     minLines: Int = 1,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    calypsoMode: Boolean = false
 ) {
     InternalAztecEditor(
         content = content,
@@ -61,7 +62,8 @@ fun OutlinedAztecEditor(
         modifier = modifier,
         label = label,
         minLines = minLines,
-        maxLines = maxLines
+        maxLines = maxLines,
+        calypsoMode = calypsoMode
     )
 }
 
@@ -72,7 +74,8 @@ fun AztecEditor(
     modifier: Modifier = Modifier,
     label: String? = null,
     minLines: Int = 1,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    calypsoMode: Boolean = false
 ) {
     InternalAztecEditor(
         content = content,
@@ -90,7 +93,8 @@ fun AztecEditor(
         modifier = modifier,
         label = label,
         minLines = minLines,
-        maxLines = maxLines
+        maxLines = maxLines,
+        calypsoMode = calypsoMode
     )
 }
 
@@ -103,7 +107,8 @@ private fun InternalAztecEditor(
     modifier: Modifier = Modifier,
     label: String? = null,
     minLines: Int = 1,
-    maxLines: Int = Int.MAX_VALUE
+    maxLines: Int = Int.MAX_VALUE,
+    calypsoMode: Boolean = false
 ) {
     val localContext = LocalContext.current
     var htmlMode by rememberSaveable { mutableStateOf(true) }
@@ -149,6 +154,11 @@ private fun InternalAztecEditor(
             viewsHolder.layout
         },
         update = {
+            if (aztec.visualEditor.isInCalypsoMode != calypsoMode) {
+                aztec.visualEditor.isInCalypsoMode = calypsoMode
+                aztec.sourceEditor?.setCalypsoMode(calypsoMode)
+            }
+
             if (minLines != -1 && minLines != aztec.visualEditor.minLines) {
                 aztec.visualEditor.minLines = minLines
             }
