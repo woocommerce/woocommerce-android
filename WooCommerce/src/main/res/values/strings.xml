@@ -4267,4 +4267,10 @@
     <string name="google_ads_campaign_created_success_title">Ready to Go!</string>
     <string name="google_ads_campaign_created_success_description">Your new campaign has been created. Exciting times ahead for your sales!</string>
     <string name="google_ads_campaign_created_success_done_button">Done</string>
+
+    <!--
+    Custom Fields
+    -->
+    <string name="custom_fields_list_title">Custom Fields</string>
+    <string name="custom_fields_list_loading_error">Error while loading custom fields</string>
 </resources>

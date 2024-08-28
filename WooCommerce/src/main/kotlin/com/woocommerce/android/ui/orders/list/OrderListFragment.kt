@@ -67,7 +67,6 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -997,22 +996,20 @@ class OrderListFragment :
     }
 
     private fun displayTimeoutErrorCard(show: Boolean) {
-        if (FeatureFlag.CONNECTIVITY_TOOL.isEnabled()) {
-            displayErrorTroubleshootingCard(
-                show = show,
-                title = getString(R.string.orderlist_timeout_error_title),
-                message = getString(R.string.orderlist_timeout_error_message),
-                supportContactClick = {
-                    viewModel.changeTroubleshootingBannerVisibility(show = false)
-                    openSupportRequestScreen()
-                },
-                troubleshootingClick = {
-                    viewModel.changeTroubleshootingBannerVisibility(show = false)
-                    viewModel.trackConnectivityTroubleshootClicked()
-                    openConnectivityTool()
-                }
-            )
-        }
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_timeout_error_title),
+            message = getString(R.string.orderlist_timeout_error_message),
+            supportContactClick = {
+                viewModel.changeTroubleshootingBannerVisibility(show = false)
+                openSupportRequestScreen()
+            },
+            troubleshootingClick = {
+                viewModel.changeTroubleshootingBannerVisibility(show = false)
+                viewModel.trackConnectivityTroubleshootClicked()
+                openConnectivityTool()
+            }
+        )
     }
 
     private fun displayErrorTroubleshootingCard(
