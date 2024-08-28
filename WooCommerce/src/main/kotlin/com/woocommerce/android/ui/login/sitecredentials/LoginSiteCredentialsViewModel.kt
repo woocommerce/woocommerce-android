@@ -21,7 +21,6 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
