@@ -25,7 +25,7 @@ class WooPosCardReaderFacade @Inject constructor(
     val readerStatus: Flow<CardReaderStatus> = cardReaderManager.readerStatus
 
     private val _paymentStatus = MutableStateFlow<WooPosCardReaderPaymentStatus>(
-        WooPosCardReaderPaymentStatus.Started
+        WooPosCardReaderPaymentStatus.Unknown
     )
     val paymentStatus: Flow<WooPosCardReaderPaymentStatus> = _paymentStatus
 
@@ -42,6 +42,7 @@ class WooPosCardReaderFacade @Inject constructor(
                 WooPosCardReaderPaymentStatus.Failure
             }
             _paymentStatus.value = paymentResult!!
+            _paymentStatus.value = WooPosCardReaderPaymentStatus.Unknown
         }
     }
 
@@ -58,7 +59,7 @@ class WooPosCardReaderFacade @Inject constructor(
     }
 
     fun collectPayment(orderId: Long) {
-        _paymentStatus.value = WooPosCardReaderPaymentStatus.Started
+        _paymentStatus.value = WooPosCardReaderPaymentStatus.Unknown
         val intent = WooPosCardReaderActivity.buildIntentForPayment(activity!!, orderId).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }

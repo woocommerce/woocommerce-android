@@ -116,7 +116,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
                     }
                     is WooPosCardReaderPaymentStatus.Failure,
-                    is WooPosCardReaderPaymentStatus.Started -> Unit
+                    is WooPosCardReaderPaymentStatus.Unknown -> Unit
                 }
             }
         }
