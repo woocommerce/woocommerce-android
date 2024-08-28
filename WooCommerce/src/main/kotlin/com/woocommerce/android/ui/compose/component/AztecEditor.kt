@@ -33,6 +33,17 @@ import org.wordpress.aztec.source.SourceViewEditText
 import org.wordpress.aztec.toolbar.IAztecToolbar
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
+/**
+ * An Aztec editor that can be used in Compose, with an outlined style.
+ *
+ * @param content The content of the editor
+ * @param onContentChanged A callback that will be called when the content of the editor changes
+ * @param modifier The modifier to apply to the editor
+ * @param label The label to display above the editor
+ * @param minLines The minimum number of lines the editor should have
+ * @param maxLines The maximum number of lines the editor should have
+ * @param calypsoMode Whether the editor should be in calypso mode, for more information on calypso mode see https://github.com/wordpress-mobile/AztecEditor-Android/pull/309
+ */
 @Composable
 fun OutlinedAztecEditor(
     content: String,
@@ -67,6 +78,17 @@ fun OutlinedAztecEditor(
     )
 }
 
+/**
+ * An Aztec editor that can be used in Compose.
+ *
+ * @param content The content of the editor
+ * @param onContentChanged A callback that will be called when the content of the editor changes
+ * @param modifier The modifier to apply to the editor
+ * @param label The label to display above the editor
+ * @param minLines The minimum number of lines the editor should have
+ * @param maxLines The maximum number of lines the editor should have
+ * @param calypsoMode Whether the editor should be in calypso mode, for more information on calypso mode see https://github.com/wordpress-mobile/AztecEditor-Android/pull/309
+ */
 @Composable
 fun AztecEditor(
     content: String,
@@ -97,7 +119,6 @@ fun AztecEditor(
         calypsoMode = calypsoMode
     )
 }
-
 
 @Composable
 private fun InternalAztecEditor(
