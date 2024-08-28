@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -109,6 +110,44 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
         ).performClick()
 
         composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun testProductInfoDialogIsDisplayedWithProperLabels() = runTest {
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
+        ).performClick()
+
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+        ).performClick()
+
+        composeTestRule.onNodeWithText(
+            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_heading)
+        )
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(
+            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_primary_message)
+        )
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(
+            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_secondary_message)
+        )
+            .assertIsDisplayed()
+        composeTestRule.onNodeWithText(
+            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_button_label)
+        )
             .assertIsDisplayed()
     }
 }
