@@ -16,16 +16,16 @@ msgid "In this update, we’ve made a few small bug fixes and enhancements to en
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_201"
+msgid ""
+"20.1:\n"
+"We've improved your experience with our latest update! We've resolved the issue where the Orders screen would get stuck, addressed incorrect pin errors for UK and Canadian stores, fixed a rare crash in order editing, and enhanced usability on small screens. Enjoy smoother performance and better reliability!\n"
+msgstr ""
+
 msgctxt "release_note_200"
 msgid ""
 "20.0:\n"
 "We’ve improved your WooCommerce experience with several key updates: card reader tutorial images are now visible on tablets, QR code scanning is disabled during login, and the “Write with AI” issue with the keyboard has been fixed. Plus, you can now process card-present payments for orders marked as failed.\n"
-msgstr ""
-
-msgctxt "release_note_199"
-msgid ""
-"19.9:\n"
-"We've enhanced your refund experience! Now, each refund item on the refund screen includes detailed subtotal and taxes fields, giving you clearer insights into your transactions. Update now to enjoy smoother, more transparent refunds!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

@@ -339,17 +339,6 @@ class OrderCreateEditViewModel @Inject constructor(
         .map { feeLines ->
             feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
         }
-        .map { customAmountUIModels ->
-            customAmountUIModels.map {
-                it.copy(
-                    isLocked = !viewState.isEditable ||
-                        (
-                            _orderDraft.value.status.value != Order.Status.Pending.value &&
-                                _orderDraft.value.status.value != Order.Status.OnHold.value
-                            )
-                )
-            }
-        }
         .asLiveData()
 
     val combinedProductAndCustomAmountsLiveData: MediatorLiveData<ViewState> = MediatorLiveData<ViewState>().apply {

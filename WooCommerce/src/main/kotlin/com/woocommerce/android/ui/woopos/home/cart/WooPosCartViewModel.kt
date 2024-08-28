@@ -92,6 +92,18 @@ class WooPosCartViewModel @Inject constructor(
                     body = WooPosCartState.Body.Empty
                 )
             }
+
+            is WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed -> {
+                val currentState = _state.value
+                val currentStateBody = currentState.body as? WooPosCartState.Body.WithItems ?: return
+                _state.value = currentState.copy(
+                    body = currentStateBody.copy(
+                        itemsInCart = currentState.body.itemsInCart.map {
+                            if (it.id == event.item.id) it.copy(isAppearanceAnimationPlayed = true) else it
+                        }
+                    )
+                )
+            }
         }
     }
 
@@ -126,7 +138,7 @@ class WooPosCartViewModel @Inject constructor(
 
                             is WooPosCartState.Body.WithItems -> _state.value.copy(
                                 body = currentState.copy(
-                                    itemsInCart = currentState.itemsInCart + itemClicked.await()
+                                    itemsInCart = listOf(itemClicked.await()) + currentState.itemsInCart
                                 )
                             )
                         }
@@ -227,6 +239,7 @@ class WooPosCartViewModel @Inject constructor(
             id = WooPosCartState.Body.WithItems.Item.Id(productId = remoteId, itemNumber = itemNumber),
             name = name,
             price = formatPrice(price),
-            imageUrl = firstImageUrl
+            imageUrl = firstImageUrl,
+            isAppearanceAnimationPlayed = false,
         )
 }

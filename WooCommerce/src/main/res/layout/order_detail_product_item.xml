@@ -65,9 +65,12 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/productInfo_SKU"
         style="@style/Woo.ListItem.Body"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/orderdetail_product_lineitem_sku_value"
+        app:layout_constraintEnd_toStartOf="@+id/productInfo_total"
+        android:lines="1"
+        android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@+id/productInfo_iconFrame"
         app:layout_constraintTop_toBottomOf="@+id/productInfo_attributes"
         tools:visibility="visible" />

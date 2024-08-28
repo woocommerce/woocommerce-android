@@ -79,6 +79,7 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked -> {
                 onSimpleProductsOnlyBannerLearnMoreClicked()
             }
+
             WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked -> {
                 onSimpleProductsDialogInfoClicked()
             }

@@ -79,6 +79,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val appPrefs: AppPrefs = AppPrefs,
     private val paymentsUtils: PaymentUtils,
+    private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -113,6 +114,11 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             }.also { order ->
                                 _order.value = order
                                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
+
+                                logOrderCurrencyMismatchWithSiteSettings(
+                                    storeCurrency = getSiteCurrencyCode(),
+                                    orderCurrency = order.currency
+                                )
                             }
 
                             when (param.paymentType) {
@@ -152,7 +158,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun buildSuccessState(
+    private suspend fun buildSuccessState(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,
         isPaymentCollectableWithTapToPay: Boolean,
@@ -496,10 +502,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun formatOrderTotal(total: BigDecimal): String {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+    private suspend fun formatOrderTotal(total: BigDecimal): String {
+        val currencyCode = getSiteCurrencyCode()
         return currencyFormatter.formatCurrency(total, currencyCode)
     }
+
+    private suspend fun getSiteCurrencyCode() =
+        withContext(dispatchers.io) {
+            wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+        }
 
     private fun isWooPOSPaymentFlow() = with(navArgs.cardReaderFlowParam) {
         this is Payment && paymentType == WOO_POS
