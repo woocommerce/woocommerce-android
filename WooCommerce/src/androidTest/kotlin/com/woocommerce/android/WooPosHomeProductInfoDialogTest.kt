@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.woocommerce.android
 
 import androidx.activity.ComponentActivity
@@ -83,5 +85,30 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
         composeTestRule.onNodeWithContentDescription(
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
         ).assertIsDisplayed()
+    }
+
+    @Test
+    fun testProductInfoDialogIsDisplayedOnIconClick()  = runTest {
+
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
+        ).performClick()
+
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+        ).performClick()
+
+        composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
+            .assertIsDisplayed()
     }
 }
