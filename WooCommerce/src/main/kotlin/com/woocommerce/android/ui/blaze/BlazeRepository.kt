@@ -40,8 +40,8 @@ class BlazeRepository @Inject constructor(
 ) {
     companion object {
         private const val BLAZE_CAMPAIGN_CREATION_ORIGIN = "wc-android"
-        private const val CAMPAIGN_BUDGET_MODE_TOTAL = "total" // "total" for campaigns with defined end date
-        private const val CAMPAIGN_BUDGET_MODE_DAILY = "daily" // "daily" for endless/evergreen campaigns
+        const val CAMPAIGN_BUDGET_MODE_TOTAL = "total" // "total" for campaigns with defined end date
+        const val CAMPAIGN_BUDGET_MODE_DAILY = "daily" // "daily" for endless/evergreen campaigns
         const val BLAZE_DEFAULT_CURRENCY_CODE = "USD" // For now only USD are supported
         const val DEFAULT_CAMPAIGN_DURATION = 7 // Days
         const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5f // USD
