@@ -18,7 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.widget.doOnTextChanged
+import androidx.core.widget.doAfterTextChanged
 import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.databinding.ViewAztecBinding
 import com.woocommerce.android.databinding.ViewAztecOutlinedBinding
@@ -126,13 +126,15 @@ private fun InternalAztecEditor(
 
     AndroidView(
         factory = {
-            aztec.visualEditor.doOnTextChanged { _, _, _, _ ->
-                aztec.visualEditor.toHtml().takeIf { it != content }?.let {
+            aztec.visualEditor.doAfterTextChanged {
+                if (!htmlMode) return@doAfterTextChanged
+                aztec.visualEditor.toHtml().takeIf { it != contentState }?.let {
                     onContentChanged(it)
                 }
             }
-            aztec.sourceEditor?.doOnTextChanged { _, _, _, _ ->
-                aztec.sourceEditor?.getPureHtml()?.takeIf { it != content }?.let {
+            aztec.sourceEditor?.doAfterTextChanged {
+                if (htmlMode) return@doAfterTextChanged
+                aztec.sourceEditor?.getPureHtml()?.takeIf { it != contentState }?.let {
                     onContentChanged(it)
                 }
             }
