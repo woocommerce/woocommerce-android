@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-30 09:54:04+0000
+Translation-Revision-Date: 2024-08-21 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">菜单</string>
+    <string name="woopos_cart_item_content_description">购物车中的产品 %s，价格 %s</string>
+    <string name="woopos_product_item_content_description">产品 %s，价格 %s</string>
+    <string name="blaze_campaign_status_suspended">挂起</string>
+    <string name="woopos_success_screen_total">成功支付 %1$s</string>
+    <string name="woopos_new_order_button">新订单</string>
+    <string name="woopos_dialog_products_info_button_label">确定</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理中创建订单</string>
+    <string name="woopos_dialog_products_info_secondary_message">要接受非简单产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
+    <string name="woopos_dialog_products_info_primary_message">POS 目前仅可用于简单实体产品。\n其他产品类型（如可变产品和虚拟产品）将在今后的更新中得到支持。</string>
+    <string name="woopos_dialog_products_info_heading">为何看不到我的产品？</string>
+    <string name="woopos_banner_simple_products_info_content_description">信息</string>
+    <string name="woopos_banner_simple_products_close_content_description">关闭</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">了解更多</string>
+    <string name="woopos_banner_simple_products_only_message">POS 目前仅兼容简单实体产品。 其他产品类型（如可变产品和虚拟产品）将在今后的更新中受到支持。 </string>
+    <string name="woopos_banner_simple_products_only_title">仅显示简单产品</string>
+    <string name="support_request_site_address">站点地址</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">添加付费广告活动</string>
+    <string name="analytics_google_ads_cta_description">通过 Google Ads 推动销售并增加流量。</string>
+    <string name="analytics_google_ads_cta_title">Google 广告活动</string>
     <string name="google_ads_campaign_created_success_done_button">完成</string>
     <string name="google_ads_campaign_created_success_description">您的新广告活动已创建。 您的销售工作将迎来激动人心的时刻！</string>
     <string name="google_ads_campaign_created_success_title">准备就绪！</string>
@@ -103,12 +124,10 @@ Language: zh_CN
     <string name="woopos_payment_total_label">总计</string>
     <string name="woopos_payment_tax_label">税费</string>
     <string name="woopos_payment_subtotal_label">小计</string>
-    <string name="woopos_new_transaction_button">新交易</string>
     <string name="woopos_payment_successful_label">付款成功</string>
     <string name="woopos_payment_failed_please_try_again">付款失败。 请重试。</string>
     <string name="woopos_cart_back_content_description">购物车图标</string>
     <string name="woopos_products_screen_title">产品</string>
-    <string name="woopos_product_image_description">产品图片</string>
     <string name="woopos_items_in_cart">%d 件商品</string>
     <string name="woopos_clear_cart_button">清除</string>
     <string name="more_menu_button_google_description">通过 Google Ads 推动销售并增加流量</string>
@@ -119,7 +138,7 @@ Language: zh_CN
     <string name="woopos_exit_confirmation_confirm_button">退出</string>
     <string name="woopos_exit_confirmation_message">是否确定要退出 POS 机？</string>
     <string name="woopos_exit_confirmation_title">退出 POS 机</string>
-    <string name="woopos_remove_item_from_cart_content_description">将商品从购物车中移除</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">将 %s 从购物车中移除</string>
     <string name="woopos_checkout_button">结账</string>
     <string name="woopos_reader_unknown">读卡器状态未知</string>
     <string name="woopos_checkout">结账</string>
@@ -1279,7 +1298,6 @@ Language: zh_CN
     <string name="login_application_passwords_help">什么是应用程序密码？</string>
     <string name="login_application_passwords_unavailable">您的站点 %1$s 似乎禁用应用程序密码功能。\n 请启用该功能以使用 WooCommerce 应用。</string>
     <string name="login_open_installation_page">打开安装页面</string>
-    <string name="not_a_valid_qr_code">扫进来的 QR code 不是 WooCommerce 代码</string>
     <string name="review_reply_failure">在发送回复时出现错误</string>
     <string name="review_reply_success">回复已发送！</string>
     <string name="wc_reply">回复</string>
@@ -1354,7 +1372,6 @@ Language: zh_CN
     <string name="domain_picker_subtitle">人们可以通过此域名在互联网上找到您。 别担心，您可以稍后进行更改。</string>
     <string name="analytics_visitors_subtitle">访客人数</string>
     <string name="or_use_password_below_qr_code_scan_option">或使用密码登录</string>
-    <string name="or_scan_qr_code_to_log_in">扫描二维码登录</string>
     <string name="simulated_reader_toast">已禁用模拟读卡器</string>
     <string name="simulated_reader_key">模拟读卡器密钥</string>
     <string name="variations_bulk_update_stock_quantity_success">已更新库存量</string>
@@ -1407,7 +1424,6 @@ Language: zh_CN
     <string name="qr_code_login_scanner_title">摄像头条形码扫描程序</string>
     <string name="dev_options">开发者选项</string>
     <string name="login_2fa_not_supported_self_hosted_site">自托管站点不支持 2FA。 请使用应用程序密码。</string>
-    <string name="login_with_qr_code">扫描二维码登录</string>
     <string name="show_password_content_description">显示密码</string>
     <string name="hide_password_content_description">隐藏密码</string>
     <string name="stats_widget_last_updated_message">截至 %1$s</string>
@@ -1682,7 +1698,7 @@ Language: zh_CN
     <string name="card_reader_interac_refund_refund_payment">退款</string>
     <string name="card_reader_interac_refund_refund_failed_header">退款失败</string>
     <string name="card_reader_interac_refund_refund_loading_header">正在准备退款</string>
-    <string name="copy">复制</string>
+    <string name="copy" tools:override="true">复制</string>
     <string name="coupons_list_search_hint">搜索优惠券</string>
     <string name="coupon_details_share_formatting_failure">无法生成优惠券代码共享信息</string>
     <string name="coupon_details_share_coupon_error">共享优惠券代码时出错。</string>
@@ -2943,7 +2959,7 @@ Language: zh_CN
     <string name="orderdetail_empty_address">未指定地址</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
-    <string name="enter_email_for_site">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">津巴布韦</string>
     <string name="country_mapping_ZM">赞比亚</string>
     <string name="country_mapping_YE">也门</string>
@@ -3539,8 +3555,8 @@ Language: zh_CN
     <string name="login_configure_link">请查看%1$s配置说明%2$s。</string>
     <string name="login_jetpack_required">这款应用程序需要安装 Jetpack 才能关联您的商店。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">输入您要关联的 WooCommerce 商店的地址。</string>
-    <string name="enter_email_wordpress_com">使用您的 WordPress.com 帐户电子邮件地址登录，管理您的 WooCommerce 商店。</string>
+    <string name="enter_site_address" content_override="true">输入您要关联的 WooCommerce 商店的地址。</string>
+    <string name="enter_email_wordpress_com" content_override="true">使用您的 WordPress.com 帐户电子邮件地址登录，管理您的 WooCommerce 商店。</string>
     <string name="already_logged_in_wpcom">您已登录 WordPress.com 帐户，不能添加被其他帐户绑定的 WordPress.com 站点。</string>
     <string name="cant_open_url">无法打开链接</string>
     <string name="error_no_sms_app">未找到任何短信应用程序</string>
@@ -3586,17 +3602,17 @@ Language: zh_CN
     <string name="notification_channel_general_title">常规</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>正在处理</item>

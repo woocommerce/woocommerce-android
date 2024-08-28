@@ -35,7 +35,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_S
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
-import org.wordpress.android.fluxc.model.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductSkuAvailabilityPayload
@@ -301,8 +301,8 @@ class ProductDetailRepository @Inject constructor(
         }
     }
 
-    fun getProductMetadata(remoteProductId: Long): List<WCMetaData>? {
-        return getCachedWCProductModel(remoteProductId)?.parsedMetaData ?: return null
+    suspend fun getProductMetadata(remoteProductId: Long): List<WCMetaData> {
+        return productStore.getProductMetaData(selectedSite.get(), remoteProductId)
     }
 
     @SuppressWarnings("unused")

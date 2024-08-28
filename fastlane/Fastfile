@@ -59,7 +59,7 @@ REMOTE_LIBRARIES_STRINGS_PATHS = [
 # URL of the GlotPress project containing the app's strings
 GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/'
 # URL of the GlotPress project containing the Play Store metadata (title, keywords, release notes, …)
-GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = 'https://translate.wordpress.com/projects/woocommerce/woocommerce-android/release-notes/'
+GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = "#{GLOTPRESS_APP_STRINGS_PROJECT_URL}/release-notes/".freeze
 
 APP_PACKAGE_NAME = 'com.woocommerce.android'
 GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
@@ -106,7 +106,7 @@ platform :android do
   # Release Lanes
   ########################################################################
 
-  # This lane executes the steps planned on code freeze, creating new release branch from the current trunk.
+  # This lane executes the steps planned on code freeze, creating a new release branch from the current trunk.
   #
   # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
   #
@@ -132,8 +132,11 @@ platform :android do
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Create the release branch
+    new_release_branch = "release/#{release_version_next}"
+    ensure_branch_does_not_exist!(new_release_branch)
+
     UI.message 'Creating release branch...'
-    Fastlane::Helper::GitHelper.create_branch("release/#{release_version_next}", from: DEFAULT_BRANCH)
+    Fastlane::Helper::GitHelper.create_branch(new_release_branch, from: DEFAULT_BRANCH)
     UI.success("Done! New release branch is: #{git_branch}")
 
     # Bump the version and build code
@@ -168,16 +171,44 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    # Update GitHub branch protection and milestone name
+    # Protect release/* branch
     copy_branch_protection(
       repository: GITHUB_REPO,
       from_branch: DEFAULT_BRANCH,
       to_branch: "release/#{new_version}"
     )
-    set_milestone_frozen_marker(
-      repository: GITHUB_REPO,
-      milestone: new_version
-    )
+
+    begin
+      # Move PRs to next milestone
+      moved_prs = update_assigned_milestone(
+        repository: GITHUB_REPO,
+        from_milestone: new_version,
+        to_milestone: release_version_next,
+        comment: "Version `#{new_version}` has now entered code-freeze, so the milestone of this PR has been updated to `#{release_version_next}`."
+      )
+
+      # Add ❄️ marker to milestone title to indicate we entered code-freeze
+      set_milestone_frozen_marker(
+        repository: GITHUB_REPO,
+        milestone: new_version
+      )
+    rescue StandardError => e
+      moved_prs = []
+
+      report_milestone_error(error_title: "Error freezing milestone `#{new_version}`: #{e.message}")
+    end
+
+    UI.message("Moved the following PRs to milestone #{release_version_next}: #{moved_prs.join(', ')}")
+
+    # Annotate the build with the moved PRs
+    moved_prs_info = if moved_prs.empty?
+                       "👍 No open PR were targeting `#{new_version}` at the time of code-freeze"
+                     else
+                       "#{moved_prs.count} PRs targeting `#{new_version}` were still open and thus moved to `#{release_version_next}`:\n" \
+                         + moved_prs.map { |pr_num| "[##{pr_num}](https://github.com/#{GITHUB_REPO}/pull/#{pr_num})" }.join(', ')
+                     end
+
+    buildkite_annotate(style: moved_prs.empty? ? 'success' : 'warning', context: 'start-code-freeze-wcios', message: moved_prs_info) if is_ci
   end
 
   # This lane executes the last steps planned on code freeze, creating a new release branch from the current trunk
@@ -191,10 +222,8 @@ platform :android do
   lane :complete_code_freeze do |skip_confirm: false, include_wear_app: false|
     check_for_toolkit_updates unless is_ci || ENV['FASTLANE_SKIP_TOOLKIT_UPDATE_CHECK']
 
-    # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
-
-    ensure_git_branch_is_release_branch
+    ensure_git_branch_is_release_branch!
 
     UI.important("Completing code freeze for: #{release_version_current}")
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
@@ -207,17 +236,7 @@ platform :android do
 
     trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
-    # Create an intermediate branch
-    new_intermediate_branch_name = "merge/#{release_version_current}-code-freeze-into-#{DEFAULT_BRANCH}"
-    Fastlane::Helper::GitHelper.create_branch(new_intermediate_branch_name)
-
-    # Push up the intermediate branch
-    push_to_git_remote(tags: false)
-
-    create_release_management_pull_request(
-      base_branch: DEFAULT_BRANCH,
-      title: "Merge #{release_version_current} code freeze to #{DEFAULT_BRANCH}"
-    )
+    create_backmerge_pr
   end
 
   # Updates the `PlayStoreStrings.pot` file with the latest content from the `release_notes.txt` files and the other text sources.
@@ -230,10 +249,8 @@ platform :android do
   # @example Running the lane
   #          bundle exec fastlane update_play_store_strings version:10.3
   #
-  lane :update_play_store_strings do |version: nil|
+  lane :update_play_store_strings do |version: release_version_current|
     ensure_git_status_clean
-
-    version ||= release_version_current
 
     app_metadata_source_path = METADATA_SOURCE_DIR_PATH[MOBILE_APP]
     files = {
@@ -277,11 +294,9 @@ platform :android do
   # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
   desc 'Updates a release branch for a new beta release'
-  lane :new_beta_release do |options|
-    # Verify that there's nothing in progress in the working copy
+  lane :new_beta_release do |skip_confirm: false, include_wear_app: false|
     ensure_git_status_clean
-
-    ensure_git_branch_is_release_branch
+    ensure_git_branch_is_release_branch!
 
     # Check versions
     message = <<-MESSAGE
@@ -295,13 +310,11 @@ platform :android do
     MESSAGE
 
     UI.important(message)
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Bump the release version and build code
     UI.message 'Bumping beta version and build code...'
-    ensure_git_branch_is_release_branch
+    ensure_git_branch_is_release_branch!
     VERSION_FILE.write_version(
       version_name: beta_version_next,
       version_code: build_code_next
@@ -310,26 +323,13 @@ platform :android do
     UI.success("Done! New Beta Version: #{version_name_current}. New Build Code: #{build_code_current}")
 
     UI.important('Pushing changes to remote and triggering the beta build')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     push_to_git_remote(tags: false)
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
-    # Create an intermediate branch
-    new_intermediate_branch_name = "merge/#{version_name_current}-into-#{DEFAULT_BRANCH}"
-    Fastlane::Helper::GitHelper.create_branch(new_intermediate_branch_name)
-
-    # Push up the intermediate branch
-    push_to_git_remote(tags: false)
-
-    create_release_management_pull_request(
-      base_branch: DEFAULT_BRANCH,
-      title: "Merge #{version_name_current} into #{DEFAULT_BRANCH}"
-    )
+    create_backmerge_pr
   end
 
   #####################################################################################
@@ -342,51 +342,43 @@ platform :android do
   # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
   #
   desc 'Prepare a new hotfix branch cut from the previous tag, and bump the version'
-  lane :new_hotfix_release do |options|
-    UI.user_error!('A `version_name` must be provided when calling this lane') if options[:version_name].nil?
-    UI.user_error!('A `version_code` must be provided when calling this lane') if options[:version_code].nil?
-
-    # Verify that there's nothing in progress in the working copy
+  lane :new_hotfix_release do |version_name:, version_code:, skip_confirm: false|
     ensure_git_status_clean
 
-    new_version = options[:version_name]
-    version_code_new = options[:version_code]
     # Parse the provided version into an AppVersion object
-    parsed_version = VERSION_FORMATTER.parse(new_version)
+    parsed_version = VERSION_FORMATTER.parse(version_name)
     previous_version = VERSION_FORMATTER.release_version(VERSION_CALCULATOR.previous_patch_version(version: parsed_version))
 
     # Check versions
     message = <<-MESSAGE
 
       Current release version: #{release_version_current}
-      New hotfix version: #{new_version}
+      New hotfix version: #{version_name}
 
       Current build code: #{build_code_current}
-      New build code: #{version_code_new}
+      New build code: #{version_code}
 
       Branching from tag: #{previous_version}
 
     MESSAGE
 
     UI.important(message)
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Check tags
-    UI.user_error!("The version `#{new_version}` tag already exists!") if git_tag_exists(tag: new_version)
+    UI.user_error!("The version `#{version_name}` tag already exists!") if git_tag_exists(tag: version_name)
     UI.user_error!("Version #{previous_version} is not tagged! A hotfix branch cannot be created.") unless git_tag_exists(tag: previous_version)
 
     # Create the hotfix branch
     UI.message('Creating hotfix branch...')
-    Fastlane::Helper::GitHelper.create_branch("release/#{new_version}", from: previous_version)
+    Fastlane::Helper::GitHelper.create_branch("release/#{version_name}", from: previous_version)
     UI.success("Done! New hotfix branch is: #{git_branch}")
 
     # Bump the hotfix version and build code and write it to the `version.properties` file
     UI.message('Bumping hotfix version and build code...')
     VERSION_FILE.write_version(
-      version_name: new_version,
-      version_code: version_code_new
+      version_name: version_name,
+      version_code: version_code
     )
     commit_version_bump
     UI.success("Done! New Release Version: #{release_version_current}. New Build Code: #{build_code_current}")
@@ -406,8 +398,7 @@ platform :android do
   #
   lane :finalize_hotfix_release do |skip_confirm: false, include_wear_app: false|
     ensure_git_status_clean
-
-    ensure_git_branch_is_release_branch
+    ensure_git_branch_is_release_branch!
 
     hotfix_version = release_version_current
 
@@ -416,22 +407,17 @@ platform :android do
 
     trigger_release_build(branch_to_build: "release/#{hotfix_version}", include_wear_app: include_wear_app)
 
-    # Retrieve the current non-hotfix release version
-    Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
-    non_hotfix_release_version = release_version_current
+    create_backmerge_pr
 
-    # Create an intermediate branch
-    Fastlane::Helper::GitHelper.checkout_and_pull("release/#{hotfix_version}")
-    new_intermediate_branch_name = "merge/#{hotfix_version}-hotfix-into-release-#{non_hotfix_release_version}"
-    Fastlane::Helper::GitHelper.create_branch(new_intermediate_branch_name)
-
-    # Push up the intermediate branch
-    push_to_git_remote(tags: false)
-
-    create_release_management_pull_request(
-      base_branch: "release/#{non_hotfix_release_version}",
-      title: "Merge #{hotfix_version} hotfix into release/#{non_hotfix_release_version}"
-    )
+    # Close hotfix milestone
+    begin
+      close_milestone(
+        repository: GITHUB_REPO,
+        milestone: hotfix_version
+      )
+    rescue StandardError => e
+      report_milestone_error(error_title: "Error closing milestone `#{hotfix_version}`: #{e.message}")
+    end
   end
 
   #####################################################################################
@@ -462,10 +448,8 @@ platform :android do
   lane :finalize_release do |skip_confirm: false, include_wear_app: false|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
 
-    # Verify that there's nothing in progress in the working copy
     ensure_git_status_clean
-
-    ensure_git_branch_is_release_branch
+    ensure_git_branch_is_release_branch!
 
     UI.important("Finalizing release: #{release_version_current}")
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
@@ -490,12 +474,23 @@ platform :android do
     download_metadata_strings(version: version, app: MOBILE_APP)
     download_metadata_strings(version: version, app: WEAR_APP) if include_wear_app
 
-    # Wrap up
+    # Start the build
+    UI.important('Pushing changes to remote and triggering the release build')
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
+
+    push_to_git_remote(tags: false)
+
+    trigger_release_build(branch_to_build: "release/#{version}", include_wear_app: include_wear_app)
+
+    create_backmerge_pr
+
+    remove_branch_protection(
+      repository: GITHUB_REPO,
+      branch: "release/#{version}"
+    )
+
+    # Close milestone
     begin
-      remove_branch_protection(
-        repository: GITHUB_REPO,
-        branch: "release/#{version}"
-      )
       set_milestone_frozen_marker(
         repository: GITHUB_REPO,
         milestone: version,
@@ -506,36 +501,8 @@ platform :android do
         milestone: version
       )
     rescue StandardError => e
-      error_message = <<-MESSAGE
-        Error closing milestone `#{app_version}`: #{e.message}
-        - If this is a retry of the lane, the milestone might have already been closed and this error is expected.
-        - If this is the first run of the lane, please investigate the error.
-      MESSAGE
-
-      UI.error(error_message)
-
-      buildkite_annotate(style: 'warning', context: 'finalize-release-error-milestone', message: error_message) if is_ci
+      report_milestone_error(error_title: "Error closing milestone `#{version}`: #{e.message}")
     end
-
-    # Start the build
-    UI.important('Pushing changes to remote and triggering the release build')
-    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
-
-    push_to_git_remote(tags: false)
-
-    trigger_release_build(branch_to_build: "release/#{version}", include_wear_app: include_wear_app)
-
-    # Create an intermediate branch
-    new_intermediate_branch_name = "merge/#{release_version_current}-final-into-#{DEFAULT_BRANCH}"
-    Fastlane::Helper::GitHelper.create_branch(new_intermediate_branch_name)
-
-    # Push up the intermediate branch
-    push_to_git_remote(tags: false)
-
-    create_release_management_pull_request(
-      base_branch: DEFAULT_BRANCH,
-      title: "Merge #{release_version_current} final into #{DEFAULT_BRANCH}"
-    )
   end
 
   lane :check_translation_progress_all do
@@ -599,11 +566,10 @@ platform :android do
   #
   desc 'Builds and uploads release for distribution'
   lane :build_and_upload_release do |options|
-    ensure_git_branch_is_release_branch unless is_ci
+    ensure_git_branch_is_release_branch! unless is_ci
+    ensure_git_status_clean unless is_ci
 
     UI.user_error!("Can't build a final release out of this branch because it's configured as a beta release!") if beta_version?(version_name_current)
-
-    ensure_git_status_clean unless is_ci
 
     app = get_app_param!(options)
     message = "Building `#{app}` version #{release_version_current} (#{build_code_current}) for upload to Release Channel"
@@ -634,9 +600,7 @@ platform :android do
       skip_upload_changelogs: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
-      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
-      # We're retaining version 16.4 - 480 because 16.5 increases the minSDKVersion from Android 7 to Android 8
-      version_codes_to_retain: app == WEAR_APP ? nil : [480]
+      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
     create_gh_release(app: app, version: version) if options[:create_release]
@@ -655,8 +619,7 @@ platform :android do
   #
   desc 'Builds and uploads a new beta build to Google Play (without releasing it)'
   lane :build_and_upload_beta do |options|
-    ensure_git_branch_is_release_branch unless is_ci
-
+    ensure_git_branch_is_release_branch! unless is_ci
     ensure_git_status_clean unless is_ci
 
     app = get_app_param!(options)
@@ -712,7 +675,7 @@ platform :android do
     )
 
     message = "This build triggered a release build on <code>#{branch}</code>:<br>- #{build_url}"
-    buildkite_annotate(style: 'info', context: 'trigger-release-build-doandroid', message: message) if is_ci
+    buildkite_annotate(style: 'info', context: 'trigger-release-build', message: message) if is_ci
   end
 
   #####################################################################################
@@ -966,7 +929,16 @@ platform :android do
   lane :build_and_instrumented_test do
     gradle(tasks: %w[assembleVanillaDebug assembleVanillaDebugAndroidTest])
 
-    gradle(task: 'runFlank')
+    annotation_ctx = 'firebase-test-woocommerce-vanilla-debug'
+    begin
+      gradle(task: 'runFlank')
+      sh("buildkite-agent annotation remove --context '#{annotation_ctx}' || true") if is_ci?
+    rescue StandardError
+      details_url = sh('jq', '.[].webLink', '../build/instrumented-tests/matrix_ids.json', '-r')
+      message = "Firebase Tests failed. Failure details can be seen [here in Firebase Console](#{details_url})"
+      sh('buildkite-agent', 'annotate', message, '--style', 'error', '--context', annotation_ctx) if is_ci?
+      UI.test_failure!(message)
+    end
   end
 
   #####################################################################################
@@ -1305,18 +1277,51 @@ end
 # -----------------------------------------------------------------------------------
 # Release Management Utils
 # -----------------------------------------------------------------------------------
-def create_release_management_pull_request(base_branch:, title:)
-  create_pull_request(
-    api_token: ENV.fetch('GITHUB_TOKEN', nil),
-    repo: GITHUB_REPO,
-    title: title,
-    head: Fastlane::Helper::GitHelper.current_git_branch,
-    base: base_branch,
-    labels: 'Releases'
+def create_backmerge_pr
+  version = release_version_current
+
+  create_release_backmerge_pull_request(
+    repository: GITHUB_REPO,
+    source_branch: "release/#{version}",
+    labels: ['Releases'],
+    milestone_title: release_version_next
   )
+rescue StandardError => e
+  error_message = <<-MESSAGE
+    Error creating backmerge pull request: #{e.message}
+    - If this is not the first time you are running the release task, the backmerge PR for the version `#{version}` might have already been previously created.
+    Please close any previous backmerge PR for `#{version}`, delete the previous merge branch, then run the release task again.
+  MESSAGE
+
+  buildkite_annotate(style: 'error', context: 'error-creating-backmerge', message: error_message) if is_ci
+
+  UI.user_error!(error_message)
 end
 
-def ensure_git_branch_is_release_branch
+def ensure_git_branch_is_release_branch!
   # Verify that the current branch is a release branch. Notice that `ensure_git_branch` expects a RegEx parameter
   ensure_git_branch(branch: '^release/')
+end
+
+def ensure_branch_does_not_exist!(branch_name)
+  return unless Fastlane::Helper::GitHelper.branch_exists_on_remote?(branch_name: branch_name)
+
+  error_message = "The branch `#{branch_name}` already exists. Please check first if there is an existing Pull Request that needs to be merged or closed first, " \
+                  'or delete the branch to then run again the release task.'
+
+  buildkite_annotate(style: 'error', context: 'error-checking-branch', message: error_message) if is_ci
+
+  UI.user_error!(error_message)
+end
+
+def report_milestone_error(error_title:)
+  error_message = <<-MESSAGE
+    #{error_title}
+    - If this is not the first time you are running the release task (e.g. retrying because it failed on first attempt), the milestone might have already been closed and this error is expected.
+    - Otherwise if this is the first you are running the release task for this version, please investigate the error.
+  MESSAGE
+
+  UI.error(error_message)
+
+  buildkite_annotate(style: 'warning', context: 'error-with-milestone', message: error_message) if is_ci
 end

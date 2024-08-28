@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 09:54:04+0000
+Translation-Revision-Date: 2024-08-21 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">メニュー</string>
+    <string name="woopos_cart_item_content_description">お買い物カゴ %s の商品、価格%s</string>
+    <string name="woopos_product_item_content_description">商品 %s、価格%s</string>
+    <string name="blaze_campaign_status_suspended">一時停止中</string>
+    <string name="woopos_success_screen_total">%1$sの支払いが正常に行われました</string>
+    <string name="woopos_new_order_button">新しい注文</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ ストア管理で注文を作成</string>
+    <string name="woopos_dialog_products_info_secondary_message">シンプルな商品以外の支払いを受け取るには、POS を終了して注文タブから新しい注文を作成します。</string>
+    <string name="woopos_dialog_products_info_primary_message">現在、POS で使用できるのはシンプルな物理的商品のみです。\nバリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。</string>
+    <string name="woopos_dialog_products_info_heading">商品が表示されないのはなぜですか ?</string>
+    <string name="woopos_banner_simple_products_info_content_description">情報</string>
+    <string name="woopos_banner_simple_products_close_content_description">閉じる</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">さらに詳しく</string>
+    <string name="woopos_banner_simple_products_only_message">現在、POS で対応できるのはシンプルな物理的商品のみです。 バリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。 </string>
+    <string name="woopos_banner_simple_products_only_title">シンプルな商品のみ表示中</string>
+    <string name="support_request_site_address">サイトのアドレス</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">有料キャンペーンを追加</string>
+    <string name="analytics_google_ads_cta_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう。</string>
+    <string name="analytics_google_ads_cta_title">Google キャンペーン</string>
     <string name="google_ads_campaign_created_success_done_button">完了</string>
     <string name="google_ads_campaign_created_success_description">新しいキャンペーンが作成されました。 販売の楽しい時期がやってきます !</string>
     <string name="google_ads_campaign_created_success_title">準備完了 !</string>
@@ -103,12 +124,10 @@ Language: ja_JP
     <string name="woopos_payment_total_label">合計</string>
     <string name="woopos_payment_tax_label">税</string>
     <string name="woopos_payment_subtotal_label">小計</string>
-    <string name="woopos_new_transaction_button">新規トランザクション</string>
     <string name="woopos_payment_successful_label">支払いに成功しました</string>
     <string name="woopos_payment_failed_please_try_again">支払いに失敗しました。 もう一度お試しください。</string>
     <string name="woopos_cart_back_content_description">お買い物カゴアイコン</string>
     <string name="woopos_products_screen_title">商品</string>
-    <string name="woopos_product_image_description">商品画像</string>
     <string name="woopos_items_in_cart">%d個のアイテム</string>
     <string name="woopos_clear_cart_button">消去</string>
     <string name="more_menu_button_google_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう</string>
@@ -119,7 +138,7 @@ Language: ja_JP
     <string name="woopos_exit_confirmation_confirm_button">終了</string>
     <string name="woopos_exit_confirmation_message">POS を終了してもよいですか ?</string>
     <string name="woopos_exit_confirmation_title">POS を終了</string>
-    <string name="woopos_remove_item_from_cart_content_description">お買い物カゴからアイテムを削除</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">%s をお買い物カゴから削除</string>
     <string name="woopos_checkout_button">購入手続き</string>
     <string name="woopos_reader_unknown">Reader ステータス不明</string>
     <string name="woopos_checkout">購入手続き</string>
@@ -1279,7 +1298,6 @@ Language: ja_JP
     <string name="login_application_passwords_help">アプリケーションパスワードとは</string>
     <string name="login_application_passwords_unavailable">サイト %1$s でアプリケーションパスワード機能が無効になっているようです。\n WooCommerce アプリを使用するには、アプリケーションパスワードを有効にしてください。</string>
     <string name="login_open_installation_page">インストールページを開く</string>
-    <string name="not_a_valid_qr_code">スキャンされた QR コードは WooCommerce コードではありません</string>
     <string name="review_reply_failure">返信の送信時にエラーが発生しました</string>
     <string name="review_reply_success">返信を送信しました !</string>
     <string name="wc_reply">返信</string>
@@ -1354,7 +1372,6 @@ Language: ja_JP
     <string name="domain_picker_subtitle">ドメインとは、インターネット上で閲覧者があなたを見つける場所です。 後からでも変更できます。</string>
     <string name="analytics_visitors_subtitle">訪問者</string>
     <string name="or_use_password_below_qr_code_scan_option">またはパスワードでログイン</string>
-    <string name="or_scan_qr_code_to_log_in">QR コードをスキャンしてログイン</string>
     <string name="simulated_reader_toast">シミュレートされたカードリーダーは無効になりました</string>
     <string name="simulated_reader_key">シミュレートされたリーダーキー</string>
     <string name="variations_bulk_update_stock_quantity_success">更新された在庫数</string>
@@ -1407,7 +1424,6 @@ Language: ja_JP
     <string name="qr_code_login_scanner_title">カメラバーコードスキャナー</string>
     <string name="dev_options">開発者オプション</string>
     <string name="login_2fa_not_supported_self_hosted_site">インストール型のサイトでは2FA はサポートされていません。 アプリパスワードを使用してください。</string>
-    <string name="login_with_qr_code">QR コードをスキャンしてログイン</string>
     <string name="show_password_content_description">パスワードを表示</string>
     <string name="hide_password_content_description">パスワードを隠す</string>
     <string name="stats_widget_last_updated_message">%1$s時点</string>
@@ -1682,7 +1698,7 @@ Language: ja_JP
     <string name="card_reader_interac_refund_refund_payment">支払いを返金</string>
     <string name="card_reader_interac_refund_refund_failed_header">返金に失敗しました</string>
     <string name="card_reader_interac_refund_refund_loading_header">支払いを返金する準備をしています</string>
-    <string name="copy">コピー</string>
+    <string name="copy" tools:override="true">コピー</string>
     <string name="coupons_list_search_hint">クーポンを検索</string>
     <string name="coupon_details_share_formatting_failure">クーポンコードの共有メッセージを生成できません</string>
     <string name="coupon_details_share_coupon_error">クーポンコードを共有する際にエラーが発生しました。</string>
@@ -2943,7 +2959,7 @@ Language: ja_JP
     <string name="orderdetail_empty_address">住所が指定されていません</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
-    <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>
+    <string name="enter_email_for_site" content_override="true">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>
     <string name="country_mapping_ZW">ジンバブエ</string>
     <string name="country_mapping_ZM">ザンビア</string>
     <string name="country_mapping_YE">イエメン</string>
@@ -3539,8 +3555,8 @@ Language: ja_JP
     <string name="login_configure_link">%1$s設定に関する指示%2$sを参照してください。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
-    <string name="enter_email_wordpress_com">WooCommerce ストアを管理するには、WordPress.com アカウントのメールアドレスを使用してログインします。</string>
+    <string name="enter_site_address" content_override="true">連携させる WooCommerce ストアのアドレスを入力してください。</string>
+    <string name="enter_email_wordpress_com" content_override="true">WooCommerce ストアを管理するには、WordPress.com アカウントのメールアドレスを使用してログインします。</string>
     <string name="already_logged_in_wpcom">すでに WordPress.com アカウントにログインしています。別のアカウントに結び付いている WordPress.com サイトを追加することはできません。</string>
     <string name="cant_open_url">リンクを開けません</string>
     <string name="error_no_sms_app">SMS アプリが見つかりませんでした</string>
@@ -3586,17 +3602,17 @@ Language: ja_JP
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>処理中</item>

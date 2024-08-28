@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-31 15:54:04+0000
+Translation-Revision-Date: 2024-08-23 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">Menü</string>
+    <string name="woopos_cart_item_content_description">Produkt im Warenkorb %s, Preis %s</string>
+    <string name="woopos_product_item_content_description">Produkt %s, Preis %s</string>
+    <string name="blaze_campaign_status_suspended">Eingestellt</string>
+    <string name="woopos_success_screen_total">Eine Zahlung in Höhe von %1$s wurde erfolgreich abgebucht</string>
+    <string name="woopos_new_order_button">Neue Bestellung</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ Eine Bestellung im Shop-Management erstellen</string>
+    <string name="woopos_dialog_products_info_secondary_message">Um die Zahlung für ein nicht einfaches Produkt entgegenzunehmen, beende POS und erstelle eine neue Bestellung über den Tab „Bestellungen“.</string>
+    <string name="woopos_dialog_products_info_primary_message">Derzeit können nur einfache physische Produkte mit POS verwendet werden.\nWeitere Produkttypen, wie variable und virtuelle, werden in künftigen Updates bereitgestellt.</string>
+    <string name="woopos_dialog_products_info_heading">Warum werden mir meine Produkte nicht angezeigt?</string>
+    <string name="woopos_banner_simple_products_info_content_description">Info</string>
+    <string name="woopos_banner_simple_products_close_content_description">Schließen</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Weitere Informationen</string>
+    <string name="woopos_banner_simple_products_only_message">Derzeit sind nur einfache physische Produkte mit POS kompatibel. Weitere Produkttypen, wie variable und virtuelle, werden in künftigen Updates bereitgestellt. </string>
+    <string name="woopos_banner_simple_products_only_title">Es werden nur einfache Produkte angezeigt</string>
+    <string name="support_request_site_address">Website-Adresse</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google für WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">Gebührenpflichtige Kampagne hinzufügen</string>
+    <string name="analytics_google_ads_cta_description">Steigere deine Umsätze und generiere mehr Traffic mit Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">Google-Kampagnen</string>
     <string name="google_ads_campaign_created_success_done_button">Fertig</string>
     <string name="google_ads_campaign_created_success_description">Deine neue Kampagne wurde erstellt. Gute Aussichten für deine Verkaufszahlen!</string>
     <string name="google_ads_campaign_created_success_title">Fertig!</string>
@@ -101,14 +122,12 @@ Language: de
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Wir generieren die Produktdetails für dich</string>
     <string name="woopos_payment_collect_payment_label">Kartenzahlungen empfangen</string>
     <string name="woopos_payment_total_label">Gesamt</string>
-    <string name="woopos_payment_tax_label">Steuer</string>
+    <string name="woopos_payment_tax_label">Steuern</string>
     <string name="woopos_payment_subtotal_label">Zwischensumme</string>
-    <string name="woopos_new_transaction_button">Neue Transaktion</string>
     <string name="woopos_payment_successful_label">Zahlung erfolgreich</string>
     <string name="woopos_payment_failed_please_try_again">Zahlung fehlgeschlagen. Bitte versuche es erneut.</string>
     <string name="woopos_cart_back_content_description">Warenkorb-Icon</string>
     <string name="woopos_products_screen_title">Produkte</string>
-    <string name="woopos_product_image_description">Produktbild</string>
     <string name="woopos_items_in_cart">%d Artikel</string>
     <string name="woopos_clear_cart_button">Löschen</string>
     <string name="more_menu_button_google_description">Steigere deine Umsätze und generiere mehr Traffic mit Google Ads</string>
@@ -119,7 +138,7 @@ Language: de
     <string name="woopos_exit_confirmation_confirm_button">Beenden</string>
     <string name="woopos_exit_confirmation_message">Bist du sicher, dass du POS beenden möchtest?</string>
     <string name="woopos_exit_confirmation_title">POS beenden</string>
-    <string name="woopos_remove_item_from_cart_content_description">Artikel aus Warenkorb entfernen</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">%s aus Warenkorb entfernen</string>
     <string name="woopos_checkout_button">Bezahlen</string>
     <string name="woopos_reader_unknown">Status des Lesegeräts unbekannt</string>
     <string name="woopos_checkout">Bezahlen</string>
@@ -1279,7 +1298,6 @@ Language: de
     <string name="login_application_passwords_help">Was sind Anwendungs-Passwörter?</string>
     <string name="login_application_passwords_unavailable">Anscheinend ist die Funktion „Anwendungs-Passwörter“ auf deiner Website %1$s deaktiviert.\n Bitte aktiviere sie, um die WooCommerce-App verwenden zu können.</string>
     <string name="login_open_installation_page">Installationsseite öffnen</string>
-    <string name="not_a_valid_qr_code">Der gescannte QR-Code ist kein WooCommerce-Code.</string>
     <string name="review_reply_failure">Beim Senden der Antwort ist ein Fehler aufgetreten.</string>
     <string name="review_reply_success">Antwort gesendet!</string>
     <string name="wc_reply">Antworten</string>
@@ -1354,7 +1372,6 @@ Language: de
     <string name="domain_picker_subtitle">Hier finden dich Personen im Internet. Keine Sorge, du kannst das später noch ändern.</string>
     <string name="analytics_visitors_subtitle">Besucher</string>
     <string name="or_use_password_below_qr_code_scan_option">Oder mit Passwort anmelden</string>
-    <string name="or_scan_qr_code_to_log_in">Zum Anmelden den QR-Code scannen</string>
     <string name="simulated_reader_toast">Simuliertes Kartenlesegerät wurde deaktiviert</string>
     <string name="simulated_reader_key">Schlüssel des simulierten Lesegeräts</string>
     <string name="variations_bulk_update_stock_quantity_success">Aktualisierte Lagerbestandsmenge</string>
@@ -1407,7 +1424,6 @@ Language: de
     <string name="qr_code_login_scanner_title">Barcode-Scanner der Kamera</string>
     <string name="dev_options">Entwickleroptionen</string>
     <string name="login_2fa_not_supported_self_hosted_site">2FA wird für selbst gehostete Websites nicht unterstützt. Bitte verwende ein App-Passwort.</string>
-    <string name="login_with_qr_code">Zum Anmelden den QR-Code scannen</string>
     <string name="show_password_content_description">Passwort anzeigen</string>
     <string name="hide_password_content_description">Passwort verbergen</string>
     <string name="stats_widget_last_updated_message">Stand: %1$s</string>
@@ -1682,7 +1698,7 @@ Language: de
     <string name="card_reader_interac_refund_refund_payment">Zahlung erstatten</string>
     <string name="card_reader_interac_refund_refund_failed_header">Rückerstattung fehlgeschlagen</string>
     <string name="card_reader_interac_refund_refund_loading_header">Vorbereitung für Zahlungserstattung läuft</string>
-    <string name="copy">Kopieren</string>
+    <string name="copy" tools:override="true">Kopieren</string>
     <string name="coupons_list_search_hint">Gutschein suchen</string>
     <string name="coupon_details_share_formatting_failure">Nachricht zum Teilen des Gutscheincodes kann nicht erstellt werden</string>
     <string name="coupon_details_share_coupon_error">Fehler beim Teilen des Gutscheincodes.</string>
@@ -2943,7 +2959,7 @@ Language: de
     <string name="orderdetail_empty_address">Keine Adresse angegeben</string>
     <string name="login_need_help_finding_connected_email">Benötigst du Hilfe bei der Suche nach der E-Mail-Adresse, mit der du dich verbunden hast?</string>
     <string name="enter_wordpress_site">Die Website mit dieser Adresse ist keine WordPress-Website. Damit wir uns mit ihr verbinden können, muss WordPress auf der Website installiert sein.</string>
-    <string name="enter_email_for_site">Melde dich mit WordPress.com an, um dich mit &lt;b&gt;%1$s&lt;/b&gt; zu verbinden</string>
+    <string name="enter_email_for_site" content_override="true">Melde dich mit WordPress.com an, um dich mit &lt;b&gt;%1$s&lt;/b&gt; zu verbinden</string>
     <string name="country_mapping_ZW">Simbabwe</string>
     <string name="country_mapping_ZM">Sambia</string>
     <string name="country_mapping_YE">Jemen</string>
@@ -3539,8 +3555,8 @@ Language: de
     <string name="login_configure_link">Lies die %1$sKonfigurationsanleitung%2$s.</string>
     <string name="login_jetpack_required">Für diese App muss Jetpack mit deinem Shop verbunden sein.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Gib die Adresse des WooCommerce-Shops ein, den du verbinden möchtest.</string>
-    <string name="enter_email_wordpress_com">Melde dich mit der E-Mail-Adresse deines WordPress.com-Kontos an, um deine WooCommerce-Shops zu verwalten.</string>
+    <string name="enter_site_address" content_override="true">Gib die Adresse des WooCommerce-Shops ein, den du verbinden möchtest.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Melde dich mit der E-Mail-Adresse deines WordPress.com-Kontos an, um deine WooCommerce-Shops zu verwalten.</string>
     <string name="already_logged_in_wpcom">Du bist bereits in einem WordPress.com-Konto angemeldet, du kannst keine WordPress.com-Website hinzufügen, die an ein anderes Konto gebunden ist.</string>
     <string name="cant_open_url">Link konnte nicht geöffnet werden</string>
     <string name="error_no_sms_app">Es wurde keine SMS-Anwendung gefunden</string>
@@ -3586,17 +3602,17 @@ Language: de
     <string name="notification_channel_general_title">Allgemein</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>In Bearbeitung</item>

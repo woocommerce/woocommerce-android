@@ -9,6 +9,7 @@ plugins {
     id 'com.android.application' apply false
     id 'org.jetbrains.kotlin.android' apply false
     id 'com.google.dagger.hilt.android' apply false
+    id 'androidx.navigation.safeargs.kotlin' apply false
     id 'com.google.gms.google-services' apply false
     id 'com.google.devtools.ksp' apply false
 }
@@ -99,7 +100,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-06355b8e708b8303653a5e1afb751c25d469c40e'
+    fluxCVersion = '2.93.1'
     glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -108,22 +109,23 @@ ext {
     googlePlayCoreVersion = '1.10.3'
     googlePlayWearableVersion = '18.1.0'
     coroutinesVersion = '1.8.1'
-    lifecycleVersion = '2.6.2'
-    aztecVersion = 'v1.3.45'
+    lifecycleVersion = '2.7.0'
+    aztecVersion = 'v2.1.4'
     flipperVersion = '0.176.1'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.13.1'
     appCompatVersion = '1.4.2'
-    materialVersion = '1.10.0'
+    materialVersion = '1.12.0'
+    transitionVersion = '1.5.1'
     hiltJetpackVersion = '1.1.0'
     wordPressUtilsVersion = '3.5.0'
     mediapickerVersion = '0.3.1'
-    wordPressLoginVersion = '1.17.0'
+    wordPressLoginVersion = '1.18.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '5.0.0'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
-    stripeTerminalVersion = '3.1.1'
+    stripeTerminalVersion = '3.7.1'
     mlkitBarcodeScanningVersion = '17.2.0'
     mlkitTextRecognitionVersion = '16.0.0'
     androidxCameraVersion = '1.2.3'

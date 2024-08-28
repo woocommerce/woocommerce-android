@@ -12,14 +12,14 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -34,12 +34,12 @@ class WooPosTotalsViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val totalsRepository: WooPosTotalsRepository,
     private val priceFormat: WooPosFormatPrice,
+    private val analyticsTracker: WooPosAnalyticsTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
-        private const val DEBOUNCE_TIME_MS = 800L
         private const val KEY_STATE = "woo_pos_totals_data_state"
         private val InitialState = WooPosTotalsViewState.Loading
     }
@@ -58,8 +58,6 @@ class WooPosTotalsViewModel @Inject constructor(
         key = KEY_STATE,
     )
 
-    private var debounceJob: Job? = null
-
     init {
         listenUpEvents()
     }
@@ -67,10 +65,8 @@ class WooPosTotalsViewModel @Inject constructor(
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
             is WooPosTotalsUIEvent.CollectPaymentClicked -> {
-                debounce {
-                    viewModelScope.launch {
-                        collectPayment()
-                    }
+                viewModelScope.launch {
+                    collectPayment()
                 }
             }
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> {
@@ -78,7 +74,6 @@ class WooPosTotalsViewModel @Inject constructor(
                     childrenToParentEventSender.sendToParent(
                         ChildToParentEvent.NewTransactionClicked
                     )
-                    uiState.value = InitialState
                 }
             }
             is WooPosTotalsUIEvent.RetryOrderCreationClicked -> {
@@ -95,11 +90,7 @@ class WooPosTotalsViewModel @Inject constructor(
             is WooPosCardReaderPaymentResult.Success -> {
                 val state = uiState.value
                 check(state is WooPosTotalsViewState.Totals)
-                uiState.value = WooPosTotalsViewState.PaymentSuccess(
-                    state.orderSubtotalText,
-                    state.orderTaxText,
-                    state.orderTotalText
-                )
+                uiState.value = WooPosTotalsViewState.PaymentSuccess(orderTotalText = state.orderTotalText)
                 childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
             }
             else -> Unit
@@ -134,11 +125,19 @@ class WooPosTotalsViewModel @Inject constructor(
                     onSuccess = { order ->
                         dataState.value = dataState.value.copy(orderId = order.id)
                         uiState.value = buildWooPosTotalsViewState(order)
+                        analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)
                     },
                     onFailure = { error ->
                         WooLog.e(T.POS, "Order creation failed - $error")
                         uiState.value = WooPosTotalsViewState.Error(
                             resourceProvider.getString(R.string.woopos_totals_order_creation_error)
+                        )
+                        analyticsTracker.track(
+                            WooPosAnalyticsEvent.Error.OrderCreationError(
+                                errorContext = WooPosTotalsViewModel::class,
+                                errorType = error::class.simpleName,
+                                errorDescription = error.message
+                            )
                         )
                     }
                 )
@@ -162,14 +161,4 @@ class WooPosTotalsViewModel @Inject constructor(
         val orderId: Long = EMPTY_ORDER_ID,
         val productIds: List<Long> = emptyList()
     ) : Parcelable
-
-    private fun debounce(destinationFunction: suspend () -> Unit) {
-        if (debounceJob?.isActive == true) {
-            return
-        }
-        debounceJob = viewModelScope.launch {
-            destinationFunction()
-            delay(DEBOUNCE_TIME_MS)
-        }
-    }
 }

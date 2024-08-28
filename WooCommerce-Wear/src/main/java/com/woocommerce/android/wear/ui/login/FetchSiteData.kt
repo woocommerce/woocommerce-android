@@ -5,6 +5,7 @@ import com.woocommerce.android.wear.phone.PhoneConnectionRepository
 import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Logged
 import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Timeout
 import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Waiting
+import com.woocommerce.commons.MessagePath.REQUEST_APP_SETTINGS
 import com.woocommerce.commons.MessagePath.REQUEST_SITE
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -15,6 +16,7 @@ class FetchSiteData @Inject constructor(
 ) {
     suspend operator fun invoke(): Flow<LoginRequestState> {
         if (phoneRepository.isPhoneConnectionAvailable()) {
+            phoneRepository.sendMessage(REQUEST_APP_SETTINGS)
             phoneRepository.sendMessage(REQUEST_SITE)
         }
 

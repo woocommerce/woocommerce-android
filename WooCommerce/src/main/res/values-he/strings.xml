@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-01 10:54:04+0000
+Translation-Revision-Date: 2024-08-23 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">תפריט</string>
+    <string name="woopos_cart_item_content_description">מוצר בעגלת הקניות %s, מחיר %s</string>
+    <string name="woopos_product_item_content_description">מוצר %s, מחיר %s</string>
+    <string name="blaze_campaign_status_suspended">מושהה</string>
+    <string name="woopos_success_screen_total">תשלום של ⁦%1$s⁩ חויב בהצלחה</string>
+    <string name="woopos_new_order_button">הזמנה חדשה</string>
+    <string name="woopos_dialog_products_info_button_label">אישור</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ ליצור הזמנה בניהול החנות</string>
+    <string name="woopos_dialog_products_info_secondary_message">כדי לגבות תשלום במוצר שאינו מוצר פשוט, יש לצאת מ-POS וליצור הזמנה חדשה מלשונית ההזמנות.</string>
+    <string name="woopos_dialog_products_info_primary_message">נכון לעכשיו, ניתן להשתמש ב-POS רק עבור מוצרים פיזיים פשוטים.\nסוגי מוצרים אחרים, כמו מוצרים עם סוגים או מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד.</string>
+    <string name="woopos_dialog_products_info_heading">למה המוצרים שלי לא מופיעים?</string>
+    <string name="woopos_banner_simple_products_info_content_description">מידע</string>
+    <string name="woopos_banner_simple_products_close_content_description">לסגור</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">למידע נוסף</string>
+    <string name="woopos_banner_simple_products_only_message">רק מוצרים פיזיים פשוטים תואמים ל-POS כרגע. סוגי מוצרים אחרים, כמו מוצרים עם סוגים או מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד. </string>
+    <string name="woopos_banner_simple_products_only_title">מציג רק מוצרים פשוטים</string>
+    <string name="support_request_site_address">כתובת האתר</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google ל-WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">להוסיף קמפיין בתשלום</string>
+    <string name="analytics_google_ads_cta_description">לעודד מכירות ולהגדיל את התעבורה עם Google Ads.</string>
+    <string name="analytics_google_ads_cta_title">קמפיינים של Google</string>
     <string name="google_ads_campaign_created_success_done_button">בוצע</string>
     <string name="google_ads_campaign_created_success_description">הקמפיין החדש שלך נוצר. העתיד של המכירות שלך ורוד!</string>
     <string name="google_ads_campaign_created_success_title">מוכן לפעולה!</string>
@@ -101,14 +122,12 @@ Language: he_IL
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">אנחנו יכולים ליצור את פרטי המוצר עבורך</string>
     <string name="woopos_payment_collect_payment_label">לקבל תשלומים באמצעות כרטיסים</string>
     <string name="woopos_payment_total_label">סכום כולל</string>
-    <string name="woopos_payment_tax_label">מס</string>
+    <string name="woopos_payment_tax_label">מיסים</string>
     <string name="woopos_payment_subtotal_label">סכום ביניים</string>
-    <string name="woopos_new_transaction_button">עסקה חדשה</string>
     <string name="woopos_payment_successful_label">התשלום בוצע בהצלחה</string>
     <string name="woopos_payment_failed_please_try_again">התשלום נכשל. יש לנסות שוב.</string>
     <string name="woopos_cart_back_content_description">סמל \'עגלת קניות\'</string>
     <string name="woopos_products_screen_title">מוצרים</string>
-    <string name="woopos_product_image_description">תמונת מוצר</string>
     <string name="woopos_items_in_cart">פריט %d</string>
     <string name="woopos_clear_cart_button">למחוק</string>
     <string name="more_menu_button_google_description">לעודד מכירות ולהגדיל את התעבורה עם Google Ads</string>
@@ -119,7 +138,7 @@ Language: he_IL
     <string name="woopos_exit_confirmation_confirm_button">יציאה</string>
     <string name="woopos_exit_confirmation_message">האם ברצונך לצאת מ-POS?</string>
     <string name="woopos_exit_confirmation_title">לצאת מ-POS</string>
-    <string name="woopos_remove_item_from_cart_content_description">להסיר את הפריט מעגלת הקניות</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">להסיר את %s מעגלת הקניות</string>
     <string name="woopos_checkout_button">תשלום בקופה</string>
     <string name="woopos_reader_unknown">הסטטוס של הקורא לא ידוע</string>
     <string name="woopos_checkout">קופה</string>
@@ -1279,7 +1298,6 @@ Language: he_IL
     <string name="login_application_passwords_help">מהן \'סיסמאות אפליקציה\'?</string>
     <string name="login_application_passwords_unavailable">נראה שהאפשרות \'סיסמאות אפליקציה\' מושבתת באתר ⁦%1$s⁩.\n יש להפעיל אותה כדי להשתמש באפליקציית WooCommerce.</string>
     <string name="login_open_installation_page">יש לפתוח את עמוד ההתקנה</string>
-    <string name="not_a_valid_qr_code">קוד Qr סרוק אינו קוד WooCommerce</string>
     <string name="review_reply_failure">אירעה שגיאה בשליחת התגובה</string>
     <string name="review_reply_success">התגובה נשלחה!</string>
     <string name="wc_reply">להגיב</string>
@@ -1354,7 +1372,6 @@ Language: he_IL
     <string name="domain_picker_subtitle">כאן ימצאו אותך באינטרנט. אל דאגה, אפשר לשנות את ההגדרות מאוחר יותר.</string>
     <string name="analytics_visitors_subtitle">מבקרים</string>
     <string name="or_use_password_below_qr_code_scan_option">לחלופין, ניתן להתחבר באמצעות סיסמה</string>
-    <string name="or_scan_qr_code_to_log_in">יש לסרוק את קוד ה-QR כדי להתחבר</string>
     <string name="simulated_reader_toast">הסימולציה של קורא הכרטיסים הושבתה</string>
     <string name="simulated_reader_key">סימולציה של מפתח הקורא</string>
     <string name="variations_bulk_update_stock_quantity_success">הכמות במלאי מעודכנת</string>
@@ -1407,7 +1424,6 @@ Language: he_IL
     <string name="qr_code_login_scanner_title">סריקת ברקוד מצלמה</string>
     <string name="dev_options">אפשרויות מפתח</string>
     <string name="login_2fa_not_supported_self_hosted_site">2FA לא נתמך לאתרים באחסון עצמי. יש להשתמש בסיסמה לאפליקציה.</string>
-    <string name="login_with_qr_code">יש לסרוק את קוד ה-QR כדי להתחבר</string>
     <string name="show_password_content_description">להציג סיסמה</string>
     <string name="hide_password_content_description">הסתר סיסמה</string>
     <string name="stats_widget_last_updated_message">החל ממועד ⁦%1$s⁩</string>
@@ -1682,7 +1698,7 @@ Language: he_IL
     <string name="card_reader_interac_refund_refund_payment">להנפיק החזר כספי על תשלום</string>
     <string name="card_reader_interac_refund_refund_failed_header">ההחזר הכספי נכשל</string>
     <string name="card_reader_interac_refund_refund_loading_header">מתכונן לביצוע החזר כספי עבור התשלום</string>
-    <string name="copy">להעתיק</string>
+    <string name="copy" tools:override="true">להעתיק</string>
     <string name="coupons_list_search_hint">לחפש קופונים</string>
     <string name="coupon_details_share_formatting_failure">לא ניתן ליצור הודעה לשיתוף של קוד הקופון</string>
     <string name="coupon_details_share_coupon_error">שגיאה בשיתוף קוד הקופון.</string>
@@ -2943,7 +2959,7 @@ Language: he_IL
     <string name="orderdetail_empty_address">לא צוינה כתובת</string>
     <string name="login_need_help_finding_connected_email">נדרשת לך עזרה במציאת האימייל שבעזרתו התחברת?</string>
     <string name="enter_wordpress_site">האתר בכתובת זו אינו אתר של WordPress. כדי שנוכל להתחבר לאתר, השירות של WordPress חייב להיות מותקן באתר.</string>
-    <string name="enter_email_for_site">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">יש להתחבר אל WordPress.com כדי להתחבר אל &lt;b&gt;⁦%1$s⁩&lt;/b&gt;</string>
     <string name="country_mapping_ZW">זימבבואה</string>
     <string name="country_mapping_ZM">זמביה</string>
     <string name="country_mapping_YE">תימן</string>
@@ -3539,8 +3555,8 @@ Language: he_IL
     <string name="login_configure_link">קריאת %1$sהוראות ההגדרה%2$s.</string>
     <string name="login_jetpack_required">אפליקציה זו דורשת Jetpack כדי לחבר אותך לחנות.</string>
     <string name="at_username">‎@‎%s‎</string>
-    <string name="enter_site_address">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>
-    <string name="enter_email_wordpress_com">עליך להתחבר באמצעות כתובת האימייל של החשבון שלך ב-WordPress.com כדי לנהל את החנויות שלך ב-WooCommerce.</string>
+    <string name="enter_site_address" content_override="true">יש להזין את כתובת החנות שלך ב-WooCommerce שאליה ברצונך להתחבר.</string>
+    <string name="enter_email_wordpress_com" content_override="true">עליך להתחבר באמצעות כתובת האימייל של החשבון שלך ב-WordPress.com כדי לנהל את החנויות שלך ב-WooCommerce.</string>
     <string name="already_logged_in_wpcom">כבר התחברת לחשבון שלך ב-WordPress.com. אין באפשרותך להוסיף אתר WordPress.com שקשור לחשבון אחר.</string>
     <string name="cant_open_url">אי אפשר לפתוח את הקישור</string>
     <string name="error_no_sms_app">לא נמצאה אפליקציה של הודעות טקסט</string>

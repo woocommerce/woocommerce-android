@@ -16,6 +16,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -32,6 +34,7 @@ class WooPosCartViewModel @Inject constructor(
     private val getProductById: WooPosGetProductById,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
+    private val analyticsTracker: WooPosAnalyticsTracker,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -89,6 +92,18 @@ class WooPosCartViewModel @Inject constructor(
                     body = WooPosCartState.Body.Empty
                 )
             }
+
+            is WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed -> {
+                val currentState = _state.value
+                val currentStateBody = currentState.body as? WooPosCartState.Body.WithItems ?: return
+                _state.value = currentState.copy(
+                    body = currentStateBody.copy(
+                        itemsInCart = currentState.body.itemsInCart.map {
+                            if (it.id == event.item.id) it.copy(isAppearanceAnimationPlayed = true) else it
+                        }
+                    )
+                )
+            }
         }
     }
 
@@ -123,10 +138,11 @@ class WooPosCartViewModel @Inject constructor(
 
                             is WooPosCartState.Body.WithItems -> _state.value.copy(
                                 body = currentState.copy(
-                                    itemsInCart = currentState.itemsInCart + itemClicked.await()
+                                    itemsInCart = listOf(itemClicked.await()) + currentState.itemsInCart
                                 )
                             )
                         }
+                        analyticsTracker.track(WooPosAnalyticsEvent.Event.ItemAddedToCart)
                     }
 
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
@@ -223,6 +239,7 @@ class WooPosCartViewModel @Inject constructor(
             id = WooPosCartState.Body.WithItems.Item.Id(productId = remoteId, itemNumber = itemNumber),
             name = name,
             price = formatPrice(price),
-            imageUrl = firstImageUrl
+            imageUrl = firstImageUrl,
+            isAppearanceAnimationPlayed = false,
         )
 }

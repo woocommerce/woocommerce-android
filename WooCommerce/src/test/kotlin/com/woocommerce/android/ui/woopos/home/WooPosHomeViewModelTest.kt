@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -12,7 +14,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -20,6 +21,10 @@ class WooPosHomeViewModelTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
+
+    @Rule
+    @JvmField
+    val rule = InstantTaskExecutorRule()
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
@@ -53,7 +58,11 @@ class WooPosHomeViewModelTest {
         viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
 
         // THEN
-        assertThat(viewModel.state.value.exitConfirmationDialog).isEqualTo(WooPosExitConfirmationDialog)
+        assertThat(viewModel.state.value.exitConfirmationDialog).isEqualTo(
+            WooPosHomeState.ExitConfirmationDialog(
+                isVisible = true
+            )
+        )
     }
 
     @Test
@@ -87,7 +96,7 @@ class WooPosHomeViewModelTest {
             viewModel.onUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed)
 
             // THEN
-            assertThat(viewModel.state.value.exitConfirmationDialog).isNull()
+            assertThat(viewModel.state.value.exitConfirmationDialog.isVisible).isFalse()
         }
 
     @Test
@@ -103,7 +112,11 @@ class WooPosHomeViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value.exitConfirmationDialog)
-                .isEqualTo(WooPosExitConfirmationDialog)
+                .isEqualTo(
+                    WooPosHomeState.ExitConfirmationDialog(
+                        isVisible = true
+                    )
+                )
         }
 
     @Test
@@ -120,7 +133,11 @@ class WooPosHomeViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value.exitConfirmationDialog)
-                .isEqualTo(WooPosExitConfirmationDialog)
+                .isEqualTo(
+                    WooPosHomeState.ExitConfirmationDialog(
+                        isVisible = true
+                    )
+                )
         }
 
     @Test
@@ -134,7 +151,9 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertTrue((viewModel.state.value.productsInfoDialog is WooPosHomeState.ProductsInfoDialog.Visible))
+        assertThat(viewModel.state.value.productsInfoDialog).isEqualTo(
+            WooPosHomeState.ProductsInfoDialog(isVisible = true)
+        )
     }
 
     @Test
@@ -149,7 +168,7 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(
-            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).header
+            (viewModel.state.value.productsInfoDialog).header
         ).isEqualTo(
             R.string.woopos_dialog_products_info_heading
         )
@@ -167,7 +186,7 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(
-            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryMessage
+            (viewModel.state.value.productsInfoDialog).primaryMessage
         ).isEqualTo(
             R.string.woopos_dialog_products_info_primary_message
         )
@@ -185,7 +204,7 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(
-            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).secondaryMessage
+            (viewModel.state.value.productsInfoDialog).secondaryMessage
         ).isEqualTo(
             R.string.woopos_dialog_products_info_secondary_message
         )
@@ -203,7 +222,7 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(
-            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryButton.label
+            (viewModel.state.value.productsInfoDialog).primaryButton.label
         ).isEqualTo(
             R.string.woopos_dialog_products_info_button_label
         )
@@ -221,11 +240,25 @@ class WooPosHomeViewModelTest {
         viewModel.onUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
 
         // THEN
-        assertFalse((viewModel.state.value.productsInfoDialog is WooPosHomeState.ProductsInfoDialog.Visible))
+        assertThat(viewModel.state.value.productsInfoDialog.isVisible).isFalse()
+    }
+
+    @Test
+    fun `given home screen is at checkout, when products are updated, then should not modify screen position`() {
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(
+                ChildToParentEvent.CheckoutClicked(listOf(1)),
+                ChildToParentEvent.ProductsStatusChanged.FullScreen
+            )
+        )
+        val viewModel = createViewModel()
+
+        assertTrue(viewModel.state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout)
     }
 
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
-        parentToChildrenEventSender
+        parentToChildrenEventSender,
+        SavedStateHandle()
     )
 }
