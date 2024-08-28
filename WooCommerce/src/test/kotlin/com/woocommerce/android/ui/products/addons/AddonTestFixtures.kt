@@ -8,10 +8,10 @@ import com.woocommerce.android.util.UnitTestUtils.jsonFileToString
 import org.wordpress.android.fluxc.domain.Addon
 import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*
 import org.wordpress.android.fluxc.model.OrderEntity
-import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.addons.RemoteAddonDto
-import org.wordpress.android.fluxc.model.get
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.get
 import org.wordpress.android.fluxc.model.order.LineItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.addons.mappers.RemoteAddonMapper
 

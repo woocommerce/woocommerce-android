@@ -14,7 +14,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -59,7 +58,11 @@ class WooPosHomeViewModelTest {
         viewModel.onUIEvent(WooPosHomeUIEvent.SystemBackClicked)
 
         // THEN
-        assertThat(viewModel.state.value.exitConfirmationDialog).isEqualTo(WooPosExitConfirmationDialog)
+        assertThat(viewModel.state.value.exitConfirmationDialog).isEqualTo(
+            WooPosHomeState.ExitConfirmationDialog(
+                isVisible = true
+            )
+        )
     }
 
     @Test
@@ -93,7 +96,7 @@ class WooPosHomeViewModelTest {
             viewModel.onUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed)
 
             // THEN
-            assertThat(viewModel.state.value.exitConfirmationDialog).isNull()
+            assertThat(viewModel.state.value.exitConfirmationDialog.isVisible).isFalse()
         }
 
     @Test
@@ -109,7 +112,11 @@ class WooPosHomeViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value.exitConfirmationDialog)
-                .isEqualTo(WooPosExitConfirmationDialog)
+                .isEqualTo(
+                    WooPosHomeState.ExitConfirmationDialog(
+                        isVisible = true
+                    )
+                )
         }
 
     @Test
@@ -126,7 +133,11 @@ class WooPosHomeViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value.exitConfirmationDialog)
-                .isEqualTo(WooPosExitConfirmationDialog)
+                .isEqualTo(
+                    WooPosHomeState.ExitConfirmationDialog(
+                        isVisible = true
+                    )
+                )
         }
 
     @Test
@@ -140,7 +151,9 @@ class WooPosHomeViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        assertTrue((viewModel.state.value.productsInfoDialog is WooPosHomeState.ProductsInfoDialog.Visible))
+        assertThat(viewModel.state.value.productsInfoDialog).isEqualTo(
+            WooPosHomeState.ProductsInfoDialog(isVisible = true)
+        )
     }
 
     @Test
@@ -155,7 +168,7 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(
-            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).header
+            (viewModel.state.value.productsInfoDialog).header
         ).isEqualTo(
             R.string.woopos_dialog_products_info_heading
         )
@@ -173,7 +186,7 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(
-            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryMessage
+            (viewModel.state.value.productsInfoDialog).primaryMessage
         ).isEqualTo(
             R.string.woopos_dialog_products_info_primary_message
         )
@@ -191,7 +204,7 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(
-            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).secondaryMessage
+            (viewModel.state.value.productsInfoDialog).secondaryMessage
         ).isEqualTo(
             R.string.woopos_dialog_products_info_secondary_message
         )
@@ -209,7 +222,7 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(
-            (viewModel.state.value.productsInfoDialog as WooPosHomeState.ProductsInfoDialog.Visible).primaryButton.label
+            (viewModel.state.value.productsInfoDialog).primaryButton.label
         ).isEqualTo(
             R.string.woopos_dialog_products_info_button_label
         )
@@ -227,7 +240,7 @@ class WooPosHomeViewModelTest {
         viewModel.onUIEvent(WooPosHomeUIEvent.DismissProductsInfoDialog)
 
         // THEN
-        assertFalse((viewModel.state.value.productsInfoDialog is WooPosHomeState.ProductsInfoDialog.Visible))
+        assertThat(viewModel.state.value.productsInfoDialog.isVisible).isFalse()
     }
 
     @Test

@@ -1632,6 +1632,64 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
             verify(cardReaderTrackingInfoKeeper).setCountry(eq("US"))
         }
 
+    @Test
+    fun `when stripe account pending verification, then ONBOARDING_COMPLETED returned`() = testBlocking {
+        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPaymentAccountStatus.PENDING_VERIFICATION,
+                hasPendingRequirements = false,
+                hadOverdueRequirements = false
+            )
+        )
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isEqualTo(
+            CardReaderOnboardingState.OnboardingCompleted(
+                PluginType.WOOCOMMERCE_PAYMENTS,
+                wcPayPluginVersion,
+                countryCode
+            )
+        )
+    }
+
+    @Test
+    fun `when stripe account pending verification and stripe is activated, then onboarding complete with stripe`() =
+        testBlocking {
+            whenever(wooStore.fetchSitePlugins(site)).thenReturn(
+                WooResult(listOf(buildStripeExtensionPluginInfo(isActive = true)))
+            )
+            whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+                buildPaymentAccountResult(WCPaymentAccountResult.WCPaymentAccountStatus.PENDING_VERIFICATION)
+            )
+
+            val result = checker.getOnboardingState()
+
+            assertThat(result).isEqualTo(
+                CardReaderOnboardingState.OnboardingCompleted(
+                    STRIPE_EXTENSION_GATEWAY,
+                    stripePluginVersion,
+                    countryCode
+                )
+            )
+        }
+
+    @Test
+    fun `when status is pending verification and COD is disabled, then CashOnDeliveryDisabled returned`() = testBlocking {
+        whenever(wcInPersonPaymentsStore.loadAccount(any(), any())).thenReturn(
+            buildPaymentAccountResult(
+                WCPaymentAccountResult.WCPaymentAccountStatus.PENDING_VERIFICATION,
+                hasPendingRequirements = false,
+                hadOverdueRequirements = false
+            )
+        )
+        whenever(cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()).thenReturn(false)
+
+        val result = checker.getOnboardingState()
+
+        assertThat(result).isInstanceOf(CardReaderOnboardingState.CashOnDeliveryDisabled::class.java)
+    }
+
     private fun buildPaymentAccountResult(
         status: WCPaymentAccountResult.WCPaymentAccountStatus = WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE,
         hasPendingRequirements: Boolean = false,

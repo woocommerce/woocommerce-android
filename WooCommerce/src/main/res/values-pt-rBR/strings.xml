@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-13 20:54:03+0000
+Translation-Revision-Date: 2024-08-21 13:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_menu_toolbar_content_description">Menu</string>
+    <string name="woopos_cart_item_content_description">Produto no carrinho %s. Preço: %s</string>
+    <string name="woopos_product_item_content_description">Produto %s. Preço: %s</string>
+    <string name="blaze_campaign_status_suspended">Suspensa</string>
     <string name="woopos_success_screen_total">Um pagamento de %1$s foi feito com sucesso</string>
     <string name="woopos_new_order_button">Novo pedido</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
@@ -117,26 +121,25 @@ Language: pt_BR
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Deixe a gente gerar os detalhes do produto para você</string>
     <string name="ai_product_creation_product_prompt_subtitle">Fale sobre seu produto e o que o torna único, e deixe a mágica com a IA.</string>
     <string name="woopos_payment_total_label">Total</string>
-    <string name="woopos_payment_tax_label">Imposto</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_successful_label">Pagamento realizado com êxito</string>
     <string name="woopos_payment_failed_please_try_again">Falha no pagamento. Tente novamente.</string>
     <string name="woopos_cart_back_content_description">Ícone do carrinho</string>
     <string name="woopos_products_screen_title">Produtos</string>
-    <string name="woopos_product_image_description">Imagem do produto</string>
     <string name="more_menu_button_google_description">Otimizar vendas e aumentar o número de visitas com Google Ads</string>
     <string name="no_quantity_rules">Não há regras de quantidade</string>
     <string name="woopos_payment_collect_payment_label">Receber pagamentos com cartão</string>
     <string name="more_menu_button_google">Google para WooCommerce</string>
     <string name="woopos_items_in_cart">%d item</string>
     <string name="woopos_clear_cart_button">Limpar</string>
+    <string name="woopos_payment_tax_label">Impostos</string>
     <string name="blaze_campaign_preview_audience_section_title">Público</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancelar</string>
     <string name="woopos_exit_confirmation_confirm_button">Sair</string>
-    <string name="woopos_remove_item_from_cart_content_description">Remover item do carrinho</string>
     <string name="woopos_exit_confirmation_message">Tem certeza de que deseja sair do PDV?</string>
     <string name="woopos_exit_confirmation_title">Sair do PDV</string>
     <string name="woopos_checkout_button">Finalizar compra</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Remover %s do carrinho</string>
     <string name="woopos_reader_unknown">Status do leitor desconhecido</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_connected">Leitor conectado</string>
@@ -1295,7 +1298,6 @@ Language: pt_BR
     <string name="login_application_passwords_help">O que são senhas do aplicativo?</string>
     <string name="login_application_passwords_unavailable">Parece que a funcionalidade Senhas do aplicativo está desativada no seu site %1$s.\n Ative-a para usar o aplicativo do WooCommerce.</string>
     <string name="login_open_installation_page">Abrir página de instalação</string>
-    <string name="not_a_valid_qr_code">O código QR escaneado não é um código WooCommerce</string>
     <string name="wc_reply">Responder</string>
     <string name="review_reply_success">Resposta enviada!</string>
     <string name="review_reply_failure">Ocorreu um erro ao enviar a resposta</string>
@@ -1370,7 +1372,6 @@ Language: pt_BR
     <string name="analytics_visitors_subtitle">Visitantes</string>
     <string name="domain_picker_subtitle">É onde as pessoas encontrarão seu site na internet. Não se preocupe, você pode mudar isso mais tarde.</string>
     <string name="or_use_password_below_qr_code_scan_option">Ou fazer login com senha</string>
-    <string name="or_scan_qr_code_to_log_in">Escanear código QR para fazer login</string>
     <string name="simulated_reader_toast">A simulação de leitor virtual foi desativada</string>
     <string name="simulated_reader_key">Simulação de chave de leitor</string>
     <string name="variations_bulk_update_stock_quantity_success">Quantidade de estoque atualizada</string>
@@ -1425,7 +1426,6 @@ Language: pt_BR
     <string name="show_password_content_description">Mostrar senha</string>
     <string name="hide_password_content_description">Ocultar senha</string>
     <string name="qr_code_login_camera_permission_denied_message">Para usar esta funcionalidade, permita o uso da sua câmera.</string>
-    <string name="login_with_qr_code">Leia o QR code para fazer login</string>
     <string name="stats_widget_last_updated_message">Às %1$s</string>
     <string name="stats_widget_error_no_data">Não foi possível carregar os dados</string>
     <string name="stats_today_widget_description">Estatísticas de hoje do WooCommerce</string>

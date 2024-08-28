@@ -231,14 +231,15 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 is NavigateBackToOrderList -> {
-                    val action = if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
-                            orderId = event.order.id
-                        )
+                    if (requireContext().windowSizeClass > WindowSizeClass.Compact) {
+                        // in tablet mode the [SelectPaymentMethodFragment] is shown in the details pane.
+                        // We should pop the back stack to show the [OrderDetailsFragment].
+                        findNavController().popBackStack()
                     } else {
-                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList()
+                        SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList().run {
+                            findNavController().navigateSafely(this)
+                        }
                     }
-                    findNavController().navigateSafely(action)
                 }
 
                 is NavigateBackToHub -> {
