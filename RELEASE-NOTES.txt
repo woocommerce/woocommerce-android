@@ -13,6 +13,7 @@
 - [*] [Internal] Fixed an issue with date formatting for the Blaze campaign creation API request [https://github.com/woocommerce/woocommerce-android/pull/12372]
 - [*] Fixed a rare crash in the order editing screen. [https://github.com/woocommerce/woocommerce-android/pull/12382]
 - [*] Fixed the blaze budget screens that are unusable on small screens. [https://github.com/woocommerce/woocommerce-android/pull/12402]
+- [**] Fixed navigation on "Collect payment" button tap in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/12436]
 
 20.0
 -----
