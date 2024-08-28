@@ -66,8 +66,7 @@ private fun CustomFieldsEditorScreen(
             WCOutlinedTextField(
                 value = state.customField.key,
                 onValueChange = onKeyChanged,
-                label = "Key",
-                placeholderText = "Enter key"
+                label = stringResource(R.string.custom_fields_editor_key_label),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -75,8 +74,7 @@ private fun CustomFieldsEditorScreen(
             WCOutlinedTextField(
                 value = state.customField.value,
                 onValueChange = onValueChanged,
-                label = "Value",
-                placeholderText = "Enter value",
+                label = stringResource(R.string.custom_fields_editor_value_label),
                 minLines = 5
             )
         }
