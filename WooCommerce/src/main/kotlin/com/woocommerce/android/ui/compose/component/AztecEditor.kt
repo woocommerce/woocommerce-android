@@ -149,16 +149,18 @@ private fun InternalAztecEditor(
             viewsHolder.layout
         },
         update = {
-            if (minLines != -1) {
+            if (minLines != -1 && minLines != aztec.visualEditor.minLines) {
                 aztec.visualEditor.minLines = minLines
             }
-            if (maxLines != Int.MAX_VALUE) {
+            if (maxLines != Int.MAX_VALUE && maxLines != aztec.visualEditor.maxLines) {
                 aztec.visualEditor.maxLines = maxLines
                 aztec.sourceEditor?.maxLines = maxLines
             }
 
-            aztec.visualEditor.label = label
-            aztec.sourceEditor?.label = label
+            if (aztec.visualEditor.label != label) {
+                aztec.visualEditor.label = label
+                aztec.sourceEditor?.label = label
+            }
 
             if (htmlMode) {
                 if (aztec.visualEditor.toHtml() != content) {
