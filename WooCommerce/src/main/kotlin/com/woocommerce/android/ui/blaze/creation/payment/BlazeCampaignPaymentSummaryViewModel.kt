@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,16 +27,14 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val blazeRepository: BlazeRepository,
     currencyFormatter: CurrencyFormatter,
+    private val blazeRepository: BlazeRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val dashboardRepository: DashboardRepository
+    private val dashboardRepository: DashboardRepository,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
-    private val budgetFormatted = currencyFormatter.formatCurrency(
-        amount = navArgs.campaignDetails.budget.totalBudget.toBigDecimal(),
-        currencyCode = navArgs.campaignDetails.budget.currencyCode
-    )
+    private val budgetFormatted = getBudgetDisplayValue(currencyFormatter)
 
     private val selectedPaymentMethodId = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
@@ -52,7 +51,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         campaignCreationState
     ) { selectedPaymentMethodId, paymentMethodState, campaignCreationState ->
         ViewState(
-            budgetFormatted = budgetFormatted,
+            displayBudget = budgetFormatted,
             paymentMethodsState = paymentMethodState,
             selectedPaymentMethodId = selectedPaymentMethodId,
             campaignCreationState = campaignCreationState
@@ -150,8 +149,23 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         }
     }
 
+    private fun getBudgetDisplayValue(currencyFormatter: CurrencyFormatter): String {
+        val formattedBudget = currencyFormatter.formatCurrency(
+            amount = navArgs.campaignDetails.budget.totalBudget.toBigDecimal(),
+            currencyCode = navArgs.campaignDetails.budget.currencyCode
+        )
+        return when {
+            navArgs.campaignDetails.budget.isEndlessCampaign -> resourceProvider.getString(
+                R.string.blaze_campaign_budget_weekly_spending,
+                formattedBudget
+            )
+
+            else -> formattedBudget
+        }
+    }
+
     data class ViewState(
-        val budgetFormatted: String,
+        val displayBudget: String,
         val paymentMethodsState: PaymentMethodsState,
         private val selectedPaymentMethodId: String?,
         val campaignCreationState: CampaignCreationState? = null

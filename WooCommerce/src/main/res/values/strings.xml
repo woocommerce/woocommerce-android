@@ -3899,6 +3899,7 @@
     <string name="blaze_campaign_preview_details_destination_url">Ad destination</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirm Details</string>
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%1$s weekly, starting from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
     <string name="blaze_campaign_preview_target_location_search_hint">Search locations</string>
     <string name="blaze_campaign_preview_missing_image_dialog_text">Please add an image for the Blaze campaign</string>
@@ -3912,10 +3913,12 @@
     <string name="blaze_campaign_budget_toolbar_title">Set your budget</string>
     <string name="blaze_campaign_budget_subtitle">How much would you like to spend on your product promotion campaign?</string>
     <string name="blaze_campaign_budget_total_spend">Total spend</string>
+    <string name="blaze_campaign_budget_weekly_spend">Weekly spend</string>
     <string name="blaze_campaign_budget_days_duration">for %1$s days</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s daily</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimated people reached per day</string>
     <string name="blaze_campaign_budget_duration_section_title">Duration</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Starting from %1$s</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
     <string name="blaze_campaign_budget_impressions_title">Impressions</string>
@@ -3926,8 +3929,10 @@
     <string name="blaze_campaign_budget_duration_bottom_sheet_title">Set duration</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s days</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
+    <string name="blaze_campaign_budget_duration_endless_label">Run until I stop it</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
     <string name="blaze_campaign_budget_error_fetching_forecast">Failed to estimate impressions. Retry?</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s weekly</string>
 
     <!--
     Blaze campaign edit-ad screen
@@ -4267,4 +4272,10 @@
     <string name="google_ads_campaign_created_success_title">Ready to Go!</string>
     <string name="google_ads_campaign_created_success_description">Your new campaign has been created. Exciting times ahead for your sales!</string>
     <string name="google_ads_campaign_created_success_done_button">Done</string>
+
+    <!--
+    Custom Fields
+    -->
+    <string name="custom_fields_list_title">Custom Fields</string>
+    <string name="custom_fields_list_loading_error">Error while loading custom fields</string>
 </resources>
