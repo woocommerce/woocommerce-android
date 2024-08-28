@@ -76,8 +76,7 @@ private fun WooPosHomeScreen(
         when (state.screenPositionState) {
             WooPosHomeState.ScreenPositionState.Cart.Hidden -> screenWidthDp
 
-            is WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
-            WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
+            is WooPosHomeState.ScreenPositionState.Cart.Visible,
             WooPosHomeState.ScreenPositionState.Checkout.NotPaid -> productsWidthDp
 
             WooPosHomeState.ScreenPositionState.Checkout.Paid -> productsWidthDp - cartWidthDp
@@ -234,23 +233,7 @@ fun WooPosHomeCartScreenPreview() {
     WooPosTheme {
         WooPosHomeScreen(
             state = WooPosHomeState(
-                screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
-                productsInfoDialog = ProductsInfoDialog(isVisible = false),
-                exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
-            ),
-            onHomeUIEvent = { },
-            onNavigationEvent = {},
-        )
-    }
-}
-
-@Composable
-@WooPosPreview
-fun WooPosHomeCartEmptyScreenPreview() {
-    WooPosTheme {
-        WooPosHomeScreen(
-            state = WooPosHomeState(
-                screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
+                screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible,
                 productsInfoDialog = ProductsInfoDialog(isVisible = false),
                 exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
             ),

@@ -19,7 +19,7 @@ class WooPosHomeViewModel @Inject constructor(
         scope = viewModelScope,
         key = "home_state",
         initialValue = WooPosHomeState(
-            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
+            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible,
             productsInfoDialog = WooPosHomeState.ProductsInfoDialog(isVisible = false),
             exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false)
         )
@@ -36,14 +36,14 @@ class WooPosHomeViewModel @Inject constructor(
                 when (_state.value.screenPositionState) {
                     WooPosHomeState.ScreenPositionState.Checkout.NotPaid -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible
                         )
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
 
                     WooPosHomeState.ScreenPositionState.Checkout.Paid -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible
                         )
                         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                     }
@@ -83,7 +83,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible
                         )
                     }
 
@@ -95,7 +95,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.NewTransactionClicked -> {
                         _state.value = _state.value.copy(
-                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
+                            screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible
                         )
                         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                     }
@@ -105,8 +105,6 @@ class WooPosHomeViewModel @Inject constructor(
                             screenPositionState = WooPosHomeState.ScreenPositionState.Checkout.Paid
                         )
                     }
-
-                    is ChildToParentEvent.CartStatusChanged -> handleCartStatusChanged(event)
 
                     ChildToParentEvent.ExitPosClicked -> {
                         _state.value = _state.value.copy(
@@ -138,26 +136,13 @@ class WooPosHomeViewModel @Inject constructor(
             ChildToParentEvent.ProductsStatusChanged.WithCart -> {
                 when (screenPosition) {
                     WooPosHomeState.ScreenPositionState.Cart.Hidden ->
-                        WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
+                        WooPosHomeState.ScreenPositionState.Cart.Visible
 
-                    WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
-                    WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty,
+                    WooPosHomeState.ScreenPositionState.Cart.Visible,
                     WooPosHomeState.ScreenPositionState.Checkout.NotPaid,
                     WooPosHomeState.ScreenPositionState.Checkout.Paid -> screenPosition
                 }
             }
-        }
-        _state.value = _state.value.copy(screenPositionState = newScreenPositionState)
-    }
-
-    private fun handleCartStatusChanged(event: ChildToParentEvent.CartStatusChanged) {
-        if (_state.value.screenPositionState is WooPosHomeState.ScreenPositionState.Checkout.Paid) {
-            return
-        }
-
-        val newScreenPositionState = when (event) {
-            ChildToParentEvent.CartStatusChanged.Empty -> WooPosHomeState.ScreenPositionState.Cart.Visible.Empty
-            ChildToParentEvent.CartStatusChanged.NotEmpty -> WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty
         }
         _state.value = _state.value.copy(screenPositionState = newScreenPositionState)
     }
