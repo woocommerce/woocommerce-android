@@ -43,7 +43,7 @@ class WooPosCartViewModel @Inject constructor(
     )
 
     val state: LiveData<WooPosCartState> = _state
-        .asLiveData(viewModelScope.coroutineContext)
+        .asLiveData()
         .map { updateCartStatusDependingOnItems(it) }
         .map { updateToolbarState(it) }
         .map { updateStateDependingOnCartStatus(it) }
