@@ -65,11 +65,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
-            is WooPosTotalsUIEvent.CollectPaymentClicked -> {
-                viewModelScope.launch {
-                    collectPayment()
-                }
-            }
+            is WooPosTotalsUIEvent.CollectPaymentClicked -> collectPayment()
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(
