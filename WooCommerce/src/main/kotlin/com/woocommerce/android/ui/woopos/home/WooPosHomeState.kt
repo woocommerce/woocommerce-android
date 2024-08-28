@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 data class WooPosHomeState(
     val screenPositionState: ScreenPositionState,
     val productsInfoDialog: ProductsInfoDialog,
-    val exitConfirmationDialog: WooPosExitConfirmationDialog? = null,
+    val exitConfirmationDialog: ExitConfirmationDialog,
 ) : Parcelable {
     @Parcelize
     sealed class ScreenPositionState : Parcelable {
@@ -40,33 +40,35 @@ data class WooPosHomeState(
     }
 
     @Parcelize
-    sealed class ProductsInfoDialog : Parcelable {
-        @Parcelize
-        data object Hidden : ProductsInfoDialog()
+    data class ProductsInfoDialog(val isVisible: Boolean) : Parcelable {
+        @IgnoredOnParcel
+        val header: Int = R.string.woopos_dialog_products_info_heading
 
-        @Parcelize
-        data class Visible(
-            @StringRes val header: Int,
-            @StringRes val primaryMessage: Int,
-            @StringRes val secondaryMessage: Int,
-            val primaryButton: PrimaryButton,
-        ) : ProductsInfoDialog() {
-            @Parcelize
-            data class PrimaryButton(
-                @StringRes val label: Int,
-            ) : Parcelable
-        }
+        @IgnoredOnParcel
+        val primaryMessage: Int = R.string.woopos_dialog_products_info_primary_message
+
+        @IgnoredOnParcel
+        val secondaryMessage: Int = R.string.woopos_dialog_products_info_secondary_message
+
+        @IgnoredOnParcel
+        val primaryButton: PrimaryButton = PrimaryButton(
+            label = R.string.woopos_dialog_products_info_button_label,
+        )
+
+        data class PrimaryButton(
+            @StringRes val label: Int,
+        )
     }
-}
 
-@Parcelize
-data object WooPosExitConfirmationDialog : Parcelable {
-    @IgnoredOnParcel
-    val title: Int = R.string.woopos_exit_dialog_confirmation_title
+    @Parcelize
+    data class ExitConfirmationDialog(val isVisible: Boolean) : Parcelable {
+        @IgnoredOnParcel
+        val title: Int = R.string.woopos_exit_dialog_confirmation_title
 
-    @IgnoredOnParcel
-    val message: Int = R.string.woopos_exit_dialog_confirmation_message
+        @IgnoredOnParcel
+        val message: Int = R.string.woopos_exit_dialog_confirmation_message
 
-    @IgnoredOnParcel
-    val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
+        @IgnoredOnParcel
+        val confirmButton: Int = R.string.woopos_exit_dialog_confirmation_confirm_button
+    }
 }

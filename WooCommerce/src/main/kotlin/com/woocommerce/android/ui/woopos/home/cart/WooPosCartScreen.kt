@@ -273,7 +273,6 @@ private fun CartToolbar(
                     start = 16.dp.toAdaptivePadding(),
                     end = 4.dp,
                     top = 4.dp,
-                    bottom = 4.dp
                 )
         )
 

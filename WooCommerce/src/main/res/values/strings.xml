@@ -1658,6 +1658,7 @@
     <string name="card_reader_payment_failed_insufficient_funds">Payment declined due to insufficient funds</string>
     <string name="card_reader_payment_failed_invalid_amount">The payment amount is not allowed for the card presented</string>
     <string name="card_reader_payment_failed_pin_required">This card requires a PIN code and thus cannot be processed</string>
+    <string name="card_reader_payment_failed_incorrect_pin">An incorrect PIN has been entered. Try again, or use another means of payment</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">A PIN code is required, but Tap To Pay doesn\'t support it yet. Consider using an external card reader</string>
     <string name="card_reader_payment_failed_too_many_pin_tries">An incorrect PIN has been entered too many times</string>
     <string name="card_reader_payment_failed_test_card">System test cards are not permitted for payment</string>
@@ -4182,7 +4183,7 @@
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
 
     <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
-    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\nOther product types, such as variable and virtual, will be available in future updates.</string>
+    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.\n\nOther product types, such as variable and virtual, will be available in future updates.</string>
     <string name="woopos_dialog_products_info_secondary_message">To take payment for a non-simple product, exit POS and create a new order from the orders tab.</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Create an order in store management</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
@@ -4194,6 +4195,7 @@
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
     <string name="woopos_exit_dialog_confirmation_confirm_button">Exit</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_items_in_cart">%d item</string>

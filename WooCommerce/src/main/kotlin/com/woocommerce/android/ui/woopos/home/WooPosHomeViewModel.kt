@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -21,8 +20,8 @@ class WooPosHomeViewModel @Inject constructor(
         key = "home_state",
         initialValue = WooPosHomeState(
             screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible.Empty,
-            productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden,
-            exitConfirmationDialog = null
+            productsInfoDialog = WooPosHomeState.ProductsInfoDialog(isVisible = false),
+            exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false)
         )
     )
     val state: StateFlow<WooPosHomeState> = _state
@@ -51,19 +50,21 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is WooPosHomeState.ScreenPositionState.Cart -> {
                         _state.value = _state.value.copy(
-                            exitConfirmationDialog = WooPosExitConfirmationDialog
+                            exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = true)
                         )
                     }
                 }
             }
 
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
-                _state.value = _state.value.copy(exitConfirmationDialog = null)
+                _state.value = _state.value.copy(
+                    exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false)
+                )
             }
 
             WooPosHomeUIEvent.DismissProductsInfoDialog -> {
                 _state.value = _state.value.copy(
-                    productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Hidden
+                    productsInfoDialog = WooPosHomeState.ProductsInfoDialog(isVisible = false)
                 )
             }
         }
@@ -109,7 +110,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     ChildToParentEvent.ExitPosClicked -> {
                         _state.value = _state.value.copy(
-                            exitConfirmationDialog = WooPosExitConfirmationDialog
+                            exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = true)
                         )
                     }
 
@@ -117,14 +118,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     ChildToParentEvent.ProductsDialogInfoIconClicked -> {
                         _state.value = _state.value.copy(
-                            productsInfoDialog = WooPosHomeState.ProductsInfoDialog.Visible(
-                                header = R.string.woopos_dialog_products_info_heading,
-                                primaryMessage = R.string.woopos_dialog_products_info_primary_message,
-                                secondaryMessage = R.string.woopos_dialog_products_info_secondary_message,
-                                primaryButton = WooPosHomeState.ProductsInfoDialog.Visible.PrimaryButton(
-                                    label = R.string.woopos_dialog_products_info_button_label,
-                                )
-                            )
+                            productsInfoDialog = WooPosHomeState.ProductsInfoDialog(isVisible = true)
                         )
                     }
                 }
