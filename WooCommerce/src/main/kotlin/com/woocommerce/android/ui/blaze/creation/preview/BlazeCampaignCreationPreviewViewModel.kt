@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_FORM_DISP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
@@ -319,7 +320,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             isEndlessCampaign -> resourceProvider.getString(
                 R.string.blaze_campaign_preview_days_duration_endless,
                 totalBudgetWithCurrency,
-                startDate.formatToMMMdd()
+                startDate.formatToMMMddYYYY()
             )
 
             else ->
