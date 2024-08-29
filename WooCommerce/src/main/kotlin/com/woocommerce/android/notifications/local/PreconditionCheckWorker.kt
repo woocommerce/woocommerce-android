@@ -35,7 +35,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
         val type = LocalNotificationType.fromString(inputData.getString(LOCAL_NOTIFICATION_TYPE))
         val siteId = inputData.getLong(LOCAL_NOTIFICATION_SITE_ID, 0L)
         return when (type) {
-            LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER -> proceedIfValidSiteAndBlazeAvailable(siteId)
+            LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER,
             LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER -> proceedIfValidSiteAndBlazeAvailable(siteId)
 
             null -> cancelWork("Notification type is null. Cancelling work.")
