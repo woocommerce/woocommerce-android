@@ -53,6 +53,8 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.Companion.MAX_DATE_LIMIT_IN_DAYS
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
@@ -106,7 +108,6 @@ private fun CampaignBudgetScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(id = R.string.blaze_campaign_budget_toolbar_title),
                 onNavigationButtonClick = onBackPressed,
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
@@ -181,47 +182,33 @@ private fun EditBudgetSection(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            modifier = Modifier.padding(
-                top = 40.dp,
-                bottom = 90.dp
-            ),
+            modifier = Modifier.padding(16.dp),
+            text = stringResource(id = R.string.blaze_campaign_budget_toolbar_title),
+            style = MaterialTheme.typography.h4,
+            fontWeight = FontWeight.Bold,
+        )
+        Text(
+            modifier = Modifier.padding(bottom = 90.dp),
             text = stringResource(id = R.string.blaze_campaign_budget_subtitle),
             style = MaterialTheme.typography.subtitle1,
             textAlign = TextAlign.Center,
-            lineHeight = 24.sp,
             color = colorResource(id = color.color_on_surface_medium)
         )
         Text(
             modifier = Modifier.padding(bottom = 8.dp),
-            text = when (state.isEndlessCampaign) {
-                true -> stringResource(id = R.string.blaze_campaign_budget_weekly_spend)
-                false -> stringResource(id = R.string.blaze_campaign_budget_total_spend)
-            },
+            text = stringResource(id = R.string.blaze_campaign_budget_daily_spend_label),
             style = MaterialTheme.typography.body1,
             color = colorResource(id = color.color_on_surface_medium)
         )
         Text(
-            text = " $${state.totalBudget.toInt()} USD",
+            text = state.formattedDailySpending,
             style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold,
         )
-        if (state.isEndlessCampaign.not()) {
-            Text(
-                text = stringResource(id = R.string.blaze_campaign_budget_days_duration, state.durationInDays),
-                style = MaterialTheme.typography.h4,
-                color = colorResource(id = color.color_on_surface_medium)
-            )
-        }
-        Text(
-            modifier = Modifier.padding(top = 24.dp),
-            text = stringResource(id = R.string.blaze_campaign_budget_daily_spend, state.dailySpending),
-            color = colorResource(id = color.color_on_surface_medium),
-            style = MaterialTheme.typography.h6,
-        )
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
-            value = state.totalBudget,
-            valueRange = state.budgetRangeMin..state.budgetRangeMax,
+            value = state.dailySpend,
+            valueRange = CAMPAIGN_MINIMUM_DAILY_SPEND ..CAMPAIGN_MAXIMUM_DAILY_SPEND,
             onValueChange = { onBudgetUpdated(it) },
             onValueChangeFinished = { onBudgetChangeFinished() },
             colors = SliderDefaults.colors(
@@ -483,9 +470,9 @@ private fun CampaignBudgetScreenPreview() {
         state = BlazeCampaignBudgetViewModel.BudgetUiState(
             currencyCode = "USD",
             totalBudget = 35f,
-            budgetRangeMin = 5f,
-            budgetRangeMax = 35f,
-            dailySpending = "$5",
+            formattedTotalBudget = "$35",
+            dailySpend = 5f,
+            formattedDailySpending = "$5",
             durationInDays = 7,
             durationRangeMin = 1f,
             durationRangeMax = 28f,
