@@ -3855,9 +3855,11 @@
     <string name="blaze_campaign_status_rejected">Rejected</string>
     <string name="blaze_campaign_status_canceled">Canceled</string>
     <string name="blaze_campaign_status_suspended">Suspended</string>
-    <string name="blaze_campaign_status_impressions">Impressions</string>
-    <string name="blaze_campaign_status_clicks">Clicks</string>
-    <string name="blaze_campaign_status_budget">Budget</string>
+    <string name="blaze_campaign_status_ctr_label">Click-throughs</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_budget_total">Total</string>
+    <string name="blaze_campaign_status_budget_remaining">Remaining</string>
+    <string name="blaze_campaign_status_budget_weekly">Weekly</string>
     <string name="blaze_overflow_menu_hide_blaze">Hide Blaze</string>
 
     <!--
