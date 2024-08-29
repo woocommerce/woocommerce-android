@@ -345,7 +345,7 @@ private fun CampaignBudgetFooter(
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.SemiBold,
             )
-            Spacer(modifier = Modifier.width(3.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = stringResource(
                     id = R.string.blaze_campaign_budget_days_duration,
