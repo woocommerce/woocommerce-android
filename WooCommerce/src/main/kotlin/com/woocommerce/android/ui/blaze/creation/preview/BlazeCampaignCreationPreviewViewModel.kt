@@ -166,7 +166,13 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = BLAZE_CREATION_CONFIRM_DETAILS_TAPPED,
             properties = mapOf(
-                AnalyticsTracker.KEY_BLAZE_IS_AI_CONTENT to isAdContentGeneratedByAi(campaignDetails.value)
+                AnalyticsTracker.KEY_BLAZE_IS_AI_CONTENT to isAdContentGeneratedByAi(campaignDetails.value),
+                AnalyticsTracker.KEY_BLAZE_CAMPAIGN_TYPE to when {
+                    campaignDetails.value?.budget?.isEndlessCampaign == true ->
+                        AnalyticsTracker.VALUE_EVERGREEN_CAMPAIGN
+
+                    else -> AnalyticsTracker.VALUE_START_END_CAMPAIGN
+                }
             )
         )
         campaignDetails.value?.let {
