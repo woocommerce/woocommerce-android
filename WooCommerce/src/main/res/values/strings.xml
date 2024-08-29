@@ -4223,7 +4223,6 @@
     <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
     <string name="woopos_splash_title">Starting up</string>
-    <string name="woopos_splash_message">Let’s serve some customers</string>
     <string name="woopos_products_empty_list_image_description">No products</string>
     <string name="woopos_products_empty_list_title">No supported products found</string>
     <string name="woopos_products_empty_list_message">POS currently only supports simple products – \ncreate one to get started.</string>

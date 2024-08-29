@@ -14,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -57,14 +56,6 @@ private fun Loading() {
         Text(
             text = stringResource(id = R.string.woopos_splash_title),
             style = MaterialTheme.typography.h5,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-
-        Text(
-            text = stringResource(id = R.string.woopos_splash_message),
-            style = MaterialTheme.typography.h4,
-            fontWeight = FontWeight.Bold
         )
     }
 }
