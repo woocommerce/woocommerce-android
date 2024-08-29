@@ -12,6 +12,7 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
+import com.woocommerce.android.ui.blaze.notification.AbandonedCampaignReminder
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -28,6 +29,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeRepository: BlazeRepository,
     currencyFormatter: CurrencyFormatter,
+    private val abandonedCampaignReminder: AbandonedCampaignReminder,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val dashboardRepository: DashboardRepository
 ) : ScopedViewModel(savedStateHandle) {
@@ -124,6 +126,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     campaignCreationState.value = null
+                    abandonedCampaignReminder.setBlazeCampaignCreated()
                     analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_SUCCESS)
                     dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.ONBOARDING, isVisible = true)
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
