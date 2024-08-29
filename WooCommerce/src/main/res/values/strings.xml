@@ -3914,7 +3914,7 @@
     Blaze campaign budget screen
     -->
     <string name="blaze_campaign_budget_toolbar_title">Set your budget</string>
-    <string name="blaze_campaign_budget_subtitle">How much would you like to spend on your product promotion campaign?</string>
+    <string name="blaze_campaign_budget_duration_subtitle">How much would you like to spend on your campaign, and how long should it run for?</string>
     <string name="blaze_campaign_budget_weekly_spend">Weekly spend</string>
     <string name="blaze_campaign_budget_daily_spend_label">Daily spend</string>
     <string name="blaze_campaign_budget_days_duration">for %1$s days</string>

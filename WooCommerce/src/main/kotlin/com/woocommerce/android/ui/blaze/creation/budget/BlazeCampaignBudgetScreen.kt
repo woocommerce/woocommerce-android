@@ -180,8 +180,8 @@ private fun EditBudgetSection(
             fontWeight = FontWeight.Bold,
         )
         Text(
-            modifier = Modifier.padding(bottom = 90.dp),
-            text = stringResource(id = R.string.blaze_campaign_budget_subtitle),
+            modifier = Modifier.padding(bottom = 64.dp),
+            text = stringResource(id = R.string.blaze_campaign_budget_duration_subtitle),
             style = MaterialTheme.typography.subtitle1,
             textAlign = TextAlign.Center,
             color = colorResource(id = color.color_on_surface_medium)
@@ -231,10 +231,7 @@ private fun CampaignImpressionsRow(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(),) {
             Text(
                 text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast),
                 style = MaterialTheme.typography.body1,
@@ -264,6 +261,7 @@ private fun CampaignImpressionsRow(
                 )
             } else {
                 Text(
+                    modifier= Modifier.padding(top = 6.dp),
                     text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
                     style = MaterialTheme.typography.h6,
                     fontWeight = FontWeight.SemiBold,
@@ -287,7 +285,10 @@ private fun CampaignDurationRow(
             style = MaterialTheme.typography.body1,
             color = colorResource(id = color.color_on_surface_medium)
         )
-        Row(modifier = Modifier.fillMaxWidth(),) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             when {
                 isEndlessCampaign ->
                     Text(
@@ -301,7 +302,6 @@ private fun CampaignDurationRow(
 
                 else -> {
                     Text(
-                        modifier = Modifier.padding(top = 8.dp),
                         text = "$formattedStartDate - $formattedEndDate",
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.SemiBold,
