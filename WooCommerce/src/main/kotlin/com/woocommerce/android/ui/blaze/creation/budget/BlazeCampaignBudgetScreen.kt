@@ -77,7 +77,7 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onBackPressed = viewModel::onBackPressed,
             onEditDurationTapped = viewModel::onEditDurationTapped,
             onImpressionsInfoTapped = viewModel::onImpressionsInfoTapped,
-            onBudgetUpdated = viewModel::onBudgetUpdated,
+            onBudgetUpdated = viewModel::onDailyBudgetUpdated,
             onStartDateChanged = viewModel::onStartDateChanged,
             onBudgetChangeFinished = viewModel::onBudgetChangeFinished,
             onUpdateTapped = viewModel::onUpdateTapped,

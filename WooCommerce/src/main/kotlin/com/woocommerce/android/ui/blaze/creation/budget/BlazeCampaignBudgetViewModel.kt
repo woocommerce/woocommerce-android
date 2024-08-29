@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import java.util.Date
 import javax.inject.Inject
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.days
 
 @HiltViewModel
@@ -131,13 +132,14 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         }
     }
 
-    fun onBudgetUpdated(sliderValue: Float) {
+    fun onDailyBudgetUpdated(sliderValue: Float) {
+        val totalBudget = sliderValue.roundToInt().toFloat() * budgetUiState.value.durationInDays
         budgetUiState.update {
             it.copy(
                 dailySpend = sliderValue,
-                totalBudget = sliderValue * it.durationInDays,
-                formattedTotalBudget = formatBudget(rawValue = sliderValue * it.durationInDays),
-                formattedDailySpending = formatBudget(sliderValue)
+                formattedDailySpending = formatBudget(sliderValue),
+                totalBudget = totalBudget,
+                formattedTotalBudget = formatBudget(totalBudget)
             )
         }
     }
