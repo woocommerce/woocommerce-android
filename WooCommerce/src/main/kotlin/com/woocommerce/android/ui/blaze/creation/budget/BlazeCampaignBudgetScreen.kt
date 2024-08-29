@@ -150,18 +150,10 @@ private fun CampaignBudgetScreen(
                     },
                     onBudgetUpdated = onBudgetUpdated,
                     onBudgetChangeFinished = onBudgetChangeFinished,
+                    onEditDurationTapped = onEditDurationTapped,
                     modifier = Modifier.weight(1f)
                 )
-                EditDurationSection(
-                    formattedStartDate = state.formattedStartDate,
-                    formattedEndDate = state.formattedEndDate,
-                    isEndlessCampaign = state.isEndlessCampaign,
-                    onEditDurationTapped = {
-                        onEditDurationTapped()
-                        coroutineScope.launch { modalSheetState.show() }
-                    },
-                    onUpdateTapped = onUpdateTapped
-                )
+                CampaignBudgetFooter(onUpdateTapped = onUpdateTapped)
             }
         }
     }
@@ -173,6 +165,7 @@ private fun EditBudgetSection(
     onBudgetUpdated: (Float) -> Unit,
     onImpressionsInfoTapped: () -> Unit,
     onBudgetChangeFinished: () -> Unit,
+    onEditDurationTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -208,12 +201,19 @@ private fun EditBudgetSection(
         Slider(
             modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
             value = state.dailySpend,
-            valueRange = CAMPAIGN_MINIMUM_DAILY_SPEND ..CAMPAIGN_MAXIMUM_DAILY_SPEND,
+            valueRange = CAMPAIGN_MINIMUM_DAILY_SPEND..CAMPAIGN_MAXIMUM_DAILY_SPEND,
             onValueChange = { onBudgetUpdated(it) },
             onValueChangeFinished = { onBudgetChangeFinished() },
             colors = SliderDefaults.colors(
                 inactiveTrackColor = colorResource(id = color.divider_color)
             )
+        )
+        CampaignDurationRow(
+            formattedStartDate = state.formattedStartDate,
+            formattedEndDate = state.formattedEndDate,
+            isEndlessCampaign = state.isEndlessCampaign,
+            onEditDurationTapped = onEditDurationTapped,
+            modifier = Modifier.padding(top = 24.dp)
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast))
@@ -252,62 +252,72 @@ private fun EditBudgetSection(
 }
 
 @Composable
-private fun EditDurationSection(
+private fun CampaignDurationRow(
     formattedStartDate: String,
     formattedEndDate: String,
     isEndlessCampaign: Boolean,
     onEditDurationTapped: () -> Unit,
-    onUpdateTapped: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column {
-        Divider()
-        Column(
-            modifier = Modifier.padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 16.dp,
-                bottom = 24.dp
-            )
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(id = R.string.blaze_campaign_budget_scheduled_section_title),
+            style = MaterialTheme.typography.body1,
+            color = colorResource(id = color.color_on_surface_medium)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = stringResource(id = R.string.blaze_campaign_budget_duration_section_title),
-                style = MaterialTheme.typography.body1,
-                color = colorResource(id = color.color_on_surface_medium)
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                when {
-                    isEndlessCampaign ->
-                        Text(
-                            text = stringResource(
-                                id = R.string.blaze_campaign_budget_duration_section_endless_campaign_value,
-                                formattedStartDate
-                            ),
-                            style = MaterialTheme.typography.subtitle2,
-                            fontWeight = FontWeight.SemiBold,
-                        )
+            when {
+                isEndlessCampaign ->
+                    Text(
+                        text = stringResource(
+                            id = R.string.blaze_campaign_budget_duration_section_endless_campaign_value,
+                            formattedStartDate
+                        ),
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.SemiBold,
+                    )
 
-                    else -> {
-                        Text(
-                            text = "$formattedStartDate - $formattedEndDate",
-                            style = MaterialTheme.typography.subtitle2,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-                }
-                WCTextButton(
-                    onClick = onEditDurationTapped
-                ) {
-                    Text(text = stringResource(id = R.string.blaze_campaign_budget_edit_duration_button))
+                else -> {
+                    Text(
+                        text = "$formattedStartDate - $formattedEndDate",
+                        style = MaterialTheme.typography.h6,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                 }
             }
-            WCColoredButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onUpdateTapped,
-                text = stringResource(id = R.string.blaze_campaign_budget_update_button)
-            )
+            Spacer(modifier = Modifier.weight(1f))
+            WCTextButton(
+                onClick = onEditDurationTapped
+            ) {
+                Text(
+                    text = stringResource(id = R.string.blaze_campaign_budget_edit_duration_button),
+                    style = MaterialTheme.typography.h6,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun CampaignBudgetFooter(onUpdateTapped: () -> Unit) {
+    Column {
+        Divider()
+        WCColoredButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 16.dp,
+                    bottom = 24.dp
+                ),
+            onClick = onUpdateTapped,
+            text = stringResource(id = R.string.blaze_campaign_budget_update_button)
+        )
     }
 }
 
