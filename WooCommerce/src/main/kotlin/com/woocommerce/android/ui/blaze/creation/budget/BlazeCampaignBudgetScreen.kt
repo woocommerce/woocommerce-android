@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -152,7 +154,11 @@ private fun CampaignBudgetScreen(
                     onEditDurationTapped = onEditDurationTapped,
                     modifier = Modifier.weight(1f)
                 )
-                CampaignBudgetFooter(onUpdateTapped = onUpdateTapped)
+                CampaignBudgetFooter(
+                    formattedBudget = state.formattedTotalBudget,
+                    durationInDays = state.durationInDays,
+                    onUpdateTapped = onUpdateTapped
+                )
             }
         }
     }
@@ -169,7 +175,7 @@ private fun EditBudgetSection(
 ) {
     Column(
         modifier = modifier
-            .padding(start = 28.dp, end = 28.dp)
+            .padding(start = 16.dp, end = 16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -231,7 +237,7 @@ private fun CampaignImpressionsRow(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth(),) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast),
                 style = MaterialTheme.typography.body1,
@@ -261,7 +267,7 @@ private fun CampaignImpressionsRow(
                 )
             } else {
                 Text(
-                    modifier= Modifier.padding(top = 6.dp),
+                    modifier = Modifier.padding(top = 6.dp),
                     text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
                     style = MaterialTheme.typography.h6,
                     fontWeight = FontWeight.SemiBold,
@@ -321,16 +327,40 @@ private fun CampaignDurationRow(
 }
 
 @Composable
-private fun CampaignBudgetFooter(onUpdateTapped: () -> Unit) {
+private fun CampaignBudgetFooter(
+    formattedBudget: String,
+    durationInDays: Int,
+    onUpdateTapped: () -> Unit
+) {
     Column {
         Divider()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = formattedBudget,
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Spacer(modifier = Modifier.width(3.dp))
+            Text(
+                text = stringResource(
+                    id = R.string.blaze_campaign_budget_days_duration,
+                    durationInDays
+                ),
+                style = MaterialTheme.typography.h6,
+                color = colorResource(id = color.color_on_surface_medium)
+            )
+        }
         WCColoredButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
                     start = 16.dp,
                     end = 16.dp,
-                    top = 16.dp,
                     bottom = 24.dp
                 ),
             onClick = onUpdateTapped,
