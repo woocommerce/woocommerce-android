@@ -310,10 +310,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     private fun skipScreenDuringPosFlow() {
-        launch {
-            OrderDurationRecorder.recordCardPaymentStarted()
-            triggerEvent(SkipScreenInPosAndNavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
-        }
+        triggerEvent(SkipScreenInPosAndNavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
     }
 
     fun onTapToPayClicked() {
