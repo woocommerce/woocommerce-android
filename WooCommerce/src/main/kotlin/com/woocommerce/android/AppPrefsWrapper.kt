@@ -383,4 +383,10 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getBlazeAbandonedCampaignReminderShown(siteId: Long) = AppPrefs.getBlazeAbandonedCampaignReminderShown(siteId)
+
+    fun setBlazeCampaignCreated(siteId: Long) {
+        AppPrefs.setBlazeCampaignCreated(siteId)
+    }
+
+    fun getBlazeCampaignCreated(siteId: Long) = AppPrefs.getBlazeCampaignCreated(siteId)
 }

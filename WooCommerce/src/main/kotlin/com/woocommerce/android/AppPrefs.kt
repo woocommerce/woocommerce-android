@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.BLAZE_CAMPAIGN_CREATED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
@@ -120,6 +121,7 @@ object AppPrefs {
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+        BLAZE_CAMPAIGN_CREATED,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
         WC_STORE_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
@@ -1050,6 +1052,18 @@ object AppPrefs {
 
     fun getBlazeAbandonedCampaignReminderShown(siteId: Long) = getBoolean(
         key = PrefKeyString("$BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN:$siteId"),
+        default = false
+    )
+
+    fun setBlazeCampaignCreated(siteId: Long) {
+        setBoolean(
+            key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED:$siteId"),
+            value = true
+        )
+    }
+
+    fun getBlazeCampaignCreated(siteId: Long) = getBoolean(
+        key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED:$siteId"),
         default = false
     )
 
