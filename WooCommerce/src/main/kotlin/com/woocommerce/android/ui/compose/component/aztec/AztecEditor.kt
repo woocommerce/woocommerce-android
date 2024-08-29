@@ -1,18 +1,16 @@
-package com.woocommerce.android.ui.compose.component
+package com.woocommerce.android.ui.compose.component.aztec
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,8 +34,7 @@ import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 /**
  * An Aztec editor that can be used in Compose, with an outlined style.
  *
- * @param content The content of the editor
- * @param onContentChanged A callback that will be called when the content of the editor changes
+ * @param state The state of the editor, see [rememberAztecEditorState]
  * @param modifier The modifier to apply to the editor
  * @param label The label to display above the editor
  * @param minLines The minimum number of lines the editor should have
@@ -46,8 +43,7 @@ import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
  */
 @Composable
 fun OutlinedAztecEditor(
-    content: String,
-    onContentChanged: (String) -> Unit,
+    state: AztecEditorState,
     modifier: Modifier = Modifier,
     label: String? = null,
     minLines: Int = 1,
@@ -55,8 +51,7 @@ fun OutlinedAztecEditor(
     calypsoMode: Boolean = false
 ) {
     InternalAztecEditor(
-        content = content,
-        onContentChanged = onContentChanged,
+        state = state,
         aztecViewsProvider = { context ->
             val binding = ViewAztecOutlinedBinding.inflate(LayoutInflater.from(context)).apply {
                 visualEditor.background = null
@@ -81,8 +76,7 @@ fun OutlinedAztecEditor(
 /**
  * An Aztec editor that can be used in Compose.
  *
- * @param content The content of the editor
- * @param onContentChanged A callback that will be called when the content of the editor changes
+ * @param state The state of the editor, see [rememberAztecEditorState]
  * @param modifier The modifier to apply to the editor
  * @param label The label to display above the editor
  * @param minLines The minimum number of lines the editor should have
@@ -91,8 +85,7 @@ fun OutlinedAztecEditor(
  */
 @Composable
 fun AztecEditor(
-    content: String,
-    onContentChanged: (String) -> Unit,
+    state: AztecEditorState,
     modifier: Modifier = Modifier,
     label: String? = null,
     minLines: Int = 1,
@@ -100,8 +93,7 @@ fun AztecEditor(
     calypsoMode: Boolean = false
 ) {
     InternalAztecEditor(
-        content = content,
-        onContentChanged = onContentChanged,
+        state = state,
         aztecViewsProvider = { context ->
             val binding = ViewAztecBinding.inflate(LayoutInflater.from(context))
 
@@ -122,8 +114,7 @@ fun AztecEditor(
 
 @Composable
 private fun InternalAztecEditor(
-    content: String,
-    onContentChanged: (String) -> Unit,
+    state: AztecEditorState,
     aztecViewsProvider: (context: Context) -> AztecViewsHolder,
     modifier: Modifier = Modifier,
     label: String? = null,
@@ -132,24 +123,33 @@ private fun InternalAztecEditor(
     calypsoMode: Boolean = false
 ) {
     val localContext = LocalContext.current
-    var htmlMode by rememberSaveable { mutableStateOf(true) }
 
-    val viewsHolder = remember(LocalContext.current) { aztecViewsProvider(localContext) }
-    val listener = remember { createToolbarListener { htmlMode = !htmlMode } }
-    val aztec = remember(LocalContext.current) {
+    val viewsHolder = remember(localContext) { aztecViewsProvider(localContext) }
+    val listener = remember { createToolbarListener { state.toggleHtmlEditor() } }
+    val aztec = remember(localContext) {
         Aztec.with(viewsHolder.visualEditor, viewsHolder.sourceEditor, viewsHolder.toolbar, listener)
             .setImageGetter(GlideImageLoader(localContext))
     }
 
+    // Toggle the editor mode when the state changes
     LaunchedEffect(Unit) {
-        snapshotFlow { htmlMode }
-            .drop(1)
-            .collect {
-                aztec.toolbar.toggleEditorMode()
-            }
+        snapshotFlow { state.isHtmlEditorEnabled }
+            .drop(1) // Skip the initial value to avoid toggling the editor when it's first created
+            .collect { aztec.toolbar.toggleEditorMode() }
     }
 
-    val contentState by rememberUpdatedState(content)
+    // Update the content of the editor when the state changes
+    LaunchedEffect(state.content) {
+        if (state.isHtmlEditorEnabled) {
+            if (aztec.visualEditor.toHtml() != state.content) {
+                aztec.visualEditor.fromHtml(state.content)
+            }
+        } else {
+            if (aztec.sourceEditor?.getPureHtml() != state.content) {
+                aztec.sourceEditor?.displayStyledAndFormattedHtml(state.content)
+            }
+        }
+    }
 
     AndroidView(
         factory = {
@@ -160,16 +160,13 @@ private fun InternalAztecEditor(
             }
 
             aztec.visualEditor.doAfterTextChanged {
-                if (!htmlMode) return@doAfterTextChanged
-                aztec.visualEditor.toHtml().takeIf { it != contentState }?.let {
-                    onContentChanged(it)
-                }
+                if (!state.isHtmlEditorEnabled) return@doAfterTextChanged
+                state.updateContent(aztec.visualEditor.toHtml())
             }
             aztec.sourceEditor?.doAfterTextChanged {
-                if (htmlMode) return@doAfterTextChanged
-                aztec.sourceEditor?.getPureHtml()?.takeIf { it != contentState }?.let {
-                    onContentChanged(it)
-                }
+                val sourceEditor = aztec.sourceEditor
+                if (state.isHtmlEditorEnabled || sourceEditor == null) return@doAfterTextChanged
+                state.updateContent(sourceEditor.getPureHtml())
             }
 
             viewsHolder.layout
@@ -191,16 +188,6 @@ private fun InternalAztecEditor(
             if (aztec.visualEditor.label != label) {
                 aztec.visualEditor.label = label
                 aztec.sourceEditor?.label = label
-            }
-
-            if (htmlMode) {
-                if (aztec.visualEditor.toHtml() != content) {
-                    aztec.visualEditor.fromHtml(content)
-                }
-            } else {
-                if (aztec.sourceEditor?.getPureHtml() != content) {
-                    aztec.sourceEditor?.displayStyledAndFormattedHtml(content)
-                }
             }
         },
         modifier = modifier
@@ -246,33 +233,41 @@ private data class AztecViewsHolder(
 @Composable
 @Preview
 private fun OutlinedAztecEditorPreview() {
-    var content by remember { mutableStateOf("") }
+    val state = rememberAztecEditorState("")
+
     WooThemeWithBackground {
-        OutlinedAztecEditor(
-            content = content,
-            onContentChanged = {
-                content = it
-            },
-            label = "Label",
-            minLines = 5,
-            modifier = Modifier.padding(16.dp)
-        )
+        Column {
+            OutlinedAztecEditor(
+                state = state,
+                label = "Label",
+                minLines = 5,
+                modifier = Modifier.padding(16.dp)
+            )
+
+            TextButton(onClick = { state.toggleHtmlEditor() }) {
+                Text("Toggle Html Mode")
+            }
+        }
     }
 }
 
 @Composable
 @Preview
 private fun AztecEditorPreview() {
-    var content by remember { mutableStateOf("") }
+    val state = rememberAztecEditorState("")
+
     WooThemeWithBackground {
-        AztecEditor(
-            content = content,
-            onContentChanged = {
-                content = it
-            },
-            label = "Label",
-            minLines = 5,
-            modifier = Modifier
-        )
+        Column {
+            AztecEditor(
+                state = state,
+                label = "Label",
+                minLines = 5,
+                modifier = Modifier.padding(16.dp)
+            )
+
+            TextButton(onClick = { state.toggleHtmlEditor() }) {
+                Text("Toggle Html Mode")
+            }
+        }
     }
 }
