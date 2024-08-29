@@ -12,13 +12,11 @@ data class BlazeProductUi(
 data class BlazeCampaignUi(
     val product: BlazeProductUi,
     val status: CampaignStatusUi?,
-    val stats: List<BlazeCampaignStat>,
-    val isEndlessCampaign: Boolean
-)
-
-data class BlazeCampaignStat(
-    @StringRes val name: Int,
-    val value: String
+    val isEndlessCampaign: Boolean,
+    val impressions: Long,
+    val clicks: Long,
+    val formattedBudget: String,
+    @StringRes val budgetLabel: Int
 )
 
 enum class CampaignStatusUi(

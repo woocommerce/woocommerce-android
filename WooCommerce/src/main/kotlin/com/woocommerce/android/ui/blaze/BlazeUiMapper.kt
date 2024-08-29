@@ -11,17 +11,11 @@ fun BlazeCampaignModel.toUiState(currencyFormatter: CurrencyFormatter) =
             imgUrl = imageUrl.orEmpty(),
         ),
         status = CampaignStatusUi.fromString(uiStatus),
-        stats = listOf(
-            BlazeCampaignStat(
-                name = R.string.blaze_campaign_status_ctr,
-                value = "$impressions ➔ $clicks"
-            ),
-            BlazeCampaignStat(
-                name = getBudgetTitle(this),
-                value = getBudgetValue(this, currencyFormatter)
-            )
-        ),
-        isEndlessCampaign = isEndlessCampaign
+        isEndlessCampaign = isEndlessCampaign,
+        impressions = impressions,
+        clicks = clicks,
+        formattedBudget = getBudgetValue(this, currencyFormatter),
+        budgetLabel = getBudgetTitle(this)
     )
 
 private fun getBudgetTitle(campaign: BlazeCampaignModel) =
