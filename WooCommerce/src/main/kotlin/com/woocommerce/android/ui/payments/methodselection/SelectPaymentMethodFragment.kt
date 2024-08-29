@@ -63,12 +63,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSelectPaymentMethodBinding.inflate(inflater, container, false)
-        return if (viewModel.displayUi) {
-            setupToolbar()
-            binding.root
-        } else {
-            View(requireContext())
-        }
+        setupToolbar()
+        return binding.root
     }
 
     private fun setupToolbar() {

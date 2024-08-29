@@ -91,9 +91,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderPaymentFlowParam
         get() = navArgs.cardReaderFlowParam as Payment
 
-    val displayUi: Boolean
-        get() = !isWooPOSPaymentFlow()
-
     init {
         checkStatus()
     }
@@ -515,10 +512,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
         withContext(dispatchers.io) {
             wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
         }
-
-    private fun isWooPOSPaymentFlow() = with(navArgs.cardReaderFlowParam) {
-        this is Payment && paymentType == WOO_POS
-    }
 
     companion object {
         private const val DELAY_MS = 1L
