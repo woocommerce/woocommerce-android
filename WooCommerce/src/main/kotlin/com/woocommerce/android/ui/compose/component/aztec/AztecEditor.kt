@@ -10,7 +10,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +25,8 @@ import com.woocommerce.android.databinding.ViewAztecBinding
 import com.woocommerce.android.databinding.ViewAztecOutlinedBinding
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.wordpress.aztec.Aztec
 import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.ITextFormat
@@ -30,6 +34,50 @@ import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.source.SourceViewEditText
 import org.wordpress.aztec.toolbar.IAztecToolbar
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
+
+/**
+ * An Aztec editor that can be used in Compose, with an outlined style.
+ *
+ * @param content The content of the editor
+ * @param onContentChanged A callback that will be called when the content of the editor changes
+ * @param modifier The modifier to apply to the editor
+ * @param label The label to display above the editor
+ * @param minLines The minimum number of lines the editor should have
+ * @param maxLines The maximum number of lines the editor should have
+ * @param calypsoMode Whether the editor should be in calypso mode, for more information on calypso mode see https://github.com/wordpress-mobile/AztecEditor-Android/pull/309
+ */
+@Composable
+fun OutlinedAztecEditor(
+    content: String,
+    onContentChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE,
+    calypsoMode: Boolean = false
+) {
+    val state = rememberAztecEditorState(initialContent = content)
+    val contentState by rememberUpdatedState(content)
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { contentState }
+            .onEach { state.updateContent(it) }
+            .launchIn(this)
+
+        snapshotFlow { state.content }
+            .onEach { onContentChanged(it) }
+            .launchIn(this)
+    }
+
+    OutlinedAztecEditor(
+        state = state,
+        modifier = modifier,
+        label = label,
+        minLines = minLines,
+        maxLines = maxLines,
+        calypsoMode = calypsoMode
+    )
+}
 
 /**
  * An Aztec editor that can be used in Compose, with an outlined style.
@@ -65,6 +113,50 @@ fun OutlinedAztecEditor(
                 toolbar = binding.toolbar
             )
         },
+        modifier = modifier,
+        label = label,
+        minLines = minLines,
+        maxLines = maxLines,
+        calypsoMode = calypsoMode
+    )
+}
+
+/**
+ * An Aztec editor that can be used in Compose.
+ *
+ * @param content The content of the editor
+ * @param onContentChanged A callback that will be called when the content of the editor changes
+ * @param modifier The modifier to apply to the editor
+ * @param label The label to display above the editor
+ * @param minLines The minimum number of lines the editor should have
+ * @param maxLines The maximum number of lines the editor should have
+ * @param calypsoMode Whether the editor should be in calypso mode, for more information on calypso mode see https://github.com/wordpress-mobile/AztecEditor-Android/pull/309
+ */
+@Composable
+fun AztecEditor(
+    content: String,
+    onContentChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    minLines: Int = 1,
+    maxLines: Int = Int.MAX_VALUE,
+    calypsoMode: Boolean = false
+) {
+    val state = rememberAztecEditorState(initialContent = content)
+    val contentState by rememberUpdatedState(content)
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { contentState }
+            .onEach { state.updateContent(it) }
+            .launchIn(this)
+
+        snapshotFlow { state.content }
+            .onEach { onContentChanged(it) }
+            .launchIn(this)
+    }
+
+    AztecEditor(
+        state = state,
         modifier = modifier,
         label = label,
         minLines = minLines,
