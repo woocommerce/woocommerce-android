@@ -25,7 +25,7 @@ class AztecEditorState(
     }
 
     companion object {
-        fun Saver() = Saver<AztecEditorState, Any>(
+        val Saver = Saver<AztecEditorState, Any>(
             save = { arrayListOf(it.content, it.isHtmlEditorEnabled) },
             restore = {
                 val list = it as List<*>
@@ -47,5 +47,5 @@ class AztecEditorState(
 fun rememberAztecEditorState(
     initialContent: String
 ): AztecEditorState {
-    return rememberSaveable(saver = AztecEditorState.Saver()) { AztecEditorState(initialContent) }
+    return rememberSaveable(saver = AztecEditorState.Saver) { AztecEditorState(initialContent) }
 }
