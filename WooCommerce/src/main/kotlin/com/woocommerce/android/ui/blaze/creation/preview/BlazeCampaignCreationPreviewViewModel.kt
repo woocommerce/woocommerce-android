@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_FORM_DISP
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.formatToMMMdd
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
@@ -315,12 +316,20 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             totalBudget.toBigDecimal(),
             currencyCode
         )
-        val duration = resourceProvider.getString(
-            R.string.blaze_campaign_preview_days_duration,
-            durationInDays,
-            startDate.formatToMMMdd()
-        )
-        return "$totalBudgetWithCurrency, $duration"
+        return when {
+            isEndlessCampaign -> resourceProvider.getString(
+                R.string.blaze_campaign_preview_days_duration_endless,
+                totalBudgetWithCurrency,
+                startDate.formatToMMMddYYYY()
+            )
+
+            else ->
+                "$totalBudgetWithCurrency, " + resourceProvider.getString(
+                    R.string.blaze_campaign_preview_days_duration,
+                    durationInDays,
+                    startDate.formatToMMMdd()
+                )
+        }
     }
 
     data class CampaignPreviewUiState(
