@@ -28,13 +28,13 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            ENDLESS_CAMPAIGNS_SUPPORT,
             CUSTOM_FIELDS -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             INBOX,
             SHOW_INBOX_CTA,
-            GOOGLE_ADS_M1 -> true
+            GOOGLE_ADS_M1,
+            ENDLESS_CAMPAIGNS_SUPPORT -> true
         }
     }
 }
