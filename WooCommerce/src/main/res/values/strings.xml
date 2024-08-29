@@ -3485,6 +3485,7 @@
     -->
     <string name="stats_widget_log_in_message">Please log in to the WooCommerce app</string>
     <string name="stats_widget_offline_error">Your network is unavailable.\nCheck your data or wifi connection.</string>
+    <string name="stats_widget_battery_saver_error">Looks like your device is in Battery Saver mode. \nWe can\'t provide your store information while it\'s active</string>
     <string name="stats_widget_availability_message">Store analytics not available! Please upgrade to the latest version of WooCommerce to view your store analytics.</string>
     <string name="stats_today_widget_configure_title">Today\'s store stats</string>
     <string name="stats_today_widget_description">WooCommerce Stats Today</string>
