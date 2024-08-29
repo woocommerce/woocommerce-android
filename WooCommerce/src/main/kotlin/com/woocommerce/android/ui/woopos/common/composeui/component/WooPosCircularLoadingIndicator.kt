@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.unit.dp
@@ -36,6 +35,7 @@ fun WooPosCircularLoadingIndicator(modifier: Modifier = Modifier) {
     )
 
     val backgroundColor = MaterialTheme.colors.primary
+    val centerCircleColor = MaterialTheme.colors.background
     Canvas(modifier = modifier) {
         val radius = size.width / 2
 
@@ -55,7 +55,7 @@ fun WooPosCircularLoadingIndicator(modifier: Modifier = Modifier) {
         }
 
         drawCircle(
-            color = Color.White,
+            color = centerCircleColor,
             radius = radius * 0.4f,
         )
     }
