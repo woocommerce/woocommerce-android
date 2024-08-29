@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -78,6 +79,7 @@ private fun BlazeCampaignCreationPreviewScreen(
     onConfirmDetailsClicked: () -> Unit,
     onHelpTapped: () -> Unit
 ) {
+    BackHandler(onBack = onBackPressed)
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(

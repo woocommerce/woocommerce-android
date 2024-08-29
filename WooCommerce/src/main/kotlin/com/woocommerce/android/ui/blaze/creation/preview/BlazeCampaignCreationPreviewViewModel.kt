@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTEREST
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
+import com.woocommerce.android.ui.blaze.notification.AbandonedCampaignReminder
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -42,6 +43,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val blazeRepository: BlazeRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
+    private val abandonedCampaignReminder: AbandonedCampaignReminder,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
@@ -86,6 +88,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
+        abandonedCampaignReminder.scheduleReminderIfNeeded()
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 

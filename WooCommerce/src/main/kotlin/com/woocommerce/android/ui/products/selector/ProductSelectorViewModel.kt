@@ -11,6 +11,7 @@ import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.notification.AbandonedCampaignReminder
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ProductNavigationTarget
@@ -72,6 +73,7 @@ class ProductSelectorViewModel @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val listHandler: ProductListHandler,
+    private val abandonedCampaignReminder: AbandonedCampaignReminder,
     private val variationSelectorRepository: VariationSelectorRepository,
     private val resourceProvider: ResourceProvider,
     private val tracker: ProductSelectorTracker,
@@ -481,6 +483,7 @@ class ProductSelectorViewModel @Inject constructor(
         if (searchState.value.isActive) {
             searchState.value = SearchState.EMPTY
         } else {
+            abandonedCampaignReminder.scheduleReminderIfNeeded()
             triggerEvent(Exit)
         }
     }
