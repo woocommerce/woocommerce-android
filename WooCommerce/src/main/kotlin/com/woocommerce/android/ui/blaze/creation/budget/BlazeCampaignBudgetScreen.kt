@@ -47,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -215,8 +214,32 @@ private fun EditBudgetSection(
             onEditDurationTapped = onEditDurationTapped,
             modifier = Modifier.padding(top = 24.dp)
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast))
+        CampaignImpressionsRow(
+            state = state,
+            onImpressionsInfoTapped = onImpressionsInfoTapped,
+            onBudgetChangeFinished = onBudgetChangeFinished,
+            modifier = Modifier.padding(top = 18.dp)
+        )
+    }
+}
+
+@Composable
+private fun CampaignImpressionsRow(
+    state: BlazeCampaignBudgetViewModel.BudgetUiState,
+    onImpressionsInfoTapped: () -> Unit,
+    onBudgetChangeFinished: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast),
+                style = MaterialTheme.typography.body1,
+                color = colorResource(id = color.color_on_surface_medium)
+            )
             Icon(
                 modifier = Modifier
                     .padding(start = 4.dp)
@@ -242,12 +265,11 @@ private fun EditBudgetSection(
             } else {
                 Text(
                     text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
+                    style = MaterialTheme.typography.h6,
                     fontWeight = FontWeight.SemiBold,
-                    lineHeight = 24.sp,
                 )
             }
         }
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
@@ -265,10 +287,7 @@ private fun CampaignDurationRow(
             style = MaterialTheme.typography.body1,
             color = colorResource(id = color.color_on_surface_medium)
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.fillMaxWidth(),) {
             when {
                 isEndlessCampaign ->
                     Text(
@@ -282,6 +301,7 @@ private fun CampaignDurationRow(
 
                 else -> {
                     Text(
+                        modifier = Modifier.padding(top = 8.dp),
                         text = "$formattedStartDate - $formattedEndDate",
                         style = MaterialTheme.typography.h6,
                         fontWeight = FontWeight.SemiBold,
@@ -289,9 +309,7 @@ private fun CampaignDurationRow(
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
-            WCTextButton(
-                onClick = onEditDurationTapped
-            ) {
+            WCTextButton(onClick = onEditDurationTapped) {
                 Text(
                     text = stringResource(id = R.string.blaze_campaign_budget_edit_duration_button),
                     style = MaterialTheme.typography.h6,
