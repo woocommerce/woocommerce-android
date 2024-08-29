@@ -163,9 +163,6 @@ class GetWidgetStatsTest : BaseUnitTest() {
     fun `when the device is in battery saver mode then get stats respond with WidgetStatsBatterySaverActive`() =
         testBlocking {
             // Given the user is logged, v4 stats is supported and network is working fine
-            whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
-            whenever(appPrefsWrapper.isV4StatsSupported()).thenReturn(true)
-            whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(isDeviceBatterySaverActive()).thenReturn(true)
 
             // When GetWidgetStats is invoked
