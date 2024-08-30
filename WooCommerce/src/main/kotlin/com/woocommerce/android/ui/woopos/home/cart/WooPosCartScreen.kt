@@ -238,7 +238,10 @@ private fun CartToolbar(
         label = "titleOffset"
     )
 
-    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+    ConstraintLayout(modifier = Modifier
+        .fillMaxWidth()
+        .height(40.dp)
+    ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
         toolbar.icon?.let {
@@ -274,7 +277,6 @@ private fun CartToolbar(
                 .padding(
                     start = 16.dp.toAdaptivePadding(),
                     end = 4.dp,
-                    top = 4.dp,
                 )
         )
 
