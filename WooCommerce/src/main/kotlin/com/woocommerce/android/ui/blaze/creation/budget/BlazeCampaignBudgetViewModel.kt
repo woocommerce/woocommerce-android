@@ -180,7 +180,13 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     fun onStartDateChanged(newStartDateMillis: Long) {
         budgetUiState.update {
-            it.copy(bottomSheetCampaignStartDateMillis = newStartDateMillis)
+            it.copy(
+                bottomSheetCampaignStartDateMillis = newStartDateMillis,
+                formattedEndDate = getFormattedEndDate(
+                    startDateMillis = newStartDateMillis,
+                    duration = it.durationInDays
+                )
+            )
         }
     }
 
