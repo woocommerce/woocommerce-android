@@ -54,6 +54,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.WooPosCardReaderStatus
 
+private val TOOLBAR_ELEVATION = 6.dp
+
 @Composable
 fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
     val viewModel: WooPosToolbarViewModel = hiltViewModel()
@@ -198,7 +200,7 @@ private fun MenuButtonWithPopUpMenu(
     Card(
         modifier = modifier,
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(8.dp),
     ) {
         TextButton(
@@ -236,7 +238,7 @@ private fun PopUpMenu(
 ) {
     Card(
         modifier = modifier.width(214.dp),
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
     ) {
         Column {
             Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
@@ -329,7 +331,7 @@ private fun CardReaderStatusButton(
         modifier = modifier
             .height(56.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(8.dp),
     ) {
         TextButton(
