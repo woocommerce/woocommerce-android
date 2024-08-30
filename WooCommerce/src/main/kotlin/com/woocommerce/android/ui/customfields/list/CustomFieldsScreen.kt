@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomField
@@ -50,6 +51,7 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
         CustomFieldsScreen(
             state = state,
             onPullToRefresh = viewModel::onPullToRefresh,
+            onSaveClicked = viewModel::onSaveClicked,
             onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
             onBackClick = viewModel::onBackClick
@@ -62,6 +64,7 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
 private fun CustomFieldsScreen(
     state: CustomFieldsViewModel.UiState,
     onPullToRefresh: () -> Unit,
+    onSaveClicked: () -> Unit,
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onBackClick: () -> Unit
@@ -70,7 +73,15 @@ private fun CustomFieldsScreen(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.custom_fields_list_title),
-                onNavigationButtonClick = onBackClick
+                onNavigationButtonClick = onBackClick,
+                actions = {
+                    if (state.hasChanges) {
+                        WCTextButton(
+                            text = stringResource(id = R.string.save),
+                            onClick = onSaveClicked
+                        )
+                    }
+                }
             )
         },
         backgroundColor = MaterialTheme.colors.surface
@@ -180,10 +191,10 @@ private fun CustomFieldsScreenPreview() {
                         )
                     ),
                     CustomFieldUiModel(CustomField(3, "key4", "https://url.com")),
-                ),
-                isLoading = false
+                )
             ),
             onPullToRefresh = {},
+            onSaveClicked = {},
             onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
             onBackClick = {}

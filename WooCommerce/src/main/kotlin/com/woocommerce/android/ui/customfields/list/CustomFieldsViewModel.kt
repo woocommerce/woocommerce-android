@@ -37,7 +37,8 @@ class CustomFieldsViewModel @Inject constructor(
     ) { customFields, pendingChanges, isLoading ->
         UiState(
             customFields = customFields.map { CustomFieldUiModel(it) }.combineWithChanges(pendingChanges),
-            isLoading = isLoading
+            isLoading = isLoading,
+            hasChanges = pendingChanges.hasChanges
         )
     }.asLiveData()
 
@@ -72,7 +73,7 @@ class CustomFieldsViewModel @Inject constructor(
                     val storedValue = repository.getCustomFieldById(args.parentItemId, result.id)
                     if (storedValue?.key == result.key && storedValue.valueAsString == result.value) {
                         // This means the field was changed back to its original value
-                        changes.copy(editedFields = changes.editedFields - result)
+                        changes.copy(editedFields = changes.editedFields.filterNot { it.id == result.id })
                     } else {
                         changes.copy(editedFields = changes.editedFields.filterNot { it.id == result.id } + result)
                     }
@@ -81,20 +82,28 @@ class CustomFieldsViewModel @Inject constructor(
         }
     }
 
+    fun onSaveClicked() {
+        TODO()
+    }
+
     private fun List<CustomFieldUiModel>.combineWithChanges(pendingChanges: PendingChanges) = map { customField ->
         pendingChanges.editedFields.find { it.id == customField.id } ?: customField
     } + pendingChanges.insertedFields
 
     data class UiState(
         val customFields: List<CustomFieldUiModel>,
-        val isLoading: Boolean
+        val isLoading: Boolean = false,
+        val hasChanges: Boolean = false
     )
 
     @Parcelize
     private data class PendingChanges(
         val editedFields: List<CustomFieldUiModel> = emptyList(),
         val insertedFields: List<CustomFieldUiModel> = emptyList()
-    ) : Parcelable
+    ) : Parcelable {
+        val hasChanges: Boolean
+            get() = editedFields.isNotEmpty() || insertedFields.isNotEmpty()
+    }
 
     data class OpenCustomFieldEditor(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
     data class CustomFieldValueClicked(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
