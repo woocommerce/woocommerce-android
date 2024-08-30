@@ -155,6 +155,7 @@ private fun CampaignBudgetScreen(
                     modifier = Modifier.weight(1f)
                 )
                 CampaignBudgetFooter(
+                    isEndlessCampaign = state.isEndlessCampaign,
                     formattedBudget = state.formattedTotalBudget,
                     durationInDays = state.durationInDays,
                     onUpdateTapped = onUpdateTapped
@@ -299,7 +300,7 @@ private fun CampaignDurationRow(
                 isEndlessCampaign ->
                     Text(
                         text = stringResource(
-                            id = R.string.blaze_campaign_budget_duration_section_endless_campaign_value,
+                            id = R.string.blaze_campaign_budget_duration_endless_campaign_value,
                             formattedStartDate
                         ),
                         style = MaterialTheme.typography.h6,
@@ -328,6 +329,7 @@ private fun CampaignDurationRow(
 
 @Composable
 private fun CampaignBudgetFooter(
+    isEndlessCampaign: Boolean,
     formattedBudget: String,
     durationInDays: Int,
     onUpdateTapped: () -> Unit
@@ -342,18 +344,23 @@ private fun CampaignBudgetFooter(
         ) {
             Text(
                 text = formattedBudget,
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.SemiBold,
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = stringResource(
-                    id = R.string.blaze_campaign_budget_days_duration,
-                    durationInDays
-                ),
-                style = MaterialTheme.typography.h6,
-                color = colorResource(id = color.color_on_surface_medium)
-            )
+                text = if (isEndlessCampaign) {
+                    stringResource(id = R.string.blaze_campaign_budget_footer_weekly_spend)
+                } else {
+                    stringResource(
+                        id = R.string.blaze_campaign_budget_days_duration,
+                        durationInDays
+                    )
+                },
+                style = MaterialTheme.typography.body1,
+                color = colorResource(id = color.color_on_surface_medium),
+                fontWeight = FontWeight.SemiBold,
+                )
         }
         WCColoredButton(
             modifier = Modifier

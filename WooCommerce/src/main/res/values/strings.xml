@@ -3915,13 +3915,13 @@
     -->
     <string name="blaze_campaign_budget_toolbar_title">Set your budget</string>
     <string name="blaze_campaign_budget_duration_subtitle">How much would you like to spend on your campaign, and how long should it run for?</string>
-    <string name="blaze_campaign_budget_weekly_spend">Weekly spend</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">weekly spend</string>
     <string name="blaze_campaign_budget_daily_spend_label">Daily spend</string>
     <string name="blaze_campaign_budget_days_duration">for %1$s days</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s daily</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimated people reached per day</string>
     <string name="blaze_campaign_budget_scheduled_section_title">Scheduled</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Starting from %1$s</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">Ongoing from %1$s</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
     <string name="blaze_campaign_budget_impressions_title">Impressions</string>
