@@ -238,9 +238,10 @@ private fun CartToolbar(
         label = "titleOffset"
     )
 
-    ConstraintLayout(modifier = Modifier
-        .fillMaxWidth()
-        .height(40.dp)
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp)
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
