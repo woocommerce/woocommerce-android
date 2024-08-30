@@ -1,9 +1,8 @@
 package com.woocommerce.android.ui.woopos.home
 
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.OvershootInterpolator
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.fadeIn
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -21,15 +20,11 @@ fun NavGraphBuilder.homeScreen(
     composable(
         route = HOME_ROUTE,
         enterTransition = {
-            slideInVertically(
-                initialOffsetY = { -it },
+            fadeIn(
                 animationSpec = tween(
-                    durationMillis = 800,
-                    easing = { time ->
-                        val accelerateDecelerate = AccelerateDecelerateInterpolator().getInterpolation(time)
-                        @Suppress("MagicNumber")
-                        OvershootInterpolator(1.5f).getInterpolation(accelerateDecelerate)
-                    }
+                    durationMillis = 300,
+                    delayMillis = 200,
+                    easing = FastOutSlowInEasing
                 )
             )
         }
