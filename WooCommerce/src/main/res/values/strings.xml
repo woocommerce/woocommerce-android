@@ -3929,11 +3929,15 @@
     <string name="blaze_campaign_budget_impressions_info">Impressions reflect the frequency with which your ad appears to potential customers.\n\n
         While exact numbers can\'t be assured due to fluctuating online traffic and user behavior, we aim to match your ad\'s actual impressions as closely as possible to your target count.\n\n
         Remember, impressions are about visibility, not action taken by viewers.</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Set duration</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s days</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">to %1$s</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Start date</string>
     <string name="blaze_campaign_budget_duration_endless_label">Run until I stop it</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">Specify the duration</string>
+    <string name="blaze_campaign_budget_duration_endless_description">Campaign will run until you stop it.</string>
+    <string name="blaze_campaign_budget_duration_current_duration">Duration</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">Cancel</string>
     <string name="blaze_campaign_budget_error_fetching_forecast">Failed to estimate impressions. Retry?</string>
     <string name="blaze_campaign_budget_weekly_spending">%1$s weekly</string>
 

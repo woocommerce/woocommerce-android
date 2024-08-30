@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.blaze.creation.budget
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,8 +24,6 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -58,10 +55,12 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIM
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.Companion.MAX_DATE_LIMIT_IN_DAYS
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
+import com.woocommerce.android.ui.compose.component.BottomSheetSwitchColors
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
+import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.util.FeatureFlag
@@ -132,7 +131,8 @@ private fun CampaignBudgetScreen(
                             onApplyTapped = { duration, isEndlessCampaign ->
                                 onApplyDurationTapped(duration, isEndlessCampaign)
                                 coroutineScope.launch { modalSheetState.hide() }
-                            }
+                            },
+                            onCancelTapped = { coroutineScope.launch { modalSheetState.hide() } }
                         )
                     }
                 }
@@ -400,7 +400,10 @@ private fun ImpressionsInfoBottomSheet(
             WCTextButton(
                 onClick = onDoneTapped
             ) {
-                Text(text = stringResource(id = R.string.blaze_campaign_budget_impressions_done_button))
+                Text(
+                    style = MaterialTheme.typography.h6,
+                    text = stringResource(id = R.string.blaze_campaign_budget_impressions_done_button)
+                )
             }
         }
         Divider()
@@ -418,10 +421,12 @@ private fun EditDurationBottomSheet(
     budgetUiState: BlazeCampaignBudgetViewModel.BudgetUiState,
     onStartDateChanged: (Long) -> Unit,
     onApplyTapped: (Int, Boolean) -> Unit,
+    onCancelTapped: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
     var isEndlessCampaign by remember { mutableStateOf(budgetUiState.isEndlessCampaign) }
+    var sliderPosition by remember { mutableFloatStateOf(budgetUiState.durationInDays.toFloat()) }
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -436,98 +441,125 @@ private fun EditDurationBottomSheet(
         )
     }
 
-    var sliderPosition by remember { mutableFloatStateOf(budgetUiState.durationInDays.toFloat()) }
     Column(
         modifier = modifier
-            .padding(16.dp)
+            .padding(vertical = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Text(
-            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_title),
-            style = MaterialTheme.typography.h6,
-            fontWeight = FontWeight.SemiBold,
-        )
-        AnimatedVisibility(isEndlessCampaign.not()) {
-            Column {
-                Text(
-                    modifier = Modifier
-                        .padding(top = 30.dp)
-                        .fillMaxWidth(),
-                    text = stringResource(
-                        id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
-                        sliderPosition.toInt()
-                    ),
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center
-                )
-                Slider(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = sliderPosition,
-                    valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
-                    onValueChange = { sliderPosition = it },
-                    colors = SliderDefaults.colors(
-                        inactiveTrackColor = colorResource(id = color.divider_color)
-                    )
-                )
-            }
-        }
-        if (FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()) {
-            Row(
-                modifier = Modifier.padding(top = 40.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_label),
-                    style = MaterialTheme.typography.body1,
-                )
-                Switch(
-                    checked = isEndlessCampaign,
-                    onCheckedChange = { isEndlessCampaign = it },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = colorResource(id = color.color_primary),
-                        checkedTrackColor = colorResource(id = color.color_primary),
-                        uncheckedThumbColor =
-                        when {
-                            isSystemInDarkTheme() -> colorResource(id = color.color_on_surface_medium)
-                            else -> MaterialTheme.colors.onSurface
-                        }
-                    )
-                )
-            }
-        }
         Row(
-            modifier = Modifier.padding(top = 16.dp),
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 8.dp
+            ),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 modifier = Modifier.weight(1f),
-                text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_starts),
-                style = MaterialTheme.typography.body1,
+                text = stringResource(id = R.string.blaze_campaign_budget_scheduled_section_title),
+                style = MaterialTheme.typography.h6,
             )
-            Text(
+            WCTextButton(
+                onClick = onCancelTapped
+            ) {
+                Text(
+                    text = stringResource(id = R.string.blaze_campaign_budget_duration_cancel_button),
+                    style = MaterialTheme.typography.h6,
+                )
+            }
+        }
+        Divider()
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Row(
+                modifier = Modifier.padding(top = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_start_date),
+                    style = MaterialTheme.typography.body1,
+                )
+                Text(
+                    modifier = Modifier
+                        .clickable { showDatePicker = !showDatePicker }
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(colorResource(id = color.divider_color))
+                        .padding(8.dp),
+                    text = Date(budgetUiState.bottomSheetCampaignStartDateMillis).formatToMMMddYYYY(),
+                    style = MaterialTheme.typography.body1,
+                )
+            }
+            if (FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()) {
+                WCSwitch(
+                    text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_switch_label),
+                    checked = !isEndlessCampaign,
+                    onCheckedChange = { isEndlessCampaign = !it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    colors = BottomSheetSwitchColors()
+                )
+                AnimatedVisibility(isEndlessCampaign) {
+                    Text(
+                        modifier = Modifier.padding(top = 10.dp),
+                        text = stringResource(id = R.string.blaze_campaign_budget_duration_endless_description),
+                        style = MaterialTheme.typography.body1,
+                        color = colorResource(id = color.color_on_surface_medium)
+                    )
+                }
+            }
+            AnimatedVisibility(isEndlessCampaign.not()) {
+                Column(modifier = Modifier.padding(top = 16.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = stringResource(id = R.string.blaze_campaign_budget_duration_current_duration),
+                            style = MaterialTheme.typography.body1,
+                        )
+                        Text(
+                            text = stringResource(
+                                id = R.string.blaze_campaign_budget_duration_bottom_sheet_duration,
+                                sliderPosition.toInt()
+                            ),
+                            style = MaterialTheme.typography.subtitle1,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            modifier = Modifier.padding(start = 6.dp),
+                            text = stringResource(
+                                id = R.string.blaze_campaign_budget_duration_bottom_sheet_end_date,
+                                budgetUiState.formattedEndDate
+                            ),
+                            style = MaterialTheme.typography.body1,
+                        )
+                    }
+                    Slider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        value = sliderPosition,
+                        valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
+                        onValueChange = { sliderPosition = it },
+                        colors = SliderDefaults.colors(
+                            inactiveTrackColor = colorResource(id = color.divider_color)
+                        )
+                    )
+                }
+            }
+            WCColoredButton(
                 modifier = Modifier
-                    .clickable { showDatePicker = !showDatePicker }
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(colorResource(id = color.divider_color))
-                    .padding(8.dp),
-                text = Date(budgetUiState.bottomSheetCampaignStartDateMillis).formatToMMMddYYYY(),
-                style = MaterialTheme.typography.body1,
+                    .padding(
+                        top = 30.dp,
+                        bottom = 16.dp
+                    )
+                    .fillMaxWidth(),
+                onClick = {
+                    onApplyTapped(sliderPosition.toInt(), isEndlessCampaign)
+                },
+                text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_apply_button)
             )
         }
-        WCColoredButton(
-            modifier = Modifier
-                .padding(
-                    top = 30.dp,
-                    bottom = 16.dp
-                )
-                .fillMaxWidth(),
-            onClick = {
-                onApplyTapped(sliderPosition.toInt(), isEndlessCampaign)
-            },
-            text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_apply_button)
-        )
     }
 }
 
