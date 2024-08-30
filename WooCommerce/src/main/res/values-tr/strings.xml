@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-21 09:54:03+0000
+Translation-Revision-Date: 2024-08-29 09:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Seçenekleri olan açılır pencere menüsü. Öğeler arasında gezinmek için kaydırın.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Araç çubuğu menüsünü aç</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Kart okuyucu durumu olan araç çubuğu. Menü açık. Etkileşime girmek için iki kez dokunun.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Kart okuyucu durumu olan araç çubuğu. Etkileşime girmek için iki kez dokunun.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menü Devre Dışı Bırakıldı</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menü Etkinleştirildi</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Kart okuyucu bağlanmadı. Bağlanmak için çift dokunun</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Kart okuyucu bağlandı</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Soluk arkaplan. Menüyü kapatmak için dokunun.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Ödeme başarılı onay işareti simgesi</string>
+    <string name="woopos_remove_cart_item_content_description">Bu ürünü sepetten çıkarın</string>
+    <string name="woopos_exit_dialog_confirmation_message">Devam eden tüm siparişler kaybolacak.</string>
+    <string name="woopos_exit_dialog_confirmation_title">Satış Noktası Modundan Çıkılsın Mı?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Kapat</string>
+    <string name="woopos_dialog_products_info_background_content_description">Soluk arkaplan. Pencereyi kapatmak için dokunun.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Pencereyi kapatmak için iki kez dokunun</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Yalnızca basit ürünler penceresi</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Daha fazla bilgi edinmek için iki kez dokunun</string>
+    <string name="woopos_banner_simple_products_content_description">Yalnızca basit ürünler başlığı</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Blaze Reklamları ile hemen ürünlerinizi tanıtın ve satışlarınızı artırın.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">Satışlarınızı güçlendirin</string>
+    <string name="more_menu_button_payments_description">Hareket halindeyken ödeme alın</string>
+    <string name="card_reader_payment_failed_incorrect_pin">Yanlış PIN girildi. Yeniden deneyin veya başka bir ödeme yöntemi kullanın</string>
     <string name="woopos_menu_toolbar_content_description">Menü</string>
     <string name="woopos_cart_item_content_description">Sepetteki ürün %s, Fiyatı %s</string>
     <string name="woopos_product_item_content_description">Ürün %s, Fiyatı %s</string>
@@ -135,8 +158,7 @@ Language: tr
     <string name="no_quantity_rules">Miktar Kuralı Yok</string>
     <string name="blaze_campaign_preview_audience_section_title">Hedef Kitle</string>
     <string name="woopos_exit_confirmation_dismiss_button">İptal Et</string>
-    <string name="woopos_exit_confirmation_confirm_button">Çıkış</string>
-    <string name="woopos_exit_confirmation_message">POS\'tan çıkmak istediğinizden emin misiniz?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Çık</string>
     <string name="woopos_exit_confirmation_title">POS\'tan çık</string>
     <string name="woopos_remove_item_button_from_cart_content_description">%s ürününü sepetten çıkar</string>
     <string name="woopos_checkout_button">Ödeme</string>
@@ -634,7 +656,6 @@ Language: tr
     <string name="blaze_campaign_creation_intro_title">Blaze ile mağazanızda daha fazla satış yapın</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">Kampanya listesi yenilenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
     <string name="media_picker_dialog_title">Ortam Kaynağı Seçin</string>
-    <string name="product_creation_package_photo_error">Ürün adı ve açıklaması oluşturulurken bir hata oluştu.</string>
     <string name="product_creation_package_photo_no_text_detected">Metin algılanmadı. Lütfen başka bir ambalaj fotoğrafı seçin veya ürün ayrıntılarını manuel olarak girin.</string>
     <string name="order_editing_add_content_description">Ürün ekleyin</string>
     <string name="order_editing_barcode_content_description">Barkodu tarayın</string>
@@ -691,46 +712,23 @@ Language: tr
     <string name="card_reader_settings_header">AYARLAR</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">Ayrıntıları e-posta kullanarak el ile ekle</string>
     <string name="login_app_login_malformed_link">Uygulamada oturum açma isteğinizi işleme koyamadık</string>
-    <string name="ai_product_name_copy_error">Ürün adını panoya kopyalamada hata.</string>
-    <string name="ai_product_name_copy_success">Ürün adı panoya kopyalandı.</string>
-    <string name="ai_product_name_copy_label">Ürün adı Yapay Zeka tarafından oluşturuldu</string>
     <string name="ai_product_description_copy_error">Ürün açıklamasını panoya kopyalamada hata.</string>
     <string name="ai_product_description_copy_success">Ürün açıklaması panoya kopyalandı.</string>
     <string name="product_creation_ai_generation_failure_message">Ürün oluşturma başarısız. Lütfen tekrar deneyin</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Adresi temizleyin ve bu oranı kullanmayı bırakın</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Bu sipariş için yeni bir vergi oranı belirleyin</string>
     <string name="tax_rate_selector_auto_rate_details_title">Vergi oranını otomatik olarak ekleme</string>
-    <string name="ai_product_name_sheet_error_message">Ürün adı oluşturulurken bir sorun oluştu. Lütfen tekrar deneyin.</string>
-    <string name="ai_product_name_sheet_regenerate_button">Yeniden oluştur</string>
-    <string name="ai_product_name_sheet_generate_button">Benim için yaz</string>
-    <string name="ai_product_name_sheet_input_description">Bize ürününüzden ve onu benzersiz kılanın ne olduğundan bahsedin!</string>
-    <string name="ai_product_name_sheet_subtitle">Yapay zekanın sizin için etkileyici başlıklar oluşturmasına izin verin</string>
-    <string name="ai_product_name_sheet_title">Ürün adı</string>
     <string name="empty_review_filtered_list_message">Tüm ürün incelemelerinizi görmek için okunmamış filtresini devre dışı bırakmayı deneyin</string>
     <string name="empty_review_filtered_list_title">Okunmamış ürün incelemesi yok</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Ton seçildi</string>
     <string name="product_creation_ai_tone_convincing">İkna edici</string>
     <string name="product_creation_ai_tone_flowery">Çiçekli</string>
     <string name="product_creation_ai_tone_formal">Resmi</string>
     <string name="product_creation_ai_tone_casual">Gelişigüzel</string>
-    <string name="product_creation_ai_tone_description">Ürününüzün sunumunu markanızla uyumlu biçimde şekillendirmek için tonu ve sesi belirleyin.</string>
     <string name="product_creation_ai_tone_title">Ton ve ses</string>
     <string name="product_creation_ai_preview_details_section">Ayrıntılar</string>
-    <string name="product_creation_ai_preview_description_section">Ürün açıklaması</string>
     <string name="product_creation_ai_preview_name_section">Ürün adı</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">Aşağıdaki ayrıntıları daha sonra her zaman değiştirebilirsiniz.</string>
     <string name="product_creation_ai_preview_title">Önizleme</string>
-    <string name="product_creation_ai_about_product_continue_button">Ürünler Ayrıntıları Oluştur</string>
-    <string name="product_creation_ai_about_product_set_tone">Ton ve sesi ayarla</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Ürününüzün internette bulunmasına yardımcı olmak için temel özellikler, avantajlar veya ayrıntılar ekleyin.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Örneğin, yumuşak kumaş, dayanıklı dikiş, benzersiz tasarım</string>
-    <string name="product_creation_ai_about_product_subtitle">Ürününüzü benzersiz kılan özellikleri vurgulayın ve yapay zekanın işini yapmasına izin verin.</string>
-    <string name="product_creation_ai_about_product_title">Ürününüz hakkında</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Bir ad öner</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">Örnek: Yumuşak kumaş, dayanıklı dikiş, benzersiz tasarım.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Ürün adı</string>
-    <string name="ai_product_creation_add_name_subtitle">Ya da daha fazla isim önerisi için dokunarak seçeneklerinizi genişletin.</string>
-    <string name="ai_product_creation_add_name_title">Ürün adınızı ekleyin</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Yapay zeka destekli. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Bir ürünü ve ayrıntılarını manuel olarak ekleyin</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">El ile ekle</string>
@@ -1054,7 +1052,6 @@ Language: tr
     <string name="more_menu_button_coupons_description">Özel tekliflerle satışları artırın</string>
     <string name="more_menu_button_store_description">Mağazanızı görüntüleme</string>
     <string name="more_menu_button_inbox_description">Güncel kalın</string>
-    <string name="more_menu_button_payments_description">Mobil ödemelere katılın</string>
     <string name="more_menu_button_wc_admin_description">Yöneticide daha fazlasını yönetin</string>
     <string name="more_menu_general_section_title">Genel</string>
     <string name="more_menu_settings_section_title">Ayarlar</string>
