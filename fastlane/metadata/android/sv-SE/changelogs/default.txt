@@ -1,0 +1,2 @@
+20.1:
+Vår senaste uppdatering förbättrar din upplevelse. Vi har löst problemet med att skärmen Beställningar låste sig, korrigerat felaktig fastklistring för butiker i Storbritannien och Kanada, åtgärdat en sällsynt krasch som uppstod vid beställningsredigering och förbättrat användbarheten på små skärmar. Ta del av smidigare prestanda och ökad tillförlitlighet.

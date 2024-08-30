@@ -264,7 +264,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // THEN
-        assertThat(states).hasSize(2)
+        assertThat(states).hasSize(1)
         assertThat(states.last().body).isInstanceOf(WooPosCartState.Body.Empty::class.java)
         assertThat(states.last().cartStatus).isEqualTo(WooPosCartStatus.EMPTY)
     }

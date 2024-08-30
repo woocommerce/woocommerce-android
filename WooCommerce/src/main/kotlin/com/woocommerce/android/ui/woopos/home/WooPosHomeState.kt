@@ -17,13 +17,7 @@ data class WooPosHomeState(
         @Parcelize
         sealed class Cart : ScreenPositionState() {
             @Parcelize
-            sealed class Visible : Cart() {
-                @Parcelize
-                data object Empty : Cart()
-
-                @Parcelize
-                data object NotEmpty : Cart()
-            }
+            data object Visible : Cart()
 
             @Parcelize
             data object Hidden : Cart()

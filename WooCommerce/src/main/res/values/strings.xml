@@ -3485,6 +3485,7 @@
     -->
     <string name="stats_widget_log_in_message">Please log in to the WooCommerce app</string>
     <string name="stats_widget_offline_error">Your network is unavailable.\nCheck your data or wifi connection.</string>
+    <string name="stats_widget_battery_saver_error">Looks like your device is in Battery Saver mode. \nWe can\'t provide your store information while it\'s active</string>
     <string name="stats_widget_availability_message">Store analytics not available! Please upgrade to the latest version of WooCommerce to view your store analytics.</string>
     <string name="stats_today_widget_configure_title">Today\'s store stats</string>
     <string name="stats_today_widget_description">WooCommerce Stats Today</string>
@@ -3856,9 +3857,11 @@
     <string name="blaze_campaign_status_rejected">Rejected</string>
     <string name="blaze_campaign_status_canceled">Canceled</string>
     <string name="blaze_campaign_status_suspended">Suspended</string>
-    <string name="blaze_campaign_status_impressions">Impressions</string>
-    <string name="blaze_campaign_status_clicks">Clicks</string>
-    <string name="blaze_campaign_status_budget">Budget</string>
+    <string name="blaze_campaign_status_ctr_label">Click-throughs</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_budget_total">Total</string>
+    <string name="blaze_campaign_status_budget_remaining">Remaining</string>
+    <string name="blaze_campaign_status_budget_weekly">Weekly</string>
     <string name="blaze_overflow_menu_hide_blaze">Hide Blaze</string>
 
     <!--
@@ -3901,6 +3904,7 @@
     <string name="blaze_campaign_preview_details_destination_url">Ad destination</string>
     <string name="blaze_campaign_preview_details_confirm_details_button">Confirm Details</string>
     <string name="blaze_campaign_preview_days_duration">%1$s days from %2$s</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%1$s weekly, starting from %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">All</string>
     <string name="blaze_campaign_preview_target_location_search_hint">Search locations</string>
     <string name="blaze_campaign_preview_missing_image_dialog_text">Please add an image for the Blaze campaign</string>
@@ -3914,10 +3918,12 @@
     <string name="blaze_campaign_budget_toolbar_title">Set your budget</string>
     <string name="blaze_campaign_budget_subtitle">How much would you like to spend on your product promotion campaign?</string>
     <string name="blaze_campaign_budget_total_spend">Total spend</string>
+    <string name="blaze_campaign_budget_weekly_spend">Weekly spend</string>
     <string name="blaze_campaign_budget_days_duration">for %1$s days</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s daily</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimated people reached per day</string>
     <string name="blaze_campaign_budget_duration_section_title">Duration</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Starting from %1$s</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
     <string name="blaze_campaign_budget_impressions_title">Impressions</string>
@@ -3928,8 +3934,10 @@
     <string name="blaze_campaign_budget_duration_bottom_sheet_title">Set duration</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s days</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
+    <string name="blaze_campaign_budget_duration_endless_label">Run until I stop it</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
     <string name="blaze_campaign_budget_error_fetching_forecast">Failed to estimate impressions. Retry?</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s weekly</string>
 
     <!--
     Blaze campaign edit-ad screen
@@ -4269,4 +4277,10 @@
     <string name="google_ads_campaign_created_success_title">Ready to Go!</string>
     <string name="google_ads_campaign_created_success_description">Your new campaign has been created. Exciting times ahead for your sales!</string>
     <string name="google_ads_campaign_created_success_done_button">Done</string>
+
+    <!--
+    Custom Fields
+    -->
+    <string name="custom_fields_list_title">Custom Fields</string>
+    <string name="custom_fields_list_loading_error">Error while loading custom fields</string>
 </resources>

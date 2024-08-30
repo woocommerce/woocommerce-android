@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-21 17:54:04+0000
+Translation-Revision-Date: 2024-08-29 17:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Menu contextuel avec options. Balayez pour naviguer parmi les éléments.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Ouvrir le menu de la barre d’outils</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Barre d’outils avec l’état du lecteur de carte. Le menu est ouvert. Appuyez deux fois pour interagir.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Barre d’outils avec l’état du lecteur de carte. Appuyez deux fois pour interagir.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menu désactivé</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menu activé</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Lecteur de carte non connecté. Appuyer deux fois pour le connecter</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Lecteur de carte connecté</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Arrière-plan peu éclairé. Appuyez pour fermer le menu.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Icône en forme de coche Paiement effectué</string>
+    <string name="woopos_remove_cart_item_content_description">Retirer cet élément du panier</string>
+    <string name="woopos_exit_dialog_confirmation_message">Toutes les commandes en cours seront perdues.</string>
+    <string name="woopos_exit_dialog_confirmation_title">Quitter le mode point de vente ?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Fermer</string>
+    <string name="woopos_dialog_products_info_background_content_description">Arrière-plan peu éclairé. Appuyez pour ignorer la fenêtre de dialogue.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Appuyez deux fois pour ignorer la fenêtre de dialogue</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Fenêtre de dialogue Produits simples uniquement</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Appuyer deux fois pour lire la suite</string>
+    <string name="woopos_banner_simple_products_content_description">Bannière Produits simples uniquement</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Faites la promotion de vos produits avec les publicités Blaze et augmentez vos ventes dès maintenant.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">Dynamiser vos ventes</string>
+    <string name="more_menu_button_payments_description">Accepter les paiements en mode nomade</string>
+    <string name="card_reader_payment_failed_incorrect_pin">Un code PIN incorrect a été saisi. Réessayer ou utiliser un autre moyen de paiement</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_cart_item_content_description">Produit dans le panier %s, Prix %s</string>
     <string name="woopos_product_item_content_description">Produit %s, Prix %s</string>
@@ -135,8 +158,7 @@ Language: fr
     <string name="no_quantity_rules">Pas de règles de quantité</string>
     <string name="blaze_campaign_preview_audience_section_title">Audience</string>
     <string name="woopos_exit_confirmation_dismiss_button">Annuler</string>
-    <string name="woopos_exit_confirmation_confirm_button">Quitter</string>
-    <string name="woopos_exit_confirmation_message">Voulez-vous vraiment quitter le PDV ?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Quitter</string>
     <string name="woopos_exit_confirmation_title">Quitter le PDV</string>
     <string name="woopos_remove_item_button_from_cart_content_description">Retirer %s du panier</string>
     <string name="woopos_checkout_button">Validation de la commande</string>
@@ -634,7 +656,6 @@ Language: fr
     <string name="blaze_campaign_creation_intro_title">Augmenter les ventes de votre boutique avec Blaze</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">Une erreur s’est produite lors de l’actualisation de la liste de campagnes. Veuillez réessayer plus tard.</string>
     <string name="media_picker_dialog_title">Sélectionner une source multimédia</string>
-    <string name="product_creation_package_photo_error">Une erreur est survenue lors de la génération du nom et de la description du produit.</string>
     <string name="product_creation_package_photo_no_text_detected">Aucun texte détecté. Sélectionnez une autre photo de l’emballage ou entrez manuellement les détails du produit.</string>
     <string name="order_editing_add_content_description">Ajouter un produit</string>
     <string name="order_editing_barcode_content_description">Scanner le code-barres</string>
@@ -691,46 +712,23 @@ Language: fr
     <string name="card_reader_settings_header">RÉGLAGES</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">Ajouter des détails manuellement avec l’adresse e-mail</string>
     <string name="login_app_login_malformed_link">Nous n’avons pas pu traiter votre demande de connexion à l’application</string>
-    <string name="ai_product_name_copy_error">Erreur lors de la copie du nom du produit dans le presse-papiers.</string>
-    <string name="ai_product_name_copy_success">Nom du produit copié dans le presse-papiers.</string>
-    <string name="ai_product_name_copy_label">Nom de produit généré par l’IA</string>
     <string name="ai_product_description_copy_error">Erreur lors de la copie de la description du produit dans le presse-papiers.</string>
     <string name="ai_product_description_copy_success">Description du produit copiée dans le presse-papiers.</string>
     <string name="product_creation_ai_generation_failure_message">Le produit n’a pas pu être généré. Veuillez réessayer</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Effacer l’adresse et arrêter d’utiliser ce taux</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Définir un nouveau taux de taxation pour cette commande</string>
     <string name="tax_rate_selector_auto_rate_details_title">Ajout automatique du taux de taxation</string>
-    <string name="ai_product_name_sheet_error_message">Un problème est survenu lors de la génération du nom du produit. Veuillez réessayer.</string>
-    <string name="ai_product_name_sheet_regenerate_button">Régénérer</string>
-    <string name="ai_product_name_sheet_generate_button">L’écrire à ma place</string>
-    <string name="ai_product_name_sheet_input_description">Présentez-nous votre produit et dites-nous ce qui le rend unique !</string>
-    <string name="ai_product_name_sheet_subtitle">Laissez l’IA générer des titres captivants pour vous</string>
-    <string name="ai_product_name_sheet_title">Nom du produit</string>
     <string name="empty_review_filtered_list_message">Essayer de désactiver le filtre des avis non lus pour afficher tous les avis sur les produits</string>
     <string name="empty_review_filtered_list_title">Aucun avis non lu sur les produits</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Ton sélectionné</string>
     <string name="product_creation_ai_tone_convincing">Convaincant</string>
     <string name="product_creation_ai_tone_flowery">Fleuri</string>
     <string name="product_creation_ai_tone_formal">Formel</string>
     <string name="product_creation_ai_tone_casual">Décontracté</string>
-    <string name="product_creation_ai_tone_description">Définissez le ton et la voix pour que la présentation de votre produit corresponde à votre marque.</string>
     <string name="product_creation_ai_tone_title">Ton et voix</string>
     <string name="product_creation_ai_preview_details_section">Détails</string>
-    <string name="product_creation_ai_preview_description_section">Description du produit</string>
     <string name="product_creation_ai_preview_name_section">Nom du produit</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">Vous pourrez toujours modifier les détails ci-après ultérieurement.</string>
     <string name="product_creation_ai_preview_title">Aperçu</string>
-    <string name="product_creation_ai_about_product_continue_button">Créer les détails du produit</string>
-    <string name="product_creation_ai_about_product_set_tone">Définir le ton et la voix</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Ajoutez les fonctionnalités, les avantages ou les détails clés pour faciliter la recherche de votre produit en ligne.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Par exemple : tissu doux, coutures solides, design unique</string>
-    <string name="product_creation_ai_about_product_subtitle">Mettez en avant ce qui rend votre produit unique et laissez l’IA s’occuper du reste.</string>
-    <string name="product_creation_ai_about_product_title">À propos de votre produit</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Proposer un nom</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">Par exemple : tissu doux, coutures solides, design unique.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Nom du produit</string>
-    <string name="ai_product_creation_add_name_subtitle">Vous pouvez aussi obtenir d’autres suggestions de noms en un clic.</string>
-    <string name="ai_product_creation_add_name_title">Ajouter le nom de votre produit</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Alimenté par l’IA. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Lire la suite&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Ajouter un produit et les détails manuellement</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Ajouter manuellement</string>
@@ -1054,7 +1052,6 @@ Language: fr
     <string name="more_menu_button_coupons_description">Accélérez les ventes grâce à des offres spéciales</string>
     <string name="more_menu_button_store_description">Voir votre boutique</string>
     <string name="more_menu_button_inbox_description">Restez à jour</string>
-    <string name="more_menu_button_payments_description">Associez les paiements sur mobile</string>
     <string name="more_menu_button_wc_admin_description">Gérez plus de paramètres d’administration</string>
     <string name="more_menu_general_section_title">Général</string>
     <string name="more_menu_settings_section_title">Réglages</string>

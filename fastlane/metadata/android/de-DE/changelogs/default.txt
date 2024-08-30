@@ -1,0 +1,2 @@
+20.1:
+Mit unserem neuesten Update verbessern wir dein Erlebnis! Wir haben das Problem, das für das Festhängen des Bestellbildschirms gesorgt hat, sowie Fehler mit falschen PINs für Shops im Vereinigten Königreich und in Kanada behoben. Außerdem haben wir einen seltenen Absturz beim Bearbeiten von Bestellungen behoben und die Benutzerfreundlichkeit auf kleinen Bildschirmen optimiert. Freu dich auf reibungslosere Performance und erhöhte Zuverlässigkeit!

@@ -34,7 +34,8 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
                 spentBudget = 0f,
                 currencyCode = "$",
                 durationInDays = 7,
-                startDate = Date()
+                startDate = Date(),
+                isEndlessCampaign = false
             ),
             targetingParameters = TargetingParameters(),
             destinationParameters = BlazeRepository.DestinationParameters(
@@ -61,7 +62,8 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
             blazeRepository = blazeRepository,
             currencyFormatter = currencyFormatter,
             analyticsTrackerWrapper = mock(),
-            dashboardRepository = mock()
+            dashboardRepository = mock(),
+            resourceProvider = mock(),
         )
     }
 
@@ -87,7 +89,7 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
 
         val state = viewModel.viewState.getOrAwaitValue()
 
-        assertThat(state.budgetFormatted).isEqualTo(
+        assertThat(state.displayBudget).isEqualTo(
             currencyFormatter.formatCurrency(
                 amount = campaignDetails.budget.totalBudget.toBigDecimal(),
                 currencyCode = campaignDetails.budget.currencyCode

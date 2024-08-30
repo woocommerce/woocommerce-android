@@ -44,7 +44,7 @@ class WooPosHomeViewModelTest {
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
         }
 
     @Test
@@ -80,7 +80,7 @@ class WooPosHomeViewModelTest {
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
         }
 
     @Test
@@ -128,7 +128,6 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            eventsFlow.emit(ChildToParentEvent.CartStatusChanged.NotEmpty)
             eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
 
             // THEN

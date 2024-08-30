@@ -5,7 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -17,6 +19,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
@@ -65,13 +68,22 @@ fun BlazeCampaignItem(
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold,
                 )
-                Row(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))) {
-                    campaign.stats.forEach {
-                        CampaignStat(
-                            statName = stringResource(id = it.name),
-                            statValue = it.value
+                Row(
+                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    CampaignStat(
+                        statName = stringResource(R.string.blaze_campaign_status_ctr_label),
+                        statValue = stringResource(
+                            id = R.string.blaze_campaign_status_ctr_valur,
+                            campaign.clicks,
+                            campaign.impressions
                         )
-                    }
+                    )
+                    Spacer(modifier = Modifier.width(42.dp))
+                    CampaignStat(
+                        statName = stringResource(campaign.budgetLabel),
+                        statValue = campaign.formattedBudget
+                    )
                 }
             }
         }
