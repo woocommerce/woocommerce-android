@@ -152,7 +152,7 @@ private fun CampaignBudgetScreen(
                     onBudgetUpdated = onBudgetUpdated,
                     onBudgetChangeFinished = onBudgetChangeFinished,
                     onEditDurationTapped = {
-                        onEditDurationTapped
+                        onEditDurationTapped()
                         coroutineScope.launch { modalSheetState.show() }
                     },
                     modifier = Modifier.weight(1f)
