@@ -1,0 +1,2 @@
+20.1:
+Hemos mejorado tu experiencia con nuestra última actualización. Hemos resuelto el problema por el que la pantalla de pedidos se quedaba atascada, hemos solucionado errores de PIN incorrecto en tiendas de Reino Unido y Canadá, hemos corregido un fallo poco frecuente en la edición de pedidos y hemos mejorado la usabilidad en pantallas pequeñas. Disfruta de un rendimiento más fluido y una mayor fiabilidad.

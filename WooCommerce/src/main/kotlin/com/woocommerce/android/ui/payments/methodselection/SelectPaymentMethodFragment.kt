@@ -35,7 +35,7 @@ import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodVi
 import com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -63,12 +63,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentSelectPaymentMethodBinding.inflate(inflater, container, false)
-        return if (viewModel.displayUi) {
-            setupToolbar()
-            binding.root
-        } else {
-            View(requireContext())
-        }
+        setupToolbar()
+        return binding.root
     }
 
     private fun setupToolbar() {
@@ -213,6 +209,18 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     findNavController().navigate(action)
                 }
 
+                is SkipScreenInPosAndNavigateToCardReaderPaymentFlow -> {
+                    if (findNavController().currentDestination?.id == R.id.selectPaymentMethodFragment) {
+                        findNavController().navigate(
+                            SelectPaymentMethodFragmentDirections
+                                .actionSelectPaymentMethodFragmentToCardReaderPaymentFlow(
+                                    event.cardReaderFlowParam,
+                                    event.cardReaderType
+                                )
+                        )
+                    }
+                }
+
                 is NavigateToCardReaderHubFlow -> {
                     val action =
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToCardReaderHubFlow(
@@ -299,8 +307,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
     private fun ReturnResultToWooPos.asWooPosCardReaderPaymentResult() =
         when (this) {
-            is ReturnResultToWooPos.Success -> WooPosCardReaderPaymentResult.Success
-            else -> WooPosCardReaderPaymentResult.Failure
+            is ReturnResultToWooPos.Success -> WooPosCardReaderPaymentStatus.Success
+            else -> WooPosCardReaderPaymentStatus.Failure
         }
 
     private fun setupResultHandlers() {

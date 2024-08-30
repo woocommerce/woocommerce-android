@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-21 11:54:04+0000
+Translation-Revision-Date: 2024-08-28 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Menu popup yang memuat sejumlah opsi. Geser untuk mengakses aneka item.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Buka menu bilah alat</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Bilah alat dengan status pembaca kartu. Menu terbuka. Ketuk dua kali untuk berinteraksi.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Bilah alat dengan status pembaca kartu. Ketuk dua kali untuk berinteraksi.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menu Dinonaktifkan</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menu Diaktifkan</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Pembaca kartu tidak terhubung. Ketuk dua kali untuk menghubungkan</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Pembaca kartu terhubung</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Latar belakang diredupkan. Ketuk untuk menutup menu.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Ikon centang untuk pembayaran berhasil</string>
+    <string name="woopos_remove_cart_item_content_description">Hapus item ini dari keranjang</string>
+    <string name="woopos_exit_dialog_confirmation_message">Semua pesanan yang sedang aktif akan hilang.</string>
+    <string name="woopos_exit_dialog_confirmation_title">Keluar dari mode Point of Sale?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Tutup</string>
+    <string name="woopos_dialog_products_info_background_content_description">Latar belakang diredupkan. Ketuk untuk menutup dialog.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Ketuk dua kali untuk menutup dialog</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Dialog khusus produk sederhana</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Ketuk dua kali untuk melihat selengkapnya</string>
+    <string name="woopos_banner_simple_products_content_description">Banner khusus produk sederhana</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Promosikan produk Anda dengan Iklan Blaze dan dongkrak penjualan sekarang.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">Tingkatkan penjualan Anda</string>
+    <string name="more_menu_button_payments_description">Terima pembayaran di mana saja</string>
+    <string name="card_reader_payment_failed_incorrect_pin">PIN yang dimasukkan salah. Coba lagi, atau gunakan metode pembayaran lainnya</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_cart_item_content_description">Produk di keranjang %s, Harga %s</string>
     <string name="woopos_product_item_content_description">Produk %s, Harga %s</string>
@@ -135,11 +158,10 @@ Language: id
     <string name="woopos_payment_tax_label">Pajak</string>
     <string name="blaze_campaign_preview_audience_section_title">Audiens</string>
     <string name="woopos_exit_confirmation_dismiss_button">Batal</string>
-    <string name="woopos_exit_confirmation_confirm_button">Keluar</string>
-    <string name="woopos_exit_confirmation_message">Anda yakin ingin keluar dari POS?</string>
     <string name="woopos_exit_confirmation_title">Keluar dari POS</string>
     <string name="woopos_checkout_button">Checkout</string>
     <string name="woopos_remove_item_button_from_cart_content_description">Hapus %s dari keranjang</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Keluar</string>
     <string name="woopos_reader_unknown">Status Pembaca Tidak Diketahui</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_connected">Pembaca Terhubung</string>
@@ -422,12 +444,12 @@ Language: id
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Mulai</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s hari</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_title">Tentukan durasi</string>
-    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Selesai</string>
     <string name="blaze_campaign_budget_impressions_title">Tayangan</string>
     <string name="blaze_campaign_budget_update_button">Perbarui</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_duration_section_title">Durasi</string>
+    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimasi orang yang dijangkau per hari</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s harian</string>
     <string name="blaze_campaign_budget_days_duration">selama %1$s hari</string>
@@ -635,7 +657,6 @@ Language: id
     <string name="product_creation_package_photo_no_text_detected">Tidak ada teks yang terdeteksi. Pilih foto kemasan lainnya atau masukkan detail produk secara manual.</string>
     <string name="blaze_campaign_creation_intro_title">Tingkatkan penjualan toko Anda dengan Blaze</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">Terjadi error ketika menyegarkan daftar kampanye. Silakan coba lagi nanti.</string>
-    <string name="product_creation_package_photo_error">Terjadi error ketika membuat nama &amp; deskripsi produk.</string>
     <string name="order_editing_add_content_description">Tambahkan produk</string>
     <string name="order_editing_barcode_content_description">Pindai barcode</string>
     <string name="order_creation_collapse_expand_product_card_content_description">Ciutkan/perluas kartu produk</string>
@@ -691,45 +712,23 @@ Language: id
     <string name="card_reader_settings_header">PENGATURAN</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">Tambahkan detail secara manual dengan email</string>
     <string name="login_app_login_malformed_link">Kami tidak dapat memproses permintaan login aplikasi Anda</string>
-    <string name="ai_product_name_copy_error">Error saat menyalin nama produk ke clipboard.</string>
-    <string name="ai_product_name_copy_success">Nama produk disalin ke clipboard.</string>
-    <string name="ai_product_name_copy_label">Nama produk dibuat oleh AI</string>
     <string name="ai_product_description_copy_error">Error saat menyalin deskripsi produk ke clipboard.</string>
     <string name="ai_product_description_copy_success">Deskripsi produk disalin ke clipboard.</string>
     <string name="product_creation_ai_generation_failure_message">Pembuatan produk tidak berhasil. Coba lagi</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Hapus alamat dan hentikan penggunaan tarif pajak ini</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Tentukan tarif pajak baru untuk pesanan ini</string>
     <string name="tax_rate_selector_auto_rate_details_title">Tarif pajak ditambahkan otomatis</string>
-    <string name="ai_product_name_sheet_error_message">Terjadi masalah saat membuat nama produk. Coba lagi.</string>
-    <string name="ai_product_name_sheet_generate_button">Minta tuliskan</string>
-    <string name="ai_product_name_sheet_input_description">Ceritakan tentang produk dan keunikannya.</string>
-    <string name="ai_product_name_sheet_subtitle">AI akan membuatkan Anda judul yang menarik</string>
-    <string name="ai_product_name_sheet_regenerate_button">Buat ulang</string>
     <string name="empty_review_filtered_list_message">Coba nonaktifkan penyaring belum dibaca untuk melihat semua ulasan produk</string>
-    <string name="ai_product_name_sheet_title">Nama produk</string>
     <string name="empty_review_filtered_list_title">Tidak ada ulasan produk belum dibaca</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Nada dipilih</string>
     <string name="product_creation_ai_tone_convincing">Persuasif</string>
     <string name="product_creation_ai_tone_flowery">Berbunga-bunga</string>
     <string name="product_creation_ai_tone_formal">Formal</string>
     <string name="product_creation_ai_tone_casual">Kasual</string>
-    <string name="product_creation_ai_tone_description">Tentukan nada dan suara agar presentasi produk sesuai dengan citra yang ingin diangkat.</string>
     <string name="product_creation_ai_tone_title">Nada dan suara</string>
     <string name="product_creation_ai_preview_details_section">Rincian</string>
-    <string name="product_creation_ai_preview_description_section">Deskripsi produk</string>
     <string name="product_creation_ai_preview_name_section">Nama produk</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">Anda bisa mengubah detail berikut kapan saja.</string>
     <string name="product_creation_ai_preview_title">Pratinjau</string>
-    <string name="product_creation_ai_about_product_continue_button">Buat Info Produk</string>
-    <string name="product_creation_ai_about_product_set_tone">Tentukan nada dan suara</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Tambahkan fitur utama, keunggulan, atau informasi produk agar mudah ditemukan di internet.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Misalnya, kain lembut, jahitan awet, desain unik</string>
-    <string name="product_creation_ai_about_product_subtitle">Tonjolkan keunikan produk dan biar AI yang urus selanjutnya.</string>
-    <string name="product_creation_ai_about_product_title">Tentang produk</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Sarankan nama</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">Misalnya: Kain lembut, jahitan awet, desain unik.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Nama produk</string>
-    <string name="ai_product_creation_add_name_title">Masukkan nama produk</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Berbasis AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Baca selengkapnya&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Tambahkan produk dan informasi secara manual</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Tambahkan secara manual</string>
@@ -738,7 +737,6 @@ Language: id
     <string name="product_creation_ai_entry_sheet_header">Tambahkan produk</string>
     <string name="product_review_list_unread_reviews_filter">Hanya ulasan belum dibaca</string>
     <string name="order_creation_edit_tax_rate">Edit Pengaturan Tarif Pajak</string>
-    <string name="ai_product_creation_add_name_subtitle">Atau, ketuk untuk mendapatkan saran nama lainnya.</string>
     <string name="tax_rate_selector_auto_rate_subtitle">Hal ini tidak akan memengaruhi pesanan online</string>
     <string name="tax_rate_selector_auto_rate_label">Tambahkan tarif ini ke semua pesanan yang dibuat</string>
     <string name="tax_rate_selector_empty_list_button_alt">Sunting Tarif Pajak</string>
@@ -1054,7 +1052,6 @@ Language: id
     <string name="more_menu_button_coupons_description">Tingkatkan penjualan dengan penawaran khusus</string>
     <string name="more_menu_button_store_description">Lihat toko Anda</string>
     <string name="more_menu_button_inbox_description">Pantau selalu</string>
-    <string name="more_menu_button_payments_description">Aktifkan pembayaran dengan perangkat seluler</string>
     <string name="more_menu_button_wc_admin_description">Kelola lebih lanjut di admin</string>
     <string name="more_menu_general_section_title">Umum</string>
     <string name="more_menu_settings_section_title">Pengaturan</string>

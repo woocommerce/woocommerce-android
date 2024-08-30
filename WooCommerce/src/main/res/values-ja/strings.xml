@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-21 09:54:03+0000
+Translation-Revision-Date: 2024-08-29 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">オプション付きのポップアップメニュー。 スワイプしてアイテム間を移動します。</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">ツールバーメニューを開く</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">カードリーダーステータス付きのツールバー。 メニューが開いています。 ダブルタップして操作します。</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">カードリーダーステータス付きのツールバー。 ダブルタップして操作します。</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">メニューが無効です</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">メニューが有効です</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">カードリーダーが接続されていません。 ダブルタップして接続</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">カードリーダーが接続されました</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">背景を暗くしました。 タップしてメニューを閉じます。</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">支払い成功チェックマークアイコン</string>
+    <string name="woopos_remove_cart_item_content_description">お買い物カゴからこのアイテムを削除</string>
+    <string name="woopos_exit_dialog_confirmation_message">進行中の注文はすべて失われます。</string>
+    <string name="woopos_exit_dialog_confirmation_title">販売時点管理モードを終了しますか ?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">閉じる</string>
+    <string name="woopos_dialog_products_info_background_content_description">背景を暗くしました。 タップしてダイアログを閉じます。</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">ダブルタップしてダイアログを閉じる</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">シンプルな商品のみのダイアログ</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">ダブルタップして詳しく確認</string>
+    <string name="woopos_banner_simple_products_content_description">シンプルな商品のみのバナー</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Blaze 広告で商品を宣伝し、今すぐ売上を増やしましょう。</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">売上を増やす</string>
+    <string name="more_menu_button_payments_description">外出先で支払いを受け取る</string>
+    <string name="card_reader_payment_failed_incorrect_pin">誤った PIN が入力されました。 再度お試しいただくか、別の支払い方法をお使いください</string>
     <string name="woopos_menu_toolbar_content_description">メニュー</string>
     <string name="woopos_cart_item_content_description">お買い物カゴ %s の商品、価格%s</string>
     <string name="woopos_product_item_content_description">商品 %s、価格%s</string>
@@ -135,8 +158,7 @@ Language: ja_JP
     <string name="no_quantity_rules">数量ルールなし</string>
     <string name="blaze_campaign_preview_audience_section_title">読者</string>
     <string name="woopos_exit_confirmation_dismiss_button">キャンセル</string>
-    <string name="woopos_exit_confirmation_confirm_button">終了</string>
-    <string name="woopos_exit_confirmation_message">POS を終了してもよいですか ?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">終了</string>
     <string name="woopos_exit_confirmation_title">POS を終了</string>
     <string name="woopos_remove_item_button_from_cart_content_description">%s をお買い物カゴから削除</string>
     <string name="woopos_checkout_button">購入手続き</string>
@@ -634,7 +656,6 @@ Language: ja_JP
     <string name="blaze_campaign_creation_intro_title">Blaze でストアの売上を増やす</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">キャンペーンのリストを更新中にエラーが発生しました。 後でもう一度お試しください。</string>
     <string name="media_picker_dialog_title">メディアソースを選択する</string>
-    <string name="product_creation_package_photo_error">商品名と説明文の生成中にエラーが発生しました。</string>
     <string name="product_creation_package_photo_no_text_detected">テキストが検出されませんでした。 別のパッケージ写真を選択するか、商品の詳細を手動で入力してください。</string>
     <string name="order_editing_add_content_description">商品を追加する</string>
     <string name="order_editing_barcode_content_description">バーコードをスキャンする</string>
@@ -691,46 +712,23 @@ Language: ja_JP
     <string name="card_reader_settings_header">設定</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">メールアドレスを使用して手動で詳細を追加</string>
     <string name="login_app_login_malformed_link">アプリログインのリクエストを処理できませんでした</string>
-    <string name="ai_product_name_copy_error">商品名をクリップボードにコピーする際にエラーが発生しました。</string>
-    <string name="ai_product_name_copy_success">商品名がクリップボードにコピーされました。</string>
-    <string name="ai_product_name_copy_label">AI によって生成された商品名</string>
     <string name="ai_product_description_copy_error">商品説明をクリップボードにコピーする際にエラーが発生しました。</string>
     <string name="ai_product_description_copy_success">商品説明がクリップボードにコピーされました。</string>
     <string name="product_creation_ai_generation_failure_message">商品の生成に失敗しました。 もう一度お試しください</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">住所をクリアしてこのレートの使用を停止する</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">この注文に新しい税率を設定する</string>
     <string name="tax_rate_selector_auto_rate_details_title">税率の自動加算</string>
-    <string name="ai_product_name_sheet_error_message">商品名の生成中に問題が発生しました。 もう一度お試しください。</string>
-    <string name="ai_product_name_sheet_regenerate_button">再生成</string>
-    <string name="ai_product_name_sheet_generate_button">ご記入ください</string>
-    <string name="ai_product_name_sheet_input_description">商品の概要とその特徴的な点を教えてください。</string>
-    <string name="ai_product_name_sheet_subtitle">AI が魅力的なタイトルを生成します</string>
-    <string name="ai_product_name_sheet_title">商品名</string>
     <string name="empty_review_filtered_list_message">すべての商品レビューを表示するには、未読フィルターを無効にしてみてください</string>
     <string name="empty_review_filtered_list_title">未読の商品レビューはありません</string>
-    <string name="product_creation_ai_tone_selected_content_desc">トーンが選択されました</string>
     <string name="product_creation_ai_tone_convincing">説得力がある</string>
     <string name="product_creation_ai_tone_flowery">花</string>
     <string name="product_creation_ai_tone_formal">フォーマル</string>
     <string name="product_creation_ai_tone_casual">カジュアル</string>
-    <string name="product_creation_ai_tone_description">トーンと声を設定してブランドに合わせた商品のプレゼンテーションを形成します。</string>
     <string name="product_creation_ai_tone_title">トーンと声</string>
     <string name="product_creation_ai_preview_details_section">詳細</string>
-    <string name="product_creation_ai_preview_description_section">商品説明</string>
     <string name="product_creation_ai_preview_name_section">商品名</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">以下の情報は後からいつでも変更できます。</string>
     <string name="product_creation_ai_preview_title">プレビュー</string>
-    <string name="product_creation_ai_about_product_continue_button">商品情報を作成</string>
-    <string name="product_creation_ai_about_product_set_tone">トーンと声を設定する</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">主要な機能や利点、詳細を追加して商品をオンラインで見つけられるようにします。</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど</string>
-    <string name="product_creation_ai_about_product_subtitle">商品のユニークな点を強調し、AI に魔法をかけてもらいましょう。</string>
-    <string name="product_creation_ai_about_product_title">商品について</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">名前を提案</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど。</string>
-    <string name="ai_product_creation_add_name_keywords_label">商品名</string>
-    <string name="ai_product_creation_add_name_subtitle">または、タップして選択肢を拡張し、さらに名前の候補を表示します。</string>
-    <string name="ai_product_creation_add_name_title">商品名を追加する</string>
     <string name="product_creation_ai_entry_sheet_learn_more">AI を活用しています。 &lt;a href=\'guidelines\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">手動で商品と詳細を追加します</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">手動で追加する</string>
@@ -1054,7 +1052,6 @@ Language: ja_JP
     <string name="more_menu_button_coupons_description">特別オファーで売上を伸ばす</string>
     <string name="more_menu_button_store_description">ストアを表示</string>
     <string name="more_menu_button_inbox_description">最新の状態に保つ</string>
-    <string name="more_menu_button_payments_description">モバイル決済を利用する</string>
     <string name="more_menu_button_wc_admin_description">管理画面でさらに管理する</string>
     <string name="more_menu_general_section_title">一般</string>
     <string name="more_menu_settings_section_title">設定</string>

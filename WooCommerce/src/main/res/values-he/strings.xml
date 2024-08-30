@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-23 10:54:03+0000
+Translation-Revision-Date: 2024-08-29 15:54:14+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">תפריט קופץ עם אפשרויות. יש להחליק כדי לנווט בין הפריטים.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">לפתוח את התפריט של סרגל הכלים</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">סרגל כלים עם מצב של קורא כרטיסים. התפריט פתוח. יש להקיש הקשה כפולה לאינטראקציה.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">סרגל כלים עם מצב של קורא כרטיסים. יש להקיש הקשה כפולה לאינטראקציה.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">התפריט הושבת</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">התפריט הופעל</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">קורא הכרטיסים לא מחובר. יש להקיש הקשה כפולה כדי להתחבר</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">קורא הכרטיסים מחובר</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">רקע מעומעם. יש להקיש כדי לסגור את התפריט.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">סמל אישור שמציין את הצלחת התשלום</string>
+    <string name="woopos_remove_cart_item_content_description">להסיר את הפריט מעגלת הקניות</string>
+    <string name="woopos_exit_dialog_confirmation_message">כל התקדמות שנרשמה בהזמנות תאבד.</string>
+    <string name="woopos_exit_dialog_confirmation_title">האם לצאת ממצב \'נקודת מכירה\'?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">לסגור</string>
+    <string name="woopos_dialog_products_info_background_content_description">רקע מעומעם. יש להקיש כדי לצאת מתיבת הדו-שיח.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">יש להקיש הקשה כפולה כדי לצאת מתיבת הדו-שיח</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">תיבת דו-שיח של מוצרים פשוטים בלבד</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">יש להקיש הקשה כפולה למידע נוסף</string>
+    <string name="woopos_banner_simple_products_content_description">באנר של מוצרים פשוטים בלבד</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">לקדם מוצרים עם פרסומות של Blaze כדי להגדיל את המכירות שלך עכשיו.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">לשפר את המכירות</string>
+    <string name="more_menu_button_payments_description">לגבות תשלומים מכל מקום</string>
+    <string name="card_reader_payment_failed_incorrect_pin">הוזן קוד PIN שגוי. יש לנסות שוב או להשתמש באמצעי תשלום אחר</string>
     <string name="woopos_menu_toolbar_content_description">תפריט</string>
     <string name="woopos_cart_item_content_description">מוצר בעגלת הקניות %s, מחיר %s</string>
     <string name="woopos_product_item_content_description">מוצר %s, מחיר %s</string>
@@ -135,8 +158,7 @@ Language: he_IL
     <string name="no_quantity_rules">אין כללי כמות</string>
     <string name="blaze_campaign_preview_audience_section_title">קהל</string>
     <string name="woopos_exit_confirmation_dismiss_button">ביטול</string>
-    <string name="woopos_exit_confirmation_confirm_button">יציאה</string>
-    <string name="woopos_exit_confirmation_message">האם ברצונך לצאת מ-POS?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">יציאה</string>
     <string name="woopos_exit_confirmation_title">לצאת מ-POS</string>
     <string name="woopos_remove_item_button_from_cart_content_description">להסיר את %s מעגלת הקניות</string>
     <string name="woopos_checkout_button">תשלום בקופה</string>
@@ -634,7 +656,6 @@ Language: he_IL
     <string name="blaze_campaign_creation_intro_title">להגביר מכירות בחנות שלך בעזרת Blaze</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">שגיאה בעת ריענון רשימת הקמפיינים. נא לנסות שוב מאוחר יותר.</string>
     <string name="media_picker_dialog_title">לבחור מקור מדיה</string>
-    <string name="product_creation_package_photo_error">שגיאה בעת יצירת שם ותיאור מוצר.</string>
     <string name="product_creation_package_photo_no_text_detected">לא זוהה טקסט. יש לבחור תמונת אריזה אחרת או להזין את פרטי המוצר באופן ידני.</string>
     <string name="order_editing_add_content_description">להוסיף מוצר</string>
     <string name="order_editing_barcode_content_description">לסרוק ברקוד</string>
@@ -691,46 +712,23 @@ Language: he_IL
     <string name="card_reader_settings_header">הגדרות</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">להוסיף פרטים ידנית באמצעות אימייל</string>
     <string name="login_app_login_malformed_link">לא הצלחנו לעבד את בקשת הכניסה לאפליקציה</string>
-    <string name="ai_product_name_copy_error">שגיאה בעת ההעתקה של שם המוצר ללוח.</string>
-    <string name="ai_product_name_copy_success">שם המוצר הועתק ללוח.</string>
-    <string name="ai_product_name_copy_label">שם המוצר נוצר על ידי בינה מלאכותית</string>
     <string name="ai_product_description_copy_error">שגיאה בעת ההעתקה של תיאור המוצר ללוח.</string>
     <string name="ai_product_description_copy_success">תיאור המוצר הועתק ללוח.</string>
     <string name="product_creation_ai_generation_failure_message">יצירת המוצר נכשלה. יש לנסות שוב</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">למחוק את הכתובת ולהפסיק להשתמש בשיעור המס הזה</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">לקבוע שיעור מס חדש להזמנה זו</string>
     <string name="tax_rate_selector_auto_rate_details_title">הוספה אוטומטית של שיעור מס</string>
-    <string name="ai_product_name_sheet_error_message">אירעה בעיה ביצירה של שם המוצר. יש לנסות שוב.</string>
-    <string name="ai_product_name_sheet_regenerate_button">ליצור מחדש</string>
-    <string name="ai_product_name_sheet_generate_button">לכתוב עבורי</string>
-    <string name="ai_product_name_sheet_input_description">נשמח לשמוע מה המוצר שברצונך למכור ומה מייחד אותו!</string>
-    <string name="ai_product_name_sheet_subtitle">הבינה המלאכותית יכולה ליצור עבורך שמות מעניינים</string>
-    <string name="ai_product_name_sheet_title">שם המוצר</string>
     <string name="empty_review_filtered_list_message">כדי להציג את כל הביקורות שהתקבלו למוצר, נסו להשבית את המסנן של פריטים שלא נקראו</string>
     <string name="empty_review_filtered_list_title">אין ביקורות שלא נקראו למוצרים</string>
-    <string name="product_creation_ai_tone_selected_content_desc">טון הדיבור שנבחר</string>
     <string name="product_creation_ai_tone_convincing">משכנע</string>
     <string name="product_creation_ai_tone_flowery">מתחכם</string>
     <string name="product_creation_ai_tone_formal">רשמי</string>
     <string name="product_creation_ai_tone_casual">יומיומי</string>
-    <string name="product_creation_ai_tone_description">כדאי להגדיר את הנימה ואת טון הדיבור כדי לוודא שהתצוגה של המוצר מתאימה למותג שלך.</string>
     <string name="product_creation_ai_tone_title">נימה וטון דיבור</string>
     <string name="product_creation_ai_preview_details_section">פרטים</string>
-    <string name="product_creation_ai_preview_description_section">תיאור המוצר</string>
     <string name="product_creation_ai_preview_name_section">שם המוצר</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">תמיד אפשר לשנות את הפרטים שלמטה מאוחר יותר.</string>
     <string name="product_creation_ai_preview_title">תצוגה מקדימה</string>
-    <string name="product_creation_ai_about_product_continue_button">ליצור את פרטי המוצר</string>
-    <string name="product_creation_ai_about_product_set_tone">להגדיר את הנימה וטון הדיבור</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">יש להוסיף מאפיינים מרכזיים, יתרונות או פרטים שיעזרו למחפשים למצוא את המוצר שלך באינטרנט.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">למשל: בד רך, תפירה חזקה, עיצוב ייחודי</string>
-    <string name="product_creation_ai_about_product_subtitle">ניתן להדגיש את המאפיינים שמייחדים את המוצר שלך ולהשתמש בקסמיה של הבינה המלאכותית כדי ליצור שמות.</string>
-    <string name="product_creation_ai_about_product_title">פרטים לגבי המוצר</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">להציע שם</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">למשל: בד רך, תפירה חזקה, עיצוב ייחודי.</string>
-    <string name="ai_product_creation_add_name_keywords_label">שם המוצר</string>
-    <string name="ai_product_creation_add_name_subtitle">לחלופין, ניתן להרחיב את הבחירה על ידי הקשה על הצעות לשמות נוספים.</string>
-    <string name="ai_product_creation_add_name_title">לציין את שם המוצר</string>
     <string name="product_creation_ai_entry_sheet_learn_more">מופעל באמצעות בינה מלאכותית. &lt;a href=\'guidelines\'&gt;&lt;u&gt;למידע נוסף&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">להוסיף מוצר ואת הפרטים באופן ידני</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">להוסיף ידנית</string>
@@ -1054,7 +1052,6 @@ Language: he_IL
     <string name="more_menu_button_coupons_description">לשפר את שיעור המכירה עם מבצעים מיוחדים</string>
     <string name="more_menu_button_store_description">הצגת החנות שלך</string>
     <string name="more_menu_button_inbox_description">להישאר בעניינים</string>
-    <string name="more_menu_button_payments_description">להצטרף לתשלומים מהנייד</string>
     <string name="more_menu_button_wc_admin_description">לנהל אפשרויות נוספות באזור הניהול</string>
     <string name="more_menu_general_section_title">כללי</string>
     <string name="more_menu_settings_section_title">הגדרות</string>
