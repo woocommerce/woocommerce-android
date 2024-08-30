@@ -207,9 +207,9 @@ class ProductConfiguration(
             val isIncluded = isOptional && optionalValue || isOptional.not() && itemQuantity > 0f
 
             val isVariable = entry.value.containsKey(VariableProductRule.KEY)
-            val attributesAreNullOrEmpty = entry.value[VariableProductRule.KEY].isNullOrEmpty()
+            val attributesAreNull = entry.value[VariableProductRule.KEY] == null
 
-            if (isIncluded && isVariable && attributesAreNullOrEmpty) {
+            if (isIncluded && isVariable && attributesAreNull) {
                 issues[entry.key] = resourceProvider.getString(R.string.configuration_variable_selection)
             }
         }
