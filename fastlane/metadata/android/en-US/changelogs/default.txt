@@ -1,1 +1,4 @@
-We've improved your experience with our latest update! We've resolved the issue where the Orders screen would get stuck, addressed incorrect pin errors for UK and Canadian stores, fixed a rare crash in order editing, and enhanced usability on small screens. Enjoy smoother performance and better reliability!
+- [**] Fixed navigation in tablet mode: after order is paid, the app should redirect to order details screen. [https://github.com/woocommerce/woocommerce-android/pull/12415]
+- [*] Show the back button on the Order Edit Screen for phones [https://github.com/woocommerce/woocommerce-android/pull/12421]
+- [**] Enables support to create Blaze Evergreen campaigns [https://github.com/woocommerce/woocommerce-android/issues/12176]
+
