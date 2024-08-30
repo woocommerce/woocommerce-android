@@ -231,6 +231,18 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         isError = false
     )
 
+    fun onDurationSliderUpdated(durationInDays: Int) {
+        budgetUiState.update {
+            it.copy(
+                durationInDays = durationInDays,
+                formattedEndDate = getFormattedEndDate(
+                    startDateMillis = it.bottomSheetCampaignStartDateMillis,
+                    duration = durationInDays
+                ),
+            )
+        }
+    }
+
     @Parcelize
     data class BudgetUiState(
         val currencyCode: String,

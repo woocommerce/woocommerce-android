@@ -81,6 +81,7 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
             onBudgetChangeFinished = viewModel::onBudgetChangeFinished,
             onUpdateTapped = viewModel::onUpdateTapped,
             onApplyDurationTapped = viewModel::onApplyDurationTapped,
+            onDurationSliderUpdated = viewModel::onDurationSliderUpdated
         )
     }
 }
@@ -97,6 +98,7 @@ private fun CampaignBudgetScreen(
     onBudgetChangeFinished: () -> Unit,
     onUpdateTapped: () -> Unit,
     onApplyDurationTapped: (Int, Boolean) -> Unit,
+    onDurationSliderUpdated: (Int) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -132,7 +134,8 @@ private fun CampaignBudgetScreen(
                                 onApplyDurationTapped(duration, isEndlessCampaign)
                                 coroutineScope.launch { modalSheetState.hide() }
                             },
-                            onCancelTapped = { coroutineScope.launch { modalSheetState.hide() } }
+                            onCancelTapped = { coroutineScope.launch { modalSheetState.hide() } },
+                            onDurationSliderUpdated = { onDurationSliderUpdated(it) }
                         )
                     }
                 }
@@ -422,6 +425,7 @@ private fun EditDurationBottomSheet(
     onStartDateChanged: (Long) -> Unit,
     onApplyTapped: (Int, Boolean) -> Unit,
     onCancelTapped: () -> Unit,
+    onDurationSliderUpdated: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
@@ -540,7 +544,10 @@ private fun EditDurationBottomSheet(
                             .padding(top = 16.dp),
                         value = sliderPosition,
                         valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
-                        onValueChange = { sliderPosition = it },
+                        onValueChange = {
+                            sliderPosition = it
+                            onDurationSliderUpdated(it.toInt())
+                        },
                         colors = SliderDefaults.colors(
                             inactiveTrackColor = colorResource(id = color.divider_color)
                         )
@@ -598,6 +605,7 @@ private fun CampaignBudgetScreenPreview() {
         onUpdateTapped = {},
         onBudgetChangeFinished = {},
         onApplyDurationTapped = { _, _ -> },
+        onDurationSliderUpdated = {}
     )
 }
 
