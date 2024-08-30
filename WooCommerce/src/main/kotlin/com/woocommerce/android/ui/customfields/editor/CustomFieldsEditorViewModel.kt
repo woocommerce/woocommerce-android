@@ -3,98 +3,61 @@ package com.woocommerce.android.ui.customfields.editor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
-import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CustomFieldsEditorViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val repository: CustomFieldsRepository
+    savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<CustomFieldsEditorFragmentArgs>()
 
-    private val customFieldDraft = savedStateHandle.getNullableStateFlow(
+    private val customFieldDraft = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = null,
-        key = "customField",
-        clazz = CustomFieldUiModel::class.java
+        initialValue = navArgs.customField ?: CustomFieldUiModel("", ""),
+        key = "customField"
     )
     private val showDiscardChangesDialog = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = false,
         key = "showDiscardChangesDialog"
     )
-    private val storedValue = MutableStateFlow<CustomField?>(null)
-    private val isHtml = storedValue.map { it?.valueStrippedHtml != it?.valueAsString }
+    private val storedValue = navArgs.customField
+    private val isHtml = storedValue?.valueStrippedHtml != storedValue?.value
 
     val state = combine(
-        customFieldDraft.filterNotNull(),
-        storedValue,
-        isHtml,
+        customFieldDraft,
         showDiscardChangesDialog.mapToState()
-    ) { customField, storedValue, isHtml, discardChangesDialogState ->
+    ) { customField, discardChangesDialogState ->
         UiState(
             customField = customField,
             hasChanges = storedValue?.key.orEmpty() != customField.key ||
-                storedValue?.valueAsString.orEmpty() != customField.value,
+                storedValue?.value.orEmpty() != customField.value,
             isHtml = isHtml,
             discardChangesDialogState = discardChangesDialogState
         )
     }.asLiveData()
 
-    init {
-        initState()
-    }
-
     fun onKeyChanged(key: String) {
-        customFieldDraft.update { it?.copy(key = key) }
+        customFieldDraft.update { it.copy(key = key) }
     }
 
     fun onValueChanged(value: String) {
-        customFieldDraft.update { it?.copy(value = value) }
+        customFieldDraft.update { it.copy(value = value) }
     }
 
     fun onDoneClicked() {
         val value = requireNotNull(customFieldDraft.value)
         triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
-    }
-
-    private fun initState() {
-        if (navArgs.customFieldId == -1L && customFieldDraft.value == null) {
-            customFieldDraft.value = CustomFieldUiModel("", "")
-            return
-        }
-
-        launch {
-            val dbValue = requireNotNull(
-                repository.getCustomFieldById(
-                    parentItemId = navArgs.parentItemId,
-                    customFieldId = navArgs.customFieldId
-                )
-            ) {
-                "Custom field not found in database, this should not happen"
-            }
-
-            storedValue.value = dbValue
-            if (customFieldDraft.value == null) {
-                customFieldDraft.value = CustomFieldUiModel(dbValue)
-            }
-        }
     }
 
     fun onBackClick() {

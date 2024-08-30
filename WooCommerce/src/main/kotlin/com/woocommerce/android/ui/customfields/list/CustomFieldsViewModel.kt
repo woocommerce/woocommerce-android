@@ -30,8 +30,6 @@ class CustomFieldsViewModel @Inject constructor(
     private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
     private val pendingChanges = savedStateHandle.getStateFlow(viewModelScope, PendingChanges())
 
-    val parentItemId = args.parentItemId
-
     val state = combine(
         customFields,
         pendingChanges,
