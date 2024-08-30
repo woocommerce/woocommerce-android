@@ -1,10 +1,21 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+
+20.2
+-----
+- [**] Fixed navigation in tablet mode: after order is paid, the app should redirect to order details screen. [https://github.com/woocommerce/woocommerce-android/pull/12415]
+- [*] Show the back button on the Order Edit Screen for phones [https://github.com/woocommerce/woocommerce-android/pull/12421]
+- [**] Enables support to create Blaze Evergreen campaigns [https://github.com/woocommerce/woocommerce-android/issues/12176]
+
 20.1
 -----
-
 - [*****] [Internal] Update Aztec from v1.3.45 to v2.1.4 [https://github.com/woocommerce/woocommerce-android/pull/12316]
+- [**] Fixed Orders screen being stuck at skeleton loading view in certain scenarios [https://github.com/woocommerce/woocommerce-android/pull/12387]
+- [*] Handle incorrect pin error for UK and Canadian stores during IPP [https://github.com/woocommerce/woocommerce-android/pull/12375]
+- [*] [Internal] Fixed an issue with date formatting for the Blaze campaign creation API request [https://github.com/woocommerce/woocommerce-android/pull/12372]
+- [*] Fixed a rare crash in the order editing screen. [https://github.com/woocommerce/woocommerce-android/pull/12382]
+- [*] Fixed the blaze budget screens that are unusable on small screens. [https://github.com/woocommerce/woocommerce-android/pull/12402]
 
 20.0
 -----

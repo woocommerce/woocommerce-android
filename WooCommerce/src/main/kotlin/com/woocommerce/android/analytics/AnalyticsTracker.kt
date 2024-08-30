@@ -601,6 +601,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_PRODUCT_SHARING = "product_sharing"
 
         // -- AI product description
+        const val VALUE_PRODUCT_CREATION = "product_creation"
         const val VALUE_AZTEC_EDITOR = "aztec_editor"
         const val VALUE_PRODUCT_FORM = "product_form"
         const val VALUE_PRODUCT_DESCRIPTION = "product_description"
@@ -618,6 +619,7 @@ class AnalyticsTracker private constructor(
         const val KEY_BLAZE_TOTAL_BUDGET = "total_budget"
         const val KEY_BLAZE_IS_AI_CONTENT = "is_ai_suggested_ad_content"
         const val KEY_BLAZE_ERROR = "blaze_creation_error"
+        const val KEY_BLAZE_CAMPAIGN_TYPE = "campaign_type"
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"
@@ -627,21 +629,13 @@ class AnalyticsTracker private constructor(
         const val VALUE_CHANGED_FIELD_QUANTITY = "quantity"
         const val VALUE_CHANGED_FIELD_VARIATION = "variation"
         const val VALUE_CHANGED_FIELD_OPTIONAL = "optional"
-
-        // -- AI product name
-        const val KEY_HAS_INPUT_NAME = "has_input_name"
-        const val VALUE_PRODUCT_CREATION = "product_creation"
-        const val VALUE_PRODUCT_CREATION_AI = "product_creation_ai"
+        const val VALUE_START_END_CAMPAIGN = "start_end"
+        const val VALUE_EVERGREEN_CAMPAIGN = "evergreen"
 
         // -- AI product creation
         const val KEY_TONE = "tone"
         const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
         const val KEY_FEATURE_WORD_COUNT = "feature_word_count"
-
-        // -- AI product from package photo
-        const val KEY_SCANNED_TEXT_COUNT = "scanned_text_count"
-        const val KEY_SELECTED_TEXT_COUNT = "selected_text_count"
-        const val VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO = "product_creation_from_package_photo"
 
         const val KEY_IS_AI_CONTENT = "is_ai_content"
 
