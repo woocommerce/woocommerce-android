@@ -1,0 +1,2 @@
+20.1:
+We hebben je ervaring verbeterd met onze nieuwste update! We hebben een probleem opgelost waarbij het scherm Bestellingen vastliep, adressen onjuist op de kaart geplaatst werden voor winkels in het VK en in Canada, en we hebben een zeldzame crash opgelost bij het bewerken van bestellingen en de gebruiksvriendelijkheid op kleine schermen verbeterd. Profiteer van soepelere prestaties en betere betrouwbaarheid!
