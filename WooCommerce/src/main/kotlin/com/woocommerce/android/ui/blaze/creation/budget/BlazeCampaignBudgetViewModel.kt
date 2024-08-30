@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAX_DURATION
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
+import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.WEEKLY_DURATION
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -39,7 +40,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_DATE_LIMIT_IN_DAYS = 60
-        const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
     }
 
     private val navArgs: BlazeCampaignBudgetFragmentArgs by savedStateHandle.navArgs()
@@ -108,6 +108,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             properties = mapOf(
                 AnalyticsTracker.KEY_BLAZE_DURATION to budgetUiState.value.durationInDays,
                 AnalyticsTracker.KEY_BLAZE_TOTAL_BUDGET to budgetUiState.value.totalBudget,
+                AnalyticsTracker.KEY_BLAZE_CAMPAIGN_TYPE to when {
+                    budgetUiState.value.isEndlessCampaign -> AnalyticsTracker.VALUE_EVERGREEN_CAMPAIGN
+                    else -> AnalyticsTracker.VALUE_START_END_CAMPAIGN
+                },
             )
         )
     }
@@ -167,6 +171,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             stat = BLAZE_CREATION_EDIT_BUDGET_SET_DURATION_APPLIED,
             properties = mapOf(
                 AnalyticsTracker.KEY_BLAZE_DURATION to budgetUiState.value.durationInDays,
+                AnalyticsTracker.KEY_BLAZE_CAMPAIGN_TYPE to when {
+                    isEndlessCampaign -> AnalyticsTracker.VALUE_EVERGREEN_CAMPAIGN
+                    else -> AnalyticsTracker.VALUE_START_END_CAMPAIGN
+                }
             )
         )
     }

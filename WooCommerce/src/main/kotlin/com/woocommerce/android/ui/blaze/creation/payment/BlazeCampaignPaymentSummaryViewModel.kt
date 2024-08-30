@@ -123,7 +123,16 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     campaignCreationState.value = null
-                    analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_SUCCESS)
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_SUCCESS,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_BLAZE_CAMPAIGN_TYPE to when {
+                                navArgs.campaignDetails.budget.isEndlessCampaign ->
+                                    AnalyticsTracker.VALUE_EVERGREEN_CAMPAIGN
+                                else -> AnalyticsTracker.VALUE_START_END_CAMPAIGN
+                            }
+                        )
+                    )
                     dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.ONBOARDING, isVisible = true)
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
                 },
