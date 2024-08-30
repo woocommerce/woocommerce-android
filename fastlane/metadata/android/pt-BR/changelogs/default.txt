@@ -1,2 +1,0 @@
-20.1:
-Melhoramos sua experiência com a mais nova atualização! Corrigimos um problema em que a tela de pedidos ficava travada e resolvemos erros de fixação para as lojas do Reino Unido e Canadá. Também corrigimos uma falha rara na edição de pedidos e melhoramos o uso em telas pequenas. Aproveite um desempenho mais fluido e estável!
