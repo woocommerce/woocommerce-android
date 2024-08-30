@@ -161,12 +161,14 @@ fun CartBodyEmpty() {
         Image(
             imageVector = ImageVector.vectorResource(R.drawable.woo_pos_ic_empty_cart),
             contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
+            modifier = Modifier.size(104.dp)
         )
-        Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(32.dp.toAdaptivePadding()))
         Text(
             text = stringResource(R.string.woopos_cart_empty_subtitle),
-            style = MaterialTheme.typography.subtitle1,
-            color = MaterialTheme.colors.secondaryVariant,
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Normal,
+            color = MaterialTheme.colors.onSurface,
             textAlign = TextAlign.Center
         )
     }
