@@ -70,7 +70,8 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     fun onDoneClicked() {
-        TODO()
+        val value = requireNotNull(customFieldDraft.value)
+        triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
     }
 
     private fun initState() {

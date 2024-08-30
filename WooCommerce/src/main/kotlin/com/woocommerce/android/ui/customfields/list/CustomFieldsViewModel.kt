@@ -58,6 +58,10 @@ class CustomFieldsViewModel @Inject constructor(
         triggerEvent(CustomFieldValueClicked(field))
     }
 
+    fun onCustomFieldUpdated(result: CustomFieldUiModel) {
+        TODO("Not yet implemented")
+    }
+
     data class UiState(
         val customFields: List<CustomFieldUiModel>,
         val isLoading: Boolean

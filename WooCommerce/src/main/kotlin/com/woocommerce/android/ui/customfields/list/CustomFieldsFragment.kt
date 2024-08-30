@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
+import com.woocommerce.android.ui.customfields.editor.CustomFieldsEditorFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -37,6 +39,7 @@ class CustomFieldsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         handleEvents()
+        handleResults()
     }
 
     private fun handleEvents() {
@@ -49,6 +52,12 @@ class CustomFieldsFragment : BaseFragment() {
                     findNavController().navigateUp()
                 }
             }
+        }
+    }
+
+    private fun handleResults() {
+        handleResult<CustomFieldUiModel>(CustomFieldsEditorFragment.RESULT_KEY) { result ->
+            viewModel.onCustomFieldUpdated(result)
         }
     }
 
