@@ -70,6 +70,7 @@ private fun CustomFieldsEditorScreen(
                 value = state.customField.key,
                 onValueChange = onKeyChanged,
                 label = stringResource(R.string.custom_fields_editor_key_label),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
