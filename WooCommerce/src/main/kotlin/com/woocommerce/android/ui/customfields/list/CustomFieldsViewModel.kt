@@ -64,11 +64,19 @@ class CustomFieldsViewModel @Inject constructor(
     }
 
     fun onCustomFieldUpdated(result: CustomFieldUiModel) {
-        pendingChanges.update {
-            if (result.id == null) {
-                it.copy(insertedFields = it.insertedFields + result)
-            } else {
-                it.copy(editedFields = it.editedFields + result)
+        launch {
+            pendingChanges.update { changes ->
+                if (result.id == null) {
+                    changes.copy(insertedFields = changes.insertedFields + result)
+                } else {
+                    val storedValue = repository.getCustomFieldById(args.parentItemId, result.id)
+                    if (storedValue?.key == result.key && storedValue.valueAsString == result.value) {
+                        // This means the field was changed back to its original value
+                        changes.copy(editedFields = changes.editedFields - result)
+                    } else {
+                        changes.copy(editedFields = changes.editedFields.filterNot { it.id == result.id } + result)
+                    }
+                }
             }
         }
     }
