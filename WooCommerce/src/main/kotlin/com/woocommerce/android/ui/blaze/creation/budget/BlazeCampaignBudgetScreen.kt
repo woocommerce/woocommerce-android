@@ -151,7 +151,10 @@ private fun CampaignBudgetScreen(
                     },
                     onBudgetUpdated = onBudgetUpdated,
                     onBudgetChangeFinished = onBudgetChangeFinished,
-                    onEditDurationTapped = onEditDurationTapped,
+                    onEditDurationTapped = {
+                        onEditDurationTapped
+                        coroutineScope.launch { modalSheetState.show() }
+                    },
                     modifier = Modifier.weight(1f)
                 )
                 CampaignBudgetFooter(
@@ -360,7 +363,7 @@ private fun CampaignBudgetFooter(
                 style = MaterialTheme.typography.body1,
                 color = colorResource(id = color.color_on_surface_medium),
                 fontWeight = FontWeight.SemiBold,
-                )
+            )
         }
         WCColoredButton(
             modifier = Modifier
