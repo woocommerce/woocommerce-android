@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -54,6 +53,7 @@ import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.Companion.MAX_DATE_LIMIT_IN_DAYS
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.BottomSheetSwitchColors
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
@@ -258,12 +258,11 @@ private fun CampaignImpressionsRow(
                 contentDescription = null
             )
         }
-        Spacer(modifier = Modifier.height(6.dp))
         if (state.forecast.isLoading) {
-            CircularProgressIndicator(
+            SkeletonView(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .size(20.dp),
+                    .size(height = 20.dp, width = 140.dp)
+                    .padding(top = 8.dp)
             )
         } else {
             if (state.forecast.isError) {
