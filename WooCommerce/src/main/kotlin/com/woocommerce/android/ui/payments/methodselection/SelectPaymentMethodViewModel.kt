@@ -91,9 +91,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderPaymentFlowParam
         get() = navArgs.cardReaderFlowParam as Payment
 
-    val displayUi: Boolean
-        get() = !isWooPOSPaymentFlow()
-
     init {
         checkStatus()
     }
@@ -123,7 +120,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
                             when (param.paymentType) {
                                 SIMPLE, ORDER, ORDER_CREATION, TRY_TAP_TO_PAY -> showPaymentState()
-                                WOO_POS -> onBtReaderClicked()
+                                WOO_POS -> skipScreenDuringPosFlow()
                             }
                         }
                         Unit
@@ -307,6 +304,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_EXTERNAL)
             triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
         }
+    }
+
+    private fun skipScreenDuringPosFlow() {
+        triggerEvent(SkipScreenInPosAndNavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
     }
 
     fun onTapToPayClicked() {
@@ -511,10 +512,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
         withContext(dispatchers.io) {
             wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
         }
-
-    private fun isWooPOSPaymentFlow() = with(navArgs.cardReaderFlowParam) {
-        this is Payment && paymentType == WOO_POS
-    }
 
     companion object {
         private const val DELAY_MS = 1L
