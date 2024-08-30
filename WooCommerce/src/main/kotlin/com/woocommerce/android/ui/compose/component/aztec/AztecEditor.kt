@@ -2,14 +2,22 @@ package com.woocommerce.android.ui.compose.component.aztec
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -24,7 +32,11 @@ import com.google.android.material.textfield.TextInputLayout
 import com.woocommerce.android.databinding.ViewAztecBinding
 import com.woocommerce.android.databinding.ViewAztecOutlinedBinding
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.aztec.Aztec
@@ -204,6 +216,7 @@ fun AztecEditor(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun InternalAztecEditor(
     state: AztecEditorState,
@@ -215,6 +228,7 @@ private fun InternalAztecEditor(
     calypsoMode: Boolean = false
 ) {
     val localContext = LocalContext.current
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
     val viewsHolder = remember(localContext) { aztecViewsProvider(localContext) }
     val listener = remember { createToolbarListener { state.toggleHtmlEditor() } }
@@ -243,6 +257,17 @@ private fun InternalAztecEditor(
         }
     }
 
+    val focusState = remember { MutableStateFlow(false) }
+    val isImeVisible = rememberUpdatedState(WindowInsets.isImeVisible)
+
+    LaunchedEffect(Unit) {
+        handleFocus(
+            focusState = focusState,
+            imeVisibility = isImeVisible,
+            bringIntoViewRequester = bringIntoViewRequester
+        )
+    }
+
     AndroidView(
         factory = {
             aztec.visualEditor.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
@@ -260,6 +285,12 @@ private fun InternalAztecEditor(
                 if (state.isHtmlEditorEnabled || sourceEditor == null) return@doAfterTextChanged
                 state.updateContent(sourceEditor.getPureHtml())
             }
+
+            val focusChangeListener = OnFocusChangeListener { _, focused ->
+                focusState.value = focused
+            }
+            aztec.visualEditor.onFocusChangeListener = focusChangeListener
+            aztec.sourceEditor?.onFocusChangeListener = focusChangeListener
 
             viewsHolder.layout
         },
@@ -283,7 +314,25 @@ private fun InternalAztecEditor(
             }
         },
         modifier = modifier
+            .bringIntoViewRequester(bringIntoViewRequester)
     )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+private suspend fun handleFocus(
+    focusState: StateFlow<Boolean>,
+    imeVisibility: State<Boolean>,
+    bringIntoViewRequester: BringIntoViewRequester
+) {
+    // Use collectLatest to make sure the nested collection is cancelled when the focus state changes
+    focusState.collectLatest { hasFocus ->
+        if (!hasFocus) return@collectLatest
+        bringIntoViewRequester.bringIntoView()
+
+        snapshotFlow { imeVisibility.value }
+            .filter { it }
+            .collect { bringIntoViewRequester.bringIntoView() }
+    }
 }
 
 private fun createToolbarListener(onHtmlButtonClicked: () -> Unit) = object : IAztecToolbarClickListener {
@@ -353,8 +402,6 @@ private fun AztecEditorPreview() {
             AztecEditor(
                 state = state,
                 label = "Label",
-                minLines = 5,
-                modifier = Modifier.padding(16.dp)
             )
 
             TextButton(onClick = { state.toggleHtmlEditor() }) {
