@@ -75,8 +75,8 @@ fun BlazeCampaignItem(
                         statName = stringResource(R.string.blaze_campaign_status_ctr_label),
                         statValue = stringResource(
                             id = R.string.blaze_campaign_status_ctr_valur,
-                            campaign.clicks,
-                            campaign.impressions
+                            campaign.impressions,
+                            campaign.clicks
                         )
                     )
                     Spacer(modifier = Modifier.width(42.dp))
