@@ -4,7 +4,7 @@
 
 20.3
 -----
-
+- [*] Added a blaze campaign reminder that appears after abandoning a campaign creation. [https://github.com/woocommerce/woocommerce-android/pull/12452]
 
 20.2
 -----
