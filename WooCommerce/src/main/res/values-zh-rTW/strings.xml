@@ -677,9 +677,6 @@ Language: zh_TW
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">嘗試使用簽帳金融卡或信用卡支付 %s 款項。\n完成後就會退款。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">簡單、安全且私密。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">接受所有類型的親自收款，\n全都能在手機上完成。 無須使用額外硬體。</string>
-    <string name="blaze_campaign_status_budget">預算</string>
-    <string name="blaze_campaign_status_clicks">點擊數</string>
-    <string name="blaze_campaign_status_impressions">曝光數</string>
     <string name="blaze_campaign_status_rejected">已拒絕</string>
     <string name="blaze_campaign_status_completed">已完成</string>
     <string name="blaze_campaign_status_active">已啟用</string>

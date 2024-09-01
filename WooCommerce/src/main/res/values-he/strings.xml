@@ -677,9 +677,6 @@ Language: he_IL
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">לנסות תשלום של %s באמצעות כרטיס החיוב או כרטיס האשראי.\nהתשלום יוחזר בסיום.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">התהליך קל, מאובטח ופרטי.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">לקבל את כל הסוגים של תשלומים באופן אישי, ישר\nבטלפון. ללא צורך בחומרה נוספת.</string>
-    <string name="blaze_campaign_status_budget">תקציב</string>
-    <string name="blaze_campaign_status_clicks">קליקים</string>
-    <string name="blaze_campaign_status_impressions">צפיות</string>
     <string name="blaze_campaign_status_rejected">נדחה</string>
     <string name="blaze_campaign_status_completed">הושלם</string>
     <string name="blaze_campaign_status_active">פעיל</string>

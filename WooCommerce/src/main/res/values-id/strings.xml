@@ -449,12 +449,12 @@ Language: id
     <string name="blaze_campaign_budget_update_button">Perbarui</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_duration_section_title">Durasi</string>
-    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimasi orang yang dijangkau per hari</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s harian</string>
     <string name="blaze_campaign_budget_days_duration">selama %1$s hari</string>
     <string name="blaze_campaign_budget_total_spend">Total pengeluaran</string>
     <string name="blaze_campaign_budget_subtitle">Berapa banyak dana yang ingin Anda keluarkan untuk kampanye promosi produk?</string>
+    <string name="blaze_campaign_budget_impressions_info">Tayangan menunjukkan frekuensi iklan ditampilkan kepada calon pembeli.\n\n\n        Meskipun jumlah persisnya tidak dapat dijamin karena fluktuasi lalu lintas online dan perilaku pengguna, kami berupaya agar tayangan aktual iklan Anda sedekat mungkin dengan jumlah yang Anda targetkan.\n\n\n        Jangan lupa, tayangan berhubungan dengan visibilitas, bukan tindakan yang dilakukan pembaca.</string>
     <string name="blaze_campaign_budget_toolbar_title">Tentukan anggaran</string>
     <string name="blaze_campaign_preview_target_default_value">Semua</string>
     <string name="blaze_campaign_preview_days_duration">%1$s hari sejak %2$s</string>
@@ -677,9 +677,6 @@ Language: id
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Coba lakukan pembayaran %s dengan kartu debit atau kredit Anda.\nDana akan dikembalikan saat selesai.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Mudah, aman, privasi terjaga.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Terima semua jenis pembayaran fisik, langsung\ndari ponsel. Tidak perlu alat tambahan.</string>
-    <string name="blaze_campaign_status_budget">Anggaran</string>
-    <string name="blaze_campaign_status_clicks">Klik</string>
-    <string name="blaze_campaign_status_impressions">Tayangan</string>
     <string name="blaze_campaign_status_rejected">Ditolak</string>
     <string name="blaze_campaign_status_completed">Selesai</string>
     <string name="blaze_campaign_status_active">Aktif</string>

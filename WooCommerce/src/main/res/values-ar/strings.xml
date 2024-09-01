@@ -677,9 +677,6 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">جرّب مدفوعات %s من خلال بطاقة الخصم أو الائتمان لديك.\nستُستَرد المدفوعات عندما تنتهي.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">إنها سهلة وآمنة وخاصة.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">اقبل كل أنواع المدفوعات الشخصية، مباشرة\nعلى هاتفك. لا يلزم أجهزة إضافة.</string>
-    <string name="blaze_campaign_status_budget">الميزانية</string>
-    <string name="blaze_campaign_status_clicks">النقرات</string>
-    <string name="blaze_campaign_status_impressions">الانطباعات</string>
     <string name="blaze_campaign_status_rejected">مرفوض</string>
     <string name="blaze_campaign_status_completed">مكتمل</string>
     <string name="blaze_campaign_status_active">نشط</string>

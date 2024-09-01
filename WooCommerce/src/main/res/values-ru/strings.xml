@@ -677,9 +677,6 @@ Language: ru
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Попробуйте оплатить %s банковской картой.\nПосле этого средства будут возвращены.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Просто, безопасно и конфиденциально.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Принимайте все виды очных платежей прямо\nна вашем телефоне. Дополнительное оборудование не требуется.</string>
-    <string name="blaze_campaign_status_budget">Бюджет</string>
-    <string name="blaze_campaign_status_clicks">Нажатий</string>
-    <string name="blaze_campaign_status_impressions">Показов</string>
     <string name="blaze_campaign_status_rejected">Отклонено</string>
     <string name="blaze_campaign_status_completed">Завершено</string>
     <string name="blaze_campaign_status_active">Активно</string>

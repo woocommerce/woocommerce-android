@@ -677,9 +677,6 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">デビットカードまたはクレジットカードで %s の支払いを試します。\n完了したら返金されます。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">簡単、安全でプライバシーは保護されます。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">あらゆる種類のオフラインでの支払いを\nスマートフォンで受け取れます。 追加のハードウェアは不要です。</string>
-    <string name="blaze_campaign_status_budget">予算</string>
-    <string name="blaze_campaign_status_clicks">クリック数</string>
-    <string name="blaze_campaign_status_impressions">インプレッション</string>
     <string name="blaze_campaign_status_rejected">却下</string>
     <string name="blaze_campaign_status_completed">完了</string>
     <string name="blaze_campaign_status_active">有効</string>

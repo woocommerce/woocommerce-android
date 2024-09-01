@@ -677,9 +677,6 @@ Language: nl
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Probeer een %s-betaling met je betaal- of creditcard.\nJe zal het terugbetaald krijgen zodra je klaar bent.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Het is eenvoudig, veilig en privé.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Accepteer alle typen fysieke betalingen, direct\nop je telefoon. Geen extra hardware nodig.</string>
-    <string name="blaze_campaign_status_budget">Budget</string>
-    <string name="blaze_campaign_status_clicks">Klikken</string>
-    <string name="blaze_campaign_status_impressions">Impressies</string>
     <string name="blaze_campaign_status_rejected">Afgewezen</string>
     <string name="blaze_campaign_status_completed">Voltooid</string>
     <string name="blaze_campaign_status_active">Actief</string>

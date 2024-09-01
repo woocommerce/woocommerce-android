@@ -444,8 +444,8 @@ Language: ko_KR
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">시작</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s일</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_title">기간 설정</string>
-    <string name="blaze_campaign_budget_impressions_info">노출 수는 잠재적 고객에게 광고가 표시되는 빈도를 반영합니다.\n\n\n        온라인 트래픽과 사용자 행동의 유동성으로 인해 정확한 수는 보장할 수 없지만 광고의 실제 노출 수를 목표 수에 최대한 가깝게 일치시키는 것을 목표로 합니다.\n\n\n        노출 수는 독자의 행동이 아니라 가시성을 나타낸다는 점에 유의하세요.</string>
     <string name="blaze_campaign_budget_impressions_done_button">완료</string>
+    <string name="blaze_campaign_budget_impressions_info">노출 수는 잠재적 고객에게 광고가 표시되는 빈도를 반영합니다.\n\n\n        온라인 트래픽과 사용자 행동의 유동성으로 인해 정확한 수는 보장할 수 없지만 광고의 실제 노출 수를 목표 수에 최대한 가깝게 일치시키는 것을 목표로 합니다.\n\n\n        노출 수는 독자의 행동이 아니라 가시성을 나타낸다는 점에 유의하세요.</string>
     <string name="blaze_campaign_budget_impressions_title">노출 수</string>
     <string name="blaze_campaign_budget_update_button">업데이트</string>
     <string name="blaze_campaign_budget_edit_duration_button">편집</string>
@@ -677,9 +677,6 @@ Language: ko_KR
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">직불카드 또는 신용카드로 %s 결제를 시도합니다.\n완료하면 결제가 환불됩니다.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">쉽고 안전합니다.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">모든 종류의 대면 결제를 \n스마트폰에서 허용합니다. 추가 하드웨어가 필요하지 않습니다.</string>
-    <string name="blaze_campaign_status_budget">예산</string>
-    <string name="blaze_campaign_status_clicks">클릭 수</string>
-    <string name="blaze_campaign_status_impressions">노출 수</string>
     <string name="blaze_campaign_status_rejected">거부됨</string>
     <string name="blaze_campaign_status_completed">완료됨</string>
     <string name="blaze_campaign_status_active">활성</string>

@@ -677,9 +677,6 @@ Language: fr
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Essayez de procéder à un paiement %s avec votre carte de débit ou de crédit.\nLe paiement sera remboursé lorsque vous aurez terminé.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">C’est facile, sûr et privé.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Acceptez tous les types de paiements en personne directement\nsur votre téléphone. Aucun matériel supplémentaire nécessaire.</string>
-    <string name="blaze_campaign_status_budget">Budget</string>
-    <string name="blaze_campaign_status_clicks">Clics</string>
-    <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_rejected">Refusée</string>
     <string name="blaze_campaign_status_completed">Terminée</string>
     <string name="blaze_campaign_status_active">Active</string>

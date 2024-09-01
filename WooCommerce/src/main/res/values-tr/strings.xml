@@ -677,9 +677,6 @@ Language: tr
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Banka veya kredi kartınızla bir %s ödemesi yapmayı deneyin.\nÖdeme, işiniz bittiğinde iade edilir.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Kolay, güvenli ve gizlidir.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Doğrudan telefonunuzdan her türde şahsen ödemeyi\nkabul edin. Ekstra donanım gerektirmez.</string>
-    <string name="blaze_campaign_status_budget">Bütçe</string>
-    <string name="blaze_campaign_status_clicks">Tıklamalar</string>
-    <string name="blaze_campaign_status_impressions">İzlenimler</string>
     <string name="blaze_campaign_status_rejected">Reddedildi</string>
     <string name="blaze_campaign_status_completed">Tamamlandı</string>
     <string name="blaze_campaign_status_active">Etkin</string>
