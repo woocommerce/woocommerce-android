@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -157,7 +158,7 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
                     CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, target.paymentTypeFlow)
                 )
-                fragment.findNavController().navigateSafely(action)
+                fragment.findNavController().navigateSafely(directions = action, skipThrottling = true)
             }
             is ViewPrintingInstructions -> {
                 val action = OrderDetailFragmentDirections
@@ -198,9 +199,15 @@ class OrderNavigator @Inject constructor() {
             }
 
             is ViewCustomFields -> {
-                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment(
-                    orderId = target.orderId
-                )
+                val action = if (FeatureFlag.CUSTOM_FIELDS.isEnabled()) {
+                    OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomFieldsFragment(
+                        parentItemId = target.orderId
+                    )
+                } else {
+                    OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment(
+                        orderId = target.orderId
+                    )
+                }
                 fragment.findNavController().navigateSafely(action)
             }
             is AIThankYouNote -> {

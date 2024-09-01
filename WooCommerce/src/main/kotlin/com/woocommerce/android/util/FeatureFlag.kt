@@ -12,12 +12,12 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
-    CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
-    APP_PASSWORD_TUTORIAL,
     GOOGLE_ADS_M1,
-    GOOGLE_ADS_ANALYTICS_HUB_M1,
-    SHOW_INBOX_CTA;
+    SHOW_INBOX_CTA,
+    ENDLESS_CAMPAIGNS_SUPPORT,
+    CUSTOM_FIELDS,
+    REVAMP_WOO_SHIPPING;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -28,15 +28,15 @@ enum class FeatureFlag {
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE,
+            CUSTOM_FIELDS,
+            REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
 
-            CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
-            APP_PASSWORD_TUTORIAL,
             INBOX,
-            GOOGLE_ADS_ANALYTICS_HUB_M1,
             SHOW_INBOX_CTA,
-            GOOGLE_ADS_M1 -> true
+            GOOGLE_ADS_M1,
+            ENDLESS_CAMPAIGNS_SUPPORT -> true
         }
     }
 }
