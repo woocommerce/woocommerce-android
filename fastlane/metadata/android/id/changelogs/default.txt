@@ -1,2 +1,0 @@
-20.1:
-Pembaruan terkini kami meningkatkan pengalaman Anda. Kami sudah mengatasi masalah yang menyebabkan layar Pesanan macet, error karena pin salah untuk toko-toko di Inggris dan Kanada, dan crash yang jarang terjadi dalam pengeditan pesanan, serta meningkatkan akses di layar berukuran kecil. Nikmati performa yang lebih baik dan keandalan yang lebih optimal di versi ini!
