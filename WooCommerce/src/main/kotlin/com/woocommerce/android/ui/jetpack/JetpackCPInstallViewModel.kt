@@ -24,6 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -32,7 +33,7 @@ class JetpackCPInstallViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: PluginRepository,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val siteStore: SiteStore
 ) : ScopedViewModel(savedState) {
     companion object {
         const val JETPACK_SLUG = "jetpack"
@@ -114,10 +115,10 @@ class JetpackCPInstallViewModel @Inject constructor(
     private suspend fun isJetpackConnectedAfterInstallation(): Boolean {
         var attempt = 0
         while (attempt < ATTEMPT_LIMIT) {
-            val result = wooCommerceStore.fetchWooCommerceSites()
-            val sites = result.model
-            if (sites != null) {
-                val syncedSite = sites.firstOrNull { it.siteId == selectedSite.get().siteId }
+            val siteId = selectedSite.get().siteId
+            val result = siteStore.fetchSite(selectedSite.get()).let { !it.isError }
+            if (result) {
+                val syncedSite = siteStore.getSiteBySiteId(siteId)
                 if (syncedSite?.isJetpackConnected == true && syncedSite.hasWooCommerce) {
                     selectedSite.set(syncedSite)
                     return true
