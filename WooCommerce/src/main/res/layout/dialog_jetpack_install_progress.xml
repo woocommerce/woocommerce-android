@@ -238,7 +238,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/jetpackProgressActionButton"
-        style="@style/Woo.JetpackButton"
+        style="@style/Woo.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/done" />
