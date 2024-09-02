@@ -77,7 +77,7 @@ class LocalNotificationScheduler @Inject constructor(
             .build()
     }
 
-    private fun cancelScheduledNotification(tag: String) {
+    fun cancelScheduledNotification(tag: String) {
         workManager.cancelAllWorkByTag(tag)
     }
 }

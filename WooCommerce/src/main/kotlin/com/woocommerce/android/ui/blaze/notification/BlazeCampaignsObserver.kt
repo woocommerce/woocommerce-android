@@ -43,6 +43,11 @@ class BlazeCampaignsObserver @Inject constructor(
         if (campaigns.isEmpty()) {
             // There are no campaigns. Skip scheduling the notification.
             return
+        } else if (campaigns.any { it.isEndlessCampaign }) {
+            // There is an active endless campaign.
+            val dummyNotificationForTag = BlazeNoCampaignReminderNotification(selectedSite.get().siteId, 0)
+            localNotificationScheduler.cancelScheduledNotification(dummyNotificationForTag.tag)
+            return
         }
 
         val delayForNotification = calculateDelayForNotification(campaigns)

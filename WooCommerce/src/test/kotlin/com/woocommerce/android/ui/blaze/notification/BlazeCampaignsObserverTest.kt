@@ -11,6 +11,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
@@ -71,6 +72,16 @@ class BlazeCampaignsObserverTest {
         blazeCampaignsObserver.observeAndScheduleNotifications()
 
         verify(localNotificationScheduler).scheduleNotification(any())
+    }
+
+    @Test
+    fun `when there is endless campaign, then don't schedule notification`() = runTest {
+        initBlazeCampaignsObserver(campaigns = listOf(BLAZE_CAMPAIGN_MODEL.copy(isEndlessCampaign = true)))
+
+        blazeCampaignsObserver.observeAndScheduleNotifications()
+
+        verify(localNotificationScheduler).cancelScheduledNotification(any())
+        verifyNoMoreInteractions(localNotificationScheduler)
     }
 
     companion object {
