@@ -8,7 +8,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FilterListItemBinding
 import com.woocommerce.android.ui.products.filter.ProductFilterListAdapter.ProductFilterViewHolder
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListItemUiModel
-import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
 
 class ProductFilterListAdapter(
     private val clickListener: OnProductFilterClickListener,
@@ -58,12 +57,7 @@ class ProductFilterListAdapter(
         RecyclerView.ViewHolder(viewBinding.root) {
         fun bind(filterItem: FilterListItemUiModel, defaultFilterOption: String) {
             viewBinding.filterItemName.text = filterItem.filterItemName
-            viewBinding.filterItemSelection.text =
-                filterItem.filterOptionListItems
-                    .filterIsInstance<FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel>()
-                    .firstOrNull { it.isSelected }
-                    ?.filterOptionItemName
-                    ?: defaultFilterOption
+            viewBinding.filterItemSelection.text = filterItem.firstSelectedOption ?: defaultFilterOption
         }
     }
 
