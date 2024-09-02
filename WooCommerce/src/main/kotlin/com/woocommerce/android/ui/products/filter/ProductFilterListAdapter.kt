@@ -13,7 +13,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductFilterListAdapter(
     private val clickListener: OnProductFilterClickListener,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: (resourceId: Int) -> String
 ) : RecyclerView.Adapter<ProductFilterViewHolder>() {
     var filterList = listOf<FilterListItemUiModel>()
         set(value) {
@@ -44,7 +44,7 @@ class ProductFilterListAdapter(
     override fun onBindViewHolder(holder: ProductFilterViewHolder, position: Int) {
         holder.bind(
             filterItem = filterList[position],
-            defaultFilterOption = resourceProvider.getString(R.string.product_filter_default)
+            defaultFilterOption = resourceProvider(R.string.product_filter_default)
         )
         holder.itemView.setOnClickListener {
             clickListener.onProductFilterClick(position)

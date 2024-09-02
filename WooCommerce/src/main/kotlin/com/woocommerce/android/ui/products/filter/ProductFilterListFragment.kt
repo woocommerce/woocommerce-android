@@ -56,7 +56,7 @@ class ProductFilterListFragment :
 
         productFilterListAdapter = ProductFilterListAdapter(
             clickListener = this,
-            resourceProvider = ResourceProvider(requireContext())
+            resourceProvider = { requireContext().getString(it) }
         )
         with(binding.filterList) {
             addItemDecoration(
