@@ -709,7 +709,9 @@ class OrderListFragment :
     }
 
     private fun showOrderFilters() {
-        findNavController().navigateSafely(OrderListFragmentDirections.actionOrderListFragmentToOrderFilterListFragment())
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToOrderFilterListFragment()
+        )
     }
 
     private fun navigateToTryTestOrderScreen() {
