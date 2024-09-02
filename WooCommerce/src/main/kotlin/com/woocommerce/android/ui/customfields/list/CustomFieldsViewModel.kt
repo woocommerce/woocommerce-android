@@ -29,6 +29,11 @@ class CustomFieldsViewModel @Inject constructor(
 
     private val isRefreshing = MutableStateFlow(false)
     private val isSaving = MutableStateFlow(false)
+    private val showDiscardChangesDialog = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "showDiscardChangesDialog"
+    )
     private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
     private val pendingChanges = savedStateHandle.getStateFlow(viewModelScope, PendingChanges())
 
@@ -36,18 +41,29 @@ class CustomFieldsViewModel @Inject constructor(
         customFields,
         pendingChanges,
         isRefreshing,
-        isSaving
-    ) { customFields, pendingChanges, isLoading, isSaving ->
+        isSaving,
+        showDiscardChangesDialog
+    ) { customFields, pendingChanges, isLoading, isSaving, isShowingDiscardDialog ->
         UiState(
             customFields = customFields.map { CustomFieldUiModel(it) }.combineWithChanges(pendingChanges),
             isRefreshing = isLoading,
             isSaving = isSaving,
-            hasChanges = pendingChanges.hasChanges
+            hasChanges = pendingChanges.hasChanges,
+            discardChangesDialogState = isShowingDiscardDialog.takeIf { it }?.let {
+                DiscardChangesDialogState(
+                    onDiscard = { triggerEvent(MultiLiveEvent.Event.Exit) },
+                    onCancel = { showDiscardChangesDialog.value = false }
+                )
+            }
         )
     }.asLiveData()
 
     fun onBackClick() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        if (pendingChanges.value.hasChanges) {
+            showDiscardChangesDialog.value = true
+        } else {
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        }
     }
 
     fun onPullToRefresh() {
@@ -111,7 +127,13 @@ class CustomFieldsViewModel @Inject constructor(
         val customFields: List<CustomFieldUiModel>,
         val isRefreshing: Boolean = false,
         val isSaving: Boolean = false,
-        val hasChanges: Boolean = false
+        val hasChanges: Boolean = false,
+        val discardChangesDialogState: DiscardChangesDialogState? = null
+    )
+
+    data class DiscardChangesDialogState(
+        val onDiscard: () -> Unit,
+        val onCancel: () -> Unit
     )
 
     @Parcelize

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -117,6 +118,13 @@ private fun CustomFieldsScreen(
             ProgressDialog(
                 title = stringResource(id = R.string.custom_fields_list_progress_dialog_title),
                 subtitle = stringResource(id = R.string.please_wait)
+            )
+        }
+
+        state.discardChangesDialogState?.let {
+            DiscardChangesDialog(
+                discardButton = it.onDiscard,
+                dismissButton = it.onCancel
             )
         }
     }
