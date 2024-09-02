@@ -5,6 +5,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
+import org.wordpress.android.fluxc.model.metadata.UpdateMetadataRequest
 import org.wordpress.android.fluxc.store.MetaDataStore
 import javax.inject.Inject
 
@@ -30,6 +31,18 @@ class CustomFieldsRepository @Inject constructor(
                 Result.failure(WooException(it.error))
             } else {
                 WooLog.d(WooLog.T.CUSTOM_FIELDS, "Successfully refreshed custom fields")
+                Result.success(Unit)
+            }
+        }
+    }
+
+    suspend fun updateCustomFields(request: UpdateMetadataRequest): Result<Unit> {
+        return metaDataStore.updateMetaData(selectedSite.get(), request).let {
+            if (it.isError) {
+                WooLog.w(WooLog.T.CUSTOM_FIELDS, "Failed to update custom fields: ${it.error}")
+                Result.failure(WooException(it.error))
+            } else {
+                WooLog.d(WooLog.T.CUSTOM_FIELDS, "Successfully updated custom fields")
                 Result.success(Unit)
             }
         }
