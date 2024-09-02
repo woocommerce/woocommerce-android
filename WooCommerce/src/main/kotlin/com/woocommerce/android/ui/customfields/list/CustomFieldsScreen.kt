@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -109,6 +110,13 @@ private fun CustomFieldsScreen(
                 refreshing = state.isRefreshing,
                 state = pullToRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
+
+        if (state.isSaving) {
+            ProgressDialog(
+                title = stringResource(id = R.string.custom_fields_progress_dialog_title),
+                subtitle = stringResource(id = R.string.please_wait)
             )
         }
     }

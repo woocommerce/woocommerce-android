@@ -4273,4 +4273,5 @@
     <string name="custom_fields_list_loading_error">Error while loading custom fields</string>
     <string name="custom_fields_editor_key_label">Key</string>
     <string name="custom_fields_editor_value_label">Value</string>
+    <string name="custom_fields_progress_dialog_title">Saving changes</string>
 </resources>

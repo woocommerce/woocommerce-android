@@ -27,6 +27,7 @@ class CustomFieldsViewModel @Inject constructor(
     private val args: CustomFieldsFragmentArgs by savedStateHandle.navArgs()
 
     private val isRefreshing = MutableStateFlow(false)
+    private val isSaving = MutableStateFlow(false)
     private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
     private val pendingChanges = savedStateHandle.getStateFlow(viewModelScope, PendingChanges())
 
@@ -34,10 +35,12 @@ class CustomFieldsViewModel @Inject constructor(
         customFields,
         pendingChanges,
         isRefreshing,
-    ) { customFields, pendingChanges, isLoading ->
+        isSaving
+    ) { customFields, pendingChanges, isLoading, isSaving ->
         UiState(
             customFields = customFields.map { CustomFieldUiModel(it) }.combineWithChanges(pendingChanges),
             isRefreshing = isLoading,
+            isSaving = isSaving,
             hasChanges = pendingChanges.hasChanges
         )
     }.asLiveData()
@@ -93,6 +96,7 @@ class CustomFieldsViewModel @Inject constructor(
     data class UiState(
         val customFields: List<CustomFieldUiModel>,
         val isRefreshing: Boolean = false,
+        val isSaving: Boolean = false,
         val hasChanges: Boolean = false
     )
 
