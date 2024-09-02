@@ -4,7 +4,7 @@
 
 20.3
 -----
-
+- [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
 
 20.2
 -----
