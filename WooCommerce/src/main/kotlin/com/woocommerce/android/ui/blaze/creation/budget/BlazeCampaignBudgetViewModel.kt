@@ -24,7 +24,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import java.text.NumberFormat
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.days
@@ -205,11 +207,12 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 totalBudget = budgetUiState.value.totalBudget,
                 targetingParameters = navArgs.targetingParameters
             ).onSuccess { fetchAdForecastResult ->
+                val formatter = NumberFormat.getInstance(Locale.getDefault())
                 campaignForecastState = campaignForecastState.copy(
                     isLoading = false,
                     isError = false,
-                    impressionsMin = fetchAdForecastResult.minImpressions,
-                    impressionsMax = fetchAdForecastResult.maxImpressions
+                    formattedImpressionsMin = formatter.format(fetchAdForecastResult.minImpressions),
+                    formattedImpressionsMax = formatter.format(fetchAdForecastResult.maxImpressions)
                 )
             }.onFailure {
                 campaignForecastState = campaignForecastState.copy(
@@ -234,8 +237,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
 
     private fun getLoadingForecastUi() = ForecastUi(
         isLoading = true,
-        impressionsMin = 0,
-        impressionsMax = 0,
+        formattedImpressionsMin = "0",
+        formattedImpressionsMax = "0",
         isError = false
     )
 
@@ -273,8 +276,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     @Parcelize
     data class ForecastUi(
         val isLoading: Boolean,
-        val impressionsMin: Long,
-        val impressionsMax: Long,
+        val formattedImpressionsMin: String,
+        val formattedImpressionsMax: String,
         val isError: Boolean
     ) : Parcelable
 }

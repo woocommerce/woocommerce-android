@@ -277,7 +277,7 @@ private fun CampaignImpressionsRow(
             } else {
                 Text(
                     modifier = Modifier.padding(top = 6.dp),
-                    text = "${state.forecast.impressionsMin} - ${state.forecast.impressionsMax}",
+                    text = "${state.forecast.formattedImpressionsMin} - ${state.forecast.formattedImpressionsMax}",
                     style = MaterialTheme.typography.h6,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -583,7 +583,7 @@ private fun EditDurationBottomSheet(
 @Composable
 private fun CampaignBudgetScreenPreview() {
     CampaignBudgetScreen(
-        state = BlazeCampaignBudgetViewModel.BudgetUiState(
+        state = BudgetUiState(
             currencyCode = "USD",
             totalBudget = 35f,
             formattedTotalBudget = "$35",
@@ -594,8 +594,8 @@ private fun CampaignBudgetScreenPreview() {
             durationRangeMax = 28f,
             forecast = BlazeCampaignBudgetViewModel.ForecastUi(
                 isLoading = false,
-                impressionsMin = 0,
-                impressionsMax = 0,
+                formattedImpressionsMin = "0",
+                formattedImpressionsMax = "0",
                 isError = false
             ),
             confirmedCampaignStartDateMillis = Date().time,
