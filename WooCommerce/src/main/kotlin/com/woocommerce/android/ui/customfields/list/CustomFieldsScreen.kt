@@ -115,7 +115,7 @@ private fun CustomFieldsScreen(
 
         if (state.isSaving) {
             ProgressDialog(
-                title = stringResource(id = R.string.custom_fields_progress_dialog_title),
+                title = stringResource(id = R.string.custom_fields_list_progress_dialog_title),
                 subtitle = stringResource(id = R.string.please_wait)
             )
         }

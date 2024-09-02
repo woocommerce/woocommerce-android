@@ -90,13 +90,15 @@ class CustomFieldsViewModel @Inject constructor(
             )
 
             repository.updateCustomFields(request)
-                .onSuccess {
-                    // Clear pending changes after successful save
-                    pendingChanges.value = PendingChanges()
-                }.onFailure {
-                    // TODO use a more specific error message
-                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
-                }
+                .fold(
+                    onSuccess = {
+                        pendingChanges.value = PendingChanges()
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_succeeded))
+                    },
+                    onFailure = {
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_failed))
+                    }
+                )
             isSaving.value = false
         }
     }
