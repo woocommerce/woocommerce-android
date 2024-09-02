@@ -11,6 +11,7 @@
 - [**] Fixed navigation in tablet mode: after order is paid, the app should redirect to order details screen. [https://github.com/woocommerce/woocommerce-android/pull/12415]
 - [*] Show the back button on the Order Edit Screen for phones [https://github.com/woocommerce/woocommerce-android/pull/12421]
 - [**] Enables support to create Blaze Evergreen campaigns [https://github.com/woocommerce/woocommerce-android/issues/12176]
+- [*] Fixed a bug that caused the button "Open Mail" to not work during Magic Link login [https://github.com/woocommerce/woocommerce-android/pull/12486]
 
 20.1
 -----
