@@ -52,6 +52,7 @@ import com.woocommerce.android.R.drawable
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
+import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.BudgetUiState
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.Companion.MAX_DATE_LIMIT_IN_DAYS
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
@@ -89,7 +90,7 @@ fun CampaignBudgetScreen(viewModel: BlazeCampaignBudgetViewModel) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun CampaignBudgetScreen(
-    state: BlazeCampaignBudgetViewModel.BudgetUiState,
+    state: BudgetUiState,
     onBackPressed: () -> Unit,
     onEditDurationTapped: () -> Unit,
     onImpressionsInfoTapped: () -> Unit,
@@ -97,8 +98,8 @@ private fun CampaignBudgetScreen(
     onStartDateChanged: (Long) -> Unit,
     onBudgetChangeFinished: () -> Unit,
     onUpdateTapped: () -> Unit,
-    onApplyDurationTapped: (Int, Boolean) -> Unit,
-    onDurationSliderUpdated: (Int) -> Unit,
+    onApplyDurationTapped: (Int, Boolean, Long) -> Unit,
+    onDurationSliderUpdated: (Int, Long) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val modalSheetState = rememberModalBottomSheetState(
@@ -130,12 +131,14 @@ private fun CampaignBudgetScreen(
                         state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
                             budgetUiState = state,
                             onStartDateChanged = { onStartDateChanged(it) },
-                            onApplyTapped = { duration, isEndlessCampaign ->
-                                onApplyDurationTapped(duration, isEndlessCampaign)
+                            onApplyTapped = { duration, isEndlessCampaign, startDate ->
+                                onApplyDurationTapped(duration, isEndlessCampaign, startDate)
                                 coroutineScope.launch { modalSheetState.hide() }
                             },
                             onCancelTapped = { coroutineScope.launch { modalSheetState.hide() } },
-                            onDurationSliderUpdated = { onDurationSliderUpdated(it) }
+                            onDurationSliderUpdated = { duration, startDate ->
+                                onDurationSliderUpdated(duration, startDate)
+                            }
                         )
                     }
                 }
@@ -173,7 +176,7 @@ private fun CampaignBudgetScreen(
 
 @Composable
 private fun EditBudgetSection(
-    state: BlazeCampaignBudgetViewModel.BudgetUiState,
+    state: BudgetUiState,
     onBudgetUpdated: (Float) -> Unit,
     onImpressionsInfoTapped: () -> Unit,
     onBudgetChangeFinished: () -> Unit,
@@ -238,7 +241,7 @@ private fun EditBudgetSection(
 
 @Composable
 private fun CampaignImpressionsRow(
-    state: BlazeCampaignBudgetViewModel.BudgetUiState,
+    state: BudgetUiState,
     onImpressionsInfoTapped: () -> Unit,
     onBudgetChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
@@ -420,11 +423,11 @@ private fun ImpressionsInfoBottomSheet(
 
 @Composable
 private fun EditDurationBottomSheet(
-    budgetUiState: BlazeCampaignBudgetViewModel.BudgetUiState,
+    budgetUiState: BudgetUiState,
     onStartDateChanged: (Long) -> Unit,
-    onApplyTapped: (Int, Boolean) -> Unit,
+    onApplyTapped: (Int, Boolean, Long) -> Unit,
     onCancelTapped: () -> Unit,
-    onDurationSliderUpdated: (Int) -> Unit,
+    onDurationSliderUpdated: (Int, Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
@@ -439,6 +442,7 @@ private fun EditDurationBottomSheet(
             maxDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, MAX_DATE_LIMIT_IN_DAYS) }.time,
             onDateSelected = {
                 onStartDateChanged(it.time)
+                selectedStartDate = it
                 showDatePicker = false
             },
             onDismissRequest = { showDatePicker = false }
@@ -464,7 +468,12 @@ private fun EditDurationBottomSheet(
                 style = MaterialTheme.typography.h6,
             )
             WCTextButton(
-                onClick = onCancelTapped
+                onClick = {
+                    onCancelTapped()
+                    sliderPosition = budgetUiState.durationInDays.toFloat()
+                    isEndlessCampaign = budgetUiState.isEndlessCampaign
+                    selectedStartDate = Date(budgetUiState.confirmedCampaignStartDateMillis)
+                }
             ) {
                 Text(
                     text = stringResource(id = R.string.blaze_campaign_budget_duration_cancel_button),
@@ -489,7 +498,7 @@ private fun EditDurationBottomSheet(
                         .clip(RoundedCornerShape(4.dp))
                         .background(colorResource(id = color.divider_color))
                         .padding(8.dp),
-                    text = Date(budgetUiState.bottomSheetCampaignStartDateMillis).formatToMMMddYYYY(),
+                    text = selectedStartDate.formatToMMMddYYYY(),
                     style = MaterialTheme.typography.body1,
                 )
             }
@@ -546,7 +555,7 @@ private fun EditDurationBottomSheet(
                         valueRange = budgetUiState.durationRangeMin..budgetUiState.durationRangeMax,
                         onValueChange = {
                             sliderPosition = it
-                            onDurationSliderUpdated(it.toInt())
+                            onDurationSliderUpdated(it.toInt(), selectedStartDate.time)
                         },
                         colors = SliderDefaults.colors(
                             inactiveTrackColor = colorResource(id = color.divider_color)
@@ -562,7 +571,7 @@ private fun EditDurationBottomSheet(
                     )
                     .fillMaxWidth(),
                 onClick = {
-                    onApplyTapped(sliderPosition.toInt(), isEndlessCampaign)
+                    onApplyTapped(sliderPosition.toInt(), isEndlessCampaign, selectedStartDate.time)
                 },
                 text = stringResource(id = R.string.blaze_campaign_budget_duration_bottom_sheet_apply_button)
             )
@@ -590,7 +599,6 @@ private fun CampaignBudgetScreenPreview() {
                 isError = false
             ),
             confirmedCampaignStartDateMillis = Date().time,
-            bottomSheetCampaignStartDateMillis = Date().time,
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false,
             isEndlessCampaign = true,
@@ -604,8 +612,8 @@ private fun CampaignBudgetScreenPreview() {
         onStartDateChanged = {},
         onUpdateTapped = {},
         onBudgetChangeFinished = {},
-        onApplyDurationTapped = { _, _ -> },
-        onDurationSliderUpdated = {}
+        onApplyDurationTapped = { _, _, _ -> },
+        onDurationSliderUpdated = { _, _ -> },
     )
 }
 

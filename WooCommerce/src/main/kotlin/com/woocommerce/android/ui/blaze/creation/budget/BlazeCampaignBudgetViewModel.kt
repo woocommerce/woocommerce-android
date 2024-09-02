@@ -57,7 +57,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
             durationRangeMin = 1f,
             durationRangeMax = CAMPAIGN_MAX_DURATION.toFloat(),
             confirmedCampaignStartDateMillis = navArgs.budget.startDate.time,
-            bottomSheetCampaignStartDateMillis = navArgs.budget.startDate.time,
             showImpressionsBottomSheet = false,
             showCampaignDurationBottomSheet = false,
             isEndlessCampaign = navArgs.budget.isEndlessCampaign,
@@ -144,7 +143,11 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         }
     }
 
-    fun onApplyDurationTapped(newDuration: Int, isEndlessCampaign: Boolean) {
+    fun onApplyDurationTapped(
+        newDuration: Int,
+        isEndlessCampaign: Boolean,
+        startDateMillis: Long
+    ) {
         val duration = if (isEndlessCampaign) WEEKLY_DURATION else newDuration
         val totalBudget = duration * budgetUiState.value.dailySpend
         budgetUiState.update {
@@ -153,14 +156,14 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
                 formattedDailySpending = formatBudget(budgetUiState.value.dailySpend),
                 totalBudget = totalBudget,
                 formattedTotalBudget = formatBudget(rawValue = totalBudget),
-                confirmedCampaignStartDateMillis = it.bottomSheetCampaignStartDateMillis,
+                confirmedCampaignStartDateMillis = startDateMillis,
                 isEndlessCampaign = isEndlessCampaign,
                 formattedStartDate = getFormattedStartDate(
-                    startDateMillis = it.bottomSheetCampaignStartDateMillis,
+                    startDateMillis = startDateMillis,
                     isEndlessCampaign = isEndlessCampaign
                 ),
                 formattedEndDate = getFormattedEndDate(
-                    startDateMillis = it.bottomSheetCampaignStartDateMillis,
+                    startDateMillis = startDateMillis,
                     duration = duration
                 ),
             )
@@ -181,7 +184,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     fun onStartDateChanged(newStartDateMillis: Long) {
         budgetUiState.update {
             it.copy(
-                bottomSheetCampaignStartDateMillis = newStartDateMillis,
                 formattedEndDate = getFormattedEndDate(
                     startDateMillis = newStartDateMillis,
                     duration = it.durationInDays
@@ -237,12 +239,12 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         isError = false
     )
 
-    fun onDurationSliderUpdated(durationInDays: Int) {
+    fun onDurationSliderUpdated(durationInDays: Int, selectedStartDateMillis: Long) {
         budgetUiState.update {
             it.copy(
                 durationInDays = durationInDays,
                 formattedEndDate = getFormattedEndDate(
-                    startDateMillis = it.bottomSheetCampaignStartDateMillis,
+                    startDateMillis = selectedStartDateMillis,
                     duration = durationInDays
                 ),
             )
@@ -263,7 +265,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
         val showImpressionsBottomSheet: Boolean,
         val showCampaignDurationBottomSheet: Boolean,
         val confirmedCampaignStartDateMillis: Long,
-        val bottomSheetCampaignStartDateMillis: Long,
         val isEndlessCampaign: Boolean,
         val formattedStartDate: String,
         val formattedEndDate: String
