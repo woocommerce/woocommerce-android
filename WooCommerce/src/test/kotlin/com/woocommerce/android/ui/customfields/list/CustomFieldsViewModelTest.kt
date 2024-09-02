@@ -81,8 +81,8 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.drop(1)
 
         verify(repository).refreshCustomFields(PARENT_ITEM_ID, PARENT_ITEM_TYPE)
-        assertThat(states.first().isLoading).isTrue()
-        assertThat(states.last().isLoading).isFalse()
+        assertThat(states.first().isRefreshing).isTrue()
+        assertThat(states.last().isRefreshing).isFalse()
     }
 
     @Test

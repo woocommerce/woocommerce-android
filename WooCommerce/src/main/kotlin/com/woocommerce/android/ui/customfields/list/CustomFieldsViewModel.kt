@@ -26,18 +26,18 @@ class CustomFieldsViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val args: CustomFieldsFragmentArgs by savedStateHandle.navArgs()
 
-    private val isLoading = MutableStateFlow(false)
+    private val isRefreshing = MutableStateFlow(false)
     private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
     private val pendingChanges = savedStateHandle.getStateFlow(viewModelScope, PendingChanges())
 
     val state = combine(
         customFields,
         pendingChanges,
-        isLoading,
+        isRefreshing,
     ) { customFields, pendingChanges, isLoading ->
         UiState(
             customFields = customFields.map { CustomFieldUiModel(it) }.combineWithChanges(pendingChanges),
-            isLoading = isLoading,
+            isRefreshing = isLoading,
             hasChanges = pendingChanges.hasChanges
         )
     }.asLiveData()
@@ -48,11 +48,11 @@ class CustomFieldsViewModel @Inject constructor(
 
     fun onPullToRefresh() {
         launch {
-            isLoading.value = true
+            isRefreshing.value = true
             repository.refreshCustomFields(args.parentItemId, args.parentItemType).onFailure {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_loading_error))
             }
-            isLoading.value = false
+            isRefreshing.value = false
         }
     }
 
@@ -92,7 +92,7 @@ class CustomFieldsViewModel @Inject constructor(
 
     data class UiState(
         val customFields: List<CustomFieldUiModel>,
-        val isLoading: Boolean = false,
+        val isRefreshing: Boolean = false,
         val hasChanges: Boolean = false
     )
 

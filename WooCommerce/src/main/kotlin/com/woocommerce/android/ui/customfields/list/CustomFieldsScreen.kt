@@ -86,7 +86,7 @@ private fun CustomFieldsScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
-        val pullToRefreshState = rememberPullRefreshState(state.isLoading, onPullToRefresh)
+        val pullToRefreshState = rememberPullRefreshState(state.isRefreshing, onPullToRefresh)
 
         Box(
             modifier = Modifier
@@ -106,7 +106,7 @@ private fun CustomFieldsScreen(
             }
 
             PullRefreshIndicator(
-                refreshing = state.isLoading,
+                refreshing = state.isRefreshing,
                 state = pullToRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
             )
