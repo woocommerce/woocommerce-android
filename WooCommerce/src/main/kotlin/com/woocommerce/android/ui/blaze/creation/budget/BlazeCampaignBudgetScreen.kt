@@ -469,10 +469,10 @@ private fun EditDurationBottomSheet(
             )
             WCTextButton(
                 onClick = {
-                    onCancelTapped()
                     sliderPosition = budgetUiState.durationInDays.toFloat()
                     isEndlessCampaign = budgetUiState.isEndlessCampaign
                     selectedStartDate = Date(budgetUiState.confirmedCampaignStartDateMillis)
+                    onCancelTapped()
                 }
             ) {
                 Text(
