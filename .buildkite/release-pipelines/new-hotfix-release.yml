@@ -2,7 +2,7 @@
 ---
 
 steps:
-  - input: "What version code do you want to use for the new hotfix release?"
+  - block: "What version code do you want to use for the new hotfix release?"
     fields:
       - text: "Version Code"
         key: "version_code"
