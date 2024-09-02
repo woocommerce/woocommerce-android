@@ -38,4 +38,13 @@ class CustomFieldsRepository @Inject constructor(
     suspend fun hasDisplayableCustomFields(
         parentItemId: Long,
     ) = metaDataStore.hasDisplayableMetaData(selectedSite.get(), parentItemId)
+
+    suspend fun getCustomFieldById(
+        parentItemId: Long,
+        customFieldId: Long,
+    ): CustomField? = metaDataStore.getMetaDataById(
+        site = selectedSite.get(),
+        parentItemId = parentItemId,
+        metaDataId = customFieldId
+    )
 }
