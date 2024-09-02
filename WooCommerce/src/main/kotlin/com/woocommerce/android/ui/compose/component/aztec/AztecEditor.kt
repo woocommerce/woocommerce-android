@@ -345,9 +345,9 @@ private suspend fun handleFocus(
         // the session is closed and this hides the keyboard.
         // This behavior doesn't work well when focus moves to a non-Compose input field, like the Aztec editor.
         // see: https://issuetracker.google.com/issues/318530776 and https://issuetracker.google.com/issues/363544352
-        // To fix this, we are using the internal API to start/stop the input.
-        // This is safe to do because even if the API changes, we can remove the logic temporarily until we find a
-        // better solution, as this behavior is not critical for the editor.
+        // To get around the issue, we are using the internal API to start/stop the input session.
+        // This is safe to do because even if the API changes, we can remove the logic temporarily until the bug is
+        // fixed, as this bug is not critical for the editor.
         focusState.collect {
             if (it) {
                 textInputService?.startInput()
