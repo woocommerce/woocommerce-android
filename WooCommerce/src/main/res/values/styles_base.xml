@@ -777,6 +777,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     </style>
 
     <style name="Woo.AztecText.SourceEditor">
+        <item name="android:imeOptions">flagNoExtractUi</item>
         <item name="android:inputType">textNoSuggestions|textMultiLine</item>
         <item name="attributeColor">@color/editor_attribute_color</item>
         <item name="codeBackgroundColor">@color/editor_code_bg_color</item>
