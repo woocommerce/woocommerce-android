@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.products.filter
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import kotlin.test.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
+import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FilterListItemUiModelTest : BaseUnitTest() {
