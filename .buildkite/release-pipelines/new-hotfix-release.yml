@@ -21,7 +21,7 @@ steps:
 
       echo '--- :fire: Start New Hotfix Release'
       # Note: we need to double the dollar sign in front of `{VERSION_CODE}` below, so that the env var is interpreted *at runtime*, instead of too soon during `pipeline upload`
-      bundle exec fastlane new_hotfix_release version_name:$${VERSION} version_code:$${VERSION_CODE} skip_confirm:true
+      echo bundle exec fastlane new_hotfix_release version_name:$${VERSION} version_code:$${VERSION_CODE} skip_confirm:true
     agents:
         queue: "tumblr-metal"
     retry:
