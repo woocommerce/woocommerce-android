@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.metadata.UpdateMetadataRequest
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,25 +69,36 @@ class CustomFieldsViewModel @Inject constructor(
     }
 
     fun onCustomFieldUpdated(result: CustomFieldUiModel) {
-        launch {
-            pendingChanges.update { changes ->
-                if (result.id == null) {
-                    changes.copy(insertedFields = changes.insertedFields + result)
-                } else {
-                    val storedValue = repository.getCustomFieldById(args.parentItemId, result.id)
-                    if (storedValue?.key == result.key && storedValue.valueAsString == result.value) {
-                        // This means the field was changed back to its original value
-                        changes.copy(editedFields = changes.editedFields.filterNot { it.id == result.id })
-                    } else {
-                        changes.copy(editedFields = changes.editedFields.filterNot { it.id == result.id } + result)
-                    }
-                }
+        pendingChanges.update {
+            if (result.id == null) {
+                it.copy(insertedFields = it.insertedFields + result)
+            } else {
+                it.copy(editedFields = it.editedFields + result)
             }
         }
     }
 
     fun onSaveClicked() {
-        TODO()
+        launch {
+            isSaving.value = true
+            val currentPendingChanges = pendingChanges.value
+            val request = UpdateMetadataRequest(
+                parentItemId = args.parentItemId,
+                parentItemType = args.parentItemType,
+                updatedMetadata = currentPendingChanges.editedFields.map { it.toDomainModel() },
+                insertedMetadata = currentPendingChanges.insertedFields.map { it.toDomainModel() }
+            )
+
+            repository.updateCustomFields(request)
+                .onSuccess {
+                    // Clear pending changes after successful save
+                    pendingChanges.value = PendingChanges()
+                }.onFailure {
+                    // TODO use a more specific error message
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
+                }
+            isSaving.value = false
+        }
     }
 
     private fun List<CustomFieldUiModel>.combineWithChanges(pendingChanges: PendingChanges) = map { customField ->

@@ -5,6 +5,7 @@ import androidx.core.util.PatternsCompat
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
 import org.wordpress.android.util.HtmlUtils
 import java.util.regex.Pattern
 
@@ -23,6 +24,12 @@ data class CustomFieldUiModel(
 
     @IgnoredOnParcel
     val contentType: CustomFieldContentType = CustomFieldContentType.fromMetadataValue(value)
+
+    fun toDomainModel() = CustomField(
+        id = id ?: 0, // Use 0 for new custom fields
+        key = key,
+        value = WCMetaDataValue.StringValue(value) // Treat all updates as string values
+    )
 }
 
 enum class CustomFieldContentType {
