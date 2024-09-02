@@ -30,7 +30,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.SiteStore
 
 @ExperimentalCoroutinesApi
 class JetpackCPInstallViewModelTest : BaseUnitTest() {
@@ -46,7 +46,7 @@ class JetpackCPInstallViewModelTest : BaseUnitTest() {
     private val selectedSiteMock: SelectedSite = mock {
         on { get() }.doReturn(siteModelMock)
     }
-    private val wooCommerceStore: WooCommerceStore = mock()
+    private val siteStore: SiteStore = mock()
     private val exampleResult = WooResult(model = listOf(siteModelMock))
     private lateinit var viewModel: JetpackCPInstallViewModel
 
@@ -65,7 +65,7 @@ class JetpackCPInstallViewModelTest : BaseUnitTest() {
             savedState,
             pluginRepository,
             selectedSiteMock,
-            wooCommerceStore
+            siteStore
         )
     }
 
@@ -73,7 +73,7 @@ class JetpackCPInstallViewModelTest : BaseUnitTest() {
     fun `when installation is successful, then set proper install states`() = testBlocking {
         val installStates = mutableListOf<JetpackCPInstallViewModel.InstallStatus>()
         doReturn(true).whenever(siteModelMock).hasWooCommerce
-        doReturn(exampleResult).whenever(wooCommerceStore).fetchWooCommerceSites()
+        doReturn(exampleResult).whenever(siteStore).fetchSite(selectedSiteMock.get())
 
         viewModel.viewStateLiveData.observeForever { old, new ->
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
@@ -144,7 +144,7 @@ class JetpackCPInstallViewModelTest : BaseUnitTest() {
     fun `when connecting is failed, then set failed state`() = testBlocking {
         val installStates = mutableListOf<JetpackCPInstallViewModel.InstallStatus>()
         doReturn(false).whenever(siteModelMock).hasWooCommerce
-        doReturn(exampleResult).whenever(wooCommerceStore).fetchWooCommerceSites()
+        doReturn(exampleResult).whenever(siteStore).fetchSite(selectedSiteMock.get())
 
         viewModel.viewStateLiveData.observeForever { old, new ->
             new.installStatus?.takeIfNotEqualTo(old?.installStatus) { installStates.add(it) }
