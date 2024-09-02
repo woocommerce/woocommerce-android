@@ -50,7 +50,8 @@ class CustomFieldsEditorViewModel @Inject constructor(
     ) { customField, storedValue, isHtml, discardChangesDialogState ->
         UiState(
             customField = customField,
-            showDoneButton = calculateShowButtonState(customField, storedValue),
+            hasChanges = storedValue?.key.orEmpty() != customField.key ||
+                storedValue?.valueAsString.orEmpty() != customField.value,
             isHtml = isHtml,
             discardChangesDialogState = discardChangesDialogState
         )
@@ -96,7 +97,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     fun onBackClick() {
-        if (state.value?.showDoneButton == true) {
+        if (state.value?.hasChanges == true) {
             showDiscardChangesDialog.value = true
         } else {
             triggerEvent(MultiLiveEvent.Event.Exit)
@@ -114,20 +115,15 @@ class CustomFieldsEditorViewModel @Inject constructor(
         }
     }
 
-    private fun calculateShowButtonState(draft: CustomFieldUiModel, stored: CustomField?): Boolean {
-        if (draft.key.isEmpty()) {
-            return false
-        }
-
-        return stored == null || stored.key != draft.key || stored.valueAsString != draft.value
-    }
-
     data class UiState(
         val customField: CustomFieldUiModel = CustomFieldUiModel("", ""),
-        val showDoneButton: Boolean = false,
+        val hasChanges: Boolean = false,
         val isHtml: Boolean = false,
         val discardChangesDialogState: DiscardChangesDialogState? = null
-    )
+    ) {
+        val showDoneButton
+            get() = customField.key.isNotEmpty() && hasChanges
+    }
 
     data class DiscardChangesDialogState(
         val onDiscard: () -> Unit,

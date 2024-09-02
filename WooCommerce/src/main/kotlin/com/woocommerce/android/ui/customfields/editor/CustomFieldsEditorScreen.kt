@@ -97,11 +97,7 @@ private fun CustomFieldsEditorScreen(
 private fun CustomFieldsEditorScreenPreview() {
     WooThemeWithBackground {
         CustomFieldsEditorScreen(
-            CustomFieldsEditorViewModel.UiState(
-                customField = CustomFieldUiModel("key", "value"),
-                showDoneButton = true,
-                isHtml = false
-            ),
+            CustomFieldsEditorViewModel.UiState(customField = CustomFieldUiModel("key", "value")),
             onKeyChanged = {},
             onValueChanged = {},
             onDoneClicked = {},
