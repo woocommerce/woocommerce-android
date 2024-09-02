@@ -19,8 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -243,6 +246,7 @@ private fun InternalAztecEditor(
         Aztec.with(viewsHolder.visualEditor, viewsHolder.sourceEditor, viewsHolder.toolbar, listener)
             .setImageGetter(GlideImageLoader(localContext))
     }
+    var sourceEditorMinHeight by rememberSaveable { mutableStateOf(0) }
 
     // Toggle the editor mode when the state changes
     LaunchedEffect(Unit) {
@@ -281,7 +285,7 @@ private fun InternalAztecEditor(
             aztec.visualEditor.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
                 // Because the editors could have different number of lines, we don't set the minLines
                 // of the source editor, so we set the minHeight instead to match the visual editor
-                aztec.sourceEditor?.minHeight = aztec.visualEditor.height
+                sourceEditorMinHeight = aztec.visualEditor.height
             }
 
             aztec.visualEditor.doAfterTextChanged {
@@ -308,6 +312,9 @@ private fun InternalAztecEditor(
                 aztec.sourceEditor?.setCalypsoMode(calypsoMode)
             }
 
+            if (sourceEditorMinHeight != aztec.sourceEditor?.minHeight) {
+                aztec.sourceEditor?.minHeight = sourceEditorMinHeight
+            }
             if (minLines != -1 && minLines != aztec.visualEditor.minLines) {
                 aztec.visualEditor.minLines = minLines
             }
