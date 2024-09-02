@@ -56,7 +56,9 @@ class ProductFilterListAdapter(
             viewBinding.filterItemSelection.text =
                 filter.filterOptionListItems
                     .filterIsInstance<FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel>()
-                    .first { it.isSelected }.filterOptionItemName
+                    .firstOrNull { it.isSelected }
+                    ?.filterOptionItemName
+                    .orEmpty()
         }
     }
 
