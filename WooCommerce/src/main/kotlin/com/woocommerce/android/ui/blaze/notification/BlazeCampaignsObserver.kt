@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Calendar
 import javax.inject.Inject
@@ -39,7 +39,7 @@ class BlazeCampaignsObserver @Inject constructor(
             .collectLatest { scheduleNotification(it) }
     }
 
-    private fun scheduleNotification(campaigns: List<BlazeCampaignsDao.BlazeCampaignEntity>) {
+    private fun scheduleNotification(campaigns: List<BlazeCampaignModel>) {
         if (campaigns.isEmpty()) {
             // There are no campaigns. Skip scheduling the notification.
             return
@@ -52,7 +52,7 @@ class BlazeCampaignsObserver @Inject constructor(
         )
     }
 
-    private fun calculateDelayForNotification(campaigns: List<BlazeCampaignsDao.BlazeCampaignEntity>): Long {
+    private fun calculateDelayForNotification(campaigns: List<BlazeCampaignModel>): Long {
         val latestEndTime = campaigns.maxOf { it.startTime.daysLater(it.durationInDays) }
         val notificationTime = latestEndTime.daysLater(DAYS_DURATION_NO_CAMPAIGN_REMINDER_NOTIFICATION)
         return notificationTime.time - Calendar.getInstance().time.time

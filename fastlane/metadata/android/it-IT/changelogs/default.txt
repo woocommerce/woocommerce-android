@@ -1,2 +1,0 @@
-20.1:
-Abbiamo migliorato la tua esperienza con l'ultimo update! Abbiamo risolto un problema per cui la schermata degli ordini si bloccava, risolto errori di agganciamento per negozi inglesi e canadesi, risolto un arresto anomalo raro nella modifica degli ordini e migliorato l'usabilità su schermi piccoli. Goditi prestazioni più fluide e una migliore affidabilità!

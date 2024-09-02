@@ -8,12 +8,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
-import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.CampaignStatusUi
+import com.woocommerce.android.ui.blaze.toUiState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -26,7 +24,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
 
@@ -64,7 +61,12 @@ class BlazeCampaignListViewModel @Inject constructor(
         isCampaignCelebrationShown
     ) { campaigns, loadingMore, isBlazeCelebrationScreenShown ->
         BlazeCampaignListState(
-            campaigns = campaigns.map { mapToUiState(it) },
+            campaigns = campaigns.map {
+                ClickableCampaign(
+                    campaignUi = it.toUiState(currencyFormatter),
+                    onCampaignClicked = { onCampaignClicked(it.campaignId) }
+                )
+            },
             onAddNewCampaignClicked = { onAddNewCampaignClicked() },
             isLoading = loadingMore,
             isCampaignCelebrationShown = isBlazeCelebrationScreenShown
@@ -117,32 +119,6 @@ class BlazeCampaignListViewModel @Inject constructor(
             )
         )
     }
-
-    private fun mapToUiState(campaignEntity: BlazeCampaignEntity) =
-        ClickableCampaign(
-            campaignUi = BlazeCampaignUi(
-                product = BlazeProductUi(
-                    name = campaignEntity.title,
-                    imgUrl = campaignEntity.imageUrl.orEmpty(),
-                ),
-                status = CampaignStatusUi.fromString(campaignEntity.uiStatus),
-                stats = listOf(
-                    BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_impressions,
-                        value = campaignEntity.impressions.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_clicks,
-                        value = campaignEntity.clicks.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_budget,
-                        value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
-                    )
-                )
-            ),
-            onCampaignClicked = { onCampaignClicked(campaignEntity.campaignId) }
-        )
 
     private fun onAddNewCampaignClicked() {
         triggerEvent(LaunchBlazeCampaignCreation(BlazeFlowSource.CAMPAIGN_LIST))
