@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.list.ProductListFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -53,7 +54,10 @@ class ProductFilterListFragment :
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
-        productFilterListAdapter = ProductFilterListAdapter(this)
+        productFilterListAdapter = ProductFilterListAdapter(
+            clickListener = this,
+            resourceProvider = ResourceProvider(requireContext())
+        )
         with(binding.filterList) {
             addItemDecoration(
                 DividerItemDecoration(
