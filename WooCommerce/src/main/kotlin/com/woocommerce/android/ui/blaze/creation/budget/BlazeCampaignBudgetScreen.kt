@@ -428,12 +428,13 @@ private fun EditDurationBottomSheet(
     modifier: Modifier = Modifier,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
+    var selectedStartDate by remember { mutableStateOf(Date(budgetUiState.confirmedCampaignStartDateMillis)) }
     var isEndlessCampaign by remember { mutableStateOf(budgetUiState.isEndlessCampaign) }
     var sliderPosition by remember { mutableFloatStateOf(budgetUiState.durationInDays.toFloat()) }
 
     if (showDatePicker) {
         DatePickerDialog(
-            currentDate = Date(budgetUiState.confirmedCampaignStartDateMillis),
+            currentDate = selectedStartDate,
             minDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time,
             maxDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, MAX_DATE_LIMIT_IN_DAYS) }.time,
             onDateSelected = {
