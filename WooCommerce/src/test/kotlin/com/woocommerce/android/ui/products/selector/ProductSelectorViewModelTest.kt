@@ -1501,6 +1501,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
             orderStore,
             selectedSite,
             listHandler,
+            mock(),
             variationSelectorRepository,
             resourceProvider,
             productSelectorTracker,
