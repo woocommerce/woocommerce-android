@@ -115,8 +115,8 @@ class JetpackCPInstallViewModel @Inject constructor(
         var attempt = 0
         while (attempt < ATTEMPT_LIMIT) {
             val siteId = selectedSite.get().siteId
-            val result = siteStore.fetchSite(selectedSite.get()).let { !it.isError }
-            if (result) {
+            val resultIsNotError = siteStore.fetchSite(selectedSite.get()).let { !it.isError }
+            if (resultIsNotError) {
                 val syncedSite = siteStore.getSiteBySiteId(siteId)
                 if (syncedSite?.isJetpackConnected == true && syncedSite.hasWooCommerce) {
                     selectedSite.set(syncedSite)
@@ -125,6 +125,8 @@ class JetpackCPInstallViewModel @Inject constructor(
                     attempt++
                     delay(SYNC_CHECK_DELAY)
                 }
+            } else {
+                attempt++
             }
         }
         return false
