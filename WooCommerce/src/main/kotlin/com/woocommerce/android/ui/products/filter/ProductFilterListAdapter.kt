@@ -9,7 +9,6 @@ import com.woocommerce.android.databinding.FilterListItemBinding
 import com.woocommerce.android.ui.products.filter.ProductFilterListAdapter.ProductFilterViewHolder
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListItemUiModel
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
-import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductFilterListAdapter(
     private val clickListener: OnProductFilterClickListener,
