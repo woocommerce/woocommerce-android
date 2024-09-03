@@ -23,6 +23,7 @@ import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -108,10 +109,13 @@ fun ModalStatusBarBottomSheetLayout(
     if (window == null) return@ModalBottomSheetLayout
 
     val originalNavigationBarColor = remember { window.navigationBarColor }
-    if (sheetState.currentValue != Hidden) {
-        window.navigationBarColor = sheetBackgroundColor.toArgb()
-    } else {
-        window.navigationBarColor = originalNavigationBarColor
+
+    LaunchedEffect(sheetState.currentValue) {
+        if (sheetState.currentValue != Hidden) {
+            window.navigationBarColor = sheetBackgroundColor.toArgb()
+        } else {
+            window.navigationBarColor = originalNavigationBarColor
+        }
     }
 
     DisposableEffect(Unit) {
