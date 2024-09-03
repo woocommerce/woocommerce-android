@@ -24,7 +24,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
     private val customFieldDraft = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = navArgs.customField ?: CustomFieldUiModel("", ""),
-        key = "customField"
+        key = "customFieldDraft"
     )
     private val showDiscardChangesDialog = savedStateHandle.getStateFlow(
         scope = viewModelScope,
