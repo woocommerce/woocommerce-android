@@ -245,7 +245,6 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     fun onDurationSliderUpdated(durationInDays: Int, selectedStartDateMillis: Long) {
         budgetUiState.update {
             it.copy(
-                durationInDays = durationInDays,
                 formattedEndDate = getFormattedEndDate(
                     startDateMillis = selectedStartDateMillis,
                     duration = durationInDays
