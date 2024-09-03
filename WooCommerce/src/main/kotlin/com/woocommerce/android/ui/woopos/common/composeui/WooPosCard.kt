@@ -118,6 +118,7 @@ fun Shape.toCornerRadius(density: Density): Dp {
     }
 }
 
+@Suppress("LongParameterList")
 private fun Modifier.drawShadow(
     color: Color,
     alpha: Float,
