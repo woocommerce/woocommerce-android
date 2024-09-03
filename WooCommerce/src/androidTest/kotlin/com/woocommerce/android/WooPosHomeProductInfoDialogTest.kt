@@ -54,6 +54,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
     @Before
     fun setUp() = runTest {
         rule.inject()
+        dataStore.edit { it.clear() }
         WelcomeScreen
             .skipCarouselIfNeeded()
             .selectLogin()
@@ -64,7 +65,6 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
         TabNavComponent()
             .gotoMoreMenuScreen()
             .openPOSScreen(composeTestRule)
-        dataStore.edit { it.clear() }
     }
 
     @Test
@@ -84,9 +84,13 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
         ).performClick()
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-        ).assertIsDisplayed()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithContentDescription(
+                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+            )
+                .assertIsDisplayed()
+            true
+        }
     }
 
     @Test
@@ -106,12 +110,19 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
         ).performClick()
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-        ).performClick()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithContentDescription(
+                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+            )
+                .performClick()
+            true
+        }
 
-        composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
-            .assertIsDisplayed()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
+                .assertIsDisplayed()
+            true
+        }
     }
 
     @Test
@@ -130,14 +141,21 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
         ).performClick()
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-        ).performClick()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithContentDescription(
+                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+            ).performClick()
+            true
+        }
 
-        composeTestRule.onNodeWithText(
-            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_heading)
-        )
-            .assertIsDisplayed()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithText(
+                composeTestRule.activity.getString(R.string.woopos_dialog_products_info_heading)
+            )
+                .assertIsDisplayed()
+            true
+        }
+
         composeTestRule.onNodeWithText(
             composeTestRule.activity.getString(R.string.woopos_dialog_products_info_primary_message)
         )
@@ -169,17 +187,23 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
         ).performClick()
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-        ).performClick()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithContentDescription(
+                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+            ).performClick()
+            true
+        }
 
         composeTestRule.onNodeWithContentDescription(
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
         ).performClick()
 
-        composeTestRule.onNodeWithTag(
-            "woo_pos_product_info_dialog"
-        ).assertIsNotDisplayed()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_product_info_dialog"
+            ).assertIsNotDisplayed()
+            true
+        }
     }
 
     @Test
@@ -199,16 +223,67 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
         ).performClick()
 
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithContentDescription(
+                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+                )
+                .assertExists()
+            true
+        }
+
         composeTestRule.onNodeWithContentDescription(
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
         ).performClick()
 
         composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_button_label)
+            composeTestRule.activity.getString(
+                R.string.woopos_banner_simple_products_dialog_primary_button_content_description
+            )
         ).performClick()
 
-        composeTestRule.onNodeWithTag(
-            "woo_pos_product_info_dialog"
-        ).assertIsNotDisplayed()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
+                .assertDoesNotExist()
+            true
+        }
+    }
+
+    @Test
+    fun testProductInfoDialogIsDismissedWhenOutsideDialogClicked()  = runTest {
+
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        composeTestRule.onNodeWithContentDescription(
+            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
+        ).performClick()
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithContentDescription(
+                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_product_info_dialog_background"
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_product_info_dialog"
+            ).assertIsNotDisplayed()
+            true
+        }
     }
 }

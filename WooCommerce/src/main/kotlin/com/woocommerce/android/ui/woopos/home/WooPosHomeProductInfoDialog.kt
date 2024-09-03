@@ -53,7 +53,8 @@ fun WooPosProductInfoDialog(
     WooPosDialogWrapper(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(102.dp.toAdaptivePadding()),
+            .padding(102.dp.toAdaptivePadding())
+            .testTag("woo_pos_product_info_dialog_background"),
         isVisible = state.isVisible,
         dialogBackgroundContentDescription = dialogBackgroundContentDescription,
         onDismissRequest = onDismissRequest
