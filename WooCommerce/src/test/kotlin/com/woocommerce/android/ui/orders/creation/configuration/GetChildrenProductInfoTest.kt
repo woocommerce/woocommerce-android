@@ -62,7 +62,7 @@ class GetChildrenProductInfoTest : BaseUnitTest() {
         )
         val bundledProducts = listOf(childProduct1, childProduct2)
 
-        whenever(productDetailRepository.getProductFromLocalCache(productBundle.remoteId)).thenReturn(productBundle)
+        whenever(productDetailRepository.getProduct(productBundle.remoteId)).thenReturn(productBundle)
         whenever(getBundledProducts.invoke(productBundle.remoteId)).thenReturn(flowOf(bundledProducts))
 
         // When
@@ -86,7 +86,7 @@ class GetChildrenProductInfoTest : BaseUnitTest() {
         }
 
         // Verify
-        verify(productDetailRepository).getProductFromLocalCache(productBundle.remoteId)
+        verify(productDetailRepository).getProduct(productBundle.remoteId)
         verify(getBundledProducts).invoke(productBundle.remoteId)
     }
 
@@ -98,7 +98,7 @@ class GetChildrenProductInfoTest : BaseUnitTest() {
             productName = "Product 1",
             imageUrl = "image1.jpg"
         )
-        whenever(productDetailRepository.getProductFromLocalCache(product.remoteId)).thenReturn(product)
+        whenever(productDetailRepository.getProduct(product.remoteId)).thenReturn(product)
 
         // When
         val resultFlow = getChildrenProductInfo(product.remoteId)
@@ -107,7 +107,7 @@ class GetChildrenProductInfoTest : BaseUnitTest() {
         resultFlow.collect { productInfoMap -> assert(productInfoMap.isEmpty()) }
 
         // Verify
-        verify(productDetailRepository).getProductFromLocalCache(product.remoteId)
+        verify(productDetailRepository).getProduct(product.remoteId)
         verify(getBundledProducts, never()).invoke(product.remoteId)
     }
 }

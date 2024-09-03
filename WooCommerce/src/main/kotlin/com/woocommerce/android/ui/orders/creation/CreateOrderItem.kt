@@ -26,8 +26,8 @@ class CreateOrderItem @Inject constructor(
         productConfiguration: ProductConfiguration? = null,
     ): Order.Item {
         return withContext(coroutineDispatchers.io) {
-            val product = productDetailRepository.getProductFromLocalCache(remoteProductId)
-                ?: productDetailRepository.fetchProductAndLoadFromCache(remoteProductId)
+            val product = productDetailRepository.getProduct(remoteProductId)
+                ?: productDetailRepository.fetchAndGetProduct(remoteProductId)
             // Try to get the default configuration for not configurable bundles
             val configuration = if (product?.productType == ProductType.BUNDLE && productConfiguration == null) {
                 getProductRules.getRules(remoteProductId)?.let { getProductConfiguration(it) }

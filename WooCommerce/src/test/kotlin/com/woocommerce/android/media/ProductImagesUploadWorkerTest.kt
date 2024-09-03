@@ -175,26 +175,26 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product is requested, then fetch product`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
-        verify(productDetailRepository).fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)
+        verify(productDetailRepository).fetchAndGetProduct(REMOTE_PRODUCT_ID)
     }
 
     @Test
     fun `when fetching product fails, then retry three times`() = testBlocking {
-        whenever(productDetailRepository.fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(null)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(null)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
         verify(productDetailRepository, times(ProductImagesUploadWorker.PRODUCT_UPDATE_RETRIES))
-            .fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)
+            .fetchAndGetProduct(REMOTE_PRODUCT_ID)
     }
 
     @Test
     fun `when fetching product fails, then send an event`() = testBlocking {
-        whenever(productDetailRepository.fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(null)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(null)
 
         val eventsList = mutableListOf<Event>()
         val job = launch {
@@ -210,7 +210,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product is requested, then update product`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
@@ -221,7 +221,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product succeeds, then send an event`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
         whenever(productDetailRepository.updateProduct(any())).thenReturn(Pair(true, null))
 
         val eventsList = mutableListOf<Event>()
@@ -238,7 +238,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product fails, then retry three times`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
         whenever(productDetailRepository.updateProduct(any())).thenReturn(Pair(false, null))
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
@@ -251,7 +251,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when update product fails, then send an event`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
-        whenever(productDetailRepository.fetchProductAndLoadFromCache(REMOTE_PRODUCT_ID)).thenReturn(product)
+        whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
         whenever(productDetailRepository.updateProduct(any())).thenReturn(Pair(false, null))
 
         val eventsList = mutableListOf<Event>()

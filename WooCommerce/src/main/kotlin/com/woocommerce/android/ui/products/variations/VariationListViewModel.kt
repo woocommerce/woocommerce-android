@@ -108,7 +108,7 @@ class VariationListViewModel @Inject constructor(
         get() = _variationList.value?.isEmpty() ?: true
 
     fun start() {
-        productRepository.getProductFromLocalCache(remoteProductId)?.let {
+        productRepository.getProduct(remoteProductId)?.let {
             viewState = viewState.copy(parentProduct = it)
             handleVariationLoading(remoteProductId)
         }
@@ -170,7 +170,7 @@ class VariationListViewModel @Inject constructor(
                 ?.let { remove(it) }
         }?.toList().let { _variationList.value = it }
 
-        productRepository.fetchProductAndLoadFromCache(productID)
+        productRepository.fetchAndGetProduct(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
@@ -212,7 +212,7 @@ class VariationListViewModel @Inject constructor(
 
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)
-        productRepository.fetchProductAndLoadFromCache(productID)
+        productRepository.fetchAndGetProduct(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 

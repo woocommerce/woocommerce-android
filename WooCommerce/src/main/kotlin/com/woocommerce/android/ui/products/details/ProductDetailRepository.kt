@@ -79,7 +79,7 @@ class ProductDetailRepository @Inject constructor(
         dispatcher.unregister(this)
     }
 
-    suspend fun fetchProductAndLoadFromCache(remoteProductId: Long): Product? {
+    suspend fun fetchAndGetProduct(remoteProductId: Long): Product? {
         val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
         val result = productStore.fetchSingleProduct(payload)
 
@@ -87,7 +87,7 @@ class ProductDetailRepository @Inject constructor(
             lastFetchProductErrorType = result.error.type
         }
 
-        return getProductFromLocalCache(remoteProductId)
+        return getProduct(remoteProductId)
     }
 
     suspend fun fetchProductPassword(remoteProductId: Long): String? {
@@ -270,7 +270,7 @@ class ProductDetailRepository @Inject constructor(
     private fun getCachedWCProductModel(remoteProductId: Long) =
         productStore.getProductByRemoteId(selectedSite.get(), remoteProductId)
 
-    fun getProductFromLocalCache(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
+    fun getProduct(remoteProductId: Long): Product? = getCachedWCProductModel(remoteProductId)?.toAppModel()
 
     suspend fun getProductAsync(remoteProductId: Long): Product? = withContext(coroutineDispatchers.io) {
         getCachedWCProductModel(remoteProductId)?.toAppModel()

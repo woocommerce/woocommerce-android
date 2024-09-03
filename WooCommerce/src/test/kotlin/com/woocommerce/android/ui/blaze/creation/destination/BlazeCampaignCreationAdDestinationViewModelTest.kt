@@ -43,7 +43,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
     fun setupTests() {
         whenever(product.permalink).thenReturn("https://woocommerce.com")
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = "https://woo2.com" })
-        whenever(productDetailRepository.getProductFromLocalCache(any())).thenReturn(product)
+        whenever(productDetailRepository.getProduct(any())).thenReturn(product)
     }
 
     @Test

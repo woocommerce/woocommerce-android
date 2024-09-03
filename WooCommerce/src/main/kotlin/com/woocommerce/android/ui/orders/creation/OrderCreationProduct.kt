@@ -199,7 +199,7 @@ class OrderCreationProductMapper @Inject constructor(
                     hasDiscount = item.discount > BigDecimal.ZERO
                 )
             } else {
-                val product = productDetailRepository.getProductFromLocalCache(item.productId)
+                val product = productDetailRepository.getProduct(item.productId)
                 ProductInfo(
                     imageUrl = product?.firstImageUrl.orEmpty(),
                     isStockManaged = product?.isStockManaged ?: false,

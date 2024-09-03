@@ -678,7 +678,7 @@ class ProductDetailViewModel @Inject constructor(
                 when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
                     RequestResult.SUCCESS -> {
                         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
-                        productRepository.fetchProductAndLoadFromCache(remoteProductId)
+                        productRepository.fetchAndGetProduct(remoteProductId)
                             ?.also { updateProductState(productToUpdateFrom = it) }
                         triggerEvent(ProductExitEvent.ExitAttributesAdded)
                     }
@@ -701,7 +701,7 @@ class ProductDetailViewModel @Inject constructor(
             )
             variationRepository.createEmptyVariation(draft)
                 ?.let {
-                    productRepository.fetchProductAndLoadFromCache(draft.remoteId)
+                    productRepository.fetchAndGetProduct(draft.remoteId)
                         ?.also { updateProductState(productToUpdateFrom = it) }
                 }
         }.also {
@@ -1563,7 +1563,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (checkConnection()) {
-            val fetchedProduct = productRepository.fetchProductAndLoadFromCache(remoteProductId)
+            val fetchedProduct = productRepository.fetchAndGetProduct(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {

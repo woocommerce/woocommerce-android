@@ -24,7 +24,7 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationAdDestinationFragmentArgs by savedStateHandle.navArgs()
-    private val productUrl = requireNotNull(productDetailRepository.getProductFromLocalCache(navArgs.productId)).permalink
+    private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId)).permalink
     private val initialDestinationValues: ViewState
 
     private val _viewState = MutableStateFlow(
