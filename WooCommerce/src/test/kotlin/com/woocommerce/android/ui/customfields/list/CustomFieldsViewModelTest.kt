@@ -172,4 +172,23 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(CustomFieldsViewModel.CustomFieldValueClicked(uiModel))
         assertThat(uiModel.contentType).isEqualTo(CustomFieldContentType.PHONE)
     }
+
+    @Test
+    fun `when tapping on a custom field, then custom field editor is opened`() = testBlocking {
+        val customField = CustomField(
+            id = 1,
+            key = "key",
+            value = "value"
+        )
+        setup {
+            whenever(repository.observeDisplayableCustomFields(PARENT_ITEM_ID)).thenReturn(flowOf(listOf(customField)))
+        }
+
+        val uiModel = CustomFieldUiModel(customField)
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCustomFieldClicked(uiModel)
+        }.last()
+
+        assertThat(event).isEqualTo(CustomFieldsViewModel.OpenCustomFieldEditor(uiModel))
+    }
 }

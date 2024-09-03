@@ -1,2 +1,0 @@
-20.1 :
-Nous avons amélioré votre expérience avec notre dernière mise à jour ! Nous avons résolu le problème qui bloquait l’écran Commandes, traité les erreurs de code pin incorrect pour les boutiques au Royaume-Uni et au Canada, corrigé un incident rare dans la création de commande et amélioré l’ergonomie sur les petits écrans. Bénéficiez de performances plus fluides et d’une meilleure fiabilité !

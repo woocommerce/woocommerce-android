@@ -131,7 +131,6 @@
     <!--
     Jetpack plugin installation dialog
     -->
-    <color name="jetpack_button_color">@color/woo_white</color>
     <color name="jetpack_install_progressbar">@color/woo_white</color>
 
     <color name="reader_update_progress_color">@color/woo_purple_40</color>

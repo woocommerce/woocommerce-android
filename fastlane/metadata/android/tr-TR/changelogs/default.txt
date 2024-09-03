@@ -1,2 +1,0 @@
-20.1:
-Son güncellememizle deneyiminizi iyileştirin! Siparişler ekranının takılması sorununu çözdük, BK ve Kanada mağazalarındaki yanlış pin hatalarını giderdik, sipariş düzenlemedeki nadir bir kilitlenmeyi düzelttik ve küçük ekranlarda kullanılabilirliği geliştirdik. Daha sorunsuz performansın ve daha iyi güvenilirliğin keyfini çıkarın!

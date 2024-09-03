@@ -8,6 +8,7 @@
     <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_refunds" />
     <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_custom_fields" />
 
     <dialog
         android:id="@+id/itemSelectorDialog"
@@ -299,7 +300,15 @@
             app:destination="@id/AIThankYouNoteBottomSheetFragment" />
         <action
             android:id="@+id/action_orderDetailFragment_to_customFieldsFragment"
-            app:destination="@id/customFieldsFragment" />
+            app:destination="@id/nav_graph_custom_fields" >
+            <argument
+                android:name="parentItemId"
+                app:argType="long" />
+            <argument
+                android:name="parentItemType"
+                app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType"
+                android:defaultValue="ORDER" />
+        </action>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -650,17 +659,6 @@
             android:name="remoteNoteId"
             android:defaultValue="0L"
             app:argType="long" />
-    </fragment>
-    <fragment
-        android:id="@+id/customFieldsFragment"
-        android:name="com.woocommerce.android.ui.customfields.list.CustomFieldsFragment">
-        <argument
-            android:name="parentItemId"
-            app:argType="long" />
-        <argument
-            android:name="parentItemType"
-            app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType"
-            android:defaultValue="ORDER" />
     </fragment>
     <action
         android:id="@+id/action_global_item_selector_dialog"

@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+20.3
+-----
+- [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
+
 20.2
 -----
 - [**] Fixed navigation in tablet mode: after order is paid, the app should redirect to order details screen. [https://github.com/woocommerce/woocommerce-android/pull/12415]
