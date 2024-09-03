@@ -61,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -362,7 +363,7 @@ private fun ProductItem(
         }
     }
 
-    Card(
+    WooPosCard(
         modifier = modifier
             .height(64.dp)
             .semantics { contentDescription = itemContentDescription }
