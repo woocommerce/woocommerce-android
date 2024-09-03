@@ -84,13 +84,15 @@ class CustomFieldsViewModel @Inject constructor(
         triggerEvent(CustomFieldValueClicked(field))
     }
 
+    fun onCustomFieldInserted(result: CustomFieldUiModel) {
+        pendingChanges.update {
+            it.copy(insertedFields = it.insertedFields + result)
+        }
+    }
+
     fun onCustomFieldUpdated(result: CustomFieldUiModel) {
         pendingChanges.update {
-            if (result.id == null) {
-                it.copy(insertedFields = it.insertedFields + result)
-            } else {
-                it.copy(editedFields = it.editedFields + result)
-            }
+            it.copy(editedFields = it.editedFields + result)
         }
     }
 

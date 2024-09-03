@@ -57,7 +57,11 @@ class CustomFieldsFragment : BaseFragment() {
 
     private fun handleResults() {
         handleResult<CustomFieldUiModel>(CustomFieldsEditorFragment.RESULT_KEY) { result ->
-            viewModel.onCustomFieldUpdated(result)
+            if (result.id == null) {
+                viewModel.onCustomFieldInserted(result)
+            } else {
+                viewModel.onCustomFieldUpdated(result)
+            }
         }
     }
 
