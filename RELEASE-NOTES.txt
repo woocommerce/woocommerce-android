@@ -5,6 +5,7 @@
 20.3
 -----
 - [**] Stopped potential crash in the orders list screen when tapping "Filters" button [https://github.com/woocommerce/woocommerce-android/pull/12482]
+- [**] Fixed a bug that caused the app to freeze after adding products to new order [https://github.com/woocommerce/woocommerce-android/pull/12493]
 
 20.2
 -----
