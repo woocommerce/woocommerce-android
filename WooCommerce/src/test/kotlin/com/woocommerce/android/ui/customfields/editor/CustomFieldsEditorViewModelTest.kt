@@ -163,4 +163,21 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         assertThat(state.discardChangesDialogState).isNotNull
     }
+
+    @Test
+    fun `when done is clicked, then exit with result`() = testBlocking {
+        setup(editing = true)
+
+        val events = viewModel.event.runAndCaptureValues {
+            viewModel.onKeyChanged("new key")
+            viewModel.onValueChanged("new value")
+            viewModel.onDoneClicked()
+        }.last()
+
+        assertThat(events).isEqualTo(
+            MultiLiveEvent.Event.ExitWithResult(
+                CustomFieldUiModel(id = CUSTOM_FIELD_ID, key = "new key", value = "new value")
+            )
+        )
+    }
 }

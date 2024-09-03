@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -190,5 +192,93 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(CustomFieldsViewModel.OpenCustomFieldEditor(uiModel))
+    }
+
+    @Test
+    fun `when updating a custom field, then custom fields are refreshed`() = testBlocking {
+        val customField = CustomFieldUiModel(CUSTOM_FIELDS.first()).copy(value = "new value")
+        setup()
+
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onCustomFieldUpdated(customField)
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state.customFields.first().value).isEqualTo("new value")
+    }
+
+    @Test
+    fun `when adding a custom field, then custom fields are refreshed`() = testBlocking {
+        val customField = CustomFieldUiModel(
+            key = "new key",
+            value = "new value"
+        )
+        setup()
+
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onCustomFieldInserted(customField)
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state.customFields).hasSize(CUSTOM_FIELDS.size + 1)
+        assertThat(state.customFields.last().key).isEqualTo(customField.key)
+        assertThat(state.customFields.last().value).isEqualTo(customField.value)
+    }
+
+    @Test
+    fun `given pending changes, when back button is clicked, then discard changes dialog is shown`() = testBlocking {
+        setup()
+
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onCustomFieldInserted(CustomFieldUiModel(key = "new key", value = "new value"))
+            viewModel.onBackClick()
+        }.last()
+
+        assertThat(state.discardChangesDialogState).isNotNull
+    }
+
+    @Test
+    fun `given pending changes, when save is clicked, then update fields`() = testBlocking {
+        val insertedField = CustomFieldUiModel(key = "new key", value = "new value")
+        val updatedField = CustomFieldUiModel(CUSTOM_FIELDS.first()).copy(value = "new value")
+
+        setup()
+
+        viewModel.onCustomFieldUpdated(updatedField)
+        viewModel.onCustomFieldInserted(insertedField)
+        viewModel.onSaveClicked()
+
+        verify(repository).updateCustomFields(
+            request = argThat {
+                insertedMetadata == listOf(insertedField.toDomainModel()) &&
+                    updatedMetadata == listOf(updatedField.toDomainModel())
+            }
+        )
+    }
+
+    @Test
+    fun `given saving fails, when save is clicked, then show error message`() = testBlocking {
+        setup {
+            whenever(repository.updateCustomFields(any())).thenReturn(Result.failure(Exception()))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onSaveClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_failed))
+    }
+
+    @Test
+    fun `given saving succeeds, when save is clicked, then show success message`() = testBlocking {
+        setup {
+            whenever(repository.updateCustomFields(any())).thenReturn(Result.success(Unit))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onSaveClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_succeeded))
     }
 }
