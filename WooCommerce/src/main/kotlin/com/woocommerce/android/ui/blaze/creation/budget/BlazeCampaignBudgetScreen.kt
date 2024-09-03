@@ -65,6 +65,7 @@ import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.util.FeatureFlag
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
@@ -430,6 +431,7 @@ private fun EditDurationBottomSheet(
     onDurationSliderUpdated: (Int, Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedStartDate by remember { mutableStateOf(Date(budgetUiState.confirmedCampaignStartDateMillis)) }
     var isEndlessCampaign by remember { mutableStateOf(budgetUiState.isEndlessCampaign) }
@@ -472,7 +474,11 @@ private fun EditDurationBottomSheet(
                     sliderPosition = budgetUiState.durationInDays.toFloat()
                     isEndlessCampaign = budgetUiState.isEndlessCampaign
                     selectedStartDate = Date(budgetUiState.confirmedCampaignStartDateMillis)
-                    onCancelTapped()
+                    coroutineScope.launch {
+                        @Suppress("MagicNumber")
+                        delay(400)
+                        onCancelTapped()
+                    }
                 }
             ) {
                 Text(
