@@ -533,16 +533,6 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="backgroundTint">?colorPrimary</item>
     </style>
 
-    <!--  Button used in Jetpack Installation dialogs   -->
-    <style name="Woo.JetpackButton" parent="Widget.MaterialComponents.Button.UnelevatedButton">
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
-        <item name="android:paddingStart">@dimen/major_100</item>
-        <item name="android:paddingEnd">@dimen/major_100</item>
-        <item name="backgroundTint">@color/jetpack_button_color</item>
-    </style>
-
-
-
     <!-- Set at the theme level so no need to set directly on the component -->
     <style name="Widget.Woo.WCToggleOutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:paddingStart">@dimen/major_100</item>
