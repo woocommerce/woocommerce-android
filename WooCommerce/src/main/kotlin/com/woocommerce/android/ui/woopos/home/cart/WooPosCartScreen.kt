@@ -190,7 +190,10 @@ private fun CartBodyWithItems(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(2.dp),
+        contentPadding = PaddingValues(
+            top = 2.dp.toAdaptivePadding(),
+            bottom = 8.dp.toAdaptivePadding()
+        )
     ) {
         items(
             items,
