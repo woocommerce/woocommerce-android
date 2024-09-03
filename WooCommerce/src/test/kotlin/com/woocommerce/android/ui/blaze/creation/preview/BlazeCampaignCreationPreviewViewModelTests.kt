@@ -91,7 +91,6 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
             blazeRepository = blazeRepository,
             resourceProvider = resourceProvider,
             currencyFormatter = currencyFormatter,
-            abandonedCampaignReminder = mock(),
             analyticsTrackerWrapper = analyticsTracker
         )
     }
