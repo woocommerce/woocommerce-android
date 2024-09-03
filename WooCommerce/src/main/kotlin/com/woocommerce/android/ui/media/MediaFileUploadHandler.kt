@@ -147,7 +147,7 @@ class MediaFileUploadHandler @Inject constructor(
         if (!externalObservers.contains(productId)) {
             WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> post upload failure notification")
             val errors = state.filter { it.remoteProductId == productId && it.uploadStatus is UploadStatus.Failed }
-            notificationHandler.postUploadFailureNotification(productDetailRepository.getProduct(productId), errors)
+            notificationHandler.postUploadFailureNotification(productDetailRepository.getProductFromLocalCache(productId), errors)
         }
     }
 

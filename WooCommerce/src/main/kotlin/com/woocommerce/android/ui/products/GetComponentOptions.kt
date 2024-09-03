@@ -32,7 +32,7 @@ class GetComponentOptions @Inject constructor(
     }
 
     private suspend fun getDefaultValue(remoteProductId: Long?): String? {
-        return remoteProductId?.let { repository.fetchProductOrLoadFromCache(it)?.name }
+        return remoteProductId?.let { repository.fetchProductAndLoadFromCache(it)?.name }
     }
 
     private suspend fun getCategoriesOptions(categoriesIds: List<Long>): List<ComponentOption> {

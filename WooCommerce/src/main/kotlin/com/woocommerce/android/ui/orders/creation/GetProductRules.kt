@@ -15,11 +15,11 @@ class GetProductRules @Inject constructor(
 ) {
     suspend fun getRules(item: Order.Item): ProductRules? {
         if (item.isVariation) return null
-        return productDetailRepository.getProduct(item.productId)?.let { getRules(it) }
+        return productDetailRepository.getProductFromLocalCache(item.productId)?.let { getRules(it) }
     }
 
     suspend fun getRules(productId: Long): ProductRules? {
-        return productDetailRepository.getProduct(productId)?.let { getRules(it) }
+        return productDetailRepository.getProductFromLocalCache(productId)?.let { getRules(it) }
     }
 
     private suspend fun getRules(product: Product): ProductRules? {

@@ -148,8 +148,8 @@ class BlazeRepository @Inject constructor(
             isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
         )
 
-        val product = productDetailRepository.getProduct(productId)
-            ?: productDetailRepository.fetchProductOrLoadFromCache(productId)!!
+        val product = productDetailRepository.getProductFromLocalCache(productId)
+            ?: productDetailRepository.fetchProductAndLoadFromCache(productId)!!
 
         return CampaignDetails(
             productId = productId,

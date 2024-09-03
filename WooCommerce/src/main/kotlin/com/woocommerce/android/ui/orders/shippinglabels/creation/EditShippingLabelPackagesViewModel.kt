@@ -115,8 +115,8 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
 
     private suspend fun loadProductsWeightsIfNeeded(order: Order) {
         suspend fun fetchProductIfNeeded(productId: Long): Boolean {
-            if (productDetailRepository.getProduct(productId) == null) {
-                return productDetailRepository.fetchProductOrLoadFromCache(productId) != null ||
+            if (productDetailRepository.getProductFromLocalCache(productId) == null) {
+                return productDetailRepository.fetchProductAndLoadFromCache(productId) != null ||
                     productDetailRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true
@@ -314,7 +314,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                     if (it.isVariation) {
                         variationDetailRepository.getVariation(it.productId, it.variationId)
                     } else {
-                        productDetailRepository.getProduct(it.productId)
+                        productDetailRepository.getProductFromLocalCache(it.productId)
                     }
                 }
 
@@ -365,7 +365,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val refunds = orderDetailRepository.getOrderRefunds(id)
         return refunds.getNonRefundedProducts(items)
             .filter {
-                val product = productDetailRepository.getProduct(it.productId)
+                val product = productDetailRepository.getProductFromLocalCache(it.productId)
                 // Exclude deleted and virtual products
                 product != null && !product.isVirtual
             }
@@ -375,7 +375,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val weight = if (isVariation) {
             variationDetailRepository.getVariation(productId, variationId)!!.weight
         } else {
-            productDetailRepository.getProduct(productId)!!.weight
+            productDetailRepository.getProductFromLocalCache(productId)!!.weight
         }
 
         return ShippingLabelPackage.Item(

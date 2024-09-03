@@ -207,7 +207,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(originalProduct)
             )
-            whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+            whenever(productRepo.getProductFromLocalCache(any())).thenReturn(originalProduct)
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
                     "123",
@@ -241,7 +241,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(originalProduct)
             )
-            whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+            whenever(productRepo.getProductFromLocalCache(any())).thenReturn(originalProduct)
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
                     "123",
@@ -279,7 +279,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             )
 
             whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
-            whenever(productRepo.getProduct(productId)).thenReturn(product)
+            whenever(productRepo.getProductFromLocalCache(productId)).thenReturn(product)
             whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
@@ -323,7 +323,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(originalProduct)
             )
-            whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+            whenever(productRepo.getProductFromLocalCache(any())).thenReturn(originalProduct)
             val originalVariation =
                 ProductTestUtils.generateProductVariation(productId = productId, variationId = variationId)
                     .copy(stockQuantity = originalProduct.stockQuantity, isStockManaged = true)
@@ -368,7 +368,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             whenever(fetchProductBySKU(any(), any())).thenReturn(
                 Result.success(originalProduct)
             )
-            whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
+            whenever(productRepo.getProductFromLocalCache(any())).thenReturn(originalProduct)
             val originalVariation =
                 ProductTestUtils.generateProductVariation(productId = 1, variationId = 2)
                     .copy(stockQuantity = 1.0, isStockManaged = true)

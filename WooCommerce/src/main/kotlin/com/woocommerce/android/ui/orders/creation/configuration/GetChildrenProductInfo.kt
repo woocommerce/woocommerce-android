@@ -13,7 +13,7 @@ class GetChildrenProductInfo @Inject constructor(
     private val getBundledProducts: GetBundledProducts
 ) {
     operator fun invoke(productId: Long): Flow<Map<Long, ProductInfo>> {
-        return productDetailRepository.getProduct(productId)
+        return productDetailRepository.getProductFromLocalCache(productId)
             ?.takeIf { it.productType == ProductType.BUNDLE }
             ?.let { getBundledProducts(productId) }
             ?.map { products ->

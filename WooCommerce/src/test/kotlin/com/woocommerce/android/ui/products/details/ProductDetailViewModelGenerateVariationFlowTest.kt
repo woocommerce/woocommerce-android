@@ -91,7 +91,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
 
         productRepository = mock {
-            onBlocking { fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID) } doReturn product
+            onBlocking { fetchProductAndLoadFromCache(PRODUCT_REMOTE_ID) } doReturn product
         }
 
         variationRepository = mock {

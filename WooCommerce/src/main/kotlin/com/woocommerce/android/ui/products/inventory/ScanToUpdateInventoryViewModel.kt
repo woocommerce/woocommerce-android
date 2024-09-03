@@ -167,7 +167,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
     ) = launch {
         _viewState.value = ViewState.Loading
         scanToUpdateInventoryState.value = ScanToUpdateInventoryState.UpdatingProduct
-        val product = productRepository.getProduct(updatedProductInfo.id)
+        val product = productRepository.getProductFromLocalCache(updatedProductInfo.id)
         if (product == null) {
             handleQuantityUpdateError()
             _viewState.value = ViewState.QuickInventoryBottomSheetHidden
@@ -317,7 +317,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
         val productInfo = state.product
         val updatedProductInfo = productInfo.copy(isStockManaged = true)
-        val product = productRepository.getProduct(updatedProductInfo.id)
+        val product = productRepository.getProductFromLocalCache(updatedProductInfo.id)
         if (product != null) {
             val result = if (product.isVariation()) {
                 product.updateVariation(updatedProductInfo)
