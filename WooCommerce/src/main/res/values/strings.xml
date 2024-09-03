@@ -3856,7 +3856,7 @@
     <string name="blaze_campaign_status_canceled">Canceled</string>
     <string name="blaze_campaign_status_suspended">Suspended</string>
     <string name="blaze_campaign_status_ctr_label">Click-throughs</string>
-    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_value">%1$d ➔ %2$d</string>
     <string name="blaze_campaign_status_budget_total">Total</string>
     <string name="blaze_campaign_status_budget_remaining">Remaining</string>
     <string name="blaze_campaign_status_budget_weekly">Weekly</string>
