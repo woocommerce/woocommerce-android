@@ -5,6 +5,7 @@
 20.3
 -----
 - [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
+- [*] Fixes toolbar shown twice on Package details screen while adding shipping label [https://github.com/woocommerce/woocommerce-android/pull/12489]
 
 20.2
 -----
