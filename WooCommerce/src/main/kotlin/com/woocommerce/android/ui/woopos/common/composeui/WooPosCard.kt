@@ -83,10 +83,11 @@ private fun Modifier.surface(
     return this
         .drawShadow(
             color = Color.Black,
-            backgroundColor = backgroundColor,
             borderRadius = shape.toCornerRadius(LocalDensity.current),
             shadowRadius = elevation,
-            offsetY = elevation / 2
+            alpha = 0.24f,
+            offsetX = 0.dp,
+            offsetY = elevation * 0.5f
         )
         .then(if (border != null) Modifier.border(border, shape) else Modifier)
         .background(color = backgroundColor, shape = shape)
@@ -119,35 +120,35 @@ fun Shape.toCornerRadius(density: Density): Dp {
 
 private fun Modifier.drawShadow(
     color: Color,
-    backgroundColor: Color,
-    alpha: Float = 0.24f,
-    borderRadius: Dp = 0.dp,
-    shadowRadius: Dp = 20.dp,
-    offsetY: Dp = 0.dp,
-    offsetX: Dp = 0.dp
+    alpha: Float,
+    borderRadius: Dp,
+    shadowRadius: Dp,
+    offsetY: Dp,
+    offsetX: Dp,
 ) = this.drawBehind {
     val shadowColor = color.copy(alpha = alpha).toArgb()
-    this.drawIntoCanvas {
-        val paint = Paint()
-        val frameworkPaint = paint.asFrameworkPaint()
-        frameworkPaint.color = backgroundColor.toArgb()
-        frameworkPaint.setShadowLayer(
-            shadowRadius.toPx(),
-            offsetX.toPx(),
-            offsetY.toPx(),
-            shadowColor
-        )
-        it.drawRoundRect(
+    val paint = Paint()
+    val frameworkPaint = paint.asFrameworkPaint()
+    frameworkPaint.color = Color.Transparent.toArgb()
+    frameworkPaint.setShadowLayer(
+        shadowRadius.toPx(),
+        offsetX.toPx(),
+        offsetY.toPx(),
+        shadowColor
+    )
+    drawIntoCanvas { canvas ->
+        canvas.drawRoundRect(
             0f,
             0f,
-            this.size.width,
-            this.size.height,
+            size.width,
+            size.height,
             borderRadius.toPx(),
             borderRadius.toPx(),
             paint
         )
     }
 }
+
 
 @WooPosPreview
 @Composable

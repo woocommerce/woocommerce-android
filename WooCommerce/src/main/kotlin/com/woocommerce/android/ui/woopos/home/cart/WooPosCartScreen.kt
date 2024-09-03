@@ -193,7 +193,8 @@ private fun CartBodyWithItems(
         contentPadding = PaddingValues(
             top = 2.dp.toAdaptivePadding(),
             bottom = 8.dp.toAdaptivePadding()
-        )
+        ),
+        withBottomShadow = true,
     ) {
         items(
             items,
