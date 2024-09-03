@@ -137,7 +137,7 @@ fun WCWebView(
 
                     if (activityRegistry != null) {
                         this.webChromeClient =
-                            WebChromeClientWithImageChooser(activityRegistry) { newProgress -> progress = newProgress }
+                            ComposeWebChromeClient(activityRegistry) { newProgress -> progress = newProgress }
                     } else {
                         this.webChromeClient = object : WebChromeClient() {
                             override fun onProgressChanged(view: WebView?, newProgress: Int) {

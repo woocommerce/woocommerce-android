@@ -10,7 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 
-class WebChromeClientWithImageChooser(
+class ComposeWebChromeClient(
     registry: ActivityResultRegistry,
     private val onProgressChanged: (Int) -> Unit
 ) : WebChromeClient() {
