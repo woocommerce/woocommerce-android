@@ -1,9 +1,6 @@
 package com.woocommerce.android.ui.compose.component
 
 import android.R.attr
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
 import android.util.TypedValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -39,6 +36,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.core.view.WindowCompat
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.findActivity
 
 /*
  * This is a custom implementation of the ModalBottomSheetLayout that fixes the scrim color of the status bar
@@ -83,7 +81,7 @@ fun ModalStatusBarBottomSheetLayout(
     var statusBarColor by remember { mutableStateOf(Color.Transparent) }
     val backgroundColor = remember {
         val typedValue = TypedValue()
-        if (context.findActivity().theme.resolveAttribute(attr.windowBackground, typedValue, true)) {
+        if (context.findActivity()?.theme?.resolveAttribute(attr.windowBackground, typedValue, true) == true) {
             Color(typedValue.data)
         } else {
             sheetBackgroundColor
@@ -106,7 +104,9 @@ fun ModalStatusBarBottomSheetLayout(
         }
     }
 
-    val window = remember { context.findActivity().window }
+    val window = remember { context.findActivity()?.window }
+    if (window == null) return@ModalBottomSheetLayout
+
     val originalNavigationBarColor = remember { window.navigationBarColor }
     if (sheetState.currentValue != Hidden) {
         window.navigationBarColor = sheetBackgroundColor.toArgb()
@@ -134,13 +134,4 @@ private fun scrimColor() = if (isSystemInDarkTheme()) {
     colorResource(id = R.color.color_scrim_background)
 } else {
     ModalBottomSheetDefaults.scrimColor
-}
-
-fun Context.findActivity(): Activity {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is Activity) return context
-        context = context.baseContext
-    }
-    error("Permissions should be called in the context of an Activity")
 }
