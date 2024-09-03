@@ -135,15 +135,8 @@ fun WCWebView(
                         }
                     }
 
-                    if (activityRegistry != null) {
-                        this.webChromeClient =
-                            ComposeWebChromeClient(activityRegistry) { newProgress -> progress = newProgress }
-                    } else {
-                        this.webChromeClient = object : WebChromeClient() {
-                            override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                                progress = newProgress
-                            }
-                        }
+                    this.webChromeClient = ComposeWebChromeClient {
+                        progress = it
                     }
 
                     if (isReadOnly) {
