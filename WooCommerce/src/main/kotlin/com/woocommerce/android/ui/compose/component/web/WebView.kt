@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.compose.component
+package com.woocommerce.android.ui.compose.component.web
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
@@ -33,8 +33,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Circular
-import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Linear
+import com.woocommerce.android.ui.compose.component.web.WebViewProgressIndicator.Circular
+import com.woocommerce.android.ui.compose.component.web.WebViewProgressIndicator.Linear
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.onCompletion
 import org.wordpress.android.fluxc.network.UserAgent

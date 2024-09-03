@@ -11,7 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
-import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WCWebView
 import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.ViewState.CheckoutState
 import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.ViewState.LoadingState
 import com.woocommerce.android.util.WooLog

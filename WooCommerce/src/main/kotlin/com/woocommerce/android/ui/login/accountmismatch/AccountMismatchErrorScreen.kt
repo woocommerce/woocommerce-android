@@ -58,9 +58,9 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.compose.component.WebViewNavigator
-import com.woocommerce.android.ui.compose.component.rememberWebViewNavigator
+import com.woocommerce.android.ui.compose.component.web.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WebViewNavigator
+import com.woocommerce.android.ui.compose.component.web.rememberWebViewNavigator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 import com.woocommerce.android.util.ChromeCustomTabUtils

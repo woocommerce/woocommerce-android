@@ -14,7 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.MODAL
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.REGULAR
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable

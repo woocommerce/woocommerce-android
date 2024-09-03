@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.compose.component
+package com.woocommerce.android.ui.compose.component.web
 
 import android.content.ActivityNotFoundException
 import android.net.Uri
