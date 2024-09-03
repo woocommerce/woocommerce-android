@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.compose.component.web
 import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.webkit.CookieManager
-import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
@@ -11,7 +10,6 @@ import android.webkit.WebStorage
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
-import androidx.activity.result.ActivityResultRegistry
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -52,7 +50,7 @@ fun WCWebView(
     captureBackPresses: Boolean = true,
     wpComAuthenticator: WPComWebViewAuthenticator? = null,
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
-    activityRegistry: ActivityResultRegistry? = null,
+    webChromeClient: ComposeWebChromeClient = remember { ComposeWebChromeClient() },
     loadWithOverviewMode: Boolean = false,
     useWideViewPort: Boolean = false,
     isJavaScriptEnabled: Boolean = true,
@@ -135,8 +133,8 @@ fun WCWebView(
                         }
                     }
 
-                    this.webChromeClient = ComposeWebChromeClient {
-                        progress = it
+                    this.webChromeClient = webChromeClient.apply {
+                        onProgressChanged = { newProgress -> progress = newProgress }
                     }
 
                     if (isReadOnly) {

@@ -8,9 +8,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import com.woocommerce.android.extensions.findActivity
 
-class ComposeWebChromeClient(
-    private val onProgressChanged: (Int) -> Unit
-) : WebChromeClient() {
+open class ComposeWebChromeClient : WebChromeClient() {
+    var onProgressChanged: (Int) -> Unit = {}
+
     /**
      * This method is called when the user chooses a file for file upload.
      *
