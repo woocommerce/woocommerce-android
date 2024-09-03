@@ -149,7 +149,6 @@ private fun Modifier.drawShadow(
     }
 }
 
-
 @WooPosPreview
 @Composable
 fun WooPosCardPreview8() {
