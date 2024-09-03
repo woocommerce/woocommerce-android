@@ -18,6 +18,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenHazmatCategorySelector
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenPackageCreatorEvent
@@ -50,6 +51,9 @@ class EditShippingLabelPackagesFragment :
 
     private lateinit var doneMenuItem: MenuItem
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
         ShippingLabelPackagesAdapter(
             viewModel.siteParameters,
@@ -64,8 +68,6 @@ class EditShippingLabelPackagesFragment :
     }
 
     private val skeletonView: SkeletonView = SkeletonView()
-
-    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_package_info)
 
     fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
