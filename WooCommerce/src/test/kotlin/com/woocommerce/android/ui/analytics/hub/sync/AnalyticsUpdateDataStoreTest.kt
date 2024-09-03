@@ -273,6 +273,32 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
         assertThat(timestampUpdate).isEqualTo(lastUpdateTimestamp)
     }
 
+    @Test
+    fun `given observe should emit last update, when all data sources are not required, if all data sources are missing then return null`() = testBlocking {
+        // Given
+        val selectedSiteId = 1
+
+        val analyticsPreferences = mock<Preferences>()
+
+        createAnalyticsUpdateScenarioWith(analyticsPreferences, selectedSiteId)
+
+        // When
+        var timestampUpdate: Long? = null
+        sut.observeLastUpdate(
+            rangeSelection = defaultSelectionData,
+            analyticData = listOf(
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            ),
+            shouldAllDataBePresent = false
+        ).onEach {
+            timestampUpdate = it
+        }.launchIn(this)
+
+        // Then
+        assertThat(timestampUpdate).isNull()
+    }
+
     private fun createAnalyticsUpdateScenarioWith(
         analyticsPreferences: Preferences,
         selectedSiteId: Int
