@@ -44,11 +44,15 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
         prepareMocks()
         viewModel = CustomFieldsEditorViewModel(
             savedStateHandle = CustomFieldsEditorFragmentArgs(
-                customField = if (editing) CustomFieldUiModel(
-                    id = CUSTOM_FIELD_ID,
-                    key = "key",
-                    value = "value"
-                ) else null
+                customField = if (editing) {
+                    CustomFieldUiModel(
+                        id = CUSTOM_FIELD_ID,
+                        key = "key",
+                        value = "value"
+                    )
+                } else {
+                    null
+                }
             ).toSavedStateHandle()
         )
     }
