@@ -42,6 +42,7 @@ class CustomFieldsFragment : BaseFragment() {
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
+                is CustomFieldsViewModel.OpenCustomFieldEditor -> openEditor(event.field)
                 is CustomFieldsViewModel.CustomFieldValueClicked -> handleValueClick(event.field)
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> {
@@ -49,6 +50,15 @@ class CustomFieldsFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    private fun openEditor(field: CustomFieldUiModel) {
+        findNavController().navigate(
+            CustomFieldsFragmentDirections.actionCustomFieldsFragmentToCustomFieldsEditorFragment(
+                customFieldId = field.id ?: -1,
+                parentItemId = viewModel.parentItemId,
+            )
+        )
     }
 
     private fun handleValueClick(field: CustomFieldUiModel) {

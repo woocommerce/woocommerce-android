@@ -619,6 +619,7 @@ class AnalyticsTracker private constructor(
         const val KEY_BLAZE_TOTAL_BUDGET = "total_budget"
         const val KEY_BLAZE_IS_AI_CONTENT = "is_ai_suggested_ad_content"
         const val KEY_BLAZE_ERROR = "blaze_creation_error"
+        const val KEY_BLAZE_CAMPAIGN_TYPE = "campaign_type"
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"
@@ -628,6 +629,8 @@ class AnalyticsTracker private constructor(
         const val VALUE_CHANGED_FIELD_QUANTITY = "quantity"
         const val VALUE_CHANGED_FIELD_VARIATION = "variation"
         const val VALUE_CHANGED_FIELD_OPTIONAL = "optional"
+        const val VALUE_START_END_CAMPAIGN = "start_end"
+        const val VALUE_EVERGREEN_CAMPAIGN = "evergreen"
 
         // -- AI product creation
         const val KEY_TONE = "tone"

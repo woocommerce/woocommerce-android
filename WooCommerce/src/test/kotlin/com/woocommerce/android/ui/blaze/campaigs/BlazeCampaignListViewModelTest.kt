@@ -26,7 +26,6 @@ import org.wordpress.android.fluxc.model.blaze.BlazeCampaignsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.blaze.BlazeCampaignsError
 import org.wordpress.android.fluxc.network.rest.wpcom.blaze.BlazeCampaignsErrorType.INVALID_RESPONSE
 import org.wordpress.android.fluxc.network.rest.wpcom.blaze.BlazeCampaignsUtils
-import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore.BlazeCampaignsResult
 
@@ -38,7 +37,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val siteModel: SiteModel = mock()
-    private val campaignsEntityFlow = flow { emit(listOf(BLAZE_CAMPAIGN_ENTITY)) }
+    private val campaignsEntityFlow = flow { emit(listOf(BLAZE_CAMPAIGN_MODEL)) }
     private val currencyFormatter: CurrencyFormatter = mock()
 
     private lateinit var viewModel: BlazeCampaignListViewModel
@@ -179,6 +178,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             targetUrn = TARGET_URN,
             totalBudget = TOTAL_BUDGET,
             spentBudget = SPENT_BUDGET,
+            isEndlessCampaign = false
         )
         val EMPTY_BLAZE_CAMPAIGN_MODEL = BlazeCampaignsModel(
             campaigns = listOf(BLAZE_CAMPAIGN_MODEL),
@@ -190,20 +190,5 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
                 campaigns = listOf(BLAZE_CAMPAIGN_MODEL.copy(campaignId = "1")),
                 totalItems = 2
             )
-
-        private val BLAZE_CAMPAIGN_ENTITY = BlazeCampaignEntity(
-            siteId = 1234,
-            campaignId = CAMPAIGN_ID,
-            title = TITLE,
-            imageUrl = IMAGE_URL,
-            startTime = BlazeCampaignsUtils.stringToDate(CREATED_AT),
-            durationInDays = DURATION_DAYS,
-            uiStatus = UI_STATUS,
-            impressions = IMPRESSIONS,
-            clicks = CLICKS,
-            targetUrn = TARGET_URN,
-            totalBudget = TOTAL_BUDGET,
-            spentBudget = SPENT_BUDGET
-        )
     }
 }

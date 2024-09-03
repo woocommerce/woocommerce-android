@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-22 15:54:03+0000
+Translation-Revision-Date: 2024-08-28 13:54:06+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Всплывающее меню с опциями. Смахивайте товары, чтобы переходить к следующим.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Открыть меню панели инструментов</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Панель инструментов со статусом платёжного терминала. Меню открыто. Дважды коснитесь, чтобы начать работу.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Панель инструментов со статусом платёжного терминала. Дважды коснитесь, чтобы начать работу.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Меню отключено</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Меню включено</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Платёжный терминал не подключён. Дважды коснитесь, чтобы подключить</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Платёжный терминал подключён</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Затемнённый фон. Коснитесь, чтобы закрыть меню.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Значок «Оплачено» в виде флажка</string>
+    <string name="woopos_remove_cart_item_content_description">Удалить товар из корзины</string>
+    <string name="woopos_exit_dialog_confirmation_message">Все заказы, которые находятся в процессе выполнения, будут потеряны.</string>
+    <string name="woopos_exit_dialog_confirmation_title">Выйти из режима «Пункт продажи»?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Закрыть</string>
+    <string name="woopos_dialog_products_info_background_content_description">Затемнённый фон. Коснитесь, чтобы закрыть диалог.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Дважды коснитесь, чтобы закрыть диалог.</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Диалог «Только простые товары»</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Коснитесь, чтобы узнать подробнее.</string>
+    <string name="woopos_banner_simple_products_content_description">Баннер «Только простые товары»</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Продвигайте товары при помощи Blaze Ads и повышайте продажи.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">Повышайте продажи</string>
+    <string name="more_menu_button_payments_description">Принимайте платежи на ходу</string>
+    <string name="card_reader_payment_failed_incorrect_pin">Введён неверный PIN-код. Повторите попытку или попробуйте другое средство платежа</string>
     <string name="woopos_menu_toolbar_content_description">Меню</string>
     <string name="woopos_cart_item_content_description">Товар в корзине %s, цена %s</string>
     <string name="woopos_product_item_content_description">Товар %s, цена %s</string>
@@ -135,8 +158,7 @@ Language: ru
     <string name="no_quantity_rules">Нет правил количества</string>
     <string name="blaze_campaign_preview_audience_section_title">Аудитория</string>
     <string name="woopos_exit_confirmation_dismiss_button">Отмена</string>
-    <string name="woopos_exit_confirmation_confirm_button">Выход</string>
-    <string name="woopos_exit_confirmation_message">Вы уверены, что хотите закрыть POS?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Выход</string>
     <string name="woopos_exit_confirmation_title">Закрыть POS</string>
     <string name="woopos_remove_item_button_from_cart_content_description">Удалить %s из корзины</string>
     <string name="woopos_checkout_button">Оформление заказа</string>
@@ -634,7 +656,6 @@ Language: ru
     <string name="blaze_campaign_creation_intro_title">Повышайте продажи в своём магазине с помощью Blaze</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">При обновлении списка кампаний произошла ошибка. Повторите попытку позже.</string>
     <string name="media_picker_dialog_title">Выберите источник медиафайлов</string>
-    <string name="product_creation_package_photo_error">При создании названия и описания товара произошла ошибка.</string>
     <string name="product_creation_package_photo_no_text_detected">Текст не обнаружен. Выберите другую фотографию упаковки или введите сведения о товаре вручную.</string>
     <string name="order_editing_add_content_description">Добавить товар</string>
     <string name="order_editing_barcode_content_description">Сканировать штрихкод</string>
@@ -691,46 +712,23 @@ Language: ru
     <string name="card_reader_settings_header">НАСТРОЙКИ</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">Добавить сведения вручную, используя электронный адрес</string>
     <string name="login_app_login_malformed_link">Не удалось обработать запрос на вход в приложение</string>
-    <string name="ai_product_name_copy_error">Ошибка при копировании названия товара в буфер обмена</string>
-    <string name="ai_product_name_copy_success">Название товара скопировано в буфер обмена.</string>
-    <string name="ai_product_name_copy_label">Название товара создано при помощи ИИ</string>
     <string name="ai_product_description_copy_error">Ошибка при копировании описания товара в буфер обмена.</string>
     <string name="ai_product_description_copy_success">Описание товара скопировано в буфер обмена.</string>
     <string name="product_creation_ai_generation_failure_message">При создании товара возникла ошибка. Повторите попытку</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Очистить адрес и больше не использовать эту ставку</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Установить другую налоговую ставку для этого заказа</string>
     <string name="tax_rate_selector_auto_rate_details_title">Автоматическое добавление налоговой ставки</string>
-    <string name="ai_product_name_sheet_error_message">Возникла проблема при создании названия товара. Повторите попытку.</string>
-    <string name="ai_product_name_sheet_regenerate_button">Создать повторно</string>
-    <string name="ai_product_name_sheet_generate_button">Напишите это за меня</string>
-    <string name="ai_product_name_sheet_input_description">Расскажите о своём товаре и его отличительных качествах!</string>
-    <string name="ai_product_name_sheet_subtitle">С помощью ИИ вы можете создавать привлекательные заголовки</string>
-    <string name="ai_product_name_sheet_title">Название товара</string>
     <string name="empty_review_filtered_list_message">Попробуйте отключить фильтр «Непрочитанные», чтобы просмотреть все отзывы о товарах</string>
     <string name="empty_review_filtered_list_title">Нет непрочитанных отзывов о товарах</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Выбранный тон</string>
     <string name="product_creation_ai_tone_convincing">Убедительный</string>
     <string name="product_creation_ai_tone_flowery">Цветистый</string>
     <string name="product_creation_ai_tone_formal">Строгий</string>
     <string name="product_creation_ai_tone_casual">Непринужденный</string>
-    <string name="product_creation_ai_tone_description">Задайте тон и стиль презентации, чтобы она соответствовала характеру вашего бренда.</string>
     <string name="product_creation_ai_tone_title">Тон и стиль</string>
     <string name="product_creation_ai_preview_details_section">Сведения</string>
-    <string name="product_creation_ai_preview_description_section">Описание товара</string>
     <string name="product_creation_ai_preview_name_section">Название товара</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">Приведённые ниже сведения можно будет отредактировать в любой момент.</string>
     <string name="product_creation_ai_preview_title">Предварительный просмотр</string>
-    <string name="product_creation_ai_about_product_continue_button">Создание сведений о товаре</string>
-    <string name="product_creation_ai_about_product_set_tone">Задайте тон и стиль</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Добавьте ключевые характеристики, преимущества и подробные сведения, чтобы покупателям проще было найти ваш товар в Интернете.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Например: мягкая ткань, прочные швы, уникальный дизайн</string>
-    <string name="product_creation_ai_about_product_subtitle">Укажите отличительные качества вашего товара, и ИИ сделает за вас всё остальное.</string>
-    <string name="product_creation_ai_about_product_title">Информация о товаре</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Предложите название товара</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">Например: мягкая ткань, прочные швы, уникальный дизайн</string>
-    <string name="ai_product_creation_add_name_keywords_label">Название товара</string>
-    <string name="ai_product_creation_add_name_subtitle">Можно также расширить выбор: нажмите, чтобы увидеть больше вариантов.</string>
-    <string name="ai_product_creation_add_name_title">Добавить название товара</string>
     <string name="product_creation_ai_entry_sheet_learn_more">На основе ИИ. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Добавьте товар и сведения вручную</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Добавить вручную</string>
@@ -1054,7 +1052,6 @@ Language: ru
     <string name="more_menu_button_coupons_description">Увеличивайте продажи с помощью специальных предложений</string>
     <string name="more_menu_button_store_description">Просматривайте магазин</string>
     <string name="more_menu_button_inbox_description">Следите за новостями</string>
-    <string name="more_menu_button_payments_description">Подключите мобильные платежи</string>
     <string name="more_menu_button_wc_admin_description">Управляйте магазином через консоль</string>
     <string name="more_menu_general_section_title">Общее</string>
     <string name="more_menu_settings_section_title">Настройки</string>

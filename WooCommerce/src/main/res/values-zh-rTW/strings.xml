@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-22 11:54:04+0000
+Translation-Revision-Date: 2024-08-29 13:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">附選項的快顯選單。 滑動以導覽項目。</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">開啟工具列選單</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">顯示讀卡機狀態的工具列。 選單已開啟。 點選兩下以互動。</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">顯示讀卡機狀態的工具列。 點選兩下以互動。</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">選單已停用</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">選單已啟用</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">讀卡機未連結。 點選兩下以連結</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">讀卡機已連結</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">背景已調暗。 點選以關閉選單。</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">付款成功核取記號圖示</string>
+    <string name="woopos_remove_cart_item_content_description">從購物車將此商品移除</string>
+    <string name="woopos_exit_dialog_confirmation_message">任何進行中的訂單將會遺失。</string>
+    <string name="woopos_exit_dialog_confirmation_title">要結束銷售時點情報系統模式嗎？</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">關閉</string>
+    <string name="woopos_dialog_products_info_background_content_description">背景已調暗。 點選以關閉對話方塊。</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">點選兩下以關閉對話框</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">僅限簡單商品的對話框</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">點選兩下以深入了解</string>
+    <string name="woopos_banner_simple_products_content_description">僅限簡單商品的橫幅</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">運用 Blaze 廣告宣傳商品，立即提升銷售表現。</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">強化銷售表現</string>
+    <string name="more_menu_button_payments_description">隨時隨地輕鬆收款</string>
+    <string name="card_reader_payment_failed_incorrect_pin">輸入的 PIN 碼不正確。 請再試一次，或使用其他付款方式</string>
     <string name="woopos_menu_toolbar_content_description">選單</string>
     <string name="woopos_cart_item_content_description">購物車「%s」中的商品，價格為 %s</string>
     <string name="woopos_product_item_content_description">商品「%s」的價格為 %s</string>
@@ -135,8 +158,7 @@ Language: zh_TW
     <string name="no_quantity_rules">沒有數量規則</string>
     <string name="blaze_campaign_preview_audience_section_title">受眾</string>
     <string name="woopos_exit_confirmation_dismiss_button">取消</string>
-    <string name="woopos_exit_confirmation_confirm_button">結束</string>
-    <string name="woopos_exit_confirmation_message">你確定要結束 POS 嗎？</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">結束</string>
     <string name="woopos_exit_confirmation_title">結束 POS</string>
     <string name="woopos_remove_item_button_from_cart_content_description">從購物車移除「%s」</string>
     <string name="woopos_checkout_button">結帳</string>
@@ -634,7 +656,6 @@ Language: zh_TW
     <string name="blaze_campaign_creation_intro_title">使用 Blaze 為你的商店帶動更多銷售業績</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">There was an error refreshing the list of campaigns. 請稍後再試。</string>
     <string name="media_picker_dialog_title">選取媒體來源</string>
-    <string name="product_creation_package_photo_error">An error occurred while generating product name &amp; description.</string>
     <string name="product_creation_package_photo_no_text_detected">未偵測到文字。 請選取另一張包裹照片或手動輸入產品詳細資訊。</string>
     <string name="order_editing_add_content_description">新增商品</string>
     <string name="order_editing_barcode_content_description">掃瞄條碼</string>
@@ -691,46 +712,23 @@ Language: zh_TW
     <string name="card_reader_settings_header">設定</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">使用電子郵件手動新增詳情</string>
     <string name="login_app_login_malformed_link">我們無法處理你的應用程式登入要求</string>
-    <string name="ai_product_name_copy_error">複製商品名稱到剪貼簿時發生錯誤。</string>
-    <string name="ai_product_name_copy_success">商品名稱已複製到剪貼簿。</string>
-    <string name="ai_product_name_copy_label">AI 產生的商品名稱</string>
     <string name="ai_product_description_copy_error">複製商品說明到剪貼簿時發生錯誤。</string>
     <string name="ai_product_description_copy_success">商品說明已複製到剪貼簿。</string>
     <string name="product_creation_ai_generation_failure_message">商品產生失敗。 請再試一次</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">清除地址並停止使用此稅率</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">為此訂單設定新稅率</string>
     <string name="tax_rate_selector_auto_rate_details_title">自動新增稅率</string>
-    <string name="ai_product_name_sheet_error_message">產生產品名稱時發生問題， 請再試一次。</string>
-    <string name="ai_product_name_sheet_regenerate_button">重新產生</string>
-    <string name="ai_product_name_sheet_generate_button">幫我撰寫</string>
-    <string name="ai_product_name_sheet_input_description">介紹你的產品與其獨特之處！</string>
-    <string name="ai_product_name_sheet_subtitle">讓 AI 為你產生吸引人的名稱</string>
-    <string name="ai_product_name_sheet_title">產品名稱</string>
     <string name="empty_review_filtered_list_message">嘗試停用「未讀」篩選條件，便可看到所有產品評論</string>
     <string name="empty_review_filtered_list_title">沒有未讀的產品評論</string>
-    <string name="product_creation_ai_tone_selected_content_desc">已選取語氣</string>
     <string name="product_creation_ai_tone_convincing">具有說服力</string>
     <string name="product_creation_ai_tone_flowery">誇飾華麗</string>
     <string name="product_creation_ai_tone_formal">正式</string>
     <string name="product_creation_ai_tone_casual">休閒</string>
-    <string name="product_creation_ai_tone_description">設定語氣和風格，讓產品反映品牌形象。</string>
     <string name="product_creation_ai_tone_title">語氣和風格</string>
     <string name="product_creation_ai_preview_details_section">詳細資料</string>
-    <string name="product_creation_ai_preview_description_section">產品說明</string>
     <string name="product_creation_ai_preview_name_section">產品名稱</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">稍後也可隨時變更下方詳細資料。</string>
     <string name="product_creation_ai_preview_title">預覽</string>
-    <string name="product_creation_ai_about_product_continue_button">建立產品詳細資料</string>
-    <string name="product_creation_ai_about_product_set_tone">設定語氣和風格</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">新增主要功能、優點或詳細資料，可以讓人更容易在網路上找到你的產品。</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">例如布料柔軟、強固縫線、獨特設計</string>
-    <string name="product_creation_ai_about_product_subtitle">列出產品獨特之處，AI 便能產生絕佳內容。</string>
-    <string name="product_creation_ai_about_product_title">產品相關資訊</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">建議名稱</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">例如布料柔軟、強固縫線、獨特設計</string>
-    <string name="ai_product_creation_add_name_keywords_label">產品名稱</string>
-    <string name="ai_product_creation_add_name_subtitle">或點選更多名稱建議，查看更多選項。</string>
-    <string name="ai_product_creation_add_name_title">新增產品名稱</string>
     <string name="product_creation_ai_entry_sheet_learn_more">AI 技術支援。 &lt;a href=\'guidelines\'&gt;&lt;u&gt;深入瞭解&lt;/u&gt;&lt;/a&gt;。</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">手動新增產品和詳細資料</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">手動新增</string>
@@ -1054,7 +1052,6 @@ Language: zh_TW
     <string name="more_menu_button_coupons_description">透過特價提高銷售額</string>
     <string name="more_menu_button_store_description">檢視你的商店</string>
     <string name="more_menu_button_inbox_description">掌握最新資訊</string>
-    <string name="more_menu_button_payments_description">加入行動付款</string>
     <string name="more_menu_button_wc_admin_description">在管理員上管理更多功能</string>
     <string name="more_menu_general_section_title">一般</string>
     <string name="more_menu_settings_section_title">設定</string>

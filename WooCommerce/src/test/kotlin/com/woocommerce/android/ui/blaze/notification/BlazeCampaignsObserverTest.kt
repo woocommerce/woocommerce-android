@@ -13,7 +13,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 
@@ -28,7 +28,7 @@ class BlazeCampaignsObserverTest {
 
     private fun initBlazeCampaignsObserver(
         notificationShownBefore: Boolean = false,
-        campaigns: List<BlazeCampaignEntity> = listOf(BLAZE_CAMPAIGN_ENTITY)
+        campaigns: List<BlazeCampaignModel> = listOf(BLAZE_CAMPAIGN_MODEL)
     ) {
         whenever(selectedSite.observe()).thenReturn(flowOf(site))
         whenever(selectedSite.get()).thenReturn(site)
@@ -62,9 +62,9 @@ class BlazeCampaignsObserverTest {
 
     @Test
     fun `when there are campaigns, schedule the notification`() = runTest {
-        val campaign1 = BLAZE_CAMPAIGN_ENTITY
-        val campaign2 = BLAZE_CAMPAIGN_ENTITY.copy(durationInDays = 8)
-        val campaign3 = BLAZE_CAMPAIGN_ENTITY.copy(uiStatus = "completed")
+        val campaign1 = BLAZE_CAMPAIGN_MODEL
+        val campaign2 = BLAZE_CAMPAIGN_MODEL.copy(durationInDays = 8)
+        val campaign3 = BLAZE_CAMPAIGN_MODEL.copy(uiStatus = "completed")
         val campaignList = listOf(campaign1, campaign2, campaign3)
         initBlazeCampaignsObserver(campaigns = campaignList)
 
@@ -74,8 +74,7 @@ class BlazeCampaignsObserverTest {
     }
 
     companion object {
-        private val BLAZE_CAMPAIGN_ENTITY = BlazeCampaignEntity(
-            siteId = 1,
+        private val BLAZE_CAMPAIGN_MODEL = BlazeCampaignModel(
             campaignId = "2",
             title = "title",
             imageUrl = "image_url",
@@ -86,7 +85,8 @@ class BlazeCampaignsObserverTest {
             clicks = 1,
             targetUrn = "urn:wpcom:post:1:1",
             totalBudget = 100.0,
-            spentBudget = 1.0
+            spentBudget = 1.0,
+            isEndlessCampaign = false
         )
     }
 }

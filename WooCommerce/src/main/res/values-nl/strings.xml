@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-22 15:54:03+0000
+Translation-Revision-Date: 2024-08-28 16:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Pop-upmenu met opties. Swipe om door de items te navigeren.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Taakbalkmenu openen</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Taakbalk met status van kaartlezer. Het menu is geopend. Tik dubbel voor interacties.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Taakbalk met status van kaartlezer. Tik dubbel voor interacties.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menu uitgeschakeld</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menu ingeschakeld</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Kaartlezer niet verbonden. Tik dubbel om te verbinden</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Kaartlezer verbonden</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Achtergrond gedimd. Tik om het menu te sluiten.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Vinkje voor Betaling gelukt</string>
+    <string name="woopos_remove_cart_item_content_description">Dit artikel uit winkelwagen verwijderen</string>
+    <string name="woopos_exit_dialog_confirmation_message">Alle bestellingen die nog in behandeling zijn, zullen verloren gaan.</string>
+    <string name="woopos_exit_dialog_confirmation_title">Verkooppuntmodus afsluiten?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Sluiten</string>
+    <string name="woopos_dialog_products_info_background_content_description">Achtergrond gedimd. Tik om het dialoogvenster te sluiten.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Tik dubbel om het dialoogvenster te sluiten</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Dialoogvenster voor Alleen simpele producten</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Tik dubbel voor meer informatie</string>
+    <string name="woopos_banner_simple_products_content_description">Banner voor Alleen simpele producten</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Promoot je producten met Blaze Ads en verhoog nu je omzet.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">Verhoog je omzet</string>
+    <string name="more_menu_button_payments_description">Neem onderweg betalingen aan</string>
+    <string name="card_reader_payment_failed_incorrect_pin">Er is een onjuiste pincode ingevoerd. Probeer het opnieuw of probeer een andere betaalmethode</string>
     <string name="woopos_menu_toolbar_content_description">Menu</string>
     <string name="woopos_cart_item_content_description">Product in winkelwagen %s, prijs %s</string>
     <string name="woopos_product_item_content_description">Product %s, prijs %s</string>
@@ -135,8 +158,7 @@ Language: nl
     <string name="no_quantity_rules">Geen regels voor hoeveelheid</string>
     <string name="blaze_campaign_preview_audience_section_title">Bezoekers</string>
     <string name="woopos_exit_confirmation_dismiss_button">Annuleren</string>
-    <string name="woopos_exit_confirmation_confirm_button">Afsluiten</string>
-    <string name="woopos_exit_confirmation_message">Weet je zeker dat je POS wilt afsluiten?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Afsluiten</string>
     <string name="woopos_exit_confirmation_title">POS afsluiten</string>
     <string name="woopos_remove_item_button_from_cart_content_description">Verwijder %s uit winkelwagen</string>
     <string name="woopos_checkout_button">Afrekenen</string>
@@ -634,7 +656,6 @@ Language: nl
     <string name="blaze_campaign_creation_intro_title">Boost je verkoopcijfers met Blaze</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">Er is een fout opgetreden bij het vernieuwen van de campagnelijst. Probeer later opnieuw.</string>
     <string name="media_picker_dialog_title">Mediabron selecteren</string>
-    <string name="product_creation_package_photo_error">Er is een fout opgetreden bij de generatie van een productnaam en -beschrijving.</string>
     <string name="product_creation_package_photo_no_text_detected">Geen tekst gedetecteerd. Kies een andere foto van de verpakking of voer de productgegevens handmatig in.</string>
     <string name="order_editing_add_content_description">Product toevoegen</string>
     <string name="order_editing_barcode_content_description">Streepjescode scannen</string>
@@ -691,46 +712,23 @@ Language: nl
     <string name="card_reader_settings_header">INSTELLINGEN</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">Details handmatig toevoegen met behulp van e-mail</string>
     <string name="login_app_login_malformed_link">We konden de loginaanvraag van je app niet verwerken</string>
-    <string name="ai_product_name_copy_error">Fout bij kopiëren naar klembord.</string>
-    <string name="ai_product_name_copy_success">Productnaam gekopieerd naar klembord.</string>
-    <string name="ai_product_name_copy_label">Productnaam gegenereerd door AI</string>
     <string name="ai_product_description_copy_error">Fout bij kopiëren productbeschrijving naar klembord.</string>
     <string name="ai_product_description_copy_success">Productbeschrijving gekopieerd naar klembord.</string>
     <string name="product_creation_ai_generation_failure_message">Productgeneratie mislukt. Probeer het nog eens</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Verwijder het adres en stop met het gebruiken van dit tarief</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Stel een nieuw belastingtarief voor deze bestelling</string>
     <string name="tax_rate_selector_auto_rate_details_title">Automatisch het belastingtarief toevoegen</string>
-    <string name="ai_product_name_sheet_error_message">Er is een probleem opgetreden tijdens het genereren van de productnaam. Probeer het opnieuw.</string>
-    <string name="ai_product_name_sheet_regenerate_button">Regenereren</string>
-    <string name="ai_product_name_sheet_generate_button">Schrijf het voor mij</string>
-    <string name="ai_product_name_sheet_input_description">Vertel ons wat jouw product is en wat dit uniek maakt!</string>
-    <string name="ai_product_name_sheet_subtitle">Laat AI pakkende titels voor je genereren</string>
-    <string name="ai_product_name_sheet_title">Productnaam</string>
     <string name="empty_review_filtered_list_message">Probeer om het ‘ongelezen’ filter uit te schakelen om al je productbeoordelingen te bekijken</string>
     <string name="empty_review_filtered_list_title">Geen ongelezen productbeoordelingen</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Toon geselecteerd</string>
     <string name="product_creation_ai_tone_convincing">Overtuigend</string>
     <string name="product_creation_ai_tone_flowery">Fleurig</string>
     <string name="product_creation_ai_tone_formal">Formeel</string>
     <string name="product_creation_ai_tone_casual">Casual</string>
-    <string name="product_creation_ai_tone_description">Stel de toon in om de presentatie van je product af te stemmen op je merk.</string>
     <string name="product_creation_ai_tone_title">Toon</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
-    <string name="product_creation_ai_preview_description_section">Productbeschrijving</string>
     <string name="product_creation_ai_preview_name_section">Productnaam</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">Je kan de onderstaande gegevens later altijd wijzigen.</string>
     <string name="product_creation_ai_preview_title">Voorbeeld</string>
-    <string name="product_creation_ai_about_product_continue_button">Productgegevens aanmaken</string>
-    <string name="product_creation_ai_about_product_set_tone">Toon instellen</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Voeg belangrijke functies, voordelen of details toe om je product beter online vindbaar te laten worden.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Bijvoorbeeld Zachte stof, duurzaam stikwerk, uniek ontwerp</string>
-    <string name="product_creation_ai_about_product_subtitle">Markeer wat je product uniek maakt en laat AI het werk voor je doen.</string>
-    <string name="product_creation_ai_about_product_title">Over je product</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Stel een naam voor</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">Bijvoorbeeld: Zachte stof, duurzaam stikwerk, uniek ontwerp.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Productnaam</string>
-    <string name="ai_product_creation_add_name_subtitle">Of breid je keuzes uit door te tikken voor meer naamvoorstellen.</string>
-    <string name="ai_product_creation_add_name_title">Voeg je productnaam toe</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Mogelijk gemaakt door AI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Meer informatie&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Handmatig een product en de details toevoegen</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Handmatig toevoegen</string>
@@ -1054,7 +1052,6 @@ Language: nl
     <string name="more_menu_button_coupons_description">Geef je verkopen een boost met speciale aanbiedingen</string>
     <string name="more_menu_button_store_description">Bekijk je winkel</string>
     <string name="more_menu_button_inbox_description">Blijf up-to-date</string>
-    <string name="more_menu_button_payments_description">Start ook met mobiele betalingen</string>
     <string name="more_menu_button_wc_admin_description">Beheer meer bij beheer</string>
     <string name="more_menu_general_section_title">Algemeen</string>
     <string name="more_menu_settings_section_title">Instellingen</string>

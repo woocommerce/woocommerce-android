@@ -43,7 +43,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
@@ -232,20 +231,11 @@ fun BlazeCampaignListScreenPreview() {
                             imgUrl = "https://picsum.photos/200/300",
                         ),
                         status = Active,
-                        stats = listOf(
-                            BlazeCampaignStat(
-                                name = R.string.blaze_campaign_status_impressions,
-                                value = 100.toString()
-                            ),
-                            BlazeCampaignStat(
-                                name = R.string.blaze_campaign_status_clicks,
-                                value = 10.toString()
-                            ),
-                            BlazeCampaignStat(
-                                name = R.string.blaze_campaign_status_budget,
-                                value = 1000.toString()
-                            ),
-                        ),
+                        isEndlessCampaign = false,
+                        impressions = 100,
+                        clicks = 10,
+                        formattedBudget = "$100",
+                        budgetLabel = R.string.blaze_campaign_status_budget_total
                     ),
                     onCampaignClicked = {}
                 )

@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -60,15 +60,12 @@ class WooPosTotalsViewModel @Inject constructor(
 
     init {
         listenUpEvents()
+        listenToPaymentsStatus()
     }
 
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
-            is WooPosTotalsUIEvent.CollectPaymentClicked -> {
-                viewModelScope.launch {
-                    collectPayment()
-                }
-            }
+            is WooPosTotalsUIEvent.CollectPaymentClicked -> collectPayment()
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(
@@ -82,19 +79,10 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun collectPayment() {
+    private fun collectPayment() {
         val orderId = dataState.value.orderId
         check(orderId != EMPTY_ORDER_ID)
-        val result = cardReaderFacade.collectPayment(orderId)
-        when (result) {
-            is WooPosCardReaderPaymentResult.Success -> {
-                val state = uiState.value
-                check(state is WooPosTotalsViewState.Totals)
-                uiState.value = WooPosTotalsViewState.PaymentSuccess(orderTotalText = state.orderTotalText)
-                childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
-            }
-            else -> Unit
-        }
+        cardReaderFacade.collectPayment(orderId)
     }
 
     private fun listenUpEvents() {
@@ -110,7 +98,25 @@ class WooPosTotalsViewModel @Inject constructor(
                         uiState.value = InitialState
                     }
 
-                    else -> Unit
+                    is ParentToChildrenEvent.ItemClickedInProductSelector,
+                    ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
+                }
+            }
+        }
+    }
+
+    private fun listenToPaymentsStatus() {
+        viewModelScope.launch {
+            cardReaderFacade.paymentStatus.collect { status ->
+                when (status) {
+                    is WooPosCardReaderPaymentStatus.Success -> {
+                        val state = uiState.value
+                        check(state is WooPosTotalsViewState.Totals)
+                        uiState.value = WooPosTotalsViewState.PaymentSuccess(orderTotalText = state.orderTotalText)
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
+                    }
+                    is WooPosCardReaderPaymentStatus.Failure,
+                    is WooPosCardReaderPaymentStatus.Unknown -> Unit
                 }
             }
         }

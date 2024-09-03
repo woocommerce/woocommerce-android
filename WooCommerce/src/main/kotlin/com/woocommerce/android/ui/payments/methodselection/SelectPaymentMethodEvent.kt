@@ -23,6 +23,11 @@ data class NavigateToCardReaderPaymentFlow(
     val cardReaderType: CardReaderType
 ) : MultiLiveEvent.Event()
 
+data class SkipScreenInPosAndNavigateToCardReaderPaymentFlow(
+    val cardReaderFlowParam: CardReaderFlowParam.PaymentOrRefund.Payment,
+    val cardReaderType: CardReaderType
+) : MultiLiveEvent.Event()
+
 data class NavigateToCardReaderRefundFlow(
     val cardReaderFlowParam: CardReaderFlowParam.PaymentOrRefund.Refund,
     val cardReaderType: CardReaderType

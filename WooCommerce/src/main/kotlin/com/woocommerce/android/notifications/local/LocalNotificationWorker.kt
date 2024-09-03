@@ -77,6 +77,10 @@ class LocalNotificationWorker @AssistedInject constructor(
                 appsPrefsWrapper.setBlazeNoCampaignReminderShown(siteId)
             }
 
+            LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER -> {
+                appsPrefsWrapper.setBlazeAbandonedCampaignReminderShown(siteId)
+            }
+
             else -> {}
         }
     }

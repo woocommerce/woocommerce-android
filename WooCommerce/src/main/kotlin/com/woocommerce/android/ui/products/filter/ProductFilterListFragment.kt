@@ -53,7 +53,10 @@ class ProductFilterListFragment :
         requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
-        productFilterListAdapter = ProductFilterListAdapter(this)
+        productFilterListAdapter = ProductFilterListAdapter(
+            clickListener = this,
+            resourceProvider = { requireContext().getString(it) }
+        )
         with(binding.filterList) {
             addItemDecoration(
                 DividerItemDecoration(

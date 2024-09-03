@@ -11,13 +11,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.MY_STORE_SECTION
-import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.ObserveMostRecentBlazeCampaign
+import com.woocommerce.android.ui.blaze.toUiState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -27,6 +26,7 @@ import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.Dashbo
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.list.ProductListRepository
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
@@ -55,7 +55,8 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
     private val blazeUrlsHelper: BlazeUrlsHelper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(_refreshTrigger, (parentViewModel.refreshTrigger))
@@ -141,23 +142,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
 
     private fun showUiForCampaign(campaign: BlazeCampaignModel): DashboardBlazeCampaignState {
         return Campaign(
-            campaign = BlazeCampaignUi(
-                product = BlazeProductUi(
-                    name = campaign.title,
-                    imgUrl = campaign.imageUrl.orEmpty(),
-                ),
-                status = CampaignStatusUi.fromString(campaign.uiStatus),
-                stats = listOf(
-                    BlazeCampaignStat(
-                        name = string.blaze_campaign_status_impressions,
-                        value = campaign.impressions.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = string.blaze_campaign_status_clicks,
-                        value = campaign.clicks.toString()
-                    )
-                )
-            ),
+            campaign = campaign.toUiState(currencyFormatter),
             onCampaignClicked = {
                 parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)
                 analyticsTrackerWrapper.track(

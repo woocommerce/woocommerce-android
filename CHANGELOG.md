@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 20.2
+Create Blaze Evergreen campaigns effortlessly with our latest update! We've also improved tablet navigation—now you'll be redirected to the order details screen after payment for a smoother experience. Update today and enjoy the enhancements!
+
 ## 20.1
 We've improved your experience with our latest update! We've resolved the issue where the Orders screen would get stuck, addressed incorrect pin errors for UK and Canadian stores, fixed a rare crash in order editing, and enhanced usability on small screens. Enjoy smoother performance and better reliability!
 
