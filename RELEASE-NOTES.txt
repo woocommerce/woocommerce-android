@@ -6,6 +6,9 @@
 -----
 - [**] Stopped potential crash in the orders list screen when tapping "Filters" button [https://github.com/woocommerce/woocommerce-android/pull/12482]
 - [**] Fixed a bug that caused the app to freeze after adding products to new order [https://github.com/woocommerce/woocommerce-android/pull/12493]
+- [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
+- [*] Fixes toolbar shown twice on Package details screen while adding shipping label [https://github.com/woocommerce/woocommerce-android/pull/12489]
+- [*] Fixes navigation from product review detail screen when opened from notification [https://github.com/woocommerce/woocommerce-android/pull/12514]
 
 20.2
 -----

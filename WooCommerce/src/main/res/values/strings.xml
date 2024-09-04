@@ -3787,6 +3787,8 @@
    -->
     <string name="local_notification_blaze_no_campaign_reminder_title">Boost your sales</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">Thinking about boosting your sales?</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">Get your products seen by millions with Blaze and boost your sales</string>
 
     <!--
     First product published congratulatory feature
@@ -3914,14 +3916,14 @@
     Blaze campaign budget screen
     -->
     <string name="blaze_campaign_budget_toolbar_title">Set your budget</string>
-    <string name="blaze_campaign_budget_subtitle">How much would you like to spend on your product promotion campaign?</string>
-    <string name="blaze_campaign_budget_total_spend">Total spend</string>
-    <string name="blaze_campaign_budget_weekly_spend">Weekly spend</string>
+    <string name="blaze_campaign_budget_duration_subtitle">How much would you like to spend on your campaign, and how long should it run for?</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">weekly spend</string>
+    <string name="blaze_campaign_budget_daily_spend_label">Daily spend</string>
     <string name="blaze_campaign_budget_days_duration">for %1$s days</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s daily</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimated people reached per day</string>
-    <string name="blaze_campaign_budget_duration_section_title">Duration</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Starting from %1$s</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">Schedule</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">Ongoing from %1$s</string>
     <string name="blaze_campaign_budget_edit_duration_button">Edit</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
     <string name="blaze_campaign_budget_impressions_title">Impressions</string>
@@ -3929,11 +3931,15 @@
     <string name="blaze_campaign_budget_impressions_info">Impressions reflect the frequency with which your ad appears to potential customers.\n\n
         While exact numbers can\'t be assured due to fluctuating online traffic and user behavior, we aim to match your ad\'s actual impressions as closely as possible to your target count.\n\n
         Remember, impressions are about visibility, not action taken by viewers.</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Set duration</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s days</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Starts</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">to %1$s</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Start date</string>
     <string name="blaze_campaign_budget_duration_endless_label">Run until I stop it</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">Specify the duration</string>
+    <string name="blaze_campaign_budget_duration_endless_description">Campaign will run until you stop it.</string>
+    <string name="blaze_campaign_budget_duration_current_duration">Duration</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Apply</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">Cancel</string>
     <string name="blaze_campaign_budget_error_fetching_forecast">Failed to estimate impressions. Retry?</string>
     <string name="blaze_campaign_budget_weekly_spending">%1$s weekly</string>
 
@@ -4182,7 +4188,7 @@
 
     <string name="woopos_banner_simple_products_only_title">Showing simple products only</string>
     <string name="woopos_banner_simple_products_only_message">Only simple physical products are compatible with POS right now. Other product types, such as variable and virtual, will become available in future updates. </string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Learn more</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Learn\u00A0more</string>
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
     <string name="woopos_banner_simple_products_content_description">Simple products only banner</string>
@@ -4224,8 +4230,6 @@
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
-    <string name="woopos_splash_title">Starting up</string>
-    <string name="woopos_splash_message">Let’s serve some customers</string>
     <string name="woopos_products_empty_list_image_description">No products</string>
     <string name="woopos_products_empty_list_title">No supported products found</string>
     <string name="woopos_products_empty_list_message">POS currently only supports simple products – \ncreate one to get started.</string>
@@ -4281,4 +4285,6 @@
     -->
     <string name="custom_fields_list_title">Custom Fields</string>
     <string name="custom_fields_list_loading_error">Error while loading custom fields</string>
+    <string name="custom_fields_editor_key_label">Key</string>
+    <string name="custom_fields_editor_value_label">Value</string>
 </resources>

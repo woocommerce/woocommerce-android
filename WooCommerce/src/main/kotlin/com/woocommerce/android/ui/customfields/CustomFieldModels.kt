@@ -1,22 +1,27 @@
 package com.woocommerce.android.ui.customfields
 
+import android.os.Parcelable
 import androidx.core.util.PatternsCompat
+import kotlinx.parcelize.IgnoredOnParcel
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.util.HtmlUtils
 import java.util.regex.Pattern
 
 typealias CustomField = WCMetaData
 
+@Parcelize
 data class CustomFieldUiModel(
-    private val customField: CustomField
-) {
-    val key
-        get() = customField.key
-    val value
-        get() = customField.valueAsString
+    val key: String,
+    val value: String,
+    val id: Long? = null,
+) : Parcelable {
+    constructor(customField: CustomField) : this(customField.key, customField.valueAsString, customField.id)
+
     val valueStrippedHtml: String
         get() = HtmlUtils.fastStripHtml(value)
 
+    @IgnoredOnParcel
     val contentType: CustomFieldContentType = CustomFieldContentType.fromMetadataValue(value)
 }
 
