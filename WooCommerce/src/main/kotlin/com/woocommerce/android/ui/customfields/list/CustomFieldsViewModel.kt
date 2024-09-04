@@ -85,7 +85,7 @@ class CustomFieldsViewModel @Inject constructor(
     }
 
     fun onAddCustomFieldClicked() {
-        TODO()
+        triggerEvent(OpenCustomFieldEditor(null))
     }
 
     fun onCustomFieldInserted(result: CustomFieldUiModel) {
@@ -151,6 +151,6 @@ class CustomFieldsViewModel @Inject constructor(
             get() = editedFields.isNotEmpty() || insertedFields.isNotEmpty()
     }
 
-    data class OpenCustomFieldEditor(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
+    data class OpenCustomFieldEditor(val field: CustomFieldUiModel?) : MultiLiveEvent.Event()
     data class CustomFieldValueClicked(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
 }

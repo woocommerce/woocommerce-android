@@ -65,7 +65,7 @@ class CustomFieldsFragment : BaseFragment() {
         }
     }
 
-    private fun openEditor(field: CustomFieldUiModel) {
+    private fun openEditor(field: CustomFieldUiModel?) {
         findNavController().navigate(
             CustomFieldsFragmentDirections.actionCustomFieldsFragmentToCustomFieldsEditorFragment(
                 customField = field
