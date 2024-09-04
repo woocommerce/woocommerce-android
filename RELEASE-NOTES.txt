@@ -4,6 +4,7 @@
 
 20.3
 -----
+- [**] Stopped potential crash in the orders list screen when tapping "Filters" button [https://github.com/woocommerce/woocommerce-android/pull/12482]
 - [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
 
 20.2
