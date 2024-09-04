@@ -2,10 +2,15 @@
 
 package com.woocommerce.android.ui.woopos.home.cart
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -233,7 +238,7 @@ private fun CartToolbar(
     val iconSize = 28.dp
     val iconTitlePadding = 16.dp.toAdaptivePadding()
     val titleOffset by animateDpAsState(
-        targetValue = if (toolbar.icon != null) iconSize + iconTitlePadding else 0.dp,
+        targetValue = if (toolbar.backIconVisible) iconSize + iconTitlePadding else 0.dp,
         animationSpec = tween(durationMillis = 300),
         label = "titleOffset"
     )
@@ -245,7 +250,11 @@ private fun CartToolbar(
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-        toolbar.icon?.let {
+        AnimatedVisibility(
+            visible = toolbar.backIconVisible,
+            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
+            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
+        ) {
             IconButton(
                 onClick = { onBackClicked() },
                 modifier = Modifier
@@ -256,7 +265,7 @@ private fun CartToolbar(
                     .padding(start = 8.dp.toAdaptivePadding())
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(it),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                     contentDescription = stringResource(R.string.woopos_cart_back_content_description),
                     tint = MaterialTheme.colors.onBackground,
                     modifier = Modifier.size(iconSize)
@@ -446,7 +455,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
             modifier = modifier,
             state = WooPosCartState(
                 toolbar = WooPosCartState.Toolbar(
-                    icon = null,
+                    backIconVisible = false,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
@@ -491,7 +500,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
             modifier = modifier,
             state = WooPosCartState(
                 toolbar = WooPosCartState.Toolbar(
-                    icon = R.drawable.ic_back_24dp,
+                    backIconVisible = true,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
@@ -535,7 +544,7 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
             modifier = modifier,
             state = WooPosCartState(
                 toolbar = WooPosCartState.Toolbar(
-                    icon = null,
+                    backIconVisible = false,
                     itemsCount = null,
                     isClearAllButtonVisible = false
                 ),
