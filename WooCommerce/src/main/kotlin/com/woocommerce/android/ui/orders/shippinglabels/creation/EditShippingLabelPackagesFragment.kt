@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -38,7 +39,7 @@ typealias OnHazmatCategorySelected = (ShippingLabelHazmatCategory) -> Unit
 
 @AndroidEntryPoint
 class EditShippingLabelPackagesFragment :
-    BaseFragment(R.layout.fragment_edit_shipping_label_packages),
+    Fragment(R.layout.fragment_edit_shipping_label_packages),
     BackPressListener {
     companion object {
         const val EDIT_PACKAGES_CLOSED = "edit_packages_closed"
@@ -50,9 +51,6 @@ class EditShippingLabelPackagesFragment :
     val viewModel: EditShippingLabelPackagesViewModel by viewModels()
 
     private lateinit var doneMenuItem: MenuItem
-
-    override val activityAppBarStatus: AppBarStatus
-        get() = AppBarStatus.Hidden
 
     private val packagesAdapter: ShippingLabelPackagesAdapter by lazy {
         ShippingLabelPackagesAdapter(
