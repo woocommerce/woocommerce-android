@@ -84,6 +84,10 @@ class CustomFieldsViewModel @Inject constructor(
         triggerEvent(CustomFieldValueClicked(field))
     }
 
+    fun onAddCustomFieldClicked() {
+        TODO()
+    }
+
     fun onCustomFieldInserted(result: CustomFieldUiModel) {
         pendingChanges.update {
             it.copy(insertedFields = it.insertedFields + result)

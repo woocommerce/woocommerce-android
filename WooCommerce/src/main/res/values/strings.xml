@@ -4276,4 +4276,5 @@
     <string name="custom_fields_list_saving_failed">Saving changes failed, please try again</string>
     <string name="custom_fields_editor_key_label">Key</string>
     <string name="custom_fields_editor_value_label">Value</string>
+    <string name="custom_fields_add_button">Add custom fields</string>
 </resources>

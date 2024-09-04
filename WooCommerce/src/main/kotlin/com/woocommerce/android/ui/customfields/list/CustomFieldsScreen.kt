@@ -15,12 +15,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -28,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
@@ -56,6 +59,7 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
             onSaveClicked = viewModel::onSaveClicked,
             onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
+            onAddCustomFieldClicked = viewModel::onAddCustomFieldClicked,
             onBackClick = viewModel::onBackClick
         )
     }
@@ -69,6 +73,7 @@ private fun CustomFieldsScreen(
     onSaveClicked: () -> Unit,
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
+    onAddCustomFieldClicked: () -> Unit,
     onBackClick: () -> Unit
 ) {
     Scaffold(
@@ -85,6 +90,18 @@ private fun CustomFieldsScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddCustomFieldClicked,
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.custom_fields_add_button)
+                )
+            }
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
@@ -213,6 +230,7 @@ private fun CustomFieldsScreenPreview() {
             onSaveClicked = {},
             onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
+            onAddCustomFieldClicked = {},
             onBackClick = {}
         )
     }
