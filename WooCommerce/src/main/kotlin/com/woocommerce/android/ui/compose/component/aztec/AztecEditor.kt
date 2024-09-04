@@ -282,6 +282,10 @@ private fun InternalAztecEditor(
 
     AndroidView(
         factory = {
+            // Set initial content
+            aztec.visualEditor.fromHtml(state.content)
+            aztec.sourceEditor?.displayStyledAndFormattedHtml(state.content)
+
             aztec.visualEditor.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
                 // Because the editors could have different number of lines, we don't set the minLines
                 // of the source editor, so we set the minHeight instead to match the visual editor
@@ -409,7 +413,7 @@ private data class AztecViewsHolder(
 @Composable
 @Preview
 private fun OutlinedAztecEditorPreview() {
-    val state = rememberAztecEditorState("")
+    val state = rememberAztecEditorState("something")
 
     WooThemeWithBackground {
         Column {
