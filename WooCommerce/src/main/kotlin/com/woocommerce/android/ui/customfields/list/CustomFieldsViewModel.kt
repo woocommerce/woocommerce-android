@@ -24,6 +24,8 @@ class CustomFieldsViewModel @Inject constructor(
     private val isLoading = MutableStateFlow(false)
     private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
 
+    val parentItemId = args.parentItemId
+
     val state = combine(
         customFields,
         isLoading
@@ -48,6 +50,10 @@ class CustomFieldsViewModel @Inject constructor(
         }
     }
 
+    fun onCustomFieldClicked(field: CustomFieldUiModel) {
+        triggerEvent(OpenCustomFieldEditor(field))
+    }
+
     fun onCustomFieldValueClicked(field: CustomFieldUiModel) {
         triggerEvent(CustomFieldValueClicked(field))
     }
@@ -57,5 +63,6 @@ class CustomFieldsViewModel @Inject constructor(
         val isLoading: Boolean
     )
 
+    data class OpenCustomFieldEditor(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
     data class CustomFieldValueClicked(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
 }

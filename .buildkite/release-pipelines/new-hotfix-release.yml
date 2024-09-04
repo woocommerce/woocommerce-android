@@ -2,7 +2,7 @@
 ---
 
 steps:
-  - input: "What version code do you want to use for the new hotfix release?"
+  - block: "What version code do you want to use for the new hotfix release?"
     fields:
       - text: "Version Code"
         key: "version_code"
@@ -16,11 +16,12 @@ steps:
       echo '--- :ruby: Setup Ruby Tools'
       install_gems
 
-      # Get the version code from the Buildkite 'input' step
+      # Get the version code from the Buildkite 'block' step
       VERSION_CODE=$(buildkite-agent meta-data get version_code)
 
       echo '--- :fire: Start New Hotfix Release'
-      bundle exec fastlane new_hotfix_release version_name:${VERSION} version_code:${VERSION_CODE} skip_confirm:true
+      # Note: we need to double the dollar sign in front of `{VERSION_CODE}` below, so that the env var is interpreted *at runtime*, instead of too soon during `pipeline upload`
+      bundle exec fastlane new_hotfix_release version_name:$${VERSION} version_code:$${VERSION_CODE} skip_confirm:true
     agents:
         queue: "tumblr-metal"
     retry:
