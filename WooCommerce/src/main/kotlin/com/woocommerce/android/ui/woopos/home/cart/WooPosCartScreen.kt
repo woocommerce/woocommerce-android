@@ -1,12 +1,9 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -174,7 +171,6 @@ fun CartBodyEmpty() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartBodyWithItems(
     items: List<WooPosCartState.Body.WithItems.Item>,
@@ -203,7 +199,7 @@ private fun CartBodyWithItems(
             key = { item -> item.id.itemNumber }
         ) { item ->
             ProductItem(
-                modifier = Modifier.animateItemPlacement(),
+                modifier = Modifier,
                 item = item,
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
