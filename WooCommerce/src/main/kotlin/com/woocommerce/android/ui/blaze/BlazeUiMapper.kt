@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze
 
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.shortenToNearestThousand
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 
@@ -12,8 +13,8 @@ fun BlazeCampaignModel.toUiState(currencyFormatter: CurrencyFormatter) =
         ),
         status = CampaignStatusUi.fromString(uiStatus),
         isEndlessCampaign = isEndlessCampaign,
-        impressions = impressions,
-        clicks = clicks,
+        impressions = impressions.shortenToNearestThousand(),
+        clicks = clicks.shortenToNearestThousand(),
         formattedBudget = getBudgetValue(this, currencyFormatter),
         budgetLabel = getBudgetTitle(this)
     )

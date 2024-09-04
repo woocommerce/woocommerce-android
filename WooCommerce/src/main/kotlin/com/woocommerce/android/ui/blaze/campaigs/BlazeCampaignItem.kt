@@ -76,9 +76,9 @@ fun BlazeCampaignItem(
                     CampaignStat(
                         statName = stringResource(R.string.blaze_campaign_status_ctr_label),
                         statValue = stringResource(
-                            id = R.string.blaze_campaign_status_ctr_valur,
+                            id = R.string.blaze_campaign_status_ctr_value_shortened,
+                            campaign.impressions,
                             campaign.clicks,
-                            campaign.impressions
                         )
                     )
                     val orientation = LocalConfiguration.current.orientation
