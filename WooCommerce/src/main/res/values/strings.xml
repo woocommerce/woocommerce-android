@@ -4188,7 +4188,7 @@
 
     <string name="woopos_banner_simple_products_only_title">Showing simple products only</string>
     <string name="woopos_banner_simple_products_only_message">Only simple physical products are compatible with POS right now. Other product types, such as variable and virtual, will become available in future updates. </string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Learn more</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Learn\u00A0more</string>
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
     <string name="woopos_banner_simple_products_content_description">Simple products only banner</string>
@@ -4230,8 +4230,6 @@
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
     <string name="woopos_cart_empty_subtitle">Tap on a product to\nadd it to the cart</string>
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
-    <string name="woopos_splash_title">Starting up</string>
-    <string name="woopos_splash_message">Let’s serve some customers</string>
     <string name="woopos_products_empty_list_image_description">No products</string>
     <string name="woopos_products_empty_list_title">No supported products found</string>
     <string name="woopos_products_empty_list_message">POS currently only supports simple products – \ncreate one to get started.</string>
