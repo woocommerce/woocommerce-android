@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,15 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,7 +68,7 @@ fun WooPosProductInfoDialog(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                     modifier = Modifier
-                        .padding(bottom = 16.dp.toAdaptivePadding())
+                        .padding(top = 40.dp.toAdaptivePadding() , bottom = 16.dp.toAdaptivePadding())
                         .constrainAs(header) {
                             top.linkTo(closeIcon.bottom)
                             start.linkTo(parent.start)
@@ -82,27 +76,6 @@ fun WooPosProductInfoDialog(
                             width = Dimension.preferredWrapContent
                         }
                 )
-
-                IconButton(
-                    onClick = { onDismissRequest() },
-                    modifier = Modifier
-                        .constrainAs(closeIcon) {
-                            top.linkTo(parent.top)
-                            end.linkTo(parent.end)
-                        }
-                        .focusable(enabled = false)
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .focusable(enabled = false),
-                        imageVector = Icons.Default.Close,
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-                        contentDescription = stringResource(
-                            id = R.string.woopos_banner_simple_products_close_content_description
-                        ),
-                    )
-                }
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
