@@ -24,6 +24,10 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
 
+    var isBlazeNoCampaignReminderShown by AppPrefs::isBlazeNoCampaignReminderShown
+
+    var isBlazeAbandonedCampaignReminderShown by AppPrefs::isBlazeAbandonedCampaignReminderShown
+
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 
     var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
@@ -371,18 +375,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? =
         AppPrefs.getNotificationChannelTypeSuffix(channel)
-
-    fun setBlazeNoCampaignReminderShown(siteId: Long) {
-        AppPrefs.setBlazeNoCampaignReminderShown(siteId)
-    }
-
-    fun getBlazeNoCampaignReminderShown(siteId: Long) = AppPrefs.getBlazeNoCampaignReminderShown(siteId)
-
-    fun setBlazeAbandonedCampaignReminderShown(siteId: Long) {
-        AppPrefs.setBlazeAbandonedCampaignReminderShown(siteId)
-    }
-
-    fun getBlazeAbandonedCampaignReminderShown(siteId: Long) = AppPrefs.getBlazeAbandonedCampaignReminderShown(siteId)
 
     fun setBlazeCampaignCreated(siteId: Long) {
         AppPrefs.setBlazeCampaignCreated(siteId)
