@@ -83,6 +83,7 @@ fun WooPosCartScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
@@ -94,7 +95,7 @@ private fun WooPosCartScreen(
             .background(MaterialTheme.colors.surface)
             .padding(top = 40.dp.toAdaptivePadding())
     ) {
-        val (toolbar, bodyEmpty, bodyList, checkoutButton, overlay) = createRefs()
+        val (toolbar, body, checkoutButton, overlay) = createRefs()
 
         CartToolbar(
             modifier = Modifier.constrainAs(toolbar) {
@@ -110,7 +111,7 @@ private fun WooPosCartScreen(
         when (state.body) {
             WooPosCartState.Body.Empty -> {
                 CartBodyEmpty(
-                    modifier = Modifier.constrainAs(bodyEmpty) {
+                    modifier = Modifier.constrainAs(body) {
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
@@ -123,7 +124,7 @@ private fun WooPosCartScreen(
             is WooPosCartState.Body.WithItems -> {
                 val productsTopMargin = 20.dp.toAdaptivePadding()
                 CartBodyWithItems(
-                    modifier = Modifier.constrainAs(bodyList) {
+                    modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
                         bottom.linkTo(checkoutButton.top)
                         start.linkTo(parent.start)
