@@ -113,6 +113,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
@@ -207,12 +208,30 @@ class MainActivity :
     private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
+        private var lastFragment = WeakReference<Fragment>(null)
+
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
             updateAppBarAndBottomNav(f)
         }
 
+        override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
+            // This logic is needed to handle this case:
+            // 1. User navigates from Fragment A to Fragment B
+            // 2. Fragment B's view gets created, and onFragmentViewCreated is called, updating the AppBar.
+            // 3. Quickly the user goes back to Fragment A
+            // 4. Fragment A's view wasn't destroyed yet, so it doesn't go through the creation lifecycle,
+            //    which means onFragmentViewCreated won't be called, and the AppBar won't be updated.
+            //
+            // In this case, lastFragment will be pointing to Fragment B, so we can compare it with the fragment being
+            // started (Fragment A), and we can update the AppBar accordingly.
+            if (lastFragment.get() != f) {
+                updateAppBarAndBottomNav(f)
+            }
+        }
+
         private fun updateAppBarAndBottomNav(f: Fragment) {
             if (f is DialogFragment) return
+            lastFragment = WeakReference(f)
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
