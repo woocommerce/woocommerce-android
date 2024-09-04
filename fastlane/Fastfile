@@ -1128,7 +1128,7 @@ platform :android do
     aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(app, version))
     release_assets = [universal_apk_path, aab_file_path].compact
 
-    create_release(
+    create_github_release(
       repository: GITHUB_REPO,
       # 'version' is used for the release name as well as the tag that's going to be created for the release
       version: app == WEAR_APP ? "#{version}w" : version,
