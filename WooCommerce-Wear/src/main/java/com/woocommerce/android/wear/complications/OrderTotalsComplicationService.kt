@@ -5,8 +5,14 @@ import androidx.wear.watchface.complications.data.ComplicationType
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.woocommerce.android.R
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class OrderTotalsComplicationService : SuspendingComplicationDataSourceService() {
+
+    @Inject lateinit var fetchTodayOrderTotals: FetchTodayOrderTotals
+
     override fun getPreviewData(type: ComplicationType): ComplicationData? {
         return when (type) {
             ComplicationType.SHORT_TEXT -> createTextComplicationData(
@@ -23,8 +29,8 @@ class OrderTotalsComplicationService : SuspendingComplicationDataSourceService()
         return when (request.complicationType) {
             ComplicationType.SHORT_TEXT -> createTextComplicationData(
                 context = applicationContext,
-                content = "$42k",
-                description = "Displays the total value of the current order"
+                content = fetchTodayOrderTotals(),
+                description = getString(R.string.order_totals_complication_preview_description)
             )
 
             else -> null
