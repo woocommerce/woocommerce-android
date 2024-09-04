@@ -87,10 +87,7 @@ private fun WooPosCartScreen(
     ) {
         Column(
             modifier = modifier
-                .padding(
-                    top = 40.dp.toAdaptivePadding(),
-                    bottom = 16.dp.toAdaptivePadding()
-                )
+                .padding(top = 40.dp.toAdaptivePadding())
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 CartToolbar(
