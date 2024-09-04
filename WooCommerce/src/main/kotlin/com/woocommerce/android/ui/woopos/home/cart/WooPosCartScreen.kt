@@ -88,56 +88,92 @@ private fun WooPosCartScreen(
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    Box(
+    ConstraintLayout(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
+            .padding(top = 40.dp.toAdaptivePadding())
     ) {
-        Column(
-            modifier = modifier
-                .padding(
-                    top = 40.dp.toAdaptivePadding(),
-                    bottom = 16.dp.toAdaptivePadding()
-                )
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                CartToolbar(
-                    toolbar = state.toolbar,
-                    onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
-                    onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
-                )
+        val (toolbar, bodyEmpty, bodyList, checkoutButton, overlay) = createRefs()
 
-                when (state.body) {
-                    WooPosCartState.Body.Empty -> {
-                        CartBodyEmpty()
-                    }
+        CartToolbar(
+            modifier = Modifier.constrainAs(toolbar) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            toolbar = state.toolbar,
+            onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
+            onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) },
+        )
 
-                    is WooPosCartState.Body.WithItems -> {
-                        CartBodyWithItems(
-                            items = state.body.itemsInCart,
-                            areItemsRemovable = state.areItemsRemovable,
-                            onUIEvent = onUIEvent,
-                        )
+        when (state.body) {
+            WooPosCartState.Body.Empty -> {
+                CartBodyEmpty(
+                    modifier = Modifier.constrainAs(bodyEmpty) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        height = Dimension.fillToConstraints
                     }
-                }
+                )
             }
 
-            if (state.isCheckoutButtonVisible) {
-                WooPosButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp.toAdaptivePadding()),
-                    text = stringResource(R.string.woopos_checkout_button),
-                    onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+            is WooPosCartState.Body.WithItems -> {
+                val productsTopMargin = 20.dp.toAdaptivePadding()
+                CartBodyWithItems(
+                    modifier = Modifier.constrainAs(bodyList) {
+                        top.linkTo(toolbar.bottom, margin = productsTopMargin)
+                        bottom.linkTo(checkoutButton.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        height = Dimension.fillToConstraints
+                    },
+                    items = state.body.itemsInCart,
+                    areItemsRemovable = state.areItemsRemovable,
+                    onUIEvent = onUIEvent
                 )
             }
         }
-        CartOverlay(state)
+
+        AnimatedVisibility(
+            visible = state.isCheckoutButtonVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp.toAdaptivePadding())
+                .constrainAs(checkoutButton) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        ) {
+            WooPosButton(
+                text = stringResource(R.string.woopos_checkout_button),
+                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+            )
+        }
+
+        CartOverlay(
+            modifier = Modifier.constrainAs(overlay) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                height = Dimension.fillToConstraints
+            },
+            state = state,
+        )
     }
 }
 
 @Composable
-private fun CartOverlay(state: WooPosCartState) {
+private fun CartOverlay(
+    modifier: Modifier = Modifier,
+    state: WooPosCartState,
+) {
     val cartOverlayIntensityAnimated by animateFloatAsState(
         when (state.body) {
             WooPosCartState.Body.Empty -> .6f
@@ -146,7 +182,7 @@ private fun CartOverlay(state: WooPosCartState) {
         label = "cartOverlayAnimated"
     )
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(
                 color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
@@ -155,10 +191,9 @@ private fun CartOverlay(state: WooPosCartState) {
 }
 
 @Composable
-fun CartBodyEmpty() {
+fun CartBodyEmpty(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .padding(16.dp.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -182,17 +217,16 @@ fun CartBodyEmpty() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartBodyWithItems(
+    modifier: Modifier = Modifier,
     items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
-
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
 
     WooPosLazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 16.dp.toAdaptivePadding()),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
@@ -231,6 +265,7 @@ private fun ScrollToTopHandler(
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun CartToolbar(
+    modifier: Modifier = Modifier,
     toolbar: WooPosCartState.Toolbar,
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
@@ -244,7 +279,7 @@ private fun CartToolbar(
     )
 
     ConstraintLayout(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(40.dp)
     ) {
