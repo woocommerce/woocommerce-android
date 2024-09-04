@@ -50,9 +50,7 @@ fun WooPosProductInfoDialog(
         id = R.string.woopos_dialog_products_info_background_content_description
     )
     WooPosDialogWrapper(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(102.dp.toAdaptivePadding()),
+        modifier = Modifier,
         isVisible = state.isVisible,
         dialogBackgroundContentDescription = dialogBackgroundContentDescription,
         onDismissRequest = onDismissRequest
