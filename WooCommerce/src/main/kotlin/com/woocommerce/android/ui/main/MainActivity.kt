@@ -208,6 +208,10 @@ class MainActivity :
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+            updateAppBarAndBottomNav(f)
+        }
+
+        private fun updateAppBarAndBottomNav(f: Fragment) {
             if (f is DialogFragment) return
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
