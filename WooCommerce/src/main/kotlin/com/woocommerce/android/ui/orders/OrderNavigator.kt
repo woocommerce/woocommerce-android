@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShipping
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -97,6 +98,13 @@ class OrderNavigator @Inject constructor() {
                     )
                 fragment.findNavController().navigateSafely(action)
             }
+
+            is OpenTrackingBarcodeScanning -> {
+                val action = AddOrderShipmentTrackingFragmentDirections.
+                actionAddOrderShipmentTrackingFragmentToBarcodeScanningFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is PrintShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintShippingLabelFragment(

@@ -11,9 +11,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -91,6 +93,10 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
                 selectedProvider = addOrderShipmentTrackingViewState.carrier.name
             )
         )
+    }
+
+    fun onScanTrackingNumberClicked() {
+        triggerEvent(OpenTrackingBarcodeScanning)
     }
 
     fun onAddButtonTapped() {
