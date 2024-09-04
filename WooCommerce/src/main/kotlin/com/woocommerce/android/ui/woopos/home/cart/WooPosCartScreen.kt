@@ -339,7 +339,7 @@ private fun ProductItem(
 
     val elevation by animateDpAsState(
         targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 200, delayMillis = 100),
+        animationSpec = tween(durationMillis = 250, delayMillis = 200),
         label = "elevation"
     )
 
