@@ -12,6 +12,9 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
+import com.woocommerce.android.ui.orders.creation.BarcodeOptions
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -76,6 +79,21 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
             trackingNumber = trackingNumber,
             trackingNumberError = null
         )
+    }
+
+    fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
+        when (status) {
+            is CodeScannerStatus.Failure -> {
+            }
+
+            is CodeScannerStatus.Success -> {
+                triggerEvent(SetScannedTrackingNumberEvent(status.code))
+            }
+
+            CodeScannerStatus.NotFound -> {
+                // do nothing
+            }
+        }
     }
 
     fun onTrackingLinkEntered(trackingLink: String) {
@@ -198,4 +216,5 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
     ) : Parcelable
 
     data class SaveTrackingPrefsEvent(val carrier: Carrier) : MultiLiveEvent.Event()
+    data class SetScannedTrackingNumberEvent(val trackingNumber: String) : MultiLiveEvent.Event()
 }

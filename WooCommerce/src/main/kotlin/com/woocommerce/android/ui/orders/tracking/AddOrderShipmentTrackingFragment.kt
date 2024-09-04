@@ -19,6 +19,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -26,8 +27,10 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -157,12 +160,22 @@ class AddOrderShipmentTrackingFragment :
                     AppPrefs.setSelectedShipmentTrackingProviderName(event.carrier.name)
                     AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(event.carrier.isCustom)
                 }
+
+                is SetScannedTrackingNumberEvent -> {
+                    binding.trackingNumber.setText(event.trackingNumber)
+                    viewModel.onTrackingNumberEntered(event.trackingNumber)
+                }
+
                 else -> event.isHandled = false
             }
         }
 
         handleResult<Carrier>(AddOrderTrackingProviderListFragment.SHIPMENT_TRACKING_PROVIDER_RESULT) {
             viewModel.onCarrierSelected(it)
+        }
+
+        handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            viewModel.handleBarcodeScannedStatus(status)
         }
     }
 
