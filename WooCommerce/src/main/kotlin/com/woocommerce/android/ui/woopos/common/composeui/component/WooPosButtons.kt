@@ -69,6 +69,7 @@ fun WooPosButtonLarge(
 fun WooPosOutlinedButton(
     modifier: Modifier = Modifier,
     text: String,
+    shape: RoundedCornerShape = RoundedCornerShape(4.dp),
     onClick: () -> Unit,
 ) {
     Button(
@@ -79,7 +80,7 @@ fun WooPosOutlinedButton(
             backgroundColor = MaterialTheme.colors.surface,
             contentColor = MaterialTheme.colors.onBackground,
         ),
-        shape = RoundedCornerShape(8.dp),
+        shape = shape,
         elevation = ButtonDefaults.elevation(
             defaultElevation = 0.dp,
             pressedElevation = 0.dp,
