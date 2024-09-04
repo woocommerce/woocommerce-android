@@ -169,6 +169,10 @@ class AddOrderShipmentTrackingFragment :
             viewModel.onCarrierClicked()
         }
 
+        binding.trackingNumberLayout.setEndIconOnClickListener {
+            print("setEndIconOnClickListener")
+        }
+
         binding.date.setOnClickListener {
             val calendar = FluxCDateUtils.getCalendarInstance(viewModel.currentSelectedDate)
             dateShippedPickerDialog = DatePickerDialog(
