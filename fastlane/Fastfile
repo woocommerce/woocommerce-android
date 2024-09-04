@@ -1328,6 +1328,7 @@ def create_backmerge_pr
 rescue StandardError => e
   error_message = <<-MESSAGE
     Error creating backmerge pull request:
+
     ```
     #{e.message}
     ```
