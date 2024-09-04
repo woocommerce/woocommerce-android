@@ -6,6 +6,7 @@
 -----
 - [**] Stopped potential crash in the orders list screen when tapping "Filters" button [https://github.com/woocommerce/woocommerce-android/pull/12482]
 - [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
+- [*] Fixes navigation from product review detail screen when opened from notification [https://github.com/woocommerce/woocommerce-android/pull/12514]
 
 20.2
 -----
