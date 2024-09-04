@@ -68,7 +68,10 @@ fun WooPosProductInfoDialog(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
                     modifier = Modifier
-                        .padding(top = 40.dp.toAdaptivePadding() , bottom = 16.dp.toAdaptivePadding())
+                        .padding(
+                            top = 40.dp.toAdaptivePadding(),
+                            bottom = 16.dp.toAdaptivePadding()
+                        )
                         .constrainAs(header) {
                             top.linkTo(closeIcon.bottom)
                             start.linkTo(parent.start)
