@@ -119,13 +119,20 @@ fun WooPosProductInfoDialog(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.padding(bottom = 16.dp.toAdaptivePadding())
                     )
+                    Text(
+                        text = stringResource(id = state.secondaryMessage),
+                        style = MaterialTheme.typography.h5,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(bottom = 16.dp.toAdaptivePadding())
+                    )
                     Box(
                         Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .background(
                                 color = WooPosTheme.colors.dialogSubtitleHighlightBackground
                             )
-                            .padding(16.dp.toAdaptivePadding()),
+                            .padding(24.dp.toAdaptivePadding()),
                         contentAlignment = Alignment.Center,
                     ) {
                         Column(
@@ -133,7 +140,7 @@ fun WooPosProductInfoDialog(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = stringResource(id = state.secondaryMessage),
+                                text = stringResource(id = state.tertiaryMessage),
                                 style = MaterialTheme.typography.subtitle1,
                                 textAlign = TextAlign.Center,
                                 fontWeight = FontWeight.Normal,
@@ -174,7 +181,7 @@ private fun getCombinedContentDescription(state: WooPosHomeState.ProductsInfoDia
         id = R.string.woopos_banner_simple_products_dialog_content_description
     )
     return "$dialogContentDescription\n${stringResource(id = state.header)}" +
-        "\n${stringResource(id = state.primaryMessage)}\n${stringResource(id = state.secondaryMessage)}"
+        "\n${stringResource(id = state.primaryMessage)}\n${stringResource(id = state.tertiaryMessage)}"
 }
 
 @WooPosPreview
