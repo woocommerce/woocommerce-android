@@ -7,10 +7,26 @@ import androidx.wear.watchface.complications.datasource.SuspendingComplicationDa
 
 class OrderTotalsComplicationService : SuspendingComplicationDataSourceService() {
     override fun getPreviewData(type: ComplicationType): ComplicationData? {
-        TODO("Not yet implemented")
+        return when (type) {
+            ComplicationType.SHORT_TEXT -> createTextComplicationData(
+                context = applicationContext,
+                content = "$42k",
+                description = "Displays the total value of the current order"
+            )
+
+            else -> null
+        }
     }
 
     override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? {
-        TODO("Not yet implemented")
+        return when (request.complicationType) {
+            ComplicationType.SHORT_TEXT -> createTextComplicationData(
+                context = applicationContext,
+                content = "$42k",
+                description = "Displays the total value of the current order"
+            )
+
+            else -> null
+        }
     }
 }
