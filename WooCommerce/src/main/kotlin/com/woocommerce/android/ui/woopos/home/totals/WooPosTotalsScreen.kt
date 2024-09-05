@@ -153,7 +153,6 @@ private fun TotalsLoaded(
     }
 }
 
-
 @Composable
 private fun TotalsGrid(state: WooPosTotalsViewState.Totals) {
     Column(
