@@ -39,7 +39,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethod
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.component.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WCWebView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
