@@ -8,6 +8,9 @@
 - [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
 - [*] Fixes toolbar shown twice on Package details screen while adding shipping label [https://github.com/woocommerce/woocommerce-android/pull/12489]
 - [*] Fixes navigation from product review detail screen when opened from notification [https://github.com/woocommerce/woocommerce-android/pull/12514]
+- [*] Added a blaze campaign reminder that appears after abandoning a campaign creation. [https://github.com/woocommerce/woocommerce-android/pull/12452]
+- [*] Fixes an issue that caused the an incorrect App Bar visibility in some rare cases [https://github.com/woocommerce/woocommerce-android/pull/12523]
+- [*] Fixes an issue on the Order Tracking screen that was causing the carrier being reset unintentionally [https://github.com/woocommerce/woocommerce-android/pull/12535]
 
 20.2
 -----
