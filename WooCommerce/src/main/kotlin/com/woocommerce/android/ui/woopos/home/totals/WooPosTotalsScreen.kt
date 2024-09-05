@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +24,12 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +47,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
+import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
@@ -97,11 +105,19 @@ private fun StateChangeAnimated(
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun TotalsLoaded(
     state: WooPosTotalsViewState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
+    var isButtonVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(300)
+        isButtonVisible = true
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -124,10 +140,16 @@ private fun TotalsLoaded(
             Spacer(modifier = Modifier.weight(1f))
         }
 
-        WooPosButtonLarge(
-            text = stringResource(R.string.woopos_payment_collect_payment_label),
-            onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-        )
+        AnimatedVisibility(visible = isButtonVisible) {
+            WooPosButtonLarge(
+                text = stringResource(R.string.woopos_payment_collect_payment_label),
+                onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
+                modifier = Modifier
+                    .animateEnterExit(
+                        enter = slideInVertically { it },
+                    )
+            )
+        }
     }
 }
 

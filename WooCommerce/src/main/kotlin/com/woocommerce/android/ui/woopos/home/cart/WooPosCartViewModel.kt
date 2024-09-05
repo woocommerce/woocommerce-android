@@ -162,7 +162,7 @@ class WooPosCartViewModel @Inject constructor(
         val newToolbar = when (newState.cartStatus) {
             EDITABLE -> {
                 WooPosCartState.Toolbar(
-                    icon = null,
+                    backIconVisible = false,
                     itemsCount = itemsCount,
                     isClearAllButtonVisible = newState.body is WooPosCartState.Body.WithItems
                 )
@@ -170,7 +170,7 @@ class WooPosCartViewModel @Inject constructor(
 
             CHECKOUT -> {
                 WooPosCartState.Toolbar(
-                    icon = R.drawable.ic_back_24dp,
+                    backIconVisible = true,
                     itemsCount = itemsCount,
                     isClearAllButtonVisible = false
                 )
@@ -178,7 +178,7 @@ class WooPosCartViewModel @Inject constructor(
 
             EMPTY -> {
                 WooPosCartState.Toolbar(
-                    icon = null,
+                    backIconVisible = false,
                     itemsCount = null,
                     isClearAllButtonVisible = false
                 )
