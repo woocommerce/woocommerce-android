@@ -96,7 +96,7 @@ class VariationPickerViewModel @Inject constructor(
                     itemId = navArgs.itemId,
                     productId = navArgs.productId,
                     variationId = variation.id,
-                    attributes = variation.selectedAttributes
+                    attributes = variation.attributes
                 )
             )
         )
@@ -115,9 +115,28 @@ class VariationPickerViewModel @Inject constructor(
         val id: Long,
         val title: String,
         val imageUrl: String? = null,
-        val selectedAttributes: List<VariantOption>,
-        val selectableAttributes: List<ProductAttribute>
-    )
+        private val selectedAttributes: List<VariantOption>,
+        private val selectableAttributes: List<ProductAttribute>
+    ) {
+        val attributes: List<VariantOption>
+            get() {
+                val attributeSelection = mutableListOf<VariantOption>()
+
+                selectableAttributes.forEach { selectable ->
+                    selectedAttributes.find { selectable.name == it.name }
+                        ?.let { attributeSelection.add(it) }
+                        ?: attributeSelection.add(
+                            VariantOption(
+                                id = selectable.id,
+                                name = selectable.name,
+                                option = null
+                            )
+                        )
+                }
+
+                return attributeSelection
+            }
+    }
 
     data class ViewState(
         val loadingState: LoadingState = LoadingState.IDLE,
