@@ -148,7 +148,7 @@ class ProductConfiguration(
     val configurationType: ConfigurationType,
     val configuration: Map<String, String?>,
     val childrenConfiguration: Map<Long, Map<String, String?>>? = null,
-    private val variableProductSelection: Map<Long, VariableProductSelection> = emptyMap()
+    val variableProductSelection: Map<Long, VariableProductSelection> = emptyMap()
 ) : Parcelable {
     companion object {
         const val PARENT_KEY = -1L

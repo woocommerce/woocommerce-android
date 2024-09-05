@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.configuration
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CHANGED_FIELD
@@ -50,6 +51,8 @@ class ProductConfigurationViewModel @Inject constructor(
 
     private val productsInformation = getChildrenProductInfo(productId).toStateFlow(null)
 
+    private val gson by lazy { Gson() }
+
     val viewState = combine(
         flow = rules.drop(1),
         flow2 = configuration.drop(1),
@@ -96,6 +99,18 @@ class ProductConfigurationViewModel @Inject constructor(
     fun onUpdateVariationConfiguration(itemId: Long, variationId: Long, attributes: List<VariantOption>) {
         configuration.value?.let { currentConfiguration ->
             configuration.value = currentConfiguration.updateVariationConfiguration(itemId, variationId, attributes)
+        }
+
+        val missingSelectionAttributes = configuration.value?.getMissingAttributesSelection(itemId)
+        if (missingSelectionAttributes?.isEmpty() == true) {
+            configuration.value?.variableProductSelection?.forEach {
+                val value = mapOf<String, Any?>(
+                    VariableProductRule.VARIATION_ID to it.value.variationId,
+                    VariableProductRule.VARIATION_ATTRIBUTES to it.value.attributes
+                )
+                val valueString = gson.toJson(value)
+                onUpdateChildrenConfiguration(itemId, VariableProductRule.KEY, valueString)
+            }
         }
 
         tracker.track(
