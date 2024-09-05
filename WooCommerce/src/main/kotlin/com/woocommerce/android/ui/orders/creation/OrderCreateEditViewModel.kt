@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -138,7 +139,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.list.ProductListRepository
+import com.woocommerce.android.ui.products.inventory.FetchProductBySKU
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
@@ -177,13 +178,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
-import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -195,7 +194,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreationProductMapper: OrderCreationProductMapper,
     private val createOrderItem: CreateOrderItem,
     private val tracker: AnalyticsTrackerWrapper,
-    private val productRepository: ProductListRepository,
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
@@ -211,6 +209,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val currencySymbolFinder: CurrencySymbolFinder,
     private val totalsHelper: OrderCreateEditTotalsHelper,
     private val feedbackRepository: FeedbackRepository,
+    private val fetchProductBySKU: FetchProductBySKU,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -919,12 +918,20 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.orEmpty()
         viewModelScope.launch {
-            productRepository.searchProductList(
-                searchQuery = barcodeOptions.sku,
-                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
-            )?.let { products ->
-                handleFetchProductBySKUSuccess(products, selectedItems, source, barcodeOptions)
-            } ?: run {
+            val result = fetchProductBySKU(barcodeOptions.sku, barcodeOptions.barcodeFormat)
+            if (result.isSuccess) {
+                val product = result.getOrNull()
+                if (product != null) {
+                    handleFetchProductBySKUSuccess(
+                        product,
+                        selectedItems,
+                        source,
+                        barcodeOptions
+                    )
+                } else {
+                    handleFetchProductBySKUEmpty(barcodeOptions, source)
+                }
+            } else {
                 handleFetchProductBySKUFailure(
                     source,
                     barcodeOptions,
@@ -935,17 +942,13 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun handleFetchProductBySKUSuccess(
-        products: List<com.woocommerce.android.model.Product>,
+        product: com.woocommerce.android.model.Product,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
         barcodeOptions: BarcodeOptions
     ) {
         viewState = viewState.copy(isUpdatingOrderDraft = false)
-        products.firstOrNull()?.let { product ->
-            addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
-        } ?: run {
-            handleFetchProductBySKUEmpty(barcodeOptions, source)
-        }
+        addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
     }
 
     private fun handleFetchProductBySKUEmpty(
