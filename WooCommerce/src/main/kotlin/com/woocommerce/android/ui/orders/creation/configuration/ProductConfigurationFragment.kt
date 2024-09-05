@@ -80,12 +80,7 @@ class ProductConfigurationFragment : BaseFragment() {
 
     private fun handleResults() {
         handleResult<VariationPickerViewModel.VariationPickerResult>(VariationPickerFragment.VARIATION_PICKER_RESULT) {
-            val value = mapOf<String, Any?>(
-                VariableProductRule.VARIATION_ID to it.variationId,
-                VariableProductRule.VARIATION_ATTRIBUTES to it.attributes
-            )
-            val valueString = gson.toJson(value)
-            viewModel.onUpdateChildrenConfiguration(it.itemId, VariableProductRule.KEY, valueString)
+            viewModel.onUpdateVariationConfiguration(it.itemId, it.variationId, it.attributes)
         }
     }
 }

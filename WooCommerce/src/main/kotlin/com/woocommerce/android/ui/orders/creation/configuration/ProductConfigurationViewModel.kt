@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGED_FIELD_VARIATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_OTHER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.orders.creation.GetProductRules
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -90,6 +91,17 @@ class ProductConfigurationViewModel @Inject constructor(
                 mapOf(KEY_CHANGED_FIELD to ruleChanged)
             )
         }
+    }
+
+    fun onUpdateVariationConfiguration(itemId: Long, variationId: Long, attributes: List<VariantOption>) {
+        configuration.value?.let { currentConfiguration ->
+            configuration.value = currentConfiguration.updateVariationConfiguration(itemId, variationId, attributes)
+        }
+
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURATION_CHANGED,
+            mapOf(KEY_CHANGED_FIELD to VALUE_CHANGED_FIELD_VARIATION)
+        )
     }
 
     fun onCancel() {

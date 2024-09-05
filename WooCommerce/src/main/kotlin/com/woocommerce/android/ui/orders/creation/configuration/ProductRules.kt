@@ -147,10 +147,23 @@ class ProductConfiguration(
     val rules: ProductRules,
     val configurationType: ConfigurationType,
     val configuration: Map<String, String?>,
-    val childrenConfiguration: Map<Long, Map<String, String?>>? = null
+    val childrenConfiguration: Map<Long, Map<String, String?>>? = null,
+    val variableProductSelection: Map<Long, VariableProductSelection>? = null
 ) : Parcelable {
     companion object {
         const val PARENT_KEY = -1L
+    }
+
+    fun getMissingAttributesSelection(): Map<Long, List<VariantOption>> {
+        return rules.childrenRules
+            ?.filter { it.value.containsKey(VariableProductRule.KEY) }
+            ?.map { it.key to it.value[VariableProductRule.KEY] as? VariableProductRule }
+            ?.mapNotNull { (key, variableProductRule) ->
+                variableProductRule?.attributesDefault
+                    ?.filter { it.option == null }
+                    ?.let { key to it }
+            }?.associate { it }
+            ?: emptyMap()
     }
 
     fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
@@ -215,18 +228,6 @@ class ProductConfiguration(
         }
     }
 
-    private fun getMissingAttributesSelection(): Map<Long, List<VariantOption>> {
-        return rules.childrenRules
-            ?.filter { it.value.containsKey(VariableProductRule.KEY) }
-            ?.map { it.key to it.value[VariableProductRule.KEY] as? VariableProductRule }
-            ?.mapNotNull { (key, variableProductRule) ->
-                variableProductRule?.attributesDefault
-                    ?.filter { it.option == null }
-                    ?.let { key to it }
-            }?.associate { it }
-            ?: emptyMap()
-    }
-
     fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String): ProductConfiguration {
         val updatedChildConfiguration = childrenConfiguration?.get(itemId)?.let { childConfiguration ->
             val mutableConfiguration = childConfiguration.toMutableMap()
@@ -246,7 +247,36 @@ class ProductConfiguration(
             updatedChildrenConfiguration
         )
     }
+
+    fun updateVariationConfiguration(
+        itemId: Long,
+        variationId: Long,
+        attributes: List<VariantOption>
+    ): ProductConfiguration {
+        val updatedVariableProductSelection = variableProductSelection?.get(itemId)
+            ?.copy(variationId = variationId, attributes = attributes)
+            ?: VariableProductSelection(variationId, attributes)
+
+        return variableProductSelection
+            ?.toMutableMap()
+            ?.apply { put(itemId, updatedVariableProductSelection) }
+            ?.let { updatedVariableProductSelectionMap ->
+                ProductConfiguration(
+                    rules,
+                    configurationType,
+                    configuration,
+                    childrenConfiguration,
+                    updatedVariableProductSelectionMap
+                )
+            } ?: this
+    }
 }
+
+@Parcelize
+data class VariableProductSelection(
+    val variationId: Long,
+    val attributes: List<VariantOption>
+) : Parcelable
 
 enum class ConfigurationType { BUNDLE, UNKNOWN }
 
