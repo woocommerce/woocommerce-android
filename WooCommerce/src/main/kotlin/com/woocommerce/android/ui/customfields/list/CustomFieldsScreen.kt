@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -49,6 +50,7 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
         CustomFieldsScreen(
             state = state,
             onPullToRefresh = viewModel::onPullToRefresh,
+            onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
             onBackClick = viewModel::onBackClick
         )
@@ -60,6 +62,7 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
 private fun CustomFieldsScreen(
     state: CustomFieldsViewModel.UiState,
     onPullToRefresh: () -> Unit,
+    onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -83,6 +86,7 @@ private fun CustomFieldsScreen(
                 items(state.customFields) { customField ->
                     CustomFieldItem(
                         customField = customField,
+                        onClicked = onCustomFieldClicked,
                         onValueClicked = onCustomFieldValueClicked,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -103,12 +107,15 @@ private fun CustomFieldsScreen(
 @Composable
 private fun CustomFieldItem(
     customField: CustomFieldUiModel,
+    onClicked: (CustomFieldUiModel) -> Unit,
     onValueClicked: (CustomFieldUiModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(16.dp)
+        modifier = modifier
+            .clickable(onClick = { onClicked(customField) })
+            .padding(16.dp)
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -177,6 +184,7 @@ private fun CustomFieldsScreenPreview() {
                 isLoading = false
             ),
             onPullToRefresh = {},
+            onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
             onBackClick = {}
         )

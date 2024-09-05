@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -517,7 +518,13 @@ class ProductFilterListViewModel @Inject constructor(
         val filterItemKey: ProductFilterOption,
         val filterItemName: String,
         var filterOptionListItems: List<FilterListOptionItemUiModel>
-    ) : Parcelable
+    ) : Parcelable {
+        val firstSelectedOption: String?
+            get() = filterOptionListItems
+                .filterIsInstance<DefaultFilterListOptionItemUiModel>()
+                .firstOrNull { it.isSelected }
+                ?.filterOptionItemName
+    }
 
     @Parcelize
     sealed class FilterListOptionItemUiModel : Parcelable {
