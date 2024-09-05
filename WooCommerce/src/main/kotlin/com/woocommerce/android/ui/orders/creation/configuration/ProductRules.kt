@@ -148,7 +148,7 @@ class ProductConfiguration(
     val configurationType: ConfigurationType,
     val configuration: Map<String, String?>,
     val childrenConfiguration: Map<Long, Map<String, String?>>? = null,
-    val variableProductSelection: Map<Long, VariableProductSelection>? = null
+    val variableProductSelection: Map<Long, VariableProductSelection> = emptyMap()
 ) : Parcelable {
     companion object {
         const val PARENT_KEY = -1L
@@ -253,14 +253,13 @@ class ProductConfiguration(
         variationId: Long,
         attributes: List<VariantOption>
     ): ProductConfiguration {
-        val updatedVariableProductSelection = variableProductSelection?.get(itemId)
+        val updatedVariableProductSelection = variableProductSelection[itemId]
             ?.copy(variationId = variationId, attributes = attributes)
             ?: VariableProductSelection(variationId, attributes)
 
-        return variableProductSelection
-            ?.toMutableMap()
-            ?.apply { put(itemId, updatedVariableProductSelection) }
-            ?.let { updatedVariableProductSelectionMap ->
+        return variableProductSelection.toMutableMap()
+            .apply { put(itemId, updatedVariableProductSelection) }
+            .let { updatedVariableProductSelectionMap ->
                 ProductConfiguration(
                     rules,
                     configurationType,
@@ -268,7 +267,7 @@ class ProductConfiguration(
                     childrenConfiguration,
                     updatedVariableProductSelectionMap
                 )
-            } ?: this
+            }
     }
 }
 
