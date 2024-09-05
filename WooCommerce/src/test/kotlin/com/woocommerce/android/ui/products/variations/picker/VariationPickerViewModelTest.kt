@@ -101,7 +101,7 @@ class VariationPickerViewModelTest : BaseUnitTest() {
                 itemId = navArgs.itemId,
                 productId = navArgs.productId,
                 variationId = variation.id,
-                attributes = variation.attributes
+                attributes = variation.selectedAttributes
             )
         )
         verify(observer).onChanged(expectedEvent)

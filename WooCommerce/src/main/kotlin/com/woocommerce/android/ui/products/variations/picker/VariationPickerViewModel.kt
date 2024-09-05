@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
@@ -95,7 +96,7 @@ class VariationPickerViewModel @Inject constructor(
                     itemId = navArgs.itemId,
                     productId = navArgs.productId,
                     variationId = variation.id,
-                    attributes = variation.attributes
+                    attributes = variation.selectedAttributes
                 )
             )
         )
@@ -106,14 +107,16 @@ class VariationPickerViewModel @Inject constructor(
             id = remoteVariationId,
             title = getName(parentProduct),
             imageUrl = image?.source,
-            attributes = attributes.toList()
+            selectedAttributes = attributes.toList(),
+            selectableAttributes = parentProduct?.attributes.orEmpty()
         )
 
     data class VariationListItem(
         val id: Long,
         val title: String,
         val imageUrl: String? = null,
-        val attributes: List<VariantOption>
+        val selectedAttributes: List<VariantOption>,
+        val selectableAttributes: List<ProductAttribute>
     )
 
     data class ViewState(
