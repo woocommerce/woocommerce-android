@@ -31,8 +31,6 @@ class ProductConfigurationFragment : BaseFragment() {
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
-    private val gson = Gson()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             id = R.id.product_configuration_view
