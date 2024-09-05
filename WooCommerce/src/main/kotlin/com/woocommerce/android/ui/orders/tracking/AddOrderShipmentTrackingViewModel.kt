@@ -84,16 +84,12 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
 
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
         when (status) {
-            is CodeScannerStatus.Failure -> {
+            is CodeScannerStatus.Failure, CodeScannerStatus.NotFound -> {
                 triggerEvent(ShowTrackingNumberScanFailed(R.string.order_shipment_tracking_barcode_scanning_failed))
             }
 
             is CodeScannerStatus.Success -> {
                 triggerEvent(SetScannedTrackingNumberEvent(status.code))
-            }
-
-            CodeScannerStatus.NotFound -> {
-                // do nothing
             }
         }
     }

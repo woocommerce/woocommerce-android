@@ -128,11 +128,8 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when handling the barcode scanned failure status it emits the scanned failed event with the error message`() = testBlocking {
-        val scannedStatus = CodeScannerStatus.Failure(
-            error = "Failed to recognize the barcode",
-            type = CodeScanningErrorType.NotFound
-        )
+    fun `when handling the barcode scanned not found status it emits the scanned failed event with the error message`() = testBlocking {
+        val scannedStatus = CodeScannerStatus.NotFound
         viewModel.handleBarcodeScannedStatus(scannedStatus)
 
         assertThat((viewModel.event.value as ShowTrackingNumberScanFailed).errorMessage).isEqualTo(
