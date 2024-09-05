@@ -62,7 +62,11 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }.asLiveData()
 
     fun onKeyChanged(key: String) {
-        keyErrorMessage.value = null
+        keyErrorMessage.value = if (key.startsWith("_")) {
+            UiString.UiStringRes(R.string.custom_fields_editor_key_error_underscore)
+        } else {
+            null
+        }
         customFieldDraft.update { it.copy(key = key) }
     }
 

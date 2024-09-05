@@ -4278,4 +4278,5 @@
     <string name="custom_fields_editor_key_label">Key</string>
     <string name="custom_fields_editor_value_label">Value</string>
     <string name="custom_fields_editor_key_error_duplicate">This key is already used for another custom field.\nThe app currently does not support creating duplicate keys. Please use wp-admin to duplicate a key if needed.</string>
+    <string name="custom_fields_editor_key_error_underscore">Invalid key: please remove the \"_\" character from the beginning.</string>
 </resources>
