@@ -154,7 +154,7 @@ class ProductConfiguration(
         const val PARENT_KEY = -1L
     }
 
-    fun getMissingAttributesSelection(
+    fun getInvalidAttributesFrom(
         itemId: Long
     ) = variableProductSelection[itemId]
         ?.attributes

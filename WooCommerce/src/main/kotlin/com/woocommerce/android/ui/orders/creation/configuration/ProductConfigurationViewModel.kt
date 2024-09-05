@@ -14,6 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_OTHER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.orders.creation.GetProductRules
+import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule.Companion.VARIATION_ATTRIBUTES
+import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule.Companion.VARIATION_ID
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class ProductConfigurationViewModel @Inject constructor(
@@ -97,19 +100,21 @@ class ProductConfigurationViewModel @Inject constructor(
     }
 
     fun onUpdateVariationConfiguration(itemId: Long, variationId: Long, attributes: List<VariantOption>) {
-        configuration.value?.let { currentConfiguration ->
-            configuration.value = currentConfiguration.updateVariationConfiguration(itemId, variationId, attributes)
+        configuration.update { currentConfiguration ->
+            currentConfiguration?.updateVariationConfiguration(itemId, variationId, attributes)
         }
 
-        val missingSelectionAttributes = configuration.value?.getMissingAttributesSelection(itemId)
-        if (missingSelectionAttributes?.isEmpty() == true) {
-            configuration.value?.variableProductSelection?.forEach {
-                val value = mapOf<String, Any?>(
-                    VariableProductRule.VARIATION_ID to it.value.variationId,
-                    VariableProductRule.VARIATION_ATTRIBUTES to it.value.attributes
-                )
-                val valueString = gson.toJson(value)
-                onUpdateChildrenConfiguration(itemId, VariableProductRule.KEY, valueString)
+        val invalidAttributes = configuration.value?.getInvalidAttributesFrom(itemId) ?: emptyList()
+        if (invalidAttributes.isEmpty()) {
+            configuration.value?.variableProductSelection?.get(itemId)
+                ?.let { mapOf(VARIATION_ID to it.variationId, VARIATION_ATTRIBUTES to it.attributes) }
+                ?.let { gson.toJson(it) }
+                ?.let { onUpdateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
+        } else {
+            configuration.update { currentConfiguration ->
+                mapOf(VARIATION_ID to variationId, VARIATION_ATTRIBUTES to null)
+                    .let { gson.toJson(it) }
+                    .let { currentConfiguration?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
             }
         }
     }
