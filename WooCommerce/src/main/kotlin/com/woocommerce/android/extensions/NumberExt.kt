@@ -1,6 +1,12 @@
 package com.woocommerce.android.extensions
 
+import android.icu.number.Notation
+import android.icu.number.NumberFormatter
+import android.icu.text.CompactDecimalFormat
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import java.text.DecimalFormat
+import java.util.Locale
 import kotlin.math.roundToInt
 
 fun Float.formatToString(): String {
@@ -38,14 +44,18 @@ infix fun <T> Comparable<T>?.lesserThan(other: T) =
         ?: false
 
 /**
- * The number is shortened to the nearest thousand or million. For example, 1,500 is shortened to 1.5k.
+ * Shortens a number to the nearest thousand and appends a 'K' to the end. For example, 1000 will be shortened to 1K.
  */
-fun Long.shortenToNearestThousand(): String = when {
-    this >= ONE_MILLION -> "${(this / ONE_MILLION)}m"
-    this >= ONE_THOUSAND -> "${(this / ONE_THOUSAND)}k"
-    else -> this.toString()
-}
+fun compactNumberCompat(number: Long, locale: Locale = Locale.getDefault()): String =
+    if (VERSION.SDK_INT >= VERSION_CODES.R) {
+        NumberFormatter.with()
+            .notation(Notation.compactShort())
+            .locale(locale)
+            .format(number)
+            .toString()
+    } else {
+        CompactDecimalFormat.getInstance(locale, CompactDecimalFormat.CompactStyle.SHORT)
+            .format(number.toDouble())
+    }
 
 const val PERCENTAGE_BASE = 100.0
-const val ONE_THOUSAND = 1000
-const val ONE_MILLION = 1000000
