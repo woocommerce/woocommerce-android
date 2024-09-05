@@ -116,7 +116,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
         val keyErrorMessage: UiString? = null,
     ) {
         val showDoneButton
-            get() = customField.key.isNotEmpty() && hasChanges
+            get() = customField.key.isNotEmpty() && hasChanges && keyErrorMessage == null
     }
 
     data class DiscardChangesDialogState(
