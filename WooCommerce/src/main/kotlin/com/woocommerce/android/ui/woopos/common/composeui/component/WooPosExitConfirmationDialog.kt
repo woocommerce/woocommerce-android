@@ -35,9 +35,7 @@ fun WooPosExitConfirmationDialog(
     onExit: () -> Unit
 ) {
     WooPosDialogWrapper(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(148.dp.toAdaptivePadding()),
+        modifier = modifier,
         isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(
             id = R.string.woopos_dialog_exit_confirmation_background_content_description

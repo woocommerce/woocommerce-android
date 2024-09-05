@@ -45,6 +45,9 @@ data class WooPosHomeState(
         val secondaryMessage: Int = R.string.woopos_dialog_products_info_secondary_message
 
         @IgnoredOnParcel
+        val tertiaryMessage: Int = R.string.woopos_dialog_products_info_tertiary_message
+
+        @IgnoredOnParcel
         val primaryButton: PrimaryButton = PrimaryButton(
             label = R.string.woopos_dialog_products_info_button_label,
         )
