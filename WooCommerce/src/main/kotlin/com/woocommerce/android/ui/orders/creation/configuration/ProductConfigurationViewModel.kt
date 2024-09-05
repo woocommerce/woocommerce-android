@@ -112,11 +112,6 @@ class ProductConfigurationViewModel @Inject constructor(
                 onUpdateChildrenConfiguration(itemId, VariableProductRule.KEY, valueString)
             }
         }
-
-        tracker.track(
-            AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURATION_CHANGED,
-            mapOf(KEY_CHANGED_FIELD to VALUE_CHANGED_FIELD_VARIATION)
-        )
     }
 
     fun onCancel() {
