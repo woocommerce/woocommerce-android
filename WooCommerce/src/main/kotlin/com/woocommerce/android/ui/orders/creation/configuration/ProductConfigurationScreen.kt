@@ -160,6 +160,10 @@ fun ProductConfigurationScreen(
                             val attributes = childMapEntry.value[VariableProductRule.KEY]
                                 .toAttributesFromConfigurationStringOrNull()
 
+                            val attributesPendingSelection = productConfiguration.variableProductSelection
+                                ?.get(item.id)?.attributes
+                                ?.filter { it.option == null }
+
                             val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
                             val isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false
 
@@ -179,6 +183,7 @@ fun ProductConfigurationScreen(
                                     onUpdateChildrenConfiguration(item.id, OptionalRule.KEY, value.toString())
                                 },
                                 attributes = attributes,
+                                pendingAttributes = attributesPendingSelection,
                                 isSelectionEnabled = isMaxChildrenReached.not() || (isMaxChildrenReached && isIncluded)
                             )
                         }
@@ -190,6 +195,10 @@ fun ProductConfigurationScreen(
 
                             val attributes = childMapEntry.value[VariableProductRule.KEY]
                                 .toAttributesFromConfigurationStringOrNull()
+
+                            val attributesPendingSelection = productConfiguration.variableProductSelection
+                                ?.get(item.id)?.attributes
+                                ?.filter { it.option == null }
 
                             val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
                             val isIncluded = quantity > 0f
@@ -206,6 +215,7 @@ fun ProductConfigurationScreen(
                                 maxValue = if (isMaxChildrenReached) quantity else quantityRule?.quantityMax,
                                 onSelectAttributes = { onSelectChildrenAttributes(item.id) },
                                 attributes = attributes,
+                                pendingAttributes = attributesPendingSelection,
                                 isSelectionEnabled = isMaxChildrenReached.not() || (isMaxChildrenReached && isIncluded)
                             )
                         }
@@ -771,8 +781,10 @@ fun VariableQuantityProductItem(
     maxValue: Float? = null,
     minValue: Float? = null,
     attributes: List<VariantOption>? = null,
+    pendingAttributes: List<VariantOption>? = null,
     isSelectionEnabled: Boolean = true
 ) {
+    pendingAttributes.apply {  }
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
     val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
 
@@ -857,8 +869,10 @@ fun OptionalVariableQuantityProductItem(
     maxValue: Float? = null,
     minValue: Float? = null,
     attributes: List<VariantOption>? = null,
+    pendingAttributes: List<VariantOption>? = null,
     isSelectionEnabled: Boolean = true
 ) {
+    pendingAttributes.apply {  }
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
     val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
 
