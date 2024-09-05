@@ -215,6 +215,18 @@ class ProductConfiguration(
         }
     }
 
+    private fun getMissingAttributesSelection(): Map<Long, List<VariantOption>> {
+        return rules.childrenRules
+            ?.filter { it.value.containsKey(VariableProductRule.KEY) }
+            ?.map { it.key to it.value[VariableProductRule.KEY] as? VariableProductRule }
+            ?.mapNotNull { (key, variableProductRule) ->
+                variableProductRule?.attributesDefault
+                    ?.filter { it.option == null }
+                    ?.let { key to it }
+            }?.associate { it }
+            ?: emptyMap()
+    }
+
     fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String): ProductConfiguration {
         val updatedChildConfiguration = childrenConfiguration?.get(itemId)?.let { childConfiguration ->
             val mutableConfiguration = childConfiguration.toMutableMap()
