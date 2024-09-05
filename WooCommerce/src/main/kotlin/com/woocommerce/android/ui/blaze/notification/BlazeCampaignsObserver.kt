@@ -28,7 +28,7 @@ class BlazeCampaignsObserver @Inject constructor(
     suspend fun observeAndScheduleNotifications() {
         selectedSite.observe()
             .filterNotNull()
-            .filter { !appPrefsWrapper.getBlazeNoCampaignReminderShown(it.siteId) }
+            .filter { !appPrefsWrapper.isBlazeNoCampaignReminderShown }
             .distinctUntilChanged { old, new -> new.id == old.id }
             .collectLatest { observeBlazeCampaigns(it) }
     }
