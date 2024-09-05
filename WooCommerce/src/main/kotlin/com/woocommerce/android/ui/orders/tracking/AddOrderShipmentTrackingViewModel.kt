@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.orders.creation.BarcodeOptions
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -84,6 +85,7 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
         when (status) {
             is CodeScannerStatus.Failure -> {
+                triggerEvent(ShowTrackingNumberScanFailed(R.string.order_shipment_tracking_barcode_scanning_failed))
             }
 
             is CodeScannerStatus.Success -> {
@@ -217,4 +219,5 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
 
     data class SaveTrackingPrefsEvent(val carrier: Carrier) : MultiLiveEvent.Event()
     data class SetScannedTrackingNumberEvent(val trackingNumber: String) : MultiLiveEvent.Event()
+    data class ShowTrackingNumberScanFailed(val errorMessage: Int) : Event()
 }

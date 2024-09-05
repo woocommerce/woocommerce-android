@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.ShowTrackingNumberScanFailed
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -164,6 +165,10 @@ class AddOrderShipmentTrackingFragment :
                 is SetScannedTrackingNumberEvent -> {
                     binding.trackingNumber.setText(event.trackingNumber)
                     viewModel.onTrackingNumberEntered(event.trackingNumber)
+                }
+
+                is ShowTrackingNumberScanFailed -> {
+                    uiMessageResolver.showSnack(event.errorMessage)
                 }
 
                 else -> event.isHandled = false
