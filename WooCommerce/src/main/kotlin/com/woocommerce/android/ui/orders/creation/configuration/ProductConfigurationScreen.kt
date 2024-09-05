@@ -780,7 +780,6 @@ fun VariableQuantityProductItem(
     pendingAttributes: List<VariantOption>? = null,
     isSelectionEnabled: Boolean = true
 ) {
-    pendingAttributes.apply {  }
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
     val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
 
@@ -844,6 +843,7 @@ fun VariableQuantityProductItem(
         ) {
             VariableSelection(
                 attributes = attributes,
+                pendingAttributes = pendingAttributes,
                 onSelectAttributes = onSelectAttributes,
                 modifier = Modifier.padding(start = 56.dp, end = 8.dp)
             )
@@ -868,7 +868,6 @@ fun OptionalVariableQuantityProductItem(
     pendingAttributes: List<VariantOption>? = null,
     isSelectionEnabled: Boolean = true
 ) {
-    pendingAttributes.apply {  }
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
     val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
 
@@ -930,6 +929,7 @@ fun OptionalVariableQuantityProductItem(
         ) {
             VariableSelection(
                 attributes = attributes,
+                pendingAttributes = pendingAttributes,
                 onSelectAttributes = onSelectAttributes,
                 modifier = Modifier.padding(start = 56.dp, end = 8.dp)
             )
@@ -940,6 +940,7 @@ fun OptionalVariableQuantityProductItem(
 @Composable
 fun VariableSelection(
     attributes: List<VariantOption>?,
+    pendingAttributes: List<VariantOption>?,
     onSelectAttributes: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -957,6 +958,20 @@ fun VariableSelection(
                             append(attribute.name)
                         }
                         append(" ${attribute.option}")
+                    }
+                    Text(text = annotatedString, modifier = Modifier.padding(top = 8.dp))
+                }
+            }
+        }
+
+        if (pendingAttributes?.isNotEmpty() == true) {
+            Column(modifier = Modifier.padding(top = 8.dp)) {
+                pendingAttributes.forEach {
+                    val annotatedString = buildAnnotatedString {
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(it.name)
+                        }
+                        append(" ${it.option}")
                     }
                     Text(text = annotatedString, modifier = Modifier.padding(top = 8.dp))
                 }
