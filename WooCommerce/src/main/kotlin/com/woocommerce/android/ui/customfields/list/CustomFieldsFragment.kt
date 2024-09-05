@@ -68,6 +68,7 @@ class CustomFieldsFragment : BaseFragment() {
     private fun openEditor(field: CustomFieldUiModel?) {
         findNavController().navigate(
             CustomFieldsFragmentDirections.actionCustomFieldsFragmentToCustomFieldsEditorFragment(
+                parentItemId = viewModel.parentItemId,
                 customField = field
             )
         )

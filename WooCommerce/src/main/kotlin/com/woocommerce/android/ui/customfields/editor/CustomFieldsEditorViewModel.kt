@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.customfields.editor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -15,11 +17,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CustomFieldsEditorViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val repository: CustomFieldsRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<CustomFieldsEditorFragmentArgs>()
 
@@ -68,7 +72,21 @@ class CustomFieldsEditorViewModel @Inject constructor(
 
     fun onDoneClicked() {
         val value = requireNotNull(customFieldDraft.value)
-        triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
+        if (storedValue == null) {
+            // Check for duplicate keys before inserting the new custom field
+            // For more context: pe5sF9-33t-p2#comment-3880
+            launch {
+                val existingFields = repository.getDisplayableCustomFields(navArgs.parentItemId)
+                if (existingFields.any { it.key == value.key }) {
+                    keyErrorMessage.value = UiString.UiStringRes(R.string.custom_fields_editor_key_error_duplicate)
+                } else {
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
+                }
+            }
+        } else {
+            // When editing, we don't need to check for duplicate keys
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
+        }
     }
 
     fun onBackClick() {

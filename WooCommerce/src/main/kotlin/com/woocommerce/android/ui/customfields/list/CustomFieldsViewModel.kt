@@ -26,6 +26,7 @@ class CustomFieldsViewModel @Inject constructor(
     private val repository: CustomFieldsRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val args: CustomFieldsFragmentArgs by savedStateHandle.navArgs()
+    val parentItemId: Long = args.parentItemId
 
     private val isRefreshing = MutableStateFlow(false)
     private val isSaving = MutableStateFlow(false)
