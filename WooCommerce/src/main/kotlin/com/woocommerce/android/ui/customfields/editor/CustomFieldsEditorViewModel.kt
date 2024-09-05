@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.customfields.editor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,23 +33,32 @@ class CustomFieldsEditorViewModel @Inject constructor(
         initialValue = false,
         key = "showDiscardChangesDialog"
     )
+    private val keyErrorMessage = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = UiString::class.java,
+        key = "keyErrorMessage"
+    )
     private val storedValue = navArgs.customField
     private val isHtml = storedValue?.valueStrippedHtml != storedValue?.value
 
     val state = combine(
         customFieldDraft,
-        showDiscardChangesDialog.mapToState()
-    ) { customField, discardChangesDialogState ->
+        showDiscardChangesDialog.mapToState(),
+        keyErrorMessage
+    ) { customField, discardChangesDialogState, keyErrorMessage ->
         UiState(
             customField = customField,
             hasChanges = storedValue?.key.orEmpty() != customField.key ||
                 storedValue?.value.orEmpty() != customField.value,
             isHtml = isHtml,
-            discardChangesDialogState = discardChangesDialogState
+            discardChangesDialogState = discardChangesDialogState,
+            keyErrorMessage = keyErrorMessage
         )
     }.asLiveData()
 
     fun onKeyChanged(key: String) {
+        keyErrorMessage.value = null
         customFieldDraft.update { it.copy(key = key) }
     }
 
@@ -83,7 +94,8 @@ class CustomFieldsEditorViewModel @Inject constructor(
         val customField: CustomFieldUiModel = CustomFieldUiModel("", ""),
         val hasChanges: Boolean = false,
         val isHtml: Boolean = false,
-        val discardChangesDialogState: DiscardChangesDialogState? = null
+        val discardChangesDialogState: DiscardChangesDialogState? = null,
+        val keyErrorMessage: UiString? = null,
     ) {
         val showDoneButton
             get() = customField.key.isNotEmpty() && hasChanges

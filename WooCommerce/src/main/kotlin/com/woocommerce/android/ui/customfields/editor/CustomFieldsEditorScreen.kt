@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
@@ -70,6 +71,8 @@ private fun CustomFieldsEditorScreen(
                 value = state.customField.key,
                 onValueChange = onKeyChanged,
                 label = stringResource(R.string.custom_fields_editor_key_label),
+                helperText = state.keyErrorMessage?.getText(),
+                isError = state.keyErrorMessage != null,
                 singleLine = true
             )
 
