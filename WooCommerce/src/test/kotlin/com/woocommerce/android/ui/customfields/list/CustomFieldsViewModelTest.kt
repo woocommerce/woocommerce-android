@@ -195,6 +195,17 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when tapping on add custom field, then custom field editor is opened`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onAddCustomFieldClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(CustomFieldsViewModel.OpenCustomFieldEditor(null))
+    }
+
+    @Test
     fun `when updating a custom field, then custom fields are refreshed`() = testBlocking {
         val customField = CustomFieldUiModel(CUSTOM_FIELDS.first()).copy(value = "new value")
         setup()
