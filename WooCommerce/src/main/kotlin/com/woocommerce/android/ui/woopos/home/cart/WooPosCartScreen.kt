@@ -93,13 +93,23 @@ private fun WooPosCartScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
-            .padding(top = 40.dp.toAdaptivePadding())
     ) {
-        val (toolbar, body, checkoutButton, overlay) = createRefs()
+        val (topMargin, toolbar, body, checkoutButton, overlay) = createRefs()
+
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp.toAdaptivePadding())
+                .constrainAs(topMargin) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        )
 
         CartToolbar(
             modifier = Modifier.constrainAs(toolbar) {
-                top.linkTo(parent.top)
+                top.linkTo(topMargin.bottom)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
