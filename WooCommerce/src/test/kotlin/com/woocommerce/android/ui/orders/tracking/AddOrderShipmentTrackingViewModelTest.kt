@@ -8,6 +8,11 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.ShowTrackingNumberScanFailed
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -108,5 +113,29 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(0)).addOrderShipmentTracking(any(), any())
         assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
+    }
+
+    @Test
+    fun `when handling the barcode scanned success status it emits the scanned event with the status code`() = testBlocking {
+        val code = "123"
+        viewModel.handleBarcodeScannedStatus(CodeScannerStatus.Success(
+            code,
+            GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+        ))
+
+        assertThat((viewModel.event.value as SetScannedTrackingNumberEvent).trackingNumber).isEqualTo(
+            code)
+    }
+
+    @Test
+    fun `when handling the barcode scanned failure status it emits the scanned failed event with the error message`() = testBlocking {
+        val scannedStatus = CodeScannerStatus.Failure(
+            error = "Failed to recognize the barcode",
+            type = CodeScanningErrorType.NotFound
+        )
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        assertThat((viewModel.event.value as ShowTrackingNumberScanFailed).errorMessage).isEqualTo(
+            R.string.order_shipment_tracking_barcode_scanning_failed)
     }
 }
