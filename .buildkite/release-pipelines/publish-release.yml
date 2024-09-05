@@ -13,7 +13,7 @@ steps:
       install_gems
 
       echo '--- :package: Publish Release'
-      bundle exec fastlane publish_release skip_confirm:true
+      bundle exec fastlane publish_release skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
     agents:
       queue: "tumblr-metal"
     retry:

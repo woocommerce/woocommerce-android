@@ -508,11 +508,12 @@ platform :android do
   # This lane publishes a release on GitHub, tagging it on git, and backmerges the current release branch into the next release/ branch
   #
   # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
   #
   # @example Running the lane
-  #          bundle exec fastlane publish_release skip_confirm:true
+  #          bundle exec fastlane publish_release skip_confirm:true include_wear_app:true
   #
-  lane :publish_release do |skip_confirm: false|
+  lane :publish_release do |skip_confirm: false, include_wear_app: false|
     ensure_git_status_clean
     ensure_git_branch_is_release_branch
 
@@ -533,10 +534,14 @@ platform :android do
 
     UI.important "Publishing release #{version_number} on GitHub"
 
-    publish_github_release(
-      repository: GITHUB_REPO,
-      name: version_number
-    )
+    apps = [MOBILE_APP]
+    apps << WEAR_APP if include_wear_app
+    apps.each do |app|
+      publish_github_release(
+        repository: GITHUB_REPO,
+        name: app == WEAR_APP ? "#{version_number}w" : version_number
+      )
+    end
 
     create_backmerge_pr
 
