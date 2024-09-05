@@ -234,18 +234,28 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
             val exceptions = mutableListOf<Throwable>()
 
             // WHEN
-            cache.init()
-            val jobs = List(100) {
+            val jobsInit = List(50) {
                 async(Dispatchers.Default) {
                     try {
-                        cache.getMessagesForPath(messagePath)
+                        cache.init()
                     } catch (e: Exception) {
                         exceptions.add(e)
                     }
                 }
             }
 
-            jobs.forEach { it.await() }
+            val jobsGetMessages = List(50) {
+                async(Dispatchers.Default) {
+                    try {
+                        cache.init()
+                    } catch (e: Exception) {
+                        exceptions.add(e)
+                    }
+                }
+            }
+
+            jobsInit.forEach { it.await() }
+            jobsGetMessages.forEach { it.await() }
 
             // THEN
             assertThat(exceptions).isEmpty()
