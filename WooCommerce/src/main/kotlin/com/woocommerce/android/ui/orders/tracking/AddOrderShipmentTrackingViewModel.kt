@@ -10,13 +10,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPMENT_TRACKING_
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
-import com.woocommerce.android.ui.orders.creation.BarcodeOptions
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import com.woocommerce.android.ui.orders.creation.ScanningSource
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event

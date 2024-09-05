@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
@@ -26,7 +27,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintShipping
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
-import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelFormatOptions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShippingLabelPaperSizes
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -100,8 +100,8 @@ class OrderNavigator @Inject constructor() {
             }
 
             is OpenTrackingBarcodeScanning -> {
-                val action = AddOrderShipmentTrackingFragmentDirections.
-                actionAddOrderShipmentTrackingFragmentToBarcodeScanningFragment()
+                val action = AddOrderShipmentTrackingFragmentDirections
+                    .actionAddOrderShipmentTrackingFragmentToBarcodeScanningFragment()
                 fragment.findNavController().navigateSafely(action)
             }
 

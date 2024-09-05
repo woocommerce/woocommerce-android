@@ -2,17 +2,16 @@ package com.woocommerce.android.ui.orders.tracking
 
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.ShowTrackingNumberScanFailed
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import com.woocommerce.android.ui.orders.creation.CodeScanningErrorType
-import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
-import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
-import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.ShowTrackingNumberScanFailed
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -118,13 +117,16 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
     @Test
     fun `when handling the barcode scanned success status it emits the scanned event with the status code`() = testBlocking {
         val code = "123"
-        viewModel.handleBarcodeScannedStatus(CodeScannerStatus.Success(
-            code,
-            GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
-        ))
+        viewModel.handleBarcodeScannedStatus(
+            CodeScannerStatus.Success(
+                code,
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            )
+        )
 
         assertThat((viewModel.event.value as SetScannedTrackingNumberEvent).trackingNumber).isEqualTo(
-            code)
+            code
+        )
     }
 
     @Test
@@ -133,6 +135,7 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
         viewModel.handleBarcodeScannedStatus(scannedStatus)
 
         assertThat((viewModel.event.value as ShowTrackingNumberScanFailed).errorMessage).isEqualTo(
-            R.string.order_shipment_tracking_barcode_scanning_failed)
+            R.string.order_shipment_tracking_barcode_scanning_failed
+        )
     }
 }

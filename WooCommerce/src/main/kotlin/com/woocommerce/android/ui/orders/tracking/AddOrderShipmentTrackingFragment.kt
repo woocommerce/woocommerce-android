@@ -16,7 +16,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentAddShipmentTrackingBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
@@ -28,7 +27,6 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
-import com.woocommerce.android.ui.orders.creation.OrderCreateEditFormFragmentDirections
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.ShowTrackingNumberScanFailed
