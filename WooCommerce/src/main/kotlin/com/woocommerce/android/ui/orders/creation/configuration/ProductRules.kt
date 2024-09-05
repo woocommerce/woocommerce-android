@@ -148,23 +148,17 @@ class ProductConfiguration(
     val configurationType: ConfigurationType,
     val configuration: Map<String, String?>,
     val childrenConfiguration: Map<Long, Map<String, String?>>? = null,
-    val variableProductSelection: Map<Long, VariableProductSelection> = emptyMap()
+    private val variableProductSelection: Map<Long, VariableProductSelection> = emptyMap()
 ) : Parcelable {
     companion object {
         const val PARENT_KEY = -1L
     }
 
-    fun getMissingAttributesSelection(): Map<Long, List<VariantOption>> {
-        return rules.childrenRules
-            ?.filter { it.value.containsKey(VariableProductRule.KEY) }
-            ?.map { it.key to it.value[VariableProductRule.KEY] as? VariableProductRule }
-            ?.mapNotNull { (key, variableProductRule) ->
-                variableProductRule?.attributesDefault
-                    ?.filter { it.option == null }
-                    ?.let { key to it }
-            }?.associate { it }
-            ?: emptyMap()
-    }
+    fun getMissingAttributesSelection(
+        itemId: Long
+    ) = variableProductSelection[itemId]
+        ?.attributes
+        ?.filter { it.option == null }
 
     fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
         val issues = mutableMapOf<Long, String>()

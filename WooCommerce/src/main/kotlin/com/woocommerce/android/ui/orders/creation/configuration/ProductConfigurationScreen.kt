@@ -160,8 +160,7 @@ fun ProductConfigurationScreen(
                             val attributes = childMapEntry.value[VariableProductRule.KEY]
                                 .toAttributesFromConfigurationStringOrNull()
 
-                            val attributesPendingSelection = productConfiguration.variableProductSelection[item.id]
-                                ?.attributes?.filter { it.option == null }
+                            val attributesPendingSelection = productConfiguration.getMissingAttributesSelection(item.id)
 
                             val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
                             val isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false
@@ -195,8 +194,7 @@ fun ProductConfigurationScreen(
                             val attributes = childMapEntry.value[VariableProductRule.KEY]
                                 .toAttributesFromConfigurationStringOrNull()
 
-                            val attributesPendingSelection = productConfiguration.variableProductSelection[item.id]
-                                ?.attributes?.filter { it.option == null }
+                            val attributesPendingSelection = productConfiguration.getMissingAttributesSelection(item.id)
 
                             val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
                             val isIncluded = quantity > 0f
