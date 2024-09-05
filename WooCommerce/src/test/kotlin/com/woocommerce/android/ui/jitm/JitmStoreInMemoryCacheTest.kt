@@ -3,7 +3,11 @@ package com.woocommerce.android.ui.jitm
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -213,4 +217,37 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
         // THEN
         assertThat(cache.getMessagesForPath(messagePath = messagePath)).isEmpty()
     }
+
+    @Test
+    fun `given concurrent calls to getMessagesForPath, when init is not complete, then IllegalStateException is thrown`() =
+        testBlocking {
+            // GIVEN
+            val messagePath = "path:screen:1"
+            val jitmResponseArray = arrayOf(mock<JITMApiResponse>())
+            whenever(selectedSite.exists()).thenReturn(true)
+            whenever(pathsProvider.paths).thenReturn(listOf(messagePath))
+            whenever(jitmStore.fetchJitmMessage(any(), any(), any())).thenAnswer {
+                runBlocking { delay(10) }
+                WooResult(jitmResponseArray)
+            }
+
+            val exceptions = mutableListOf<Throwable>()
+
+            // WHEN
+            cache.init()
+            val jobs = List(100) {
+                async(Dispatchers.Default) {
+                    try {
+                        cache.getMessagesForPath(messagePath)
+                    } catch (e: Exception) {
+                        exceptions.add(e)
+                    }
+                }
+            }
+
+            jobs.forEach { it.await() }
+
+            // THEN
+            assertThat(exceptions).isEmpty()
+        }
 }
