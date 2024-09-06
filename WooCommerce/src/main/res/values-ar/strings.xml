@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-28 19:54:04+0000
+Translation-Revision-Date: 2024-09-02 15:54:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">خطأ في أثناء تحميل الحقول المخصصة</string>
+    <string name="custom_fields_list_title">حقول مخصصة</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">خلفية معتمة. انقر لتجاهل مربع الحوار.</string>
+    <string name="blaze_campaign_budget_weekly_spending">⁦%1$s⁩ أسبوعيًا</string>
+    <string name="blaze_campaign_budget_duration_endless_label">التشغيل حتى أوقفه</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">بدءًا من ⁦%1$s⁩</string>
+    <string name="blaze_campaign_budget_weekly_spend">الإنفاق الأسبوعي</string>
+    <string name="blaze_campaign_preview_days_duration_endless">⁦%1$s⁩ أسبوعيًا، بدءًا من ⁦%2$s⁩</string>
+    <string name="blaze_campaign_status_budget_weekly">أسبوعيًا</string>
+    <string name="blaze_campaign_status_budget_remaining">المتبقي</string>
+    <string name="blaze_campaign_status_budget_total">الإجمالي</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ← %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">مرات النقر</string>
+    <string name="stats_widget_battery_saver_error">يبدو أن الجهاز في وضع توفير الطاقة. \nيتعذر علينا تقديم معلومات المتجر الخاصة بك بينما يكون نشطًا.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">القائمة المنبثقة مع الخيارات. مرر للتنقل عبر العناصر.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">فتح قائمة شريط الأدوات</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">شريط أدوات يتضمن حالة قارئ البطاقات. القائمة مفتوحة. انقر نقرًا مزدوجًا للتفاعل.</string>
@@ -677,9 +691,6 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">جرّب مدفوعات %s من خلال بطاقة الخصم أو الائتمان لديك.\nستُستَرد المدفوعات عندما تنتهي.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">إنها سهلة وآمنة وخاصة.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">اقبل كل أنواع المدفوعات الشخصية، مباشرة\nعلى هاتفك. لا يلزم أجهزة إضافة.</string>
-    <string name="blaze_campaign_status_budget">الميزانية</string>
-    <string name="blaze_campaign_status_clicks">النقرات</string>
-    <string name="blaze_campaign_status_impressions">الانطباعات</string>
     <string name="blaze_campaign_status_rejected">مرفوض</string>
     <string name="blaze_campaign_status_completed">مكتمل</string>
     <string name="blaze_campaign_status_active">نشط</string>

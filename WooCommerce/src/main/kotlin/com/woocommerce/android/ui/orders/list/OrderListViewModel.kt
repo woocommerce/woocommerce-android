@@ -270,7 +270,7 @@ class OrderListViewModel @Inject constructor(
         )
         val listId = listDescriptor.uniqueIdentifier.value
         launch {
-            if (shouldUpdateOrdersList(listId)) {
+            if (shouldUpdateOrdersList(listDescriptor)) {
                 fetchOrdersAndOrderDependencies()
             } else {
                 // List is displayed from cache
