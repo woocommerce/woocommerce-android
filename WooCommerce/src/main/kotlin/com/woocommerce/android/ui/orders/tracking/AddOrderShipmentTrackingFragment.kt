@@ -188,6 +188,8 @@ class AddOrderShipmentTrackingFragment :
             viewModel.onCarrierClicked()
         }
 
+        // Let's not hide the scan button with the error icon
+        binding.trackingNumberLayout.errorIconDrawable = null
         binding.trackingNumberLayout.setEndIconOnClickListener {
             viewModel.onScanTrackingNumberClicked()
         }

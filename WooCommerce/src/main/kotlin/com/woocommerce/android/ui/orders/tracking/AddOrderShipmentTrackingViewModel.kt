@@ -109,6 +109,7 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
     }
 
     fun onScanTrackingNumberClicked() {
+        addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(trackingNumberError = null)
         triggerEvent(OpenTrackingBarcodeScanning)
     }
 
