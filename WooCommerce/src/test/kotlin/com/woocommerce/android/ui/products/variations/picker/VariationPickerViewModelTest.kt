@@ -2,10 +2,13 @@ package com.woocommerce.android.ui.products.variations.picker
 
 import androidx.lifecycle.Observer
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.VariationListItem
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.VariationPickerResult
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
@@ -88,7 +91,12 @@ class VariationPickerViewModelTest : BaseUnitTest() {
     @Test
     fun `onSelectVariation() triggers ExitWithResult event`() {
         // Arrange
-        val variation = VariationPickerViewModel.VariationListItem(1L, "Title", null, emptyList())
+        val variation = VariationListItem(
+            id = 1L,
+            title = "Title", imageUrl = null,
+            selectedAttributes = emptyList(),
+            selectableAttributes = emptyList()
+        )
         val observer: Observer<MultiLiveEvent.Event> = mock()
         viewModel.event.observeForever(observer)
 
@@ -96,12 +104,12 @@ class VariationPickerViewModelTest : BaseUnitTest() {
         viewModel.onSelectVariation(variation)
 
         // Assert
-        val expectedEvent = MultiLiveEvent.Event.ExitWithResult(
-            VariationPickerViewModel.VariationPickerResult(
+        val expectedEvent = ExitWithResult(
+            VariationPickerResult(
                 itemId = navArgs.itemId,
                 productId = navArgs.productId,
                 variationId = variation.id,
-                attributes = variation.selectedAttributes
+                attributes = variation.attributes
             )
         )
         verify(observer).onChanged(expectedEvent)
