@@ -1583,6 +1583,27 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `when back pressed, then should exit the flow`() = testBlocking {
+        init(scanState = SCANNING)
+
+        viewModel.onBackPressed()
+
+        assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
+    }
+
+    @Test
+    fun `given reader initialized, when back pressed, then should disconnect the reader`() = testBlocking {
+        whenever(cardReaderManager.initialized).thenReturn(true)
+
+        init(scanState = SCANNING)
+
+
+        viewModel.onBackPressed()
+
+        verify(cardReaderManager).disconnectReader()
+    }
+
     private fun initVM(
         cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
         cardReaderType: CardReaderType = EXTERNAL
