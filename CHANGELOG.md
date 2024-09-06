@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 20.3
+We’ve made several enhancements to boost your experience! This update fixes crashes on the orders list screen, resolves issues with the Jetpack plugin installation, and corrects toolbar glitches in the Package details and Order Tracking screens. We’ve also added a helpful blaze campaign reminder if you leave a campaign creation unfinished. Enjoy smoother navigation and a more reliable app!
+
 ## 20.2
 Create Blaze Evergreen campaigns effortlessly with our latest update! We've also improved tablet navigation—now you'll be redirected to the order details screen after payment for a smoother experience. Update today and enjoy the enhancements!
 
