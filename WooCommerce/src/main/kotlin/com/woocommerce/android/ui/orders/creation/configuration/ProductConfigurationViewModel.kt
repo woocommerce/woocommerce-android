@@ -100,6 +100,18 @@ class ProductConfigurationViewModel @Inject constructor(
         }
     }
 
+    /**
+     * The Bundles API demand that all variation attributes have a defined option,
+     * not effectively supporting Any as an option, since the Any selection is represented as null.
+     *
+     * However, the order creation will follow the attributes configuration set in the [VariantOption.id],
+     * which will eventually map the attributes to the defined options of the Variation, not the provided ones
+     * during the Bundle setup.
+     *
+     * The [OptionalVariantAttribute.defaultOption] serves exactly this purpose, it will select any option when
+     * Any is selected, or keep the already selected otherwise. Once the Order is created, Woo Core will ignore this
+     * information and just use the attributes defined for that Variation.
+     */
     fun onUpdateVariationConfiguration(itemId: Long, variationId: Long, attributes: List<OptionalVariantAttribute>) {
         configuration.update { currentConfig ->
             val newConfig = currentConfig?.updateVariationAttributesConfiguration(itemId, variationId, attributes)
