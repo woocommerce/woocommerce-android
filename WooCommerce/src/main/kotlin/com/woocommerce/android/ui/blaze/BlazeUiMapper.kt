@@ -34,7 +34,8 @@ private fun getBudgetValue(campaign: BlazeCampaignModel, currencyFormatter: Curr
             campaign.isEndlessCampaign -> getWeeklyBudget(campaign)
             CampaignStatusUi.isActive(campaign.uiStatus) -> (campaign.totalBudget - campaign.spentBudget)
             else -> campaign.totalBudget
-        }
+        },
+        BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE
     )
 
 private fun getWeeklyBudget(campaign: BlazeCampaignModel): Double =
