@@ -169,5 +169,8 @@ class VariationPickerViewModel @Inject constructor(
             option = option.option,
             selectableOptions = selectableOptions
         )
+
+        val defaultOption
+            get() = option ?: selectableOptions.firstOrNull()
     }
 }

@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGED_FIELD_VARIATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_OTHER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.orders.creation.GetProductRules
 import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule.Companion.VARIATION_ATTRIBUTES
 import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule.Companion.VARIATION_ID
@@ -103,8 +104,9 @@ class ProductConfigurationViewModel @Inject constructor(
         configuration.update { currentConfig ->
             val newConfig = currentConfig?.updateVariationAttributesConfiguration(itemId, variationId, attributes)
 
-            attributes.filter { it.option != null }
-                .takeIf { it.isNotEmpty() }
+            attributes.takeIf { it.isNotEmpty() }
+                ?.map { VariantOption(it.id, it.name, it.defaultOption) }
+                ?.filter { it.option != null }
                 .let { mapOf(VARIATION_ID to variationId, VARIATION_ATTRIBUTES to it) }
                 .let { gson.toJson(it) }
                 .let { newConfig?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
