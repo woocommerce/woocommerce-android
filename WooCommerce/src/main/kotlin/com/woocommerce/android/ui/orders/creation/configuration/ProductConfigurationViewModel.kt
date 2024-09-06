@@ -12,10 +12,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGED_FIELD_VARIATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_OTHER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.orders.creation.GetProductRules
 import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule.Companion.VARIATION_ATTRIBUTES
 import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule.Companion.VARIATION_ID
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.OptionalVariantAttribute
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -99,7 +99,7 @@ class ProductConfigurationViewModel @Inject constructor(
         }
     }
 
-    fun onUpdateVariationConfiguration(itemId: Long, variationId: Long, attributes: List<VariantOption>) {
+    fun onUpdateVariationConfiguration(itemId: Long, variationId: Long, attributes: List<OptionalVariantAttribute>) {
         configuration.update { currentConfig ->
             val newConfig = currentConfig?.updateVariationAttributesConfiguration(itemId, variationId, attributes)
 

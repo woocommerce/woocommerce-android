@@ -159,8 +159,11 @@ fun ProductConfigurationScreen(
 
                             val attributes = childMapEntry.value[VariableProductRule.KEY]
                                 .toAttributesFromConfigurationStringOrNull()
+                                ?: emptyList()
 
-                            val attributesPendingSelection = productConfiguration.getInvalidAttributesFrom(item.id)
+                            val attributesPendingSelection = productConfiguration
+                                .getInvalidAttributesFrom(item.id)
+                                ?: emptyList()
 
                             val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
                             val isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false
@@ -193,8 +196,11 @@ fun ProductConfigurationScreen(
 
                             val attributes = childMapEntry.value[VariableProductRule.KEY]
                                 .toAttributesFromConfigurationStringOrNull()
+                                ?: emptyList()
 
-                            val attributesPendingSelection = productConfiguration.getInvalidAttributesFrom(item.id)
+                            val attributesPendingSelection = productConfiguration
+                                .getInvalidAttributesFrom(item.id)
+                                ?: emptyList()
 
                             val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
                             val isIncluded = quantity > 0f
@@ -776,8 +782,8 @@ fun VariableQuantityProductItem(
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
     minValue: Float? = null,
-    attributes: List<VariantOption>? = null,
-    pendingAttributes: List<VariantOption>? = null,
+    attributes: List<VariantOption>,
+    pendingAttributes: List<VariantAttribute>,
     isSelectionEnabled: Boolean = true
 ) {
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
@@ -864,8 +870,8 @@ fun OptionalVariableQuantityProductItem(
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
     minValue: Float? = null,
-    attributes: List<VariantOption>? = null,
-    pendingAttributes: List<VariantOption>? = null,
+    attributes: List<VariantOption>,
+    pendingAttributes: List<VariantAttribute>,
     isSelectionEnabled: Boolean = true
 ) {
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
@@ -940,7 +946,7 @@ fun OptionalVariableQuantityProductItem(
 @Composable
 fun VariableSelection(
     attributes: List<VariantOption>?,
-    pendingAttributes: List<VariantOption>?,
+    pendingAttributes: List<VariantAttribute>?,
     onSelectAttributes: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -1013,7 +1019,9 @@ fun VariableQuantityProductItemPreview() {
             info = "Attribute 1 • Attribute 2",
             quantity = 1f,
             onQuantityChanged = {},
-            onSelectAttributes = {}
+            onSelectAttributes = {},
+            attributes = emptyList(),
+            pendingAttributes = emptyList()
         )
     }
 }

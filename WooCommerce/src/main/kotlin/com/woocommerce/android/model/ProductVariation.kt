@@ -261,7 +261,8 @@ open class ProductVariation(
 data class VariantOption(
     val id: Long?,
     val name: String?,
-    val option: String?
+    val option: String?,
+    val selectableOptions: List<String> = emptyList()
 ) : Parcelable {
     constructor(sourceModel: WCProductVariationModel.ProductVariantOption) : this(
         id = sourceModel.id,

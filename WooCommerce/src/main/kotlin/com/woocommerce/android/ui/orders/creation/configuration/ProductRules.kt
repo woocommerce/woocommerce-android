@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.OptionalVariantAttribute
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.parcelize.Parcelize
@@ -246,11 +247,20 @@ class ProductConfiguration(
     fun updateVariationAttributesConfiguration(
         itemId: Long,
         variationId: Long,
-        attributes: List<VariantOption>
+        attributes: List<OptionalVariantAttribute>
     ): ProductConfiguration {
+        val variantAttributes = attributes.map {
+            VariantAttribute(
+                id = it.id,
+                name = it.name,
+                option = it.option,
+                selectableOptions = it.selectableOptions
+            )
+        }
+
         val updatedVariableProductSelection = variationAttributesSelection[itemId]
-            ?.copy(variationId = variationId, attributes = attributes)
-            ?: VariableProductSelection(variationId, attributes)
+            ?.copy(variationId = variationId, attributes = variantAttributes)
+            ?: VariableProductSelection(variationId, variantAttributes)
 
         return variationAttributesSelection.toMutableMap()
             .apply { put(itemId, updatedVariableProductSelection) }
@@ -269,8 +279,19 @@ class ProductConfiguration(
 @Parcelize
 data class VariableProductSelection(
     val variationId: Long,
-    val attributes: List<VariantOption>
+    val attributes: List<VariantAttribute>
 ) : Parcelable
+
+@Parcelize
+data class VariantAttribute(
+    val id: Long?,
+    val name: String?,
+    val option: String?,
+    val selectableOptions: List<String>
+) : Parcelable {
+    val suggestedOption
+        get() = selectableOptions.firstOrNull()
+}
 
 enum class ConfigurationType { BUNDLE, UNKNOWN }
 
