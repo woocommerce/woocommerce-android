@@ -1598,7 +1598,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
         init(scanState = SCANNING)
 
-
         viewModel.onBackPressed()
 
         verify(cardReaderManager).disconnectReader()
