@@ -897,6 +897,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         barcodeFormat = status.format
                     )
                 )
+                viewState = viewState.copy(isUpdatingOrderDraft = false)
             }
 
             CodeScannerStatus.NotFound -> {
