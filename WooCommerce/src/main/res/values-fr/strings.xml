@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-29 17:54:03+0000
+Translation-Revision-Date: 2024-09-04 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">Erreur lors du chargement des champs personnalisés</string>
+    <string name="custom_fields_list_title">Champs personnalisés</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Arrière-plan peu éclairé. Appuyez pour ignorer la fenêtre de dialogue.</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s par semaine</string>
+    <string name="blaze_campaign_budget_duration_endless_label">Exécuter jusqu’à ce que je l’arrête</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">À partir du %1$s</string>
+    <string name="blaze_campaign_budget_weekly_spend">Dépense hebdomadaire</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%1$s par semaine à partir du %2$s</string>
+    <string name="blaze_campaign_status_budget_weekly">Hebdomadaire</string>
+    <string name="blaze_campaign_status_budget_remaining">Restant</string>
+    <string name="blaze_campaign_status_budget_total">Total</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">Nombre de clics</string>
+    <string name="stats_widget_battery_saver_error">Il semblerait que votre appareil soit en mode Économie d’énergie. \nNous ne pouvons pas fournir d’informations sur votre boutique tant qu’il est activé.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Menu contextuel avec options. Balayez pour naviguer parmi les éléments.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">Ouvrir le menu de la barre d’outils</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">Barre d’outils avec l’état du lecteur de carte. Le menu est ouvert. Appuyez deux fois pour interagir.</string>
@@ -677,9 +691,6 @@ Language: fr
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Essayez de procéder à un paiement %s avec votre carte de débit ou de crédit.\nLe paiement sera remboursé lorsque vous aurez terminé.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">C’est facile, sûr et privé.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Acceptez tous les types de paiements en personne directement\nsur votre téléphone. Aucun matériel supplémentaire nécessaire.</string>
-    <string name="blaze_campaign_status_budget">Budget</string>
-    <string name="blaze_campaign_status_clicks">Clics</string>
-    <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_rejected">Refusée</string>
     <string name="blaze_campaign_status_completed">Terminée</string>
     <string name="blaze_campaign_status_active">Active</string>
