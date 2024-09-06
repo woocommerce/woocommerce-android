@@ -219,7 +219,7 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given concurrent calls to getMessagesForPath, when init is not complete, then IllegalStateException is thrown`() =
+    fun `given concurrent calls to getMessagesForPath, when init is not complete, then Exceptions are not thrown`() =
         testBlocking {
             // GIVEN
             val messagePath = "path:screen:1"
@@ -247,7 +247,7 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
             val jobsGetMessages = List(50) {
                 async(Dispatchers.Default) {
                     try {
-                        cache.init()
+                        cache.getMessagesForPath(messagePath)
                     } catch (e: Exception) {
                         exceptions.add(e)
                     }
