@@ -523,9 +523,7 @@ class CardReaderConnectViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        if (arguments.cardReaderFlowParam == CardReaderFlowParam.WooPosConnection) {
-            onCancelClicked()
-        }
+        onCancelClicked()
     }
 
     private fun exitFlow(connected: Boolean) {
