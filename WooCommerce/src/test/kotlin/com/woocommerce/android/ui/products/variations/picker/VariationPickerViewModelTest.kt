@@ -93,7 +93,8 @@ class VariationPickerViewModelTest : BaseUnitTest() {
         // Arrange
         val variation = VariationListItem(
             id = 1L,
-            title = "Title", imageUrl = null,
+            title = "Title",
+            imageUrl = null,
             selectedAttributes = emptyList(),
             selectableAttributes = emptyList()
         )
