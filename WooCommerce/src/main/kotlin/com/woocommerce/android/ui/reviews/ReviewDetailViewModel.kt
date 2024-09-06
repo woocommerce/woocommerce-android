@@ -59,7 +59,7 @@ class ReviewDetailViewModel @Inject constructor(
             viewState.productReview?.let { review ->
                 reviewModerationHandler.postModerationRequest(review, newStatus)
                 // Close the detail view
-                triggerEvent(Exit)
+                closeDetailScreen()
             }
         } else {
             // Network is not connected
@@ -120,6 +120,7 @@ class ReviewDetailViewModel @Inject constructor(
                             )
                         }
                     }
+
                     RequestResult.ERROR -> triggerEvent(ShowSnackbar(R.string.wc_load_review_error))
                     RequestResult.API_ERROR -> Unit // Do nothing
                     RequestResult.RETRY -> Unit // Do nothing
@@ -132,12 +133,16 @@ class ReviewDetailViewModel @Inject constructor(
     }
 
     fun onBackPressed(): Boolean {
+        closeDetailScreen()
+        return false
+    }
+
+    private fun closeDetailScreen() {
         if (launchedFromNotification) {
             triggerEvent(NavigateBackFromNotification)
         } else {
             triggerEvent(Exit)
         }
-        return false
     }
 
     fun onReviewReplied(reviewReply: String) {

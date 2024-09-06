@@ -13,8 +13,8 @@ data class BlazeCampaignUi(
     val product: BlazeProductUi,
     val status: CampaignStatusUi?,
     val isEndlessCampaign: Boolean,
-    val impressions: Long,
-    val clicks: Long,
+    val impressions: String,
+    val clicks: String,
     val formattedBudget: String,
     @StringRes val budgetLabel: Int
 )
