@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -183,6 +182,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -194,7 +194,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreationProductMapper: OrderCreationProductMapper,
     private val createOrderItem: CreateOrderItem,
     private val tracker: AnalyticsTrackerWrapper,
-    private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
@@ -955,15 +954,11 @@ class OrderCreateEditViewModel @Inject constructor(
         barcodeOptions: BarcodeOptions,
         source: ScanningSource
     ) {
-        if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
-            fetchProductBySKURemovingCheckDigit(barcodeOptions)
-        } else {
-            handleFetchProductBySKUFailure(
-                source,
-                barcodeOptions,
-                "Empty data response (no product found for the SKU)"
-            )
-        }
+        handleFetchProductBySKUFailure(
+            source,
+            barcodeOptions,
+            "Empty data response (no product found for the SKU)"
+        )
     }
 
     private fun handleFetchProductBySKUFailure(
@@ -980,30 +975,6 @@ class OrderCreateEditViewModel @Inject constructor(
             resourceProvider.getString(string.order_creation_barcode_scanning_unable_to_add_product, barcodeOptions.sku)
         )
     }
-
-    private fun fetchProductBySKURemovingCheckDigit(barcodeOptions: BarcodeOptions) {
-        viewState = viewState.copy(isUpdatingOrderDraft = true)
-        fetchProductBySKU(
-            barcodeOptions.copy(
-                sku = checkDigitRemoverFactory.getCheckDigitRemoverFor(
-                    barcodeOptions.barcodeFormat
-                ).getSKUWithoutCheckDigit(barcodeOptions.sku),
-                shouldHandleCheckDigitOnFailure = false
-            )
-        )
-    }
-
-    private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
-        (isBarcodeFormatUPC(barcodeOptions) || isBarcodeFormatEAN(barcodeOptions)) &&
-            barcodeOptions.shouldHandleCheckDigitOnFailure
-
-    private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
-        barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCA ||
-            barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCE
-
-    private fun isBarcodeFormatEAN(barcodeOptions: BarcodeOptions) =
-        barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
-            barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
     @Suppress("LongMethod", "ReturnCount")
     private fun addScannedProduct(
