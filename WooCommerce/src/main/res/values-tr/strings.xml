@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-29 09:54:04+0000
+Translation-Revision-Date: 2024-09-02 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">Özel alanlar yüklenirken hata oluştu</string>
+    <string name="custom_fields_list_title">Özel Alanlar</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Soluk arkaplan. Pencereyi kapatmak için dokunun.</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s haftalık</string>
+    <string name="blaze_campaign_budget_duration_endless_label">Ben durdurana kadar çalıştır</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Şundan itibaren: %1$s</string>
+    <string name="blaze_campaign_budget_weekly_spend">Haftalık harcama</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%2$s tarihinden itibaren haftalık %1$s</string>
+    <string name="blaze_campaign_status_budget_weekly">Haftalık</string>
+    <string name="blaze_campaign_status_budget_remaining">Kalan</string>
+    <string name="blaze_campaign_status_budget_total">Toplam</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">Tıklanmalar</string>
+    <string name="stats_widget_battery_saver_error">Görünüşe göre cihazınız Pil Koruyucu modunda. \nBu etkinken mağaza bilgilerinizi sağlayamıyoruz</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Seçenekleri olan açılır pencere menüsü. Öğeler arasında gezinmek için kaydırın.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">Araç çubuğu menüsünü aç</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">Kart okuyucu durumu olan araç çubuğu. Menü açık. Etkileşime girmek için iki kez dokunun.</string>
@@ -677,9 +691,6 @@ Language: tr
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Banka veya kredi kartınızla bir %s ödemesi yapmayı deneyin.\nÖdeme, işiniz bittiğinde iade edilir.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Kolay, güvenli ve gizlidir.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Doğrudan telefonunuzdan her türde şahsen ödemeyi\nkabul edin. Ekstra donanım gerektirmez.</string>
-    <string name="blaze_campaign_status_budget">Bütçe</string>
-    <string name="blaze_campaign_status_clicks">Tıklamalar</string>
-    <string name="blaze_campaign_status_impressions">İzlenimler</string>
     <string name="blaze_campaign_status_rejected">Reddedildi</string>
     <string name="blaze_campaign_status_completed">Tamamlandı</string>
     <string name="blaze_campaign_status_active">Etkin</string>
