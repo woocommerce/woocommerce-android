@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation
 
-
 import com.woocommerce.android.ui.orders.creation.configuration.GetProductConfiguration
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
