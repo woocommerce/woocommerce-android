@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.campaigs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.util.CurrencyFormatter
@@ -39,12 +40,14 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private val siteModel: SiteModel = mock()
     private val campaignsEntityFlow = flow { emit(listOf(BLAZE_CAMPAIGN_MODEL)) }
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val numberExtensionsWrapper: NumberExtensionsWrapper = mock()
 
     private lateinit var viewModel: BlazeCampaignListViewModel
 
     @Before
     fun setup() = testBlocking {
         whenever(selectedSite.get()).thenReturn(siteModel)
+        whenever(numberExtensionsWrapper.compactNumberCompat(any(), any())).thenReturn("0")
         whenever(currencyFormatter.formatCurrencyRounded(TOTAL_BUDGET)).thenReturn(TOTAL_BUDGET.toString())
         whenever(blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get())).thenReturn(campaignsEntityFlow)
         whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
@@ -149,7 +152,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             blazeUrlsHelper = blazeUrlsHelper,
             appPrefsWrapper = appPrefsWrapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
-            currencyFormatter = currencyFormatter
+            currencyFormatter = currencyFormatter,
+            numberExtensionsWrapper = numberExtensionsWrapper
         )
     }
 

@@ -6,10 +6,13 @@
 -----
 - [**] Stopped potential crash in the orders list screen when tapping "Filters" button [https://github.com/woocommerce/woocommerce-android/pull/12482]
 - [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
+- [*] [Internal] Updated the Compose WebView component to handle choosing files from the device when the web page requests it [https://github.com/woocommerce/woocommerce-android/pull/12499]
 - [*] Fixes toolbar shown twice on Package details screen while adding shipping label [https://github.com/woocommerce/woocommerce-android/pull/12489]
 - [*] Fixes navigation from product review detail screen when opened from notification [https://github.com/woocommerce/woocommerce-android/pull/12514]
 - [*] Added a blaze campaign reminder that appears after abandoning a campaign creation. [https://github.com/woocommerce/woocommerce-android/pull/12452]
+- [**] [Internal] Fix a crash during JITM cache initialisation
 - [*] Fixes an issue that caused the an incorrect App Bar visibility in some rare cases [https://github.com/woocommerce/woocommerce-android/pull/12523]
+- [*] Fixes duplicated toolbar in the Order Tracking Carriers List [https://github.com/woocommerce/woocommerce-android/pull/12537]
 - [*] Fixes an issue on the Order Tracking screen that was causing the carrier being reset unintentionally [https://github.com/woocommerce/woocommerce-android/pull/12535]
 
 20.2

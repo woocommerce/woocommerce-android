@@ -33,8 +33,8 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Circular
+import com.woocommerce.android.ui.compose.component.web.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WebViewProgressIndicator.Circular
 import com.woocommerce.android.ui.compose.drawShadow
 import com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreViewModel.LaunchStoreState
 import org.wordpress.android.fluxc.network.UserAgent

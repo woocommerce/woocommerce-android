@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTR
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
@@ -56,7 +57,8 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     private val productListRepository: ProductListRepository,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val numberExtensionsWrapper: NumberExtensionsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(_refreshTrigger, (parentViewModel.refreshTrigger))
@@ -142,7 +144,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
 
     private fun showUiForCampaign(campaign: BlazeCampaignModel): DashboardBlazeCampaignState {
         return Campaign(
-            campaign = campaign.toUiState(currencyFormatter),
+            campaign = campaign.toUiState(currencyFormatter, numberExtensionsWrapper),
             onCampaignClicked = {
                 parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)
                 analyticsTrackerWrapper.track(
