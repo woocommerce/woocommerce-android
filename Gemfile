@@ -5,11 +5,11 @@ source 'https://rubygems.org'
 gem 'danger-dangermattic', '~> 1.1'
 gem 'fastlane', '~> 2.216'
 gem 'nokogiri'
-gem 'rubocop', '~> 1.60'
+gem 'rubocop', '~> 1.65'
 
 ### Fastlane Plugins
 
-gem 'fastlane-plugin-wpmreleasetoolkit', '~> 11.0'
+gem 'fastlane-plugin-wpmreleasetoolkit', '~> 12.0'
 # gem 'fastlane-plugin-wpmreleasetoolkit', path: '../../release-toolkit'
 # gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: ''
 
