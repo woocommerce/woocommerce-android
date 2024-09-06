@@ -1,23 +1,25 @@
 package com.woocommerce.android.ui.blaze
 
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.compactNumberCompat
+import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 
-fun BlazeCampaignModel.toUiState(currencyFormatter: CurrencyFormatter) =
-    BlazeCampaignUi(
-        product = BlazeProductUi(
-            name = title,
-            imgUrl = imageUrl.orEmpty(),
-        ),
-        status = CampaignStatusUi.fromString(uiStatus),
-        isEndlessCampaign = isEndlessCampaign,
-        impressions = compactNumberCompat(impressions),
-        clicks = compactNumberCompat(clicks),
-        formattedBudget = getBudgetValue(this, currencyFormatter),
-        budgetLabel = getBudgetTitle(this)
-    )
+fun BlazeCampaignModel.toUiState(
+    currencyFormatter: CurrencyFormatter,
+    numberExtensionsWrapper: NumberExtensionsWrapper
+) = BlazeCampaignUi(
+    product = BlazeProductUi(
+        name = title,
+        imgUrl = imageUrl.orEmpty(),
+    ),
+    status = CampaignStatusUi.fromString(uiStatus),
+    isEndlessCampaign = isEndlessCampaign,
+    impressions = numberExtensionsWrapper.compactNumberCompat(impressions),
+    clicks = numberExtensionsWrapper.compactNumberCompat(clicks),
+    formattedBudget = getBudgetValue(this, currencyFormatter),
+    budgetLabel = getBudgetTitle(this)
+)
 
 private fun getBudgetTitle(campaign: BlazeCampaignModel) =
     when {
