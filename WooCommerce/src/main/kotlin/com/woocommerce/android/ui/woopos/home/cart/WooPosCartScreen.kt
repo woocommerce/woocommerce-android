@@ -2,10 +2,15 @@
 
 package com.woocommerce.android.ui.woopos.home.cart
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -78,61 +83,108 @@ fun WooPosCartScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun WooPosCartScreen(
     modifier: Modifier = Modifier,
     state: WooPosCartState,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    Box(
+    ConstraintLayout(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
-        Column(
-            modifier = modifier
-                .padding(
-                    top = 40.dp.toAdaptivePadding(),
-                    bottom = 16.dp.toAdaptivePadding()
-                )
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                CartToolbar(
-                    toolbar = state.toolbar,
-                    onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
-                    onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
-                )
+        val (topMargin, toolbar, body, checkoutButton, overlay) = createRefs()
 
-                when (state.body) {
-                    WooPosCartState.Body.Empty -> {
-                        CartBodyEmpty()
-                    }
-
-                    is WooPosCartState.Body.WithItems -> {
-                        CartBodyWithItems(
-                            items = state.body.itemsInCart,
-                            areItemsRemovable = state.areItemsRemovable,
-                            onUIEvent = onUIEvent,
-                        )
-                    }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp.toAdaptivePadding())
+                .constrainAs(topMargin) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
                 }
+        )
+
+        CartToolbar(
+            modifier = Modifier.constrainAs(toolbar) {
+                top.linkTo(topMargin.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            toolbar = state.toolbar,
+            onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
+            onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) },
+        )
+
+        when (state.body) {
+            WooPosCartState.Body.Empty -> {
+                CartBodyEmpty(
+                    modifier = Modifier.constrainAs(body) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        height = Dimension.fillToConstraints
+                    }
+                )
             }
 
-            if (state.isCheckoutButtonVisible) {
-                WooPosButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp.toAdaptivePadding()),
-                    text = stringResource(R.string.woopos_checkout_button),
-                    onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+            is WooPosCartState.Body.WithItems -> {
+                val productsTopMargin = 20.dp.toAdaptivePadding()
+                CartBodyWithItems(
+                    modifier = Modifier.constrainAs(body) {
+                        top.linkTo(toolbar.bottom, margin = productsTopMargin)
+                        bottom.linkTo(checkoutButton.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        height = Dimension.fillToConstraints
+                    },
+                    items = state.body.itemsInCart,
+                    areItemsRemovable = state.areItemsRemovable,
+                    onUIEvent = onUIEvent
                 )
             }
         }
-        CartOverlay(state)
+
+        AnimatedVisibility(
+            visible = state.isCheckoutButtonVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp.toAdaptivePadding())
+                .constrainAs(checkoutButton) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        ) {
+            WooPosButton(
+                text = stringResource(R.string.woopos_checkout_button),
+                onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+            )
+        }
+
+        CartOverlay(
+            modifier = Modifier.constrainAs(overlay) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                height = Dimension.fillToConstraints
+            },
+            state = state,
+        )
     }
 }
 
 @Composable
-private fun CartOverlay(state: WooPosCartState) {
+private fun CartOverlay(
+    modifier: Modifier = Modifier,
+    state: WooPosCartState,
+) {
     val cartOverlayIntensityAnimated by animateFloatAsState(
         when (state.body) {
             WooPosCartState.Body.Empty -> .6f
@@ -141,7 +193,7 @@ private fun CartOverlay(state: WooPosCartState) {
         label = "cartOverlayAnimated"
     )
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(
                 color = MaterialTheme.colors.background.copy(alpha = cartOverlayIntensityAnimated),
@@ -150,10 +202,9 @@ private fun CartOverlay(state: WooPosCartState) {
 }
 
 @Composable
-fun CartBodyEmpty() {
+fun CartBodyEmpty(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
             .padding(16.dp.toAdaptivePadding()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -177,17 +228,16 @@ fun CartBodyEmpty() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartBodyWithItems(
+    modifier: Modifier = Modifier,
     items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    Spacer(modifier = Modifier.height(20.dp.toAdaptivePadding()))
-
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
 
     WooPosLazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .padding(horizontal = 16.dp.toAdaptivePadding()),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
@@ -230,6 +280,7 @@ private fun ScrollToTopHandler(
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun CartToolbar(
+    modifier: Modifier = Modifier,
     toolbar: WooPosCartState.Toolbar,
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
@@ -237,19 +288,23 @@ private fun CartToolbar(
     val iconSize = 28.dp
     val iconTitlePadding = 16.dp.toAdaptivePadding()
     val titleOffset by animateDpAsState(
-        targetValue = if (toolbar.icon != null) iconSize + iconTitlePadding else 0.dp,
+        targetValue = if (toolbar.backIconVisible) iconSize + iconTitlePadding else 0.dp,
         animationSpec = tween(durationMillis = 300),
         label = "titleOffset"
     )
 
     ConstraintLayout(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(40.dp)
     ) {
         val (backButton, title, spacer, itemsCount, clearAllButton) = createRefs()
 
-        toolbar.icon?.let {
+        AnimatedVisibility(
+            visible = toolbar.backIconVisible,
+            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
+            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
+        ) {
             IconButton(
                 onClick = { onBackClicked() },
                 modifier = Modifier
@@ -260,7 +315,7 @@ private fun CartToolbar(
                     .padding(start = 8.dp.toAdaptivePadding())
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(it),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                     contentDescription = stringResource(R.string.woopos_cart_back_content_description),
                     tint = MaterialTheme.colors.onBackground,
                     modifier = Modifier.size(iconSize)
@@ -450,7 +505,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
             modifier = modifier,
             state = WooPosCartState(
                 toolbar = WooPosCartState.Toolbar(
-                    icon = null,
+                    backIconVisible = false,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
@@ -495,7 +550,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
             modifier = modifier,
             state = WooPosCartState(
                 toolbar = WooPosCartState.Toolbar(
-                    icon = R.drawable.ic_back_24dp,
+                    backIconVisible = true,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
@@ -539,7 +594,7 @@ fun WooPosCartScreenEmptyPreview(modifier: Modifier = Modifier) {
             modifier = modifier,
             state = WooPosCartState(
                 toolbar = WooPosCartState.Toolbar(
-                    icon = null,
+                    backIconVisible = false,
                     itemsCount = null,
                     isClearAllButtonVisible = false
                 ),
