@@ -102,15 +102,10 @@ class ProductConfigurationViewModel @Inject constructor(
     fun onUpdateVariationConfiguration(itemId: Long, variationId: Long, attributes: List<VariantOption>) {
         configuration.update { currentConfiguration ->
             var newConfig = currentConfiguration?.updateVariationConfiguration(itemId, variationId, attributes)
-
-            val invalidAttributes = newConfig?.getInvalidAttributesFrom(itemId) ?: emptyList()
-            newConfig = if (invalidAttributes.isEmpty()) {
-                mapOf(VARIATION_ID to variationId, VARIATION_ATTRIBUTES to attributes)
-                    .let { gson.toJson(it) }
-                    .let { newConfig?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
-            } else {
-                newConfig?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, null)
-            }
+            val validAttributes = attributes.filter { it.option != null }.takeIf { it.isNotEmpty() }
+            newConfig = mapOf(VARIATION_ID to variationId, VARIATION_ATTRIBUTES to validAttributes)
+                .let { gson.toJson(it) }
+                .let { newConfig?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
 
             newConfig
         }
