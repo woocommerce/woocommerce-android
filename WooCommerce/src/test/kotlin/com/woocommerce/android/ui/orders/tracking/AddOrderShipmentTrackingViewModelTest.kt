@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.tracking
 
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -112,6 +113,13 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(0)).addOrderShipmentTracking(any(), any())
         assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
+    }
+
+    @Test
+    fun `when clicking on the scan button it emits the right event`() = testBlocking {
+        viewModel.onScanTrackingNumberClicked()
+
+        assertThat(viewModel.event.value).isInstanceOf(OpenTrackingBarcodeScanning::class.java)
     }
 
     @Test
