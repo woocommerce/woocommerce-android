@@ -27,10 +27,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
-import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class ProductConfigurationViewModel @Inject constructor(
@@ -109,8 +109,6 @@ class ProductConfigurationViewModel @Inject constructor(
                 .let { gson.toJson(it) }
                 .let { newConfig?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
         }
-
-
     }
 
     fun onCancel() {
