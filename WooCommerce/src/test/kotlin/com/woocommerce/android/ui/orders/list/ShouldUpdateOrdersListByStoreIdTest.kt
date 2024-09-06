@@ -27,7 +27,7 @@ class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
     fun `when should update return true and list state is not refresh, then the result is the expected`() = testBlocking {
         val listId = 1
         val key = "key-1"
-        val listDescriptor: WCOrderListDescriptor = mock{
+        val listDescriptor: WCOrderListDescriptor = mock {
             on { uniqueIdentifier }.doReturn(ListDescriptorUniqueIdentifier(listId))
         }
         whenever(lastUpdateDataStore.getLastUpdateKeyByOrdersListId(eq(listId))).doReturn(key)
@@ -43,7 +43,7 @@ class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
     fun `when should update return true and list state is refresh, then the result is the expected`() = testBlocking {
         val listId = 1
         val key = "key-1"
-        val listDescriptor: WCOrderListDescriptor = mock{
+        val listDescriptor: WCOrderListDescriptor = mock {
             on { uniqueIdentifier }.doReturn(ListDescriptorUniqueIdentifier(listId))
         }
         whenever(lastUpdateDataStore.getLastUpdateKeyByOrdersListId(eq(listId))).doReturn(key)
@@ -59,7 +59,7 @@ class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
     fun `when should update return false and list state is refresh, then the result is the expected`() = testBlocking {
         val listId = 1
         val key = "key-1"
-        val listDescriptor: WCOrderListDescriptor = mock{
+        val listDescriptor: WCOrderListDescriptor = mock {
             on { uniqueIdentifier }.doReturn(ListDescriptorUniqueIdentifier(listId))
         }
         whenever(lastUpdateDataStore.getLastUpdateKeyByOrdersListId(eq(listId))).doReturn(key)
@@ -75,7 +75,7 @@ class ShouldUpdateOrdersListByStoreIdTest : BaseUnitTest() {
     fun `when should update return false and list state is not refresh, then the result is the expected`() = testBlocking {
         val listId = 1
         val key = "key-1"
-        val listDescriptor: WCOrderListDescriptor = mock{
+        val listDescriptor: WCOrderListDescriptor = mock {
             on { uniqueIdentifier }.doReturn(ListDescriptorUniqueIdentifier(listId))
         }
         whenever(lastUpdateDataStore.getLastUpdateKeyByOrdersListId(eq(listId))).doReturn(key)

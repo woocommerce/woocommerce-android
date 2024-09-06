@@ -13,7 +13,7 @@ class ShouldUpdateOrdersList @Inject constructor(
 ) {
     suspend operator fun invoke(listDescriptor: ListDescriptor): Boolean {
         val listId = listDescriptor.uniqueIdentifier.value
-        val shouldUpdateByState= listStore.getListState(listDescriptor) == ListState.NEEDS_REFRESH
+        val shouldUpdateByState = listStore.getListState(listDescriptor) == ListState.NEEDS_REFRESH
         val shouldUpdateByCache = lastUpdateDataStore.getLastUpdateKeyByOrdersListId(listId).let { key ->
             lastUpdateDataStore.shouldUpdateData(key).first()
         }
