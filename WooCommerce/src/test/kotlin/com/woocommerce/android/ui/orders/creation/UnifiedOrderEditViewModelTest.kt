@@ -567,14 +567,16 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     fun `when scan succeeds, then set isUpdatingOrderDraft to true`() {
         createSut()
         val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-        var isUpdatingOrderDraft: Boolean? = null
+        var isUpdatingOrderDraft: List<Boolean> = emptyList()
         sut.viewStateData.observeForever { _, viewState ->
-            isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            isUpdatingOrderDraft += viewState.isUpdatingOrderDraft
         }
 
         sut.handleBarcodeScannedStatus(scannedStatus)
 
-        assertTrue(isUpdatingOrderDraft!!)
+        assertFalse(isUpdatingOrderDraft[0])
+        assertTrue(isUpdatingOrderDraft[1])
+        assertFalse(isUpdatingOrderDraft[2])
     }
 
     @Test
