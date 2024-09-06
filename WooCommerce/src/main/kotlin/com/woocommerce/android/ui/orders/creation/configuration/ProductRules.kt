@@ -159,7 +159,7 @@ class ProductConfiguration(
         itemId: Long
     ) = variationAttributesSelection[itemId]
         ?.attributes
-        ?.filter { it.option == null }
+        ?.filter { it.selectedOption == null }
 
     fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
         val issues = mutableMapOf<Long, String>()
@@ -253,7 +253,7 @@ class ProductConfiguration(
             VariantAttribute(
                 id = it.id,
                 name = it.name,
-                option = it.option,
+                selectedOption = it.option,
                 selectableOptions = it.selectableOptions
             )
         }
@@ -286,11 +286,11 @@ data class VariableProductSelection(
 data class VariantAttribute(
     val id: Long?,
     val name: String?,
-    val option: String?,
+    val selectedOption: String?,
     val selectableOptions: List<String>
 ) : Parcelable {
-    val suggestedOption
-        get() = selectableOptions.firstOrNull()
+    val option
+        get() = selectedOption ?: selectableOptions.firstOrNull()
 }
 
 enum class ConfigurationType { BUNDLE, UNKNOWN }
