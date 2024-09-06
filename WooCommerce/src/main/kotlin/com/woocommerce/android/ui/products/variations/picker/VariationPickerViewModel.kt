@@ -124,12 +124,13 @@ class VariationPickerViewModel @Inject constructor(
 
                 selectableAttributes.forEach { selectable ->
                     selectedAttributes.find { selectable.name == it.name }
-                        ?.let { attributeSelection.add(OptionalVariantAttribute(it)) }
+                        ?.let { attributeSelection.add(OptionalVariantAttribute(it, selectable.terms)) }
                         ?: attributeSelection.add(
                             OptionalVariantAttribute(
                                 id = selectable.id,
                                 name = selectable.name,
-                                option = null
+                                option = null,
+                                selectableOptions = selectable.terms
                             )
                         )
                 }
@@ -162,11 +163,11 @@ class VariationPickerViewModel @Inject constructor(
         val option: String?,
         val selectableOptions: List<String> = emptyList()
     ) : Parcelable {
-        constructor(option: VariantOption) : this(
+        constructor(option: VariantOption, selectableOptions: List<String>) : this(
             id = option.id,
             name = option.name,
             option = option.option,
-            selectableOptions = option.selectableOptions
+            selectableOptions = selectableOptions
         )
     }
 }
