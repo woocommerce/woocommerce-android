@@ -282,10 +282,7 @@ data class VariantAttribute(
     val name: String?,
     val selectedOption: String?,
     val selectableOptions: List<String>
-) : Parcelable {
-    val option
-        get() = selectedOption ?: selectableOptions.firstOrNull()
-}
+) : Parcelable
 
 enum class ConfigurationType { BUNDLE, UNKNOWN }
 

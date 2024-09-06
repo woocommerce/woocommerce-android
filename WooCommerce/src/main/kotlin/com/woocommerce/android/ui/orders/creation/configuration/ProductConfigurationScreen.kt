@@ -943,7 +943,9 @@ fun VariableSelection(
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                             append(attribute.name)
                         }
-                        append(" ${attribute.option}")
+                        val selectedOption = attribute.selectedOption
+                            ?: stringResource(id = R.string.product_any_attribute_hint)
+                        append(" $selectedOption")
                     }
                     Text(text = annotatedString, modifier = Modifier.padding(top = 8.dp))
                 }
