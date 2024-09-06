@@ -149,17 +149,11 @@ class ProductConfiguration(
     val configurationType: ConfigurationType,
     val configuration: Map<String, String?>,
     val childrenConfiguration: Map<Long, Map<String, String?>>? = null,
-    private val variationAttributesSelection: Map<Long, VariableProductSelection> = emptyMap()
+    val variationAttributesSelection: Map<Long, VariableProductSelection> = emptyMap()
 ) : Parcelable {
     companion object {
         const val PARENT_KEY = -1L
     }
-
-    fun getInvalidAttributesFrom(
-        itemId: Long
-    ) = variationAttributesSelection[itemId]
-        ?.attributes
-        ?.filter { it.selectedOption == null }
 
     fun getConfigurationIssues(resourceProvider: ResourceProvider): Map<Long, String> {
         val issues = mutableMapOf<Long, String>()
