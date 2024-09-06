@@ -112,9 +112,7 @@ class ProductConfigurationViewModel @Inject constructor(
                 ?.let { onUpdateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
         } else {
             configuration.update { currentConfiguration ->
-                mapOf(VARIATION_ID to variationId, VARIATION_ATTRIBUTES to null)
-                    .let { gson.toJson(it) }
-                    .let { currentConfiguration?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
+                currentConfiguration?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, null)
             }
         }
     }

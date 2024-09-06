@@ -222,7 +222,7 @@ class ProductConfiguration(
         }
     }
 
-    fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String): ProductConfiguration {
+    fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String?): ProductConfiguration {
         val updatedChildConfiguration = childrenConfiguration?.get(itemId)?.let { childConfiguration ->
             val mutableConfiguration = childConfiguration.toMutableMap()
             mutableConfiguration[ruleKey] = value
