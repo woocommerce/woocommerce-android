@@ -118,15 +118,15 @@ class VariationPickerViewModel @Inject constructor(
         private val selectedAttributes: List<VariantOption>,
         private val selectableAttributes: List<ProductAttribute>
     ) {
-        val attributes: List<VariantOption>
+        val attributes: List<OptionalVariantAttribute>
             get() {
-                val attributeSelection = mutableListOf<VariantOption>()
+                val attributeSelection = mutableListOf<OptionalVariantAttribute>()
 
                 selectableAttributes.forEach { selectable ->
                     selectedAttributes.find { selectable.name == it.name }
-                        ?.let { attributeSelection.add(it) }
+                        ?.let { attributeSelection.add(OptionalVariantAttribute(it)) }
                         ?: attributeSelection.add(
-                            VariantOption(
+                            OptionalVariantAttribute(
                                 id = selectable.id,
                                 name = selectable.name,
                                 option = null
@@ -152,6 +152,21 @@ class VariationPickerViewModel @Inject constructor(
         val itemId: Long,
         val productId: Long,
         val variationId: Long,
-        val attributes: List<VariantOption>
+        val attributes: List<OptionalVariantAttribute>
     ) : Parcelable
+
+    @Parcelize
+    data class OptionalVariantAttribute(
+        val id: Long?,
+        val name: String?,
+        val option: String?,
+        val selectableOptions: List<String> = emptyList()
+    ) : Parcelable {
+        constructor(option: VariantOption) : this(
+            id = option.id,
+            name = option.name,
+            option = option.option,
+            selectableOptions = option.selectableOptions
+        )
+    }
 }
