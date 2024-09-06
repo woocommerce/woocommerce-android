@@ -238,7 +238,8 @@ class ProductConfiguration(
             rules,
             configurationType,
             configuration,
-            updatedChildrenConfiguration
+            updatedChildrenConfiguration,
+            variableProductSelection
         )
     }
 
