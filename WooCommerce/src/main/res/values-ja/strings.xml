@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-29 09:54:03+0000
+Translation-Revision-Date: 2024-09-03 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">カスタムフィールドの読み込み中にエラーが発生しました</string>
+    <string name="custom_fields_list_title">カスタムフィールド</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">背景を暗くしました。 タップしてダイアログを閉じます。</string>
+    <string name="blaze_campaign_budget_weekly_spending">毎週%1$s</string>
+    <string name="blaze_campaign_budget_duration_endless_label">止めるまで実行します</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">%1$sに開始</string>
+    <string name="blaze_campaign_budget_weekly_spend">週の支出</string>
+    <string name="blaze_campaign_preview_days_duration_endless">毎週%1$s、%2$sに開始 </string>
+    <string name="blaze_campaign_status_budget_weekly">毎週</string>
+    <string name="blaze_campaign_status_budget_remaining">残り</string>
+    <string name="blaze_campaign_status_budget_total">合計</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">クリックスルー</string>
+    <string name="stats_widget_battery_saver_error">端末がバッテリーセーバーモードになっているようです。 \nストアがアクティブな間はストア情報を提供できません</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">オプション付きのポップアップメニュー。 スワイプしてアイテム間を移動します。</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">ツールバーメニューを開く</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">カードリーダーステータス付きのツールバー。 メニューが開いています。 ダブルタップして操作します。</string>
@@ -677,9 +691,6 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">デビットカードまたはクレジットカードで %s の支払いを試します。\n完了したら返金されます。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">簡単、安全でプライバシーは保護されます。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">あらゆる種類のオフラインでの支払いを\nスマートフォンで受け取れます。 追加のハードウェアは不要です。</string>
-    <string name="blaze_campaign_status_budget">予算</string>
-    <string name="blaze_campaign_status_clicks">クリック数</string>
-    <string name="blaze_campaign_status_impressions">インプレッション</string>
     <string name="blaze_campaign_status_rejected">却下</string>
     <string name="blaze_campaign_status_completed">完了</string>
     <string name="blaze_campaign_status_active">有効</string>

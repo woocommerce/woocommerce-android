@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.OrderShipmentProvider
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.tracking.AddOrderTrackingProviderListAdapter.OnProviderClickListener
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -33,6 +34,9 @@ class AddOrderTrackingProviderListFragment :
         const val TAG: String = "AddOrderTrackingProviderListFragment"
         const val SHIPMENT_TRACKING_PROVIDER_RESULT = "tracking-provider-result"
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
