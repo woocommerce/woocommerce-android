@@ -2,20 +2,20 @@ package com.woocommerce.android.ui.jitm
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class JitmStoreInMemoryCache
@@ -29,49 +29,42 @@ class JitmStoreInMemoryCache
 ) {
     private val cache = ConcurrentHashMap<String, CopyOnWriteArrayList<JITMApiResponse>>()
 
-    @Volatile
-    private var cacheInitContinuation: Continuation<Unit>? = null
-
-    @Volatile
-    private var initialisationStatus = InitStatus.NOT_STARTED
+    private val initStatus = CompletableDeferred<Unit>()
+    private val initMutex = Mutex()
 
     suspend fun init() {
-        if (!selectedSite.exists() || initialisationStatus != InitStatus.NOT_STARTED) return
+        if (!selectedSite.exists()) return
 
-        initialisationStatus = InitStatus.STARTED
+        initMutex.withLock {
+            if (initStatus.isCompleted) return
 
-        supervisorScope {
-            pathsProvider.paths.map { path ->
-                async {
-                    WooLog.d(WooLog.T.JITM, "Fetching JITM message for path: $path")
-                    val response = jitmStore.fetchJitmMessage(
-                        selectedSite.get(),
-                        path,
-                        jitmQueryParamsEncoder.getEncodedQueryParams(),
-                    )
-                    handleResponse(path, response)
-                }
-            }.awaitAll()
+            supervisorScope {
+                pathsProvider.paths.map { path ->
+                    async {
+                        WooLog.d(WooLog.T.JITM, "Fetching JITM message for path: $path")
+                        val response = jitmStore.fetchJitmMessage(
+                            selectedSite.get(),
+                            path,
+                            jitmQueryParamsEncoder.getEncodedQueryParams(),
+                        )
+                        handleResponse(path, response)
+                    }
+                }.awaitAll()
+            }
+
+            initStatus.complete(Unit)
         }
-
-        cacheInitContinuation?.resume(Unit)
-        initialisationStatus = InitStatus.DONE
     }
 
     suspend fun getMessagesForPath(messagePath: String): List<JITMApiResponse> {
         WooLog.d(WooLog.T.JITM, "Getting JITM messages for path: $messagePath")
         if (!selectedSite.exists()) return emptyList()
 
-        when (initialisationStatus) {
-            InitStatus.NOT_STARTED -> {
-                appCoroutineScope.launch { init() }
-                suspendCoroutine { cacheInitContinuation = it }
-            }
-            InitStatus.STARTED -> suspendCoroutine { cacheInitContinuation = it }
-            InitStatus.DONE -> {
-                // cache initialization is done, use it
-            }
+        if (!initStatus.isCompleted) {
+            appCoroutineScope.launch { init() }
+            initStatus.await()
         }
+
         cache.putIfAbsent(messagePath, CopyOnWriteArrayList())
         return cache[messagePath]!!
     }
@@ -103,9 +96,5 @@ class JitmStoreInMemoryCache
 
     private fun evictFirstMessage(messagePath: String) {
         cache[messagePath]?.let { if (it.isNotEmpty()) it.removeAt(0) }
-    }
-
-    private enum class InitStatus {
-        NOT_STARTED, STARTED, DONE,
     }
 }

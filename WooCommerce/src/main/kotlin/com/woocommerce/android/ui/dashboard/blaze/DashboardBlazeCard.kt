@@ -348,8 +348,8 @@ fun MyStoreBlazeViewCampaignPreview() {
                 product = product,
                 status = CampaignStatusUi.Active,
                 isEndlessCampaign = false,
-                impressions = 100,
-                clicks = 10,
+                impressions = "32435",
+                clicks = "43",
                 formattedBudget = "$100",
                 budgetLabel = R.string.blaze_campaign_status_budget_total
             ),
