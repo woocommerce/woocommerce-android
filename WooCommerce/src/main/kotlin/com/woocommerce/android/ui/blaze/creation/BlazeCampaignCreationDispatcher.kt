@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.intro.BlazeCampaignCreationIntroFragmentArgs
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragmentArgs
+import com.woocommerce.android.ui.blaze.notification.AbandonedCampaignReminder
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
@@ -35,6 +36,7 @@ import javax.inject.Inject
 class BlazeCampaignCreationDispatcher @Inject constructor(
     private val blazeRepository: BlazeRepository,
     private val productListRepository: ProductListRepository,
+    private val abandonedCampaignReminder: AbandonedCampaignReminder,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val analyticsTracker: AnalyticsTrackerWrapper,
 ) {
@@ -68,6 +70,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
                 startCampaignCreationWithoutIntro(productId, source, handler)
             }
         }
+        abandonedCampaignReminder.scheduleReminderIfNeeded()
     }
 
     private suspend fun startCampaignCreationWithoutIntro(

@@ -19,7 +19,7 @@ import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.util.Date
 
 class BlazeCampaignsObserverTest {
-    private val site = SiteModel().apply { siteId = 1 }
+    private val site = SiteModel()
     private val selectedSite = mock<SelectedSite>()
     private val appPrefsWrapper = mock<AppPrefsWrapper>()
     private val blazeCampaignsStore = mock<BlazeCampaignsStore>()
@@ -33,7 +33,7 @@ class BlazeCampaignsObserverTest {
     ) {
         whenever(selectedSite.observe()).thenReturn(flowOf(site))
         whenever(selectedSite.get()).thenReturn(site)
-        whenever(appPrefsWrapper.getBlazeNoCampaignReminderShown(site.siteId)).thenReturn(notificationShownBefore)
+        whenever(appPrefsWrapper.isBlazeNoCampaignReminderShown).thenReturn(notificationShownBefore)
         whenever(blazeCampaignsStore.observeBlazeCampaigns(site)).thenReturn(flowOf(campaigns))
         blazeCampaignsObserver = BlazeCampaignsObserver(
             selectedSite,

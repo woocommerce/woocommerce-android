@@ -49,7 +49,7 @@ class LocalNotificationWorker @AssistedInject constructor(
                 notificationTappedIntent = getIntent(notification),
             )
 
-            setNotificationShown(type, siteId)
+            setNotificationShown(type)
 
             AnalyticsTracker.track(
                 LOCAL_NOTIFICATION_DISPLAYED,
@@ -71,10 +71,14 @@ class LocalNotificationWorker @AssistedInject constructor(
         }
     }
 
-    private fun setNotificationShown(type: String, siteId: Long) {
+    private fun setNotificationShown(type: String) {
         when (LocalNotificationType.fromString(type)) {
             LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER -> {
-                appsPrefsWrapper.setBlazeNoCampaignReminderShown(siteId)
+                appsPrefsWrapper.isBlazeAbandonedCampaignReminderShown = true
+            }
+
+            LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER -> {
+                appsPrefsWrapper.isBlazeAbandonedCampaignReminderShown = true
             }
 
             else -> {}

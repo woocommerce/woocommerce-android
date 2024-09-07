@@ -32,9 +32,8 @@ fun WooPosLazyColumn(
     state: LazyListState = rememberLazyListState(),
     content: LazyListScope.() -> Unit
 ) {
-    Box {
+    Box(modifier = modifier) {
         LazyColumn(
-            modifier = modifier,
             contentPadding = contentPadding,
             verticalArrangement = verticalArrangement,
             horizontalAlignment = horizontalAlignment,
