@@ -1,4 +1,4 @@
-package com.woocommerce.android.wear.complications
+package com.woocommerce.android.wear.complications.ordertotals
 
 import javax.inject.Inject
 

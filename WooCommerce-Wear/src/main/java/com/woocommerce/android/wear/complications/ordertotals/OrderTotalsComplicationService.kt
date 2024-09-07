@@ -1,10 +1,11 @@
-package com.woocommerce.android.wear.complications
+package com.woocommerce.android.wear.complications.ordertotals
 
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.woocommerce.android.R
+import com.woocommerce.android.wear.complications.createTextComplicationData
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
