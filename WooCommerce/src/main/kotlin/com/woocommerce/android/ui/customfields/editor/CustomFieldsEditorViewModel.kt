@@ -62,7 +62,8 @@ class CustomFieldsEditorViewModel @Inject constructor(
                 storedValue?.value.orEmpty() != customField.value,
             isHtml = isHtml,
             discardChangesDialogState = discardChangesDialogState,
-            keyErrorMessage = keyErrorMessage
+            keyErrorMessage = keyErrorMessage,
+            isCreatingNewItem = storedValue == null
         )
     }.asLiveData()
 
@@ -133,6 +134,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
         val isHtml: Boolean = false,
         val discardChangesDialogState: DiscardChangesDialogState? = null,
         val keyErrorMessage: UiString? = null,
+        val isCreatingNewItem: Boolean = false
     ) {
         val showDoneButton
             get() = customField.key.isNotEmpty() && hasChanges && keyErrorMessage == null

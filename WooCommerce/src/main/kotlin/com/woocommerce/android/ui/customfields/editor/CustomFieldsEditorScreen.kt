@@ -64,22 +64,24 @@ private fun CustomFieldsEditorScreen(
                             text = stringResource(R.string.done)
                         )
                     }
-                    WCOverflowMenu(
-                        items = listOf(R.string.delete),
-                        mapper = { stringResource(it) },
-                        itemColor = {
-                            when (it) {
-                                R.string.delete -> MaterialTheme.colors.error
-                                else -> LocalContentColor.current
+                    if (!state.isCreatingNewItem) {
+                        WCOverflowMenu(
+                            items = listOf(R.string.delete),
+                            mapper = { stringResource(it) },
+                            itemColor = {
+                                when (it) {
+                                    R.string.delete -> MaterialTheme.colors.error
+                                    else -> LocalContentColor.current
+                                }
+                            },
+                            onSelected = { resourceId ->
+                                when (resourceId) {
+                                    R.string.delete -> onDeleteClicked()
+                                    else -> error("Unhandled menu item")
+                                }
                             }
-                        },
-                        onSelected = { resourceId ->
-                            when (resourceId) {
-                                R.string.delete -> onDeleteClicked()
-                                else -> error("Unhandled menu item")
-                            }
-                        }
-                    )
+                        )
+                    }
                 }
             )
         },
