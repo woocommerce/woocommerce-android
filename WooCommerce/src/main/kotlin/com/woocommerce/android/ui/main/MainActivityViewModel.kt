@@ -188,7 +188,7 @@ class MainActivityViewModel @Inject constructor(
     private fun onSinglePushNotificationOpened(localPushId: Int, notification: Notification) {
         notificationHandler.markNotificationTapped(notification.remoteNoteId)
         notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
-        when(notification.noteType) {
+        when (notification.noteType) {
             NEW_ORDER -> {
                 when {
                     siteStore.getSiteBySiteId(notification.remoteSiteId) != null -> triggerEvent(
@@ -197,6 +197,7 @@ class MainActivityViewModel @Inject constructor(
                             notification.remoteNoteId
                         )
                     )
+
                     else -> triggerEvent(ViewOrderList)
                 }
             }
