@@ -159,7 +159,7 @@ internal class ConnectionManager(
         connectedScope.launch {
             terminalListenerImpl.readerStatus.collect { connectionStatus ->
                 if (connectionStatus is CardReaderStatus.NotConnected) {
-                    bluetoothReaderListener.resetConnectionState()
+                    // This line is causing a reset for low batttery
                     connectedScope.cancel()
                 }
             }
