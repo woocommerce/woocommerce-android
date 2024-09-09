@@ -3,8 +3,11 @@ package com.woocommerce.android.ui.woopos.home
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,10 +24,13 @@ class WooPosHomeViewModel @Inject constructor(
         initialValue = WooPosHomeState(
             screenPositionState = WooPosHomeState.ScreenPositionState.Cart.Visible,
             productsInfoDialog = WooPosHomeState.ProductsInfoDialog(isVisible = false),
-            exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false)
+            exitConfirmationDialog = WooPosHomeState.ExitConfirmationDialog(isVisible = false),
         )
     )
     val state: StateFlow<WooPosHomeState> = _state
+
+    private val _toastEvent = MutableSharedFlow<Int>()
+    val toastEvent: SharedFlow<Int> = _toastEvent
 
     init {
         listenBottomEvents()
@@ -118,6 +124,12 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = _state.value.copy(
                             productsInfoDialog = WooPosHomeState.ProductsInfoDialog(isVisible = true)
                         )
+                    }
+
+                    ChildToParentEvent.NoInternet -> {
+                        viewModelScope.launch {
+                            _toastEvent.emit(R.string.orderlist_connectivity_tool_internet_check_suggestion)
+                        }
                     }
                 }
             }
