@@ -101,6 +101,17 @@ class CustomFieldsViewModel @Inject constructor(
         }
     }
 
+    fun onCustomFieldDeleted(field: CustomFieldUiModel) {
+        pendingChanges.update {
+            if (field.id == null) {
+                // This field was just added and hasn't been saved yet
+                it.copy(insertedFields = it.insertedFields - field)
+            } else {
+                it.copy(deletedFieldIds = it.deletedFieldIds + field.id)
+            }
+        }
+    }
+
     fun onSaveClicked() {
         launch {
             isSaving.value = true
@@ -109,7 +120,8 @@ class CustomFieldsViewModel @Inject constructor(
                 parentItemId = args.parentItemId,
                 parentItemType = args.parentItemType,
                 updatedMetadata = currentPendingChanges.editedFields.map { it.toDomainModel() },
-                insertedMetadata = currentPendingChanges.insertedFields.map { it.toDomainModel() }
+                insertedMetadata = currentPendingChanges.insertedFields.map { it.toDomainModel() },
+                deletedMetadataIds = currentPendingChanges.deletedFieldIds
             )
 
             repository.updateCustomFields(request)
@@ -126,9 +138,12 @@ class CustomFieldsViewModel @Inject constructor(
         }
     }
 
-    private fun List<CustomFieldUiModel>.combineWithChanges(pendingChanges: PendingChanges) = map { customField ->
-        pendingChanges.editedFields.find { it.id == customField.id } ?: customField
-    } + pendingChanges.insertedFields
+    private fun List<CustomFieldUiModel>.combineWithChanges(pendingChanges: PendingChanges) =
+        filterNot { it.id in pendingChanges.deletedFieldIds }
+            .map { customField ->
+                pendingChanges.editedFields.find { it.id == customField.id } ?: customField
+            }
+            .plus(pendingChanges.insertedFields)
 
     data class UiState(
         val customFields: List<CustomFieldUiModel>,
@@ -146,10 +161,11 @@ class CustomFieldsViewModel @Inject constructor(
     @Parcelize
     private data class PendingChanges(
         val editedFields: List<CustomFieldUiModel> = emptyList(),
-        val insertedFields: List<CustomFieldUiModel> = emptyList()
+        val insertedFields: List<CustomFieldUiModel> = emptyList(),
+        val deletedFieldIds: List<Long> = emptyList()
     ) : Parcelable {
         val hasChanges: Boolean
-            get() = editedFields.isNotEmpty() || insertedFields.isNotEmpty()
+            get() = editedFields.isNotEmpty() || insertedFields.isNotEmpty() || deletedFieldIds.isNotEmpty()
     }
 
     data class OpenCustomFieldEditor(val field: CustomFieldUiModel?) : MultiLiveEvent.Event()
