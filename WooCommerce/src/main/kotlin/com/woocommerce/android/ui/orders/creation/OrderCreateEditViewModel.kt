@@ -741,6 +741,8 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource? = null,
         addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
     ) {
+        viewState = viewState.copy(isUpdatingOrderDraft = true)
+
         val hasBundleConfiguration = selectedItems.any { item ->
             (item as? SelectedItem.ConfigurableProduct)
                 ?.configuration?.configurationType == ConfigurationType.BUNDLE
@@ -828,6 +830,9 @@ class OrderCreateEditViewModel @Inject constructor(
                         }
                     }
                 }
+
+                viewState = viewState.copy(isUpdatingOrderDraft = false)
+
                 _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
             }
         }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.wear.di
 
 import android.content.Context
+import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.login.LoginRepository
@@ -35,4 +36,10 @@ class AppConfigModule {
 
     @Provides
     fun provideDefaultLocale(): Locale = Locale.getDefault()
+
+    @Provides
+    fun provideCompactDecimalFormat(locale: Locale) = CompactDecimalFormat.getInstance(
+        locale,
+        CompactDecimalFormat.CompactStyle.SHORT
+    )
 }
