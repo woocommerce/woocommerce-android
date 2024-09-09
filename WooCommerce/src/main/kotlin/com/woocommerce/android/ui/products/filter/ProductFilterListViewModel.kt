@@ -220,7 +220,7 @@ class ProductFilterListViewModel @Inject constructor(
                 }
 
                 else -> {
-                    FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
+                    DefaultFilterListOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
                         filterOptionItemValue = it.value,
                         isSelected = productFilterOptions[TYPE] == it.value
