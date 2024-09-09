@@ -48,6 +48,11 @@ class CustomFieldsFragment : BaseFragment() {
                 is CustomFieldsViewModel.OpenCustomFieldEditor -> openEditor(event.field)
                 is CustomFieldsViewModel.CustomFieldValueClicked -> handleValueClick(event.field)
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
+                    message = event.message,
+                    actionText = event.actionText,
+                    action = event.action
+                )
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }

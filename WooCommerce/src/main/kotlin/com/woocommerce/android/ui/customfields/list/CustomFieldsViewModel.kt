@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -23,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomFieldsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: CustomFieldsRepository
+    private val repository: CustomFieldsRepository,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val args: CustomFieldsFragmentArgs by savedStateHandle.navArgs()
     val parentItemId: Long = args.parentItemId
@@ -110,6 +112,22 @@ class CustomFieldsViewModel @Inject constructor(
                 it.copy(deletedFieldIds = it.deletedFieldIds + field.id)
             }
         }
+
+        triggerEvent(
+            MultiLiveEvent.Event.ShowActionSnackbar(
+                message = resourceProvider.getString(R.string.custom_fields_list_field_deleted),
+                actionText = resourceProvider.getString(R.string.undo),
+                action = {
+                    pendingChanges.update {
+                        if (field.id == null) {
+                            it.copy(insertedFields = it.insertedFields + field)
+                        } else {
+                            it.copy(deletedFieldIds = it.deletedFieldIds - field.id)
+                        }
+                    }
+                }
+            )
+        )
     }
 
     fun onSaveClicked() {
