@@ -134,30 +134,32 @@ class WooPosToolbarViewModelTest {
     }
 
     @Test
-    fun `given card reader status is Connected, when OnCardReaderStatusClicked, then disconnect from reader should be called`() = runTest {
-        // GIVEN
-        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.Connected(mock())))
-        val viewModel = createViewModel()
+    fun `given card reader status is Connected, when OnCardReaderStatusClicked, then disconnect from reader should be called`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.Connected(mock())))
+            val viewModel = createViewModel()
 
-        // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            // WHEN
+            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
 
-        // THEN
-        verify(cardReaderFacade).disconnectFromReader()
-    }
+            // THEN
+            verify(cardReaderFacade).disconnectFromReader()
+        }
 
     @Test
-    fun `given card reader status is NotConnected, when OnCardReaderStatusClicked, then connect to reader should be called`() = runTest {
-        // GIVEN
-        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
-        val viewModel = createViewModel()
+    fun `given card reader status is NotConnected, when OnCardReaderStatusClicked, then connect to reader should be called`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+            val viewModel = createViewModel()
 
-        // WHEN
-        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+            // WHEN
+            viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
 
-        // THEN
-        verify(cardReaderFacade).connectToReader()
-    }
+            // THEN
+            verify(cardReaderFacade).connectToReader()
+        }
 
     @Test
     fun `when get support clicked, then should open support form`() {
@@ -173,6 +175,17 @@ class WooPosToolbarViewModelTest {
         )
 
         verify(getSupportFacade).openSupportForm()
+    }
+
+    @Test
+    fun `given there is no internet, when trying to connect card reader, then trigger proper event`() = runTest {
+        whenever(networkStatus.isConnected()).thenReturn(false)
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+
+        val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NoInternet)
     }
 
     private fun createViewModel() = WooPosToolbarViewModel(
