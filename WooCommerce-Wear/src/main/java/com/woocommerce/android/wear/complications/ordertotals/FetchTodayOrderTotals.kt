@@ -7,7 +7,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
-import java.util.Locale
 import javax.inject.Inject
 
 class FetchTodayOrderTotals @Inject constructor(
