@@ -1,8 +1,8 @@
 package com.woocommerce.android.wear.complications.ordertotals
 
 import android.icu.text.CompactDecimalFormat
-import com.woocommerce.android.wear.complications.ordertotals.FetchTodayOrderTotals.StatType.ORDER_COUNT
-import com.woocommerce.android.wear.complications.ordertotals.FetchTodayOrderTotals.StatType.ORDER_TOTALS
+import com.woocommerce.android.wear.complications.ordertotals.FetchStatsForComplications.StatType.ORDER_COUNT
+import com.woocommerce.android.wear.complications.ordertotals.FetchStatsForComplications.StatType.ORDER_TOTALS
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 import org.wordpress.android.fluxc.model.SiteModel
 
-class FetchTodayOrderTotals @Inject constructor(
+class FetchStatsForComplications @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val statsRepository: StatsRepository,
     private val loginRepository: LoginRepository,
