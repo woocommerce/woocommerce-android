@@ -3,6 +3,7 @@ package com.woocommerce.android.wear.complications.ordertotals
 import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.wear.complications.ordertotals.FetchStatsForComplications.StatType.ORDER_COUNT
 import com.woocommerce.android.wear.complications.ordertotals.FetchStatsForComplications.StatType.ORDER_TOTALS
+import com.woocommerce.android.wear.complications.ordertotals.FetchStatsForComplications.StatType.VISITORS
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -28,6 +29,7 @@ class FetchStatsForComplications @Inject constructor(
         return when (statType) {
             ORDER_TOTALS -> fetchTodayOrderTotals(site)
             ORDER_COUNT -> fetchTodayOrderCount(site)
+            VISITORS -> fetchTodayVisitors(site)
             else -> DEFAULT_EMPTY_VALUE
         }
     }
@@ -47,6 +49,13 @@ class FetchStatsForComplications @Inject constructor(
         .getOrNull()
         ?.parseTotal()
         ?.ordersCount?.toString()
+        ?: DEFAULT_EMPTY_VALUE
+
+    private suspend fun fetchTodayVisitors(
+        site: SiteModel
+    ) = site.let { statsRepository.fetchVisitorStats(it) }
+        .getOrNull()
+        ?.toString()
         ?: DEFAULT_EMPTY_VALUE
 
     enum class StatType {
