@@ -206,7 +206,7 @@ class MainActivityViewModel @Inject constructor(
                 triggerEvent(ViewReviewDetail(notification.uniqueId))
             }
 
-            BLAZE -> TODO()
+            BLAZE -> triggerEvent(ViewBlazeCampaignDetail(notification.uniqueId.toString()))
             LOCAL_REMINDER -> error("Local reminder notification should not be handled here")
         }
     }
@@ -345,6 +345,7 @@ class MainActivityViewModel @Inject constructor(
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class ViewBlazeCampaignDetail(val campaignId: String) : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
