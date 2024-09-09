@@ -522,6 +522,10 @@ class CardReaderConnectViewModel @Inject constructor(
         exitFlow(connected = true)
     }
 
+    fun onBackPressed() {
+        onCancelClicked()
+    }
+
     private fun exitFlow(connected: Boolean) {
         if (!connected) {
             when (val param = arguments.cardReaderFlowParam) {

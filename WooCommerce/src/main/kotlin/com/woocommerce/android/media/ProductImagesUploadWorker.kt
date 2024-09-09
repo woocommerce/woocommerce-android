@@ -242,7 +242,7 @@ class ProductImagesUploadWorker @Inject constructor(
         suspend fun fetchProductWithRetries(productId: Long): Product? {
             var retries = 0
             while (retries < PRODUCT_UPDATE_RETRIES) {
-                val product = productDetailRepository.fetchProductOrLoadFromCache(productId)
+                val product = productDetailRepository.fetchAndGetProduct(productId)
                 if (product != null && productDetailRepository.lastFetchProductErrorType == null) {
                     return product
                 }
