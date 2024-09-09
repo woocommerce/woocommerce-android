@@ -421,15 +421,6 @@ private fun ProductItem(
             label = "alpha"
         )
 
-        val offsetY by animateDpAsState(
-            targetValue = if (hasAnimationStarted) 0.dp else (-50).dp,
-            animationSpec = tween(
-                durationMillis = 200,
-                easing = LinearEasing
-            ),
-            label = "offsetY"
-        )
-
         val itemContentDescription = stringResource(
             id = R.string.woopos_cart_item_content_description,
             item.name,
@@ -445,7 +436,6 @@ private fun ProductItem(
         Card(
             modifier = modifier
                 .height(64.dp)
-                .offset(y = offsetY)
                 .semantics { contentDescription = itemContentDescription }
                 .graphicsLayer(alpha = alpha),
             elevation = elevation,
