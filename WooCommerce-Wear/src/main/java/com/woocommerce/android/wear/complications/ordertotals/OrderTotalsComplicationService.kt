@@ -6,6 +6,7 @@ import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.woocommerce.android.R
 import com.woocommerce.android.wear.complications.createTextComplicationData
+import com.woocommerce.android.wear.complications.ordertotals.FetchTodayOrderTotals.StatType.ORDER_TOTALS
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -30,7 +31,7 @@ class OrderTotalsComplicationService : SuspendingComplicationDataSourceService()
         return when (request.complicationType) {
             ComplicationType.SHORT_TEXT -> createTextComplicationData(
                 context = applicationContext,
-                content = fetchTodayOrderTotals(),
+                content = fetchTodayOrderTotals(ORDER_TOTALS),
                 description = getString(R.string.order_totals_complication_preview_description)
             )
 

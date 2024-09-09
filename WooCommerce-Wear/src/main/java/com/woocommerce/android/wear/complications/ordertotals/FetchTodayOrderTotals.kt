@@ -8,6 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.SiteModel
 
 class FetchTodayOrderTotals @Inject constructor(
     private val coroutineScope: CoroutineScope,
@@ -15,19 +16,33 @@ class FetchTodayOrderTotals @Inject constructor(
     private val loginRepository: LoginRepository,
     private val decimalFormat: CompactDecimalFormat
 ) {
-    suspend operator fun invoke(): String {
+    suspend operator fun invoke(statType: StatType): String {
         val site = coroutineScope.async {
             loginRepository.selectedSiteFlow
                 .filterNotNull()
                 .firstOrNull()
-        }.await()
+        }.await() ?: return DEFAULT_EMPTY_VALUE
 
-        return site?.let { statsRepository.fetchRevenueStats(it) }
-            ?.getOrNull()
-            ?.parseTotal()
-            ?.totalSales
-            ?.let { decimalFormat.format(it) }
-            ?: DEFAULT_EMPTY_VALUE
+        return when (statType) {
+            StatType.ORDER_TOTALS -> fetchTodayOrderTotals(site)
+            else -> DEFAULT_EMPTY_VALUE
+        }
+    }
+
+    private suspend fun fetchTodayOrderTotals(
+        site: SiteModel
+    ) = site.let { statsRepository.fetchRevenueStats(it) }
+        .getOrNull()
+        ?.parseTotal()
+        ?.totalSales
+        ?.let { decimalFormat.format(it) }
+        ?: DEFAULT_EMPTY_VALUE
+
+    enum class StatType {
+        ORDER_TOTALS,
+        ORDER_COUNT,
+        VISITORS,
+        CONVERSION
     }
 
     companion object {
