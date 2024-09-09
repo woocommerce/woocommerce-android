@@ -6,7 +6,7 @@ import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.woocommerce.android.R
 import com.woocommerce.android.wear.complications.FetchStatsForComplications
-import com.woocommerce.android.wear.complications.FetchStatsForComplications.StatType.VISITORS
+import com.woocommerce.android.wear.complications.FetchStatsForComplications.StatType.VISITORS_COUNT
 import com.woocommerce.android.wear.complications.createTextComplicationData
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -32,7 +32,7 @@ class VisitorsCountComplicationService : SuspendingComplicationDataSourceService
         return when (request.complicationType) {
             ComplicationType.SHORT_TEXT -> createTextComplicationData(
                 context = applicationContext,
-                content = fetchStatsForComplications(VISITORS),
+                content = fetchStatsForComplications(VISITORS_COUNT),
                 description = getString(R.string.visitors_count_complication_preview_description)
             )
 

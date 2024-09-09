@@ -3,7 +3,7 @@ package com.woocommerce.android.wear.complications
 import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.wear.complications.FetchStatsForComplications.StatType.ORDER_COUNT
 import com.woocommerce.android.wear.complications.FetchStatsForComplications.StatType.ORDER_TOTALS
-import com.woocommerce.android.wear.complications.FetchStatsForComplications.StatType.VISITORS
+import com.woocommerce.android.wear.complications.FetchStatsForComplications.StatType.VISITORS_COUNT
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +29,7 @@ class FetchStatsForComplications @Inject constructor(
         return when (statType) {
             ORDER_TOTALS -> fetchTodayOrderTotals(site)
             ORDER_COUNT -> fetchTodayOrderCount(site)
-            VISITORS -> fetchTodayVisitors(site)
+            VISITORS_COUNT -> fetchTodayVisitors(site)
         }
     }
 
@@ -60,7 +60,7 @@ class FetchStatsForComplications @Inject constructor(
     enum class StatType {
         ORDER_TOTALS,
         ORDER_COUNT,
-        VISITORS
+        VISITORS_COUNT
     }
 
     companion object {

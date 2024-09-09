@@ -93,7 +93,7 @@ class FetchStatsForComplicationsTest : BaseUnitTest() {
         whenever(loginRepository.selectedSiteFlow).thenReturn(MutableStateFlow(site))
         whenever(statsRepository.fetchVisitorStats(site)).thenReturn(Result.success(100))
 
-        val result = sut(FetchStatsForComplications.StatType.VISITORS)
+        val result = sut(FetchStatsForComplications.StatType.VISITORS_COUNT)
 
         assertThat(result).isEqualTo("100")
     }
@@ -104,7 +104,7 @@ class FetchStatsForComplicationsTest : BaseUnitTest() {
         whenever(loginRepository.selectedSiteFlow).thenReturn(MutableStateFlow(site))
         whenever(statsRepository.fetchVisitorStats(site)).thenReturn(Result.failure(Exception()))
 
-        val result = sut(FetchStatsForComplications.StatType.VISITORS)
+        val result = sut(FetchStatsForComplications.StatType.VISITORS_COUNT)
 
         assertThat(result).isEqualTo(FetchStatsForComplications.DEFAULT_EMPTY_VALUE)
     }
