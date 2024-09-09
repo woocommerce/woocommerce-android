@@ -15,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -107,6 +108,7 @@ class WooPosToolbarViewModelTest {
     fun `when ConnectToAReaderClicked passed, then connect to reader should be called`() = runTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+        whenever(networkStatus.isConnected()).thenReturn(true)
         val viewModel = createViewModel()
 
         // WHEN
@@ -152,6 +154,7 @@ class WooPosToolbarViewModelTest {
         runTest {
             // GIVEN
             whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+            whenever(networkStatus.isConnected()).thenReturn(true)
             val viewModel = createViewModel()
 
             // WHEN
@@ -179,13 +182,30 @@ class WooPosToolbarViewModelTest {
 
     @Test
     fun `given there is no internet, when trying to connect card reader, then trigger proper event`() = runTest {
+        // GIVEN
         whenever(networkStatus.isConnected()).thenReturn(false)
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
 
+        // WHEN
         val viewModel = createViewModel()
         viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
 
+        // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NoInternet)
+    }
+
+    @Test
+    fun `given there is no internet, when trying to connect card reader, then connect card reader method is not called`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(false)
+        whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
+
+        // THEN
+        verify(cardReaderFacade, never()).connectToReader()
     }
 
     private fun createViewModel() = WooPosToolbarViewModel(
