@@ -61,8 +61,7 @@ class FetchStatsForComplications @Inject constructor(
     enum class StatType {
         ORDER_TOTALS,
         ORDER_COUNT,
-        VISITORS,
-        CONVERSION
+        VISITORS
     }
 
     companion object {
