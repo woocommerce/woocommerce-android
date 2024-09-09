@@ -14,7 +14,7 @@ class FetchTodayOrderTotals @Inject constructor(
     private val coroutineScope: CoroutineScope,
     private val statsRepository: StatsRepository,
     private val loginRepository: LoginRepository,
-    private val locale: Locale
+    private val decimalFormat: CompactDecimalFormat
 ) {
     suspend operator fun invoke(): String {
         val site = coroutineScope.async {
@@ -27,15 +27,8 @@ class FetchTodayOrderTotals @Inject constructor(
             ?.getOrNull()
             ?.parseTotal()
             ?.totalSales
-            ?.format()
+            ?.let { decimalFormat.format(it) }
             ?: DEFAULT_EMPTY_VALUE
-    }
-
-    private fun Double.format(): String {
-        return CompactDecimalFormat.getInstance(
-            locale,
-            CompactDecimalFormat.CompactStyle.SHORT
-        ).format(this)
     }
 
     companion object {
