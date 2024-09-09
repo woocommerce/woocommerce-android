@@ -3,14 +3,12 @@ package com.woocommerce.android.wear.complications.ordertotals
 import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
-import java.util.Locale
-import javax.inject.Inject
-import kotlin.math.ln
-import kotlin.math.pow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
+import java.util.Locale
+import javax.inject.Inject
 
 class FetchTodayOrderTotals @Inject constructor(
     private val coroutineScope: CoroutineScope,
@@ -35,7 +33,8 @@ class FetchTodayOrderTotals @Inject constructor(
 
     private fun Double.format(): String {
         return CompactDecimalFormat.getInstance(
-            locale, CompactDecimalFormat.CompactStyle.SHORT
+            locale,
+            CompactDecimalFormat.CompactStyle.SHORT
         ).format(this)
     }
 
