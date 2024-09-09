@@ -15,6 +15,10 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE
+import com.woocommerce.android.notifications.WooNotificationType.LOCAL_REMINDER
+import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.WooNotificationType.PRODUCT_REVIEW
 import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER
@@ -120,7 +124,7 @@ class MainActivityViewModel @Inject constructor(
             } else {
                 when (localPushId) {
                     it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
-                    else -> onSingleNotificationOpened(localPushId, it)
+                    else -> onSinglePushNotificationOpened(localPushId, it)
                 }
             }
         } ?: run {
@@ -181,19 +185,29 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun onSingleNotificationOpened(localPushId: Int, notification: Notification) {
+    private fun onSinglePushNotificationOpened(localPushId: Int, notification: Notification) {
         notificationHandler.markNotificationTapped(notification.remoteNoteId)
         notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
-        if (notification.channelType == NotificationChannelType.REVIEW) {
-            analyticsTrackerWrapper.track(REVIEW_OPEN)
-            triggerEvent(ViewReviewDetail(notification.uniqueId))
-        } else if (notification.channelType == NotificationChannelType.NEW_ORDER) {
-            if (siteStore.getSiteBySiteId(notification.remoteSiteId) != null) {
-                triggerEvent(ViewOrderDetail(notification.uniqueId, notification.remoteNoteId))
-            } else {
-                // the site does not exist locally, open order list
-                triggerEvent(ViewOrderList)
+        when(notification.noteType) {
+            NEW_ORDER -> {
+                when {
+                    siteStore.getSiteBySiteId(notification.remoteSiteId) != null -> triggerEvent(
+                        ViewOrderDetail(
+                            notification.uniqueId,
+                            notification.remoteNoteId
+                        )
+                    )
+                    else -> triggerEvent(ViewOrderList)
+                }
             }
+
+            PRODUCT_REVIEW -> {
+                analyticsTrackerWrapper.track(REVIEW_OPEN)
+                triggerEvent(ViewReviewDetail(notification.uniqueId))
+            }
+
+            BLAZE -> TODO()
+            LOCAL_REMINDER -> error("Local reminder notification should not be handled here")
         }
     }
 
@@ -314,6 +328,7 @@ class MainActivityViewModel @Inject constructor(
     data class ViewUrlInWebView(
         val url: String,
     ) : Event()
+
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
     object LaunchBlazeCampaignCreation : Event()
