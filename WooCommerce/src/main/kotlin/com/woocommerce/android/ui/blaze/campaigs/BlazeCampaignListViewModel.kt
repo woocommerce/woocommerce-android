@@ -81,6 +81,9 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
         launch {
             loadCampaigns(offset = 0)
+            if (navArgs.campaignId != null) {
+                onCampaignClicked(navArgs.campaignId!!)
+            }
         }
     }
 
@@ -105,21 +108,17 @@ class BlazeCampaignListViewModel @Inject constructor(
             triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
         } else {
             totalItems = result.model?.totalItems ?: 0
-            if (navArgs.campaignId != null) {
-                onCampaignClicked(navArgs.campaignId!!)
-            }
         }
     }
 
     private fun onCampaignClicked(campaignId: String) {
-        val url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId)
         analyticsTrackerWrapper.track(
             stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
             properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.CAMPAIGN_LIST.trackingName)
         )
         triggerEvent(
             ShowCampaignDetails(
-                url = url,
+                url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId),
                 urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
             )
         )
