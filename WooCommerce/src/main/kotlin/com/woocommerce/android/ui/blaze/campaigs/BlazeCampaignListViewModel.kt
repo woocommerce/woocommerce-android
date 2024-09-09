@@ -105,6 +105,9 @@ class BlazeCampaignListViewModel @Inject constructor(
             triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
         } else {
             totalItems = result.model?.totalItems ?: 0
+            if (navArgs.campaignId != null) {
+                onCampaignClicked(navArgs.campaignId!!)
+            }
         }
     }
 
