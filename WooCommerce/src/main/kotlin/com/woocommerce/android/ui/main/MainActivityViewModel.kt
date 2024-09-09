@@ -114,7 +114,7 @@ class MainActivityViewModel @Inject constructor(
         )
     }
 
-    fun handleIncomingNotification(localPushId: Int, notification: Notification?) {
+    fun onPushNotificationTapped(localPushId: Int, notification: Notification?) {
         notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()

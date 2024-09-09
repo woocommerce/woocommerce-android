@@ -157,7 +157,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewMyStoreStats) event = it
         }
 
-        viewModel.handleIncomingNotification(localPushId, null)
+        viewModel.onPushNotificationTapped(localPushId, null)
         assertThat(event).isEqualTo(ViewMyStoreStats)
     }
 
@@ -169,7 +169,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewOrderDetail) event = it
         }
 
-        viewModel.handleIncomingNotification(localPushId, testOrderNotification)
+        viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
@@ -192,7 +192,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewOrderList) event = it
         }
 
-        viewModel.handleIncomingNotification(localPushId, testOrderNotification)
+        viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
@@ -208,7 +208,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewReviewDetail) event = it
         }
 
-        viewModel.handleIncomingNotification(localPushId, testReviewNotification)
+        viewModel.onPushNotificationTapped(localPushId, testReviewNotification)
 
         verify(notificationMessageHandler, atLeastOnce())
             .markNotificationTapped(eq(testReviewNotification.remoteNoteId))
@@ -221,7 +221,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     fun `when a new review notification is clicked, then review open even tracked`() {
         val localPushId = 1001
 
-        viewModel.handleIncomingNotification(localPushId, testReviewNotification)
+        viewModel.onPushNotificationTapped(localPushId, testReviewNotification)
 
         verify(analyticsTrackerWrapper).track(REVIEW_OPEN)
     }
@@ -234,7 +234,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewOrderList) event = it
         }
 
-        viewModel.handleIncomingNotification(groupOrderPushId, testOrderNotification)
+        viewModel.onPushNotificationTapped(groupOrderPushId, testOrderNotification)
 
         verify(selectedSite, never()).set(any())
         verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
@@ -255,7 +255,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewReviewList) event = it
         }
 
-        viewModel.handleIncomingNotification(reviewPushId, testReviewNotification)
+        viewModel.onPushNotificationTapped(reviewPushId, testReviewNotification)
 
         verify(selectedSite, never()).set(any())
         verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
@@ -276,7 +276,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         )
         val groupOrderPushId = orderNotification2.getGroupPushId()
 
-        viewModel.handleIncomingNotification(groupOrderPushId, orderNotification2)
+        viewModel.onPushNotificationTapped(groupOrderPushId, orderNotification2)
 
         verify(selectedSite, atLeastOnce()).set(any())
         assertThat(viewModel.event.value)
@@ -291,7 +291,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         )
         val reviewPushId = reviewNotification2.getGroupPushId()
 
-        viewModel.handleIncomingNotification(reviewPushId, reviewNotification2)
+        viewModel.onPushNotificationTapped(reviewPushId, reviewNotification2)
 
         verify(selectedSite, atLeastOnce()).set(any())
         assertThat(viewModel.event.value).isEqualTo(
@@ -307,7 +307,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         doReturn(null).whenever(siteStore).getSiteBySiteId(any())
         val notification = testOrderNotification.copy(remoteSiteId = TEST_REMOTE_SITE_ID_2)
 
-        viewModel.handleIncomingNotification(1000, notification)
+        viewModel.onPushNotificationTapped(1000, notification)
 
         assertThat(viewModel.event.value).isEqualTo(ViewMyStoreStats)
     }

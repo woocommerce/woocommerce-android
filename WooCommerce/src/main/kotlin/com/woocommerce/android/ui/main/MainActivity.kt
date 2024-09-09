@@ -787,7 +787,7 @@ class MainActivity :
             intent.removeExtra(FIELD_REMOTE_NOTIFICATION)
             intent.removeExtra(FIELD_PUSH_ID)
 
-            viewModel.handleIncomingNotification(localPushId, notification)
+            viewModel.onPushNotificationTapped(localPushId, notification)
         } else if (localNotification != null) {
             intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
             viewModel.onLocalNotificationTapped(localNotification)
