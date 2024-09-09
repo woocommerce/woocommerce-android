@@ -5,9 +5,9 @@ import androidx.wear.watchface.complications.data.ComplicationType
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.woocommerce.android.R
+import com.woocommerce.android.wear.complications.FetchStatsForComplications
+import com.woocommerce.android.wear.complications.FetchStatsForComplications.StatType.ORDER_COUNT
 import com.woocommerce.android.wear.complications.createTextComplicationData
-import com.woocommerce.android.wear.complications.ordertotals.FetchStatsForComplications
-import com.woocommerce.android.wear.complications.ordertotals.FetchStatsForComplications.StatType.ORDER_COUNT
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package com.woocommerce.android.wear.complications.ordertotals
+package com.woocommerce.android.wear.complications
 
 import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.BaseUnitTest
