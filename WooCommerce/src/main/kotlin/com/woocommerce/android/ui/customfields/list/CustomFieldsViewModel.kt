@@ -92,7 +92,7 @@ class CustomFieldsViewModel @Inject constructor(
 
     fun onCustomFieldUpdated(result: CustomFieldUiModel) {
         pendingChanges.update {
-            it.copy(editedFields = it.editedFields + result)
+            it.copy(editedFields = it.editedFields.filterNot { field -> field.id == result.id } + result)
         }
     }
 
