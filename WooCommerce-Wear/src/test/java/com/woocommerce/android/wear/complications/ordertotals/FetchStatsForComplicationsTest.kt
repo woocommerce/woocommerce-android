@@ -4,7 +4,6 @@ import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
-import kotlin.test.Test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +15,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FetchStatsForComplicationsTest : BaseUnitTest() {

@@ -10,8 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
-import javax.inject.Inject
 import org.wordpress.android.fluxc.model.SiteModel
+import javax.inject.Inject
 
 class FetchStatsForComplications @Inject constructor(
     private val coroutineScope: CoroutineScope,
