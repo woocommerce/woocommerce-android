@@ -1,20 +1,31 @@
 package com.woocommerce.android.wear.complications.ordertotals
 
+import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.ln
 import kotlin.math.pow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 
 class FetchTodayOrderTotals @Inject constructor(
+    private val coroutineScope: CoroutineScope,
     private val statsRepository: StatsRepository,
     private val loginRepository: LoginRepository,
     private val locale: Locale
 ) {
     suspend operator fun invoke(): String {
-        return loginRepository.selectedSite
-            ?.let { statsRepository.fetchRevenueStats(it) }
+        val site = coroutineScope.async {
+            loginRepository.selectedSiteFlow
+                .filterNotNull()
+                .firstOrNull()
+        }.await()
+
+        return site?.let { statsRepository.fetchRevenueStats(it) }
             ?.getOrNull()
             ?.parseTotal()
             ?.totalSales
@@ -23,15 +34,12 @@ class FetchTodayOrderTotals @Inject constructor(
     }
 
     private fun Double.format(): String {
-        if (this < 1000) return this.toString()
-        val exp = (ln(this) / ln(1000.0)).toInt()
-        val formattingValue = this / 1000.0.pow(exp.toDouble())
-        return String.format(locale, NUMBER_FORMAT, formattingValue, UNIT_SUFFIX[exp - 1])
+        return CompactDecimalFormat.getInstance(
+            locale, CompactDecimalFormat.CompactStyle.SHORT
+        ).format(this)
     }
 
     companion object {
-        const val NUMBER_FORMAT = "%.1f %c"
-        const val UNIT_SUFFIX = "kMGTPE"
         const val DEFAULT_EMPTY_VALUE = "N/A"
     }
 }
