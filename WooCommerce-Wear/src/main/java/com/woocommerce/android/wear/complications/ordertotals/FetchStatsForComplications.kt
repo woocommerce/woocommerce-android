@@ -30,7 +30,6 @@ class FetchStatsForComplications @Inject constructor(
             ORDER_TOTALS -> fetchTodayOrderTotals(site)
             ORDER_COUNT -> fetchTodayOrderCount(site)
             VISITORS -> fetchTodayVisitors(site)
-            else -> DEFAULT_EMPTY_VALUE
         }
     }
 
