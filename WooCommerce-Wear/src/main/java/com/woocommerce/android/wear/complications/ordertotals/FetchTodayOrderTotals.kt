@@ -1,6 +1,8 @@
 package com.woocommerce.android.wear.complications.ordertotals
 
 import android.icu.text.CompactDecimalFormat
+import com.woocommerce.android.wear.complications.ordertotals.FetchTodayOrderTotals.StatType.ORDER_COUNT
+import com.woocommerce.android.wear.complications.ordertotals.FetchTodayOrderTotals.StatType.ORDER_TOTALS
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.stats.datasource.StatsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -24,7 +26,8 @@ class FetchTodayOrderTotals @Inject constructor(
         }.await() ?: return DEFAULT_EMPTY_VALUE
 
         return when (statType) {
-            StatType.ORDER_TOTALS -> fetchTodayOrderTotals(site)
+            ORDER_TOTALS -> fetchTodayOrderTotals(site)
+            ORDER_COUNT -> fetchTodayOrderCount(site)
             else -> DEFAULT_EMPTY_VALUE
         }
     }
@@ -36,6 +39,14 @@ class FetchTodayOrderTotals @Inject constructor(
         ?.parseTotal()
         ?.totalSales
         ?.let { decimalFormat.format(it) }
+        ?: DEFAULT_EMPTY_VALUE
+
+    private suspend fun fetchTodayOrderCount(
+        site: SiteModel
+    ) = site.let { statsRepository.fetchRevenueStats(it) }
+        .getOrNull()
+        ?.parseTotal()
+        ?.ordersCount?.toString()
         ?: DEFAULT_EMPTY_VALUE
 
     enum class StatType {
