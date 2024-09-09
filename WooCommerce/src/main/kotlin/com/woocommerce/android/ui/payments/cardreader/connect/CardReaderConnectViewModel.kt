@@ -280,7 +280,7 @@ class CardReaderConnectViewModel @Inject constructor(
                 is CardReaderStatus.Connected -> onReaderConnected(status.cardReader)
                 is CardReaderStatus.NotConnected -> {
                     if (connectionStarted) {
-                        // we should not be showing a toast
+                        status.errorMessage?.let { triggerEvent(ShowToastString(it)) }
                         onReaderConnectionFailed()
                     } else {
                         Unit
