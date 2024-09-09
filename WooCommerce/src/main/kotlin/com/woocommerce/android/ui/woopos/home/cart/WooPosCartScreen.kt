@@ -8,9 +8,11 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -392,118 +394,127 @@ private fun ProductItem(
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     var hasAnimationStarted by remember { mutableStateOf(item.isAppearanceAnimationPlayed) }
+    var visible by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
+        visible = true
         hasAnimationStarted = true
     }
 
-    val elevation by animateDpAsState(
-        targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 200, delayMillis = 100),
-        label = "elevation"
-    )
-
-    val alpha by animateFloatAsState(
-        targetValue = if (hasAnimationStarted) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 200,
-            easing = LinearEasing
-        ),
-        label = "alpha"
-    )
-
-    val offsetY by animateDpAsState(
-        targetValue = if (hasAnimationStarted) 0.dp else (-50).dp,
-        animationSpec = tween(
-            durationMillis = 200,
-            easing = LinearEasing
-        ),
-        label = "offsetY"
-    )
-
-
-    val itemContentDescription = stringResource(
-        id = R.string.woopos_cart_item_content_description,
-        item.name,
-        item.price
-    )
-
-    LaunchedEffect(alpha) {
-        if (alpha == 1f) {
-            onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
-        }
-    }
-
-    Card(
-        modifier = modifier
-            .height(64.dp)
-            .offset(y = offsetY)
-            .semantics { contentDescription = itemContentDescription }
-            .graphicsLayer(alpha = alpha),
-        elevation = elevation,
-        shape = RoundedCornerShape(8.dp),
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn() + expandVertically(),
+        exit = fadeOut() + shrinkVertically()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(64.dp)
-            )
+        val elevation by animateDpAsState(
+            targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
+            animationSpec = tween(durationMillis = 200, delayMillis = 100),
+            label = "elevation"
+        )
 
-            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+        val alpha by animateFloatAsState(
+            targetValue = if (hasAnimationStarted) 1f else 0f,
+            animationSpec = tween(
+                durationMillis = 200,
+                easing = LinearEasing
+            ),
+            label = "alpha"
+        )
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.body1,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.clearAndSetSemantics { }
-                )
-                Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                Text(
-                    text = item.price,
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.clearAndSetSemantics { }
-                )
+        val offsetY by animateDpAsState(
+            targetValue = if (hasAnimationStarted) 0.dp else (-50).dp,
+            animationSpec = tween(
+                durationMillis = 200,
+                easing = LinearEasing
+            ),
+            label = "offsetY"
+        )
+
+        val itemContentDescription = stringResource(
+            id = R.string.woopos_cart_item_content_description,
+            item.name,
+            item.price
+        )
+
+        LaunchedEffect(alpha) {
+            if (alpha == 1f) {
+                onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
             }
+        }
 
-            if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
-
-                val removeButtonContentDescription = stringResource(
-                    id = R.string.woopos_remove_item_button_from_cart_content_description,
-                    item.name
+        Card(
+            modifier = modifier
+                .height(64.dp)
+                .offset(y = offsetY)
+                .semantics { contentDescription = itemContentDescription }
+                .graphicsLayer(alpha = alpha),
+            elevation = elevation,
+            shape = RoundedCornerShape(8.dp),
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(item.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                    error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                    placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(64.dp)
                 )
-                IconButton(
-                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-                    modifier = Modifier
-                        .size(24.dp)
-                        .semantics { contentDescription = removeButtonContentDescription }
+
+                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                        tint = MaterialTheme.colors.onBackground,
-                        contentDescription = null,
+                    Text(
+                        text = item.name,
+                        style = MaterialTheme.typography.body1,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
+                    Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                    Text(
+                        text = item.price,
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.clearAndSetSemantics { }
                     )
                 }
+
+                if (canRemoveItems) {
+                    Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+
+                    val removeButtonContentDescription = stringResource(
+                        id = R.string.woopos_remove_item_button_from_cart_content_description,
+                        item.name
+                    )
+                    IconButton(
+                        onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
+                        modifier = Modifier
+                            .size(24.dp)
+                            .semantics { contentDescription = removeButtonContentDescription }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
+                            tint = MaterialTheme.colors.onBackground,
+                            contentDescription = null,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
             }
-            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         }
     }
 }
+
 
 @Composable
 @WooPosPreview
