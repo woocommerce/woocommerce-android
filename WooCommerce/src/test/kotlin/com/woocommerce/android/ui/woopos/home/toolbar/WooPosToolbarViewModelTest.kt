@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -27,6 +28,7 @@ class WooPosToolbarViewModelTest {
     }
     private val getSupportFacade: WooPosGetSupportFacade = mock()
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val networkStatus: WooPosNetworkStatus = mock()
 
     @Test
     fun `given card reader status is NotConnected, when initialized, then state should be NotConnected`() = runTest {
@@ -177,5 +179,6 @@ class WooPosToolbarViewModelTest {
         cardReaderFacade,
         childrenToParentEventSender,
         getSupportFacade,
+        networkStatus
     )
 }
