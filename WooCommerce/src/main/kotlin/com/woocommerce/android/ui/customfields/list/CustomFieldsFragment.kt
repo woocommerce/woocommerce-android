@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
-import com.woocommerce.android.ui.customfields.editor.CustomFieldsEditorFragment
+import com.woocommerce.android.ui.customfields.editor.CustomFieldsEditorViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -56,12 +56,15 @@ class CustomFieldsFragment : BaseFragment() {
     }
 
     private fun handleResults() {
-        handleResult<CustomFieldUiModel>(CustomFieldsEditorFragment.RESULT_KEY) { result ->
+        handleResult<CustomFieldUiModel>(CustomFieldsEditorViewModel.CUSTOM_FIELD_UPDATED_RESULT_KEY) { result ->
             if (result.id == null) {
                 viewModel.onCustomFieldInserted(result)
             } else {
                 viewModel.onCustomFieldUpdated(result)
             }
+        }
+        handleResult<CustomFieldUiModel>(CustomFieldsEditorViewModel.CUSTOM_FIELD_DELETED_RESULT_KEY) { result ->
+            viewModel.onCustomFieldDeleted(result)
         }
     }
 
