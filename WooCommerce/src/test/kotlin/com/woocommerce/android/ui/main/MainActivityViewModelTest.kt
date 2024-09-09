@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForP
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -64,6 +65,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
         private const val TEST_NEW_REVIEW_REMOTE_NOTE_ID = 5604993863
         private const val TEST_NEW_REVIEW_ID_1 = 4418L
         private const val TEST_NEW_REVIEW_ID_2 = 4418L
+
+        private const val TEST_BLAZE_REMOTE_NOTE_ID = 5604993864
+        private const val TEST_BLAZE_CAMPAIGN_ID_1 = 4418L
     }
 
     private lateinit var viewModel: MainActivityViewModel
@@ -92,6 +96,14 @@ class MainActivityViewModelTest : BaseUnitTest() {
         uniqueId = TEST_NEW_REVIEW_ID_1,
         channelType = NotificationChannelType.REVIEW,
         noteType = WooNotificationType.PRODUCT_REVIEW
+    )
+
+    private val testBlazeNotification = NotificationTestUtils.generateTestNotification(
+        remoteNoteId = TEST_BLAZE_REMOTE_NOTE_ID,
+        remoteSiteId = siteModel.siteId,
+        uniqueId = TEST_BLAZE_CAMPAIGN_ID_1,
+        channelType = NotificationChannelType.OTHER,
+        noteType = WooNotificationType.BLAZE
     )
 
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
@@ -218,7 +230,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a new review notification is clicked, then review open even tracked`() {
+    fun `when a new review notification is clicked, then review open event tracked`() {
         val localPushId = 1001
 
         viewModel.onPushNotificationTapped(localPushId, testReviewNotification)
@@ -515,6 +527,23 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(event).isEqualTo(MainActivityViewModel.CreateNewProductUsingImages(listOf(uri)))
+    }
+
+    @Test
+    fun `given a Blaze push notification, when tapping on it, then open campaign details event is triggered`() {
+        val localPushId = 1001
+        var event: ViewBlazeCampaignDetail? = null
+        viewModel.event.observeForever {
+            if (it is ViewBlazeCampaignDetail) event = it
+        }
+
+        viewModel.onPushNotificationTapped(localPushId, testBlazeNotification)
+
+        verify(notificationMessageHandler, atLeastOnce())
+            .markNotificationTapped(eq(testBlazeNotification.remoteNoteId))
+        verify(notificationMessageHandler, atLeastOnce())
+            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
+        assertThat(event).isEqualTo(ViewBlazeCampaignDetail(testBlazeNotification.uniqueId.toString()))
     }
 
     private fun createViewModel() {
