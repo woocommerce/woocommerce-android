@@ -32,4 +32,7 @@
     <!-- Complications -->
     <string name="shortcut_complication_label">App Shortcut</string>
     <string name="shortcut_complication_preview_description">App Shortcut</string>
+    <string name="order_totals_complication_label">Order Totals</string>
+    <string name="order_totals_complication_preview_value">$42k</string>
+    <string name="order_totals_complication_preview_description">Display your store today\'s order totals</string>
 </resources>
