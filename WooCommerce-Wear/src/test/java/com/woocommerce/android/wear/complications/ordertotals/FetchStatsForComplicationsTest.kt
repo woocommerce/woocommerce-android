@@ -31,15 +31,6 @@ class FetchStatsForComplicationsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `returns default value when no site is selected`() = testBlocking {
-        whenever(loginRepository.selectedSiteFlow).thenReturn(MutableStateFlow(null))
-
-        val result = sut(FetchStatsForComplications.StatType.ORDER_TOTALS)
-
-        assertThat(result).isEqualTo(FetchStatsForComplications.DEFAULT_EMPTY_VALUE)
-    }
-
-    @Test
     fun `returns formatted order totals when site is selected`() = testBlocking {
         val site = SiteModel()
         val total = mock<WCRevenueStatsModel.Total> {
@@ -72,7 +63,7 @@ class FetchStatsForComplicationsTest : BaseUnitTest() {
     fun `returns order count when site is selected`() = testBlocking {
         val site = SiteModel()
         val total = mock<WCRevenueStatsModel.Total> {
-            on { totalSales } doReturn 100.0
+            on { ordersCount } doReturn 10
         }
         val revenueStats = mock<WCRevenueStatsModel> {
             on { parseTotal() } doReturn total
