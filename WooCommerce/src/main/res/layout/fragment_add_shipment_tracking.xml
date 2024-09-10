@@ -93,7 +93,10 @@
                     android:hint="@string/order_shipment_tracking_number_label"
                     app:counterEnabled="true"
                     app:counterMaxLength="@integer/max_length_tracking_number"
-                    app:errorEnabled="true">
+                    app:errorEnabled="true"
+                    app:endIconDrawable="@drawable/ic_barcode"
+                    app:endIconTint="@color/woo_purple_60"
+                    app:endIconMode="custom">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/tracking_number"

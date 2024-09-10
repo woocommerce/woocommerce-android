@@ -30,7 +30,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -66,6 +65,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -242,7 +242,11 @@ private fun CartBodyWithItems(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(2.dp),
+        contentPadding = PaddingValues(
+            top = 2.dp.toAdaptivePadding(),
+            bottom = 8.dp.toAdaptivePadding()
+        ),
+        withBottomShadow = true,
     ) {
         items(
             items,
@@ -422,7 +426,7 @@ private fun ProductItem(
         }
     }
 
-    Card(
+    WooPosCard(
         modifier = modifier
             .height(64.dp)
             .semantics { contentDescription = itemContentDescription }

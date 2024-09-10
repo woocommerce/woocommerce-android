@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -47,6 +46,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
@@ -197,7 +197,7 @@ private fun MenuButtonWithPopUpMenu(
     onClick: () -> Unit
 ) {
     val menuContentDescription = stringResource(id = R.string.woopos_menu_toolbar_content_description)
-    Card(
+    WooPosCard(
         modifier = modifier,
         backgroundColor = MaterialTheme.colors.surface,
         elevation = TOOLBAR_ELEVATION,
@@ -236,7 +236,7 @@ private fun PopUpMenu(
     menuItems: List<Menu.MenuItem>,
     onClick: (Menu.MenuItem) -> Unit
 ) {
-    Card(
+    WooPosCard(
         modifier = modifier.width(214.dp),
         elevation = TOOLBAR_ELEVATION,
     ) {
@@ -327,7 +327,7 @@ private fun CardReaderStatusButton(
         }
     }
 
-    Card(
+    WooPosCard(
         modifier = modifier
             .height(56.dp),
         backgroundColor = MaterialTheme.colors.surface,
