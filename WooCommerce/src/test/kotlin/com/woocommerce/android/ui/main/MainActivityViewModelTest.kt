@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCr
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -544,6 +545,26 @@ class MainActivityViewModelTest : BaseUnitTest() {
         verify(notificationMessageHandler, atLeastOnce())
             .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
         assertThat(event).isEqualTo(ViewBlazeCampaignDetail(testBlazeNotification.uniqueId.toString()))
+    }
+
+    @Test
+    fun `given a Blaze push notifications group, when tapping on it, then open campaign list event is triggered`() {
+        val blazePushId = testBlazeNotification.getGroupPushId()
+        var event: ViewBlazeCampaignList? = null
+        viewModel.event.observeForever {
+            if (it is ViewBlazeCampaignList) event = it
+        }
+
+        viewModel.onPushNotificationTapped(blazePushId, testBlazeNotification)
+
+        verify(notificationMessageHandler, atLeastOnce())
+            .markNotificationsOfTypeTapped(eq(testBlazeNotification.channelType))
+        verify(notificationMessageHandler, atLeastOnce())
+            .removeNotificationsOfTypeFromSystemsBar(
+                eq(testBlazeNotification.channelType),
+                eq(testBlazeNotification.remoteSiteId)
+            )
+        assertThat(event).isEqualTo(ViewBlazeCampaignList)
     }
 
     private fun createViewModel() {
