@@ -393,15 +393,12 @@ private fun ProductItem(
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     var hasAnimationStarted by remember { mutableStateOf(item.isAppearanceAnimationPlayed) }
-    var visible by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
-        visible = true
         hasAnimationStarted = true
     }
 
     AnimatedVisibility(
-        visible = visible,
+        visible = hasAnimationStarted,
         enter = fadeIn() + expandVertically(),
         exit = fadeOut() + shrinkVertically()
     ) {
