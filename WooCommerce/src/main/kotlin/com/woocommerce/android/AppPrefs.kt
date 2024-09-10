@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.BLAZE_CAMPAIGN_CREATED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
@@ -28,8 +29,6 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.WC_STORE_ID
 import com.woocommerce.android.AppPrefs.DeletableSitePrefKey.AUTO_TAX_RATE_ID
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
-import com.woocommerce.android.AppPrefs.UndeletablePrefKey.BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN
-import com.woocommerce.android.AppPrefs.UndeletablePrefKey.BLAZE_NO_CAMPAIGN_REMINDER_SHOWN
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
@@ -120,7 +119,10 @@ object AppPrefs {
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+        BLAZE_CAMPAIGN_CREATED,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
+        BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+        BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
         WC_STORE_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
@@ -202,10 +204,6 @@ object AppPrefs {
         USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
 
         APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE,
-
-        // Was the Blaze campaign reminders shown at least once
-        BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
-        BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
     }
 
     fun init(context: Context) {
@@ -1029,27 +1027,35 @@ object AppPrefs {
             value = value
         )
 
-    fun setBlazeNoCampaignReminderShown(siteId: Long) {
+    var isBlazeNoCampaignReminderShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+            value = value
+        )
+
+    var isBlazeAbandonedCampaignReminderShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
+            value = value
+        )
+
+    fun setBlazeCampaignCreated(siteId: Long) {
         setBoolean(
-            key = PrefKeyString("${BLAZE_NO_CAMPAIGN_REMINDER_SHOWN}:$siteId"),
+            key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED:$siteId"),
             value = true
         )
     }
 
-    fun getBlazeNoCampaignReminderShown(siteId: Long) = getBoolean(
-        key = PrefKeyString("$BLAZE_NO_CAMPAIGN_REMINDER_SHOWN:$siteId"),
-        default = false
-    )
-
-    fun setBlazeAbandonedCampaignReminderShown(siteId: Long) {
-        setBoolean(
-            key = PrefKeyString("$BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN:$siteId"),
-            value = true
-        )
-    }
-
-    fun getBlazeAbandonedCampaignReminderShown(siteId: Long) = getBoolean(
-        key = PrefKeyString("$BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN:$siteId"),
+    fun getBlazeCampaignCreated(siteId: Long) = getBoolean(
+        key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED:$siteId"),
         default = false
     )
 

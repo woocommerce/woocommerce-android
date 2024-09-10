@@ -8,6 +8,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,32 +28,38 @@ fun WooPosDialogWrapper(
     onDismissRequest: () -> Unit,
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
-    Box(contentAlignment = Alignment.Center) {
-        WooPosBackgroundOverlay(
-            modifier = Modifier
-                .semantics {
-                    contentDescription = dialogBackgroundContentDescription
-                },
-            isVisible = isVisible,
-            onClick = onDismissRequest
-        )
-        AnimatedVisibility(
-            visible = isVisible,
-            enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
-                initialOffsetY = { it / 8 },
-                animationSpec = tween(300)
-            ),
-            exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
-                targetOffsetY = { it / 8 },
-                animationSpec = tween(300)
-            ),
-        ) {
-            WooPosCard(
-                shape = RoundedCornerShape(24.dp),
-                elevation = 8.dp,
-                modifier = modifier
+    BoxWithConstraints(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        val dialogWidth = maxWidth * 0.75f
+        Box(contentAlignment = Alignment.Center) {
+            WooPosBackgroundOverlay(
+                modifier = Modifier
+                    .semantics {
+                        contentDescription = dialogBackgroundContentDescription
+                    },
+                isVisible = isVisible,
+                onClick = onDismissRequest
+            )
+            AnimatedVisibility(
+                visible = isVisible,
+                enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
+                    initialOffsetY = { it / 8 },
+                    animationSpec = tween(300)
+                ),
+                exit = fadeOut(animationSpec = tween(300)) + slideOutVertically(
+                    targetOffsetY = { it / 8 },
+                    animationSpec = tween(300)
+                ),
             ) {
-                content()
+                WooPosCard(
+                    shape = RoundedCornerShape(24.dp),
+                    elevation = 8.dp,
+                    modifier = modifier.width(dialogWidth)
+                ) {
+                    content()
+                }
             }
         }
     }

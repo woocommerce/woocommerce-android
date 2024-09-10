@@ -210,6 +210,24 @@ class WooPosHomeViewModelTest {
     }
 
     @Test
+    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog tertiary message is correct`() {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(
+            (viewModel.state.value.productsInfoDialog).tertiaryMessage
+        ).isEqualTo(
+            R.string.woopos_dialog_products_info_tertiary_message
+        )
+    }
+
+    @Test
     fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog primary button label is correct`() {
         // GIVEN
         whenever(childrenToParentEventReceiver.events).thenReturn(
