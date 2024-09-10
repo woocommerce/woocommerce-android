@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-28 21:54:03+0000
+Translation-Revision-Date: 2024-09-02 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">Erro ao carregar campos personalizados</string>
+    <string name="custom_fields_list_title">Campos personalizados</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Plano de fundo esmaecido. Toque para ignorar a caixa de diálogo.</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s por semana</string>
+    <string name="blaze_campaign_budget_duration_endless_label">Executar até que eu interrompa</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">A partir de %1$s</string>
+    <string name="blaze_campaign_budget_weekly_spend">Gasto semanal</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%1$s por semana começando em %2$s</string>
+    <string name="blaze_campaign_status_budget_weekly">Semanal</string>
+    <string name="blaze_campaign_status_budget_remaining">Restante</string>
+    <string name="blaze_campaign_status_budget_total">Total</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">Taxa de cliques</string>
+    <string name="stats_widget_battery_saver_error">Parece que seu dispositivo está no modo de economia de bateria. \nNão é possível ver as informações da loja enquanto ele está ativo.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Menu pop-up com opções. Deslize para navegar pelos itens.</string>
     <string name="woopos_floating_toolbar_menu_disabled_content_description">Menu desativado</string>
     <string name="woopos_floating_toolbar_menu_enabled_content_description">Menu ativado</string>
@@ -677,9 +691,6 @@ Language: pt_BR
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Experimente um pagamento no valor de %s com seu cartão de crédito ou débito.\nEle será reembolsado quando você concluir.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">É fácil, seguro e confidencial.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Aceite todos os tipos de pagamentos presenciais, direto\nno seu telefone. Não é necessário hardware adicional.</string>
-    <string name="blaze_campaign_status_budget">Orçamento</string>
-    <string name="blaze_campaign_status_clicks">Cliques</string>
-    <string name="blaze_campaign_status_impressions">Impressões</string>
     <string name="blaze_campaign_status_rejected">Rejeitada</string>
     <string name="blaze_campaign_status_completed">Concluída</string>
     <string name="blaze_campaign_status_active">Ativa</string>

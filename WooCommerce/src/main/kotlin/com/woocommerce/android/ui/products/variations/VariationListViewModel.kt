@@ -170,7 +170,7 @@ class VariationListViewModel @Inject constructor(
                 ?.let { remove(it) }
         }?.toList().let { _variationList.value = it }
 
-        productRepository.fetchProductOrLoadFromCache(productID)
+        productRepository.fetchAndGetProduct(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
@@ -212,7 +212,7 @@ class VariationListViewModel @Inject constructor(
 
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)
-        productRepository.fetchProductOrLoadFromCache(productID)
+        productRepository.fetchAndGetProduct(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 

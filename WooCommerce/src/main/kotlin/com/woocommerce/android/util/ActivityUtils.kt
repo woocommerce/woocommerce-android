@@ -23,15 +23,13 @@ object ActivityUtils {
             return false
         }
 
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_APP_EMAIL)
+        val intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_EMAIL)
         val emailApps = context.packageManager.intentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        return !emailApps.isEmpty()
+        return emailApps.isNotEmpty()
     }
 
     fun openEmailClient(context: Context) {
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_APP_EMAIL)
+        val intent = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_EMAIL)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }

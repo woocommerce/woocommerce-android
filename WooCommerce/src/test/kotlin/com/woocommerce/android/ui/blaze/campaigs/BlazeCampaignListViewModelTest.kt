@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
@@ -48,7 +49,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     fun setup() = testBlocking {
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(numberExtensionsWrapper.compactNumberCompat(any(), any())).thenReturn("0")
-        whenever(currencyFormatter.formatCurrencyRounded(TOTAL_BUDGET)).thenReturn(TOTAL_BUDGET.toString())
+        whenever(currencyFormatter.formatCurrencyRounded(TOTAL_BUDGET, BlazeRepository.BLAZE_DEFAULT_CURRENCY_CODE))
+            .thenReturn(TOTAL_BUDGET.toString())
         whenever(blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get())).thenReturn(campaignsEntityFlow)
         whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
             .thenReturn(BlazeCampaignsResult(EMPTY_BLAZE_CAMPAIGN_MODEL))
