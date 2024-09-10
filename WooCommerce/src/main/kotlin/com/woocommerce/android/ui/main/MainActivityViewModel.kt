@@ -15,7 +15,10 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
-import com.woocommerce.android.notifications.WooNotificationType.BLAZE
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE_APPROVED_NOTE
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE_CANCELLED_NOTE
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE_PERFORMED_NOTE
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE_REJECTED_NOTE
 import com.woocommerce.android.notifications.WooNotificationType.LOCAL_REMINDER
 import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
 import com.woocommerce.android.notifications.WooNotificationType.PRODUCT_REVIEW
@@ -183,7 +186,7 @@ class MainActivityViewModel @Inject constructor(
         when (notification.channelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
-            NotificationChannelType.OTHER -> if (notification.noteType == BLAZE) {
+            NotificationChannelType.OTHER -> if (notification.isBlazeNotification) {
                 triggerEvent(ViewBlazeCampaignList)
             } else {
                 triggerEvent(ViewMyStoreStats)
@@ -213,7 +216,11 @@ class MainActivityViewModel @Inject constructor(
                 triggerEvent(ViewReviewDetail(notification.uniqueId))
             }
 
-            BLAZE -> triggerEvent(ViewBlazeCampaignDetail(notification.uniqueId.toString()))
+            BLAZE_APPROVED_NOTE,
+            BLAZE_REJECTED_NOTE,
+            BLAZE_CANCELLED_NOTE,
+            BLAZE_PERFORMED_NOTE -> triggerEvent(ViewBlazeCampaignDetail(notification.uniqueId.toString()))
+
             LOCAL_REMINDER -> error("Local reminder notification should not be handled here")
         }
     }

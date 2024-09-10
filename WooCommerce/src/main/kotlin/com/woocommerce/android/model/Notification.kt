@@ -31,6 +31,12 @@ data class Notification(
     @IgnoredOnParcel
     val isReviewNotification = noteType == WooNotificationType.PRODUCT_REVIEW
 
+    @IgnoredOnParcel
+    val isBlazeNotification = noteType == WooNotificationType.BLAZE_APPROVED_NOTE ||
+            noteType == WooNotificationType.BLAZE_REJECTED_NOTE ||
+            noteType == WooNotificationType.BLAZE_CANCELLED_NOTE ||
+            noteType == WooNotificationType.BLAZE_PERFORMED_NOTE
+
     /**
      * Notifications are grouped based on the notification type and the store the notification belongs to.
      *
