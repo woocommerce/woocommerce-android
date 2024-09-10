@@ -159,7 +159,6 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
                 if (it is ShowCampaignDetails) event = it
             }
 
-
             assertThat(event).isEqualTo(ShowCampaignDetails(CAMPAIGN_URL, CAMPAIGN_LIST_URL))
         }
 
