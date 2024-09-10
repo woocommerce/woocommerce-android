@@ -123,7 +123,7 @@ class MainActivityViewModel @Inject constructor(
                 changeSiteAndRestart(it.remoteSiteId, RestartActivityForPushNotification(localPushId, notification))
             } else {
                 when (localPushId) {
-                    it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
+                    it.getGroupPushId() -> onGroupMessageOpened(it)
                     else -> onSinglePushNotificationOpened(localPushId, it)
                 }
             }
@@ -175,13 +175,19 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun onGroupMessageOpened(notificationChannelType: NotificationChannelType, remoteSiteId: Long) {
-        notificationHandler.markNotificationsOfTypeTapped(notificationChannelType)
-        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notificationChannelType, remoteSiteId)
-        when (notificationChannelType) {
+    private fun onGroupMessageOpened(notification: Notification) {
+        notificationHandler.markNotificationsOfTypeTapped(notification.channelType)
+        notificationHandler.removeNotificationsOfTypeFromSystemsBar(
+            notification.channelType, notification.remoteNoteId
+        )
+        when (notification.channelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
-            else -> triggerEvent(ViewMyStoreStats)
+            NotificationChannelType.OTHER -> if (notification.noteType == BLAZE) {
+                triggerEvent(ViewBlazeCampaignList)
+            } else {
+                triggerEvent(ViewMyStoreStats)
+            }
         }
     }
 
@@ -347,6 +353,7 @@ class MainActivityViewModel @Inject constructor(
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
     data class ViewBlazeCampaignDetail(val campaignId: String) : Event()
+    object ViewBlazeCampaignList : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()

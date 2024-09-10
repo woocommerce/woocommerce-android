@@ -78,6 +78,7 @@ fun NotificationModel.getUniqueId(): Long {
         NotificationModel.Kind.BLAZE_REJECTED_NOTE,
         NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
         NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.meta?.ids?.campaignId ?: 0L
+
         else -> 0L
     }
 }

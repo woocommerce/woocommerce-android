@@ -82,6 +82,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCr
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -805,6 +806,7 @@ class MainActivity :
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
                 is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId)
+                ViewBlazeCampaignList -> showBlazeCampaignList(null)
                 is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
@@ -845,7 +847,7 @@ class MainActivity :
         observeBottomBarState()
     }
 
-    private fun showBlazeCampaignList(campaignId: String) {
+    private fun showBlazeCampaignList(campaignId: String?) {
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
 
