@@ -457,6 +457,7 @@ private fun ProductItem(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(64.dp)
                 )
+
                 Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
 
                 Column(
