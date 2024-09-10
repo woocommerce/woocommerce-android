@@ -35,6 +35,11 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+/**
+ * We implemented our custom card as the default Material card
+ * uses source of light being at the top left corner, which is not
+ * the case in our design.
+ */
 @Composable
 fun WooPosCard(
     modifier: Modifier = Modifier,
