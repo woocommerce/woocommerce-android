@@ -128,7 +128,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     ChildToParentEvent.NoInternet -> {
                         viewModelScope.launch {
-                            _toastEvent.emit(R.string.orderlist_connectivity_tool_internet_check_suggestion)
+                            _toastEvent.emit(R.string.woopos_no_internet_message)
                         }
                     }
                 }
