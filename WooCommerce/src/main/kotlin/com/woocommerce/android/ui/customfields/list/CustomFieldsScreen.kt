@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.list
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +72,8 @@ private fun CustomFieldsScreen(
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onBackClick: () -> Unit
 ) {
+    BackHandler { onBackClick() }
+
     Scaffold(
         topBar = {
             Toolbar(

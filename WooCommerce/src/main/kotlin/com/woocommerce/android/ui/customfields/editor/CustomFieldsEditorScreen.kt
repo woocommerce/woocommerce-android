@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.editor
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -43,6 +44,8 @@ private fun CustomFieldsEditorScreen(
     onDoneClicked: () -> Unit,
     onBackButtonClick: () -> Unit,
 ) {
+    BackHandler { onBackButtonClick() }
+
     Scaffold(
         topBar = {
             Toolbar(
