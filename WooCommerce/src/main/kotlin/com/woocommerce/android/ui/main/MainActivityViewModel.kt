@@ -180,7 +180,7 @@ class MainActivityViewModel @Inject constructor(
 
     private fun onGroupMessageOpened(notification: Notification) {
         notificationHandler.markNotificationsOfTypeTapped(notification.channelType)
-        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notification.channelType, notification.remoteNoteId)
+        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notification.channelType, notification.remoteSiteId)
         when (notification.channelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
