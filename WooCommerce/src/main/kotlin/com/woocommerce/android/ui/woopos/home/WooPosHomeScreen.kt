@@ -125,7 +125,7 @@ private fun WooPosHomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
+            .background(WooPosTheme.colors.homeBackground)
     ) {
         Row(
             modifier = Modifier
