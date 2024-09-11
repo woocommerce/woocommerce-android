@@ -80,7 +80,12 @@ class BlazeCampaignListViewModel @Inject constructor(
             showCampaignCelebrationIfNeeded()
         }
         if (navArgs.campaignId != null) {
-            onCampaignClicked(navArgs.campaignId!!)
+            triggerEvent(
+                ShowCampaignDetails(
+                    url = blazeUrlsHelper.buildCampaignDetailsUrl(navArgs.campaignId!!),
+                    urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
+                )
+            )
         }
         launch {
             loadCampaigns(offset = 0)
