@@ -339,6 +339,10 @@ class VariationListViewModel @Inject constructor(
                 RequestResult.SUCCESS -> {
                     tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
                     refreshVariations(remoteProductId)
+
+                    productRepository.fetchAndGetProduct(remoteProductId)
+                        ?.let { viewState = viewState.copy(parentProduct = it, progressDialogState = Hidden) }
+
                     viewState = viewState.copy(progressDialogState = Hidden)
                 }
                 else -> {
