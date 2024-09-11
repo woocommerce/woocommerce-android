@@ -83,7 +83,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
 
     fun onDoneClicked() {
         val value = requireNotNull(customFieldDraft.value)
-        if (storedValue == null) {
+        if (value.id == null) {
             // Check for duplicate keys before inserting the new custom field
             // For more context: pe5sF9-33t-p2#comment-3880
             launch {
