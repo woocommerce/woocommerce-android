@@ -64,12 +64,11 @@ class CustomFieldsFragment : BaseFragment() {
     }
 
     private fun handleResults() {
+        handleResult<CustomFieldUiModel>(CustomFieldsEditorViewModel.CUSTOM_FIELD_CREATED_RESULT_KEY) { result ->
+            viewModel.onCustomFieldInserted(result)
+        }
         handleResult<CustomFieldUiModel>(CustomFieldsEditorViewModel.CUSTOM_FIELD_UPDATED_RESULT_KEY) { result ->
-            if (result.id == null) {
-                viewModel.onCustomFieldInserted(result)
-            } else {
-                viewModel.onCustomFieldUpdated(result)
-            }
+            viewModel.onCustomFieldUpdated(result)
         }
         handleResult<CustomFieldUiModel>(CustomFieldsEditorViewModel.CUSTOM_FIELD_DELETED_RESULT_KEY) { result ->
             viewModel.onCustomFieldDeleted(result)

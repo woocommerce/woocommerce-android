@@ -27,6 +27,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
     private val repository: CustomFieldsRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
+        const val CUSTOM_FIELD_CREATED_RESULT_KEY = "custom_field_created"
         const val CUSTOM_FIELD_UPDATED_RESULT_KEY = "custom_field_updated"
         const val CUSTOM_FIELD_DELETED_RESULT_KEY = "custom_field_deleted"
     }
@@ -82,25 +83,25 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     fun onDoneClicked() {
-        val value = requireNotNull(customFieldDraft.value)
-        if (value.id == null) {
-            // Check for duplicate keys before inserting the new custom field
-            // For more context: pe5sF9-33t-p2#comment-3880
-            launch {
+        launch {
+            val value = requireNotNull(customFieldDraft.value)
+            if (value.id == null) {
+                // Check for duplicate keys before inserting the new custom field
+                // For more context: pe5sF9-33t-p2#comment-3880
                 val existingFields = repository.getDisplayableCustomFields(navArgs.parentItemId)
                 if (existingFields.any { it.key == value.key }) {
                     keyErrorMessage.value = UiString.UiStringRes(R.string.custom_fields_editor_key_error_duplicate)
-                } else {
-                    triggerEvent(
-                        MultiLiveEvent.Event.ExitWithResult(data = value, key = CUSTOM_FIELD_UPDATED_RESULT_KEY)
-                    )
+                    return@launch
                 }
             }
-        } else {
-            // When editing, we don't need to check for duplicate keys
-            triggerEvent(
+
+            val event = if (storedValue == null) {
+                MultiLiveEvent.Event.ExitWithResult(data = value, key = CUSTOM_FIELD_CREATED_RESULT_KEY)
+
+            } else {
                 MultiLiveEvent.Event.ExitWithResult(data = value, key = CUSTOM_FIELD_UPDATED_RESULT_KEY)
-            )
+            }
+            triggerEvent(event)
         }
     }
 
