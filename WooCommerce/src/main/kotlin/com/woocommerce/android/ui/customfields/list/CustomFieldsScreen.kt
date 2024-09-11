@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.list
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +38,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomField
@@ -50,6 +54,7 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
         CustomFieldsScreen(
             state = state,
             onPullToRefresh = viewModel::onPullToRefresh,
+            onSaveClicked = viewModel::onSaveClicked,
             onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
             onBackClick = viewModel::onBackClick
@@ -62,20 +67,31 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
 private fun CustomFieldsScreen(
     state: CustomFieldsViewModel.UiState,
     onPullToRefresh: () -> Unit,
+    onSaveClicked: () -> Unit,
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onBackClick: () -> Unit
 ) {
+    BackHandler { onBackClick() }
+
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.custom_fields_list_title),
-                onNavigationButtonClick = onBackClick
+                onNavigationButtonClick = onBackClick,
+                actions = {
+                    if (state.hasChanges) {
+                        WCTextButton(
+                            text = stringResource(id = R.string.save),
+                            onClick = onSaveClicked
+                        )
+                    }
+                }
             )
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
-        val pullToRefreshState = rememberPullRefreshState(state.isLoading, onPullToRefresh)
+        val pullToRefreshState = rememberPullRefreshState(state.isRefreshing, onPullToRefresh)
 
         Box(
             modifier = Modifier
@@ -95,9 +111,23 @@ private fun CustomFieldsScreen(
             }
 
             PullRefreshIndicator(
-                refreshing = state.isLoading,
+                refreshing = state.isRefreshing,
                 state = pullToRefreshState,
                 modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
+
+        if (state.isSaving) {
+            ProgressDialog(
+                title = stringResource(id = R.string.custom_fields_list_progress_dialog_title),
+                subtitle = stringResource(id = R.string.please_wait)
+            )
+        }
+
+        state.discardChangesDialogState?.let {
+            DiscardChangesDialog(
+                discardButton = it.onDiscard,
+                dismissButton = it.onCancel
             )
         }
     }
@@ -180,10 +210,10 @@ private fun CustomFieldsScreenPreview() {
                         )
                     ),
                     CustomFieldUiModel(CustomField(3, "key4", "https://url.com")),
-                ),
-                isLoading = false
+                )
             ),
             onPullToRefresh = {},
+            onSaveClicked = {},
             onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
             onBackClick = {}
