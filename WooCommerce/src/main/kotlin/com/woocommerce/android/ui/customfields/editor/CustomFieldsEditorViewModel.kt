@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.editor
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -99,7 +101,10 @@ class CustomFieldsEditorViewModel @Inject constructor(
                 MultiLiveEvent.Event.ExitWithResult(data = value, key = CUSTOM_FIELD_CREATED_RESULT_KEY)
 
             } else {
-                MultiLiveEvent.Event.ExitWithResult(data = value, key = CUSTOM_FIELD_UPDATED_RESULT_KEY)
+                MultiLiveEvent.Event.ExitWithResult(
+                    data = CustomFieldUpdateResult(oldKey = storedValue.key, updatedField = value),
+                    key = CUSTOM_FIELD_UPDATED_RESULT_KEY
+                )
             }
             triggerEvent(event)
         }
@@ -159,4 +164,10 @@ class CustomFieldsEditorViewModel @Inject constructor(
         @StringRes val labelResource: Int,
         val content: String
     ) : MultiLiveEvent.Event()
+
+    @Parcelize
+    data class CustomFieldUpdateResult(
+        val oldKey: String,
+        val updatedField: CustomFieldUiModel
+    ) : Parcelable
 }
