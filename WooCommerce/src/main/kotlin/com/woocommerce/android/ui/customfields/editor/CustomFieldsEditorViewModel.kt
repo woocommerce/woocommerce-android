@@ -109,6 +109,14 @@ class CustomFieldsEditorViewModel @Inject constructor(
         )
     }
 
+    fun onCopyKeyClicked() {
+        TODO()
+    }
+
+    fun onCopyValueClicked() {
+        TODO()
+    }
+
     fun onBackClick() {
         if (state.value?.hasChanges == true) {
             showDiscardChangesDialog.value = true
