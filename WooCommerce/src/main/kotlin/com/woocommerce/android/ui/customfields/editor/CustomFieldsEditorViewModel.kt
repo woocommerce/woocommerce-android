@@ -3,9 +3,13 @@ package com.woocommerce.android.ui.customfields.editor
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,11 +17,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CustomFieldsEditorViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val repository: CustomFieldsRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs by savedStateHandle.navArgs<CustomFieldsEditorFragmentArgs>()
 
@@ -31,23 +37,36 @@ class CustomFieldsEditorViewModel @Inject constructor(
         initialValue = false,
         key = "showDiscardChangesDialog"
     )
+    private val keyErrorMessage = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = UiString::class.java,
+        key = "keyErrorMessage"
+    )
     private val storedValue = navArgs.customField
     private val isHtml = storedValue?.valueStrippedHtml != storedValue?.value
 
     val state = combine(
         customFieldDraft,
-        showDiscardChangesDialog.mapToState()
-    ) { customField, discardChangesDialogState ->
+        showDiscardChangesDialog.mapToState(),
+        keyErrorMessage
+    ) { customField, discardChangesDialogState, keyErrorMessage ->
         UiState(
             customField = customField,
             hasChanges = storedValue?.key.orEmpty() != customField.key ||
                 storedValue?.value.orEmpty() != customField.value,
             isHtml = isHtml,
-            discardChangesDialogState = discardChangesDialogState
+            discardChangesDialogState = discardChangesDialogState,
+            keyErrorMessage = keyErrorMessage
         )
     }.asLiveData()
 
     fun onKeyChanged(key: String) {
+        keyErrorMessage.value = if (key.startsWith("_")) {
+            UiString.UiStringRes(R.string.custom_fields_editor_key_error_underscore)
+        } else {
+            null
+        }
         customFieldDraft.update { it.copy(key = key) }
     }
 
@@ -57,7 +76,21 @@ class CustomFieldsEditorViewModel @Inject constructor(
 
     fun onDoneClicked() {
         val value = requireNotNull(customFieldDraft.value)
-        triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
+        if (storedValue == null) {
+            // Check for duplicate keys before inserting the new custom field
+            // For more context: pe5sF9-33t-p2#comment-3880
+            launch {
+                val existingFields = repository.getDisplayableCustomFields(navArgs.parentItemId)
+                if (existingFields.any { it.key == value.key }) {
+                    keyErrorMessage.value = UiString.UiStringRes(R.string.custom_fields_editor_key_error_duplicate)
+                } else {
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
+                }
+            }
+        } else {
+            // When editing, we don't need to check for duplicate keys
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
+        }
     }
 
     fun onBackClick() {
@@ -83,10 +116,11 @@ class CustomFieldsEditorViewModel @Inject constructor(
         val customField: CustomFieldUiModel = CustomFieldUiModel("", ""),
         val hasChanges: Boolean = false,
         val isHtml: Boolean = false,
-        val discardChangesDialogState: DiscardChangesDialogState? = null
+        val discardChangesDialogState: DiscardChangesDialogState? = null,
+        val keyErrorMessage: UiString? = null,
     ) {
         val showDoneButton
-            get() = customField.key.isNotEmpty() && hasChanges
+            get() = customField.key.isNotEmpty() && hasChanges && keyErrorMessage == null
     }
 
     data class DiscardChangesDialogState(
