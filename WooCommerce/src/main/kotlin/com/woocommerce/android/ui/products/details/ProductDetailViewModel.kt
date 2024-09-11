@@ -38,7 +38,6 @@ import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.addTags
