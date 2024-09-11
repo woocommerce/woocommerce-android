@@ -2,8 +2,13 @@ package com.woocommerce.android.ui.orders.tracking
 
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
+import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.ShowTrackingNumberScanFailed
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -108,5 +113,37 @@ class AddOrderShipmentTrackingViewModelTest : BaseUnitTest() {
 
         verify(repository, times(0)).addOrderShipmentTracking(any(), any())
         assertEquals(R.string.offline_error, (event as ShowSnackbar).message)
+    }
+
+    @Test
+    fun `when clicking on the scan button it emits the right event`() = testBlocking {
+        viewModel.onScanTrackingNumberClicked()
+
+        assertThat(viewModel.event.value).isInstanceOf(OpenTrackingBarcodeScanning::class.java)
+    }
+
+    @Test
+    fun `when handling the barcode scanned success status it emits the scanned event with the status code`() = testBlocking {
+        val code = "123"
+        viewModel.handleBarcodeScannedStatus(
+            CodeScannerStatus.Success(
+                code,
+                GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+            )
+        )
+
+        assertThat((viewModel.event.value as SetScannedTrackingNumberEvent).trackingNumber).isEqualTo(
+            code
+        )
+    }
+
+    @Test
+    fun `when handling the barcode scanned not found status it emits the scanned failed event with the error message`() = testBlocking {
+        val scannedStatus = CodeScannerStatus.NotFound
+        viewModel.handleBarcodeScannedStatus(scannedStatus)
+
+        assertThat((viewModel.event.value as ShowTrackingNumberScanFailed).errorMessage).isEqualTo(
+            R.string.order_shipment_tracking_barcode_scanning_failed
+        )
     }
 }
