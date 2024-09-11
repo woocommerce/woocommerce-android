@@ -26,6 +26,7 @@ class CustomFieldsViewModel @Inject constructor(
     private val repository: CustomFieldsRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val args: CustomFieldsFragmentArgs by savedStateHandle.navArgs()
+    val parentItemId: Long = args.parentItemId
 
     private val isRefreshing = MutableStateFlow(false)
     private val isSaving = MutableStateFlow(false)
@@ -82,6 +83,10 @@ class CustomFieldsViewModel @Inject constructor(
 
     fun onCustomFieldValueClicked(field: CustomFieldUiModel) {
         triggerEvent(CustomFieldValueClicked(field))
+    }
+
+    fun onAddCustomFieldClicked() {
+        triggerEvent(OpenCustomFieldEditor(null))
     }
 
     fun onCustomFieldInserted(result: CustomFieldUiModel) {
@@ -147,6 +152,6 @@ class CustomFieldsViewModel @Inject constructor(
             get() = editedFields.isNotEmpty() || insertedFields.isNotEmpty()
     }
 
-    data class OpenCustomFieldEditor(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
+    data class OpenCustomFieldEditor(val field: CustomFieldUiModel?) : MultiLiveEvent.Event()
     data class CustomFieldValueClicked(val field: CustomFieldUiModel) : MultiLiveEvent.Event()
 }

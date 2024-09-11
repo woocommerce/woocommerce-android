@@ -20,6 +20,8 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForP
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -64,6 +66,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
         private const val TEST_NEW_REVIEW_REMOTE_NOTE_ID = 5604993863
         private const val TEST_NEW_REVIEW_ID_1 = 4418L
         private const val TEST_NEW_REVIEW_ID_2 = 4418L
+
+        private const val TEST_BLAZE_REMOTE_NOTE_ID = 5604993864
+        private const val TEST_BLAZE_CAMPAIGN_ID_1 = 4418L
     }
 
     private lateinit var viewModel: MainActivityViewModel
@@ -92,6 +97,14 @@ class MainActivityViewModelTest : BaseUnitTest() {
         uniqueId = TEST_NEW_REVIEW_ID_1,
         channelType = NotificationChannelType.REVIEW,
         noteType = WooNotificationType.PRODUCT_REVIEW
+    )
+
+    private val testBlazeNotification = NotificationTestUtils.generateTestNotification(
+        remoteNoteId = TEST_BLAZE_REMOTE_NOTE_ID,
+        remoteSiteId = siteModel.siteId,
+        uniqueId = TEST_BLAZE_CAMPAIGN_ID_1,
+        channelType = NotificationChannelType.OTHER,
+        noteType = WooNotificationType.BLAZE_APPROVED_NOTE
     )
 
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
@@ -157,7 +170,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewMyStoreStats) event = it
         }
 
-        viewModel.handleIncomingNotification(localPushId, null)
+        viewModel.onPushNotificationTapped(localPushId, null)
         assertThat(event).isEqualTo(ViewMyStoreStats)
     }
 
@@ -169,7 +182,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewOrderDetail) event = it
         }
 
-        viewModel.handleIncomingNotification(localPushId, testOrderNotification)
+        viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
@@ -192,7 +205,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewOrderList) event = it
         }
 
-        viewModel.handleIncomingNotification(localPushId, testOrderNotification)
+        viewModel.onPushNotificationTapped(localPushId, testOrderNotification)
 
         verify(notificationMessageHandler, atLeastOnce()).markNotificationTapped(eq(testOrderNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
@@ -208,7 +221,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewReviewDetail) event = it
         }
 
-        viewModel.handleIncomingNotification(localPushId, testReviewNotification)
+        viewModel.onPushNotificationTapped(localPushId, testReviewNotification)
 
         verify(notificationMessageHandler, atLeastOnce())
             .markNotificationTapped(eq(testReviewNotification.remoteNoteId))
@@ -218,10 +231,10 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a new review notification is clicked, then review open even tracked`() {
+    fun `when a new review notification is clicked, then review open event tracked`() {
         val localPushId = 1001
 
-        viewModel.handleIncomingNotification(localPushId, testReviewNotification)
+        viewModel.onPushNotificationTapped(localPushId, testReviewNotification)
 
         verify(analyticsTrackerWrapper).track(REVIEW_OPEN)
     }
@@ -234,7 +247,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewOrderList) event = it
         }
 
-        viewModel.handleIncomingNotification(groupOrderPushId, testOrderNotification)
+        viewModel.onPushNotificationTapped(groupOrderPushId, testOrderNotification)
 
         verify(selectedSite, never()).set(any())
         verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
@@ -255,7 +268,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             if (it is ViewReviewList) event = it
         }
 
-        viewModel.handleIncomingNotification(reviewPushId, testReviewNotification)
+        viewModel.onPushNotificationTapped(reviewPushId, testReviewNotification)
 
         verify(selectedSite, never()).set(any())
         verify(notificationMessageHandler, atLeastOnce()).markNotificationsOfTypeTapped(
@@ -276,7 +289,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         )
         val groupOrderPushId = orderNotification2.getGroupPushId()
 
-        viewModel.handleIncomingNotification(groupOrderPushId, orderNotification2)
+        viewModel.onPushNotificationTapped(groupOrderPushId, orderNotification2)
 
         verify(selectedSite, atLeastOnce()).set(any())
         assertThat(viewModel.event.value)
@@ -291,7 +304,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         )
         val reviewPushId = reviewNotification2.getGroupPushId()
 
-        viewModel.handleIncomingNotification(reviewPushId, reviewNotification2)
+        viewModel.onPushNotificationTapped(reviewPushId, reviewNotification2)
 
         verify(selectedSite, atLeastOnce()).set(any())
         assertThat(viewModel.event.value).isEqualTo(
@@ -307,7 +320,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         doReturn(null).whenever(siteStore).getSiteBySiteId(any())
         val notification = testOrderNotification.copy(remoteSiteId = TEST_REMOTE_SITE_ID_2)
 
-        viewModel.handleIncomingNotification(1000, notification)
+        viewModel.onPushNotificationTapped(1000, notification)
 
         assertThat(viewModel.event.value).isEqualTo(ViewMyStoreStats)
     }
@@ -515,6 +528,48 @@ class MainActivityViewModelTest : BaseUnitTest() {
 
         // THEN
         assertThat(event).isEqualTo(MainActivityViewModel.CreateNewProductUsingImages(listOf(uri)))
+    }
+
+    @Test
+    fun `given a Blaze push notification, when tapping on it, then open campaign details event is triggered`() {
+        val localPushId = 1001
+        var event: ViewBlazeCampaignDetail? = null
+        viewModel.event.observeForever {
+            if (it is ViewBlazeCampaignDetail) event = it
+        }
+
+        viewModel.onPushNotificationTapped(localPushId, testBlazeNotification)
+
+        verify(notificationMessageHandler, atLeastOnce())
+            .markNotificationTapped(eq(testBlazeNotification.remoteNoteId))
+        verify(notificationMessageHandler, atLeastOnce())
+            .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
+        assertThat(event).isEqualTo(
+            ViewBlazeCampaignDetail(
+                testBlazeNotification.uniqueId.toString(),
+                isOpenedFromPush = true
+            )
+        )
+    }
+
+    @Test
+    fun `given a Blaze push notifications group, when tapping on it, then open campaign list event is triggered`() {
+        val blazePushId = testBlazeNotification.getGroupPushId()
+        var event: ViewBlazeCampaignList? = null
+        viewModel.event.observeForever {
+            if (it is ViewBlazeCampaignList) event = it
+        }
+
+        viewModel.onPushNotificationTapped(blazePushId, testBlazeNotification)
+
+        verify(notificationMessageHandler, atLeastOnce())
+            .markNotificationsOfTypeTapped(eq(testBlazeNotification.channelType))
+        verify(notificationMessageHandler, atLeastOnce())
+            .removeNotificationsOfTypeFromSystemsBar(
+                eq(testBlazeNotification.channelType),
+                eq(testBlazeNotification.remoteSiteId)
+            )
+        assertThat(event).isEqualTo(ViewBlazeCampaignList)
     }
 
     private fun createViewModel() {

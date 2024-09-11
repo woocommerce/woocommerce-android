@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.AnimatedVisibility
@@ -227,7 +225,6 @@ fun CartBodyEmpty(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
@@ -255,7 +252,7 @@ private fun CartBodyWithItems(
             key = { item -> item.id.itemNumber }
         ) { item ->
             ProductItem(
-                modifier = Modifier.animateItemPlacement(),
+                modifier = Modifier,
                 item = item,
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
@@ -401,106 +398,100 @@ private fun ProductItem(
         hasAnimationStarted = true
     }
 
-    AnimatedVisibility(
-        visible = hasAnimationStarted,
-        enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically()
-    ) {
-        val elevation by animateDpAsState(
-            targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-            animationSpec = tween(durationMillis = 200, delayMillis = 100),
-            label = "elevation"
-        )
+    val elevation by animateDpAsState(
+        targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
+        animationSpec = tween(durationMillis = 250, delayMillis = 200),
+        label = "elevation"
+    )
 
-        val alpha by animateFloatAsState(
-            targetValue = if (hasAnimationStarted) 1f else 0f,
-            animationSpec = tween(
-                durationMillis = 200,
-                easing = LinearEasing
-            ),
-            label = "alpha"
-        )
+    val alpha by animateFloatAsState(
+        targetValue = if (hasAnimationStarted) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 200,
+            easing = LinearEasing
+        ),
+        label = "alpha"
+    )
 
-        val itemContentDescription = stringResource(
-            id = R.string.woopos_cart_item_content_description,
-            item.name,
-            item.price
-        )
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_content_description,
+        item.name,
+        item.price
+    )
 
-        LaunchedEffect(alpha) {
-            if (alpha == 1f) {
-                onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
-            }
+    LaunchedEffect(alpha) {
+        if (alpha == 1f) {
+            onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
         }
+    }
 
-        WooPosCard(
-            modifier = modifier
-                .height(64.dp)
-                .semantics { contentDescription = itemContentDescription }
-                .graphicsLayer(alpha = alpha),
-            elevation = elevation,
-            shape = RoundedCornerShape(8.dp),
+    WooPosCard(
+        modifier = modifier
+            .height(64.dp)
+            .semantics { contentDescription = itemContentDescription }
+            .graphicsLayer(alpha = alpha),
+        elevation = elevation,
+        shape = RoundedCornerShape(8.dp),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(64.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(item.imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                    error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                    placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(64.dp)
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
-
-                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = item.name,
-                        style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clearAndSetSemantics { }
-                    )
-                    Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                    Text(
-                        text = item.price,
-                        style = MaterialTheme.typography.body1,
-                        modifier = Modifier.clearAndSetSemantics { }
-                    )
-                }
-
-                if (canRemoveItems) {
-                    Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
-
-                    val removeButtonContentDescription = stringResource(
-                        id = R.string.woopos_remove_item_button_from_cart_content_description,
-                        item.name
-                    )
-                    IconButton(
-                        onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-                        modifier = Modifier
-                            .size(24.dp)
-                            .semantics { contentDescription = removeButtonContentDescription }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                            tint = MaterialTheme.colors.onBackground,
-                            contentDescription = null,
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                Text(
+                    text = item.price,
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.clearAndSetSemantics { }
+                )
             }
+
+            if (canRemoveItems) {
+                Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+
+                val removeButtonContentDescription = stringResource(
+                    id = R.string.woopos_remove_item_button_from_cart_content_description,
+                    item.name
+                )
+                IconButton(
+                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
+                    modifier = Modifier
+                        .size(24.dp)
+                        .semantics { contentDescription = removeButtonContentDescription }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
+                        tint = MaterialTheme.colors.onBackground,
+                        contentDescription = null,
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         }
     }
 }
