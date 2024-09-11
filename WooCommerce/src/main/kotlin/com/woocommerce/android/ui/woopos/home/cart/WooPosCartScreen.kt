@@ -242,7 +242,7 @@ private fun CartBodyWithItems(
             top = 2.dp.toAdaptivePadding(),
             bottom = 8.dp.toAdaptivePadding()
         ),
-        withBottomShadow = true,
+        withBottomShadow = false,
     ) {
         items(
             items,
