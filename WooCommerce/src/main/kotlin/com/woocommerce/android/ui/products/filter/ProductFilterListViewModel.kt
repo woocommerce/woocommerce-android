@@ -185,7 +185,7 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     private fun getTypeFilterWithExploreOptions(): MutableList<FilterListOptionItemUiModel> {
-        return ProductType.values().filterNot { it == ProductType.OTHER }.map {
+        return ProductType.FILTERABLE_VALUES.map {
             when {
                 it == ProductType.BUNDLE && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
@@ -220,7 +220,7 @@ class ProductFilterListViewModel @Inject constructor(
                 }
 
                 else -> {
-                    FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
+                    DefaultFilterListOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
                         filterOptionItemValue = it.value,
                         isSelected = productFilterOptions[TYPE] == it.value
