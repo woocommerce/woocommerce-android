@@ -377,6 +377,28 @@ class VariationListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `When generated variations succeeds, then parent product is updated`() = testBlocking {
+        // Given a valid variation candidates list
+        val variationCandidates = List(5) { id ->
+            listOf(VariantOption(id.toLong(), "Number", id.toString()))
+        }
+        val expectedUpdatedProduct = product.copy(name = "Updated Product")
+
+        productRepository.stub {
+            onBlocking { fetchAndGetProduct(productRemoteId) } doReturn expectedUpdatedProduct
+        }
+        createViewModel()
+        viewModel.start()
+
+        // When AddAllVariations succeed
+        viewModel.onGenerateVariationsConfirmed(variationCandidates)
+
+        // Then parent product is updated
+        verify(productRepository).fetchAndGetProduct(productRemoteId)
+        assertThat(viewModel.viewStateLiveData.liveData.value?.parentProduct).isEqualTo(expectedUpdatedProduct)
+    }
+
+    @Test
     fun `When user requested variation generation but there are no candidates, show error`() = testBlocking {
         // given
         whenever(generateVariationCandidates(product)).thenReturn(emptyList())
