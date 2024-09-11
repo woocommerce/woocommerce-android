@@ -183,7 +183,6 @@ private fun CustomFieldItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
 
-
             if (customField.contentType != CustomFieldContentType.TEXT) {
                 val text = buildAnnotatedString {
                     withStyle(SpanStyle(color = MaterialTheme.colors.primary)) {

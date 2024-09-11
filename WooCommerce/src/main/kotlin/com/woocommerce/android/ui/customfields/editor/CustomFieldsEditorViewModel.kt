@@ -99,7 +99,6 @@ class CustomFieldsEditorViewModel @Inject constructor(
 
             val event = if (storedValue == null) {
                 MultiLiveEvent.Event.ExitWithResult(data = value, key = CUSTOM_FIELD_CREATED_RESULT_KEY)
-
             } else {
                 MultiLiveEvent.Event.ExitWithResult(
                     data = CustomFieldUpdateResult(oldKey = storedValue.key, updatedField = value),
