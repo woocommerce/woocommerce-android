@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
+import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ShowCampaignDetails
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
@@ -15,6 +16,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -54,6 +56,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         whenever(blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get())).thenReturn(campaignsEntityFlow)
         whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
             .thenReturn(BlazeCampaignsResult(EMPTY_BLAZE_CAMPAIGN_MODEL))
+        whenever(blazeUrlsHelper.buildCampaignDetailsUrl(CAMPAIGN_ID)).thenReturn(CAMPAIGN_URL)
+        whenever(blazeUrlsHelper.buildCampaignsListUrl()).thenReturn(CAMPAIGN_LIST_URL)
     }
 
     @Test
@@ -146,9 +150,24 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         Assertions.assertThat(state.isCampaignCelebrationShown).isFalse()
     }
 
-    private fun createViewModel(isPostCampaignCreation: Boolean = false) {
+    @Test
+    fun `when screen opened from Blaze campaign status push notification, navigate to campaign detail `() =
+        testBlocking {
+            createViewModel(campaignId = CAMPAIGN_ID)
+            var event: ShowCampaignDetails? = null
+            viewModel.event.observeForever {
+                if (it is ShowCampaignDetails) event = it
+            }
+
+            assertThat(event).isEqualTo(ShowCampaignDetails(CAMPAIGN_URL, CAMPAIGN_LIST_URL))
+        }
+
+    private fun createViewModel(isPostCampaignCreation: Boolean = false, campaignId: String? = null) {
         viewModel = BlazeCampaignListViewModel(
-            savedStateHandle = BlazeCampaignListFragmentArgs(isPostCampaignCreation).toSavedStateHandle(),
+            savedStateHandle = BlazeCampaignListFragmentArgs(
+                isPostCampaignCreation,
+                campaignId
+            ).toSavedStateHandle(),
             blazeCampaignsStore = blazeCampaignsStore,
             selectedSite = selectedSite,
             blazeUrlsHelper = blazeUrlsHelper,
@@ -171,6 +190,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         const val TOTAL_BUDGET = 100.0
         const val SPENT_BUDGET = 0.0
         const val TARGET_URN = "urn:wpcom:post:199247490:9"
+        const val CAMPAIGN_URL = "https://wordpress.com/campaigns"
+        const val CAMPAIGN_LIST_URL = "https://wordpress.com/campaigns/list"
 
         val BLAZE_CAMPAIGN_MODEL = BlazeCampaignModel(
             campaignId = CAMPAIGN_ID,

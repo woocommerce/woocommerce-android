@@ -81,6 +81,8 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForP
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -786,7 +788,7 @@ class MainActivity :
             intent.removeExtra(FIELD_REMOTE_NOTIFICATION)
             intent.removeExtra(FIELD_PUSH_ID)
 
-            viewModel.handleIncomingNotification(localPushId, notification)
+            viewModel.onPushNotificationTapped(localPushId, notification)
         } else if (localNotification != null) {
             intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
             viewModel.onLocalNotificationTapped(localNotification)
@@ -803,6 +805,8 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
+                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId, event.isOpenedFromPush)
+                ViewBlazeCampaignList -> showBlazeCampaignList(campaignId = null)
                 is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
@@ -841,6 +845,18 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
+    }
+
+    private fun showBlazeCampaignList(campaignId: String?, isOpenedFromPush: Boolean = false) {
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+
+        navController.navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToBlazeCampaignListFragment(
+                campaignId = campaignId
+            ),
+            skipThrottling = isOpenedFromPush
+        )
     }
 
     private fun observeNotificationsPermissionBarVisibility() {

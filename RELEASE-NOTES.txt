@@ -4,7 +4,7 @@
 
 20.4
 -----
-
+- [**] Users can now scan their tracking number when adding it to the order [https://github.com/woocommerce/woocommerce-android/pull/12533]
 
 20.3
 -----

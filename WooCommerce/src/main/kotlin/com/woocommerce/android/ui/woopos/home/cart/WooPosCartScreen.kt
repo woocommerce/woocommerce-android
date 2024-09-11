@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.AnimatedVisibility
@@ -11,7 +9,6 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +27,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -66,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -225,7 +222,6 @@ fun CartBodyEmpty(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
@@ -242,14 +238,18 @@ private fun CartBodyWithItems(
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(2.dp),
+        contentPadding = PaddingValues(
+            top = 2.dp.toAdaptivePadding(),
+            bottom = 8.dp.toAdaptivePadding()
+        ),
+        withBottomShadow = true,
     ) {
         items(
             items,
             key = { item -> item.id.itemNumber }
         ) { item ->
             ProductItem(
-                modifier = Modifier.animateItemPlacement(),
+                modifier = Modifier,
                 item = item,
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
@@ -397,7 +397,7 @@ private fun ProductItem(
 
     val elevation by animateDpAsState(
         targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 200, delayMillis = 100),
+        animationSpec = tween(durationMillis = 250, delayMillis = 200),
         label = "elevation"
     )
 
@@ -422,7 +422,7 @@ private fun ProductItem(
         }
     }
 
-    Card(
+    WooPosCard(
         modifier = modifier
             .height(64.dp)
             .semantics { contentDescription = itemContentDescription }
