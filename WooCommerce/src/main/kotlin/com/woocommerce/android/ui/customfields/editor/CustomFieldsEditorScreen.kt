@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.editor
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.aztec.OutlinedAztecEditor
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -44,6 +46,8 @@ private fun CustomFieldsEditorScreen(
     onDoneClicked: () -> Unit,
     onBackButtonClick: () -> Unit,
 ) {
+    BackHandler { onBackButtonClick() }
+
     Scaffold(
         topBar = {
             Toolbar(
@@ -78,12 +82,21 @@ private fun CustomFieldsEditorScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            WCOutlinedTextField(
-                value = state.customField.value,
-                onValueChange = onValueChanged,
-                label = stringResource(R.string.custom_fields_editor_value_label),
-                minLines = 5
-            )
+            if (state.isHtml) {
+                OutlinedAztecEditor(
+                    content = state.customField.value,
+                    onContentChanged = onValueChanged,
+                    label = stringResource(R.string.custom_fields_editor_value_label),
+                    minLines = 5
+                )
+            } else {
+                WCOutlinedTextField(
+                    value = state.customField.value,
+                    onValueChange = onValueChanged,
+                    label = stringResource(R.string.custom_fields_editor_value_label),
+                    minLines = 5
+                )
+            }
         }
 
         state.discardChangesDialogState?.let {

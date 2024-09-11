@@ -219,6 +219,20 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when updating a custom field twice, then make sure the last edit is the one kept`() = testBlocking {
+        val customField = CustomFieldUiModel(CUSTOM_FIELDS.first())
+        setup()
+
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onCustomFieldUpdated(customField.copy(value = "new value"))
+            viewModel.onCustomFieldUpdated(customField.copy(value = "new value 2"))
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state.customFields.first().value).isEqualTo("new value 2")
+    }
+
+    @Test
     fun `when adding a custom field, then custom fields are refreshed`() = testBlocking {
         val customField = CustomFieldUiModel(
             key = "new key",

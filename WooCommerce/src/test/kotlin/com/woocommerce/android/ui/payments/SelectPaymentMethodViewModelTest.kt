@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderP
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderRefundFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToChangeDueCalculatorScreen
 import com.woocommerce.android.ui.payments.methodselection.OpenGenericWebView
+import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodCurrencyMissMatchLog
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewModel
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
@@ -41,6 +42,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -51,6 +53,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.WCGatewayStore
@@ -113,6 +116,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val appPrefs: AppPrefs = mock()
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
+    private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
 
     @Test
     fun `given hub flow, when view model init, then navigate to hub flow emitted`() = testBlocking {
@@ -1183,6 +1187,29 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             assertThat(viewModel.event.value).isEqualTo(NavigateBackToHub(CardReadersHub()))
         }
 
+    @Test
+    fun `given different currencies, when checkStatus track currency mismatch`() = runTest {
+        // GIVEN
+        whenever(wooCommerceStore.getStoreCountryCode(any())).thenReturn("US")
+        whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(mock())
+        whenever(orderMapper.toAppModel(any())).thenReturn(order)
+        val settings = mock<WCSettingsModel> {
+            on { currencyCode }.thenReturn("EUR")
+        }
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(settings)
+        val param = Payment(orderId = 1L, paymentType = SIMPLE)
+
+        // WHEN
+        initViewModel(param)
+        advanceUntilIdle()
+
+        // THEN
+        verify(logOrderCurrencyMismatchWithSiteSettings).invoke(
+            storeCurrency = "EUR",
+            orderCurrency = "USD"
+        )
+    }
+
     private fun initViewModel(cardReaderFlowParam: CardReaderFlowParam): SelectPaymentMethodViewModel {
         return SelectPaymentMethodViewModel(
             SelectPaymentMethodFragmentArgs(cardReaderFlowParam = cardReaderFlowParam).toSavedStateHandle(),
@@ -1201,6 +1228,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             cardReaderTrackingInfoKeeper,
             appPrefs,
             paymentsUtils,
+            logOrderCurrencyMismatchWithSiteSettings,
         )
     }
 

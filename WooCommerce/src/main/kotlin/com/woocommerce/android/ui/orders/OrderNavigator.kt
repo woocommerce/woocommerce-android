@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
@@ -97,6 +98,13 @@ class OrderNavigator @Inject constructor() {
                     )
                 fragment.findNavController().navigateSafely(action)
             }
+
+            is OpenTrackingBarcodeScanning -> {
+                val action = AddOrderShipmentTrackingFragmentDirections
+                    .actionAddOrderShipmentTrackingFragmentToBarcodeScanningFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is PrintShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintShippingLabelFragment(
@@ -158,7 +166,7 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
                     CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, target.paymentTypeFlow)
                 )
-                fragment.findNavController().navigateSafely(action)
+                fragment.findNavController().navigateSafely(directions = action, skipThrottling = true)
             }
             is ViewPrintingInstructions -> {
                 val action = OrderDetailFragmentDirections

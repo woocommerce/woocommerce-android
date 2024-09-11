@@ -1,16 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -52,11 +46,15 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.WooPosCardReaderStatus
+
+private val TOOLBAR_ELEVATION = 6.dp
 
 @Composable
 fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
@@ -84,18 +82,14 @@ private fun WooPosFloatingToolbar(
     )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        MenuOverlay(
+        WooPosBackgroundOverlay(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f))
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
                 .semantics {
                     contentDescription = labels.floatingToolbarMenuOverlayContentDescription
                 },
             isVisible = menu is Menu.Visible,
+            onClick = { onUIEvent(WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked) }
         )
 
         ConstraintLayout(modifier = modifier) {
@@ -149,20 +143,6 @@ private fun WooPosFloatingToolbar(
 }
 
 @Composable
-private fun MenuOverlay(
-    modifier: Modifier,
-    isVisible: Boolean,
-) {
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = fadeIn(initialAlpha = 0.3f),
-        exit = fadeOut(targetAlpha = 0.0f)
-    ) {
-        Box(modifier = modifier)
-    }
-}
-
-@Composable
 private fun Toolbar(
     modifier: Modifier,
     menuCardDisabled: Boolean,
@@ -187,7 +167,7 @@ private fun Toolbar(
                     contentDescription = labels.cardReaderStatusContentDescription
                 },
             state = cardReaderStatus,
-        ) { onUIEvent(WooPosToolbarUIEvent.ConnectToAReaderClicked) }
+        ) { onUIEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked) }
 
         MenuButtonWithPopUpMenu(
             modifier = Modifier
@@ -217,10 +197,10 @@ private fun MenuButtonWithPopUpMenu(
     onClick: () -> Unit
 ) {
     val menuContentDescription = stringResource(id = R.string.woopos_menu_toolbar_content_description)
-    Card(
+    WooPosCard(
         modifier = modifier,
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(8.dp),
     ) {
         TextButton(
@@ -256,9 +236,9 @@ private fun PopUpMenu(
     menuItems: List<Menu.MenuItem>,
     onClick: (Menu.MenuItem) -> Unit
 ) {
-    Card(
+    WooPosCard(
         modifier = modifier.width(214.dp),
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
     ) {
         Column {
             Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
@@ -347,11 +327,11 @@ private fun CardReaderStatusButton(
         }
     }
 
-    Card(
+    WooPosCard(
         modifier = modifier
             .height(56.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(8.dp),
     ) {
         TextButton(

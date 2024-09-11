@@ -23,7 +23,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,10 +43,6 @@ class WooPosCartViewModel @Inject constructor(
     )
 
     val state: LiveData<WooPosCartState> = _state
-        .scan(_state.value) { previousState, newState ->
-            updateParentCartStatusIfCartChanged(previousState, newState)
-            newState
-        }
         .asLiveData()
         .map { updateCartStatusDependingOnItems(it) }
         .map { updateToolbarState(it) }
@@ -167,7 +162,7 @@ class WooPosCartViewModel @Inject constructor(
         val newToolbar = when (newState.cartStatus) {
             EDITABLE -> {
                 WooPosCartState.Toolbar(
-                    icon = null,
+                    backIconVisible = false,
                     itemsCount = itemsCount,
                     isClearAllButtonVisible = newState.body is WooPosCartState.Body.WithItems
                 )
@@ -175,7 +170,7 @@ class WooPosCartViewModel @Inject constructor(
 
             CHECKOUT -> {
                 WooPosCartState.Toolbar(
-                    icon = R.drawable.ic_back_24dp,
+                    backIconVisible = true,
                     itemsCount = itemsCount,
                     isClearAllButtonVisible = false
                 )
@@ -183,7 +178,7 @@ class WooPosCartViewModel @Inject constructor(
 
             EMPTY -> {
                 WooPosCartState.Toolbar(
-                    icon = null,
+                    backIconVisible = false,
                     itemsCount = null,
                     isClearAllButtonVisible = false
                 )
@@ -208,19 +203,6 @@ class WooPosCartViewModel @Inject constructor(
                 )
             }
         }
-
-    private fun updateParentCartStatusIfCartChanged(previousState: WooPosCartState, newState: WooPosCartState) {
-        if (previousState.body.amountOfItems == newState.body.amountOfItems) return
-        when (newState.body) {
-            is WooPosCartState.Body.Empty -> {
-                sendEventToParent(ChildToParentEvent.CartStatusChanged.Empty)
-            }
-
-            is WooPosCartState.Body.WithItems -> {
-                sendEventToParent(ChildToParentEvent.CartStatusChanged.NotEmpty)
-            }
-        }
-    }
 
     private fun updateCartStatusDependingOnItems(newState: WooPosCartState): WooPosCartState =
         when (newState.body) {

@@ -1,11 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-12 22:54:04+0000
+Translation-Revision-Date: 2024-09-02 15:54:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">خطأ في أثناء تحميل الحقول المخصصة</string>
+    <string name="custom_fields_list_title">حقول مخصصة</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">خلفية معتمة. انقر لتجاهل مربع الحوار.</string>
+    <string name="blaze_campaign_budget_weekly_spending">⁦%1$s⁩ أسبوعيًا</string>
+    <string name="blaze_campaign_budget_duration_endless_label">التشغيل حتى أوقفه</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">بدءًا من ⁦%1$s⁩</string>
+    <string name="blaze_campaign_budget_weekly_spend">الإنفاق الأسبوعي</string>
+    <string name="blaze_campaign_preview_days_duration_endless">⁦%1$s⁩ أسبوعيًا، بدءًا من ⁦%2$s⁩</string>
+    <string name="blaze_campaign_status_budget_weekly">أسبوعيًا</string>
+    <string name="blaze_campaign_status_budget_remaining">المتبقي</string>
+    <string name="blaze_campaign_status_budget_total">الإجمالي</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ← %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">مرات النقر</string>
+    <string name="stats_widget_battery_saver_error">يبدو أن الجهاز في وضع توفير الطاقة. \nيتعذر علينا تقديم معلومات المتجر الخاصة بك بينما يكون نشطًا.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">القائمة المنبثقة مع الخيارات. مرر للتنقل عبر العناصر.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">فتح قائمة شريط الأدوات</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">شريط أدوات يتضمن حالة قارئ البطاقات. القائمة مفتوحة. انقر نقرًا مزدوجًا للتفاعل.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">شريط أدوات يتضمن حالة قارئ البطاقات. انقر نقرًا مزدوجًا للتفاعل.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">تم تعطيل القائمة</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">تم تمكين القائمة</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">قارئ البطاقات غير متصل. النقر نقرًا مزدوج للاتصال</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">قارئ البطاقات غير متصل</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">خلفية خافتة. انقر لإغلاق القائمة.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">أيقونة علامة الاختيار للدفع الناجح</string>
+    <string name="woopos_remove_cart_item_content_description">إزالة هذا العنصر من عربة التسوق</string>
+    <string name="woopos_exit_dialog_confirmation_message">سيتم فقدان أي طلبات قيد التقدم.</string>
+    <string name="woopos_exit_dialog_confirmation_title">هل تريد إنهاء وضع نقطة البيع؟</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">إغلاق</string>
+    <string name="woopos_dialog_products_info_background_content_description">خلفية خافتة. انقر لتجاهل مربع الحوار.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">انقر نقرًا مزدوجًا لتجاهل مربع الحوار</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">مربع حوار المنتجات البسيطة فقط</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">النقر نقرًا مزدوجًا للتعرف على المزيد</string>
+    <string name="woopos_banner_simple_products_content_description">شعار المنتجات البسيطة فقط</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">روِّج لمنتجاتك من خلال Blaze Ads وارفع مبيعاتك الآن.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">تعزيز مبيعاتك</string>
+    <string name="more_menu_button_payments_description">تلقي المدفوعات في أثناء التنقل</string>
+    <string name="card_reader_payment_failed_incorrect_pin">تم إدخال رمز PIN غير صحيح. المحاولة الآن، أو استخدام وسائل دفع أخرى</string>
+    <string name="woopos_menu_toolbar_content_description">القائمة</string>
+    <string name="woopos_cart_item_content_description">المنتج في عربة التسوق %s، السعر %s</string>
+    <string name="woopos_product_item_content_description">المنتج %s، السعر %s</string>
+    <string name="blaze_campaign_status_suspended">معلَّق</string>
     <string name="woopos_success_screen_total">تم سداد دفعة قدرها ⁦%1$s⁩ بنجاح</string>
     <string name="woopos_new_order_button">طلب جديد</string>
     <string name="woopos_dialog_products_info_button_label">موافق</string>
@@ -118,13 +159,12 @@ Language: ar
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">السماح لنا بإنشاء تفاصيل المنتج من أجلك</string>
     <string name="woopos_payment_collect_payment_label">تحصيل المدفوعات بالبطاقة</string>
     <string name="woopos_payment_total_label">الإجمالي</string>
-    <string name="woopos_payment_tax_label">الضريبة</string>
+    <string name="woopos_payment_tax_label">الضرائب</string>
     <string name="woopos_payment_subtotal_label">الإجمالي الفرعي</string>
     <string name="woopos_payment_successful_label">تمت عملية الدفع بنجاح</string>
     <string name="woopos_payment_failed_please_try_again">فشلت عملية الدفع. يرجى المحاولة مجددًا.</string>
     <string name="woopos_cart_back_content_description">أيقونة عربة التسوق</string>
     <string name="woopos_products_screen_title">المنتجات</string>
-    <string name="woopos_product_image_description">صورة المنتج</string>
     <string name="woopos_items_in_cart">%d من العناصر</string>
     <string name="woopos_clear_cart_button">مسح</string>
     <string name="more_menu_button_google_description">زيادة المبيعات وإنشاء مزيد من حركة المرور باستخدام Google Ads</string>
@@ -132,10 +172,9 @@ Language: ar
     <string name="no_quantity_rules">لا توجد قواعد للكميات</string>
     <string name="blaze_campaign_preview_audience_section_title">الجمهور</string>
     <string name="woopos_exit_confirmation_dismiss_button">إلغاء</string>
-    <string name="woopos_exit_confirmation_confirm_button">إنهاء</string>
-    <string name="woopos_exit_confirmation_message">هل تريد بالتأكيد إنهاء POS؟</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">إنهاء</string>
     <string name="woopos_exit_confirmation_title">إنهاء POS</string>
-    <string name="woopos_remove_item_from_cart_content_description">إزالة عنصر من عربة التسوق</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">إزالة %s من عربة التسوق</string>
     <string name="woopos_checkout_button">السداد</string>
     <string name="woopos_reader_unknown">حالة القارئ مجهولة</string>
     <string name="woopos_checkout">السداد</string>
@@ -631,7 +670,6 @@ Language: ar
     <string name="blaze_campaign_creation_intro_title">جذب مزيد من المبيعات إلى متجرك باستخدام Blaze</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">كان هناك خطأ في أثناء تحديث قائمة الحملات. ترجى المحاولة مرة أخرى لاحقًا.</string>
     <string name="media_picker_dialog_title">تحديد مصدر الوسائط</string>
-    <string name="product_creation_package_photo_error">حدث خطأ في أثناء إنشاء اسم المنتج ووصفه.</string>
     <string name="product_creation_package_photo_no_text_detected">لم يتم الكشف عن نص. يرجى تحديد صورة حزم أخرى أو إدخال تفاصيل المنتج يدويًا.</string>
     <string name="order_editing_add_content_description">إضافة منتج</string>
     <string name="order_editing_barcode_content_description">مسح الرمز الشريطي ضوئيًا</string>
@@ -653,9 +691,6 @@ Language: ar
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">جرّب مدفوعات %s من خلال بطاقة الخصم أو الائتمان لديك.\nستُستَرد المدفوعات عندما تنتهي.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">إنها سهلة وآمنة وخاصة.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">اقبل كل أنواع المدفوعات الشخصية، مباشرة\nعلى هاتفك. لا يلزم أجهزة إضافة.</string>
-    <string name="blaze_campaign_status_budget">الميزانية</string>
-    <string name="blaze_campaign_status_clicks">النقرات</string>
-    <string name="blaze_campaign_status_impressions">الانطباعات</string>
     <string name="blaze_campaign_status_rejected">مرفوض</string>
     <string name="blaze_campaign_status_completed">مكتمل</string>
     <string name="blaze_campaign_status_active">نشط</string>
@@ -688,46 +723,23 @@ Language: ar
     <string name="card_reader_settings_header">الإعدادات</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">إضافة التفاصيل يدويًا باستخدام البريد الإلكتروني</string>
     <string name="login_app_login_malformed_link">تتعذر علينا معالجة طلب تسجيل الدخول إلى تطبيقك</string>
-    <string name="ai_product_name_copy_error">خطأ في أثناء نسخ اسم المنتج إلى الحافظة.</string>
-    <string name="ai_product_name_copy_success">تم نسخ اسم المنتج إلى الحافظة.</string>
-    <string name="ai_product_name_copy_label">تم إنشاء اسم المنتج بواسطة الذكاء الاصطناعي</string>
     <string name="ai_product_description_copy_error">خطأ في أثناء نسخ وصف المنتج إلى الحافظة.</string>
     <string name="ai_product_description_copy_success">تم نسخ وصف المنتج إلى الحافظة.</string>
     <string name="product_creation_ai_generation_failure_message">فشل إنشاء المنتج. يرجى المحاولة مجددًا</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">مسح العنوان وإيقاف استخدام هذا المعدل</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">تعيين معدل ضريبة جديد لهذا الطلب</string>
     <string name="tax_rate_selector_auto_rate_details_title">إضافة معدل الضريبة تلقائيًا</string>
-    <string name="ai_product_name_sheet_error_message">كانت هناك مشكلة في أثناء إنشاء اسم المنتج. ترجى المحاولة مجددًا.</string>
-    <string name="ai_product_name_sheet_regenerate_button">إعادة الإنشاء</string>
-    <string name="ai_product_name_sheet_generate_button">كتابة ذلك من أجلي</string>
-    <string name="ai_product_name_sheet_input_description">أخبرنا بمضمون منتجك وما الذي يجعله فريدًا!</string>
-    <string name="ai_product_name_sheet_subtitle">السماح للذكاء الاصطناعي بإنشاء عناوين جذابة من أجلك</string>
-    <string name="ai_product_name_sheet_title">اسم المنتج</string>
     <string name="empty_review_filtered_list_message">حاول تعطيل عامل التصفية غير المقروء لرؤية كل مراجعات منتجك</string>
     <string name="empty_review_filtered_list_title">لا توجد مراجعات غير مقروءة للمنتج</string>
-    <string name="product_creation_ai_tone_selected_content_desc">تم تحديد النغمة</string>
     <string name="product_creation_ai_tone_convincing">الإقناع</string>
     <string name="product_creation_ai_tone_flowery">زهري</string>
     <string name="product_creation_ai_tone_formal">رسمي</string>
     <string name="product_creation_ai_tone_casual">عادي</string>
-    <string name="product_creation_ai_tone_description">قم بتعيين النغمة والصوت لتشكيل العرض التقديمي لمنتجك الذي يتوافق مع علامتك التجارية.</string>
     <string name="product_creation_ai_tone_title">النغمة والصوت</string>
     <string name="product_creation_ai_preview_details_section">تفاصيل</string>
-    <string name="product_creation_ai_preview_description_section">وصف المنتج</string>
     <string name="product_creation_ai_preview_name_section">اسم المنتج</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">يمكنك دومًا تغيير التفاصيل أدناه لاحقًا.</string>
     <string name="product_creation_ai_preview_title">معاينة</string>
-    <string name="product_creation_ai_about_product_continue_button">إنشاء تفاصيل المنتجات</string>
-    <string name="product_creation_ai_about_product_set_tone">تعيين النغمة والصوت</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">أضف الميزات الأساسية أو المزايا أو التفاصيل لمساعدة منتجك على الظهور على الإنترنت.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">على سبيل المثال، قماش ناعم وخياطة متينة وتصميم فريد</string>
-    <string name="product_creation_ai_about_product_subtitle">أبرز ما يجعل منتجك فريدًا، واسمح للذكاء الاصطناعي بنثر سحره.</string>
-    <string name="product_creation_ai_about_product_title">نبذة عن منتجك</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">اقتراح اسم</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">على سبيل المثال: قماش ناعم وخياطة متينة وتصميم فريد.</string>
-    <string name="ai_product_creation_add_name_keywords_label">اسم المنتج</string>
-    <string name="ai_product_creation_add_name_subtitle">أو وسِّع نطاق اختياراتك عن طريق النقر للحصول على مزيد من اقتراحات الأسماء.</string>
-    <string name="ai_product_creation_add_name_title">إضافة اسم منتجك</string>
     <string name="product_creation_ai_entry_sheet_learn_more">مدعوم من الذكاء الاصطناعي. &lt;a href=\'guidelines\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">إضافة منتج والتفاصيل يدويًا</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">إضافة يدويًا</string>
@@ -1051,7 +1063,6 @@ Language: ar
     <string name="more_menu_button_coupons_description">زيادة المبيعات من خلال العروض الخاصة</string>
     <string name="more_menu_button_store_description">عرض متجرك</string>
     <string name="more_menu_button_inbox_description">البقاء على اطلاع</string>
-    <string name="more_menu_button_payments_description">الانضمام إلى المدفوعات عبر الهاتف المحمول</string>
     <string name="more_menu_button_wc_admin_description">إدارة المزيد على المسؤول</string>
     <string name="more_menu_general_section_title">عام</string>
     <string name="more_menu_settings_section_title">الإعدادات</string>
@@ -1295,7 +1306,6 @@ Language: ar
     <string name="login_application_passwords_help">ما المقصود بكلمات مرور التطبيقات؟</string>
     <string name="login_application_passwords_unavailable">يبدو أن ميزة كلمات مرور التطبيقات قد تم تعطيلها في موقعك ⁦%1$s⁩.\n يرجى تمكينها لاستخدام تطبيق WooCommerce.</string>
     <string name="login_open_installation_page">فتح صفحة التثبيت</string>
-    <string name="not_a_valid_qr_code">رمز Qr الذي تم مسحه ضوئيًا ليس رمز WooCommerce</string>
     <string name="review_reply_failure">لقد حدث خطأ عند إرسال الرد</string>
     <string name="review_reply_success">تم إرسال الإجابة</string>
     <string name="wc_reply">إجابة</string>
@@ -1370,7 +1380,6 @@ Language: ar
     <string name="domain_picker_subtitle">هذا هو المكان الذي سيجدك فيه الأشخاص على الإنترنت. لا داعي للقلق، يمكنك تغييره لاحقًا.</string>
     <string name="analytics_visitors_subtitle">الزائرون</string>
     <string name="or_use_password_below_qr_code_scan_option">أو تسجيل الدخول باستخدام كلمة المرور</string>
-    <string name="or_scan_qr_code_to_log_in">مسح رمز الاستجابة السريعة ضوئيًا لتسجيل الدخول</string>
     <string name="simulated_reader_toast">تم تعطيل قارئ البطاقات المحاكي</string>
     <string name="simulated_reader_key">مفتاح القارئ المحاكي</string>
     <string name="variations_bulk_update_stock_quantity_success">كمية المخزون التي تم تحديثها</string>
@@ -1423,7 +1432,6 @@ Language: ar
     <string name="qr_code_login_scanner_title">الماسح الضوئي للكود الشريطي للكاميرا</string>
     <string name="dev_options">خيارات المطور</string>
     <string name="login_2fa_not_supported_self_hosted_site">المصادقة الثنائية (2FA) غير مدعومة في المواقع المستضافة ذاتيًا.  يُرجى استخدام كلمة مرور التطبيق.</string>
-    <string name="login_with_qr_code">مسح رمز الاستجابة السريعة لتسجيل الدخول</string>
     <string name="show_password_content_description">عرض كلمة المرور</string>
     <string name="hide_password_content_description">إخفاء كلمة المرور</string>
     <string name="stats_widget_last_updated_message">بدءًا من ⁦%1$s⁩</string>

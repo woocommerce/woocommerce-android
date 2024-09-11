@@ -1,11 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-12 11:54:03+0000
+Translation-Revision-Date: 2024-09-02 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">Fehler beim Laden der individuellen Felder</string>
+    <string name="custom_fields_list_title">Individuelle Felder</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Abgedunkelter Hintergrund. Zum Schließen des Dialogs tippen.</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s wöchentlich</string>
+    <string name="blaze_campaign_budget_duration_endless_label">Ausführen, bis ich sie beende</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Ab dem %1$s</string>
+    <string name="blaze_campaign_budget_weekly_spend">Wöchentliche Ausgaben</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%1$s wöchentlich, ab dem %2$s</string>
+    <string name="blaze_campaign_status_budget_weekly">Wöchentlich</string>
+    <string name="blaze_campaign_status_budget_remaining">Verbleibend</string>
+    <string name="blaze_campaign_status_budget_total">Gesamt</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">Klickraten</string>
+    <string name="stats_widget_battery_saver_error">Für dein Gerät wurde der Energiesparmodus aktiviert. \nSolange er aktiviert ist, können wir keine Informationen zu deinem Shop bereitstellen</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Pop-up-Menü mit Optionen. Wische, um zwischen den Artikeln zu navigieren.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Werkzeugleiste öffnen</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Werkzeugleiste mit Status des Kartenlesegeräts. Das Menü ist geöffnet. Zum Interagieren zweimal tippen.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Werkzeugleiste mit Status des Kartenlesegeräts. Zum Interagieren zweimal tippen.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menü deaktiviert</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menü aktiviert</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Kartenlesegerät nicht verbunden. Zum Auswählen zweimal tippen</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Kartenlesegeräte verbunden</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Abgedunkelter Hintergrund. Zum Schließen des Menüs tippen.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Häkchen-Icon bei erfolgreicher Zahlung</string>
+    <string name="woopos_remove_cart_item_content_description">Diesen Artikel aus dem Warenkorb entfernen</string>
+    <string name="woopos_exit_dialog_confirmation_message">Alle Bestellungen, die sich gerade in Bearbeitung befinden, gehen verloren.</string>
+    <string name="woopos_exit_dialog_confirmation_title">Modus „Verkaufsort“ (POS) beenden?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Schließen</string>
+    <string name="woopos_dialog_products_info_background_content_description">Abgedunkelter Hintergrund. Zum Schließen des Dialogs tippen.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Zum Schließen des Dialogs zweimal tippen</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Dialog für einfache Produkte</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Zweimal tippen, um weitere Informationen zu erhalten</string>
+    <string name="woopos_banner_simple_products_content_description">Banner für einfache Produkte</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Bewerbe deine Produkte mit Blaze-Werbung und steigere jetzt deinen Umsatz.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">Erhöhe deinen Umsatz</string>
+    <string name="more_menu_button_payments_description">Erhalte Zahlungen auch unterwegs</string>
+    <string name="card_reader_payment_failed_incorrect_pin">Es wurde eine falsche PIN eingegeben. Versuche es erneut oder verwende eine andere Zahlungsmethode</string>
+    <string name="woopos_menu_toolbar_content_description">Menü</string>
+    <string name="woopos_cart_item_content_description">Produkt im Warenkorb %s, Preis %s</string>
+    <string name="woopos_product_item_content_description">Produkt %s, Preis %s</string>
+    <string name="blaze_campaign_status_suspended">Eingestellt</string>
     <string name="woopos_success_screen_total">Eine Zahlung in Höhe von %1$s wurde erfolgreich abgebucht</string>
     <string name="woopos_new_order_button">Neue Bestellung</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
@@ -118,13 +159,12 @@ Language: de
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Wir generieren die Produktdetails für dich</string>
     <string name="woopos_payment_collect_payment_label">Kartenzahlungen empfangen</string>
     <string name="woopos_payment_total_label">Gesamt</string>
-    <string name="woopos_payment_tax_label">Steuer</string>
+    <string name="woopos_payment_tax_label">Steuern</string>
     <string name="woopos_payment_subtotal_label">Zwischensumme</string>
     <string name="woopos_payment_successful_label">Zahlung erfolgreich</string>
     <string name="woopos_payment_failed_please_try_again">Zahlung fehlgeschlagen. Bitte versuche es erneut.</string>
     <string name="woopos_cart_back_content_description">Warenkorb-Icon</string>
     <string name="woopos_products_screen_title">Produkte</string>
-    <string name="woopos_product_image_description">Produktbild</string>
     <string name="woopos_items_in_cart">%d Artikel</string>
     <string name="woopos_clear_cart_button">Löschen</string>
     <string name="more_menu_button_google_description">Steigere deine Umsätze und generiere mehr Traffic mit Google Ads</string>
@@ -132,10 +172,9 @@ Language: de
     <string name="no_quantity_rules">Keine Mengenregeln</string>
     <string name="blaze_campaign_preview_audience_section_title">Zielgruppe</string>
     <string name="woopos_exit_confirmation_dismiss_button">Abbrechen</string>
-    <string name="woopos_exit_confirmation_confirm_button">Beenden</string>
-    <string name="woopos_exit_confirmation_message">Bist du sicher, dass du POS beenden möchtest?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Beenden</string>
     <string name="woopos_exit_confirmation_title">POS beenden</string>
-    <string name="woopos_remove_item_from_cart_content_description">Artikel aus Warenkorb entfernen</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">%s aus Warenkorb entfernen</string>
     <string name="woopos_checkout_button">Bezahlen</string>
     <string name="woopos_reader_unknown">Status des Lesegeräts unbekannt</string>
     <string name="woopos_checkout">Bezahlen</string>
@@ -631,7 +670,6 @@ Language: de
     <string name="blaze_campaign_creation_intro_title">Mit Blaze die Umsätze deines Shops steigern</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">Beim Aktualisieren der Kampagnenliste ist ein Fehler aufgetreten. Bitte versuche es später erneut.</string>
     <string name="media_picker_dialog_title">Medienquelle auswählen</string>
-    <string name="product_creation_package_photo_error">Beim Generieren von Produktname und -beschreibung ist ein Fehler aufgetreten.</string>
     <string name="product_creation_package_photo_no_text_detected">Kein Text erkannt. Bitte wähle ein anderes Foto der Verpackung aus oder gib die Produktdetails manuell ein.</string>
     <string name="order_editing_add_content_description">Produkt hinzufügen</string>
     <string name="order_editing_barcode_content_description">Barcode scannen</string>
@@ -653,9 +691,6 @@ Language: de
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Probiere eine %s-Zahlung mit deiner Debit- oder Kreditkarte aus.\nDie Zahlung wird zurückerstattet, wenn du fertig bist.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Es ist einfach, sicher und privat.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Du kannst alle Arten von persönlichen Zahlungen akzeptieren, direkt\nauf deinem Mobiltelefon. Es ist keine zusätzliche Hardware erforderlich.</string>
-    <string name="blaze_campaign_status_budget">Budget</string>
-    <string name="blaze_campaign_status_clicks">Klicks</string>
-    <string name="blaze_campaign_status_impressions">Aufrufe</string>
     <string name="blaze_campaign_status_rejected">Abgelehnt</string>
     <string name="blaze_campaign_status_completed">Abgeschlossen</string>
     <string name="blaze_campaign_status_active">Aktiv</string>
@@ -688,46 +723,23 @@ Language: de
     <string name="card_reader_settings_header">EINSTELLUNGEN</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">Details anhand der E-Mail-Adresse manuell hinzufügen</string>
     <string name="login_app_login_malformed_link">Deine App-Anmeldeanfrage konnte nicht verarbeitet werden</string>
-    <string name="ai_product_name_copy_error">Fehler beim Kopieren des Produktnamens in die Zwischenablage.</string>
-    <string name="ai_product_name_copy_success">Produktname in die Zwischenablage kopiert.</string>
-    <string name="ai_product_name_copy_label">Produktname von KI generiert</string>
     <string name="ai_product_description_copy_error">Fehler beim Kopieren der Produktbeschreibung in die Zwischenablage.</string>
     <string name="ai_product_description_copy_success">Produktbeschreibung in die Zwischenablage kopiert.</string>
     <string name="product_creation_ai_generation_failure_message">Produkterstellung ist fehlgeschlagen. Bitte versuche es erneut</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Adresse löschen und diesen Satz nicht mehr verwenden</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Neuen Steuersatz für diese Bestellung festlegen</string>
     <string name="tax_rate_selector_auto_rate_details_title">Steuersatz wird automatisch hinzugefügt</string>
-    <string name="ai_product_name_sheet_error_message">Beim Generieren des Produktnamens ist ein Problem aufgetreten. Bitte versuche es erneut.</string>
-    <string name="ai_product_name_sheet_regenerate_button">Neu generieren</string>
-    <string name="ai_product_name_sheet_generate_button">Für mich schreiben</string>
-    <string name="ai_product_name_sheet_input_description">Erzähle uns mehr von deinem Produkt und was es einzigartig macht!</string>
-    <string name="ai_product_name_sheet_subtitle">Lasse die KI ansprechende Titel für dich generieren</string>
-    <string name="ai_product_name_sheet_title">Produktname</string>
     <string name="empty_review_filtered_list_message">Deaktiviere den Filter für ungelesene Produktbewertungen, damit dir alle angezeigt werden</string>
     <string name="empty_review_filtered_list_title">Keine ungelesenen Produktbewertungen</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Tonalität ausgewählt</string>
     <string name="product_creation_ai_tone_convincing">Überzeugend</string>
     <string name="product_creation_ai_tone_flowery">Blumig</string>
     <string name="product_creation_ai_tone_formal">Formell</string>
     <string name="product_creation_ai_tone_casual">Locker</string>
-    <string name="product_creation_ai_tone_description">Lege Sprache und Tonalität fest, um die Präsentation deines Produkts an deine Marke anzupassen.</string>
     <string name="product_creation_ai_tone_title">Sprache und Tonalität</string>
     <string name="product_creation_ai_preview_details_section">Details</string>
-    <string name="product_creation_ai_preview_description_section">Produktbeschreibung</string>
     <string name="product_creation_ai_preview_name_section">Produktname</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">Du kannst die unten angegebenen Informationen später jederzeit ändern.</string>
     <string name="product_creation_ai_preview_title">Vorschau</string>
-    <string name="product_creation_ai_about_product_continue_button">Produktdetails erstellen</string>
-    <string name="product_creation_ai_about_product_set_tone">Sprache und Tonalität festlegen</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Füge wichtige Funktionen, Vorteile oder Details hinzu, damit dein Produkt online besser gefunden wird.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Zum Beispiel: weicher Stoff, langlebige Absteppung, einzigartiges Design</string>
-    <string name="product_creation_ai_about_product_subtitle">Hebe hervor, was dein Produkt einzigartig macht – die KI übernimmt den Rest.</string>
-    <string name="product_creation_ai_about_product_title">Über dein Produkt</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Namen vorschlagen</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">Zum Beispiel: weicher Stoff, langlebige Absteppung, einzigartiges Design.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Produktname</string>
-    <string name="ai_product_creation_add_name_subtitle">Oder erweitere deine Auswahl, indem du tippst, um weitere Namensvorschläge zu erhalten.</string>
-    <string name="ai_product_creation_add_name_title">Deinen Produktnamen hinzufügen</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Mit Unterstützung von KI. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Weitere Informationen&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Füge ein Produkt und die entsprechenden Details manuell hinzu</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Manuell hinzufügen</string>
@@ -1051,7 +1063,6 @@ Language: de
     <string name="more_menu_button_coupons_description">Steigere deine Umsätze mit speziellen Angeboten</string>
     <string name="more_menu_button_store_description">Deinen Shop ansehen</string>
     <string name="more_menu_button_inbox_description">Bleibe auf dem Laufenden</string>
-    <string name="more_menu_button_payments_description">Nutze mobile Zahlungen</string>
     <string name="more_menu_button_wc_admin_description">Verwalte mehr als Admin</string>
     <string name="more_menu_general_section_title">Allgemeines</string>
     <string name="more_menu_settings_section_title">Einstellungen</string>
@@ -1295,7 +1306,6 @@ Language: de
     <string name="login_application_passwords_help">Was sind Anwendungs-Passwörter?</string>
     <string name="login_application_passwords_unavailable">Anscheinend ist die Funktion „Anwendungs-Passwörter“ auf deiner Website %1$s deaktiviert.\n Bitte aktiviere sie, um die WooCommerce-App verwenden zu können.</string>
     <string name="login_open_installation_page">Installationsseite öffnen</string>
-    <string name="not_a_valid_qr_code">Der gescannte QR-Code ist kein WooCommerce-Code.</string>
     <string name="review_reply_failure">Beim Senden der Antwort ist ein Fehler aufgetreten.</string>
     <string name="review_reply_success">Antwort gesendet!</string>
     <string name="wc_reply">Antworten</string>
@@ -1370,7 +1380,6 @@ Language: de
     <string name="domain_picker_subtitle">Hier finden dich Personen im Internet. Keine Sorge, du kannst das später noch ändern.</string>
     <string name="analytics_visitors_subtitle">Besucher</string>
     <string name="or_use_password_below_qr_code_scan_option">Oder mit Passwort anmelden</string>
-    <string name="or_scan_qr_code_to_log_in">Zum Anmelden den QR-Code scannen</string>
     <string name="simulated_reader_toast">Simuliertes Kartenlesegerät wurde deaktiviert</string>
     <string name="simulated_reader_key">Schlüssel des simulierten Lesegeräts</string>
     <string name="variations_bulk_update_stock_quantity_success">Aktualisierte Lagerbestandsmenge</string>
@@ -1423,7 +1432,6 @@ Language: de
     <string name="qr_code_login_scanner_title">Barcode-Scanner der Kamera</string>
     <string name="dev_options">Entwickleroptionen</string>
     <string name="login_2fa_not_supported_self_hosted_site">2FA wird für selbst gehostete Websites nicht unterstützt. Bitte verwende ein App-Passwort.</string>
-    <string name="login_with_qr_code">Zum Anmelden den QR-Code scannen</string>
     <string name="show_password_content_description">Passwort anzeigen</string>
     <string name="hide_password_content_description">Passwort verbergen</string>
     <string name="stats_widget_last_updated_message">Stand: %1$s</string>

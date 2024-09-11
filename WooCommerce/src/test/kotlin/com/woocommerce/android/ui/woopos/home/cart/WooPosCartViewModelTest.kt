@@ -132,7 +132,7 @@ class WooPosCartViewModelTest {
 
             // THEN
             val toolbar = states.last().toolbar
-            assertThat(toolbar.icon).isNull()
+            assertThat(toolbar.backIconVisible).isFalse()
             assertThat(toolbar.itemsCount).isNull()
             assertThat(toolbar.isClearAllButtonVisible).isFalse()
         }
@@ -161,7 +161,7 @@ class WooPosCartViewModelTest {
 
             // THEN
             val toolbar = states.last().toolbar
-            assertThat(toolbar.icon).isNull()
+            assertThat(toolbar.backIconVisible).isFalse()
             assertThat(toolbar.itemsCount).isEqualTo("Item in cart: 1")
             assertThat(toolbar.isClearAllButtonVisible).isTrue()
         }
@@ -192,7 +192,7 @@ class WooPosCartViewModelTest {
 
             // THEN
             val toolbar = states.last().toolbar
-            assertThat(toolbar.icon).isEqualTo(R.drawable.ic_back_24dp)
+            assertThat(toolbar.backIconVisible).isTrue()
             assertThat(toolbar.itemsCount).isEqualTo("Item in cart: 1")
             assertThat(toolbar.isClearAllButtonVisible).isFalse()
         }
@@ -264,7 +264,7 @@ class WooPosCartViewModelTest {
         val states = sut.state.captureValues()
 
         // THEN
-        assertThat(states).hasSize(2)
+        assertThat(states).hasSize(1)
         assertThat(states.last().body).isInstanceOf(WooPosCartState.Body.Empty::class.java)
         assertThat(states.last().cartStatus).isEqualTo(WooPosCartStatus.EMPTY)
     }
@@ -362,7 +362,7 @@ class WooPosCartViewModelTest {
 
             // THEN
             val toolbar = states.last().toolbar
-            assertThat(toolbar.icon).isNull()
+            assertThat(toolbar.backIconVisible).isFalse()
             assertThat(toolbar.itemsCount).isNull()
             assertThat(toolbar.isClearAllButtonVisible).isFalse()
         }

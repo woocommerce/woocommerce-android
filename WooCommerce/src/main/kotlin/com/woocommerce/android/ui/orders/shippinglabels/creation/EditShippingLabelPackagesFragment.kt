@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -16,7 +17,6 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.OpenHazmatCategorySelector
@@ -37,7 +37,7 @@ typealias OnHazmatCategorySelected = (ShippingLabelHazmatCategory) -> Unit
 
 @AndroidEntryPoint
 class EditShippingLabelPackagesFragment :
-    BaseFragment(R.layout.fragment_edit_shipping_label_packages),
+    Fragment(R.layout.fragment_edit_shipping_label_packages),
     BackPressListener {
     companion object {
         const val EDIT_PACKAGES_CLOSED = "edit_packages_closed"
@@ -64,8 +64,6 @@ class EditShippingLabelPackagesFragment :
     }
 
     private val skeletonView: SkeletonView = SkeletonView()
-
-    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_item_package_info)
 
     fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

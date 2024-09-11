@@ -110,6 +110,12 @@ sealed class CardPaymentStatus {
                 object PinRequired : CardDeclined()
 
                 /**
+                 * The card presented has had an incorrect PIN entered. Tell the user
+                 * this and ask them to enter the pin again or try another payment method.
+                 */
+                object IncorrectPin : CardDeclined()
+
+                /**
                  * The card presented has had an incorrect PIN entered too many times.
                  * Tell the user this and ask them to try another payment method.
                  */

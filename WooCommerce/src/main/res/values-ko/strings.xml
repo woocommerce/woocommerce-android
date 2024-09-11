@@ -1,11 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-14 09:54:03+0000
+Translation-Revision-Date: 2024-09-03 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">사용자 정의 필드를 로드하는 중 오류 발생</string>
+    <string name="custom_fields_list_title">사용자 정의 필드</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">어두워진 배경입니다. 눌러서 대화 상자 무시하기</string>
+    <string name="blaze_campaign_budget_weekly_spending">주당 %1$s</string>
+    <string name="blaze_campaign_budget_duration_endless_label">사용자가 중지할 때까지 실행</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">%1$s부터</string>
+    <string name="blaze_campaign_budget_weekly_spend">주당 지출</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%2$s부터 주당 %1$s</string>
+    <string name="blaze_campaign_status_budget_weekly">주당</string>
+    <string name="blaze_campaign_status_budget_remaining">나머지</string>
+    <string name="blaze_campaign_status_budget_total">합계</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">클릭 통과</string>
+    <string name="stats_widget_battery_saver_error">회원님의 기기가 배터리 세이버 모드인 것 같습니다. \n이 모드가 활성화된 상태에서는 스토어 정보를 제공해 드릴 수 없습니다.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">옵션이 포함된 팝업 메뉴입니다. 밀어서 아이템을 탐색할 수 있습니다.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">도구 모음 메뉴 열기</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">카드 리더 상태를 포함한 도구 모음입니다. 메뉴가 열립니다. 두 번 눌러 상호작용할 수 있습니다.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">카드 리더 상태를 포함한 도구 모음입니다. 두 번 눌러 상호작용할 수 있습니다.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">메뉴 비활성화됨</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">메뉴 활성화됨</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">카드 리더가 연결되어 있지 않습니다. 두 번 눌러 연결할 수 있습니다.</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">카드 리더가 연결되었습니다.</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">어두워진 배경입니다. 눌러서 메뉴를 닫을 수 있습니다.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">결제 성공 체크 표시 아이콘</string>
+    <string name="woopos_remove_cart_item_content_description">장바구니에서 이 아이템 빼기</string>
+    <string name="woopos_exit_dialog_confirmation_message">진행 중인 주문이 모두 손실됩니다.</string>
+    <string name="woopos_exit_dialog_confirmation_title">판매 지점 모드를 종료할까요?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">닫기</string>
+    <string name="woopos_dialog_products_info_background_content_description">어두워진 배경입니다. 눌러서 대화 상자 무시하기</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">두 번 눌러 대화 상자 무시하기</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">단순 상품만 해당 대화 상자</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">두 번 눌러 자세히 알아보기</string>
+    <string name="woopos_banner_simple_products_content_description">단순 상품만 해당 배너</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">지금 Blaze 광고를 통해 제품을 홍보하고 매출을 늘리세요.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">매출 증대</string>
+    <string name="more_menu_button_payments_description">이동 중 결제 처리</string>
+    <string name="card_reader_payment_failed_incorrect_pin">올바르지 않은 PIN이 입력되었습니다. 다시 시도하거나 다른 결제 수단을 사용하세요.</string>
+    <string name="woopos_menu_toolbar_content_description">메뉴</string>
+    <string name="woopos_cart_item_content_description">장바구니의 상품 %s, 가격 %s</string>
+    <string name="woopos_product_item_content_description">상품 %s, 가격 %s</string>
+    <string name="blaze_campaign_status_suspended">중지됨</string>
     <string name="woopos_success_screen_total">%1$s 결제가 완료되었습니다.</string>
     <string name="woopos_new_order_button">새 주문</string>
     <string name="woopos_dialog_products_info_button_label">확인</string>
@@ -124,7 +165,6 @@ Language: ko_KR
     <string name="woopos_payment_failed_please_try_again">결제에 실패했습니다. 다시 시도해 주세요.</string>
     <string name="woopos_cart_back_content_description">장바구니 아이콘</string>
     <string name="woopos_products_screen_title">상품</string>
-    <string name="woopos_product_image_description">상품 이미지</string>
     <string name="woopos_items_in_cart">%d개 아이템</string>
     <string name="woopos_clear_cart_button">지우기</string>
     <string name="more_menu_button_google_description">Google Ads로 매출과 트래픽을 늘리세요</string>
@@ -132,10 +172,9 @@ Language: ko_KR
     <string name="no_quantity_rules">수량 규칙 없음</string>
     <string name="blaze_campaign_preview_audience_section_title">잠재 고객</string>
     <string name="woopos_exit_confirmation_dismiss_button">취소</string>
-    <string name="woopos_exit_confirmation_confirm_button">종료</string>
-    <string name="woopos_exit_confirmation_message">POS를 종료하시겠어요?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">종료</string>
     <string name="woopos_exit_confirmation_title">POS 종료</string>
-    <string name="woopos_remove_item_from_cart_content_description">장바구니에서 아이템 빼기</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">장바구니에서 %s 삭제</string>
     <string name="woopos_checkout_button">체크아웃</string>
     <string name="woopos_reader_unknown">리더 상태 알 수 없음</string>
     <string name="woopos_checkout">체크아웃</string>
@@ -631,7 +670,6 @@ Language: ko_KR
     <string name="blaze_campaign_creation_intro_title">스토어에서 Blaze로 판매 증대 유도</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">캠페인 목록 새로 고침 중 오류가 발생했습니다. 나중에 다시 시도하세요.</string>
     <string name="media_picker_dialog_title">미디어 소스 선택</string>
-    <string name="product_creation_package_photo_error">상품 이름과 설명을 생성하는 동안 오류가 발생했습니다.</string>
     <string name="product_creation_package_photo_no_text_detected">감지된 텍스트가 없습니다. 다른 포장 사진을 선택하거나 수동으로 상품 상세 정보를 입력하세요.</string>
     <string name="order_editing_add_content_description">상품 추가</string>
     <string name="order_editing_barcode_content_description">바코드 스캔</string>
@@ -653,9 +691,6 @@ Language: ko_KR
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">직불카드 또는 신용카드로 %s 결제를 시도합니다.\n완료하면 결제가 환불됩니다.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">쉽고 안전합니다.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">모든 종류의 대면 결제를 \n스마트폰에서 허용합니다. 추가 하드웨어가 필요하지 않습니다.</string>
-    <string name="blaze_campaign_status_budget">예산</string>
-    <string name="blaze_campaign_status_clicks">클릭 수</string>
-    <string name="blaze_campaign_status_impressions">노출 수</string>
     <string name="blaze_campaign_status_rejected">거부됨</string>
     <string name="blaze_campaign_status_completed">완료됨</string>
     <string name="blaze_campaign_status_active">활성</string>
@@ -688,46 +723,23 @@ Language: ko_KR
     <string name="card_reader_settings_header">설정</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">이메일을 사용하여 수동으로 상세 정보 추가</string>
     <string name="login_app_login_malformed_link">앱 로그인 요청을 처리하지 못했습니다.</string>
-    <string name="ai_product_name_copy_error">클립보드에 상품 이름을 복사하는 중 오류가 발생했습니다.</string>
-    <string name="ai_product_name_copy_success">상품 이름이 클립보드에 복사되었습니다.</string>
-    <string name="ai_product_name_copy_label">AI로 생성된 상품 이름</string>
     <string name="ai_product_description_copy_error">클립보드에 상품 설명을 복사하는 중 오류가 발생했습니다.</string>
     <string name="ai_product_description_copy_success">상품 설명이 클립보드에 복사되었습니다.</string>
     <string name="product_creation_ai_generation_failure_message">상품이 생성되지 않았습니다. 다시 시도하세요.</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">주소 정리 및 이 요율 사용 중지</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">이 주문에 대한 새 세율 설정</string>
     <string name="tax_rate_selector_auto_rate_details_title">자동으로 세율 추가하기</string>
-    <string name="ai_product_name_sheet_error_message">상품 이름 생성 중 문제가 발생했습니다. 다시 시도하세요.</string>
-    <string name="ai_product_name_sheet_regenerate_button">재생성</string>
-    <string name="ai_product_name_sheet_generate_button">작성 의뢰</string>
-    <string name="ai_product_name_sheet_input_description">상품이 무엇이고 어떤 점이 독특한지 말씀해 주세요!</string>
-    <string name="ai_product_name_sheet_subtitle">AI에게 매력적인 제목 생성 맡기기</string>
-    <string name="ai_product_name_sheet_title">상품 이름</string>
     <string name="empty_review_filtered_list_message">모든 상품 리뷰를 표시하려면 읽지 않음 필터를 비활성화해 보세요.</string>
     <string name="empty_review_filtered_list_title">읽지 않은 상품 리뷰 없음</string>
-    <string name="product_creation_ai_tone_selected_content_desc">선택된 어조</string>
     <string name="product_creation_ai_tone_convincing">설득력</string>
     <string name="product_creation_ai_tone_flowery">화려</string>
     <string name="product_creation_ai_tone_formal">정중</string>
     <string name="product_creation_ai_tone_casual">평상시</string>
-    <string name="product_creation_ai_tone_description">브랜드에 어울리는 상품 프레젠테이션을 위해 어조와 목소리를 설정하세요.</string>
     <string name="product_creation_ai_tone_title">어조 및 목소리</string>
     <string name="product_creation_ai_preview_details_section">상세 정보</string>
-    <string name="product_creation_ai_preview_description_section">상품 설명</string>
     <string name="product_creation_ai_preview_name_section">상품 이름</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">아래의 상세 정보는 나중에 언제든지 변경하실 수 있습니다.</string>
     <string name="product_creation_ai_preview_title">미리보기</string>
-    <string name="product_creation_ai_about_product_continue_button">상품 상세 정보 생성</string>
-    <string name="product_creation_ai_about_product_set_tone">어조 및 목소리 설정</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">온라인에서 상품을 찾는 데 도움이 되도록 주요 기능, 이점 또는 상세 정보를 추가하세요.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">예: 부드러운 원단, 튼튼한 바느질, 독특한 디자인</string>
-    <string name="product_creation_ai_about_product_subtitle">어떤 부분이 상품을 독특하게 만드는지 강조하고 AI가 만들어 내는 놀라운 결과물을 확인하세요.</string>
-    <string name="product_creation_ai_about_product_title">상품 소개</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">이름 제안</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">예: 부드러운 원단, 튼튼한 바느질, 독특한 디자인</string>
-    <string name="ai_product_creation_add_name_keywords_label">상품 이름</string>
-    <string name="ai_product_creation_add_name_subtitle">선택의 폭을 넓히려면 눌러서 더 많은 이름 제안을 볼 수 있습니다.</string>
-    <string name="ai_product_creation_add_name_title">상품 이름 추가</string>
     <string name="product_creation_ai_entry_sheet_learn_more">AI를 활용했습니다. &lt;a href=\'guidelines\'&gt;&lt;u&gt;자세히 알아보세요&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">수동으로 상품 및 상세 정보 추가</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">수동으로 추가</string>
@@ -1051,7 +1063,6 @@ Language: ko_KR
     <string name="more_menu_button_coupons_description">특별 행사로 매출 증대</string>
     <string name="more_menu_button_store_description">스토어 보기</string>
     <string name="more_menu_button_inbox_description">최신 상태로 유지</string>
-    <string name="more_menu_button_payments_description">모바일 결제에 참여</string>
     <string name="more_menu_button_wc_admin_description">관리자에서 자세히 관리</string>
     <string name="more_menu_general_section_title">일반</string>
     <string name="more_menu_settings_section_title">설정</string>
@@ -1295,7 +1306,6 @@ Language: ko_KR
     <string name="login_application_passwords_help">애플리케이션 비밀번호가 무엇인가요?</string>
     <string name="login_application_passwords_unavailable">%1$s 사이트에서 애플리케이션 비밀번호가 비활성화된 것 같습니다.\n 우커머스 앱을 사용하려면 활성화하세요.</string>
     <string name="login_open_installation_page">설치 페이지 열기</string>
-    <string name="not_a_valid_qr_code">스캔한 QR 코드는 WooCommerce 코드가 아닙니다</string>
     <string name="review_reply_failure">답변을 발송하는 도중에 오류가 발생했습니다</string>
     <string name="review_reply_success">답변 발송!</string>
     <string name="wc_reply">답변</string>
@@ -1370,7 +1380,6 @@ Language: ko_KR
     <string name="domain_picker_subtitle">사람들이 인터넷에서 회원님을 찾을 수 있는 곳입니다. 걱정하지 마세요. 나중에 변경할 수 있습니다.</string>
     <string name="analytics_visitors_subtitle">방문자 수</string>
     <string name="or_use_password_below_qr_code_scan_option">또는 비밀번호로 로그인</string>
-    <string name="or_scan_qr_code_to_log_in">QR 코드 스캔으로 로그인</string>
     <string name="simulated_reader_toast">시뮬레이션한 카드 리더가 비활성화되었습니다.</string>
     <string name="simulated_reader_key">시뮬레이션한 리더 키</string>
     <string name="variations_bulk_update_stock_quantity_success">업데이트한 재고 수량</string>
@@ -1423,7 +1432,6 @@ Language: ko_KR
     <string name="qr_code_login_scanner_title">카메라 바코드 스캐너</string>
     <string name="dev_options">개발자 옵션</string>
     <string name="login_2fa_not_supported_self_hosted_site">독립 호스트 사이트에는 2단계 인증이 지원되지 않습니다. 앱 비밀번호를 사용하세요.</string>
-    <string name="login_with_qr_code">QR 코드 스캔으로 로그인</string>
     <string name="show_password_content_description">비밀번호 표시</string>
     <string name="hide_password_content_description">비밀번호 숨기기</string>
     <string name="stats_widget_last_updated_message">%1$s 현재</string>

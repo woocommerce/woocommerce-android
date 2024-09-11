@@ -1,2 +1,0 @@
-19.9:
-Melhoramos a experiência de reembolso! Agora as informações sobre suas transações são mais claras: cada item reembolsado que aparece na tela de reembolso inclui um subtotal detalhado e um campo com taxas. Atualize agora para aproveitar reembolsos mais tranquilos e transparentes!

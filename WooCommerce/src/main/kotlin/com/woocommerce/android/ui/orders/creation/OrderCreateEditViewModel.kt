@@ -339,17 +339,6 @@ class OrderCreateEditViewModel @Inject constructor(
         .map { feeLines ->
             feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
         }
-        .map { customAmountUIModels ->
-            customAmountUIModels.map {
-                it.copy(
-                    isLocked = !viewState.isEditable ||
-                        (
-                            _orderDraft.value.status.value != Order.Status.Pending.value &&
-                                _orderDraft.value.status.value != Order.Status.OnHold.value
-                            )
-                )
-            }
-        }
         .asLiveData()
 
     val combinedProductAndCustomAmountsLiveData: MediatorLiveData<ViewState> = MediatorLiveData<ViewState>().apply {
@@ -752,6 +741,8 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource? = null,
         addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
     ) {
+        viewState = viewState.copy(isUpdatingOrderDraft = true)
+
         val hasBundleConfiguration = selectedItems.any { item ->
             (item as? SelectedItem.ConfigurableProduct)
                 ?.configuration?.configurationType == ConfigurationType.BUNDLE
@@ -839,6 +830,9 @@ class OrderCreateEditViewModel @Inject constructor(
                         }
                     }
                 }
+
+                viewState = viewState.copy(isUpdatingOrderDraft = false)
+
                 _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
             }
         }
