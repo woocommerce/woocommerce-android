@@ -2586,10 +2586,6 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    fun onProductVariationsCountChanged(numVariation: Int) {
-        updateProductDraft(numVariation = numVariation)
-    }
-
     private fun observeProductCategorySearchQuery() {
         viewModelScope.launch {
             productCategorySearchQuery
