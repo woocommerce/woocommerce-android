@@ -805,8 +805,8 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId)
-                ViewBlazeCampaignList -> showBlazeCampaignList(null)
+                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId, event.isOpenedFromPush)
+                ViewBlazeCampaignList -> showBlazeCampaignList(campaignId = null)
                 is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
@@ -847,14 +847,15 @@ class MainActivity :
         observeBottomBarState()
     }
 
-    private fun showBlazeCampaignList(campaignId: String?) {
+    private fun showBlazeCampaignList(campaignId: String?, isOpenedFromPush: Boolean = false) {
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
 
         navController.navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToBlazeCampaignListFragment(
                 campaignId = campaignId
-            )
+            ),
+            skipThrottling = isOpenedFromPush
         )
     }
 

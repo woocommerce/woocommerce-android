@@ -79,11 +79,11 @@ class BlazeCampaignListViewModel @Inject constructor(
         if (navArgs.isPostCampaignCreation) {
             showCampaignCelebrationIfNeeded()
         }
+        if (navArgs.campaignId != null) {
+            onCampaignClicked(navArgs.campaignId!!)
+        }
         launch {
             loadCampaigns(offset = 0)
-            if (navArgs.campaignId != null) {
-                onCampaignClicked(navArgs.campaignId!!)
-            }
         }
     }
 
