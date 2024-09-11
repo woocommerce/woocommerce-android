@@ -544,7 +544,12 @@ class MainActivityViewModelTest : BaseUnitTest() {
             .markNotificationTapped(eq(testBlazeNotification.remoteNoteId))
         verify(notificationMessageHandler, atLeastOnce())
             .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
-        assertThat(event).isEqualTo(ViewBlazeCampaignDetail(testBlazeNotification.uniqueId.toString()))
+        assertThat(event).isEqualTo(
+            ViewBlazeCampaignDetail(
+                testBlazeNotification.uniqueId.toString(),
+                isOpenedFromPush = true
+            )
+        )
     }
 
     @Test
