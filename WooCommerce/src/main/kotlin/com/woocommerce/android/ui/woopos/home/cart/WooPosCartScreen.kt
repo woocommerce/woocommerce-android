@@ -143,6 +143,7 @@ private fun WooPosCartScreen(
                     },
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
+                    isCheckoutButtonVisible = state.isCheckoutButtonVisible,
                     onUIEvent = onUIEvent
                 )
             }
@@ -231,6 +232,7 @@ private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
     items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
+    isCheckoutButtonVisible: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -258,6 +260,11 @@ private fun CartBodyWithItems(
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
             )
+        }
+        if (!isCheckoutButtonVisible) {
+            item {
+                Spacer(modifier = Modifier.height(182.dp))
+            }
         }
     }
 }
@@ -581,6 +588,43 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                 ),
                 areItemsRemovable = false,
                 isCheckoutButtonVisible = true
+            )
+        ) {}
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosCartScreenWithoutCheckoutButtonPreview(modifier: Modifier = Modifier) {
+    val itemList = mutableListOf<WooPosCartState.Body.WithItems.Item>()
+
+    repeat(7) { index ->
+        val item = WooPosCartState.Body.WithItems.Item(
+            id = WooPosCartState.Body.WithItems.Item.Id(
+                productId = (index + 1).toLong(),
+                itemNumber = index + 1
+            ),
+            imageUrl = "",
+            name = "VW California",
+            price = "€50,000",
+            isAppearanceAnimationPlayed = true
+        )
+        itemList.add(item)
+    }
+    WooPosTheme {
+        WooPosCartScreen(
+            modifier = modifier,
+            state = WooPosCartState(
+                toolbar = WooPosCartState.Toolbar(
+                    backIconVisible = true,
+                    itemsCount = "8 items",
+                    isClearAllButtonVisible = true
+                ),
+                body = WooPosCartState.Body.WithItems(
+                    itemsInCart = itemList
+                ),
+                areItemsRemovable = false,
+                isCheckoutButtonVisible = false
             )
         ) {}
     }
