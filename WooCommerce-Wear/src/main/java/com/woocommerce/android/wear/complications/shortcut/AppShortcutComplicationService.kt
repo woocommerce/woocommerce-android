@@ -1,10 +1,11 @@
-package com.woocommerce.android.wear.complications
+package com.woocommerce.android.wear.complications.shortcut
 
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.woocommerce.android.R
+import com.woocommerce.android.wear.complications.createImageComplicationData
 
 class AppShortcutComplicationService : SuspendingComplicationDataSourceService() {
     override fun getPreviewData(type: ComplicationType): ComplicationData? {

@@ -66,11 +66,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
-import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -157,8 +154,8 @@ fun ProductConfigurationScreen(
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
 
-                            val attributes = childMapEntry.value[VariableProductRule.KEY]
-                                .toAttributesFromConfigurationStringOrNull()
+                            val attributes = productConfiguration.variationAttributesSelection[item.id]?.attributes
+                                ?: emptyList()
 
                             val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
                             val isIncluded = childMapEntry.value[OptionalRule.KEY]?.toBoolean() ?: false
@@ -188,8 +185,8 @@ fun ProductConfigurationScreen(
                                 ?.get(childMapEntry.key)
                                 ?.get(QuantityRule.KEY) as? QuantityRule
 
-                            val attributes = childMapEntry.value[VariableProductRule.KEY]
-                                .toAttributesFromConfigurationStringOrNull()
+                            val attributes = productConfiguration.variationAttributesSelection[item.id]?.attributes
+                                ?: emptyList()
 
                             val quantity = childMapEntry.value[QuantityRule.KEY]?.toFloatOrNull() ?: 0f
                             val isIncluded = quantity > 0f
@@ -770,7 +767,7 @@ fun VariableQuantityProductItem(
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
     minValue: Float? = null,
-    attributes: List<VariantOption>? = null,
+    attributes: List<VariantAttribute>,
     isSelectionEnabled: Boolean = true
 ) {
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
@@ -856,7 +853,7 @@ fun OptionalVariableQuantityProductItem(
     modifier: Modifier = Modifier,
     maxValue: Float? = null,
     minValue: Float? = null,
-    attributes: List<VariantOption>? = null,
+    attributes: List<VariantAttribute>,
     isSelectionEnabled: Boolean = true
 ) {
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
@@ -929,7 +926,7 @@ fun OptionalVariableQuantityProductItem(
 
 @Composable
 fun VariableSelection(
-    attributes: List<VariantOption>?,
+    attributes: List<VariantAttribute>?,
     onSelectAttributes: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -946,7 +943,9 @@ fun VariableSelection(
                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                             append(attribute.name)
                         }
-                        append(" ${attribute.option}")
+                        val selectedOption = attribute.selectedOption
+                            ?: stringResource(id = R.string.product_any_attribute_hint)
+                        append(" $selectedOption")
                     }
                     Text(text = annotatedString, modifier = Modifier.padding(top = 8.dp))
                 }
@@ -988,23 +987,8 @@ fun VariableQuantityProductItemPreview() {
             info = "Attribute 1 • Attribute 2",
             quantity = 1f,
             onQuantityChanged = {},
-            onSelectAttributes = {}
+            onSelectAttributes = {},
+            attributes = emptyList()
         )
     }
-}
-
-@Suppress("UNCHECKED_CAST")
-private fun String?.toAttributesFromConfigurationStringOrNull(): List<VariantOption>? {
-    return this?.runCatching {
-        val gson = Gson()
-        val mapType = object : TypeToken<Map<String, Any>>() {}.type
-        val map = gson.fromJson<Map<String, Any>>(this, mapType)
-        (map[VariableProductRule.VARIATION_ATTRIBUTES] as? List<Map<String, Any>>)?.mapNotNull { attribute ->
-            VariantOption(
-                id = attribute["id"] as? Long,
-                name = attribute["name"]?.toString(),
-                option = attribute["option"]?.toString()
-            ).takeIf { variantOption -> variantOption != VariantOption.empty }
-        }
-    }?.getOrNull()
 }
