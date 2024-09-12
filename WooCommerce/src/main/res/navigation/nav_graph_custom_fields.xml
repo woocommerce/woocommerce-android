@@ -28,6 +28,9 @@
         android:id="@+id/customFieldsEditorFragment"
         android:name="com.woocommerce.android.ui.customfields.editor.CustomFieldsEditorFragment">
         <argument
+            android:name="parentItemId"
+            app:argType="long" />
+        <argument
             android:name="customField"
             app:argType="com.woocommerce.android.ui.customfields.CustomFieldUiModel"
             app:nullable="true" />

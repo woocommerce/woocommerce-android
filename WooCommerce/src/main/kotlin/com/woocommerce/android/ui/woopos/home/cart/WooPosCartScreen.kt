@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.AnimatedVisibility
@@ -11,7 +9,6 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -226,7 +223,6 @@ fun CartBodyEmpty(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
@@ -255,7 +251,7 @@ private fun CartBodyWithItems(
             key = { item -> item.id.itemNumber }
         ) { item ->
             ProductItem(
-                modifier = Modifier.animateItemPlacement(),
+                modifier = Modifier,
                 item = item,
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
@@ -408,7 +404,7 @@ private fun ProductItem(
 
     val elevation by animateDpAsState(
         targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 200, delayMillis = 100),
+        animationSpec = tween(durationMillis = 250, delayMillis = 200),
         label = "elevation"
     )
 
