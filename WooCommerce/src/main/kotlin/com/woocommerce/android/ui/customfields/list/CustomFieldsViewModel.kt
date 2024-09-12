@@ -4,7 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -14,7 +16,9 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -25,6 +29,7 @@ import javax.inject.Inject
 class CustomFieldsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: CustomFieldsRepository,
+    private val appPrefs: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     private val args: CustomFieldsFragmentArgs by savedStateHandle.navArgs()
@@ -39,14 +44,19 @@ class CustomFieldsViewModel @Inject constructor(
     )
     private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
     private val pendingChanges = savedStateHandle.getStateFlow(viewModelScope, PendingChanges())
+    private val bannerDismissed = appPrefs.observePrefs()
+        .onStart { emit(Unit) }
+        .map { appPrefs.isCustomFieldsTopBannerDismissed }
+        .distinctUntilChanged()
 
     val state = combine(
         customFields,
         pendingChanges,
         isRefreshing,
         isSaving,
-        showDiscardChangesDialog
-    ) { customFields, pendingChanges, isLoading, isSaving, isShowingDiscardDialog ->
+        showDiscardChangesDialog,
+        bannerDismissed
+    ) { customFields, pendingChanges, isLoading, isSaving, isShowingDiscardDialog, bannerDismissed ->
         UiState(
             customFields = customFields.map { CustomFieldUiModel(it) }.combineWithChanges(pendingChanges),
             isRefreshing = isLoading,
@@ -57,6 +67,11 @@ class CustomFieldsViewModel @Inject constructor(
                     onDiscard = { triggerEvent(MultiLiveEvent.Event.Exit) },
                     onCancel = { showDiscardChangesDialog.value = false }
                 )
+            },
+            topBannerState = bannerDismissed.takeIf { !it }?.let {
+                TopBannerState {
+                    appPrefs.isCustomFieldsTopBannerDismissed = true
+                }
             }
         )
     }.asLiveData()

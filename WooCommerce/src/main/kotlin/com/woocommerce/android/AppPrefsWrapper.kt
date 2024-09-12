@@ -38,6 +38,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
 
+    var isCustomFieldsTopBannerDismissed by AppPrefs::isCustomFieldsTopBannerDismissed
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
