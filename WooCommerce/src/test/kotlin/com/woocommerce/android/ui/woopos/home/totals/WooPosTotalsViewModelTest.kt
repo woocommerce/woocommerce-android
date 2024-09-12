@@ -336,7 +336,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(
                     subtotal = BigDecimal("1.00"),
                 )
-            )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
         )
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
