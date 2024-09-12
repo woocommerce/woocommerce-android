@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -35,6 +36,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val totalsRepository: WooPosTotalsRepository,
     private val priceFormat: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
+    private val networkStatus: WooPosNetworkStatus,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -80,9 +82,15 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun collectPayment() {
-        val orderId = dataState.value.orderId
-        check(orderId != EMPTY_ORDER_ID)
-        cardReaderFacade.collectPayment(orderId)
+        if (!networkStatus.isConnected()) {
+            viewModelScope.launch {
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.NoInternet)
+            }
+        } else {
+            val orderId = dataState.value.orderId
+            check(orderId != EMPTY_ORDER_ID)
+            cardReaderFacade.collectPayment(orderId)
+        }
     }
 
     private fun listenUpEvents() {
