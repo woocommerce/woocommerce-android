@@ -376,9 +376,9 @@ class AppPrefsWrapper @Inject constructor() {
     fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? =
         AppPrefs.getNotificationChannelTypeSuffix(channel)
 
-    fun setBlazeCampaignCreated(siteId: Long) {
-        AppPrefs.setBlazeCampaignCreated(siteId)
+    fun setBlazeCampaignCreated() {
+        AppPrefs.setBlazeCampaignCreated()
     }
 
-    fun getBlazeCampaignCreated(siteId: Long) = AppPrefs.getBlazeCampaignCreated(siteId)
+    fun getBlazeCampaignCreated() = AppPrefs.getBlazeCampaignCreated()
 }
