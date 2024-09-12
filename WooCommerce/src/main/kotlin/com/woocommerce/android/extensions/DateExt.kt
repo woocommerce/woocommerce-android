@@ -58,9 +58,10 @@ fun Date.formatToDDMMMYYYY(locale: Locale = Locale.getDefault()): String = Simpl
     locale
 ).format(this)
 
-fun Date.formatToMMMddYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
-    .getDateInstance(SimpleDateFormat.MEDIUM, locale)
-    .format(this)
+fun Date.formatToMMMddYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    "MMM d, yyyy",
+    locale
+).format(this)
 
 fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
     "MMM d, yyyy hh:mm a",
