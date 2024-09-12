@@ -1058,15 +1058,15 @@ object AppPrefs {
 
     fun existsBlazeFirstTimeWithoutCampaign() = exists(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN)
 
-    fun setBlazeCampaignCreated(siteId: Long) {
+    fun setBlazeCampaignCreated() {
         setBoolean(
-            key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED:$siteId"),
+            key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED"),
             value = true
         )
     }
 
-    fun getBlazeCampaignCreated(siteId: Long) = getBoolean(
-        key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED:$siteId"),
+    fun getBlazeCampaignCreated() = getBoolean(
+        key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED"),
         default = false
     )
 

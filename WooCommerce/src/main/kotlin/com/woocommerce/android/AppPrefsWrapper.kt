@@ -384,9 +384,9 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun existsBlazeFirstTimeWithoutCampaign() = AppPrefs.existsBlazeFirstTimeWithoutCampaign()
 
-    fun setBlazeCampaignCreated(siteId: Long) {
-        AppPrefs.setBlazeCampaignCreated(siteId)
+    fun setBlazeCampaignCreated() {
+        AppPrefs.setBlazeCampaignCreated()
     }
 
-    fun getBlazeCampaignCreated(siteId: Long) = AppPrefs.getBlazeCampaignCreated(siteId)
+    fun getBlazeCampaignCreated() = AppPrefs.getBlazeCampaignCreated()
 }
