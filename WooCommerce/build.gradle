@@ -213,6 +213,7 @@ android {
     }
 
     lintOptions {
+        sarifReport System.getenv('CI') ? true : false
         disable 'InvalidPackage'
     }
 
