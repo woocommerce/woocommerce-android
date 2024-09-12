@@ -173,12 +173,17 @@ class CustomFieldsViewModel @Inject constructor(
         val isRefreshing: Boolean = false,
         val isSaving: Boolean = false,
         val hasChanges: Boolean = false,
-        val discardChangesDialogState: DiscardChangesDialogState? = null
+        val discardChangesDialogState: DiscardChangesDialogState? = null,
+        val topBannerState: TopBannerState? = null
     )
 
     data class DiscardChangesDialogState(
         val onDiscard: () -> Unit,
         val onCancel: () -> Unit
+    )
+
+    data class TopBannerState(
+        val onDismiss: () -> Unit
     )
 
     @Parcelize

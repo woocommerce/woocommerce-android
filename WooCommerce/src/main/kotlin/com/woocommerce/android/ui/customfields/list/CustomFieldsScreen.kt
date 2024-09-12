@@ -46,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
+import com.woocommerce.android.ui.compose.component.ExpandableTopBanner
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -120,28 +121,41 @@ private fun CustomFieldsScreen(
     ) { paddingValues ->
         val pullToRefreshState = rememberPullRefreshState(state.isRefreshing, onPullToRefresh)
 
-        Box(
+        Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .pullRefresh(state = pullToRefreshState)
         ) {
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(state.customFields) { customField ->
-                    CustomFieldItem(
-                        customField = customField,
-                        onClicked = onCustomFieldClicked,
-                        onValueClicked = onCustomFieldValueClicked,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Divider()
-                }
+            if (state.topBannerState != null) {
+                ExpandableTopBanner(
+                    title = stringResource(id = R.string.custom_fields_list_top_banner_title),
+                    message = stringResource(id = R.string.custom_fields_list_top_banner_message),
+                    onDismiss = state.topBannerState.onDismiss,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
+            Box(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .pullRefresh(state = pullToRefreshState)
+            ) {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(state.customFields) { customField ->
+                        CustomFieldItem(
+                            customField = customField,
+                            onClicked = onCustomFieldClicked,
+                            onValueClicked = onCustomFieldValueClicked,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Divider()
+                    }
+                }
 
-            PullRefreshIndicator(
-                refreshing = state.isRefreshing,
-                state = pullToRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
+                PullRefreshIndicator(
+                    refreshing = state.isRefreshing,
+                    state = pullToRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+            }
         }
 
         if (state.isSaving) {
@@ -245,7 +259,8 @@ private fun CustomFieldsScreenPreview() {
                         )
                     ),
                     CustomFieldUiModel(CustomField(3, "key4", "https://url.com")),
-                )
+                ),
+                topBannerState = CustomFieldsViewModel.TopBannerState { }
             ),
             onPullToRefresh = {},
             onSaveClicked = {},
