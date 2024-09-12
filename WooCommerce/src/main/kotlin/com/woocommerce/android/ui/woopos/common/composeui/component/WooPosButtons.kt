@@ -30,13 +30,6 @@ fun WooPosButton(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         enabled = enabled,
-        elevation = ButtonDefaults.elevation(
-            defaultElevation = 0.dp,
-            pressedElevation = 0.dp,
-            focusedElevation = 0.dp,
-            hoveredElevation = 0.dp,
-            disabledElevation = 0.dp
-        ),
         modifier = modifier
             .fillMaxWidth()
             .height(72.dp),
