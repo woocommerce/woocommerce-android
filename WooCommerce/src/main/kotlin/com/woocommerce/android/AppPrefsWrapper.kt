@@ -24,6 +24,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
 
+    var blazeFirstTimeWithoutCampaign by AppPrefs::blazeFirstTimeWithoutCampaign
+
     var isBlazeNoCampaignReminderShown by AppPrefs::isBlazeNoCampaignReminderShown
 
     var isBlazeAbandonedCampaignReminderShown by AppPrefs::isBlazeAbandonedCampaignReminderShown
@@ -375,6 +377,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? =
         AppPrefs.getNotificationChannelTypeSuffix(channel)
+
+    fun removeBlazeFirstTimeWithoutCampaign() {
+        AppPrefs.removeBlazeFirstTimeWithoutCampaign()
+    }
+
+    fun existsBlazeFirstTimeWithoutCampaign() = AppPrefs.existsBlazeFirstTimeWithoutCampaign()
 
     fun setBlazeCampaignCreated() {
         AppPrefs.setBlazeCampaignCreated()

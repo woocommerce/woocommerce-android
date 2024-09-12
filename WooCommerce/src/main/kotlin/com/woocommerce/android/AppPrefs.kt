@@ -119,6 +119,7 @@ object AppPrefs {
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+        BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN,
         BLAZE_CAMPAIGN_CREATED,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
         BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
@@ -1046,6 +1047,16 @@ object AppPrefs {
             key = DeletablePrefKey.BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
             value = value
         )
+
+    var blazeFirstTimeWithoutCampaign: Long
+        get() = getLong(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN, 0L)
+        set(value) = setLong(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN, value)
+
+    fun removeBlazeFirstTimeWithoutCampaign() {
+        remove(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN)
+    }
+
+    fun existsBlazeFirstTimeWithoutCampaign() = exists(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN)
 
     fun setBlazeCampaignCreated() {
         setBoolean(
