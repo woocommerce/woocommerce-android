@@ -13,12 +13,6 @@ steps:
       echo "--- :closed_lock_with_key: Installing Secrets"
       bundle exec fastlane run configure_apply
 
-      echo "--- 🔬 Install GMD Image"
-      yes | /usr/local/android/cmdline-tools/latest/bin/sdkmanager --verbose --install "system-images;android-34;google_apis;x86_64"
-
-      echo "--- 🔬 Accept Android Licence"
-      yes | /usr/local/android/cmdline-tools/latest/bin/sdkmanager --verbose --licenses || true
-
       echo "--- :hammer_and_wrench: Building"
       ./gradlew assembleVanillaRelease
     plugins: [ $CI_TOOLKIT ]
