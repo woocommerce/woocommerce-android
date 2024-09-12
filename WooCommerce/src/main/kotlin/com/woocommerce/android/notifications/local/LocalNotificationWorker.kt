@@ -74,7 +74,7 @@ class LocalNotificationWorker @AssistedInject constructor(
     private fun setNotificationShown(type: String) {
         when (LocalNotificationType.fromString(type)) {
             LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER -> {
-                appsPrefsWrapper.isBlazeAbandonedCampaignReminderShown = true
+                appsPrefsWrapper.isBlazeNoCampaignReminderShown = true
             }
 
             LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER -> {
