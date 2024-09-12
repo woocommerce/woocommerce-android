@@ -25,6 +25,11 @@ class CustomFieldsEditorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: CustomFieldsRepository
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        const val CUSTOM_FIELD_UPDATED_RESULT_KEY = "custom_field_updated"
+        const val CUSTOM_FIELD_DELETED_RESULT_KEY = "custom_field_deleted"
+    }
+
     private val navArgs by savedStateHandle.navArgs<CustomFieldsEditorFragmentArgs>()
 
     private val customFieldDraft = savedStateHandle.getStateFlow(
@@ -57,7 +62,8 @@ class CustomFieldsEditorViewModel @Inject constructor(
                 storedValue?.value.orEmpty() != customField.value,
             isHtml = isHtml,
             discardChangesDialogState = discardChangesDialogState,
-            keyErrorMessage = keyErrorMessage
+            keyErrorMessage = keyErrorMessage,
+            isCreatingNewItem = storedValue == null
         )
     }.asLiveData()
 
@@ -84,13 +90,23 @@ class CustomFieldsEditorViewModel @Inject constructor(
                 if (existingFields.any { it.key == value.key }) {
                     keyErrorMessage.value = UiString.UiStringRes(R.string.custom_fields_editor_key_error_duplicate)
                 } else {
-                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
+                    triggerEvent(
+                        MultiLiveEvent.Event.ExitWithResult(data = value, key = CUSTOM_FIELD_UPDATED_RESULT_KEY)
+                    )
                 }
             }
         } else {
             // When editing, we don't need to check for duplicate keys
-            triggerEvent(MultiLiveEvent.Event.ExitWithResult(value))
+            triggerEvent(
+                MultiLiveEvent.Event.ExitWithResult(data = value, key = CUSTOM_FIELD_UPDATED_RESULT_KEY)
+            )
         }
+    }
+
+    fun onDeleteClicked() {
+        triggerEvent(
+            MultiLiveEvent.Event.ExitWithResult(data = navArgs.customField, key = CUSTOM_FIELD_DELETED_RESULT_KEY)
+        )
     }
 
     fun onBackClick() {
@@ -118,6 +134,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
         val isHtml: Boolean = false,
         val discardChangesDialogState: DiscardChangesDialogState? = null,
         val keyErrorMessage: UiString? = null,
+        val isCreatingNewItem: Boolean = false
     ) {
         val showDoneButton
             get() = customField.key.isNotEmpty() && hasChanges && keyErrorMessage == null
