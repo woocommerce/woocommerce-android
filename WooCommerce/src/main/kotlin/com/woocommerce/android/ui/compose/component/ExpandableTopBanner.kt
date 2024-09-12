@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -72,6 +74,7 @@ fun ExpandableTopBanner(
                 Text(
                     text = message,
                     style = MaterialTheme.typography.body2,
+                    color = LocalContentColor.current.copy(alpha = ContentAlpha.medium),
                     modifier = Modifier.padding(start = 48.dp, end = 16.dp)
                 )
             }
