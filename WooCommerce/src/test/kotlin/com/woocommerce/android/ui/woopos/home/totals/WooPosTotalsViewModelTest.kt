@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
@@ -10,7 +9,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -19,14 +17,12 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
