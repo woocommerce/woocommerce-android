@@ -321,6 +321,7 @@ class WooPosTotalsViewModelTest {
     @Test
     fun `when CollectPaymentClicked is emitted, then should collect payment`() = runTest {
         // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
         val productIds = listOf(1L, 2L, 3L)
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -460,12 +461,12 @@ class WooPosTotalsViewModelTest {
     @Test
     fun `given payment status is success, when payment flow started, then OrderSuccessfullyPaid event and update state to PaymentSuccess`() = runTest {
         // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
         val productIds = listOf(1L, 2L, 3L)
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
-        val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
 
         val order = Order.getEmptyOrder(
             dateCreated = Date(),
@@ -513,7 +514,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @org.junit.Test
-    fun `given there is no internet, when trying to connect card reader, then connect card reader method is not called`() = runTest {
+    fun `given there is no internet, when trying to complete payment, then trigger proper event`() = runTest {
         // GIVEN
         whenever(networkStatus.isConnected()).thenReturn(false)
         val productIds = listOf(1L, 2L, 3L)
@@ -559,17 +560,6 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NoInternet)
-
-    // GIVEN
-        //whenever(networkStatus.isConnected()).thenReturn(false)
-        //whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(CardReaderStatus.NotConnected()))
-
-        // WHEN
-        //val viewModel = createViewModel()
-        //viewModel.onUiEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked)
-
-        // THEN
-        //verify(cardReaderFacade, never()).connectToReader()
     }
 
     private fun createViewModel(
