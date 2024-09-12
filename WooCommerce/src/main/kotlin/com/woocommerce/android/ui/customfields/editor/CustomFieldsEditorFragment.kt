@@ -15,10 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CustomFieldsEditorFragment : BaseFragment() {
-    companion object {
-        const val RESULT_KEY = "custom_field_result"
-    }
-
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
     private val viewModel: CustomFieldsEditorViewModel by viewModels()
@@ -36,7 +32,7 @@ class CustomFieldsEditorFragment : BaseFragment() {
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(RESULT_KEY, event.data)
+                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(event.key!!, event.data)
                 MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
