@@ -102,7 +102,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         loadProductsWeightsIfNeeded(order)
 
         val items = order.getShippableItems().map { it.toShippingItem() }
-        val totalWeight = items.sumByFloat { it.weight * it.quantity } + (lastUsedPackage?.boxWeight ?: 0f)
+        val totalWeight = getPackageTotalWeight(items, lastUsedPackage?.boxWeight ?: 0f)
         return listOf(
             ShippingLabelPackage(
                 position = 1,
@@ -111,6 +111,10 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                 items = items
             )
         )
+    }
+
+    private fun getPackageTotalWeight(items: List<ShippingLabelPackage.Item>, packageWeight: Float): Float {
+        return items.sumByFloat { it.weight * it.quantity } + packageWeight
     }
 
     private suspend fun loadProductsWeightsIfNeeded(order: Order) {
@@ -179,7 +183,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
         val packages = viewState.packagesUiModels.toMutableList()
         val updatedPackage = with(packages[position].data) {
             val weight = if (!viewState.packagesWithEditedWeight.contains(packageId)) {
-                items.sumByFloat { it.weight } + selectedPackage.boxWeight
+                getPackageTotalWeight(items, selectedPackage.boxWeight)
             } else {
                 weight
             }

@@ -4290,6 +4290,7 @@
     <string name="custom_fields_list_progress_dialog_title">Saving changes</string>
     <string name="custom_fields_list_saving_succeeded">Changes saved</string>
     <string name="custom_fields_list_saving_failed">Saving changes failed, please try again</string>
+    <string name="custom_fields_list_field_deleted">Custom Field deleted</string>
     <string name="custom_fields_add_button">Add custom fields</string>
     <string name="custom_fields_editor_key_label">Key</string>
     <string name="custom_fields_editor_value_label">Value</string>

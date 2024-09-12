@@ -182,7 +182,8 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         assertThat(events).isEqualTo(
             MultiLiveEvent.Event.ExitWithResult(
-                CustomFieldUiModel(id = CUSTOM_FIELD_ID, key = "new key", value = "new value")
+                data = CustomFieldUiModel(id = CUSTOM_FIELD_ID, key = "new key", value = "new value"),
+                key = CustomFieldsEditorViewModel.CUSTOM_FIELD_UPDATED_RESULT_KEY
             )
         )
     }
@@ -215,6 +216,22 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(state.keyErrorMessage).isNull()
+    }
+
+    @Test
+    fun `given editing an existing field, when delete is clicked, then return result`() = testBlocking {
+        setup(editing = true)
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onDeleteClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(
+            MultiLiveEvent.Event.ExitWithResult(
+                data = CustomFieldUiModel(CUSTOM_FIELD),
+                key = CustomFieldsEditorViewModel.CUSTOM_FIELD_DELETED_RESULT_KEY
+            )
+        )
     }
 
     @Test
