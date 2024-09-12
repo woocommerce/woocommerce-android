@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-29 09:54:03+0000
+Translation-Revision-Date: 2024-09-03 15:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">加载自定义字段时出错</string>
+    <string name="custom_fields_list_title">自定义字段</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">背景变暗。 轻点即可关闭对话框。</string>
+    <string name="blaze_campaign_budget_weekly_spending">每周 %1$s</string>
+    <string name="blaze_campaign_budget_duration_endless_label">在手动停止前保持运行</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">从 %1$s 起</string>
+    <string name="blaze_campaign_budget_weekly_spend">每周支出</string>
+    <string name="blaze_campaign_preview_days_duration_endless">从 %2$s 起每周 %1$s</string>
+    <string name="blaze_campaign_status_budget_weekly">每周</string>
+    <string name="blaze_campaign_status_budget_remaining">剩余</string>
+    <string name="blaze_campaign_status_budget_total">总计</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">点击率</string>
+    <string name="stats_widget_battery_saver_error">您的设备似乎处于省电模式。 \n当您的商店处于活动状态时，我们无法提供其相关信息</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">带选项的弹出菜单。 轻扫即可浏览商品。</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">打开工具栏菜单</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">显示读卡器状态的工具栏。 菜单已打开。 轻点两下即可进行交互。</string>
@@ -677,9 +691,6 @@ Language: zh_CN
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">尝试通过借记卡或信用卡完成一次 %s 付款。\n完成后将退款。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">整个过程简单、安全且私密。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">您可以直接在手机上\n接受所有类型的现场付款。 无需额外的硬件。</string>
-    <string name="blaze_campaign_status_budget">预算</string>
-    <string name="blaze_campaign_status_clicks">点击次数</string>
-    <string name="blaze_campaign_status_impressions">展示次数</string>
     <string name="blaze_campaign_status_rejected">已拒绝</string>
     <string name="blaze_campaign_status_completed">已完成</string>
     <string name="blaze_campaign_status_active">已启用</string>

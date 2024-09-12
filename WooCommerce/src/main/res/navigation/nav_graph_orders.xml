@@ -406,6 +406,11 @@
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$AddressType" />
     </fragment>
     <fragment
+        android:id="@+id/barcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment"
+        android:label="BarcodeScanningFragment"
+        tools:layout="@layout/fragment_barcode_scanning" />
+    <fragment
         android:id="@+id/addOrderShipmentTrackingFragment"
         android:name="com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment"
         tools:layout="@layout/fragment_add_shipment_tracking">
@@ -424,6 +429,9 @@
         <action
             android:id="@+id/action_addOrderShipmentTrackingFragment_to_addOrderTrackingProviderListFragment"
             app:destination="@id/addOrderTrackingProviderListFragment" />
+        <action
+            android:id="@+id/action_addOrderShipmentTrackingFragment_to_barcodeScanningFragment"
+            app:destination="@id/barcodeScanningFragment" />
     </fragment>
     <fragment
         android:id="@+id/editShippingLabelPackagesFragment"

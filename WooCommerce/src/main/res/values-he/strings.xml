@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-29 15:54:14+0000
+Translation-Revision-Date: 2024-09-02 19:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">אירעה שגיאה בעת טעינת שדות מותאמים</string>
+    <string name="custom_fields_list_title">שדות מותאמים</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">רקע מעומעם. יש להקיש כדי לצאת מתיבת הדו-שיח.</string>
+    <string name="blaze_campaign_budget_weekly_spending">⁦%1$s⁩ בכל שבוע</string>
+    <string name="blaze_campaign_budget_duration_endless_label">להמשיך בפעולה עד שאעצור אותה</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">החל מ-⁦%1$s⁩</string>
+    <string name="blaze_campaign_budget_weekly_spend">הוצאה שבועית</string>
+    <string name="blaze_campaign_preview_days_duration_endless">חיוב שבועי של ⁦%1$s⁩, החל מ-⁦%2$s⁩</string>
+    <string name="blaze_campaign_status_budget_weekly">שבועית</string>
+    <string name="blaze_campaign_status_budget_remaining">נשאר</string>
+    <string name="blaze_campaign_status_budget_total">סכום כולל</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">קליקים</string>
+    <string name="stats_widget_battery_saver_error">נראה שהמכשיר שלך נמצא במצב \'חיסכון בסוללה\'. \nאנחנו לא יכולים לספק פרטים על החנות שלך כאשר המצב הזה פעיל</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">תפריט קופץ עם אפשרויות. יש להחליק כדי לנווט בין הפריטים.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">לפתוח את התפריט של סרגל הכלים</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">סרגל כלים עם מצב של קורא כרטיסים. התפריט פתוח. יש להקיש הקשה כפולה לאינטראקציה.</string>
@@ -677,9 +691,6 @@ Language: he_IL
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">לנסות תשלום של %s באמצעות כרטיס החיוב או כרטיס האשראי.\nהתשלום יוחזר בסיום.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">התהליך קל, מאובטח ופרטי.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">לקבל את כל הסוגים של תשלומים באופן אישי, ישר\nבטלפון. ללא צורך בחומרה נוספת.</string>
-    <string name="blaze_campaign_status_budget">תקציב</string>
-    <string name="blaze_campaign_status_clicks">קליקים</string>
-    <string name="blaze_campaign_status_impressions">צפיות</string>
     <string name="blaze_campaign_status_rejected">נדחה</string>
     <string name="blaze_campaign_status_completed">הושלם</string>
     <string name="blaze_campaign_status_active">פעיל</string>

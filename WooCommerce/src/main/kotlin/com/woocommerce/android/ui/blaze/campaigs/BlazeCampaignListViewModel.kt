@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
@@ -36,7 +37,8 @@ class BlazeCampaignListViewModel @Inject constructor(
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val numberExtensionsWrapper: NumberExtensionsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
@@ -63,7 +65,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         BlazeCampaignListState(
             campaigns = campaigns.map {
                 ClickableCampaign(
-                    campaignUi = it.toUiState(currencyFormatter),
+                    campaignUi = it.toUiState(currencyFormatter, numberExtensionsWrapper),
                     onCampaignClicked = { onCampaignClicked(it.campaignId) }
                 )
             },
@@ -76,6 +78,14 @@ class BlazeCampaignListViewModel @Inject constructor(
     init {
         if (navArgs.isPostCampaignCreation) {
             showCampaignCelebrationIfNeeded()
+        }
+        if (navArgs.campaignId != null) {
+            triggerEvent(
+                ShowCampaignDetails(
+                    url = blazeUrlsHelper.buildCampaignDetailsUrl(navArgs.campaignId!!),
+                    urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
+                )
+            )
         }
         launch {
             loadCampaigns(offset = 0)
@@ -107,14 +117,13 @@ class BlazeCampaignListViewModel @Inject constructor(
     }
 
     private fun onCampaignClicked(campaignId: String) {
-        val url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId)
         analyticsTrackerWrapper.track(
             stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
             properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.CAMPAIGN_LIST.trackingName)
         )
         triggerEvent(
             ShowCampaignDetails(
-                url = url,
+                url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId),
                 urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
             )
         )

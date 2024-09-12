@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
@@ -296,7 +297,7 @@ fun ProductsLoadingIndicator() {
 
 @Composable
 private fun ProductLoadingItem() {
-    Card(
+    WooPosCard(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {
@@ -346,7 +347,7 @@ private fun ProductItem(
         item.name,
         item.price
     )
-    Card(
+    WooPosCard(
         modifier = modifier
             .semantics { contentDescription = itemContentDescription },
         shape = RoundedCornerShape(8.dp),

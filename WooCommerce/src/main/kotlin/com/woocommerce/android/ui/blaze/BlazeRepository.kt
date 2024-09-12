@@ -149,7 +149,7 @@ class BlazeRepository @Inject constructor(
         )
 
         val product = productDetailRepository.getProduct(productId)
-            ?: productDetailRepository.fetchProductOrLoadFromCache(productId)!!
+            ?: productDetailRepository.fetchAndGetProduct(productId)!!
 
         return CampaignDetails(
             productId = productId,

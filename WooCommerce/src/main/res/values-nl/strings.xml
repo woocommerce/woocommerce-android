@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-28 16:54:04+0000
+Translation-Revision-Date: 2024-09-03 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">Fout bij het laden van aangepaste velden</string>
+    <string name="custom_fields_list_title">Aangepaste velden</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Achtergrond gedimd. Tik om het dialoogvenster te sluiten.</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s wekelijks</string>
+    <string name="blaze_campaign_budget_duration_endless_label">Uitvoeren tot ik dit zelf stopzet</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Vanaf %1$s</string>
+    <string name="blaze_campaign_budget_weekly_spend">Wekelijkse uitgaven</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%1$s wekelijks vanaf %2$s</string>
+    <string name="blaze_campaign_status_budget_weekly">Wekelijks</string>
+    <string name="blaze_campaign_status_budget_remaining">Resterend</string>
+    <string name="blaze_campaign_status_budget_total">Totaal</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">Doorklikken</string>
+    <string name="stats_widget_battery_saver_error">Het lijkt erop dat de energiebesparende modus op je apparaat aan staat. \nWe kunnen je winkelgegevens niet geven terwijl deze ingeschakeld is</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Pop-upmenu met opties. Swipe om door de items te navigeren.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">Taakbalkmenu openen</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">Taakbalk met status van kaartlezer. Het menu is geopend. Tik dubbel voor interacties.</string>
@@ -677,9 +691,6 @@ Language: nl
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Probeer een %s-betaling met je betaal- of creditcard.\nJe zal het terugbetaald krijgen zodra je klaar bent.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">Het is eenvoudig, veilig en privé.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Accepteer alle typen fysieke betalingen, direct\nop je telefoon. Geen extra hardware nodig.</string>
-    <string name="blaze_campaign_status_budget">Budget</string>
-    <string name="blaze_campaign_status_clicks">Klikken</string>
-    <string name="blaze_campaign_status_impressions">Impressies</string>
     <string name="blaze_campaign_status_rejected">Afgewezen</string>
     <string name="blaze_campaign_status_completed">Voltooid</string>
     <string name="blaze_campaign_status_active">Actief</string>

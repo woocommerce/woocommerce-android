@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-29 13:54:05+0000
+Translation-Revision-Date: 2024-09-03 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_list_loading_error">載入自訂欄位時發生錯誤</string>
+    <string name="custom_fields_list_title">自訂欄位</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">背景已調暗。 點選以關閉對話方塊。</string>
+    <string name="blaze_campaign_budget_weekly_spending">每週 %1$s</string>
+    <string name="blaze_campaign_budget_duration_endless_label">持續執行，直到我停止為止</string>
+    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">從 %1$s開始</string>
+    <string name="blaze_campaign_budget_weekly_spend">每週花費</string>
+    <string name="blaze_campaign_preview_days_duration_endless">從 %2$s起，每週 %1$s</string>
+    <string name="blaze_campaign_status_budget_weekly">每週</string>
+    <string name="blaze_campaign_status_budget_remaining">剩餘</string>
+    <string name="blaze_campaign_status_budget_total">總計</string>
+    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
+    <string name="blaze_campaign_status_ctr_label">點擊率</string>
+    <string name="stats_widget_battery_saver_error">看來你的裝置現已開啟省電模式。 \n我們無法在該模式啟用時提供商店資訊</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">附選項的快顯選單。 滑動以導覽項目。</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">開啟工具列選單</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">顯示讀卡機狀態的工具列。 選單已開啟。 點選兩下以互動。</string>
@@ -677,9 +691,6 @@ Language: zh_TW
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">嘗試使用簽帳金融卡或信用卡支付 %s 款項。\n完成後就會退款。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">簡單、安全且私密。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">接受所有類型的親自收款，\n全都能在手機上完成。 無須使用額外硬體。</string>
-    <string name="blaze_campaign_status_budget">預算</string>
-    <string name="blaze_campaign_status_clicks">點擊數</string>
-    <string name="blaze_campaign_status_impressions">曝光數</string>
     <string name="blaze_campaign_status_rejected">已拒絕</string>
     <string name="blaze_campaign_status_completed">已完成</string>
     <string name="blaze_campaign_status_active">已啟用</string>
