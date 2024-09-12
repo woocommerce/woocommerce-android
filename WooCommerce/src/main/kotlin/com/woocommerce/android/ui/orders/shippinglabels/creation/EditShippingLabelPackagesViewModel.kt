@@ -116,7 +116,7 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
     private suspend fun loadProductsWeightsIfNeeded(order: Order) {
         suspend fun fetchProductIfNeeded(productId: Long): Boolean {
             if (productDetailRepository.getProduct(productId) == null) {
-                return productDetailRepository.fetchProductOrLoadFromCache(productId) != null ||
+                return productDetailRepository.fetchAndGetProduct(productId) != null ||
                     productDetailRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID
             }
             return true

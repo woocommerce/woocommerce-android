@@ -811,6 +811,11 @@
             android:name="isPostCampaignCreation"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="campaignId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/orderConnectivityToolFragment"
