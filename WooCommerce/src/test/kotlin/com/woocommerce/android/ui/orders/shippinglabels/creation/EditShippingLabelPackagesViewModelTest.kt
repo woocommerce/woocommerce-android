@@ -406,4 +406,26 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `when the package selected changes, then the weight is updated`() = testBlocking {
+        val item1 = defaultItem.copy(quantity = 2, weight = 2f)
+        val item2 = defaultItem.copy(quantity = 1, weight = 5f)
+        val items = listOf(item1, item2)
+        val currentShippingPackages = arrayOf(
+            CreateShippingLabelTestUtils.generateShippingLabelPackage(
+                items = items,
+                weight = 10f
+            )
+        )
+        val selectedPackage = CreateShippingLabelTestUtils.generatePackage()
+        val expectedWeight = 5f + (2f * 2f) + selectedPackage.boxWeight
+
+        setup(currentShippingPackages)
+
+        viewModel.onPackageSelected(0, selectedPackage)
+
+        val packages = viewModel.viewStateData.liveData.value!!.packages
+        assertThat(packages.first().weight).isEqualTo(expectedWeight)
+    }
 }
