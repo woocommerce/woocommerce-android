@@ -296,7 +296,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00"))
-            )
+            ),
+            total = BigDecimal("5.00"),
+            productsTotal = BigDecimal("3.00"),
         )
 
         whenever(totalsRepository.createOrderWithProducts(productIds)).thenReturn(
