@@ -23,6 +23,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -545,7 +546,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(
                     subtotal = BigDecimal("1.00"),
                 )
-            )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
         )
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
@@ -568,6 +571,57 @@ class WooPosTotalsViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NoInternet)
+    }
+
+    @org.junit.Test
+    fun `given there is no internet, when trying to complete payment, then collect payment method is not called`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(false)
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
+        )
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
+                Result.success(order)
+            )
+        }
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+        viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
+
+        // THEN
+        verify(cardReaderFacade, never()).collectPayment(any())
     }
 
     private fun createViewModel(
