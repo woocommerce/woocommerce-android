@@ -1,2 +1,0 @@
-20.3:
-Hemos introducido varias mejoras para mejorar tu experiencia. Esta actualización corrige fallos en la pantalla de la lista de pedidos, resuelve problemas con la instalación del plugin de Jetpack y corrige fallos en la barra de herramientas de las pantallas de detalles del paquete y seguimiento del pedido. También hemos añadido un útil recordatorio de campaña de Blaze si dejas la creación de una campaña sin terminar. Disfruta de una navegación más fluida y de una aplicación más fiable.

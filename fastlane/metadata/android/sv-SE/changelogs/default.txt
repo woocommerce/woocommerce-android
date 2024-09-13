@@ -1,2 +1,0 @@
-20.3:
-Vi har gjort flertalet förbättringar för att göra din upplevelse bättre. Den här uppdateringen åtgärdar krascher på skärmen med listan över beställningar, löser problem med Jetpack-tilläggsinstallationen och rättar till fel i verktygsfältet på skärmarna Förpackningsinformation och Beställningsspårning. Vi har också lagt till en användbar Blaze-kampanjpåminnelse om du lämnar kampanjskapandet utan att ha slutfört det. Ta del av smidigare navigering och en mer tillförlitlig app.
