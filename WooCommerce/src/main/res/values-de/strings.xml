@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-02 15:54:04+0000
+Translation-Revision-Date: 2024-09-11 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">Wert</string>
+    <string name="custom_fields_editor_key_label">Schlüssel</string>
+    <string name="woopos_dialog_products_info_secondary_message">Weitere Produkttypen, wie variable und virtuelle, werden in künftigen Updates bereitgestellt.</string>
+    <string name="woopos_dialog_products_info_primary_message">Derzeit können nur einfache physische Produkte mit POS verwendet werden.</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">Abbrechen</string>
+    <string name="blaze_campaign_budget_duration_current_duration">Dauer</string>
+    <string name="blaze_campaign_budget_duration_endless_description">Die Kampagne läuft, bis du sie beendest.</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">Dauer angeben</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">bis zum %1$s</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">Zeitplan</string>
+    <string name="blaze_campaign_budget_daily_spend_label">Ausgaben für einen Tag</string>
+    <string name="blaze_campaign_budget_duration_subtitle">Wie viel Geld willst du für deine Kampagne ausgeben und wie lange soll sie laufen?</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">Präsentiere deine Produkte mit Blaze Millionen von Interessenten und erhöhe deine Verkaufszahlen</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">Möchtest du deine Verkaufszahlen erhöhen?</string>
     <string name="custom_fields_list_loading_error">Fehler beim Laden der individuellen Felder</string>
     <string name="custom_fields_list_title">Individuelle Felder</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">Abgedunkelter Hintergrund. Zum Schließen des Dialogs tippen.</string>
     <string name="blaze_campaign_budget_weekly_spending">%1$s wöchentlich</string>
     <string name="blaze_campaign_budget_duration_endless_label">Ausführen, bis ich sie beende</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Ab dem %1$s</string>
-    <string name="blaze_campaign_budget_weekly_spend">Wöchentliche Ausgaben</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">Seit dem %1$s</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">Ausgaben für eine Woche</string>
     <string name="blaze_campaign_preview_days_duration_endless">%1$s wöchentlich, ab dem %2$s</string>
     <string name="blaze_campaign_status_budget_weekly">Wöchentlich</string>
     <string name="blaze_campaign_status_budget_remaining">Verbleibend</string>
     <string name="blaze_campaign_status_budget_total">Gesamt</string>
-    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
     <string name="blaze_campaign_status_ctr_label">Klickraten</string>
     <string name="stats_widget_battery_saver_error">Für dein Gerät wurde der Energiesparmodus aktiviert. \nSolange er aktiviert ist, können wir keine Informationen zu deinem Shop bereitstellen</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Pop-up-Menü mit Optionen. Wische, um zwischen den Artikeln zu navigieren.</string>
@@ -51,12 +65,11 @@ Language: de
     <string name="woopos_new_order_button">Neue Bestellung</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Eine Bestellung im Shop-Management erstellen</string>
-    <string name="woopos_dialog_products_info_secondary_message">Um die Zahlung für ein nicht einfaches Produkt entgegenzunehmen, beende POS und erstelle eine neue Bestellung über den Tab „Bestellungen“.</string>
-    <string name="woopos_dialog_products_info_primary_message">Derzeit können nur einfache physische Produkte mit POS verwendet werden.\nWeitere Produkttypen, wie variable und virtuelle, werden in künftigen Updates bereitgestellt.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Um die Zahlung für ein nicht einfaches Produkt entgegenzunehmen, beende POS und erstelle eine neue Bestellung über den Tab „Bestellungen“.</string>
     <string name="woopos_dialog_products_info_heading">Warum werden mir meine Produkte nicht angezeigt?</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
     <string name="woopos_banner_simple_products_close_content_description">Schließen</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Weitere Informationen</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Mehr\u00A0erfahren</string>
     <string name="woopos_banner_simple_products_only_message">Derzeit sind nur einfache physische Produkte mit POS kompatibel. Weitere Produkttypen, wie variable und virtuelle, werden in künftigen Updates bereitgestellt. </string>
     <string name="woopos_banner_simple_products_only_title">Es werden nur einfache Produkte angezeigt</string>
     <string name="support_request_site_address">Website-Adresse</string>
@@ -76,8 +89,6 @@ Language: de
     <string name="woopos_products_empty_list_message">POS unterstützt derzeit nur einfache Produkte – \nerstelle eins, um anzufangen.</string>
     <string name="woopos_products_empty_list_title">Keine unterstützten Produkte gefunden</string>
     <string name="woopos_products_empty_list_image_description">Keine Produkte</string>
-    <string name="woopos_splash_message">Zeit, deine Kunden glücklich zu machen</string>
-    <string name="woopos_splash_title">Wird geladen</string>
     <string name="woopos_get_support_title">Erhalte Support</string>
     <string name="woopos_reader_disconnected">Kartenlesegerät verbinden</string>
     <string name="ai_product_creation_photo_removed">Foto entfernt</string>
@@ -455,20 +466,16 @@ Language: de
     <string name="blaze_campaign_edit_ad_change_tagline_title">Untertitel</string>
     <string name="blaze_campaign_edit_ad_change_image_button">Bild ändern</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Übernehmen</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Beginnt</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Startdatum</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s Tage</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Dauer festlegen</string>
     <string name="blaze_campaign_budget_impressions_info">Aufrufe geben die Häufigkeit an, mit der deine Werbung potenziellen Kunden angezeigt wird.\n\n\n        Auch wenn aufgrund von schwankendem Internet-Traffic und Nutzerverhalten keine genauen Zahlen garantiert werden können, versuchen wir, die tatsächlichen Aufrufe deiner Werbeanzeige so genau wie möglich mit deiner Zielzahl abzugleichen.\n\n\n        Denke daran, dass es bei Aufrufen um die Sichtbarkeit geht und nicht um vom Betrachter ausgeführte Aktionen.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Fertig</string>
     <string name="blaze_campaign_budget_impressions_title">Aufrufe</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
     <string name="blaze_campaign_budget_edit_duration_button">Bearbeiten</string>
-    <string name="blaze_campaign_budget_duration_section_title">Dauer</string>
     <string name="blaze_campaign_budget_reach_forecast">Geschätzte Anzahl erreichter Personen pro Tag</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s täglich</string>
     <string name="blaze_campaign_budget_days_duration">für %1$s Tage</string>
-    <string name="blaze_campaign_budget_total_spend">Gesamtbestellwert</string>
-    <string name="blaze_campaign_budget_subtitle">Wie viel möchtest du für deine Produkt-Werbekampagne ausgeben?</string>
     <string name="blaze_campaign_budget_toolbar_title">Dein Budget festlegen</string>
     <string name="blaze_campaign_preview_target_default_value">Alle</string>
     <string name="blaze_campaign_preview_days_duration">%1$s Tage seit %2$s</string>

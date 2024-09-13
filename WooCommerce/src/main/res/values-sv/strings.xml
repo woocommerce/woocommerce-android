@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-03 09:54:03+0000
+Translation-Revision-Date: 2024-09-10 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">Värde</string>
+    <string name="custom_fields_editor_key_label">Nyckel</string>
+    <string name="woopos_dialog_products_info_secondary_message">Andra produkttyper, till exempel rörliga och virtuella, kommer att bli tillgängliga i framtida uppdateringar.</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">Avbryt</string>
+    <string name="blaze_campaign_budget_duration_current_duration">Varaktighet</string>
+    <string name="blaze_campaign_budget_duration_endless_description">Kampanj kommer köras tills du stoppar den.</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">Specificera varaktigheten</string>
+    <string name="woopos_dialog_products_info_primary_message">Endast enkla fysiska produkter kan användas med POS just nu.</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">till %1$s</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">Schema</string>
+    <string name="blaze_campaign_budget_daily_spend_label">Dagligt belopp</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="blaze_campaign_budget_duration_subtitle">Hur mycket vill du spendera på din kampanj, och hur länge ska den köras?</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">Visa upp dina produkter för miljontals människor med Blaze och öka din försäljning</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">Funderar du på hur du kan öka din försäljning?</string>
     <string name="custom_fields_list_loading_error">Det gick inte att läsa in anpassade fält</string>
     <string name="custom_fields_list_title">Anpassade fält</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">Nedtonad bakgrund. Tryck för att avfärda dialogrutan.</string>
     <string name="blaze_campaign_budget_weekly_spending">%1$s per vecka</string>
     <string name="blaze_campaign_budget_duration_endless_label">Kör tills jag stoppar den</string>
-    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Från och med %1$s</string>
-    <string name="blaze_campaign_budget_weekly_spend">Veckobelopp</string>
     <string name="blaze_campaign_preview_days_duration_endless">%1$s per vecka, från och med %2$s</string>
     <string name="blaze_campaign_status_budget_weekly">Per vecka</string>
     <string name="blaze_campaign_status_budget_remaining">Återstående</string>
     <string name="blaze_campaign_status_budget_total">Totalt</string>
     <string name="blaze_campaign_status_ctr_label">Klick</string>
     <string name="stats_widget_battery_saver_error">Det verkar som att din enhet är i strömsparläge. \nVI kan inte tillhandahålla din butiksinformation medan det är aktiverat</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">Pågående från %1$s</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">veckobelopp</string>
     <string name="woopos_floating_toolbar_menu_disabled_content_description">Meny inaktiverad</string>
     <string name="woopos_floating_toolbar_menu_enabled_content_description">Meny aktiverad</string>
     <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Kortläsare ansluten</string>
@@ -54,11 +68,10 @@ Language: sv_SE
     <string name="woopos_dialog_products_info_heading">Varför kan jag inte se mina produkter?</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
     <string name="woopos_banner_simple_products_close_content_description">Stäng</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Lär dig mer</string>
-    <string name="woopos_dialog_products_info_secondary_message">För att ta betalt för en icke-enkel produkt, lämna POS och skapa en ny beställning från fliken Beställningar.</string>
-    <string name="woopos_dialog_products_info_primary_message">Endast enkla fysiska produkter kan användas med POS just nu.\nAndra produkttyper, till exempel rörliga och virtuella, kommer att bli tillgängliga i framtida uppdateringar.</string>
     <string name="woopos_banner_simple_products_only_message">Endast enkla fysiska produkter är kompatibla med POS just nu. Andra produkttyper, till exempel rörliga och virtuella, kommer att bli tillgängliga i framtida uppdateringar. </string>
     <string name="woopos_banner_simple_products_only_title">Visar endast enkla produkter</string>
+    <string name="woopos_dialog_products_info_tertiary_message">För att ta betalt för en icke-enkel produkt, lämna POS och skapa en ny beställning från fliken Beställningar.</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Läs mer</string>
     <string name="support_request_site_address">Webbplatsadress</string>
     <string name="analytics_google_ads_cta_action">Lägg till betald kampanj</string>
     <string name="analytics_google_ads_cta_web_view_title">Google för WooCommerce</string>
@@ -75,9 +88,7 @@ Language: sv_SE
     <string name="woopos_products_empty_list_message_two">POS stöder för närvarande bara enkla produkter</string>
     <string name="woopos_products_empty_list_message">POS stöder för närvarande bara enkla produkter – \nskapa en för att komma igång.</string>
     <string name="woopos_products_empty_list_image_description">Inga produkter</string>
-    <string name="woopos_splash_message">Låt oss betjäna några kunder</string>
     <string name="woopos_products_empty_list_title">Inga produkter som stöds hittades</string>
-    <string name="woopos_splash_title">Startar upp</string>
     <string name="woopos_get_support_title">Skaffa support</string>
     <string name="woopos_reader_disconnected">Anslut din läsare</string>
     <string name="ai_product_creation_photo_removed">Foto borttaget</string>
@@ -454,24 +465,20 @@ Language: sv_SE
     <string name="blaze_campaign_edit_ad_change_image_button">Ändra bild</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Tillämpa</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dagar</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Ställ in varaktighet</string>
     <string name="blaze_campaign_budget_impressions_done_button">Klar</string>
     <string name="blaze_campaign_budget_update_button">Uppdatera</string>
     <string name="blaze_campaign_budget_edit_duration_button">Redigera</string>
-    <string name="blaze_campaign_budget_duration_section_title">Varaktighet</string>
     <string name="blaze_campaign_budget_toolbar_title">Ställ in din budget</string>
     <string name="blaze_campaign_budget_days_duration">i %1$s dagar</string>
-    <string name="blaze_campaign_budget_total_spend">Totalt spenderat</string>
     <string name="blaze_campaign_preview_days_duration">%1$s dagar från %2$s</string>
     <string name="blaze_campaign_preview_target_default_value">Alla</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d tecken återstår</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Startar</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s dagligen</string>
-    <string name="blaze_campaign_budget_subtitle">Hur mycket skulle du vilja spendera på din produktmarknadsföringskampanj?</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Föreslaget av AI</string>
     <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="blaze_campaign_budget_impressions_title">Visningar</string>
     <string name="blaze_campaign_budget_reach_forecast">Uppskattat antal personer som nås per dag</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Startdatum</string>
     <string name="product_creation_survey_button_dont_show_again">Visa det inte igen</string>
     <string name="product_creation_survey_button_remind_me_later">Påminn mig senare</string>
     <string name="product_creation_survey_description">Har du tid en minut? Hjälp oss att förbättra våra AI-assisterade funktioner genom lite snabb feedback.</string>

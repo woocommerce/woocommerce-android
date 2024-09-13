@@ -30,16 +30,16 @@ fun WooPosButton(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         enabled = enabled,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(72.dp),
         elevation = ButtonDefaults.elevation(
             defaultElevation = 0.dp,
             pressedElevation = 0.dp,
-            focusedElevation = 0.dp,
+            disabledElevation = 0.dp,
             hoveredElevation = 0.dp,
-            disabledElevation = 0.dp
-        ),
-        modifier = modifier
-            .fillMaxWidth()
-            .height(72.dp)
+            focusedElevation = 0.dp
+        )
     ) {
         Text(
             text = text,
