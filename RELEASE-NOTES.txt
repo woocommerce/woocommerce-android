@@ -4,6 +4,7 @@
 
 20.5
 -----
+- [*] Fixes a bug that prevented users to rename the Product Variation Attributes to because of case insensitive checks [https://github.com/woocommerce/woocommerce-android/pull/12608]
 
 
 20.4
