@@ -1,2 +1,0 @@
-20.3:
-Nous avons apporté plusieurs améliorations pour optimiser votre expérience ! Cette mise à jour corrige des plantages de l’écran de liste des commandes et résout des problèmes liés à l’installation de l’extension Jetpack ainsi qu’à la barre d’outils des écrans Détails du colis et Suivi de la commande. Nous avons également ajouté un rappel utile pour les campagnes Blaze laissées inachevées. Profitez d’une navigation plus fluide et d’une application plus fiable !

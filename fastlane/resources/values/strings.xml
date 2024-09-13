@@ -1015,6 +1015,7 @@
     <string name="order_shipment_tracking_delete_snackbar_msg">Deleted shipment tracking</string>
     <string name="order_shipment_tracking_delete_error">Error deleting tracking</string>
     <string name="order_shipment_tracking_delete_success">Tracking deleted</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">Scanning failed. Please try again later</string>
     <string name="ordered_add_ons_details_info_notice">If renaming an add-on in your web dashboard, please note that previous orders will no longer show that add-on within the app.</string>
     <string name="ordered_add_ons_wip_title">View add-ons from your device!</string>
     <string name="ordered_add_ons_wip_message">We are working on making it easier for you to see product add-ons from your device! For now, you’ll be able to see the add-ons for your orders. You can create and edit these add-ons in your web dashboard.</string>
@@ -4251,6 +4252,7 @@
     <string name="woopos_floating_toolbar_menu_open_content_description">Toolbar with card reader status. Menu is open. Double tap to interact.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">Open toolbar menu</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Popup menu with options. Swipe to navigate through items.</string>
+    <string name="woopos_no_internet_message">It looks like you\'re not connected to the internet. Ensure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
 
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4286,6 +4288,13 @@
     -->
     <string name="custom_fields_list_title">Custom Fields</string>
     <string name="custom_fields_list_loading_error">Error while loading custom fields</string>
+    <string name="custom_fields_list_progress_dialog_title">Saving changes</string>
+    <string name="custom_fields_list_saving_succeeded">Changes saved</string>
+    <string name="custom_fields_list_saving_failed">Saving changes failed, please try again</string>
+    <string name="custom_fields_list_field_deleted">Custom Field deleted</string>
+    <string name="custom_fields_add_button">Add custom fields</string>
     <string name="custom_fields_editor_key_label">Key</string>
     <string name="custom_fields_editor_value_label">Value</string>
+    <string name="custom_fields_editor_key_error_duplicate">This key is already used for another custom field.\nThe app currently does not support creating duplicate keys. Please use wp-admin to duplicate a key if needed.</string>
+    <string name="custom_fields_editor_key_error_underscore">Invalid key: please remove the \"_\" character from the beginning.</string>
 </resources>
