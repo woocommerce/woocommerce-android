@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-03 15:54:03+0000
+Translation-Revision-Date: 2024-09-10 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">字段值</string>
+    <string name="custom_fields_editor_key_label">密钥</string>
+    <string name="woopos_dialog_products_info_secondary_message">其他产品类型（如可变产品和虚拟产品）将在今后的更新中得到支持。</string>
+    <string name="woopos_dialog_products_info_primary_message">POS 目前仅可用于简单实体产品。</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">取消</string>
+    <string name="blaze_campaign_budget_duration_current_duration">时长</string>
+    <string name="blaze_campaign_budget_duration_endless_description">活动将持续进行，直到您手动将其停止。</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">指定时长</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">至 %1$s</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">安排</string>
+    <string name="blaze_campaign_budget_daily_spend_label">每日支出</string>
+    <string name="blaze_campaign_budget_duration_subtitle">您希望在广告活动上投入多少资金？活动应持续多长时间？</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">通过 Blaze 让数百万人看到您的产品，提高您的销售额</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">想要提高您的销售额？</string>
     <string name="custom_fields_list_loading_error">加载自定义字段时出错</string>
     <string name="custom_fields_list_title">自定义字段</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">背景变暗。 轻点即可关闭对话框。</string>
     <string name="blaze_campaign_budget_weekly_spending">每周 %1$s</string>
     <string name="blaze_campaign_budget_duration_endless_label">在手动停止前保持运行</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">从 %1$s 起</string>
-    <string name="blaze_campaign_budget_weekly_spend">每周支出</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">从 %1$s 起持续进行</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">每周支出</string>
     <string name="blaze_campaign_preview_days_duration_endless">从 %2$s 起每周 %1$s</string>
     <string name="blaze_campaign_status_budget_weekly">每周</string>
     <string name="blaze_campaign_status_budget_remaining">剩余</string>
     <string name="blaze_campaign_status_budget_total">总计</string>
-    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
     <string name="blaze_campaign_status_ctr_label">点击率</string>
     <string name="stats_widget_battery_saver_error">您的设备似乎处于省电模式。 \n当您的商店处于活动状态时，我们无法提供其相关信息</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">带选项的弹出菜单。 轻扫即可浏览商品。</string>
@@ -51,8 +65,7 @@ Language: zh_CN
     <string name="woopos_new_order_button">新订单</string>
     <string name="woopos_dialog_products_info_button_label">确定</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理中创建订单</string>
-    <string name="woopos_dialog_products_info_secondary_message">要接受非简单产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
-    <string name="woopos_dialog_products_info_primary_message">POS 目前仅可用于简单实体产品。\n其他产品类型（如可变产品和虚拟产品）将在今后的更新中得到支持。</string>
+    <string name="woopos_dialog_products_info_tertiary_message">要接受非简单产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
     <string name="woopos_dialog_products_info_heading">为何看不到我的产品？</string>
     <string name="woopos_banner_simple_products_info_content_description">信息</string>
     <string name="woopos_banner_simple_products_close_content_description">关闭</string>
@@ -76,8 +89,6 @@ Language: zh_CN
     <string name="woopos_products_empty_list_message">POS 目前仅支持简单产品 – \n创建一个以开始。</string>
     <string name="woopos_products_empty_list_title">未找到受支持的产品</string>
     <string name="woopos_products_empty_list_image_description">无任何产品</string>
-    <string name="woopos_splash_message">让我们为客户服务</string>
-    <string name="woopos_splash_title">开始</string>
     <string name="woopos_get_support_title">获取支持</string>
     <string name="woopos_reader_disconnected">连接您的读卡器</string>
     <string name="ai_product_creation_photo_removed">照片已删除</string>
@@ -455,20 +466,16 @@ Language: zh_CN
     <string name="blaze_campaign_edit_ad_change_tagline_title">标语</string>
     <string name="blaze_campaign_edit_ad_change_image_button">更换图片</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">应用</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">开始</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">开始日期</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s 天</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">设置时长</string>
     <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
     <string name="blaze_campaign_budget_impressions_done_button">完成</string>
     <string name="blaze_campaign_budget_impressions_title">展示次数</string>
     <string name="blaze_campaign_budget_update_button">更新</string>
     <string name="blaze_campaign_budget_edit_duration_button">编辑</string>
-    <string name="blaze_campaign_budget_duration_section_title">时长</string>
     <string name="blaze_campaign_budget_reach_forecast">每天的预计受众人数</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s 每天</string>
     <string name="blaze_campaign_budget_days_duration">共计 %1$s 天</string>
-    <string name="blaze_campaign_budget_total_spend">总支出</string>
-    <string name="blaze_campaign_budget_subtitle">您愿意在产品推广活动上花费多少资金？</string>
     <string name="blaze_campaign_budget_toolbar_title">设置您的预算</string>
     <string name="blaze_campaign_preview_target_default_value">所有</string>
     <string name="blaze_campaign_preview_days_duration">从 %2$s 起 %1$s 天</string>

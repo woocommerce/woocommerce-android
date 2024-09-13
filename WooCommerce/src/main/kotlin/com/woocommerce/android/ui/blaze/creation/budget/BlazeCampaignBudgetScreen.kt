@@ -49,7 +49,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
-import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.extensions.formatToLocalizedMedium
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MAXIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.BlazeRepository.Companion.CAMPAIGN_MINIMUM_DAILY_SPEND
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.BudgetUiState
@@ -504,7 +504,7 @@ private fun EditDurationBottomSheet(
                         .clip(RoundedCornerShape(4.dp))
                         .background(colorResource(id = color.divider_color))
                         .padding(8.dp),
-                    text = selectedStartDate.formatToMMMddYYYY(),
+                    text = selectedStartDate.formatToLocalizedMedium(),
                     style = MaterialTheme.typography.body1,
                 )
             }
