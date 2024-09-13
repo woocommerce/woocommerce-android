@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.moremenu
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -63,6 +64,10 @@ class MoreMenuFragment : TopLevelFragment() {
 
     override fun scrollToTop() {
         return
+    }
+
+    override fun onAttach(activity: Activity) {
+
     }
 
     override fun onCreateView(
