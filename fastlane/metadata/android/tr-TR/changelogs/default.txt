@@ -1,0 +1,2 @@
+20.3:
+Deneyiminizi canlandırmak için birkaç geliştirme yaptık! Bu güncelleme; siparişler listesi ekranındaki çökmeleri düzeltir, Jetpack eklentisi kurulumundaki sorunları çözer ve Paket ayrıntıları ve Sipariş Takibi ekranlarındaki araç çubuğu aksaklıklarını düzeltir. Ayrıca bir kampanya oluşturma işlemini tamamlanmamış halde bırakırsanız size yardımcı olacak bir Blaze kampanyası hatırlatıcısı da ekledik. Daha sorunsuz bir gezinmenin ve daha güvenilir bir uygulamanın keyfini çıkarın!
