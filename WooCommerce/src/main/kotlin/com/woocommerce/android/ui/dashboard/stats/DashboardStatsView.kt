@@ -649,8 +649,7 @@ class DashboardStatsView @JvmOverloads constructor(
     }
 
     private fun generateLineDataSet(revenueStats: Map<String, Double>): LineDataSet {
-        chartRevenueStats = revenueStats
-        val entries = chartRevenueStats.values.mapIndexed { index, value ->
+        val entries = revenueStats.values.mapIndexed { index, value ->
             Entry((index + 1).toFloat(), value.toFloat())
         }
         return LineDataSet(entries, "")
