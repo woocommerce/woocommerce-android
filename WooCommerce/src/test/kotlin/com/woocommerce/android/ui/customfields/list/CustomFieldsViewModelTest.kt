@@ -9,6 +9,7 @@ import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
@@ -17,6 +18,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -45,13 +47,17 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
     private val repository: CustomFieldsRepository = mock {
         onBlocking { observeDisplayableCustomFields(PARENT_ITEM_ID) }.thenReturn(flowOf(CUSTOM_FIELDS))
     }
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { it.getArgument<Int>(0).toString() }
+    }
     private lateinit var viewModel: CustomFieldsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
         viewModel = CustomFieldsViewModel(
             savedStateHandle = CustomFieldsFragmentArgs(PARENT_ITEM_ID, PARENT_ITEM_TYPE).toSavedStateHandle(),
-            repository = repository
+            repository = repository,
+            resourceProvider = resourceProvider
         )
     }
 
@@ -248,6 +254,56 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         assertThat(state.customFields).hasSize(CUSTOM_FIELDS.size + 1)
         assertThat(state.customFields.last().key).isEqualTo(customField.key)
         assertThat(state.customFields.last().value).isEqualTo(customField.value)
+    }
+
+    @Test
+    fun `when deleting a custom field, then custom fields are refreshed`() = testBlocking {
+        val customField = CustomFieldUiModel(CUSTOM_FIELDS.first())
+        setup()
+
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onCustomFieldDeleted(customField)
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state.customFields).hasSize(CUSTOM_FIELDS.size - 1)
+        assertThat(state.customFields).doesNotContain(customField)
+    }
+
+    @Test
+    fun `when deleting a custom field, then show undo action`() = testBlocking {
+        val customField = CustomFieldUiModel(CUSTOM_FIELDS.first())
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCustomFieldDeleted(customField)
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(event).matches {
+            it is MultiLiveEvent.Event.ShowActionSnackbar &&
+                it.message == resourceProvider.getString(R.string.custom_fields_list_field_deleted) &&
+                it.actionText == resourceProvider.getString(R.string.undo)
+        }
+    }
+
+    @Test
+    fun `when undoing a delete, then custom fields are refreshed`() = testBlocking {
+        val customField = CustomFieldUiModel(CUSTOM_FIELDS.first())
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCustomFieldDeleted(customField)
+            advanceUntilIdle()
+        }.last()
+
+        val state = viewModel.state.runAndCaptureValues {
+            (event as MultiLiveEvent.Event.ShowActionSnackbar).action.onClick(null)
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state.customFields).hasSize(CUSTOM_FIELDS.size)
+        assertThat(state.customFields).contains(customField)
     }
 
     @Test

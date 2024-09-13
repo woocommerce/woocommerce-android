@@ -75,6 +75,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         when (LocalNotificationType.fromString(type)) {
             LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER -> {
                 appsPrefsWrapper.isBlazeNoCampaignReminderShown = true
+                appsPrefsWrapper.removeBlazeFirstTimeWithoutCampaign()
             }
 
             LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER -> {
