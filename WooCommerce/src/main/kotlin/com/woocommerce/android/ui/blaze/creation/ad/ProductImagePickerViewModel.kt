@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -32,25 +34,24 @@ class ProductImagePickerViewModel @Inject constructor(
         launch {
             val product = productRepository.getProduct(navArgs.productId)
             product?.let {
-                val productImages = product.images.map { it.source }
-                _viewState.update { it.copy(productImageUrls = productImages) }
+                _viewState.update { it.copy(productImages = product.images) }
             }
         }
     }
 
-    fun onImageSelected(selectedImageUri: String) {
+    fun onImageSelected(productImage: Product.Image) {
         triggerEvent(
             ExitWithResult(
-                ImageSelectedResult(imageUrl = selectedImageUri)
+                ImageSelectedResult(productImage = productImage)
             )
         )
     }
 
     @Parcelize
     data class ViewState(
-        val productImageUrls: List<String>
+        val productImages: List<Image>
     ) : Parcelable
 
     @Parcelize
-    data class ImageSelectedResult(val imageUrl: String) : Parcelable
+    data class ImageSelectedResult(val productImage: Product.Image) : Parcelable
 }

@@ -172,6 +172,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     fun onProductImagesRequested() {
         triggerEvent(ShowProductImagePicker(navArgs.productId))
+        setMediaPickerDialogVisibility(false)
     }
 
     data class ShowMediaLibrary(val source: MediaPickerSetup.DataSource) : Event()

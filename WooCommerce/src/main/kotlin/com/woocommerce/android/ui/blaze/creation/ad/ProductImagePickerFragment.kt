@@ -25,6 +25,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.creation.ad.ProductImagePickerViewModel.ImageSelectedResult
 import com.woocommerce.android.ui.compose.composeView
@@ -75,15 +76,15 @@ class ProductImagePickerFragment : BaseFragment() {
     @Composable
     fun ProductImagePickerScreen(
         viewState: ProductImagePickerViewModel.ViewState,
-        onImageSelected: (String) -> Unit
+        onImageSelected: (Product.Image) -> Unit
     ) {
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 128.dp)
         ) {
-            items(viewState.productImageUrls) { photoUrl ->
+            items(viewState.productImages) { photoUrl ->
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(photoUrl)
+                        .data(photoUrl.source)
                         .crossfade(true)
                         .build(),
                     fallback = painterResource(R.drawable.blaze_campaign_product_placeholder),
