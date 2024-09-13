@@ -159,9 +159,9 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun buildWooPosTotalsViewState(order: Order): WooPosTotalsViewState.Totals {
-        val subtotalAmount = order.items.sumOf { it.subtotal }
+        val subtotalAmount = order.productsTotal
         val taxAmount = order.totalTax
-        val totalAmount = subtotalAmount + taxAmount
+        val totalAmount = order.total
 
         return WooPosTotalsViewState.Totals(
             orderSubtotalText = priceFormat(subtotalAmount),

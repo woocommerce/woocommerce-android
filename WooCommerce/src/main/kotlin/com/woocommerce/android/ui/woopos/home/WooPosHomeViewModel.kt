@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,8 +30,12 @@ class WooPosHomeViewModel @Inject constructor(
     )
     val state: StateFlow<WooPosHomeState> = _state
 
-    private val _toastEvent = MutableSharedFlow<Int>()
-    val toastEvent: SharedFlow<Int> = _toastEvent
+    private val _toastEvent = MutableSharedFlow<Toast>()
+    val toastEvent: SharedFlow<Toast> = _toastEvent
+
+    data class Toast(
+        @StringRes val message: Int,
+    )
 
     init {
         listenBottomEvents()
@@ -128,7 +133,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     ChildToParentEvent.NoInternet -> {
                         viewModelScope.launch {
-                            _toastEvent.emit(R.string.woopos_no_internet_message)
+                            _toastEvent.emit(Toast(R.string.woopos_no_internet_message))
                         }
                     }
                 }

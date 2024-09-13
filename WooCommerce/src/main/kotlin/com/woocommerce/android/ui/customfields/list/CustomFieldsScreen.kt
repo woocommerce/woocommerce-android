@@ -20,6 +20,8 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
@@ -29,6 +31,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,7 +55,10 @@ import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 
 @Composable
-fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
+fun CustomFieldsScreen(
+    viewModel: CustomFieldsViewModel,
+    snackbarHostState: SnackbarHostState
+) {
     viewModel.state.observeAsState().value?.let { state ->
         CustomFieldsScreen(
             state = state,
@@ -61,7 +67,8 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
             onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
             onAddCustomFieldClicked = viewModel::onAddCustomFieldClicked,
-            onBackClick = viewModel::onBackClick
+            onBackClick = viewModel::onBackClick,
+            snackbarHostState = snackbarHostState
         )
     }
 }
@@ -75,7 +82,8 @@ private fun CustomFieldsScreen(
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onAddCustomFieldClicked: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     BackHandler { onBackClick() }
 
@@ -106,6 +114,7 @@ private fun CustomFieldsScreen(
                 )
             }
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         val pullToRefreshState = rememberPullRefreshState(state.isRefreshing, onPullToRefresh)

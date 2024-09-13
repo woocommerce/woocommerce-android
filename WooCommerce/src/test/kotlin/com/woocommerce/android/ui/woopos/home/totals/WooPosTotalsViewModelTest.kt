@@ -106,7 +106,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(
                     subtotal = BigDecimal("1.00"),
                 )
-            )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
@@ -162,7 +164,9 @@ class WooPosTotalsViewModelTest {
                     Order.Item.EMPTY.copy(
                         subtotal = BigDecimal("1.00"),
                     )
-                )
+                ),
+                total = BigDecimal("5.00"),
+                productsTotal = BigDecimal("3.00"),
             )
             val totalsRepository: WooPosTotalsRepository = mock {
                 onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
@@ -297,7 +301,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00"))
-            )
+            ),
+            total = BigDecimal("5.00"),
+            productsTotal = BigDecimal("3.00"),
         )
 
         whenever(totalsRepository.createOrderWithProducts(productIds)).thenReturn(
@@ -338,7 +344,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(
                     subtotal = BigDecimal("1.00"),
                 )
-            )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
         )
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
@@ -388,7 +396,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(
                     subtotal = BigDecimal("1.00"),
                 )
-            )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
@@ -472,7 +482,9 @@ class WooPosTotalsViewModelTest {
             totalTax = BigDecimal("2.00"),
             items = listOf(
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
-            )
+            ),
+            total = BigDecimal("3.00"),
+            productsTotal = BigDecimal("1.00"),
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
