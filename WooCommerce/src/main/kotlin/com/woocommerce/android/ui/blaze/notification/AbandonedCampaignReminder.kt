@@ -18,15 +18,13 @@ class AbandonedCampaignReminder @Inject constructor(
         get() = BlazeAbandonedCampaignReminderNotification(selectedSite.get().siteId)
 
     fun scheduleReminderIfNeeded() {
-        if (!appPrefsWrapper.getBlazeCampaignCreated(selectedSite.get().siteId) &&
-            !appPrefsWrapper.isBlazeAbandonedCampaignReminderShown
-        ) {
+        if (!appPrefsWrapper.getBlazeCampaignCreated() && !appPrefsWrapper.isBlazeAbandonedCampaignReminderShown) {
             localNotificationScheduler.scheduleNotification(notification)
         }
     }
 
     fun setBlazeCampaignCreated() {
-        appPrefsWrapper.setBlazeCampaignCreated(selectedSite.get().siteId)
+        appPrefsWrapper.setBlazeCampaignCreated()
         localNotificationScheduler.cancelScheduledNotification(notification.type)
     }
 }

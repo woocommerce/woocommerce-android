@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-02 19:54:03+0000
+Translation-Revision-Date: 2024-09-10 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">ערך</string>
+    <string name="custom_fields_editor_key_label">מפתח</string>
+    <string name="woopos_dialog_products_info_secondary_message">סוגי מוצרים אחרים, כמו מוצרים עם סוגים או מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד.</string>
+    <string name="woopos_dialog_products_info_primary_message">נכון לעכשיו, ניתן להשתמש ב-POS רק עבור מוצרים פיזיים פשוטים.</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">ביטול</string>
+    <string name="blaze_campaign_budget_duration_current_duration">משך זמן</string>
+    <string name="blaze_campaign_budget_duration_endless_description">הקמפיין יהיה פעיל עד שיושבת על ידיך.</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">יש לציין משך</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">עד ⁦%1$s⁩</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">תזמון</string>
+    <string name="blaze_campaign_budget_daily_spend_label">הוצאה יומית</string>
+    <string name="blaze_campaign_budget_duration_subtitle">כמה ברצונך להוציא על הקמפיין וכמה זמן ברצונך להפעיל אותו?</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">בעזרת Blaze, מיליונים יראו את המוצרים שלך והמכירות ישתפרו</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">רוצה לשפר את המכירות שלך?</string>
     <string name="custom_fields_list_loading_error">אירעה שגיאה בעת טעינת שדות מותאמים</string>
     <string name="custom_fields_list_title">שדות מותאמים</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">רקע מעומעם. יש להקיש כדי לצאת מתיבת הדו-שיח.</string>
     <string name="blaze_campaign_budget_weekly_spending">⁦%1$s⁩ בכל שבוע</string>
     <string name="blaze_campaign_budget_duration_endless_label">להמשיך בפעולה עד שאעצור אותה</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">החל מ-⁦%1$s⁩</string>
-    <string name="blaze_campaign_budget_weekly_spend">הוצאה שבועית</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">פעיל ברצף מ-⁦%1$s⁩</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">הוצאה שבועית</string>
     <string name="blaze_campaign_preview_days_duration_endless">חיוב שבועי של ⁦%1$s⁩, החל מ-⁦%2$s⁩</string>
     <string name="blaze_campaign_status_budget_weekly">שבועית</string>
     <string name="blaze_campaign_status_budget_remaining">נשאר</string>
     <string name="blaze_campaign_status_budget_total">סכום כולל</string>
-    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
     <string name="blaze_campaign_status_ctr_label">קליקים</string>
     <string name="stats_widget_battery_saver_error">נראה שהמכשיר שלך נמצא במצב \'חיסכון בסוללה\'. \nאנחנו לא יכולים לספק פרטים על החנות שלך כאשר המצב הזה פעיל</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">תפריט קופץ עם אפשרויות. יש להחליק כדי לנווט בין הפריטים.</string>
@@ -51,12 +65,11 @@ Language: he_IL
     <string name="woopos_new_order_button">הזמנה חדשה</string>
     <string name="woopos_dialog_products_info_button_label">אישור</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ ליצור הזמנה בניהול החנות</string>
-    <string name="woopos_dialog_products_info_secondary_message">כדי לגבות תשלום במוצר שאינו מוצר פשוט, יש לצאת מ-POS וליצור הזמנה חדשה מלשונית ההזמנות.</string>
-    <string name="woopos_dialog_products_info_primary_message">נכון לעכשיו, ניתן להשתמש ב-POS רק עבור מוצרים פיזיים פשוטים.\nסוגי מוצרים אחרים, כמו מוצרים עם סוגים או מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">כדי לגבות תשלום במוצר שאינו מוצר פשוט, יש לצאת מ-POS וליצור הזמנה חדשה מלשונית ההזמנות.</string>
     <string name="woopos_dialog_products_info_heading">למה המוצרים שלי לא מופיעים?</string>
     <string name="woopos_banner_simple_products_info_content_description">מידע</string>
     <string name="woopos_banner_simple_products_close_content_description">לסגור</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">למידע נוסף</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">למידע\u00A0נוסף</string>
     <string name="woopos_banner_simple_products_only_message">רק מוצרים פיזיים פשוטים תואמים ל-POS כרגע. סוגי מוצרים אחרים, כמו מוצרים עם סוגים או מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד. </string>
     <string name="woopos_banner_simple_products_only_title">מציג רק מוצרים פשוטים</string>
     <string name="support_request_site_address">כתובת האתר</string>
@@ -76,8 +89,6 @@ Language: he_IL
     <string name="woopos_products_empty_list_message">האפשרות POS נתמכת כרגע במוצרים פשוטים בלבד – \nיש ליצור אחד כזה כדי להתחיל.</string>
     <string name="woopos_products_empty_list_title">לא נמצאו מוצרים נתמכים</string>
     <string name="woopos_products_empty_list_image_description">אין מוצרים</string>
-    <string name="woopos_splash_message">זה הזמן להעניק ללקוחות שירות</string>
-    <string name="woopos_splash_title">מתחילים כאן</string>
     <string name="woopos_get_support_title">לקבלת תמיכה</string>
     <string name="woopos_reader_disconnected">לחבר את הקורא</string>
     <string name="ai_product_creation_photo_removed">התמונה הוסרה</string>
@@ -455,20 +466,16 @@ Language: he_IL
     <string name="blaze_campaign_edit_ad_change_tagline_title">תיאור האתר</string>
     <string name="blaze_campaign_edit_ad_change_image_button">להחליף תמונה</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">להחיל</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">מתחיל במועד</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">תאריך התחלה</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">⁦%1$s⁩ ימים</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">להגדיר מיקום</string>
     <string name="blaze_campaign_budget_impressions_info">הצפיות מייצגות את התדירות שבה הפרסומת שלך מוצגת ללקוחות פוטנציאליים.\n\n\n        אומנם לא ניתן להבטיח שהמספרים יהיו מדויקים עקב שינויים בתעבורה המקוונת והתנהגות המשתמשים, אך אנחנו שואפים להתאים כמה שאפשר את מספר הצפיות במודעה שלך בפועל למספר היעד שהצבת.\n\n\n        חשוב לזכור, הצפיות משקפות את הנראות של הפרסומת, לא את הפעולה שבוצעה על ידי הצופים.</string>
     <string name="blaze_campaign_budget_impressions_done_button">סיימתי</string>
     <string name="blaze_campaign_budget_impressions_title">צפיות</string>
     <string name="blaze_campaign_budget_update_button">לעדכן</string>
     <string name="blaze_campaign_budget_edit_duration_button">לערוך</string>
-    <string name="blaze_campaign_budget_duration_section_title">משך זמן</string>
     <string name="blaze_campaign_budget_reach_forecast">מספר האנשים שיראו את התוכן בכל יום</string>
     <string name="blaze_campaign_budget_daily_spend">⁦%1$s⁩ בכל יום</string>
     <string name="blaze_campaign_budget_days_duration">ל-⁦%1$s⁩ ימים</string>
-    <string name="blaze_campaign_budget_total_spend">הוצאה כוללת</string>
-    <string name="blaze_campaign_budget_subtitle">כמה ברצונך להוציא על קמפיין הקידום של המוצר שלך?</string>
     <string name="blaze_campaign_budget_toolbar_title">להגדיר את תקציב שלך</string>
     <string name="blaze_campaign_preview_target_default_value">הכול</string>
     <string name="blaze_campaign_preview_days_duration">⁦%1$s⁩ ימים מ-⁦%2$s⁩</string>
