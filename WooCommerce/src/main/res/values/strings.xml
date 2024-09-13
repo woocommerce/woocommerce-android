@@ -3955,8 +3955,8 @@
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
     <string name="blaze_campaign_edit_ad_invalid_image_description">Please select an image with a minimum size of 400x400 pixels</string>
-    <string name="blaze_campaign_product_picker_title">Product Photos</string>
-
+    <string name="blaze_campaign_product_photo_picker_title">Product Photos</string>
+    <string name="blaze_campaign_product_photo_picker_empty">No photos found</string>
     <!--
     Blaze campaign payment
     -->
