@@ -53,7 +53,11 @@ fun WooPosHomeScreen(
     val context = LocalContext.current
     LaunchedEffect(viewModel.toastEvent) {
         viewModel.toastEvent.collect { message ->
-            ToastUtils.showToast(context, message)
+            ToastUtils.showToast(
+                context,
+                context.getString(message.message),
+                ToastUtils.Duration.LONG
+            )
         }
     }
 
