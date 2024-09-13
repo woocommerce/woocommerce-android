@@ -14,9 +14,8 @@ import javax.inject.Inject
 class WooPosTotalsRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val dateUtils: DateUtils,
-    private val getProductById: WooPosGetProductById,
-
-    ) {
+    private val getProductById: WooPosGetProductById
+) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
     suspend fun createOrderWithProducts(productIds: List<Long>): Result<Order> {
