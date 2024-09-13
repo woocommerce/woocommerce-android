@@ -170,6 +170,10 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         }
     }
 
+    fun onProductImagesRequested() {
+        TODO("Not yet implemented")
+    }
+
     data class ShowMediaLibrary(val source: MediaPickerSetup.DataSource) : Event()
 
     @Parcelize

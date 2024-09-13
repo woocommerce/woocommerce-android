@@ -48,6 +48,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.mediapicker.MediaPickerDialogForExistingProduct
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ViewState
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -69,6 +70,7 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationEditAdVie
             onNextSuggestionTapped = viewModel::onNextSuggestionTapped,
             onBackButtonTapped = viewModel::onBackButtonTapped,
             onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+            onProductImagesRequested = viewModel::onProductImagesRequested,
             onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
             onSaveTapped = viewModel::onSaveTapped
         )
@@ -85,13 +87,15 @@ private fun BlazeCampaignCreationEditAdScreen(
     onNextSuggestionTapped: () -> Unit,
     onBackButtonTapped: () -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
+    onProductImagesRequested: () -> Unit,
     onMediaLibraryRequested: (DataSource) -> Unit,
     onSaveTapped: () -> Unit
 ) {
     if (viewState.isMediaPickerDialogVisible) {
-        MediaPickerDialog(
+        MediaPickerDialogForExistingProduct(
             onMediaPickerDialogDismissed,
-            onMediaLibraryRequested
+            onMediaLibraryRequested,
+            onProductImagesRequested
         )
     }
 
