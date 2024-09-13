@@ -38,7 +38,7 @@ class WooPosTotalsRepository @Inject constructor(
                         .groupingBy { it }
                         .eachCount()
                         .map { (productId, quantity) ->
-                            val productResult = getProductById(productId)
+                            val productResult = getProductById(productId)!!
 
                             Order.Item.EMPTY.copy(
                                 itemId = 0L,
@@ -48,7 +48,7 @@ class WooPosTotalsRepository @Inject constructor(
                                 total = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 subtotal = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 attributesList = emptyList(),
-                                name = productResult!!.name,
+                                name = productResult.name,
                             )
                         }
                 )
