@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.model.Product.Image
@@ -48,7 +49,7 @@ class BlazeCampaignCreationEditAdFragment : BaseFragment(), MediaPickerResultHan
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source)
-                is ShowProductImagePicker -> showProductImagePicker()
+                is ShowProductImagePicker -> navigateToProductImagePicker(event.productId)
                 is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(EDIT_AD_RESULT, event.data as EditAdResult)
@@ -57,8 +58,11 @@ class BlazeCampaignCreationEditAdFragment : BaseFragment(), MediaPickerResultHan
         }
     }
 
-    private fun showProductImagePicker() {
-        TODO("Not yet implemented")
+    private fun navigateToProductImagePicker(productId: Long) {
+        findNavController().navigateSafely(
+            BlazeCampaignCreationEditAdFragmentDirections
+                .actionBlazeCampaignCreationEditAdFragmentToProductImagePickerFragment(productId)
+        )
     }
 
     override fun onDeviceMediaSelected(imageUris: List<Uri>, source: String) {
