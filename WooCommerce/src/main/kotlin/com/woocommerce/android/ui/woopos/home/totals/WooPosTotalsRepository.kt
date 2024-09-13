@@ -49,7 +49,7 @@ class WooPosTotalsRepository @Inject constructor(
                                 total = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 subtotal = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 attributesList = emptyList(),
-                                name = productResult!!.name ,
+                                name = productResult!!.name,
                             )
                         }
                 )
