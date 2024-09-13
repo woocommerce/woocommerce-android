@@ -140,7 +140,10 @@ class SitePickerViewModel @Inject constructor(
     }
 
     private suspend fun fetchSitesFromApi(showSkeleton: Boolean) {
-        sitePickerViewState = sitePickerViewState.copy(isSkeletonViewVisible = showSkeleton)
+        sitePickerViewState = sitePickerViewState.copy(
+            isSkeletonViewVisible = showSkeleton,
+            isPrimaryBtnVisible = false
+        )
 
         val startTime = System.currentTimeMillis()
         val result = repository.fetchWooCommerceSites()
