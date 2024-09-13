@@ -53,7 +53,7 @@ fun ProductImagePickerScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(id = R.string.blaze_campaign_product_photo_picker_empty),
+                title = stringResource(id = R.string.blaze_campaign_product_photo_picker_title),
                 onNavigationButtonClick = onBackButtonTapped,
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
             )
