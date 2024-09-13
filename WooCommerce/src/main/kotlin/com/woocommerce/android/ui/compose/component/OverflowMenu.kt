@@ -7,6 +7,8 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.outlined.MoreVert
@@ -30,7 +32,8 @@ fun <T> WCOverflowMenu(
     onSelected: (T) -> Unit,
     modifier: Modifier = Modifier,
     mapper: @Composable (T) -> String = { it.toString() },
-    tint: Color = Color.Black
+    itemColor: @Composable (T) -> Color = { LocalContentColor.current },
+    tint: Color = MaterialTheme.colors.primary
 ) {
     var showMenu by remember { mutableStateOf(false) }
     Box(modifier = modifier) {
@@ -57,7 +60,10 @@ fun <T> WCOverflowMenu(
                         onSelected(item)
                     }
                 ) {
-                    Text(mapper(item))
+                    Text(
+                        text = mapper(item),
+                        color = itemColor(item)
+                    )
                 }
                 if (index < items.size - 1) {
                     Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))

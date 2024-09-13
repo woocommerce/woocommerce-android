@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-03 09:54:03+0000
+Translation-Revision-Date: 2024-09-10 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">Waarde</string>
+    <string name="custom_fields_editor_key_label">Sleutel</string>
+    <string name="woopos_dialog_products_info_secondary_message">Andere producttypen, zoals variabel en virtueel, worden in toekomstige updates beschikbaar.</string>
+    <string name="woopos_dialog_products_info_primary_message">Alleen simpele fysieke producten zijn momenteel beschikbaar met POS.</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">Annuleren</string>
+    <string name="blaze_campaign_budget_duration_current_duration">Duur</string>
+    <string name="blaze_campaign_budget_duration_endless_description">De campagne loopt totdat je deze stopzet.</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">Stel de duur in</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">tot %1$s</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">Inplannen</string>
+    <string name="blaze_campaign_budget_daily_spend_label">Dagelijkse uitgaven</string>
+    <string name="blaze_campaign_budget_duration_subtitle">Hoeveel wil je uitgeven aan je campagne, en hoelang wil je dat deze loopt?</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">Zorg dat je producten door miljoenen worden gezien met Blaze en geef je verkoop een boost</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">Wil je jouw verkoop een boost geven?</string>
     <string name="custom_fields_list_loading_error">Fout bij het laden van aangepaste velden</string>
     <string name="custom_fields_list_title">Aangepaste velden</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">Achtergrond gedimd. Tik om het dialoogvenster te sluiten.</string>
     <string name="blaze_campaign_budget_weekly_spending">%1$s wekelijks</string>
     <string name="blaze_campaign_budget_duration_endless_label">Uitvoeren tot ik dit zelf stopzet</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Vanaf %1$s</string>
-    <string name="blaze_campaign_budget_weekly_spend">Wekelijkse uitgaven</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">Doorgaand vanaf %1$s</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">wekelijkse uitgaven</string>
     <string name="blaze_campaign_preview_days_duration_endless">%1$s wekelijks vanaf %2$s</string>
     <string name="blaze_campaign_status_budget_weekly">Wekelijks</string>
     <string name="blaze_campaign_status_budget_remaining">Resterend</string>
     <string name="blaze_campaign_status_budget_total">Totaal</string>
-    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
     <string name="blaze_campaign_status_ctr_label">Doorklikken</string>
     <string name="stats_widget_battery_saver_error">Het lijkt erop dat de energiebesparende modus op je apparaat aan staat. \nWe kunnen je winkelgegevens niet geven terwijl deze ingeschakeld is</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Pop-upmenu met opties. Swipe om door de items te navigeren.</string>
@@ -51,12 +65,11 @@ Language: nl
     <string name="woopos_new_order_button">Nieuwe bestelling</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Maak een bestelling aan in het winkelbeheer</string>
-    <string name="woopos_dialog_products_info_secondary_message">Verlaat POS en maak een nieuwe bestelling aan vanuit het tabblad Bestellingen om betalingen te ontvangen voor een niet-simpel product.</string>
-    <string name="woopos_dialog_products_info_primary_message">Alleen simpele fysieke producten zijn momenteel beschikbaar met POS.\nAndere producttypen, zoals variabel en virtueel, worden in toekomstige updates beschikbaar.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Verlaat POS en maak een nieuwe bestelling aan vanuit het tabblad Bestellingen om betalingen te ontvangen voor een niet-simpel product.</string>
     <string name="woopos_dialog_products_info_heading">Waarom kan ik mijn producten niet zien?</string>
     <string name="woopos_banner_simple_products_info_content_description">Informatie</string>
     <string name="woopos_banner_simple_products_close_content_description">Sluiten</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Meer informatie</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Meer\u00A0informatie</string>
     <string name="woopos_banner_simple_products_only_message">Alleen simpele fysieke producten zijn momenteel compatibel met POS. Andere producttypen, zoals variabel en virtueel, worden in toekomstige updates beschikbaar. </string>
     <string name="woopos_banner_simple_products_only_title">Alleen simpele producten weergeven</string>
     <string name="support_request_site_address">Websiteadres</string>
@@ -76,8 +89,6 @@ Language: nl
     <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele producten – \nmaak er een aan om te beginnen.</string>
     <string name="woopos_products_empty_list_title">Geen ondersteunde producten gevonden</string>
     <string name="woopos_products_empty_list_image_description">Geen producten</string>
-    <string name="woopos_splash_message">Laten we wat klanten helpen</string>
-    <string name="woopos_splash_title">Aan de slag</string>
     <string name="woopos_get_support_title">Vraag om ondersteuning</string>
     <string name="woopos_reader_disconnected">Verbind je lezer</string>
     <string name="ai_product_creation_photo_removed">Foto verwijderd</string>
@@ -455,20 +466,16 @@ Language: nl
     <string name="blaze_campaign_edit_ad_change_tagline_title">Slogan</string>
     <string name="blaze_campaign_edit_ad_change_image_button">Afbeelding wijzigen</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Toepassen</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Begint</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Startdatum</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dagen</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Tijdsduur instellen</string>
     <string name="blaze_campaign_budget_impressions_info">Impressies reflecteren hoe vaak je advertentie door potentiële klanten te zien is.\n\n\n        Door wisselend online verkeer en gebruikersgedrag kunnen er geen exacte getallen gegarandeerd worden maar we proberen er voor te zorgen dat de daadwerkelijke impressies van je advertentie zoveel mogelijk overeenkomen met het doelaantal.\n\n\n        Vergeet niet dat het bij impressies draait om zichtbaarheid en niet om de acties die worden ondernomen door de mensen die het zien.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Gereed</string>
     <string name="blaze_campaign_budget_impressions_title">Impressies</string>
     <string name="blaze_campaign_budget_update_button">Updaten</string>
     <string name="blaze_campaign_budget_edit_duration_button">Bewerken</string>
-    <string name="blaze_campaign_budget_duration_section_title">Duur</string>
     <string name="blaze_campaign_budget_reach_forecast">Geschatte aantal mensen dat per dag bereikt wordt</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s per dag</string>
     <string name="blaze_campaign_budget_days_duration">gedurende %1$s dagen</string>
-    <string name="blaze_campaign_budget_total_spend">Totaal uitgegeven</string>
-    <string name="blaze_campaign_budget_subtitle">Hoeveel wil je uitgeven aan de promotiecampagne voor je product?</string>
     <string name="blaze_campaign_budget_toolbar_title">Stel je budget in</string>
     <string name="blaze_campaign_preview_target_default_value">Alles</string>
     <string name="blaze_campaign_preview_days_duration">%1$s dagen vanaf %2$s</string>

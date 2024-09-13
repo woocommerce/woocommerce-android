@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-03 09:54:03+0000
+Translation-Revision-Date: 2024-09-09 17:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">Значение</string>
+    <string name="custom_fields_editor_key_label">Ключ</string>
+    <string name="woopos_dialog_products_info_secondary_message">Другие типы товаров, в частности виртуальные и вариативные товары, станут доступны в ближайших обновлениях.</string>
+    <string name="woopos_dialog_products_info_primary_message">В данный момент в режиме POS поддерживаются только простые материальные товары.</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">Отмена</string>
+    <string name="blaze_campaign_budget_duration_current_duration">Продолжительность</string>
+    <string name="blaze_campaign_budget_duration_endless_description">Кампания будет идти до тех пор, пока вы её не остановите.</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">Указать продолжительность</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">по %1$s</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">Расписание</string>
+    <string name="blaze_campaign_budget_daily_spend_label">Ежедневные затраты</string>
+    <string name="blaze_campaign_budget_duration_subtitle">Сколько вы планируете потратить на кампанию и сколько времени она должна продлиться?</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">Думаете о том, как повысить продажи?</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">При помощи Blaze демонстрируйте ваши товары миллионам потенциальных покупателей и повышайте продажи</string>
     <string name="custom_fields_list_loading_error">Ошибка при загрузке произвольных полей</string>
     <string name="custom_fields_list_title">Произвольные поля</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">Затемнённый фон. Коснитесь, чтобы закрыть диалог.</string>
     <string name="blaze_campaign_budget_weekly_spending">%1$s в неделю</string>
     <string name="blaze_campaign_budget_duration_endless_label">Выполнять до остановки мною</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">Начиная с %1$s</string>
-    <string name="blaze_campaign_budget_weekly_spend">Еженедельные расходы</string>
     <string name="blaze_campaign_preview_days_duration_endless">%1$s еженедельно начиная с %2$s</string>
     <string name="blaze_campaign_status_budget_weekly">Еженедельно</string>
     <string name="blaze_campaign_status_budget_remaining">Осталось</string>
     <string name="blaze_campaign_status_budget_total">Итого</string>
-    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
     <string name="blaze_campaign_status_ctr_label">Переходы</string>
     <string name="stats_widget_battery_saver_error">По-видимому, ваше устройство находится в режиме экономии энергии. \nПока этот режим активен, сведения о магазине будут недоступны</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">Запущена %1$s</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">еженедельные расходы</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Всплывающее меню с опциями. Смахивайте товары, чтобы переходить к следующим.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">Открыть меню панели инструментов</string>
     <string name="woopos_floating_toolbar_menu_open_content_description">Панель инструментов со статусом платёжного терминала. Меню открыто. Дважды коснитесь, чтобы начать работу.</string>
@@ -51,14 +65,13 @@ Language: ru
     <string name="woopos_new_order_button">Новый заказ</string>
     <string name="woopos_dialog_products_info_button_label">ОК</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Создать заказ в разделе «Управление магазином»</string>
-    <string name="woopos_dialog_products_info_secondary_message">Чтобы принять платёж за товар, не относящийся к простым, выйдите из POS и создайте новый заказ в таблице заказов.</string>
-    <string name="woopos_dialog_products_info_primary_message">В данный момент POS поддерживает только простые материальные товары.\nДругие типы товаров, в частности виртуальные и вариативные товары, станут доступны в ближайших обновлениях.</string>
     <string name="woopos_dialog_products_info_heading">Почему я не вижу свои товары?</string>
     <string name="woopos_banner_simple_products_info_content_description">Информация</string>
     <string name="woopos_banner_simple_products_close_content_description">Закрыть</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Подробнее</string>
     <string name="woopos_banner_simple_products_only_message">В данный момент POS поддерживает только простые материальные товары. Другие типы товаров, в частности виртуальные и вариативные товары, станут доступны в ближайших обновлениях. </string>
     <string name="woopos_banner_simple_products_only_title">Только простые товары</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Чтобы принять платёж за товар, не относящийся к простым, выйдите из режима POS и создайте новый заказ в таблице заказов.</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">Подробнее</string>
     <string name="support_request_site_address">Адрес сайта</string>
     <string name="analytics_google_ads_cta_web_view_title">Google для WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Добавить платную кампанию</string>
@@ -76,8 +89,6 @@ Language: ru
     <string name="woopos_products_loading_error_retry_button">Повторить попытку</string>
     <string name="woopos_products_empty_list_title">Нет поддерживаемых товаров</string>
     <string name="woopos_products_empty_list_image_description">Товаров нет</string>
-    <string name="woopos_splash_message">Давайте обслужим нескольких клиентов</string>
-    <string name="woopos_splash_title">Начало работы</string>
     <string name="woopos_get_support_title">Поддержка</string>
     <string name="woopos_reader_disconnected">Подключите платёжный терминал</string>
     <string name="ai_product_creation_photo_removed">Фотография удалена</string>
@@ -455,23 +466,19 @@ Language: ru
     <string name="blaze_campaign_edit_ad_change_tagline_title">Ключевая фраза</string>
     <string name="blaze_campaign_edit_ad_change_image_button">Изменить изображение</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Применить</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Начало</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s дн.</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Задать продолжительность</string>
     <string name="blaze_campaign_budget_impressions_info">Раздел «Показы» отражает частоту, с которой ваша реклама появляется на экранах потенциальных клиентов.\n\n\n        Достичь этой цифры в точности будет невозможно из-за колебаний посещаемости и различного поведения пользователей, однако мы стремимся к тому, чтобы реальное число показов рекламы максимально приближалось к целевому показателю.\n\n\n        Учитывайте, что показы влияют лишь на видимость рекламы, а не на действия читателей.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Готово</string>
     <string name="blaze_campaign_budget_impressions_title">Показы</string>
     <string name="blaze_campaign_budget_update_button">Обновить</string>
     <string name="blaze_campaign_budget_edit_duration_button">Изменить</string>
-    <string name="blaze_campaign_budget_duration_section_title">Продолжительность</string>
     <string name="blaze_campaign_budget_reach_forecast">Приблизительный ежедневный охват пользователей</string>
     <string name="blaze_campaign_budget_days_duration">на %1$s дн.</string>
-    <string name="blaze_campaign_budget_total_spend">Общие расходы</string>
-    <string name="blaze_campaign_budget_subtitle">Сколько вы хотите потратить на кампанию по продвижению товара?</string>
     <string name="blaze_campaign_budget_toolbar_title">Настройте бюджет</string>
     <string name="blaze_campaign_preview_target_default_value">Все</string>
     <string name="blaze_campaign_preview_days_duration">%1$s дн. с %2$s</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s ежедневно</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Дата начала</string>
     <string name="product_creation_survey_button_dont_show_again">Больше не показывать</string>
     <string name="product_creation_survey_button_remind_me_later">Напомнить позже</string>
     <string name="product_creation_survey_description">Есть свободная минутка? Оставьте краткий отзыв и помогите нам улучшить функции на базе ИИ.</string>

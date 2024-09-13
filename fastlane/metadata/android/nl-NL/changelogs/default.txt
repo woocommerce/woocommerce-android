@@ -1,0 +1,2 @@
+20.3:
+We hebben enkele verbeteringen doorgevoerd om jouw ervaring een boost te geven! Deze update verhelpt crashes op het scherm voor de bestellingslijst, problemen met de installatie van de Jetpack-plugin en werkbalkglitches in de schermen Pakketgegevens en Bestelling volgen. We hebben ook een handige Blaze-campagneherinnering toegevoegd, voor wanneer je een campagne onvoltooid achterlaat. Geniet van soepelere navigatie op een nog betrouwbaardere app!

@@ -1,23 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-03 09:54:03+0000
+Translation-Revision-Date: 2024-09-10 09:54:11+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">値</string>
+    <string name="custom_fields_editor_key_label">キー</string>
+    <string name="woopos_dialog_products_info_secondary_message">バリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。</string>
+    <string name="woopos_dialog_products_info_primary_message">現在、POS で使用できるのはシンプルな物理的商品のみです。</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">キャンセル</string>
+    <string name="blaze_campaign_budget_duration_current_duration">期間</string>
+    <string name="blaze_campaign_budget_duration_endless_description">キャンペーンは停止するまで実行されます。</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">期間を特定</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">%1$sまで</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">予約</string>
+    <string name="blaze_campaign_budget_daily_spend_label">1日あたりの支出</string>
+    <string name="blaze_campaign_budget_duration_subtitle">キャンペーンに費やす費用はいくらですか ? また、キャンペーンの期間はどの程度ですか ?</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">Blaze で商品を何百万もの人に見てもらい、売上を伸ばしましょう</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">売上を伸ばしたいとお考えですか ?</string>
     <string name="custom_fields_list_loading_error">カスタムフィールドの読み込み中にエラーが発生しました</string>
     <string name="custom_fields_list_title">カスタムフィールド</string>
     <string name="woopos_dialog_exit_confirmation_background_content_description">背景を暗くしました。 タップしてダイアログを閉じます。</string>
     <string name="blaze_campaign_budget_weekly_spending">毎週%1$s</string>
     <string name="blaze_campaign_budget_duration_endless_label">止めるまで実行します</string>
-    <string name="blaze_campaign_budget_duration_section_endless_campaign_value">%1$sに開始</string>
-    <string name="blaze_campaign_budget_weekly_spend">週の支出</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">%1$sから進行中</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">週の支出</string>
     <string name="blaze_campaign_preview_days_duration_endless">毎週%1$s、%2$sに開始 </string>
     <string name="blaze_campaign_status_budget_weekly">毎週</string>
     <string name="blaze_campaign_status_budget_remaining">残り</string>
     <string name="blaze_campaign_status_budget_total">合計</string>
-    <string name="blaze_campaign_status_ctr_valur">%1$d ➔ %2$d</string>
     <string name="blaze_campaign_status_ctr_label">クリックスルー</string>
     <string name="stats_widget_battery_saver_error">端末がバッテリーセーバーモードになっているようです。 \nストアがアクティブな間はストア情報を提供できません</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">オプション付きのポップアップメニュー。 スワイプしてアイテム間を移動します。</string>
@@ -51,8 +65,7 @@ Language: ja_JP
     <string name="woopos_new_order_button">新しい注文</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ ストア管理で注文を作成</string>
-    <string name="woopos_dialog_products_info_secondary_message">シンプルな商品以外の支払いを受け取るには、POS を終了して注文タブから新しい注文を作成します。</string>
-    <string name="woopos_dialog_products_info_primary_message">現在、POS で使用できるのはシンプルな物理的商品のみです。\nバリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。</string>
+    <string name="woopos_dialog_products_info_tertiary_message">シンプルな商品以外の支払いを受け取るには、POS を終了して注文タブから新しい注文を作成します。</string>
     <string name="woopos_dialog_products_info_heading">商品が表示されないのはなぜですか ?</string>
     <string name="woopos_banner_simple_products_info_content_description">情報</string>
     <string name="woopos_banner_simple_products_close_content_description">閉じる</string>
@@ -76,8 +89,6 @@ Language: ja_JP
     <string name="woopos_products_empty_list_message">現在、POS はシンプルな商品のみに対応しています – \n作成して開始します。</string>
     <string name="woopos_products_empty_list_title">サポート対象の商品が見つかりません</string>
     <string name="woopos_products_empty_list_image_description">商品なし</string>
-    <string name="woopos_splash_message">お客様にサービスを提供しましょう</string>
-    <string name="woopos_splash_title">開始</string>
     <string name="woopos_get_support_title">サポートを受ける</string>
     <string name="woopos_reader_disconnected">リーダーを接続</string>
     <string name="ai_product_creation_photo_removed">写真が削除されました</string>
@@ -455,20 +466,16 @@ Language: ja_JP
     <string name="blaze_campaign_edit_ad_change_tagline_title">キャッチフレーズ</string>
     <string name="blaze_campaign_edit_ad_change_image_button">画像を変更</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">適用</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">開始</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">開始日</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s日間</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">期間を設定する</string>
     <string name="blaze_campaign_budget_impressions_info">インプレッションには、広告が潜在顧客に表示される頻度が反映されます。\n\n\n        オンライントラフィックやユーザーの行動は変動するため正確な数を保証することはできないものの、広告の実際のインプレッションを目標の数に可能な限り近づけることを目指します。\n\n\n        インプレッションは可視性のことであり、閲覧者が取ったアクションではありません。</string>
     <string name="blaze_campaign_budget_impressions_done_button">完了</string>
     <string name="blaze_campaign_budget_impressions_title">インプレッション</string>
     <string name="blaze_campaign_budget_update_button">更新</string>
     <string name="blaze_campaign_budget_edit_duration_button">編集</string>
-    <string name="blaze_campaign_budget_duration_section_title">期間</string>
     <string name="blaze_campaign_budget_reach_forecast">1日あたりの推定リーチ数</string>
     <string name="blaze_campaign_budget_daily_spend">1日 %1$s</string>
     <string name="blaze_campaign_budget_days_duration">%1$s日間</string>
-    <string name="blaze_campaign_budget_total_spend">総支出</string>
-    <string name="blaze_campaign_budget_subtitle">商品プロモーションキャンペーンにいくら使いますか ?</string>
     <string name="blaze_campaign_budget_toolbar_title">予算を設定する</string>
     <string name="blaze_campaign_preview_target_default_value">すべて</string>
     <string name="blaze_campaign_preview_days_duration">%2$sから%1$s日間</string>
