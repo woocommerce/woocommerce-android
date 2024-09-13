@@ -1,100 +1,20 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
 
-# Nodes with values to reuse in the pipeline.
-common_params:
-  # Common plugin settings to use with the `plugins` key.
-  - &test_collector_common_params
-      files: "WooCommerce/build/buildkite-test-analytics/*.xml"
-      format: "junit"
-
 agents:
-  queue: "android"
+  queue: "android-staging"
 
 steps:
-  - label: "Gradle Wrapper Validation"
+  - label: "Generate Baseline Profile"
     command: |
-      validate_gradle_wrapper
-    plugins: [$CI_TOOLKIT]
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
 
-  # Wait for Gradle Wrapper to be validated before running any other jobs
-  - wait
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
 
-  ########################################
-  - group: "🕵️ Linters"
-    steps:
-
-      - label: "☢️ Danger - PR Check"
-        command: danger
-        key: danger
-        if: "build.pull_request.id != null"
-        retry:
-          manual:
-            permit_on_passed: true
-        agents:
-          queue: "linter"
-
-      - label: "detekt"
-        command: |
-          echo "--- 🧹 Linting"
-          cp gradle.properties-example gradle.properties
-          ./gradlew detektAll
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/detekt/detekt.html"
-
-      - label: "lint"
-        command: |
-          echo "--- 🧹 Linting"
-          cp gradle.properties-example gradle.properties
-          ./gradlew lintJalapenoDebug
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/lint-results*.*"
-
-      - label: "Dependency Tree Diff"
-        command: |
-          cp gradle.properties-example gradle.properties
-          .buildkite/commands/dependency-tree-diff.sh
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-
-  ########################################
-  - group: "🛠 Prototype Builds"
-    steps:
-
-      - label: "🛠 Prototype Build: Mobile App"
-        command: |
-          ".buildkite/commands/prototype-build.sh" "WooCommerce"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-
-      - label: "🛠 Prototype Build: Wear App"
-        command: |
-          ".buildkite/commands/prototype-build.sh" "WooCommerce-Wear"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-
-  ########################################
-  - group: "🔬 Tests"
-    steps:
-
-      - label: "Unit tests"
-        command: .buildkite/commands/run-unit-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
-        artifact_paths:
-          - "**/build/test-results/merged-test-results.xml"
-
-      - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
-        artifact_paths:
-          - "**/build/instrumented-tests/**/*"
+      echo "--- :hammer_and_wrench: Building"
+      ./gradlew assembleVanillaRelease
+    plugins: [ $CI_TOOLKIT ]
+    artifact_paths:
+      - "**/build/generated/baselineProfiles/**/*"

@@ -43,7 +43,8 @@ object WooLog {
         BLAZE,
         GOOGLE_ADS,
         POS,
-        CUSTOM_FIELDS
+        CUSTOM_FIELDS,
+        BASELINE_PROFILES
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

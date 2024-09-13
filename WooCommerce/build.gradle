@@ -14,6 +14,7 @@ plugins {
     id 'com.google.devtools.ksp'
     id "com.google.protobuf"
     id "com.osacky.fladle"
+    id 'androidx.baselineprofile'
 }
 
 fladle {
@@ -219,6 +220,12 @@ android {
     testOptions {
         animationsDisabled = true
     }
+
+    baselineProfile {
+        dexLayoutOptimization = true
+        saveInSrc = false
+        automaticGenerationDuringBuild = true
+    }
 }
 
 dependencies {
@@ -298,6 +305,8 @@ dependencies {
 
     implementation project(":libs:commons")
     implementation project(":libs:cardreader")
+    implementation "androidx.profileinstaller:profileinstaller:$profileinstallerVersion"
+    baselineProfile project(':baselineprofile')
     debugImplementation project(":libs:iap")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
@@ -372,7 +381,7 @@ dependencies {
     }
     androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
     kspAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
-    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestImplementation "androidx.test.uiautomator:uiautomator:$uiautomatorVersion"
 
     // Dependencies for screenshots
     androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
