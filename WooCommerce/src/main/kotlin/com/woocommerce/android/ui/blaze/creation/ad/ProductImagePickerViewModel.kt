@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -45,6 +46,10 @@ class ProductImagePickerViewModel @Inject constructor(
                 ImageSelectedResult(productImage = productImage)
             )
         )
+    }
+
+    fun onBackButtonTapped() {
+        triggerEvent(Exit)
     }
 
     @Parcelize
