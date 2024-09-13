@@ -552,6 +552,7 @@ class DashboardStatsView @JvmOverloads constructor(
         fadeInLabelValue(ordersValue, orders)
 
         if (chartRevenueStats.isEmpty() || revenueStatsModel?.totalSales == 0.toDouble()) {
+            binding.chart.clear()
             isRequestingStats = false
             return
         }
