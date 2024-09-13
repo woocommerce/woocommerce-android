@@ -171,10 +171,11 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onProductImagesRequested() {
-        TODO("Not yet implemented")
+        triggerEvent(ShowProductImagePicker(navArgs.productId))
     }
 
     data class ShowMediaLibrary(val source: MediaPickerSetup.DataSource) : Event()
+    data class ShowProductImagePicker(val productId: Long) : Event()
 
     @Parcelize
     data class ViewState(
