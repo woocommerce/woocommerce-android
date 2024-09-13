@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 20.4
+We've enhanced your WooCommerce app experience! You can now effortlessly scan tracking numbers when adding them to orders. Plus, we've fixed an issue with shipping labels, ensuring accurate weight calculations for packages with multiple items. Enjoy a smoother, more reliable app experience!
+
 ## 20.3
 We’ve made several enhancements to boost your experience! This update fixes crashes on the orders list screen, resolves issues with the Jetpack plugin installation, and corrects toolbar glitches in the Package details and Order Tracking screens. We’ve also added a helpful blaze campaign reminder if you leave a campaign creation unfinished. Enjoy smoother navigation and a more reliable app!
 
