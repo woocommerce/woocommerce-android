@@ -33,62 +33,11 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.DEVICE
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDIA_LIBRARY
 
 @Composable
-fun MediaPickerDialogForExistingProduct(
-    onDismissRequest: () -> Unit,
-    onMediaLibraryRequested: (DataSource) -> Unit,
-    onProductImagesRequested: () -> Unit
-) {
-    Dialog(onDismissRequest = onDismissRequest) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colors.surface, MaterialTheme.shapes.medium)
-                .shadow(elevation = dimensionResource(id = dimen.major_75)),
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(vertical = dimensionResource(id = dimen.major_100)),
-            ) {
-                Text(
-                    modifier = Modifier
-                        .padding(
-                            start = dimensionResource(id = dimen.major_100),
-                            end = dimensionResource(id = dimen.major_100),
-                            bottom = dimensionResource(id = dimen.minor_100)
-                        ),
-                    text = stringResource(id = string.media_picker_dialog_title),
-                    style = MaterialTheme.typography.h6
-                )
-
-                DialogButton(
-                    image = drawable.ic_gridicons_image,
-                    title = string.image_source_device_chooser,
-                    onClick = { onMediaLibraryRequested(DEVICE) }
-                )
-                DialogButton(
-                    image = drawable.ic_gridicons_camera,
-                    title = string.image_source_device_camera,
-                    onClick = { onMediaLibraryRequested(CAMERA) }
-                )
-                DialogButton(
-                    image = drawable.ic_wordpress,
-                    title = string.image_source_wp_media_library,
-                    onClick = { onMediaLibraryRequested(WP_MEDIA_LIBRARY) }
-                )
-                DialogButton(
-                    image = drawable.ic_product,
-                    title = string.image_source_product_images,
-                    onClick = onProductImagesRequested
-                )
-            }
-        }
-    }
-}
-
-@Composable
 fun MediaPickerDialog(
     onDismissRequest: () -> Unit,
-    onMediaLibraryRequested: (DataSource) -> Unit
+    onMediaLibraryRequested: (DataSource) -> Unit,
+    withProductImagePicker: Boolean = false,
+    onProductImagesRequested: () -> Unit = {}
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -127,6 +76,13 @@ fun MediaPickerDialog(
                     title = string.image_source_wp_media_library,
                     onClick = { onMediaLibraryRequested(WP_MEDIA_LIBRARY) }
                 )
+                if (withProductImagePicker) {
+                    DialogButton(
+                        image = drawable.ic_product,
+                        title = string.image_source_product_images,
+                        onClick = onProductImagesRequested
+                    )
+                }
             }
         }
     }

@@ -47,7 +47,7 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.mediapicker.MediaPickerDialogForExistingProduct
+import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ViewState
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -91,10 +91,11 @@ private fun BlazeCampaignCreationEditAdScreen(
     onSaveTapped: () -> Unit
 ) {
     if (viewState.isMediaPickerDialogVisible) {
-        MediaPickerDialogForExistingProduct(
-            onMediaPickerDialogDismissed,
-            onMediaLibraryRequested,
-            onProductImagesRequested
+        MediaPickerDialog(
+            onDismissRequest = onMediaPickerDialogDismissed,
+            onMediaLibraryRequested = onMediaLibraryRequested,
+            withProductImagePicker = true,
+            onProductImagesRequested = onProductImagesRequested
         )
     }
 
