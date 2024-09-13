@@ -4252,7 +4252,7 @@
     <string name="woopos_floating_toolbar_menu_open_content_description">Toolbar with card reader status. Menu is open. Double tap to interact.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">Open toolbar menu</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Popup menu with options. Swipe to navigate through items.</string>
-    <string name="woopos_no_internet_message">It looks like you\'re not connected to the internet.\n\nEnsure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
+    <string name="woopos_no_internet_message">It looks like you\'re not connected to the internet. Ensure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
 
 
     <string name="customers_details_customer_section">Customer</string>
