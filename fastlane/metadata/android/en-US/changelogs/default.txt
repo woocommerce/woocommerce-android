@@ -1,1 +1,3 @@
-We’ve made several enhancements to boost your experience! This update fixes crashes on the orders list screen, resolves issues with the Jetpack plugin installation, and corrects toolbar glitches in the Package details and Order Tracking screens. We’ve also added a helpful blaze campaign reminder if you leave a campaign creation unfinished. Enjoy smoother navigation and a more reliable app!
+- [**] Users can now scan their tracking number when adding it to the order [https://github.com/woocommerce/woocommerce-android/pull/12533]
+- [*] Fixed an issue where shipping labels were incorrectly calculating the weight for packages containing multiple quantities of the same product [https://github.com/woocommerce/woocommerce-android/pull/12602]
+
