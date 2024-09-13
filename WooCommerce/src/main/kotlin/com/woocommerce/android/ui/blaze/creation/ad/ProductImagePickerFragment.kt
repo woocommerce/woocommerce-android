@@ -5,16 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -79,7 +79,12 @@ class ProductImagePickerFragment : BaseFragment() {
         onImageSelected: (Product.Image) -> Unit
     ) {
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 128.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            columns = GridCells.Adaptive(minSize = 128.dp),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+            horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             items(viewState.productImages) { photoUrl ->
                 AsyncImage(
@@ -94,8 +99,7 @@ class ProductImagePickerFragment : BaseFragment() {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(276.dp)
-                        .clip(shape = RoundedCornerShape(size = 8.dp))
+                        .height(128.dp)
                         .clickable { onImageSelected(photoUrl) }
                 )
             }
