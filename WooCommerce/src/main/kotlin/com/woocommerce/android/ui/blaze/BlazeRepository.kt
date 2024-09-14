@@ -51,6 +51,19 @@ class BlazeRepository @Inject constructor(
         const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
     }
 
+    suspend fun fetchObjectives(): Result<Unit> {
+        val result = blazeCampaignsStore.fetchBlazeCampaignObjectives(selectedSite.get())
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch objectives: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+
+            else -> Result.success(Unit)
+        }
+    }
+
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
         .map { it.map { language -> Language(language.id, language.name) } }
 
