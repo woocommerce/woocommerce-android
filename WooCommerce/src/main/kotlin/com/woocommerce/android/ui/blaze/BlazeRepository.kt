@@ -51,6 +51,10 @@ class BlazeRepository @Inject constructor(
         const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
     }
 
+    fun observeObjectives() = blazeCampaignsStore.observeBlazeCampaignObjectives().map {
+        it.map { objective -> Objective(objective.id, objective.title, objective.description) }
+    }
+
     suspend fun fetchObjectives(): Result<Unit> {
         val result = blazeCampaignsStore.fetchBlazeCampaignObjectives(selectedSite.get())
 
