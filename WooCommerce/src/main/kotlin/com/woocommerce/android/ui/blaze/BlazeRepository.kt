@@ -379,6 +379,9 @@ class BlazeRepository @Inject constructor(
     }
 
     @Parcelize
+    data class Objective(val id: String, val title: String, val description: String) : Parcelable
+
+    @Parcelize
     data class TargetingParameters(
         val locations: List<Location> = emptyList(),
         val languages: List<Language> = emptyList(),
