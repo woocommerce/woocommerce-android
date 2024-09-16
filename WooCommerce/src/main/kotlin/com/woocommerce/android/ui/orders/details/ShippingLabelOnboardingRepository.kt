@@ -16,6 +16,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
     companion object {
         // The required version to support shipping label creation
         const val SUPPORTED_WCS_VERSION = "1.25.11"
+        const val SUPPORTED_WC_SHIPPING_VERSION = "1.0.6"
         const val SUPPORTED_WCS_CURRENCY = "USD"
         const val SUPPORTED_WCS_COUNTRY = "US"
     }
@@ -53,8 +54,13 @@ class ShippingLabelOnboardingRepository @Inject constructor(
             }?.let { return true }
 
         orderDetailRepository.getWooShippingPluginInfo()
-            .takeIf { it.isPluginReady() && FeatureFlag.NEW_SHIPPING_SUPPORT.isEnabled() }
-            ?.let { return true }
+            .takeIf {
+                val pluginVersion = it.version ?: "0.0.0"
+
+                it.isPluginReady()
+                    && FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled()
+                    && pluginVersion.semverCompareTo(SUPPORTED_WC_SHIPPING_VERSION) >= 0
+            }?.let { return true }
 
         return false
     }
