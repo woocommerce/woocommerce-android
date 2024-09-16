@@ -107,7 +107,9 @@ private fun ProductImageGrid(
                 fallback = painterResource(R.drawable.blaze_campaign_product_placeholder),
                 placeholder = painterResource(R.drawable.blaze_campaign_product_placeholder),
                 error = painterResource(R.drawable.blaze_campaign_product_placeholder),
-                contentDescription = "",
+                contentDescription = stringResource(
+                    id = R.string.blaze_campaign_product_photo_picker_photo_content_description
+                ),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
