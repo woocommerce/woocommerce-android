@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -41,6 +42,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import org.wordpress.android.util.ToastUtils
 
 @Composable
 fun WooPosHomeScreen(
@@ -48,6 +50,16 @@ fun WooPosHomeScreen(
 ) {
     val viewModel: WooPosHomeViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
+    val context = LocalContext.current
+    LaunchedEffect(viewModel.toastEvent) {
+        viewModel.toastEvent.collect { message ->
+            ToastUtils.showToast(
+                context,
+                context.getString(message.message),
+                ToastUtils.Duration.LONG
+            )
+        }
+    }
 
     WooPosHomeScreen(
         state,
@@ -125,7 +137,7 @@ private fun WooPosHomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.background)
+            .background(WooPosTheme.colors.homeBackground)
     ) {
         Row(
             modifier = Modifier

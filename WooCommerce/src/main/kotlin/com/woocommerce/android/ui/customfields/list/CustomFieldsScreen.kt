@@ -16,19 +16,25 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
@@ -49,7 +55,10 @@ import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 
 @Composable
-fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
+fun CustomFieldsScreen(
+    viewModel: CustomFieldsViewModel,
+    snackbarHostState: SnackbarHostState
+) {
     viewModel.state.observeAsState().value?.let { state ->
         CustomFieldsScreen(
             state = state,
@@ -57,7 +66,9 @@ fun CustomFieldsScreen(viewModel: CustomFieldsViewModel) {
             onSaveClicked = viewModel::onSaveClicked,
             onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
-            onBackClick = viewModel::onBackClick
+            onAddCustomFieldClicked = viewModel::onAddCustomFieldClicked,
+            onBackClick = viewModel::onBackClick,
+            snackbarHostState = snackbarHostState
         )
     }
 }
@@ -70,7 +81,9 @@ private fun CustomFieldsScreen(
     onSaveClicked: () -> Unit,
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
-    onBackClick: () -> Unit
+    onAddCustomFieldClicked: () -> Unit,
+    onBackClick: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
     BackHandler { onBackClick() }
 
@@ -89,6 +102,19 @@ private fun CustomFieldsScreen(
                 }
             )
         },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddCustomFieldClicked,
+                backgroundColor = MaterialTheme.colors.primary,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.custom_fields_add_button)
+                )
+            }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
         val pullToRefreshState = rememberPullRefreshState(state.isRefreshing, onPullToRefresh)
@@ -216,6 +242,7 @@ private fun CustomFieldsScreenPreview() {
             onSaveClicked = {},
             onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
+            onAddCustomFieldClicked = {},
             onBackClick = {}
         )
     }

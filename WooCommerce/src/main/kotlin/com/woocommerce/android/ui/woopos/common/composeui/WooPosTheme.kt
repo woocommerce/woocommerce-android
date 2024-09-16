@@ -23,6 +23,7 @@ data class CustomColors(
     val paymentSuccessIcon: Color,
     val paymentSuccessIconBackground: Color,
     val dialogSubtitleHighlightBackground: Color = Color(0x14747480),
+    val homeBackground: Color,
 )
 
 private val DarkColorPalette = darkColors(
@@ -57,7 +58,8 @@ private val DarkCustomColors = CustomColors(
     paymentSuccessBackground = Color(0xFF005139),
     paymentSuccessText = Color(0xFFF2EBFF),
     paymentSuccessIcon = Color.White,
-    paymentSuccessIconBackground = Color(0xFF00AD64)
+    paymentSuccessIconBackground = Color(0xFF00AD64),
+    homeBackground = Color(0xFF1E1E1E),
 )
 
 private val LightCustomColors = CustomColors(
@@ -69,6 +71,7 @@ private val LightCustomColors = CustomColors(
     paymentSuccessText = Color(0xFF271B3D),
     paymentSuccessIcon = Color(0xFF03D479),
     paymentSuccessIconBackground = Color.White,
+    homeBackground = Color(0xFFF6F7F7),
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {

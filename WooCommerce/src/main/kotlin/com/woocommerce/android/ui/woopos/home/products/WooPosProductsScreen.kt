@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -136,7 +137,7 @@ private fun WooPosProductsScreen(
 
                 is WooPosProductsViewState.Content -> MaterialTheme.colors.onSurface
             }
-            ProductsToolbar(state.value, modifier, titleColor, onToolbarInfoIconClicked)
+            ProductsToolbar(state.value, titleColor, onToolbarInfoIconClicked)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -174,13 +175,13 @@ private fun WooPosProductsScreen(
 @Composable
 private fun ProductsToolbar(
     productViewState: WooPosProductsViewState,
-    modifier: Modifier,
     titleColor: Color,
     onToolbarInfoIconClicked: () -> Unit,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth().height(40.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top,
     ) {
         Text(
             text = stringResource(id = R.string.woopos_products_screen_title),
@@ -202,7 +203,7 @@ private fun ProductsToolbar(
                             contentDescription = stringResource(
                                 id = R.string.woopos_banner_simple_products_info_content_description
                             ),
-                            tint = MaterialTheme.colors.primary,
+                            tint = MaterialTheme.colors.onSurface.copy(ContentAlpha.high),
                         )
                     }
                 }

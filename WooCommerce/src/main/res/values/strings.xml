@@ -2347,6 +2347,7 @@
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
+    <string name="image_source_product_images">Choose an existing product photo</string>
     <string name="photo_picker_title">Device Media Library</string>
     <string name="media_picker_dialog_title">Select Media Source</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
@@ -3954,6 +3955,9 @@
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
     <string name="blaze_campaign_edit_ad_invalid_image_description">Please select an image with a minimum size of 400x400 pixels</string>
+    <string name="blaze_campaign_product_photo_picker_title">Product Photos</string>
+    <string name="blaze_campaign_product_photo_picker_empty">No photos found</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Product photo</string>
 
     <!--
     Blaze campaign payment
@@ -4252,6 +4256,7 @@
     <string name="woopos_floating_toolbar_menu_open_content_description">Toolbar with card reader status. Menu is open. Double tap to interact.</string>
     <string name="woopos_floating_toolbar_pop_up_menu_content_description">Open toolbar menu</string>
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Popup menu with options. Swipe to navigate through items.</string>
+    <string name="woopos_no_internet_message">It looks like you\'re not connected to the internet. Ensure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
 
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4290,6 +4295,12 @@
     <string name="custom_fields_list_progress_dialog_title">Saving changes</string>
     <string name="custom_fields_list_saving_succeeded">Changes saved</string>
     <string name="custom_fields_list_saving_failed">Saving changes failed, please try again</string>
+    <string name="custom_fields_list_field_deleted">Custom Field deleted</string>
+    <string name="custom_fields_add_button">Add custom fields</string>
     <string name="custom_fields_editor_key_label">Key</string>
     <string name="custom_fields_editor_value_label">Value</string>
+    <string name="custom_fields_editor_key_error_duplicate">This key is already used for another custom field.\nThe app currently does not support creating duplicate keys. Please use wp-admin to duplicate a key if needed.</string>
+    <string name="custom_fields_editor_key_error_underscore">Invalid key: please remove the \"_\" character from the beginning.</string>
+    <string name="custom_fields_editor_copy_key">Copy Key</string>
+    <string name="custom_fields_editor_copy_value">Copy Value</string>
 </resources>

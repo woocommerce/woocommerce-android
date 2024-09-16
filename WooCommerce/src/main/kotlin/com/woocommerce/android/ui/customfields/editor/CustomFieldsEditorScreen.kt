@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -18,8 +19,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.aztec.OutlinedAztecEditor
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
@@ -32,6 +35,9 @@ fun CustomFieldsEditorScreen(viewModel: CustomFieldsEditorViewModel) {
             onKeyChanged = viewModel::onKeyChanged,
             onValueChanged = viewModel::onValueChanged,
             onDoneClicked = viewModel::onDoneClicked,
+            onDeleteClicked = viewModel::onDeleteClicked,
+            onCopyKeyClicked = viewModel::onCopyKeyClicked,
+            onCopyValueClicked = viewModel::onCopyValueClicked,
             onBackButtonClick = viewModel::onBackClick,
         )
     }
@@ -43,6 +49,9 @@ private fun CustomFieldsEditorScreen(
     onKeyChanged: (String) -> Unit,
     onValueChanged: (String) -> Unit,
     onDoneClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
+    onCopyKeyClicked: () -> Unit,
+    onCopyValueClicked: () -> Unit,
     onBackButtonClick: () -> Unit,
 ) {
     BackHandler { onBackButtonClick() }
@@ -59,6 +68,28 @@ private fun CustomFieldsEditorScreen(
                             text = stringResource(R.string.done)
                         )
                     }
+                    WCOverflowMenu(
+                        items = listOfNotNull(
+                            R.string.custom_fields_editor_copy_key,
+                            R.string.custom_fields_editor_copy_value,
+                            if (!state.isCreatingNewItem) R.string.delete else null,
+                        ),
+                        mapper = { stringResource(it) },
+                        itemColor = {
+                            when (it) {
+                                R.string.delete -> MaterialTheme.colors.error
+                                else -> LocalContentColor.current
+                            }
+                        },
+                        onSelected = { resourceId ->
+                            when (resourceId) {
+                                R.string.delete -> onDeleteClicked()
+                                R.string.custom_fields_editor_copy_key -> onCopyKeyClicked()
+                                R.string.custom_fields_editor_copy_value -> onCopyValueClicked()
+                                else -> error("Unhandled menu item")
+                            }
+                        }
+                    )
                 }
             )
         },
@@ -74,6 +105,8 @@ private fun CustomFieldsEditorScreen(
                 value = state.customField.key,
                 onValueChange = onKeyChanged,
                 label = stringResource(R.string.custom_fields_editor_key_label),
+                helperText = state.keyErrorMessage?.getText(),
+                isError = state.keyErrorMessage != null,
                 singleLine = true
             )
 
@@ -114,6 +147,9 @@ private fun CustomFieldsEditorScreenPreview() {
             onKeyChanged = {},
             onValueChanged = {},
             onDoneClicked = {},
+            onDeleteClicked = {},
+            onCopyKeyClicked = {},
+            onCopyValueClicked = {},
             onBackButtonClick = {}
         )
     }

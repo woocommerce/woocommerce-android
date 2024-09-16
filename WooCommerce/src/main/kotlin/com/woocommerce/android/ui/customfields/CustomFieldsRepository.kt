@@ -17,6 +17,10 @@ class CustomFieldsRepository @Inject constructor(
         parentItemId: Long,
     ): Flow<List<CustomField>> = metaDataStore.observeDisplayableMetaData(selectedSite.get(), parentItemId)
 
+    suspend fun getDisplayableCustomFields(
+        parentItemId: Long,
+    ): List<CustomField> = metaDataStore.getDisplayableMetaData(selectedSite.get(), parentItemId)
+
     suspend fun refreshCustomFields(
         parentItemId: Long,
         parentItemType: MetaDataParentItemType

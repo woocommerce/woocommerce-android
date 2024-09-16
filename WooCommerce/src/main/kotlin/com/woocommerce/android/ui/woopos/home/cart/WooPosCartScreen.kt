@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.AnimatedVisibility
@@ -11,7 +9,6 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -132,7 +129,7 @@ private fun WooPosCartScreen(
             }
 
             is WooPosCartState.Body.WithItems -> {
-                val productsTopMargin = 20.dp.toAdaptivePadding()
+                val productsTopMargin = 24.dp.toAdaptivePadding()
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
@@ -143,6 +140,7 @@ private fun WooPosCartScreen(
                     },
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
+                    isCheckoutButtonVisible = state.isCheckoutButtonVisible,
                     onUIEvent = onUIEvent
                 )
             }
@@ -150,8 +148,8 @@ private fun WooPosCartScreen(
 
         AnimatedVisibility(
             visible = state.isCheckoutButtonVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
+            enter = fadeIn(animationSpec = tween(1000)),
+            exit = fadeOut(animationSpec = tween(1000)),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp.toAdaptivePadding())
@@ -225,16 +223,21 @@ fun CartBodyEmpty(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
     items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
+    isCheckoutButtonVisible: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
+
+    val spacerHeight by animateDpAsState(
+        targetValue = if (!isCheckoutButtonVisible) 182.dp else 0.dp,
+        label = "cart list height animation"
+    )
 
     WooPosLazyColumn(
         modifier = modifier
@@ -253,11 +256,14 @@ private fun CartBodyWithItems(
             key = { item -> item.id.itemNumber }
         ) { item ->
             ProductItem(
-                modifier = Modifier.animateItemPlacement(),
+                modifier = Modifier,
                 item = item,
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
             )
+        }
+        item {
+            Spacer(modifier = Modifier.height(spacerHeight))
         }
     }
 }
@@ -302,8 +308,8 @@ private fun CartToolbar(
 
         AnimatedVisibility(
             visible = toolbar.backIconVisible,
-            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
-            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
+            enter = fadeIn(animationSpec = tween(1000)) + expandHorizontally(),
+            exit = fadeOut(animationSpec = tween(1000)) + shrinkHorizontally()
         ) {
             IconButton(
                 onClick = { onBackClicked() },
@@ -401,7 +407,7 @@ private fun ProductItem(
 
     val elevation by animateDpAsState(
         targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 200, delayMillis = 100),
+        animationSpec = tween(durationMillis = 250, delayMillis = 200),
         label = "elevation"
     )
 
