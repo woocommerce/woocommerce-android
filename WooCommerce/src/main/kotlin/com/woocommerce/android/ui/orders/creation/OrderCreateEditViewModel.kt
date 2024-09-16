@@ -895,14 +895,12 @@ class OrderCreateEditViewModel @Inject constructor(
 
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
-                viewState = viewState.copy(isUpdatingOrderDraft = true)
                 fetchProductBySKU(
                     BarcodeOptions(
                         sku = status.code,
                         barcodeFormat = status.format
                     )
                 )
-                viewState = viewState.copy(isUpdatingOrderDraft = false)
             }
 
             CodeScannerStatus.NotFound -> {
@@ -923,6 +921,7 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.orEmpty()
         viewModelScope.launch {
+            viewState = viewState.copy(isUpdatingOrderDraft = true)
             val result = fetchProductBySKU(barcodeOptions.sku, barcodeOptions.barcodeFormat)
             if (result.isSuccess) {
                 val product = result.getOrNull()
@@ -943,6 +942,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     "Product search via SKU API call failed"
                 )
             }
+            viewState = viewState.copy(isUpdatingOrderDraft = false)
         }
     }
 
