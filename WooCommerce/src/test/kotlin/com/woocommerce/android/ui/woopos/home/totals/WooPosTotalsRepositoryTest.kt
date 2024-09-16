@@ -95,6 +95,33 @@ class WooPosTotalsRepositoryTest {
 
         assertThat(orderCapture.lastValue.items.size).isEqualTo(3)
         assertThat(orderCapture.lastValue.items.map { it.quantity }).containsOnly(1f)
+        assertThat(orderCapture.lastValue.items[0].name).isEqualTo(product1.name)
+    }
+
+    @Test
+    fun `given product id, when createOrderWithProducts, then item name matches original product`() = runTest {
+        // GIVEN
+        repository = WooPosTotalsRepository(
+            orderCreateEditRepository,
+            dateUtils,
+            getProductById
+        )
+        val productIds = listOf(1L)
+
+        whenever(getProductById(1L)).thenReturn(product1)
+
+        // WHEN
+        repository.createOrderWithProducts(productIds = productIds)
+
+        // THEN
+        val orderCapture = argumentCaptor<Order>()
+        verify(orderCreateEditRepository).createOrUpdateOrder(
+            orderCapture.capture(),
+            eq("")
+        )
+
+        assertThat(orderCapture.lastValue.items.size).isEqualTo(1)
+        assertThat(orderCapture.lastValue.items[0].name).isEqualTo(product1.name)
     }
 
     @Test
