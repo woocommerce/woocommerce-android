@@ -35,7 +35,9 @@ import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.WP_MEDI
 @Composable
 fun MediaPickerDialog(
     onDismissRequest: () -> Unit,
-    onMediaLibraryRequested: (DataSource) -> Unit
+    onMediaLibraryRequested: (DataSource) -> Unit,
+    withProductImagePicker: Boolean = false,
+    onProductImagesRequested: () -> Unit = {}
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -74,6 +76,13 @@ fun MediaPickerDialog(
                     title = string.image_source_wp_media_library,
                     onClick = { onMediaLibraryRequested(WP_MEDIA_LIBRARY) }
                 )
+                if (withProductImagePicker) {
+                    DialogButton(
+                        image = drawable.ic_product,
+                        title = string.image_source_product_images,
+                        onClick = onProductImagesRequested
+                    )
+                }
             }
         }
     }
