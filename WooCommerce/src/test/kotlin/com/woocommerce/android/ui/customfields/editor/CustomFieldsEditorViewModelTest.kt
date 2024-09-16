@@ -246,4 +246,36 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
             .isEqualTo(UiString.UiStringRes(R.string.custom_fields_editor_key_error_underscore))
         assertThat(state.showDoneButton).isFalse()
     }
+
+    @Test
+    fun `when tapping copy key, then copy key to clipboard`() = testBlocking {
+        setup(editing = true)
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCopyKeyClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(
+            CustomFieldsEditorViewModel.CopyContentToClipboard(
+                R.string.custom_fields_editor_key_label,
+                CUSTOM_FIELD.key
+            )
+        )
+    }
+
+    @Test
+    fun `when tapping copy value, then copy value to clipboard`() = testBlocking {
+        setup(editing = true)
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCopyValueClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(
+            CustomFieldsEditorViewModel.CopyContentToClipboard(
+                R.string.custom_fields_editor_value_label,
+                CUSTOM_FIELD.valueAsString
+            )
+        )
+    }
 }

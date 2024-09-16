@@ -36,6 +36,8 @@ fun CustomFieldsEditorScreen(viewModel: CustomFieldsEditorViewModel) {
             onValueChanged = viewModel::onValueChanged,
             onDoneClicked = viewModel::onDoneClicked,
             onDeleteClicked = viewModel::onDeleteClicked,
+            onCopyKeyClicked = viewModel::onCopyKeyClicked,
+            onCopyValueClicked = viewModel::onCopyValueClicked,
             onBackButtonClick = viewModel::onBackClick,
         )
     }
@@ -48,6 +50,8 @@ private fun CustomFieldsEditorScreen(
     onValueChanged: (String) -> Unit,
     onDoneClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
+    onCopyKeyClicked: () -> Unit,
+    onCopyValueClicked: () -> Unit,
     onBackButtonClick: () -> Unit,
 ) {
     BackHandler { onBackButtonClick() }
@@ -64,24 +68,28 @@ private fun CustomFieldsEditorScreen(
                             text = stringResource(R.string.done)
                         )
                     }
-                    if (!state.isCreatingNewItem) {
-                        WCOverflowMenu(
-                            items = listOf(R.string.delete),
-                            mapper = { stringResource(it) },
-                            itemColor = {
-                                when (it) {
-                                    R.string.delete -> MaterialTheme.colors.error
-                                    else -> LocalContentColor.current
-                                }
-                            },
-                            onSelected = { resourceId ->
-                                when (resourceId) {
-                                    R.string.delete -> onDeleteClicked()
-                                    else -> error("Unhandled menu item")
-                                }
+                    WCOverflowMenu(
+                        items = listOfNotNull(
+                            R.string.custom_fields_editor_copy_key,
+                            R.string.custom_fields_editor_copy_value,
+                            if (!state.isCreatingNewItem) R.string.delete else null,
+                        ),
+                        mapper = { stringResource(it) },
+                        itemColor = {
+                            when (it) {
+                                R.string.delete -> MaterialTheme.colors.error
+                                else -> LocalContentColor.current
                             }
-                        )
-                    }
+                        },
+                        onSelected = { resourceId ->
+                            when (resourceId) {
+                                R.string.delete -> onDeleteClicked()
+                                R.string.custom_fields_editor_copy_key -> onCopyKeyClicked()
+                                R.string.custom_fields_editor_copy_value -> onCopyValueClicked()
+                                else -> error("Unhandled menu item")
+                            }
+                        }
+                    )
                 }
             )
         },
@@ -140,6 +148,8 @@ private fun CustomFieldsEditorScreenPreview() {
             onValueChanged = {},
             onDoneClicked = {},
             onDeleteClicked = {},
+            onCopyKeyClicked = {},
+            onCopyValueClicked = {},
             onBackButtonClick = {}
         )
     }

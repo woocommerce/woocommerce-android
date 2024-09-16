@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.editor
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -109,6 +110,14 @@ class CustomFieldsEditorViewModel @Inject constructor(
         )
     }
 
+    fun onCopyKeyClicked() {
+        triggerEvent(CopyContentToClipboard(R.string.custom_fields_editor_key_label, customFieldDraft.value.key))
+    }
+
+    fun onCopyValueClicked() {
+        triggerEvent(CopyContentToClipboard(R.string.custom_fields_editor_value_label, customFieldDraft.value.value))
+    }
+
     fun onBackClick() {
         if (state.value?.hasChanges == true) {
             showDiscardChangesDialog.value = true
@@ -144,4 +153,9 @@ class CustomFieldsEditorViewModel @Inject constructor(
         val onDiscard: () -> Unit,
         val onCancel: () -> Unit
     )
+
+    data class CopyContentToClipboard(
+        @StringRes val labelResource: Int,
+        val content: String
+    ) : MultiLiveEvent.Event()
 }
