@@ -1664,7 +1664,7 @@ class ProductDetailViewModel @Inject constructor(
     fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean {
         // first make sure an attribute with the new name doesn't already exist in the draft
         productDraftAttributes.forEach {
-            if (it.name.equals(newAttributeName, ignoreCase = true)) {
+            if (it.name.equals(newAttributeName)) {
                 triggerEvent(ShowSnackbar(R.string.product_attribute_name_already_exists))
                 return false
             }
