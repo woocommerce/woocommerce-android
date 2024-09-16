@@ -29,8 +29,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.ui.blaze.creation.ad.ProductImagePickerViewModel.ViewState
 import com.woocommerce.android.ui.compose.component.Toolbar
 
 @Composable
@@ -88,8 +86,8 @@ private fun ProductPhotosEmpty() {
 
 @Composable
 private fun ProductImageGrid(
-    viewState: ViewState,
-    onImageSelected: (Image) -> Unit,
+    viewState: ProductImagePickerViewModel.ViewState,
+    onImageSelected: (Product.Image) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
