@@ -2347,6 +2347,7 @@
     <string name="image_source_device_chooser">Choose from device</string>
     <string name="image_source_device_camera">Take a photo</string>
     <string name="image_source_wp_media_library">WordPress media library</string>
+    <string name="image_source_product_images">Choose an existing product photo</string>
     <string name="photo_picker_title">Device Media Library</string>
     <string name="media_picker_dialog_title">Select Media Source</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
@@ -3954,6 +3955,9 @@
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
     <string name="blaze_campaign_edit_ad_invalid_image_description">Please select an image with a minimum size of 400x400 pixels</string>
+    <string name="blaze_campaign_product_photo_picker_title">Product Photos</string>
+    <string name="blaze_campaign_product_photo_picker_empty">No photos found</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Product photo</string>
 
     <!--
     Blaze campaign payment

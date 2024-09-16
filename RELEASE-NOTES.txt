@@ -4,7 +4,7 @@
 
 20.5
 -----
-
+- [*] Users can directly pick product images when creating Blaze ads [https://github.com/woocommerce/woocommerce-android/pull/12610]
 
 20.4
 -----
