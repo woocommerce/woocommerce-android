@@ -104,7 +104,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         remoteSiteId = siteModel.siteId,
         uniqueId = TEST_BLAZE_CAMPAIGN_ID_1,
         channelType = NotificationChannelType.OTHER,
-        noteType = WooNotificationType.BlazeApprovedNote
+        noteType = WooNotificationType.BlazeStatusUpdate.BlazeApprovedNote
     )
 
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
