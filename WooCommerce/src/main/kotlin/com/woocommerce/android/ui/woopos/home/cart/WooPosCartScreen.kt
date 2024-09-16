@@ -234,6 +234,10 @@ private fun CartBodyWithItems(
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
 
+    val spacerHeight by animateDpAsState(
+        targetValue = if (!isCheckoutButtonVisible) 182.dp else 0.dp, label = "cart list height animation"
+    )
+
     WooPosLazyColumn(
         modifier = modifier
             .padding(horizontal = 16.dp.toAdaptivePadding()),
@@ -257,10 +261,8 @@ private fun CartBodyWithItems(
                 onUIEvent = onUIEvent,
             )
         }
-        if (!isCheckoutButtonVisible) {
-            item {
-                Spacer(modifier = Modifier.height(182.dp))
-            }
+        item {
+            Spacer(modifier = Modifier.height(spacerHeight))
         }
     }
 }
