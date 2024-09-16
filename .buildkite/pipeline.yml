@@ -44,10 +44,7 @@ steps:
           - "**/build/reports/detekt/detekt.html"
 
       - label: "lint"
-        command: |
-          echo "--- 🧹 Linting"
-          cp gradle.properties-example gradle.properties
-          ./gradlew lintJalapenoDebug
+        command: .buildkite/commands/lint.sh
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/lint-results*.*"
