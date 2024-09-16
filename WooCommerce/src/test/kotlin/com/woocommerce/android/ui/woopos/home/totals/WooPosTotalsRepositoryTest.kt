@@ -29,6 +29,29 @@ class WooPosTotalsRepositoryTest {
 
     private lateinit var repository: WooPosTotalsRepository
 
+    private val product1 = Product(
+        remoteId = 1L, name = "Product 1", price = BigDecimal(10),
+        sku = "SKU1", attributes = emptyList(),
+        parentId = 0L, description = "", shortDescription = "", slug = "", type = "",
+        status = null, catalogVisibility = null, isFeatured = false,
+        stockStatus = ProductStockStatus.InsufficientStock, backorderStatus = ProductBackorderStatus.No,
+        dateCreated = Date(), firstImageUrl = null, totalSales = 0L, reviewsAllowed = false,
+        isVirtual = false, ratingCount = 0, averageRating = 0.0f, permalink = "", externalUrl = "",
+        buttonText = "", salePrice = BigDecimal.ZERO, regularPrice = BigDecimal.ZERO,
+        taxClass = "", isStockManaged = false, stockQuantity = 0.0, shippingClass = "",
+        shippingClassId = 0L, isDownloadable = false, downloads = emptyList(),
+        downloadLimit = 0L, downloadExpiry = 0, purchaseNote = "", numVariations = 0,
+        images = emptyList(), saleEndDateGmt = null, saleStartDateGmt = null,
+        isSoldIndividually = false, taxStatus = ProductTaxStatus.Taxable,
+        isSaleScheduled = false, isPurchasable = false, menuOrder = 0, categories = emptyList(),
+        tags = emptyList(), groupedProductIds = emptyList(), crossSellProductIds = emptyList(),
+        upsellProductIds = emptyList(), variationIds = emptyList(), length = 0f, width = 0f,
+        height = 0f, weight = 0f, subscription = null, isSampleProduct = false, specialStockStatus = null,
+        isConfigurable = false, minAllowedQuantity = null, maxAllowedQuantity = null,
+        bundleMinSize = null, bundleMaxSize = null, groupOfQuantity = null,
+        combineVariationQuantities = null
+    )
+
     @Test
     fun `given empty product list, when createOrderWithProducts called, then return error`() = runTest {
         // GIVEN
@@ -55,29 +78,6 @@ class WooPosTotalsRepositoryTest {
             getProductById
         )
         val productIds = listOf(1L, 2L, 3L)
-
-        val product1 = Product(
-            remoteId = 1L, name = "Product 1", price = BigDecimal(10),
-            sku = "SKU1", attributes = emptyList(),
-            parentId = 0L, description = "", shortDescription = "", slug = "", type = "",
-            status = null, catalogVisibility = null, isFeatured = false,
-            stockStatus = ProductStockStatus.InsufficientStock, backorderStatus = ProductBackorderStatus.No,
-            dateCreated = Date(), firstImageUrl = null, totalSales = 0L, reviewsAllowed = false,
-            isVirtual = false, ratingCount = 0, averageRating = 0.0f, permalink = "", externalUrl = "",
-            buttonText = "", salePrice = BigDecimal.ZERO, regularPrice = BigDecimal.ZERO,
-            taxClass = "", isStockManaged = false, stockQuantity = 0.0, shippingClass = "",
-            shippingClassId = 0L, isDownloadable = false, downloads = emptyList(),
-            downloadLimit = 0L, downloadExpiry = 0, purchaseNote = "", numVariations = 0,
-            images = emptyList(), saleEndDateGmt = null, saleStartDateGmt = null,
-            isSoldIndividually = false, taxStatus = ProductTaxStatus.Taxable,
-            isSaleScheduled = false, isPurchasable = false, menuOrder = 0, categories = emptyList(),
-            tags = emptyList(), groupedProductIds = emptyList(), crossSellProductIds = emptyList(),
-            upsellProductIds = emptyList(), variationIds = emptyList(), length = 0f, width = 0f,
-            height = 0f, weight = 0f, subscription = null, isSampleProduct = false, specialStockStatus = null,
-            isConfigurable = false, minAllowedQuantity = null, maxAllowedQuantity = null,
-            bundleMinSize = null, bundleMaxSize = null, groupOfQuantity = null,
-            combineVariationQuantities = null
-        )
 
         whenever(getProductById(1L)).thenReturn(product1)
         whenever(getProductById(2L)).thenReturn(product1)
@@ -106,29 +106,6 @@ class WooPosTotalsRepositoryTest {
             getProductById
         )
         val productIds = listOf(1L, 1L, 2L, 3L, 3L, 3L)
-
-        val product1 = Product(
-            remoteId = 1L, name = "Product 1", price = BigDecimal(10),
-            sku = "SKU1", attributes = emptyList(),
-            parentId = 0L, description = "", shortDescription = "", slug = "", type = "",
-            status = null, catalogVisibility = null, isFeatured = false,
-            stockStatus = ProductStockStatus.InsufficientStock, backorderStatus = ProductBackorderStatus.No,
-            dateCreated = Date(), firstImageUrl = null, totalSales = 0L, reviewsAllowed = false,
-            isVirtual = false, ratingCount = 0, averageRating = 0.0f, permalink = "", externalUrl = "",
-            buttonText = "", salePrice = BigDecimal.ZERO, regularPrice = BigDecimal.ZERO,
-            taxClass = "", isStockManaged = false, stockQuantity = 0.0, shippingClass = "",
-            shippingClassId = 0L, isDownloadable = false, downloads = emptyList(),
-            downloadLimit = 0L, downloadExpiry = 0, purchaseNote = "", numVariations = 0,
-            images = emptyList(), saleEndDateGmt = null, saleStartDateGmt = null,
-            isSoldIndividually = false, taxStatus = ProductTaxStatus.Taxable,
-            isSaleScheduled = false, isPurchasable = false, menuOrder = 0, categories = emptyList(),
-            tags = emptyList(), groupedProductIds = emptyList(), crossSellProductIds = emptyList(),
-            upsellProductIds = emptyList(), variationIds = emptyList(), length = 0f, width = 0f,
-            height = 0f, weight = 0f, subscription = null, isSampleProduct = false, specialStockStatus = null,
-            isConfigurable = false, minAllowedQuantity = null, maxAllowedQuantity = null,
-            bundleMinSize = null, bundleMaxSize = null, groupOfQuantity = null,
-            combineVariationQuantities = null
-        )
 
         whenever(getProductById(1L)).thenReturn(product1)
         whenever(getProductById(2L)).thenReturn(product1)
