@@ -66,7 +66,7 @@ fun WooPosBanner(
         ) {
             ConstraintLayout(
                 modifier = Modifier
-                    .padding(32.dp.toAdaptivePadding())
+                    .padding(24.dp.toAdaptivePadding())
                     .fillMaxWidth()
             ) {
                 val (icon, header, description, close) = createRefs()
