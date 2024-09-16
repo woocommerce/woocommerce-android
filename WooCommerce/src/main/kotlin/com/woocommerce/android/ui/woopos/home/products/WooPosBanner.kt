@@ -64,110 +64,105 @@ fun WooPosBanner(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Box(
+            ConstraintLayout(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(32.dp.toAdaptivePadding())
+                    .fillMaxWidth()
             ) {
-                ConstraintLayout(
+                val (icon, header, description, close) = createRefs()
+
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    val (icon, header, description, close) = createRefs()
-
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .constrainAs(icon) {
-                                top.linkTo(parent.top)
-                                start.linkTo(parent.start)
-                                bottom.linkTo(parent.bottom)
-                            }
-                    ) {
-                        Icon(
-                            painterResource(id = bannerIcon),
-                            contentDescription = stringResource(
-                                id = R.string.woopos_banner_simple_products_info_content_description
-                            ),
-                            tint = MaterialTheme.colors.primary,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier
-                            .padding(
-                                start = 32.dp.toAdaptivePadding(),
-                                bottom = 8.dp.toAdaptivePadding()
-                            )
-                            .constrainAs(header) {
-                                top.linkTo(parent.top)
-                                start.linkTo(icon.end)
-                                end.linkTo(close.start)
-                                width = Dimension.fillToConstraints
-                            }
-                    )
-
-                    val annotatedText = buildAnnotatedString {
-                        append(message)
-                        withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) {
-                            append(" ")
-                            append(stringResource(id = R.string.woopos_banner_simple_products_only_message_learn_more))
+                        .size(48.dp)
+                        .constrainAs(icon) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            bottom.linkTo(parent.bottom)
                         }
-                    }
+                ) {
+                    Icon(
+                        painterResource(id = bannerIcon),
+                        contentDescription = stringResource(
+                            id = R.string.woopos_banner_simple_products_info_content_description
+                        ),
+                        tint = MaterialTheme.colors.primary,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
 
-                    Box(
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.h5,
+                    color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f),
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier
+                        .padding(
+                            start = 32.dp.toAdaptivePadding(),
+                            bottom = 8.dp.toAdaptivePadding()
+                        )
+                        .constrainAs(header) {
+                            top.linkTo(parent.top)
+                            start.linkTo(icon.end)
+                            end.linkTo(close.start)
+                            width = Dimension.fillToConstraints
+                        }
+                )
+
+                val annotatedText = buildAnnotatedString {
+                    append(message)
+                    withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) {
+                        append(" ")
+                        append(stringResource(id = R.string.woopos_banner_simple_products_only_message_learn_more))
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .constrainAs(description) {
+                            top.linkTo(header.bottom)
+                            start.linkTo(header.start)
+                            end.linkTo(close.start)
+                            width = Dimension.fillToConstraints
+                        }
+                        .padding(
+                            start = 24.dp.toAdaptivePadding(),
+                            end = 18.dp.toAdaptivePadding()
+                        )
+                ) {
+                    Text(
                         modifier = Modifier
-                            .constrainAs(description) {
-                                top.linkTo(header.bottom)
-                                start.linkTo(header.start)
-                                end.linkTo(close.start)
-                                width = Dimension.fillToConstraints
+                            .clickable {
+                                onLearnMore()
                             }
                             .padding(
-                                start = 24.dp.toAdaptivePadding(),
-                                end = 18.dp.toAdaptivePadding()
-                            )
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .clickable {
-                                    onLearnMore()
-                                }
-                                .padding(
-                                    start = 8.dp.toAdaptivePadding(),
-                                    top = 8.dp.toAdaptivePadding(),
-                                    bottom = 8.dp.toAdaptivePadding(),
-                                ),
-                            text = annotatedText,
-                            style = MaterialTheme.typography.body1,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f)
-                        )
-                    }
-
-                    IconButton(
-                        modifier = Modifier
-                            .constrainAs(close) {
-                                top.linkTo(header.top)
-                                bottom.linkTo(header.bottom)
-                                end.linkTo(parent.end)
-                            },
-                        onClick = { onClose() }
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(32.dp),
-                            imageVector = Icons.Default.Close,
-                            tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-                            contentDescription = stringResource(
-                                id = R.string.woopos_banner_simple_products_close_content_description
+                                start = 8.dp.toAdaptivePadding(),
+                                top = 8.dp.toAdaptivePadding(),
+                                bottom = 8.dp.toAdaptivePadding(),
                             ),
-                        )
-                    }
+                        text = annotatedText,
+                        style = MaterialTheme.typography.body1,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colors.onBackground.copy(alpha = 0.87f)
+                    )
+                }
+
+                IconButton(
+                    modifier = Modifier
+                        .constrainAs(close) {
+                            top.linkTo(header.top)
+                            bottom.linkTo(header.bottom)
+                            end.linkTo(parent.end)
+                        },
+                    onClick = { onClose() }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Default.Close,
+                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                        contentDescription = stringResource(
+                            id = R.string.woopos_banner_simple_products_close_content_description
+                        ),
+                    )
                 }
             }
         }
