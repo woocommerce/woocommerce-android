@@ -47,7 +47,6 @@ sealed interface WooNotificationType : Parcelable {
     }
 }
 
-
 fun NotificationModel.getWooType(): WooNotificationType {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> WooNotificationType.NewOrder
