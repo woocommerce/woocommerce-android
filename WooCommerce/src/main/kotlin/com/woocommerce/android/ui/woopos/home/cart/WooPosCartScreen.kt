@@ -147,8 +147,8 @@ private fun WooPosCartScreen(
 
         AnimatedVisibility(
             visible = state.isCheckoutButtonVisible,
-            enter = fadeIn(animationSpec = tween(1000)),
-            exit = fadeOut(animationSpec = tween(1000)),
+            enter = fadeIn(animationSpec = tween(300)),
+            exit = fadeOut(animationSpec = tween(300)),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp.toAdaptivePadding())
@@ -298,8 +298,8 @@ private fun CartToolbar(
 
         AnimatedVisibility(
             visible = toolbar.backIconVisible,
-            enter = fadeIn(animationSpec = tween(1000)) + expandHorizontally(),
-            exit = fadeOut(animationSpec = tween(1000)) + shrinkHorizontally()
+            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
+            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
         ) {
             IconButton(
                 onClick = { onBackClicked() },
