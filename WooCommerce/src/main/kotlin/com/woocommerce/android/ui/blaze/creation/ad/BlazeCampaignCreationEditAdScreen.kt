@@ -69,6 +69,7 @@ fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationEditAdVie
             onNextSuggestionTapped = viewModel::onNextSuggestionTapped,
             onBackButtonTapped = viewModel::onBackButtonTapped,
             onMediaPickerDialogDismissed = viewModel::onMediaPickerDialogDismissed,
+            onProductImagesRequested = viewModel::onProductImagesRequested,
             onMediaLibraryRequested = viewModel::onMediaLibraryRequested,
             onSaveTapped = viewModel::onSaveTapped
         )
@@ -85,13 +86,16 @@ private fun BlazeCampaignCreationEditAdScreen(
     onNextSuggestionTapped: () -> Unit,
     onBackButtonTapped: () -> Unit,
     onMediaPickerDialogDismissed: () -> Unit,
+    onProductImagesRequested: () -> Unit,
     onMediaLibraryRequested: (DataSource) -> Unit,
     onSaveTapped: () -> Unit
 ) {
     if (viewState.isMediaPickerDialogVisible) {
         MediaPickerDialog(
-            onMediaPickerDialogDismissed,
-            onMediaLibraryRequested
+            onDismissRequest = onMediaPickerDialogDismissed,
+            onMediaLibraryRequested = onMediaLibraryRequested,
+            withProductImagePicker = true,
+            onProductImagesRequested = onProductImagesRequested
         )
     }
 
