@@ -35,8 +35,13 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assert
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -55,6 +60,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
+import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
 class SitePickerViewModelTest : BaseUnitTest() {
@@ -725,5 +731,27 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(state.isNoStoresViewVisible).isTrue
             assertThat(state.noStoresLabelText).isEqualTo(resourceProvider.getString(R.string.login_simple_wpcom_site))
             assertThat(state.isNoStoresBtnVisible).isFalse
+        }
+
+    @Test
+    fun `given initiated, when isPrimaryBtnVisible and loading state, then primary button view is not displayed`() =
+        runTest {
+            Dispatchers.setMain(StandardTestDispatcher())
+            val expectedSites = defaultExpectedSiteList.map { it.apply { setIsJetpackCPConnected(true) } }
+            whenSitesAreFetched(sitesFromDb = expectedSites)
+            whenViewModelIsCreated()
+            val states = viewModel.sitePickerViewStateData.liveData.captureValues()
+
+            // Make primary button visible after initialization. This may happen in low memory condition.
+            viewModel.sitePickerViewState = viewModel.sitePickerViewState.copy(isPrimaryBtnVisible = true)
+
+            advanceUntilIdle()
+
+            states.forEach { state ->
+                if (state.isSkeletonViewVisible) {
+                    assertFalse(state.isPrimaryBtnVisible)
+                }
+            }
+            Dispatchers.resetMain()
         }
 }
