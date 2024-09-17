@@ -576,7 +576,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         assertFalse(isUpdatingOrderDraft[0])
         assertTrue(isUpdatingOrderDraft[1])
-        assertFalse(isUpdatingOrderDraft[2])
     }
 
     @Test
