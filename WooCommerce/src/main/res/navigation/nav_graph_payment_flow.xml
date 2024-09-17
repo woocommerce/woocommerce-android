@@ -4,7 +4,6 @@
     app:startDestination="@id/selectPaymentMethodFragment">
 
     <include app:graph="@navigation/nav_graph_order_creations" />
-    <include app:graph="@navigation/nav_graph_orders" />
 
     <fragment
         android:id="@+id/selectPaymentMethodFragment"
