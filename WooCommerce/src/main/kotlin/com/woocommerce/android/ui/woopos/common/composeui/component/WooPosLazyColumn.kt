@@ -65,12 +65,12 @@ fun WooPosLazyColumn(
         }
 
         if (showTopShadow.value) {
-            Shadow(modifier)
+            Shadow()
         }
 
         if (showBottomShadow.value && withBottomShadow) {
             Shadow(
-                modifier
+                Modifier
                     .align(Alignment.BottomCenter)
                     .graphicsLayer(rotationZ = 180f)
             )
@@ -79,7 +79,7 @@ fun WooPosLazyColumn(
 }
 
 @Composable
-private fun Shadow(modifier: Modifier) {
+private fun Shadow(modifier: Modifier = Modifier) {
     WooPosCard(
         shape = MaterialTheme.shapes.large,
         backgroundColor = Color.Black.copy(alpha = 0.1f),
