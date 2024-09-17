@@ -245,7 +245,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         findNavController().popBackStack()
                     } else {
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList().run {
-                            findNavController().navigateSafely(this)
+                            findNavController().navigateSafely(this, true)
                         }
                     }
                 }
