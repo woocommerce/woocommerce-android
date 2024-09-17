@@ -252,6 +252,7 @@ private fun ProductsList(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(2.dp),
         state = listState,
+        withBottomShadow = false,
     ) {
         items(
             state.products,
