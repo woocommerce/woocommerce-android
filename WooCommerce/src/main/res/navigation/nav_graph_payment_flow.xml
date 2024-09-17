@@ -4,6 +4,7 @@
     app:startDestination="@id/selectPaymentMethodFragment">
 
     <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_orders" />
 
     <fragment
         android:id="@+id/selectPaymentMethodFragment"
@@ -39,7 +40,7 @@
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_orderList"
-            app:popUpTo="@+id/orders"
+            app:destination="@+id/orders"
             app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_orderDetailFragment"
