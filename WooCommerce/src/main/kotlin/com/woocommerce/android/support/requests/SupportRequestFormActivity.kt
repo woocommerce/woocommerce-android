@@ -2,6 +2,8 @@ package com.woocommerce.android.support.requests
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -55,6 +57,40 @@ class SupportRequestFormActivity : AppCompatActivity() {
             observeViewModelEvents(this)
         }
         viewModel.onViewCreated()
+
+        adjustActivityTransitions()
+    }
+
+    @Suppress("DEPRECATION")
+    private fun SupportRequestFormActivity.adjustActivityTransitions() {
+        if (isPOS()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                overrideActivityTransition(
+                    OVERRIDE_TRANSITION_OPEN,
+                    R.anim.woopos_slide_in_left,
+                    R.anim.woopos_slide_out_right,
+                    Color.TRANSPARENT
+                )
+                overrideActivityTransition(
+                    OVERRIDE_TRANSITION_CLOSE,
+                    R.anim.woopos_slide_in_right,
+                    R.anim.woopos_slide_out_left,
+                    Color.TRANSPARENT
+                )
+            } else {
+                overridePendingTransition(R.anim.woopos_slide_in_left, R.anim.woopos_slide_out_right)
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun isPOS(): Boolean {
+        val origin = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.extras?.getSerializable(ORIGIN_KEY, HelpOrigin::class.java)
+        } else {
+            intent.extras?.getSerializable(ORIGIN_KEY)
+        }
+        return origin == HelpOrigin.POS
     }
 
     private fun ActivitySupportRequestFormBinding.setupActionBar() {
