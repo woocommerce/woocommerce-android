@@ -46,7 +46,7 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.list.ProductListRepository
+import com.woocommerce.android.ui.products.inventory.FetchProductBySKU
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.util.captureValues
@@ -72,7 +72,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import java.util.Date
 import kotlin.test.assertFalse
@@ -94,7 +93,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var tracker: AnalyticsTrackerWrapper
     protected lateinit var resourceProvider: ResourceProvider
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
-    private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     private lateinit var productRestrictions: OrderCreationProductRestrictions
     private lateinit var taxRateToAddress: GetAddressFromTaxRate
     private lateinit var getAutoTaxRateSetting: GetAutoTaxRateSetting
@@ -102,12 +100,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var getTaxRateLabel: GetTaxRateLabel
     private lateinit var prefs: AppPrefs
     lateinit var selectedSite: SelectedSite
-    lateinit var productListRepository: ProductListRepository
     val currencySymbolFinder: CurrencySymbolFinder = mock()
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
     protected lateinit var totalsHelper: OrderCreateEditTotalsHelper
     private lateinit var getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
     protected lateinit var feedbackRepository: FeedbackRepository
+    protected lateinit var fetchProductBySKU: FetchProductBySKU
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -177,8 +175,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         tracker = mock()
         barcodeScanningTracker = mock()
-        checkDigitRemoverFactory = mock()
-        productListRepository = mock()
         resourceProvider = mock {
             on {
                 getString(R.string.order_creation_barcode_scanning_scanning_failed)
@@ -198,6 +194,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         totalsHelper = mock()
         getShippingMethodsWithOtherValue = mock()
         feedbackRepository = mock()
+        fetchProductBySKU = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -570,14 +567,15 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     fun `when scan succeeds, then set isUpdatingOrderDraft to true`() {
         createSut()
         val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-        var isUpdatingOrderDraft: Boolean? = null
+        var isUpdatingOrderDraft: List<Boolean> = emptyList()
         sut.viewStateData.observeForever { _, viewState ->
-            isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
+            isUpdatingOrderDraft += viewState.isUpdatingOrderDraft
         }
 
         sut.handleBarcodeScannedStatus(scannedStatus)
 
-        assertTrue(isUpdatingOrderDraft!!)
+        assertFalse(isUpdatingOrderDraft[0])
+        assertTrue(isUpdatingOrderDraft[1])
     }
 
     @Test
@@ -585,13 +583,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                ProductTestUtils.generateProductList()
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(ProductTestUtils.generateProduct())
             )
             var isUpdatingOrderDraft: Boolean? = null
             sut.viewStateData.observeForever { _, viewState ->
@@ -609,13 +602,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -642,13 +630,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -679,12 +662,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 productId = 10L,
                 customStatus = ProductStatus.PENDING.name
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
@@ -705,13 +685,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         customStatus = ProductStatus.PUBLISH.name,
@@ -743,12 +718,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 customStatus = ProductStatus.PUBLISH.name,
                 amount = ""
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(createOrderItemUseCase.invoke(10L)).thenReturn(
                 createOrderItem(10L)
             )
@@ -780,12 +752,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 productId = 10L,
                 customStatus = ProductStatus.PENDING.name
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -810,12 +779,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 productId = 10L,
                 customStatus = ProductStatus.PENDING.name
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -844,12 +810,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 productId = 10L,
                 customStatus = ProductStatus.PENDING.name
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -872,12 +835,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 productId = 10L,
                 customStatus = ProductStatus.PENDING.name
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -908,12 +868,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 customStatus = ProductStatus.PUBLISH.name,
                 amount = ""
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -943,12 +900,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 customStatus = ProductStatus.PUBLISH.name,
                 amount = ""
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -972,12 +926,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 customStatus = ProductStatus.PUBLISH.name,
                 amount = ""
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -1002,12 +953,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 productId = 10L,
                 customStatus = ProductStatus.PENDING.name,
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -1029,12 +977,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 customStatus = ProductStatus.PUBLISH.name,
                 amount = ""
             )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(listOf(product))
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(product)
+            )
             whenever(productRestrictions.isProductRestricted(product)).thenReturn(true)
 
             sut.handleBarcodeScannedStatus(scannedStatus)
@@ -1056,13 +1001,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 0L,
@@ -1091,13 +1031,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 0L,
@@ -1123,13 +1058,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 0L,
@@ -1154,13 +1084,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1193,13 +1118,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 .thenReturn("You cannot add variable product directly. Please select a specific variation")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 0L,
@@ -1224,13 +1144,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 .thenReturn("You cannot add variable product directly. Please select a specific variation")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 0L,
@@ -1302,12 +1217,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
             createSut()
             val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatQRCode)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatQRCode)).thenReturn(
+                Result.failure(Exception())
+            )
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1328,12 +1240,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
             createSut()
             val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    skuCode,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(null)
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.failure(Exception())
+            )
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1356,12 +1265,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
             createSut()
             val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatUPCA)
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.failure(Exception())
+            )
             whenever(
-                productListRepository.searchProductList(
-                    skuCode,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(null)
+                fetchProductBySKU.invoke(skuCode, BarcodeFormat.FormatUPCA)
+            ).thenReturn(Result.failure(Exception()))
 
             sut.handleBarcodeScannedStatus(scannedStatus)
             (sut.event.value as OnAddingProductViaScanningFailed).retry.onClick(mock())
@@ -1375,13 +1284,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1414,13 +1318,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                     )
@@ -1537,13 +1436,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1551,7 +1445,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-
             sut.handleBarcodeScannedStatus(scannedStatus)
 
             verify(tracker).track(
@@ -1566,13 +1459,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1598,13 +1486,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(null)
-
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.failure(Exception())
+            )
             sut.handleBarcodeScannedStatus(scannedStatus)
 
             verify(tracker).track(
@@ -1619,12 +1503,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(null)
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.failure(Exception())
+            )
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1644,12 +1525,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(null)
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.failure(Exception())
+            )
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1674,13 +1552,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             ).thenReturn("You cannot add variable product directly. Please select a specific variation")
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 0L,
@@ -1708,12 +1581,9 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatQRCode)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatQRCode)).thenReturn(
+                Result.failure(Exception())
+            )
 
             sut.handleBarcodeScannedStatus(scannedStatus)
 
@@ -1722,7 +1592,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
                     KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
-                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
                 )
             )
         }
@@ -1733,13 +1603,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1769,13 +1634,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         testBlocking {
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
+            whenever(fetchProductBySKU.invoke("12345", BarcodeFormat.FormatUPCA)).thenReturn(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                     )
@@ -1794,512 +1654,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false,
                     AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
-            )
-        }
-    }
-
-    @Test
-    fun `given UPC SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
-            ).thenReturn(
-                mockUPCCheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(productListRepository).searchProductList(
-                skuWithCheckDigitRemoved,
-                WCProductStore.SkuSearchOptions.ExactSearch
-            )
-        }
-    }
-
-    @Test
-    fun `given EAN-13 SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
-            ).thenReturn(
-                mockEAN13CheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(productListRepository).searchProductList(
-                skuWithCheckDigitRemoved,
-                WCProductStore.SkuSearchOptions.ExactSearch
-            )
-        }
-    }
-
-    @Test
-    fun `given EAN-8 SKU with check digit, when product search fails, then retry product search call by removing the check digit`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
-            ).thenReturn(
-                mockEAN8CheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(productListRepository).searchProductList(
-                skuWithCheckDigitRemoved,
-                WCProductStore.SkuSearchOptions.ExactSearch
-            )
-        }
-    }
-
-    @Test
-    fun `given product search fails for UPC barcode format, when retrying, then show a loading indicator`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
-            ).thenReturn(
-                mockUPCCheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-            var isUpdatingOrderDraft: Boolean? = null
-            sut.viewStateData.observeForever { _, viewState ->
-                isUpdatingOrderDraft = viewState.isUpdatingOrderDraft
-            }
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            assertTrue(isUpdatingOrderDraft!!)
-        }
-    }
-
-    @Test
-    fun `given product search fails for UPC barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
-            ).thenReturn(
-                mockUPCCheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(checkDigitRemoverFactory, times(1)).getCheckDigitRemoverFor(any())
-            verify(productListRepository, times(1)).searchProductList(
-                skuWithCheckDigitRemoved,
-                WCProductStore.SkuSearchOptions.ExactSearch
-            )
-        }
-    }
-
-    @Test
-    fun `given product search fails for EAN-13 barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
-            ).thenReturn(
-                mockEAN13CheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(checkDigitRemoverFactory, times(1)).getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
-            verify(productListRepository, times(1)).searchProductList(
-                skuWithCheckDigitRemoved,
-                WCProductStore.SkuSearchOptions.ExactSearch
-            )
-        }
-    }
-
-    @Test
-    fun `given product search fails for EAN-8 barcode format, when retrying, then do not handle the check digit on failing to fetch product information second time`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
-            ).thenReturn(
-                mockEAN8CheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(checkDigitRemoverFactory, times(1)).getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
-            verify(productListRepository, times(1)).searchProductList(
-                skuWithCheckDigitRemoved,
-                WCProductStore.SkuSearchOptions.ExactSearch
-            )
-        }
-    }
-
-    @Test
-    fun `given product search fails for UPC barcode format, when retrying, then do not track any failure event`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
-            ).thenReturn(
-                mockUPCCheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(1L)
-                )
-            )
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(tracker, never()).track(
-                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
-                any()
-            )
-        }
-    }
-
-    @Test
-    fun `given product search fails for EAN-13 barcode format, when retrying, then do not track any failure event`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
-            ).thenReturn(
-                mockEAN13CheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(1L)
-                )
-            )
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(tracker, never()).track(
-                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
-                any()
-            )
-        }
-    }
-
-    @Test
-    fun `given product search fails for EAN-8 barcode format, when retrying, then do not track any failure event`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
-            ).thenReturn(
-                mockEAN8CheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(1L)
-                )
-            )
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(tracker, never()).track(
-                eq(PRODUCT_SEARCH_VIA_SKU_FAILURE),
-                any()
-            )
-        }
-    }
-
-    @Test
-    fun `given product search fails for UPC barcode format, when retrying, then do not trigger failure event`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatUPCA)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
-            ).thenReturn(
-                mockUPCCheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(1L)
-                )
-            )
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            assertThat(sut.event.value).isNull()
-        }
-    }
-
-    @Test
-    fun `given product search fails for EAN-13 barcode format, when retrying, then do not trigger failure event`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockEAN13CheckDigitRemover = mock<EAN13CheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN13)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN13)
-            ).thenReturn(
-                mockEAN13CheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(1L)
-                )
-            )
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            assertThat(sut.event.value).isNull()
-        }
-    }
-
-    @Test
-    fun `given product search fails for EAN-8 barcode format, when retrying, then do not trigger failure event`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            val mockEAN8CheckDigitRemover = mock<EAN8CheckDigitRemover> {
-                on { getSKUWithoutCheckDigit(sku) }.thenReturn(skuWithCheckDigitRemoved)
-            }
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatEAN8)
-            whenever(
-                checkDigitRemoverFactory.getCheckDigitRemoverFor(BarcodeFormat.FormatEAN8)
-            ).thenReturn(
-                mockEAN8CheckDigitRemover
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            whenever(
-                productListRepository.searchProductList(
-                    skuWithCheckDigitRemoved,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(
-                listOf(
-                    ProductTestUtils.generateProduct(1L)
-                )
-            )
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            assertThat(sut.event.value).isNull()
-        }
-    }
-
-    @Test
-    fun `given product search fails for non UPC barcode format, then do not do any checksum operation`() {
-        testBlocking {
-            val sku = "12345678901"
-            val skuWithCheckDigitRemoved = "1234567890"
-            createSut()
-            val scannedStatus = CodeScannerStatus.Success(sku, BarcodeFormat.FormatQRCode)
-            whenever(
-                productListRepository.searchProductList(
-                    sku,
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            sut.handleBarcodeScannedStatus(scannedStatus)
-
-            verify(checkDigitRemoverFactory, never()).getCheckDigitRemoverFor(any())
-            verify(productListRepository, never()).searchProductList(
-                skuWithCheckDigitRemoved,
-                WCProductStore.SkuSearchOptions.ExactSearch
             )
         }
     }
@@ -2772,8 +2126,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             autoSyncPriceModifier = autoSyncPriceModifier,
             tracker = tracker,
             barcodeScanningTracker = barcodeScanningTracker,
-            productRepository = productListRepository,
-            checkDigitRemoverFactory = checkDigitRemoverFactory,
             resourceProvider = resourceProvider,
             productRestrictions = productRestrictions,
             getTaxRatesInfoDialogState = GetTaxRatesInfoDialogViewState(
@@ -2793,7 +2145,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             totalsHelper = totalsHelper,
             dateUtils = mock(),
             getShippingMethodsWithOtherValue = getShippingMethodsWithOtherValue,
-            feedbackRepository = feedbackRepository
+            feedbackRepository = feedbackRepository,
+            fetchProductBySKU = fetchProductBySKU,
         )
     }
 
