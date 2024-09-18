@@ -92,7 +92,8 @@ data class Product(
     val bundleMinSize: Float?,
     val bundleMaxSize: Float?,
     val groupOfQuantity: Int?,
-    val combineVariationQuantities: Boolean?
+    val combineVariationQuantities: Boolean?,
+    val password: String?
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -479,6 +480,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.maxAllowedQuantity = maxAllowedQuantity ?: -1
         it.groupOfQuantity = groupOfQuantity ?: -1
         it.combineVariationQuantities = combineVariationQuantities ?: false
+        it.password = password
         // Subscription details are currently the only editable metadata fields from the app.
         it.metadata = subscription?.toMetadataJson().toString()
     }
@@ -590,7 +592,8 @@ fun WCProductModel.toAppModel(): Product {
         bundleMinSize = this.bundleMinSize,
         bundleMaxSize = this.bundleMaxSize,
         groupOfQuantity = this.groupOfQuantity(),
-        combineVariationQuantities = this.combineVariationQuantities
+        combineVariationQuantities = this.combineVariationQuantities,
+        password = this.password
     )
 }
 
