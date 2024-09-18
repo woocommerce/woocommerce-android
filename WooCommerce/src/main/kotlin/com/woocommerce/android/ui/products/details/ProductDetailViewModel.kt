@@ -1549,16 +1549,10 @@ class ProductDetailViewModel @Inject constructor(
     private suspend fun fetchProductPassword(remoteProductId: Long) {
         val password = productRepository.fetchProductPassword(remoteProductId)
 
-        viewState = if (viewState.draftPassword == null) {
-            viewState.copy(
-                storedPassword = password,
-                draftPassword = password
-            )
-        } else {
-            viewState.copy(
-                storedPassword = password
-            )
-        }
+        viewState = viewState.copy(
+            storedPassword = password,
+            draftPassword = viewState.draftPassword ?: password
+        )
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
