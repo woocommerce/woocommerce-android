@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.editor.CustomFieldsEditorViewModel
+import com.woocommerce.android.ui.customfields.editor.CustomFieldsEditorViewModel.CustomFieldUpdateResult
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -64,12 +65,11 @@ class CustomFieldsFragment : BaseFragment() {
     }
 
     private fun handleResults() {
-        handleResult<CustomFieldUiModel>(CustomFieldsEditorViewModel.CUSTOM_FIELD_UPDATED_RESULT_KEY) { result ->
-            if (result.id == null) {
-                viewModel.onCustomFieldInserted(result)
-            } else {
-                viewModel.onCustomFieldUpdated(result)
-            }
+        handleResult<CustomFieldUiModel>(CustomFieldsEditorViewModel.CUSTOM_FIELD_CREATED_RESULT_KEY) { result ->
+            viewModel.onCustomFieldInserted(result)
+        }
+        handleResult<CustomFieldUpdateResult>(CustomFieldsEditorViewModel.CUSTOM_FIELD_UPDATED_RESULT_KEY) { result ->
+            viewModel.onCustomFieldUpdated(result.oldKey, result.updatedField)
         }
         handleResult<CustomFieldUiModel>(CustomFieldsEditorViewModel.CUSTOM_FIELD_DELETED_RESULT_KEY) { result ->
             viewModel.onCustomFieldDeleted(result)
