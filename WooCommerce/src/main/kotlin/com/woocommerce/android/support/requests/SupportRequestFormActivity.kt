@@ -23,6 +23,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Show
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -64,7 +65,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
     @Suppress("DEPRECATION")
     private fun SupportRequestFormActivity.adjustActivityTransitions() {
         if (isPOS()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            if (SystemVersionUtils.isAtLeastU()) {
                 overrideActivityTransition(
                     OVERRIDE_TRANSITION_CLOSE,
                     android.R.anim.slide_in_left,
