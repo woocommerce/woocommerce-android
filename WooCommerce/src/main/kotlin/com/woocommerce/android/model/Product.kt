@@ -158,7 +158,8 @@ data class Product(
             minAllowedQuantity == product.minAllowedQuantity &&
             maxAllowedQuantity == product.maxAllowedQuantity &&
             groupOfQuantity == product.groupOfQuantity &&
-            combineVariationQuantities == product.combineVariationQuantities
+            combineVariationQuantities == product.combineVariationQuantities &&
+            password == product.password
     }
 
     val hasCategories get() = categories.isNotEmpty()
