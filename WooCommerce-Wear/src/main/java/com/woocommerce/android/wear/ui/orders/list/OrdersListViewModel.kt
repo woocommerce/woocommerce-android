@@ -15,8 +15,8 @@ import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_FAILED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_REQUESTED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_OPENED
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -26,7 +26,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 
 @HiltViewModel
-class OrdersListViewModel @AssistedInject constructor(
+class OrdersListViewModel @Inject constructor(
     private val fetchOrders: FetchOrders,
     private val formatOrders: FormatOrderData,
     private val loginRepository: LoginRepository,
