@@ -184,7 +184,7 @@ class ProductDetailViewModel @Inject constructor(
         savedState = savedState,
         initialValue = ProductDetailViewState(areImagesAvailable = !selectedSite.get().isPrivate)
     ) { old, new ->
-        if (old?.productDraft != new.productDraft || old?.draftPassword != new.draftPassword) {
+        if (old?.productDraft != new.productDraft) {
             new.productDraft?.let {
                 updateCards(it)
                 draftChanges.value = it
@@ -296,9 +296,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private val _hasChanges = storedProduct
         .combine(draftChanges) { storedProduct, productDraft ->
-            storedProduct?.let { product ->
-                productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
-            } ?: false
+            storedProduct?.let { product -> productDraft?.isSameProduct(product) == false } ?: false
         }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val hasChanges = _hasChanges.asLiveData()
 
@@ -1503,7 +1501,9 @@ class ProductDetailViewModel @Inject constructor(
      * the product's visibility and/or password
      */
     fun updateProductVisibility(visibility: ProductVisibility, password: String?) {
-        viewState = viewState.copy(draftPassword = password)
+        viewState = viewState.copy(
+            productDraft = viewState.productDraft?.copy(password = password)
+        )
 
         when (visibility) {
             PUBLIC -> {
@@ -2687,13 +2687,14 @@ class ProductDetailViewModel @Inject constructor(
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
         val storedPassword: String? = null,
-        val draftPassword: String? = null,
         val showBottomSheetButton: Boolean? = null,
         val isConfirmingTrash: Boolean = false,
         val isUploadingDownloadableFile: Boolean? = null,
         val isVariationListEmpty: Boolean? = null,
         val areImagesAvailable: Boolean
     ) : Parcelable {
+        val draftPassword
+            get() = productDraft?.password
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
 
