@@ -5,10 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.wear.analytics.AnalyticsTracker
 import com.woocommerce.android.wear.extensions.getStateFlow
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Logged
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Timeout
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Waiting
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Logged
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Timeout
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Waiting
 import com.woocommerce.android.wear.viewmodel.WearViewModel
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_FAILED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED
@@ -54,6 +53,12 @@ class LoginViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val loginState: LoginRequestState = Waiting,
+        val loginState: LoginState = Waiting,
     ) : Parcelable
+
+    enum class LoginState {
+        Logged,
+        Waiting,
+        Timeout
+    }
 }
