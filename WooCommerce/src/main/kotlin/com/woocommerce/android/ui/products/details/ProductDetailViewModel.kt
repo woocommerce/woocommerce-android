@@ -1557,7 +1557,7 @@ class ProductDetailViewModel @Inject constructor(
 
         viewState = viewState.copy(
             storedPassword = password,
-            draftPassword = viewState.draftPassword ?: password
+            productDraft = viewState.productDraft?.copy(password = viewState.draftPassword ?: password)
         )
     }
 
@@ -1948,11 +1948,12 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = false)
             return
         }
-        val result = productRepository.updateProduct(product)
+        val result = productRepository.updateProduct(product.copy(password = viewState.draftPassword))
         if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
-            if (viewState.isPasswordChanged) {
-                val password = viewState.draftPassword
+            if (viewState.isPasswordChanged && determineProductPasswordApi() == ProductPasswordApi.WPCOM) {
+                // Update the product password using WordPress.com API
+                val password = viewState.productDraft?.password
                 if (productRepository.updateProductPassword(product.remoteId, password)) {
                     viewState = viewState.copy(storedPassword = password)
                     triggerEvent(ShowSnackbar(successMsg))
