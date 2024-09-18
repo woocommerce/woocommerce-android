@@ -66,13 +66,13 @@ class SupportRequestFormActivity : AppCompatActivity() {
         if (isPOS()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 overrideActivityTransition(
-                    OVERRIDE_TRANSITION_OPEN,
+                    OVERRIDE_TRANSITION_CLOSE,
                     android.R.anim.slide_in_left,
                     android.R.anim.slide_out_right,
                     Color.TRANSPARENT
                 )
                 overrideActivityTransition(
-                    OVERRIDE_TRANSITION_CLOSE,
+                    OVERRIDE_TRANSITION_OPEN,
                     R.anim.woopos_slide_in_right,
                     R.anim.woopos_slide_out_left,
                     Color.TRANSPARENT
