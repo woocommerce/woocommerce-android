@@ -36,10 +36,10 @@ import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
 import com.woocommerce.android.wear.ui.NavRoutes
 import com.woocommerce.android.wear.ui.NavRoutes.MY_STORE
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Logged
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Timeout
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Waiting
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Logged
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Timeout
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Waiting
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -54,7 +54,7 @@ fun LoginScreen(navController: NavController) {
 
 @Composable
 fun LoginScreen(
-    loginState: LoginRequestState,
+    loginState: LoginState,
     navController: NavController,
     onTryAgainClicked: () -> Unit,
     modifier: Modifier = Modifier
