@@ -57,8 +57,6 @@ class LoginViewModelTest : BaseUnitTest() {
         assertThat(loginState).isEqualTo(Waiting)
     }
 
-
-
     private fun createSut() {
         sut = LoginViewModel(
             fetchSiteData,

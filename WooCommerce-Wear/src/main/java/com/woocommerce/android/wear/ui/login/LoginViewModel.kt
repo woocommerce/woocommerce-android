@@ -13,10 +13,10 @@ import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_FAILED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_SUCCEEDED
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
