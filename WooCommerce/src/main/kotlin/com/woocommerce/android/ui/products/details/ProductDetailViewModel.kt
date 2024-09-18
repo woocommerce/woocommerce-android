@@ -156,6 +156,7 @@ class ProductDetailViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
+    private val determineProductPasswordApi: DetermineProductPasswordApi,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -1547,7 +1548,12 @@ class ProductDetailViewModel @Inject constructor(
      * Sends a request to fetch the product's password
      */
     private suspend fun fetchProductPassword(remoteProductId: Long) {
-        val password = productRepository.fetchProductPassword(remoteProductId)
+        val productPasswordApi = determineProductPasswordApi()
+        val password = when (productPasswordApi) {
+            ProductPasswordApi.WPCOM -> productRepository.fetchProductPassword(remoteProductId)
+            ProductPasswordApi.CORE -> storedProduct.value?.password
+            ProductPasswordApi.UNSUPPORTED -> return
+        }
 
         viewState = viewState.copy(
             storedPassword = password,
