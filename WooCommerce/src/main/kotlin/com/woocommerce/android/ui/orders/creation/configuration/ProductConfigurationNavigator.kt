@@ -21,7 +21,7 @@ object ProductConfigurationNavigator {
                 navController.navigateSafely(
                     ProductConfigurationFragmentDirections.actionProductConfigurationFragmentToVariationPickerFragment(
                         productId = target.productId,
-                        allowedVatiations = target.variationRule.variationIds?.toLongArray(),
+                        allowedVariations = target.variationRule.variationIds?.toLongArray(),
                         itemId = target.itemId
                     )
                 )

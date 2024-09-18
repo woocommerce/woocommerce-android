@@ -38,7 +38,7 @@ class VariationPickerViewModel @Inject constructor(
     }
 
     private val navArgs: VariationPickerFragmentArgs by savedState.navArgs()
-    private val allowedVariations = navArgs.allowedVatiations?.toSet() ?: emptySet()
+    private val allowedVariations = navArgs.allowedVariations?.toSet() ?: emptySet()
 
     private val loadingState = MutableStateFlow(LoadingState.IDLE)
     private val loadingWithDebounce
