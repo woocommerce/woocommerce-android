@@ -41,6 +41,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -182,29 +183,37 @@ private fun CustomFieldItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
 
-            val text = buildAnnotatedString {
-                if (customField.contentType != CustomFieldContentType.TEXT) {
-                    pushUrlAnnotation(UrlAnnotation(customField.value))
-                    pushStyle(SpanStyle(color = MaterialTheme.colors.primary))
-                }
-                append(customField.valueStrippedHtml)
-            }
-            ClickableText(
-                text = text,
-                style = MaterialTheme.typography.body2.copy(
-                    color = MaterialTheme.colors.onSurface
-                ),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                onClick = { offset ->
-                    text.getUrlAnnotations(
-                        start = offset,
-                        end = offset
-                    ).firstOrNull()?.let { _ ->
-                        onValueClicked(customField)
+            if (customField.contentType != CustomFieldContentType.TEXT) {
+                val text = buildAnnotatedString {
+                    withStyle(SpanStyle(color = MaterialTheme.colors.primary)) {
+                        pushUrlAnnotation(UrlAnnotation(customField.value))
+                        append(customField.value)
                     }
                 }
-            )
+                ClickableText(
+                    text = text,
+                    style = MaterialTheme.typography.body2.copy(
+                        color = MaterialTheme.colors.onSurface
+                    ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    onClick = { offset ->
+                        text.getUrlAnnotations(
+                            start = offset,
+                            end = offset
+                        ).firstOrNull()?.let { _ ->
+                            onValueClicked(customField)
+                        }
+                    }
+                )
+            } else {
+                Text(
+                    text = customField.value,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.body2
+                )
+            }
         }
 
         Icon(
