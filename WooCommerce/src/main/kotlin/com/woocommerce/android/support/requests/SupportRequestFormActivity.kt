@@ -83,13 +83,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun isPOS(): Boolean {
-        val origin = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.extras?.getSerializable(ORIGIN_KEY, HelpOrigin::class.java)
-        } else {
-            intent.extras?.getSerializable(ORIGIN_KEY)
-        }
+        val origin: HelpOrigin? = intent.extras?.serializable(ORIGIN_KEY)
         return origin == HelpOrigin.POS
     }
 
