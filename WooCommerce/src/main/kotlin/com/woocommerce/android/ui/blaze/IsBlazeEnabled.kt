@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.blaze
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
-import com.woocommerce.android.tools.SiteConnectionType.JetpackConnectionPackage
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_BLAZE
 import javax.inject.Inject
@@ -23,12 +22,11 @@ class IsBlazeEnabled @Inject constructor(
     /**
      * In order for Blaze to work, the site requires the Jetpack Sync module to be enabled. This means not all
      * Jetpack connection will work. For now, Blaze will only be enabled for sites with Jetpack plugin installed and
-     * active, or for sites with Blaze for WooCommerce plugin installed and connected (Jetpack CP with sync module)
+     * active, or for sites with Blaze for WooCommerce plugin installed and connected.
      */
     private fun hasAValidJetpackConnectionForBlaze() =
-        selectedSite.connectionType == Jetpack ||
-            (selectedSite.connectionType == JetpackConnectionPackage && isBlazeForWooCommercePluginInstalled())
+        selectedSite.connectionType == Jetpack || isBlazeForWooCommercePluginActive()
 
-    private fun isBlazeForWooCommercePluginInstalled(): Boolean =
-        selectedSite.get().activeJetpackConnectionPlugins.any { it.toString() == BLAZE_FOR_WOOCOMMERCE_PLUGIN_SLUG }
+    private fun isBlazeForWooCommercePluginActive(): Boolean =
+        selectedSite.get().activeJetpackConnectionPlugins?.contains(BLAZE_FOR_WOOCOMMERCE_PLUGIN_SLUG) == true
 }
