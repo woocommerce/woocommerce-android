@@ -87,7 +87,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        if (SystemVersionUtils.isAtMostT()) {
+        if (isPOS() && SystemVersionUtils.isAtMostT()) {
             @Suppress("DEPRECATION")
             overridePendingTransition(
                 R.anim.woopos_slide_in_left,
