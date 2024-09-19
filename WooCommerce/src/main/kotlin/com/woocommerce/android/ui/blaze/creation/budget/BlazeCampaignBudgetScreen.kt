@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -42,9 +44,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
@@ -247,19 +253,41 @@ private fun CampaignImpressionsRow(
     onBudgetChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Row(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.Start
+    ) {
+        Row(
+            modifier = Modifier
+                .clickable { onImpressionsInfoTapped() }
+                .padding(top = 8.dp, bottom = 8.dp, end = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val id = "inlineIcon"
+            val text = buildAnnotatedString {
+                append(stringResource(id = R.string.blaze_campaign_budget_reach_forecast))
+                appendInlineContent(id = id, alternateText = "[Icon]")
+            }
+            val inlineContent = mapOf(
+                id to InlineTextContent(
+                    Placeholder(
+                        width = 24.sp,
+                        height = 20.sp,
+                        placeholderVerticalAlign = PlaceholderVerticalAlign.TextCenter
+                    )
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(start = 4.dp),
+                        painter = painterResource(id = drawable.ic_info_outline_20dp),
+                        contentDescription = ""
+                    )
+                }
+            )
             Text(
-                text = stringResource(id = R.string.blaze_campaign_budget_reach_forecast),
+                text = text,
+                inlineContent = inlineContent,
                 style = MaterialTheme.typography.body1,
                 color = colorResource(id = color.color_on_surface_medium)
-            )
-            Icon(
-                modifier = Modifier
-                    .padding(start = 4.dp)
-                    .clickable { onImpressionsInfoTapped() },
-                painter = painterResource(id = drawable.ic_info_outline_20dp),
-                contentDescription = null
             )
         }
         if (state.forecast.isLoading) {
