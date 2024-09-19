@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -43,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -409,17 +407,8 @@ private fun ProductItem(
 
     val elevation by animateDpAsState(
         targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 250, delayMillis = 200),
+        animationSpec = tween(durationMillis = 150, delayMillis = 250),
         label = "elevation"
-    )
-
-    val alpha by animateFloatAsState(
-        targetValue = if (hasAnimationStarted) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 200,
-            easing = LinearEasing
-        ),
-        label = "alpha"
     )
 
     val itemContentDescription = stringResource(
@@ -428,22 +417,22 @@ private fun ProductItem(
         item.price
     )
 
-    LaunchedEffect(alpha) {
-        if (alpha == 1f) {
+    LaunchedEffect(elevation) {
+        if (elevation == 4.dp) {
             onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
         }
     }
 
     AnimatedVisibility(
         visible = hasAnimationStarted,
-        enter = fadeIn() + expandVertically(),
+        enter = fadeIn(animationSpec = tween(durationMillis = 200)) +
+            expandVertically(animationSpec = tween(durationMillis = 200)),
         exit = fadeOut() + shrinkVertically()
     ) {
         WooPosCard(
             modifier = modifier
                 .height(64.dp)
-                .semantics { contentDescription = itemContentDescription }
-                .graphicsLayer(alpha = alpha),
+                .semantics { contentDescription = itemContentDescription },
             elevation = elevation,
             shape = RoundedCornerShape(8.dp),
         ) {
