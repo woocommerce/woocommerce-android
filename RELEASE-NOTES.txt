@@ -6,6 +6,7 @@
 -----
 - [*] Fixes a bug that prevented users to rename the Product Variation Attributes to because of case insensitive checks [https://github.com/woocommerce/woocommerce-android/pull/12608]
 - [*] Users can directly pick product images when creating Blaze ads [https://github.com/woocommerce/woocommerce-android/pull/12610]
+- [*] Users can set a password to protect products when signed in using site credentials (compatible with WooCommerce 8.1.0 and higher) [https://github.com/woocommerce/woocommerce-android/pull/12642]
 
 20.4
 -----
