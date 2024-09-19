@@ -148,37 +148,38 @@ private object WooPosColors {
 }
 
 private val DarkColorPalette = darkColors(
-    primary = WooPosColors.Purple50,
+    primary = WooPosColors.oldPrimary,
     primaryVariant = WooPosColors.primaryVariant,
-    onPrimary = WooPosColors.White,
+    onPrimary = WooPosColors.oldBlack,
     secondary = WooPosColors.secondary,
     secondaryVariant = WooPosColors.Gray70,
-    surface = WooPosColors.surface,
-    onSurface = WooPosColors.White,
+    surface = WooPosColors.oldGray80,
+    onSurface = WooPosColors.oldWhite,
     background = WooPosColors.Black90,
-    onBackground = WooPosColors.White,
+    onBackground = WooPosColors.oldWhite,
 )
 
 private val LightColorPalette = lightColors(
     primary = WooPosColors.Purple50,
     primaryVariant = WooPosColors.lightColorPalettePrimaryVariant,
-    onPrimary = WooPosColors.White,
+    onPrimary = WooPosColors.oldWhite,
     secondary = WooPosColors.lightColorPaletteSecondary,
     secondaryVariant = WooPosColors.lightColorPaletteSecondaryVariant,
-    surface = WooPosColors.White,
-    onSurface = WooPosColors.Black,
+    surface = WooPosColors.oldWhite,
+    onSurface = WooPosColors.oldBlack,
     background = WooPosColors.lightColorPaletteBackground,
-    onBackground = WooPosColors.Black,
+    onBackground = WooPosColors.oldBlack,
 )
 
+
 private val DarkCustomColors = CustomColors(
-    loadingSkeleton = WooPosColors.Gray60,
+    loadingSkeleton = WooPosColors.oldGray6161,
     border = WooPosColors.Gray70,
     success = WooPosColors.Green20,
     error = WooPosColors.darkCustomColorsError,
     paymentSuccessBackground = WooPosColors.darkCustomColorsPaymentSuccessBackground,
-    paymentSuccessText = WooPosColors.White,
-    paymentSuccessIcon = WooPosColors.White,
+    paymentSuccessText = WooPosColors.oldGray870,
+    paymentSuccessIcon = WooPosColors.oldWhite,
     paymentSuccessIconBackground = WooPosColors.darkCustomColorsPaymentSuccessIconBackground,
     homeBackground = WooPosColors.Gray80,
 )
@@ -191,7 +192,7 @@ private val LightCustomColors = CustomColors(
     paymentSuccessBackground = WooPosColors.Green0,
     paymentSuccessText = WooPosColors.Purple90,
     paymentSuccessIcon = WooPosColors.Green10,
-    paymentSuccessIconBackground = WooPosColors.White,
+    paymentSuccessIconBackground = WooPosColors.oldWhite,
     homeBackground = WooPosColors.Gray0,
 )
 
