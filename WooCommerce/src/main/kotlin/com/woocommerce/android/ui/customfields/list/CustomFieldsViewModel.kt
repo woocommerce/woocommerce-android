@@ -97,9 +97,14 @@ class CustomFieldsViewModel @Inject constructor(
         }
     }
 
-    fun onCustomFieldUpdated(result: CustomFieldUiModel) {
+    fun onCustomFieldUpdated(oldValueKey: String, result: CustomFieldUiModel) {
         pendingChanges.update {
-            it.copy(editedFields = it.editedFields.filterNot { field -> field.id == result.id } + result)
+            if (result.id == null) {
+                // We are updating a field that was just added and hasn't been saved yet
+                it.copy(insertedFields = it.insertedFields.filterNot { field -> field.key == oldValueKey } + result)
+            } else {
+                it.copy(editedFields = it.editedFields.filterNot { field -> field.id == result.id } + result)
+            }
         }
     }
 
