@@ -1206,7 +1206,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
 
         // THEN
-        Assertions.assertThat(viewState.storedPassword).isEqualTo(password)
         Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
         verify(productRepository, never()).fetchProductPassword(any())
     }
@@ -1224,7 +1223,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
 
         // THEN
-        Assertions.assertThat(viewState.storedPassword).isEqualTo(password)
         Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
         verify(productRepository).fetchProductPassword(any())
     }
@@ -1258,7 +1256,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
 
         // THEN
-        Assertions.assertThat(viewState.storedPassword).isNull()
         Assertions.assertThat(viewState.draftPassword).isNull()
         verify(productRepository, never()).fetchProductPassword(any())
     }

@@ -115,6 +115,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -715,7 +716,7 @@ class ProductDetailViewModel @Inject constructor(
         return if (storedProduct.value?.hasSettingsChanges(viewState.productDraft) == true) {
             true
         } else {
-            viewState.isPasswordChanged
+            storedProduct.value?.password != viewState.draftPassword
         }
     }
 
@@ -1171,7 +1172,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsVisibilityButtonClicked() {
         val visibility = getProductVisibility()
-        val password = viewState.draftPassword ?: viewState.storedPassword
+        val password = viewState.draftPassword ?: storedProduct.value?.password
         triggerEvent(
             ProductNavigationTarget.ViewProductVisibility(
                 selectedSite.connectionType == SiteConnectionType.ApplicationPasswords,
@@ -1528,7 +1529,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun getProductVisibility(): ProductVisibility {
         val status = viewState.productDraft?.status ?: storedProduct.value?.status
-        val password = viewState.draftPassword ?: viewState.storedPassword
+        val password = viewState.draftPassword ?: storedProduct.value?.password
         return when {
             password?.isNotEmpty() == true -> {
                 ProductVisibility.PASSWORD_PROTECTED
@@ -1555,8 +1556,8 @@ class ProductDetailViewModel @Inject constructor(
             ProductPasswordApi.UNSUPPORTED -> return
         }
 
+        storedProduct.update { it?.copy(password = password) }
         viewState = viewState.copy(
-            storedPassword = password,
             productDraft = viewState.productDraft?.copy(password = viewState.draftPassword ?: password)
         )
     }
@@ -1951,11 +1952,12 @@ class ProductDetailViewModel @Inject constructor(
         val result = productRepository.updateProduct(product.copy(password = viewState.draftPassword))
         if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
-            if (viewState.isPasswordChanged && determineProductPasswordApi() == ProductPasswordApi.WPCOM) {
+            val isPasswordChanged = storedProduct.value?.password != viewState.draftPassword
+            if (isPasswordChanged && determineProductPasswordApi() == ProductPasswordApi.WPCOM) {
                 // Update the product password using WordPress.com API
                 val password = viewState.productDraft?.password
                 if (productRepository.updateProductPassword(product.remoteId, password)) {
-                    viewState = viewState.copy(storedPassword = password)
+                    storedProduct.update { it?.copy(password = password) }
                     triggerEvent(ShowSnackbar(successMsg))
                 } else {
                     triggerEvent(ShowSnackbar(R.string.product_detail_update_product_password_error))
@@ -2686,7 +2688,6 @@ class ProductDetailViewModel @Inject constructor(
         val auxiliaryState: AuxiliaryState = AuxiliaryState.None,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
-        val storedPassword: String? = null,
         val showBottomSheetButton: Boolean? = null,
         val isConfirmingTrash: Boolean = false,
         val isUploadingDownloadableFile: Boolean? = null,
@@ -2695,8 +2696,6 @@ class ProductDetailViewModel @Inject constructor(
     ) : Parcelable {
         val draftPassword
             get() = productDraft?.password
-        val isPasswordChanged: Boolean
-            get() = storedPassword != draftPassword
 
         @Parcelize
         sealed class AuxiliaryState : Parcelable {
