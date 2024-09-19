@@ -31,8 +31,8 @@ private object WooPosColors {
 
     // Adding missing colors from the old code to match exactly
     val primary = Color(0xFF9C70D3)
-    val oldGray870 = Color(0xFFF2EBFF)
-    val oldGray6161 = Color(0xFF616161)
+    val oldGrayLight = Color(0xFFF2EBFF)
+    val oldGrayDark = Color(0xFF616161)
 
     val primaryVariant = Color(0xFF3700B3)
     val secondary = Color(0xFF0A9400)
@@ -210,12 +210,12 @@ private val DarkCustomColors = CustomColors(
  */
 
 private val DarkCustomColors = CustomColors(
-    loadingSkeleton = WooPosColors.oldGray6161,
+    loadingSkeleton = WooPosColors.oldGrayDark,
     border = Color(0xFF8D8D8D),
     success = Color(0xFF06B166),
     error = WooPosColors.darkCustomColorsError,
     paymentSuccessBackground = WooPosColors.darkCustomColorsPaymentSuccessBackground,
-    paymentSuccessText = WooPosColors.oldGray870,
+    paymentSuccessText = WooPosColors.oldGrayLight,
     paymentSuccessIcon = Color.White,
     paymentSuccessIconBackground = WooPosColors.darkCustomColorsPaymentSuccessIconBackground,
     homeBackground = WooPosColors.Gray80,
