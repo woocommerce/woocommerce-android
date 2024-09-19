@@ -141,11 +141,11 @@ private object WooPosColors {
 
 private val DarkColorPalette = darkColors(
     primary = WooPosColors.Purple50,
-    primaryVariant = WooPosColors.Purple60,
+    primaryVariant = WooPosColors.primaryVariant,  // Added this line
     onPrimary = WooPosColors.White,
-    secondary = WooPosColors.Green10,
-    secondaryVariant = WooPosColors.Green20,
-    surface = WooPosColors.Gray80,
+    secondary = WooPosColors.secondary,  // Changed this line
+    secondaryVariant = WooPosColors.Gray70,
+    surface = WooPosColors.surface,  // Changed this line
     onSurface = WooPosColors.White,
     background = WooPosColors.Black90,
     onBackground = WooPosColors.White,
@@ -153,13 +153,13 @@ private val DarkColorPalette = darkColors(
 
 private val LightColorPalette = lightColors(
     primary = WooPosColors.Purple50,
-    primaryVariant = WooPosColors.Purple60,
+    primaryVariant = WooPosColors.lightColorPalettePrimaryVariant,  // Changed this line
     onPrimary = WooPosColors.White,
-    secondary = WooPosColors.Green10,
-    secondaryVariant = WooPosColors.Green20,
+    secondary = WooPosColors.lightColorPaletteSecondary,  // Changed this line
+    secondaryVariant = WooPosColors.lightColorPaletteSecondaryVariant,  // Changed this line
     surface = WooPosColors.White,
     onSurface = WooPosColors.Black,
-    background = WooPosColors.Gray0,
+    background = WooPosColors.lightColorPaletteBackground,  // Changed this line
     onBackground = WooPosColors.Black,
 )
 
@@ -167,11 +167,11 @@ private val DarkCustomColors = CustomColors(
     loadingSkeleton = WooPosColors.Gray60,
     border = WooPosColors.Gray70,
     success = WooPosColors.Green20,
-    error = WooPosColors.Red50,
-    paymentSuccessBackground = WooPosColors.Green10,
+    error = WooPosColors.darkCustomColorsError,  // Changed this line
+    paymentSuccessBackground = WooPosColors.darkCustomColorsPaymentSuccessBackground,  // Changed this line
     paymentSuccessText = WooPosColors.White,
     paymentSuccessIcon = WooPosColors.White,
-    paymentSuccessIconBackground = WooPosColors.Green20,
+    paymentSuccessIconBackground = WooPosColors.darkCustomColorsPaymentSuccessIconBackground,  // Changed this line
     homeBackground = WooPosColors.Gray80,
 )
 
@@ -179,7 +179,7 @@ private val LightCustomColors = CustomColors(
     loadingSkeleton = WooPosColors.Gray6,
     border = WooPosColors.Gray20,
     success = WooPosColors.Green10,
-    error = WooPosColors.Red50,
+    error = WooPosColors.LightCustomColorsError,  // Changed this line
     paymentSuccessBackground = WooPosColors.Green0,
     paymentSuccessText = WooPosColors.Purple90,
     paymentSuccessIcon = WooPosColors.Green10,
