@@ -43,7 +43,6 @@ class WooPosTotalsRepository @Inject constructor(
                                 quantity = quantity.toFloat(),
                                 total = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 subtotal = EMPTY_TOTALS_SUBTOTAL_VALUE,
-                                price = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 attributesList = emptyList(),
                             )
                         }

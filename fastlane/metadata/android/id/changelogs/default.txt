@@ -1,2 +1,0 @@
-20.3:
-Kami telah melakukan beberapa peningkatan untuk membuat pengalaman Anda lebih baik! Pembaruan ini memperbaiki masalah crash di layar daftar pesanan, mengatasi masalah dengan pemasangan plugin Jetpack, dan memperbaiki masalah bilah peralatan di layar rincian Paket dan Pelacakan Pesanan. Selain itu, kami telah menambahkan pengingat yang berguna untuk kampanye blaze jika Anda meninggalkan pembuatan kampanye yang belum selesai. Nikmati navigasi yang lebih lancar dan aplikasi yang lebih andal!

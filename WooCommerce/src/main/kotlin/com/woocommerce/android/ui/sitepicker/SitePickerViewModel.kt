@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.sitepicker
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -78,7 +79,9 @@ class SitePickerViewModel @Inject constructor(
      */
     @Suppress("OPT_IN_USAGE")
     val sitePickerViewStateData = LiveDataDelegate(savedState, SitePickerViewState())
-    private var sitePickerViewState by sitePickerViewStateData
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var sitePickerViewState by sitePickerViewStateData
 
     private val _sites = MutableLiveData<List<SitesListItem>>()
     val sites: LiveData<List<SitesListItem>> = _sites
