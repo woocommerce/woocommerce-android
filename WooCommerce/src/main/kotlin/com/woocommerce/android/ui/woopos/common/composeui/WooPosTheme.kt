@@ -27,27 +27,27 @@ data class CustomColors(
 )
 
 private val DarkColorPalette = darkColors(
-    primary = Color(0xFF9C70D3),
-    primaryVariant = Color(0xFF3700B3),
-    onPrimary = Color.Black,
-    secondary = Color(0xFF0A9400),
-    secondaryVariant = Color(0xFF8D8D8D),
-    surface = Color(0xFF2E2E2E),
-    onSurface = Color.White,
-    background = Color(0xFF121212),
-    onBackground = Color.White,
+    primary = WooPosColors.Purple50,
+    primaryVariant = WooPosColors.Purple60,
+    onPrimary = WooPosColors.White,
+    secondary = WooPosColors.Green10,
+    secondaryVariant = WooPosColors.Green20,
+    surface = WooPosColors.Gray80,
+    onSurface = WooPosColors.White,
+    background = WooPosColors.Black90,
+    onBackground = WooPosColors.White,
 )
 
 private val LightColorPalette = lightColors(
-    primary = Color(0xFF7F54B3),
-    primaryVariant = Color(0xFF3700B3),
-    onPrimary = Color.White,
-    secondary = Color(0xFF004B3E),
-    secondaryVariant = Color(0xFF50575E),
-    surface = Color.White,
-    onSurface = Color.Black,
-    background = Color(0xFFFDFDFD),
-    onBackground = Color.Black,
+    primary = WooPosColors.Purple50,
+    primaryVariant = WooPosColors.Purple60,
+    onPrimary = WooPosColors.White,
+    secondary = WooPosColors.Green10,
+    secondaryVariant = WooPosColors.Green20,
+    surface = WooPosColors.White,
+    onSurface = WooPosColors.Black,
+    background = WooPosColors.Gray0,
+    onBackground = WooPosColors.Black,
 )
 
 private val DarkCustomColors = CustomColors(
