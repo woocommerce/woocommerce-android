@@ -61,14 +61,13 @@ class SupportRequestFormActivity : AppCompatActivity() {
         adjustActivityTransitions()
     }
 
-    @Suppress("DEPRECATION")
     private fun SupportRequestFormActivity.adjustActivityTransitions() {
         if (isPOS()) {
             if (SystemVersionUtils.isAtLeastU()) {
                 overrideActivityTransition(
                     OVERRIDE_TRANSITION_CLOSE,
-                    android.R.anim.slide_in_left,
-                    android.R.anim.slide_out_right,
+                    R.anim.woopos_slide_in_left,
+                    R.anim.woopos_slide_out_right,
                     Color.TRANSPARENT
                 )
                 overrideActivityTransition(
@@ -78,9 +77,24 @@ class SupportRequestFormActivity : AppCompatActivity() {
                     Color.TRANSPARENT
                 )
             } else {
-                overridePendingTransition(R.anim.woopos_slide_in_left, R.anim.woopos_slide_out_right)
+                @Suppress("DEPRECATION")
+                overridePendingTransition(
+                    R.anim.woopos_slide_in_left,
+                    R.anim.woopos_slide_out_right
+                )
             }
         }
+    }
+
+    override fun onPause() {
+        if (SystemVersionUtils.isAtMostT()) {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(
+                R.anim.woopos_slide_in_left,
+                R.anim.woopos_slide_out_right
+            )
+        }
+        super.onPause()
     }
 
     private fun isPOS(): Boolean {
