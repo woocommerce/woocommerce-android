@@ -52,7 +52,14 @@ class BlazeRepository @Inject constructor(
     }
 
     fun observeObjectives() = blazeCampaignsStore.observeBlazeCampaignObjectives().map {
-        it.map { objective -> Objective(objective.id, objective.title, objective.description) }
+        it.map { objective ->
+            Objective(
+                objective.id,
+                objective.title,
+                objective.description,
+                objective.suitableForDescription
+            )
+        }
     }
 
     suspend fun fetchObjectives(): Result<Unit> {
@@ -396,7 +403,12 @@ class BlazeRepository @Inject constructor(
     }
 
     @Parcelize
-    data class Objective(val id: String, val title: String, val description: String) : Parcelable
+    data class Objective(
+        val id: String,
+        val title: String,
+        val description: String,
+        val suitableForDescription: String
+    ) : Parcelable
 
     @Parcelize
     data class TargetingParameters(
