@@ -159,13 +159,13 @@ private val DarkColorPalette = darkColors(
 
 private val DarkColorPalette = darkColors(
     primary = WooPosColors.primary,
-    primaryVariant = WooPosColors.primaryVariant, // val primaryVariant = Color(0xFF3700B3)
+    primaryVariant = WooPosColors.primaryVariant,
     onPrimary = Color.Black,
-    secondary = WooPosColors.secondary, // val secondary = Color(0xFF0A9400)
+    secondary = WooPosColors.secondary,
     secondaryVariant = Color(0xFF8D8D8D),
     surface = WooPosColors.surface,
     onSurface = Color.White,
-    background = WooPosColors.Black90, // val Black90 = Color(0xFF121212)
+    background = WooPosColors.Black90,
     onBackground = Color.White,
 )
 
@@ -184,15 +184,15 @@ private val LightColorPalette = lightColors(
  */
 
 private val LightColorPalette = lightColors(
-    primary = WooPosColors.Purple50, // val Purple50 = Color(0xFF7F54B3)
-    primaryVariant = WooPosColors.primaryVariant, // val primaryVariant = Color(0xFF3700B3)
-    onPrimary = WooPosColors.White, // val White = Color(0xFFFFFFFF)
-    secondary = WooPosColors.lightColorPaletteSecondary, // val lightColorPaletteSecondary = Color(0xFF004B3E)
-    secondaryVariant = WooPosColors.lightColorPaletteSecondaryVariant, // val lightColorPaletteSecondaryVariant = Color(0xFF50575E)
-    surface = WooPosColors.White, // val White = Color(0xFFFFFFFF)
-    onSurface = WooPosColors.Black, // val Black = Color(0xFF000000)
-    background = WooPosColors.lightColorPaletteBackground, // val lightColorPaletteBackground = Color(0xFFFDFDFD)
-    onBackground = WooPosColors.Black, // val Black = Color(0xFF000000)
+    primary = WooPosColors.Purple50,
+    primaryVariant = WooPosColors.primaryVariant,
+    onPrimary = Color.White,
+    secondary = WooPosColors.lightColorPaletteSecondary,
+    secondaryVariant = WooPosColors.lightColorPaletteSecondaryVariant,
+    surface = Color.White,
+    onSurface = Color.Black,
+    background = WooPosColors.lightColorPaletteBackground,
+    onBackground = Color.Black,
 )
 
 /*
