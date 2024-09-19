@@ -58,7 +58,6 @@ private object WooPosColors {
     val lightCustomColorsLoadingSkeleton = Color(0xFFE1E1E1)
     val lightCustomColorsBorder = Color(0xFFC6C6C8)
 
-
     val Purple0 = Color(0xFFF2EDFF)
     val Purple10 = Color(0xFFF7EDF7)
     val Purple15 = Color(0xFFE5CFE8)
