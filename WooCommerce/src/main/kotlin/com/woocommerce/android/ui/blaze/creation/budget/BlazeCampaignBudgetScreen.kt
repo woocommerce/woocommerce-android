@@ -253,12 +253,10 @@ private fun CampaignImpressionsRow(
     onBudgetChangeFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.Start
-    ) {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier
+                .fillMaxWidth()
                 .clickable { onImpressionsInfoTapped() }
                 .padding(top = 8.dp, bottom = 8.dp, end = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
