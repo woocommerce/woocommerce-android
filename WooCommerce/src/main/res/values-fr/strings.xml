@@ -1,21 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-08 11:54:03+0000
+Translation-Revision-Date: 2024-09-11 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">Valeur</string>
+    <string name="custom_fields_editor_key_label">Clé</string>
+    <string name="woopos_dialog_products_info_secondary_message">D’autres types de produits, tels que les produits virtuels et variables, seront disponibles dans les prochaines mises à jour.</string>
+    <string name="woopos_dialog_products_info_primary_message">Seuls les produits physiques simples peuvent être utilisés actuellement avec le PDV.</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">Annuler</string>
+    <string name="blaze_campaign_budget_duration_current_duration">Durée</string>
+    <string name="blaze_campaign_budget_duration_endless_description">La campagne durera jusqu’à ce que vous y mettiez un terme.</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">Préciser la durée</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">jusqu’au %1$s</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">Planifier</string>
+    <string name="blaze_campaign_budget_daily_spend_label">Dépense quotidienne</string>
+    <string name="blaze_campaign_budget_duration_subtitle">Combien souhaitez-vous dépenser pour votre campagne et combien de temps doit-elle durer ?</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">Faites découvrir vos produits à des millions de personnes et stimulez vos ventes avec Blaze.</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">Vous souhaitez stimuler vos ventes ?</string>
+    <string name="custom_fields_list_loading_error">Erreur lors du chargement des champs personnalisés</string>
+    <string name="custom_fields_list_title">Champs personnalisés</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">Arrière-plan peu éclairé. Appuyez pour ignorer la fenêtre de dialogue.</string>
+    <string name="blaze_campaign_budget_weekly_spending">%1$s par semaine</string>
+    <string name="blaze_campaign_budget_duration_endless_label">Exécuter jusqu’à ce que je l’arrête</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">À partir du %1$s</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">dépense hebdomadaire</string>
+    <string name="blaze_campaign_preview_days_duration_endless">%1$s par semaine à partir du %2$s</string>
+    <string name="blaze_campaign_status_budget_weekly">Hebdomadaire</string>
+    <string name="blaze_campaign_status_budget_remaining">Restant</string>
+    <string name="blaze_campaign_status_budget_total">Total</string>
+    <string name="blaze_campaign_status_ctr_label">Nombre de clics</string>
+    <string name="stats_widget_battery_saver_error">Il semblerait que votre appareil soit en mode Économie d’énergie. \nNous ne pouvons pas fournir d’informations sur votre boutique tant qu’il est activé.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Menu contextuel avec options. Balayez pour naviguer parmi les éléments.</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">Ouvrir le menu de la barre d’outils</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">Barre d’outils avec l’état du lecteur de carte. Le menu est ouvert. Appuyez deux fois pour interagir.</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">Barre d’outils avec l’état du lecteur de carte. Appuyez deux fois pour interagir.</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">Menu désactivé</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">Menu activé</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Lecteur de carte non connecté. Appuyer deux fois pour le connecter</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Lecteur de carte connecté</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">Arrière-plan peu éclairé. Appuyez pour fermer le menu.</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">Icône en forme de coche Paiement effectué</string>
+    <string name="woopos_remove_cart_item_content_description">Retirer cet élément du panier</string>
+    <string name="woopos_exit_dialog_confirmation_message">Toutes les commandes en cours seront perdues.</string>
+    <string name="woopos_exit_dialog_confirmation_title">Quitter le mode point de vente ?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">Fermer</string>
+    <string name="woopos_dialog_products_info_background_content_description">Arrière-plan peu éclairé. Appuyez pour ignorer la fenêtre de dialogue.</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Appuyez deux fois pour ignorer la fenêtre de dialogue</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Fenêtre de dialogue Produits simples uniquement</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">Appuyer deux fois pour lire la suite</string>
+    <string name="woopos_banner_simple_products_content_description">Bannière Produits simples uniquement</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Faites la promotion de vos produits avec les publicités Blaze et augmentez vos ventes dès maintenant.</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">Dynamiser vos ventes</string>
+    <string name="more_menu_button_payments_description">Accepter les paiements en mode nomade</string>
+    <string name="card_reader_payment_failed_incorrect_pin">Un code PIN incorrect a été saisi. Réessayer ou utiliser un autre moyen de paiement</string>
+    <string name="woopos_menu_toolbar_content_description">Menu</string>
+    <string name="woopos_cart_item_content_description">Produit dans le panier %s, Prix %s</string>
+    <string name="woopos_product_item_content_description">Produit %s, Prix %s</string>
+    <string name="blaze_campaign_status_suspended">En suspens</string>
     <string name="woopos_success_screen_total">Un paiement de %1$s a été effectué avec succès</string>
     <string name="woopos_new_order_button">Nouvelle commande</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Créer une commande dans la gestion de la boutique</string>
-    <string name="woopos_dialog_products_info_secondary_message">Pour accepter un paiement pour un produit non simple, quittez le PDV et créez une nouvelle commande depuis l’onglet Commandes.</string>
-    <string name="woopos_dialog_products_info_primary_message">Seuls les produits physiques simples peuvent être utilisés avec le PDV actuellement.\nD’autres types de produits, tels que les produits virtuels et variables, seront disponibles dans les mises à jour à venir.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Pour accepter un paiement pour un produit non simple, quittez le PDV et créez une nouvelle commande depuis l’onglet Commandes.</string>
     <string name="woopos_dialog_products_info_heading">Pourquoi ne puis-je pas voir mes produits ?</string>
     <string name="woopos_banner_simple_products_info_content_description">Informations</string>
     <string name="woopos_banner_simple_products_close_content_description">Fermer</string>
-    <string name="woopos_banner_simple_products_only_message_learn_more">Lire la suite</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">En savoir plus</string>
     <string name="woopos_banner_simple_products_only_message">Seuls les produits physiques simples sont compatibles avec le PDV actuellement. D’autres types de produits, tels que les produits virtuels et variables, seront disponibles dans les mises à jour à venir. </string>
     <string name="woopos_banner_simple_products_only_title">Affichage des produits simples uniquement</string>
     <string name="support_request_site_address">Adresse du site</string>
@@ -35,8 +89,6 @@ Language: fr
     <string name="woopos_products_empty_list_message">Le PDV ne prend actuellement en charge que les produits simples – \ncréez-en un pour commencer.</string>
     <string name="woopos_products_empty_list_title">Aucun produit pris en charge trouvé</string>
     <string name="woopos_products_empty_list_image_description">Aucun produit</string>
-    <string name="woopos_splash_message">Servir davantage de clients</string>
-    <string name="woopos_splash_title">Démarrage</string>
     <string name="woopos_get_support_title">Obtenir de l’aide</string>
     <string name="woopos_reader_disconnected">Se connecter à votre lecteur</string>
     <string name="ai_product_creation_photo_removed">Photo supprimée</string>
@@ -118,13 +170,12 @@ Language: fr
     <string name="product_creation_ai_entry_sheet_ai_option_subtitle_v2">Laissez-nous générer les détails du produit à votre place</string>
     <string name="woopos_payment_collect_payment_label">Percevoir un paiement par carte</string>
     <string name="woopos_payment_total_label">Total</string>
-    <string name="woopos_payment_tax_label">Taxe</string>
+    <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_subtotal_label">Sous-total</string>
     <string name="woopos_payment_successful_label">Paiement réussi</string>
     <string name="woopos_payment_failed_please_try_again">Échec du paiement. Veuillez réessayer.</string>
     <string name="woopos_cart_back_content_description">Icône du panier</string>
     <string name="woopos_products_screen_title">Produits</string>
-    <string name="woopos_product_image_description">Image produit</string>
     <string name="woopos_items_in_cart">%d élément</string>
     <string name="woopos_clear_cart_button">Effacer</string>
     <string name="more_menu_button_google_description">Multiplier les ventes et générer plus de trafic avec Google Ads</string>
@@ -132,10 +183,9 @@ Language: fr
     <string name="no_quantity_rules">Pas de règles de quantité</string>
     <string name="blaze_campaign_preview_audience_section_title">Audience</string>
     <string name="woopos_exit_confirmation_dismiss_button">Annuler</string>
-    <string name="woopos_exit_confirmation_confirm_button">Quitter</string>
-    <string name="woopos_exit_confirmation_message">Voulez-vous vraiment quitter le PDV ?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">Quitter</string>
     <string name="woopos_exit_confirmation_title">Quitter le PDV</string>
-    <string name="woopos_remove_item_from_cart_content_description">Retirer l’élément du panier</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">Retirer %s du panier</string>
     <string name="woopos_checkout_button">Validation de la commande</string>
     <string name="woopos_reader_unknown">État du lecteur inconnu</string>
     <string name="woopos_checkout">Validation de la commande</string>
@@ -416,20 +466,16 @@ Language: fr
     <string name="blaze_campaign_edit_ad_change_tagline_title">Description</string>
     <string name="blaze_campaign_edit_ad_change_image_button">Changer l’image</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Appliquer</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Début</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Date de début</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s jours</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">Fixer la durée</string>
     <string name="blaze_campaign_budget_impressions_info">Les impressions reflètent la fréquence à laquelle votre publicité apparaît pour les clients potentiels.\n\n\n        Il est impossible de donner les chiffres exacts en raison de la fluctuation du trafic en ligne et des comportements des internautes, nous visons à faire correspondre autant que possible les véritables impressions à votre nombre cible.\n\n\n        Rappelez-vous, les impressions sont une affaire de visibilité, pas d’action entreprise par les internautes.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Terminé</string>
     <string name="blaze_campaign_budget_impressions_title">Impressions</string>
     <string name="blaze_campaign_budget_update_button">Mettre à jour</string>
     <string name="blaze_campaign_budget_edit_duration_button">Modifier</string>
-    <string name="blaze_campaign_budget_duration_section_title">Durée</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimation du nombre de personnes atteintes par jour</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s par jour</string>
     <string name="blaze_campaign_budget_days_duration">pendant %1$s jours</string>
-    <string name="blaze_campaign_budget_total_spend">Dépense totale</string>
-    <string name="blaze_campaign_budget_subtitle">Combien souhaiteriez-vous dépenser pour votre campagne promotionnelle ?</string>
     <string name="blaze_campaign_budget_toolbar_title">Définir votre budget</string>
     <string name="blaze_campaign_preview_target_default_value">Tout</string>
     <string name="blaze_campaign_preview_days_duration">%1$s jours à partir de %2$s</string>
@@ -631,7 +677,6 @@ Language: fr
     <string name="blaze_campaign_creation_intro_title">Augmenter les ventes de votre boutique avec Blaze</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">Une erreur s’est produite lors de l’actualisation de la liste de campagnes. Veuillez réessayer plus tard.</string>
     <string name="media_picker_dialog_title">Sélectionner une source multimédia</string>
-    <string name="product_creation_package_photo_error">Une erreur est survenue lors de la génération du nom et de la description du produit.</string>
     <string name="product_creation_package_photo_no_text_detected">Aucun texte détecté. Sélectionnez une autre photo de l’emballage ou entrez manuellement les détails du produit.</string>
     <string name="order_editing_add_content_description">Ajouter un produit</string>
     <string name="order_editing_barcode_content_description">Scanner le code-barres</string>
@@ -653,9 +698,6 @@ Language: fr
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">Essayez de procéder à un paiement %s avec votre carte de débit ou de crédit.\nLe paiement sera remboursé lorsque vous aurez terminé.</string>
     <string name="card_reader_tap_to_pay_explanation_easy">C’est facile, sûr et privé.</string>
     <string name="card_reader_tap_to_pay_explanation_ready">Acceptez tous les types de paiements en personne directement\nsur votre téléphone. Aucun matériel supplémentaire nécessaire.</string>
-    <string name="blaze_campaign_status_budget">Budget</string>
-    <string name="blaze_campaign_status_clicks">Clics</string>
-    <string name="blaze_campaign_status_impressions">Impressions</string>
     <string name="blaze_campaign_status_rejected">Refusée</string>
     <string name="blaze_campaign_status_completed">Terminée</string>
     <string name="blaze_campaign_status_active">Active</string>
@@ -688,46 +730,23 @@ Language: fr
     <string name="card_reader_settings_header">RÉGLAGES</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">Ajouter des détails manuellement avec l’adresse e-mail</string>
     <string name="login_app_login_malformed_link">Nous n’avons pas pu traiter votre demande de connexion à l’application</string>
-    <string name="ai_product_name_copy_error">Erreur lors de la copie du nom du produit dans le presse-papiers.</string>
-    <string name="ai_product_name_copy_success">Nom du produit copié dans le presse-papiers.</string>
-    <string name="ai_product_name_copy_label">Nom de produit généré par l’IA</string>
     <string name="ai_product_description_copy_error">Erreur lors de la copie de la description du produit dans le presse-papiers.</string>
     <string name="ai_product_description_copy_success">Description du produit copiée dans le presse-papiers.</string>
     <string name="product_creation_ai_generation_failure_message">Le produit n’a pas pu être généré. Veuillez réessayer</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">Effacer l’adresse et arrêter d’utiliser ce taux</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">Définir un nouveau taux de taxation pour cette commande</string>
     <string name="tax_rate_selector_auto_rate_details_title">Ajout automatique du taux de taxation</string>
-    <string name="ai_product_name_sheet_error_message">Un problème est survenu lors de la génération du nom du produit. Veuillez réessayer.</string>
-    <string name="ai_product_name_sheet_regenerate_button">Régénérer</string>
-    <string name="ai_product_name_sheet_generate_button">L’écrire à ma place</string>
-    <string name="ai_product_name_sheet_input_description">Présentez-nous votre produit et dites-nous ce qui le rend unique !</string>
-    <string name="ai_product_name_sheet_subtitle">Laissez l’IA générer des titres captivants pour vous</string>
-    <string name="ai_product_name_sheet_title">Nom du produit</string>
     <string name="empty_review_filtered_list_message">Essayer de désactiver le filtre des avis non lus pour afficher tous les avis sur les produits</string>
     <string name="empty_review_filtered_list_title">Aucun avis non lu sur les produits</string>
-    <string name="product_creation_ai_tone_selected_content_desc">Ton sélectionné</string>
     <string name="product_creation_ai_tone_convincing">Convaincant</string>
     <string name="product_creation_ai_tone_flowery">Fleuri</string>
     <string name="product_creation_ai_tone_formal">Formel</string>
     <string name="product_creation_ai_tone_casual">Décontracté</string>
-    <string name="product_creation_ai_tone_description">Définissez le ton et la voix pour que la présentation de votre produit corresponde à votre marque.</string>
     <string name="product_creation_ai_tone_title">Ton et voix</string>
     <string name="product_creation_ai_preview_details_section">Détails</string>
-    <string name="product_creation_ai_preview_description_section">Description du produit</string>
     <string name="product_creation_ai_preview_name_section">Nom du produit</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">Vous pourrez toujours modifier les détails ci-après ultérieurement.</string>
     <string name="product_creation_ai_preview_title">Aperçu</string>
-    <string name="product_creation_ai_about_product_continue_button">Créer les détails du produit</string>
-    <string name="product_creation_ai_about_product_set_tone">Définir le ton et la voix</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">Ajoutez les fonctionnalités, les avantages ou les détails clés pour faciliter la recherche de votre produit en ligne.</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">Par exemple : tissu doux, coutures solides, design unique</string>
-    <string name="product_creation_ai_about_product_subtitle">Mettez en avant ce qui rend votre produit unique et laissez l’IA s’occuper du reste.</string>
-    <string name="product_creation_ai_about_product_title">À propos de votre produit</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">Proposer un nom</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">Par exemple : tissu doux, coutures solides, design unique.</string>
-    <string name="ai_product_creation_add_name_keywords_label">Nom du produit</string>
-    <string name="ai_product_creation_add_name_subtitle">Vous pouvez aussi obtenir d’autres suggestions de noms en un clic.</string>
-    <string name="ai_product_creation_add_name_title">Ajouter le nom de votre produit</string>
     <string name="product_creation_ai_entry_sheet_learn_more">Alimenté par l’IA. &lt;a href=\'guidelines\'&gt;&lt;u&gt;Lire la suite&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">Ajouter un produit et les détails manuellement</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">Ajouter manuellement</string>
@@ -1051,7 +1070,6 @@ Language: fr
     <string name="more_menu_button_coupons_description">Accélérez les ventes grâce à des offres spéciales</string>
     <string name="more_menu_button_store_description">Voir votre boutique</string>
     <string name="more_menu_button_inbox_description">Restez à jour</string>
-    <string name="more_menu_button_payments_description">Associez les paiements sur mobile</string>
     <string name="more_menu_button_wc_admin_description">Gérez plus de paramètres d’administration</string>
     <string name="more_menu_general_section_title">Général</string>
     <string name="more_menu_settings_section_title">Réglages</string>
@@ -1295,7 +1313,6 @@ Language: fr
     <string name="login_application_passwords_help">Que sont les mots de passe d\'applications ?</string>
     <string name="login_application_passwords_unavailable">Il semblerait que la fonctionnalité Mots de passe d\'applications s\'affiche sur votre site %1$s.\n Veuillez l’activer pour utiliser l’application WooCommerce.</string>
     <string name="login_open_installation_page">Ouvrir la page d\'installation</string>
-    <string name="not_a_valid_qr_code">Le code QR scanné n\'est pas un code WooCommerce</string>
     <string name="review_reply_failure">Une erreur s\'est produite lors de l\'envoi de la réponse</string>
     <string name="review_reply_success">Réponse envoyée !</string>
     <string name="wc_reply">Répondre</string>
@@ -1370,7 +1387,6 @@ Language: fr
     <string name="domain_picker_subtitle">C’est ici que les internautes vous trouveront sur Internet. Pas d’inquiétude, vous pourrez modifier ceci ultérieurement.</string>
     <string name="analytics_visitors_subtitle">Visiteurs</string>
     <string name="or_use_password_below_qr_code_scan_option">Ou connectez-vous avec un mot de passe</string>
-    <string name="or_scan_qr_code_to_log_in">Scannez le code QR pour vous connecter</string>
     <string name="simulated_reader_toast">Le simulateur de lecteur de carte a été désactivé</string>
     <string name="simulated_reader_key">Simulateur de lecteur de carte</string>
     <string name="variations_bulk_update_stock_quantity_success">Mise à jour de la quantité en stock</string>
@@ -1423,7 +1439,6 @@ Language: fr
     <string name="qr_code_login_scanner_title">Lecteur de codes-barres de l’appareil photo</string>
     <string name="dev_options">Options pour les développeurs</string>
     <string name="login_2fa_not_supported_self_hosted_site">L’authentification à deux facteurs n’est pas prise en charge pour les sites auto-hébergés. Utilisez un mot de passe d’application.</string>
-    <string name="login_with_qr_code">Scanner le code QR pour se connecter</string>
     <string name="show_password_content_description">Afficher le mot de passe</string>
     <string name="hide_password_content_description">Cacher le mot de passe</string>
     <string name="stats_widget_last_updated_message">À partir du %1$s</string>
@@ -1698,7 +1713,7 @@ Language: fr
     <string name="card_reader_interac_refund_refund_payment">Rembourser le paiement</string>
     <string name="card_reader_interac_refund_refund_failed_header">Remboursement échoué</string>
     <string name="card_reader_interac_refund_refund_loading_header">Prêt à rembourser le paiement</string>
-    <string name="copy">Copier</string>
+    <string name="copy" tools:override="true">Copier</string>
     <string name="coupons_list_search_hint">Recherche codes promo</string>
     <string name="coupon_details_share_formatting_failure">Impossible de générer le message de partage du code promo</string>
     <string name="coupon_details_share_coupon_error">Erreur lors du partage du code promo.</string>
@@ -2959,7 +2974,7 @@ Language: fr
     <string name="orderdetail_empty_address">Aucune adresse spécifiée</string>
     <string name="login_need_help_finding_connected_email">Besoin d\'aide pour trouver l\'adresse e-mail avec laquelle vous vous êtes connecté ?</string>
     <string name="enter_wordpress_site">Le site Web à cette adresse n\'est pas un site WordPress. WordPress doit être installé sur le site pour que nous puissions nous y connecter.</string>
-    <string name="enter_email_for_site">Connectez-vous à WordPress.com pour accéder à &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">Connectez-vous à WordPress.com pour accéder à &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">Zimbabwe</string>
     <string name="country_mapping_ZM">Zambie</string>
     <string name="country_mapping_YE">Yémen</string>
@@ -3555,8 +3570,8 @@ Language: fr
     <string name="login_configure_link">Lisez les %1$sinstructions de configuration%2$s.</string>
     <string name="login_jetpack_required">Cette application nécessite de connecter Jetpack à votre boutique.</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">Entrez l\'adresse de la boutique WooCommerce que vous aimeriez connecter.</string>
-    <string name="enter_email_wordpress_com">Connectez-vous avec l’adresse e-mail de votre compte WordPress.com afin de gérer toutes vos boutiques WooCommerce.</string>
+    <string name="enter_site_address" content_override="true">Entrez l\'adresse de la boutique WooCommerce que vous aimeriez connecter.</string>
+    <string name="enter_email_wordpress_com" content_override="true">Connectez-vous avec l’adresse e-mail de votre compte WordPress.com afin de gérer toutes vos boutiques WooCommerce.</string>
     <string name="already_logged_in_wpcom">Vous êtes déjà connecté à votre compte WordPress.com. Vous ne pouvez pas ajouter un site WordPress.com lié à un autre compte.</string>
     <string name="cant_open_url">Impossible d\'ouvrir le lien</string>
     <string name="error_no_sms_app">Application SMS introuvable</string>
@@ -3602,17 +3617,17 @@ Language: fr
     <string name="notification_channel_general_title">Général</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>En cours</item>

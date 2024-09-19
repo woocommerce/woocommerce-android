@@ -150,7 +150,9 @@ fun Toolbar(
                     Icon(
                         navigationIcon,
                         contentDescription = navigationIconContentDescription,
-                        modifier = Modifier.autoMirror()
+                        modifier = Modifier.then(
+                            if (navigationIcon.autoMirror) Modifier else Modifier.autoMirror()
+                        )
                     )
                 }
             }

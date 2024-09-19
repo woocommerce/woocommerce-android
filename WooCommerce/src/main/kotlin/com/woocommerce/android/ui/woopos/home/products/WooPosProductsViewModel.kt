@@ -29,7 +29,7 @@ class WooPosProductsViewModel @Inject constructor(
     private var loadMoreProductsJob: Job? = null
 
     private val _viewState =
-        MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading())
+        MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading(withCart = true))
     val viewState: StateFlow<WooPosProductsViewState> = _viewState
         .onEach { notifyParentAboutStatusChange(it) }
         .stateIn(
@@ -41,7 +41,8 @@ class WooPosProductsViewModel @Inject constructor(
     init {
         loadProducts(
             forceRefreshProducts = false,
-            withPullToRefresh = false
+            withPullToRefresh = false,
+            withCart = true,
         )
     }
 
@@ -58,14 +59,16 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
                 loadProducts(
                     forceRefreshProducts = true,
-                    withPullToRefresh = true
+                    withPullToRefresh = true,
+                    withCart = true,
                 )
             }
 
             WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
                 loadProducts(
                     forceRefreshProducts = false,
-                    withPullToRefresh = false
+                    withPullToRefresh = false,
+                    withCart = false,
                 )
             }
 
@@ -76,6 +79,7 @@ class WooPosProductsViewModel @Inject constructor(
             WooPosProductsUIEvent.SimpleProductsBannerLearnMoreClicked -> {
                 onSimpleProductsOnlyBannerLearnMoreClicked()
             }
+
             WooPosProductsUIEvent.SimpleProductsDialogInfoIconClicked -> {
                 onSimpleProductsDialogInfoClicked()
             }
@@ -106,13 +110,14 @@ class WooPosProductsViewModel @Inject constructor(
 
     private fun loadProducts(
         forceRefreshProducts: Boolean,
-        withPullToRefresh: Boolean
+        withPullToRefresh: Boolean,
+        withCart: Boolean
     ) {
         viewModelScope.launch {
             _viewState.value = if (withPullToRefresh) {
                 buildProductsReloadingState()
             } else {
-                WooPosProductsViewState.Loading()
+                WooPosProductsViewState.Loading(withCart = withCart)
             }
 
             productsDataSource.loadSimpleProducts(forceRefreshProducts = forceRefreshProducts).collect { result ->
@@ -198,8 +203,14 @@ class WooPosProductsViewModel @Inject constructor(
                 is WooPosProductsViewState.Content -> ChildToParentEvent.ProductsStatusChanged.WithCart
 
                 is WooPosProductsViewState.Empty,
-                is WooPosProductsViewState.Error,
-                is WooPosProductsViewState.Loading -> ChildToParentEvent.ProductsStatusChanged.FullScreen
+                is WooPosProductsViewState.Error -> ChildToParentEvent.ProductsStatusChanged.FullScreen
+                is WooPosProductsViewState.Loading -> {
+                    if (newState.withCart) {
+                        ChildToParentEvent.ProductsStatusChanged.WithCart
+                    } else {
+                        ChildToParentEvent.ProductsStatusChanged.FullScreen
+                    }
+                }
             }
         )
     }

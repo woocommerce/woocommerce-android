@@ -39,7 +39,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldClickListener
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldType
-import org.wordpress.android.fluxc.model.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 
 private var clickListener: CustomOrderFieldClickListener? = null
 

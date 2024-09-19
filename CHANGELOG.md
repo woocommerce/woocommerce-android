@@ -1,6 +1,21 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 20.4
+We've enhanced your WooCommerce app experience! You can now effortlessly scan tracking numbers when adding them to orders. Plus, we've fixed an issue with shipping labels, ensuring accurate weight calculations for packages with multiple items. Enjoy a smoother, more reliable app experience!
+
+## 20.3
+We’ve made several enhancements to boost your experience! This update fixes crashes on the orders list screen, resolves issues with the Jetpack plugin installation, and corrects toolbar glitches in the Package details and Order Tracking screens. We’ve also added a helpful blaze campaign reminder if you leave a campaign creation unfinished. Enjoy smoother navigation and a more reliable app!
+
+## 20.2
+Create Blaze Evergreen campaigns effortlessly with our latest update! We've also improved tablet navigation—now you'll be redirected to the order details screen after payment for a smoother experience. Update today and enjoy the enhancements!
+
+## 20.1
+We've improved your experience with our latest update! We've resolved the issue where the Orders screen would get stuck, addressed incorrect pin errors for UK and Canadian stores, fixed a rare crash in order editing, and enhanced usability on small screens. Enjoy smoother performance and better reliability!
+
+## 20.0
+We’ve improved your WooCommerce experience with several key updates: card reader tutorial images are now visible on tablets, QR code scanning is disabled during login, and the “Write with AI” issue with the keyboard has been fixed. Plus, you can now process card-present payments for orders marked as failed.
+
 ## 19.9
 We've enhanced your refund experience! Now, each refund item on the refund screen includes detailed subtotal and taxes fields, giving you clearer insights into your transactions. Update now to enjoy smoother, more transparent refunds!
 

@@ -19,6 +19,7 @@ object ProductTestUtils {
         isVirtual: Boolean = false,
         isVariable: Boolean = false,
         isPurchasable: Boolean = true,
+        isDownloadable: Boolean = true,
         customStatus: String? = null,
         variationIds: String = if (isVariable) "[123]" else "[]",
         productType: String? = null,
@@ -43,7 +44,7 @@ object ProductTestUtils {
             name = productName
             description = "product 1 description"
             images = if (imageUrl != null) """[{"src":"$imageUrl"}]""" else "[]"
-            downloadable = true
+            downloadable = isDownloadable
             downloads = """[
                                 {
                                     "id": 1,

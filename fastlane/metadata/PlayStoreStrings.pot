@@ -12,20 +12,20 @@ msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
-msgid "Introduces the new Woo WearOS app featuring instant updates on store data and orders at glance!"
+msgid "In this update, we’ve made a few small bug fixes and enhancements to ensure a smoother experience. Thanks for using our app, and stay tuned for more exciting features coming soon!"
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_199"
+msgctxt "release_note_204"
 msgid ""
-"19.9:\n"
-"We've enhanced your refund experience! Now, each refund item on the refund screen includes detailed subtotal and taxes fields, giving you clearer insights into your transactions. Update now to enjoy smoother, more transparent refunds!\n"
+"20.4:\n"
+"We've enhanced your WooCommerce app experience! You can now effortlessly scan tracking numbers when adding them to orders. Plus, we've fixed an issue with shipping labels, ensuring accurate weight calculations for packages with multiple items. Enjoy a smoother, more reliable app experience!\n"
 msgstr ""
 
-msgctxt "release_note_198"
+msgctxt "release_note_203"
 msgid ""
-"19.8:\n"
-"In our latest update, we've added a button in Google Campaign analytics for easier paid campaign creation. The Contact Support Form now includes a Site Address field. Enjoy seamless in-person payments illustrations in landscape mode, and benefit from background updates for order lists and dashboard analytics.\n"
+"20.3:\n"
+"We’ve made several enhancements to boost your experience! This update fixes crashes on the orders list screen, resolves issues with the Jetpack plugin installation, and corrects toolbar glitches in the Package details and Order Tracking screens. We’ve also added a helpful blaze campaign reminder if you leave a campaign creation unfinished. Enjoy smoother navigation and a more reliable app!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

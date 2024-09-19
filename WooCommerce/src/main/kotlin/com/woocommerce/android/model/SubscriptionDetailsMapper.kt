@@ -4,8 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.WCProductModel.SubscriptionMetadataKeys
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 
 object SubscriptionDetailsMapper {
     private val gson by lazy { Gson() }

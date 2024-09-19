@@ -4,8 +4,8 @@ import android.os.Parcelable
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.WCProductModel.SubscriptionMetadataKeys
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import java.math.BigDecimal
 
 @Parcelize

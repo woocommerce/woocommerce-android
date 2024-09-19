@@ -20,7 +20,10 @@ sealed class WooPosProductsViewState(
         )
     }
 
-    data class Loading(override val reloadingProductsWithPullToRefresh: Boolean = false) :
+    data class Loading(
+        override val reloadingProductsWithPullToRefresh: Boolean = false,
+        val withCart: Boolean,
+    ) :
         WooPosProductsViewState(reloadingProductsWithPullToRefresh)
 
     data class Error(override val reloadingProductsWithPullToRefresh: Boolean = false) :

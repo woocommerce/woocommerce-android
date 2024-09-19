@@ -93,7 +93,7 @@ fun BlazeCampaignPaymentSummaryScreen(
                 onCancelClick = onBackClick,
                 modifier = Modifier.padding(paddingValues)
             )
-            else -> PaymenSummaryContent(
+            else -> PaymentSummaryContent(
                 state = state,
                 onSubmitCampaign = onSubmitCampaign,
                 modifier = Modifier.padding(paddingValues)
@@ -103,7 +103,7 @@ fun BlazeCampaignPaymentSummaryScreen(
 }
 
 @Composable
-private fun PaymenSummaryContent(
+private fun PaymentSummaryContent(
     state: BlazeCampaignPaymentSummaryViewModel.ViewState,
     onSubmitCampaign: () -> Unit,
     modifier: Modifier = Modifier,
@@ -123,7 +123,7 @@ private fun PaymenSummaryContent(
         )
 
         PaymentTotals(
-            budget = state.budgetFormatted,
+            displayBudget = state.displayBudget,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -263,7 +263,7 @@ private fun CampaignCreationErrorUi(
 
 @Composable
 private fun PaymentTotals(
-    budget: String,
+    displayBudget: String,
     modifier: Modifier
 ) {
     Column(
@@ -285,7 +285,7 @@ private fun PaymentTotals(
             )
 
             Text(
-                text = budget,
+                text = displayBudget,
                 style = MaterialTheme.typography.body2
             )
         }
@@ -300,7 +300,7 @@ private fun PaymentTotals(
             )
 
             Text(
-                text = budget,
+                text = displayBudget,
                 style = MaterialTheme.typography.subtitle2
             )
         }
@@ -403,7 +403,7 @@ private fun BlazeCampaignPaymentSummaryScreenPreview() {
     WooThemeWithBackground {
         BlazeCampaignPaymentSummaryScreen(
             state = BlazeCampaignPaymentSummaryViewModel.ViewState(
-                budgetFormatted = "100 USD",
+                displayBudget = "100 USD",
                 paymentMethodsState = BlazeCampaignPaymentSummaryViewModel.PaymentMethodsState.Success(
                     BlazeRepository.PaymentMethodsData(
                         listOf(

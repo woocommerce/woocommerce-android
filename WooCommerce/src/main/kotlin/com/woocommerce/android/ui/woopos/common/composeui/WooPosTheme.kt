@@ -19,49 +19,59 @@ data class CustomColors(
     val success: Color,
     val error: Color,
     val paymentSuccessBackground: Color,
-    val paymentSuccessText: Color
+    val paymentSuccessText: Color,
+    val paymentSuccessIcon: Color,
+    val paymentSuccessIconBackground: Color,
+    val dialogSubtitleHighlightBackground: Color = Color(0x14747480),
+    val homeBackground: Color,
 )
 
 private val DarkColorPalette = darkColors(
-    primary = WooPOSColors.PrimaryDarkPurple,
-    primaryVariant = WooPOSColors.PrimaryVariantDarkBlue,
-    onPrimary = Color.White,
-    secondary = WooPOSColors.SecondaryDarkGreen,
-    secondaryVariant = WooPOSColors.SecondaryVariantDarkGray,
-    surface = WooPOSColors.SurfaceDarkBlack,
+    primary = Color(0xFF9C70D3),
+    primaryVariant = Color(0xFF3700B3),
+    onPrimary = Color.Black,
+    secondary = Color(0xFF0A9400),
+    secondaryVariant = Color(0xFF8D8D8D),
+    surface = Color(0xFF2E2E2E),
     onSurface = Color.White,
-    background = WooPOSColors.SurfaceDarkBlack,
-    onBackground = Color.White
+    background = Color(0xFF121212),
+    onBackground = Color.White,
 )
 
 private val LightColorPalette = lightColors(
-    primary = WooPOSColors.Purple50,
-    primaryVariant = WooPOSColors.PrimaryVariantDarkBlue,
+    primary = Color(0xFF7F54B3),
+    primaryVariant = Color(0xFF3700B3),
     onPrimary = Color.White,
-    secondary = WooPOSColors.SecondaryLightGreen,
-    secondaryVariant = WooPOSColors.SecondaryVariantLightGray,
+    secondary = Color(0xFF004B3E),
+    secondaryVariant = Color(0xFF50575E),
     surface = Color.White,
     onSurface = Color.Black,
-    background = WooPOSColors.Gray0,
-    onBackground = Color.Black
+    background = Color(0xFFFDFDFD),
+    onBackground = Color.Black,
 )
 
 private val DarkCustomColors = CustomColors(
-    loadingSkeleton = WooPOSColors.DarkLoadingSkeleton,
-    border = WooPOSColors.DarkBorder,
-    success = WooPOSColors.DarkSuccess,
-    error = WooPOSColors.DarkError,
-    paymentSuccessBackground = WooPOSColors.DarkSuccessBackground,
-    paymentSuccessText = WooPOSColors.DarkSuccessText
+    loadingSkeleton = Color(0xFF616161),
+    border = Color(0xFF8D8D8D),
+    success = Color(0xFF06B166),
+    error = Color(0xFFBE4400),
+    paymentSuccessBackground = Color(0xFF005139),
+    paymentSuccessText = Color(0xFFF2EBFF),
+    paymentSuccessIcon = Color.White,
+    paymentSuccessIconBackground = Color(0xFF00AD64),
+    homeBackground = Color(0xFF1E1E1E),
 )
 
 private val LightCustomColors = CustomColors(
-    loadingSkeleton = WooPOSColors.LightLoadingSkeleton,
-    border = WooPOSColors.LightBorder,
-    success = WooPOSColors.LightSuccess,
-    error = WooPOSColors.LightError,
-    paymentSuccessBackground = WooPOSColors.LightSuccessBackground,
-    paymentSuccessText = WooPOSColors.Purple90
+    loadingSkeleton = Color(0xFFE1E1E1),
+    border = Color(0xFFC6C6C8),
+    success = Color(0xFF03D479),
+    error = Color(0xFFF16618),
+    paymentSuccessBackground = Color(0xFF98F179),
+    paymentSuccessText = Color(0xFF271B3D),
+    paymentSuccessIcon = Color(0xFF03D479),
+    paymentSuccessIconBackground = Color.White,
+    homeBackground = Color(0xFFF6F7F7),
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {
@@ -106,33 +116,3 @@ object WooPosTheme {
         @Composable
         get() = LocalCustomColors.current
 }
-
-private object WooPOSColors {
-    val Gray0 = Color(0xFFF6F7F7)
-
-    val Purple50 = Color(0xFF7F54B3)
-    val Purple90 = Color(0xFF271B3D)
-
-    val PrimaryDarkPurple = Color(0xFF9C70D3)
-    val PrimaryVariantDarkBlue = Color(0xFF3700B3)
-    val SecondaryDarkGreen = Color(0xFF0A9400)
-    val SecondaryVariantDarkGray = Color(0xFF8D8D8D)
-    val SurfaceDarkBlack = Color(0xFF121212)
-
-    val SecondaryLightGreen = Color(0xFF004B3E)
-    val SecondaryVariantLightGray = Color(0xFF50575E)
-
-    val DarkLoadingSkeleton = Color(0xFF616161)
-    val DarkBorder = Color(0xFF8D8D8D)
-    val DarkSuccess = Color(0xFF06B166)
-    val DarkError = Color(0xFFBE4400)
-    val DarkSuccessBackground = Color(0xFF74C758)
-    val DarkSuccessText = Color(0xFFF2EBFF)
-
-    val LightLoadingSkeleton = Color(0xFFE1E1E1)
-    val LightBorder = Color(0xFFC6C6C8)
-    val LightSuccess = Color(0xFF03D479)
-    val LightError = Color(0xFFF16618)
-    val LightSuccessBackground = Color(0xFF98F179)
-}
-

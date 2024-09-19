@@ -79,6 +79,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val appPrefs: AppPrefs = AppPrefs,
     private val paymentsUtils: PaymentUtils,
+    private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -89,9 +90,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val order = _order.filterNotNull()
     private val cardReaderPaymentFlowParam
         get() = navArgs.cardReaderFlowParam as Payment
-
-    val displayUi: Boolean
-        get() = !isWooPOSPaymentFlow()
 
     init {
         checkStatus()
@@ -113,11 +111,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             }.also { order ->
                                 _order.value = order
                                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
+
+                                logOrderCurrencyMismatchWithSiteSettings(
+                                    storeCurrency = getSiteCurrencyCode(),
+                                    orderCurrency = order.currency
+                                )
                             }
 
                             when (param.paymentType) {
                                 SIMPLE, ORDER, ORDER_CREATION, TRY_TAP_TO_PAY -> showPaymentState()
-                                WOO_POS -> onBtReaderClicked()
+                                WOO_POS -> skipScreenDuringPosFlow()
                             }
                         }
                         Unit
@@ -152,7 +155,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun buildSuccessState(
+    private suspend fun buildSuccessState(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,
         isPaymentCollectableWithTapToPay: Boolean,
@@ -301,6 +304,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_EXTERNAL)
             triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
         }
+    }
+
+    private fun skipScreenDuringPosFlow() {
+        triggerEvent(SkipScreenInPosAndNavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, EXTERNAL))
     }
 
     fun onTapToPayClicked() {
@@ -496,14 +503,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun formatOrderTotal(total: BigDecimal): String {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+    private suspend fun formatOrderTotal(total: BigDecimal): String {
+        val currencyCode = getSiteCurrencyCode()
         return currencyFormatter.formatCurrency(total, currencyCode)
     }
 
-    private fun isWooPOSPaymentFlow() = with(navArgs.cardReaderFlowParam) {
-        this is Payment && paymentType == WOO_POS
-    }
+    private suspend fun getSiteCurrencyCode() =
+        withContext(dispatchers.io) {
+            wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+        }
 
     companion object {
         private const val DELAY_MS = 1L

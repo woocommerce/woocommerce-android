@@ -261,7 +261,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
                 listOf(
                     AnalyticsUpdateDataStore.AnalyticData.REVENUE,
                     AnalyticsUpdateDataStore.AnalyticData.VISITORS
-                )
+                ),
+                false
             ).collect { lastUpdateMillis -> _lastUpdateStats.value = lastUpdateMillis }
         }
     }

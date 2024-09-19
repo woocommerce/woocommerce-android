@@ -53,13 +53,15 @@ class WooPosProductsViewModelTest {
                 productId = 1,
                 productName = "Product 1",
                 amount = "10.0",
-                productType = "simple"
+                productType = "simple",
+                isDownloadable = false,
             ),
             ProductTestUtils.generateProduct(
                 productId = 2,
                 productName = "Product 2",
                 amount = "20.0",
-                productType = "simple"
+                productType = "simple",
+                isDownloadable = false,
             ).copy(firstImageUrl = "https://test.com")
         )
 

@@ -7,19 +7,20 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -34,12 +35,13 @@ class WooPosTotalsViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val totalsRepository: WooPosTotalsRepository,
     private val priceFormat: WooPosFormatPrice,
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val networkStatus: WooPosNetworkStatus,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
-        private const val DEBOUNCE_TIME_MS = 800L
         private const val KEY_STATE = "woo_pos_totals_data_state"
         private val InitialState = WooPosTotalsViewState.Loading
     }
@@ -58,21 +60,14 @@ class WooPosTotalsViewModel @Inject constructor(
         key = KEY_STATE,
     )
 
-    private var debounceJob: Job? = null
-
     init {
         listenUpEvents()
+        listenToPaymentsStatus()
     }
 
     fun onUIEvent(event: WooPosTotalsUIEvent) {
         when (event) {
-            is WooPosTotalsUIEvent.CollectPaymentClicked -> {
-                debounce {
-                    viewModelScope.launch {
-                        collectPayment()
-                    }
-                }
-            }
+            is WooPosTotalsUIEvent.CollectPaymentClicked -> collectPayment()
             is WooPosTotalsUIEvent.OnNewTransactionClicked -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(
@@ -86,18 +81,15 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun collectPayment() {
-        val orderId = dataState.value.orderId
-        check(orderId != EMPTY_ORDER_ID)
-        val result = cardReaderFacade.collectPayment(orderId)
-        when (result) {
-            is WooPosCardReaderPaymentResult.Success -> {
-                val state = uiState.value
-                check(state is WooPosTotalsViewState.Totals)
-                uiState.value = WooPosTotalsViewState.PaymentSuccess(orderTotalText = state.orderTotalText)
-                childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
+    private fun collectPayment() {
+        if (!networkStatus.isConnected()) {
+            viewModelScope.launch {
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.NoInternet)
             }
-            else -> Unit
+        } else {
+            val orderId = dataState.value.orderId
+            check(orderId != EMPTY_ORDER_ID)
+            cardReaderFacade.collectPayment(orderId)
         }
     }
 
@@ -114,7 +106,25 @@ class WooPosTotalsViewModel @Inject constructor(
                         uiState.value = InitialState
                     }
 
-                    else -> Unit
+                    is ParentToChildrenEvent.ItemClickedInProductSelector,
+                    ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
+                }
+            }
+        }
+    }
+
+    private fun listenToPaymentsStatus() {
+        viewModelScope.launch {
+            cardReaderFacade.paymentStatus.collect { status ->
+                when (status) {
+                    is WooPosCardReaderPaymentStatus.Success -> {
+                        val state = uiState.value
+                        check(state is WooPosTotalsViewState.Totals)
+                        uiState.value = WooPosTotalsViewState.PaymentSuccess(orderTotalText = state.orderTotalText)
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
+                    }
+                    is WooPosCardReaderPaymentStatus.Failure,
+                    is WooPosCardReaderPaymentStatus.Unknown -> Unit
                 }
             }
         }
@@ -129,11 +139,19 @@ class WooPosTotalsViewModel @Inject constructor(
                     onSuccess = { order ->
                         dataState.value = dataState.value.copy(orderId = order.id)
                         uiState.value = buildWooPosTotalsViewState(order)
+                        analyticsTracker.track(WooPosAnalyticsEvent.Event.OrderCreationSuccess)
                     },
                     onFailure = { error ->
                         WooLog.e(T.POS, "Order creation failed - $error")
                         uiState.value = WooPosTotalsViewState.Error(
                             resourceProvider.getString(R.string.woopos_totals_order_creation_error)
+                        )
+                        analyticsTracker.track(
+                            WooPosAnalyticsEvent.Error.OrderCreationError(
+                                errorContext = WooPosTotalsViewModel::class,
+                                errorType = error::class.simpleName,
+                                errorDescription = error.message
+                            )
                         )
                     }
                 )
@@ -141,9 +159,9 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun buildWooPosTotalsViewState(order: Order): WooPosTotalsViewState.Totals {
-        val subtotalAmount = order.items.sumOf { it.subtotal }
+        val subtotalAmount = order.productsTotal
         val taxAmount = order.totalTax
-        val totalAmount = subtotalAmount + taxAmount
+        val totalAmount = order.total
 
         return WooPosTotalsViewState.Totals(
             orderSubtotalText = priceFormat(subtotalAmount),
@@ -157,14 +175,4 @@ class WooPosTotalsViewModel @Inject constructor(
         val orderId: Long = EMPTY_ORDER_ID,
         val productIds: List<Long> = emptyList()
     ) : Parcelable
-
-    private fun debounce(destinationFunction: suspend () -> Unit) {
-        if (debounceJob?.isActive == true) {
-            return
-        }
-        debounceJob = viewModelScope.launch {
-            destinationFunction()
-            delay(DEBOUNCE_TIME_MS)
-        }
-    }
 }

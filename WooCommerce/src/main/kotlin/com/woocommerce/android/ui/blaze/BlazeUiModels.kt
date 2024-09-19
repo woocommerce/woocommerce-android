@@ -12,12 +12,11 @@ data class BlazeProductUi(
 data class BlazeCampaignUi(
     val product: BlazeProductUi,
     val status: CampaignStatusUi?,
-    val stats: List<BlazeCampaignStat>,
-)
-
-data class BlazeCampaignStat(
-    @StringRes val name: Int,
-    val value: String
+    val isEndlessCampaign: Boolean,
+    val impressions: String,
+    val clicks: String,
+    val formattedBudget: String,
+    @StringRes val budgetLabel: Int
 )
 
 enum class CampaignStatusUi(
@@ -54,6 +53,11 @@ enum class CampaignStatusUi(
         statusDisplayText = R.string.blaze_campaign_status_canceled,
         textColor = R.color.blaze_campaign_status_rejected_text,
         backgroundColor = R.color.blaze_campaign_status_rejected_background
+    ),
+    Suspended(
+        statusDisplayText = R.string.blaze_campaign_status_suspended,
+        textColor = R.color.blaze_campaign_status_suspended_text,
+        backgroundColor = R.color.blaze_campaign_status_suspended_background
     );
 
     companion object {
@@ -63,10 +67,16 @@ enum class CampaignStatusUi(
                 "scheduled" -> Scheduled
                 "active" -> Active
                 "rejected" -> Rejected
+                "suspended" -> Suspended
                 "canceled" -> Canceled
                 "finished" -> Completed
                 else -> null
             }
+        }
+
+        fun isActive(status: String): Boolean {
+            val campaignStatus = fromString(status)
+            return campaignStatus == Active || campaignStatus == Scheduled || campaignStatus == InModeration
         }
     }
 }

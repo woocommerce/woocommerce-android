@@ -8,6 +8,7 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -47,6 +48,11 @@ class LocalNotificationScheduler @Inject constructor(
                 AnalyticsTracker.KEY_BLOG_ID to notification.siteId,
             )
         )
+        WooLog.d(
+            tag = WooLog.T.NOTIFICATIONS,
+            message = "Local notification scheduled: " +
+                "type=${notification.type}, delay=${notification.delay}${notification.delayUnit}"
+        )
     }
 
     private fun buildPreconditionCheckWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
@@ -79,5 +85,9 @@ class LocalNotificationScheduler @Inject constructor(
 
     fun cancelScheduledNotification(type: LocalNotificationType) {
         workManager.cancelAllWorkByTag(type.value)
+        WooLog.d(
+            tag = WooLog.T.NOTIFICATIONS,
+            message = "Local notification canceled: $type"
+        )
     }
 }

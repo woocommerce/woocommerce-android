@@ -25,7 +25,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -51,6 +51,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,10 +61,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.Button
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
@@ -134,7 +137,7 @@ private fun WooPosProductsScreen(
 
                 is WooPosProductsViewState.Content -> MaterialTheme.colors.onSurface
             }
-            ProductsToolbar(state.value, modifier, titleColor, onToolbarInfoIconClicked)
+            ProductsToolbar(state.value, titleColor, onToolbarInfoIconClicked)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -172,13 +175,13 @@ private fun WooPosProductsScreen(
 @Composable
 private fun ProductsToolbar(
     productViewState: WooPosProductsViewState,
-    modifier: Modifier,
     titleColor: Color,
     onToolbarInfoIconClicked: () -> Unit,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth().height(40.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top,
     ) {
         Text(
             text = stringResource(id = R.string.woopos_products_screen_title),
@@ -200,11 +203,12 @@ private fun ProductsToolbar(
                             contentDescription = stringResource(
                                 id = R.string.woopos_banner_simple_products_info_content_description
                             ),
-                            tint = MaterialTheme.colors.primary,
+                            tint = MaterialTheme.colors.onSurface.copy(ContentAlpha.high),
                         )
                     }
                 }
             }
+
             else -> {
                 // no op
             }
@@ -269,7 +273,7 @@ private fun ProductsList(
             Spacer(modifier = Modifier.height(104.dp))
         }
     }
-    InfiniteListHandler(listState) {
+    InfiniteListHandler(listState, state) {
         onEndOfProductsListReached()
     }
 }
@@ -292,7 +296,7 @@ fun ProductsLoadingIndicator() {
 
 @Composable
 private fun ProductLoadingItem() {
-    Card(
+    WooPosCard(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {
@@ -337,8 +341,14 @@ private fun ProductItem(
     item: WooPosProductsListItem,
     onItemClicked: (item: WooPosProductsListItem) -> Unit
 ) {
-    Card(
-        modifier = modifier,
+    val itemContentDescription = stringResource(
+        id = R.string.woopos_cart_item_content_description,
+        item.name,
+        item.price
+    )
+    WooPosCard(
+        modifier = modifier
+            .semantics { contentDescription = itemContentDescription },
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {
@@ -357,7 +367,7 @@ private fun ProductItem(
                 fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                contentDescription = stringResource(id = R.string.woopos_product_image_description),
+                contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(112.dp)
             )
@@ -432,7 +442,7 @@ fun ProductsError(onRetryClicked: () -> Unit) {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
     ) {
-        WooPosErrorState(
+        WooPosErrorScreen(
             modifier = Modifier.width(640.dp),
             message = stringResource(id = R.string.woopos_products_loading_error_title),
             reason = stringResource(id = R.string.woopos_products_loading_error_message),
@@ -447,6 +457,7 @@ fun ProductsError(onRetryClicked: () -> Unit) {
 @Composable
 private fun InfiniteListHandler(
     listState: LazyListState,
+    state: WooPosProductsViewState.Content,
     onEndOfProductsListReached: () -> Unit
 ) {
     val buffer = 5
@@ -460,7 +471,7 @@ private fun InfiniteListHandler(
         }
     }
 
-    LaunchedEffect(loadMore) {
+    LaunchedEffect(state.reloadingProductsWithPullToRefresh) {
         snapshotFlow { loadMore.value }
             .distinctUntilChanged()
             .filter { it }
@@ -527,7 +538,12 @@ fun WooPosProductsScreenPreview(modifier: Modifier = Modifier) {
 @Composable
 @WooPosPreview
 fun WooPosProductsScreenLoadingPreview() {
-    val productState = MutableStateFlow(WooPosProductsViewState.Loading(true))
+    val productState = MutableStateFlow(
+        WooPosProductsViewState.Loading(
+            reloadingProductsWithPullToRefresh = true,
+            withCart = false
+        )
+    )
     WooPosTheme {
         WooPosProductsScreen(
             productsStateFlow = productState,

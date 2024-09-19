@@ -9,6 +9,7 @@ import android.content.SharedPreferences.Editor
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.BLAZE_CAMPAIGN_CREATED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
@@ -43,9 +44,9 @@ import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.promobanner.PromoBannerType
-import com.woocommerce.android.util.PreferenceUtils
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
+import com.woocommerce.commons.prefs.PreferenceUtils
 import java.util.Calendar
 import java.util.Date
 
@@ -118,7 +119,11 @@ object AppPrefs {
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+        BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN,
+        BLAZE_CAMPAIGN_CREATED,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
+        BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+        BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
         WC_STORE_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
@@ -1022,6 +1027,48 @@ object AppPrefs {
             key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
             value = value
         )
+
+    var isBlazeNoCampaignReminderShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+            value = value
+        )
+
+    var isBlazeAbandonedCampaignReminderShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
+            value = value
+        )
+
+    var blazeFirstTimeWithoutCampaign: Long
+        get() = getLong(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN, 0L)
+        set(value) = setLong(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN, value)
+
+    fun removeBlazeFirstTimeWithoutCampaign() {
+        remove(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN)
+    }
+
+    fun existsBlazeFirstTimeWithoutCampaign() = exists(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN)
+
+    fun setBlazeCampaignCreated() {
+        setBoolean(
+            key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED"),
+            value = true
+        )
+    }
+
+    fun getBlazeCampaignCreated() = getBoolean(
+        key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED"),
+        default = false
+    )
 
     var timesAiProductCreationSurveyDisplayed: Int
         get() = getInt(

@@ -7,8 +7,6 @@ import com.woocommerce.android.ui.products.GetBundledProducts
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
-import org.wordpress.android.fluxc.model.WCMetaData
-import org.wordpress.android.fluxc.model.get
 import javax.inject.Inject
 
 class GetProductRules @Inject constructor(
@@ -30,11 +28,7 @@ class GetProductRules @Inject constructor(
             val builder = ProductRules.Builder().apply {
                 productType = ProductType.BUNDLE
             }
-            productDetailRepository.getProductMetadata(product.remoteId)?.let { list ->
-                val maxSize = list[WCMetaData.BundleMetadataKeys.BUNDLE_MAX_SIZE]?.valueAsString?.toFloatOrNull()
-                val minSize = list[WCMetaData.BundleMetadataKeys.BUNDLE_MIN_SIZE]?.valueAsString?.toFloatOrNull()
-                builder.setQuantityRules(minSize, maxSize)
-            }
+            builder.setQuantityRules(quantityMin = product.bundleMinSize, quantityMax = product.bundleMaxSize)
             getBundledProducts(product.remoteId).first().forEach { bundledProduct ->
                 builder.setChildQuantityRules(
                     itemId = bundledProduct.id,

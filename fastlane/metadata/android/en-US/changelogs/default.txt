@@ -1,1 +1,1 @@
-We've enhanced your refund experience! Now, each refund item on the refund screen includes detailed subtotal and taxes fields, giving you clearer insights into your transactions. Update now to enjoy smoother, more transparent refunds!
+We've enhanced your WooCommerce app experience! You can now effortlessly scan tracking numbers when adding them to orders. Plus, we've fixed an issue with shipping labels, ensuring accurate weight calculations for packages with multiple items. Enjoy a smoother, more reliable app experience!

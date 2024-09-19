@@ -15,7 +15,7 @@ interface ProductRestrictions {
 class OrderCreationProductRestrictions @Inject constructor() : ProductRestrictions {
     override val restrictions: List<ProductRestriction>
         get() = listOf(
-            ProductRestriction.NonPublishedProducts,
+            ProductRestriction.NonPurchasableProducts,
             ProductRestriction.VariableProductsWithNoVariations,
             ProductRestriction.ProductWithPriceNotSpecified,
         )
@@ -35,6 +35,13 @@ sealed class ProductRestriction : (Product) -> Boolean, Parcelable {
     object NonPublishedProducts : ProductRestriction() {
         override fun invoke(product: Product): Boolean {
             return product.status != ProductStatus.PUBLISH
+        }
+    }
+
+    @Parcelize
+    object NonPurchasableProducts : ProductRestriction() {
+        override fun invoke(product: Product): Boolean {
+            return product.status != ProductStatus.PUBLISH && product.status != ProductStatus.PRIVATE
         }
     }
 

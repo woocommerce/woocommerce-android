@@ -170,7 +170,7 @@ class VariationListViewModel @Inject constructor(
                 ?.let { remove(it) }
         }?.toList().let { _variationList.value = it }
 
-        productRepository.fetchProductOrLoadFromCache(productID)
+        productRepository.fetchAndGetProduct(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
@@ -212,7 +212,7 @@ class VariationListViewModel @Inject constructor(
 
     private suspend fun syncProductToVariations(productID: Long) {
         loadVariations(productID, withSkeletonView = false)
-        productRepository.fetchProductOrLoadFromCache(productID)
+        productRepository.fetchAndGetProduct(productID)
             ?.let { viewState = viewState.copy(parentProduct = it) }
     }
 
@@ -339,7 +339,10 @@ class VariationListViewModel @Inject constructor(
                 RequestResult.SUCCESS -> {
                     tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
                     refreshVariations(remoteProductId)
-                    viewState = viewState.copy(progressDialogState = Hidden)
+
+                    viewState = productRepository.fetchAndGetProduct(remoteProductId)
+                        ?.let { viewState.copy(parentProduct = it, progressDialogState = Hidden) }
+                        ?: viewState.copy(progressDialogState = Hidden)
                 }
                 else -> {
                     tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_FAILURE)

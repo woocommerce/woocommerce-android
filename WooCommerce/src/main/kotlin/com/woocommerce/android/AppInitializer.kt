@@ -39,6 +39,7 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.appwidgets.getWidgetName
+import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
@@ -126,6 +127,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var sendTelemetry: SendTelemetry
 
     @Inject lateinit var siteObserver: SiteObserver
+
+    @Inject
+    lateinit var blazeCampaignsObserver: BlazeCampaignsObserver
 
     @Inject lateinit var wooLog: WooLogWrapper
 
@@ -232,6 +236,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
+        appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
         appCoroutineScope.launch {
             featureFlagRepository.fetchFeatureFlags(PackageUtils.getVersionName(application.applicationContext))
         }

@@ -15,6 +15,16 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE_APPROVED_NOTE
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE_CANCELLED_NOTE
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE_PERFORMED_NOTE
+import com.woocommerce.android.notifications.WooNotificationType.BLAZE_REJECTED_NOTE
+import com.woocommerce.android.notifications.WooNotificationType.LOCAL_REMINDER
+import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.notifications.local.LocalNotificationType
+import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER
+import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -107,7 +117,7 @@ class MainActivityViewModel @Inject constructor(
         )
     }
 
-    fun handleIncomingNotification(localPushId: Int, notification: Notification?) {
+    fun onPushNotificationTapped(localPushId: Int, notification: Notification?) {
         notification?.let {
             // update current selectSite based on the current notification
             val currentSite = selectedSite.get()
@@ -116,8 +126,8 @@ class MainActivityViewModel @Inject constructor(
                 changeSiteAndRestart(it.remoteSiteId, RestartActivityForPushNotification(localPushId, notification))
             } else {
                 when (localPushId) {
-                    it.getGroupPushId() -> onGroupMessageOpened(it.channelType, it.remoteSiteId)
-                    else -> onSingleNotificationOpened(localPushId, it)
+                    it.getGroupPushId() -> onGroupMessageOpened(it)
+                    else -> onSinglePushNotificationOpened(localPushId, it)
                 }
             }
         } ?: run {
@@ -168,29 +178,53 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    private fun onGroupMessageOpened(notificationChannelType: NotificationChannelType, remoteSiteId: Long) {
-        notificationHandler.markNotificationsOfTypeTapped(notificationChannelType)
-        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notificationChannelType, remoteSiteId)
-        when (notificationChannelType) {
+    private fun onGroupMessageOpened(notification: Notification) {
+        notificationHandler.markNotificationsOfTypeTapped(notification.channelType)
+        notificationHandler.removeNotificationsOfTypeFromSystemsBar(notification.channelType, notification.remoteSiteId)
+        when (notification.channelType) {
             NotificationChannelType.NEW_ORDER -> triggerEvent(ViewOrderList)
             NotificationChannelType.REVIEW -> triggerEvent(ViewReviewList)
-            else -> triggerEvent(ViewMyStoreStats)
+            NotificationChannelType.OTHER -> if (notification.isBlazeNotification) {
+                triggerEvent(ViewBlazeCampaignList)
+            } else {
+                triggerEvent(ViewMyStoreStats)
+            }
         }
     }
 
-    private fun onSingleNotificationOpened(localPushId: Int, notification: Notification) {
+    private fun onSinglePushNotificationOpened(localPushId: Int, notification: Notification) {
         notificationHandler.markNotificationTapped(notification.remoteNoteId)
         notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
-        if (notification.channelType == NotificationChannelType.REVIEW) {
-            analyticsTrackerWrapper.track(REVIEW_OPEN)
-            triggerEvent(ViewReviewDetail(notification.uniqueId))
-        } else if (notification.channelType == NotificationChannelType.NEW_ORDER) {
-            if (siteStore.getSiteBySiteId(notification.remoteSiteId) != null) {
-                triggerEvent(ViewOrderDetail(notification.uniqueId, notification.remoteNoteId))
-            } else {
-                // the site does not exist locally, open order list
-                triggerEvent(ViewOrderList)
+        when (notification.noteType) {
+            NEW_ORDER -> {
+                when {
+                    siteStore.getSiteBySiteId(notification.remoteSiteId) != null -> triggerEvent(
+                        ViewOrderDetail(
+                            notification.uniqueId,
+                            notification.remoteNoteId
+                        )
+                    )
+
+                    else -> triggerEvent(ViewOrderList)
+                }
             }
+
+            PRODUCT_REVIEW -> {
+                analyticsTrackerWrapper.track(REVIEW_OPEN)
+                triggerEvent(ViewReviewDetail(notification.uniqueId))
+            }
+
+            BLAZE_APPROVED_NOTE,
+            BLAZE_REJECTED_NOTE,
+            BLAZE_CANCELLED_NOTE,
+            BLAZE_PERFORMED_NOTE -> triggerEvent(
+                ViewBlazeCampaignDetail(
+                    campaignId = notification.uniqueId.toString(),
+                    isOpenedFromPush = true
+                )
+            )
+
+            LOCAL_REMINDER -> error("Local reminder notification should not be handled here")
         }
     }
 
@@ -260,6 +294,12 @@ class MainActivityViewModel @Inject constructor(
                 AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
                 mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
             )
+            LocalNotificationType.fromString(notification.tag)?.let {
+                when (it) {
+                    BLAZE_NO_CAMPAIGN_REMINDER,
+                    BLAZE_ABANDONED_CAMPAIGN_REMINDER -> triggerEvent(LaunchBlazeCampaignCreation)
+                }
+            }
         }
     }
 
@@ -305,8 +345,10 @@ class MainActivityViewModel @Inject constructor(
     data class ViewUrlInWebView(
         val url: String,
     ) : Event()
+
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
+    object LaunchBlazeCampaignCreation : Event()
 
     sealed class RestartActivityEvent : Event()
     data class RestartActivityForLocalNotification(val notification: Notification) : RestartActivityEvent()
@@ -320,6 +362,8 @@ class MainActivityViewModel @Inject constructor(
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
+    data class ViewBlazeCampaignDetail(val campaignId: String, val isOpenedFromPush: Boolean) : Event()
+    object ViewBlazeCampaignList : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()

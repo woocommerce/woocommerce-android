@@ -5,4 +5,5 @@ sealed class WooPosCartUIEvent {
     data class ItemRemovedFromCart(val item: WooPosCartState.Body.WithItems.Item) : WooPosCartUIEvent()
     data object ClearAllClicked : WooPosCartUIEvent()
     data object BackClicked : WooPosCartUIEvent()
+    data class OnCartItemAppearanceAnimationPlayed(val item: WooPosCartState.Body.WithItems.Item) : WooPosCartUIEvent()
 }

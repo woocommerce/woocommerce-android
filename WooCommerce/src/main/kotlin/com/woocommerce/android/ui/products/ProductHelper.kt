@@ -103,6 +103,8 @@ object ProductHelper {
             parentId = 0,
             minAllowedQuantity = null,
             maxAllowedQuantity = null,
+            bundleMinSize = null,
+            bundleMaxSize = null,
             groupOfQuantity = null,
             combineVariationQuantities = null
         )

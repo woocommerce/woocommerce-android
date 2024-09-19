@@ -49,7 +49,8 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
                 spentBudget = 0f,
                 currencyCode = "$",
                 durationInDays = 7,
-                startDate = Date()
+                startDate = Date(),
+                isEndlessCampaign = false
             ),
             campaignImage = BlazeCampaignImage.None,
             destinationParameters = BlazeRepository.DestinationParameters(
@@ -337,7 +338,8 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
             spentBudget = 0f,
             currencyCode = "$",
             durationInDays = 14,
-            startDate = Date()
+            startDate = Date(),
+            isEndlessCampaign = false
         )
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onBudgetAndDurationUpdated(newBudget)

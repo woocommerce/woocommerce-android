@@ -43,15 +43,18 @@ import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
+import com.woocommerce.android.ui.main.MainActivityViewModel
 
 @Composable
 fun DashboardContainer(
+    mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
     dashboardViewModel.dashboardWidgets.observeAsState().value?.let { widgets ->
         WidgetList(
             widgetUiModels = widgets,
+            mainActivityViewModel = mainActivityViewModel,
             dashboardViewModel = dashboardViewModel,
             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
         )
@@ -61,6 +64,7 @@ fun DashboardContainer(
 @Composable
 private fun WidgetList(
     widgetUiModels: List<DashboardViewModel.DashboardWidgetUiModel>,
+    mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
@@ -80,6 +84,7 @@ private fun WidgetList(
                     is DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget -> {
                         ConfigurableWidgetCard(
                             widgetUiModel = it,
+                            mainActivityViewModel = mainActivityViewModel,
                             dashboardViewModel = dashboardViewModel,
                             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
                             modifier = widgetModifier
@@ -115,6 +120,7 @@ private fun WidgetList(
 @Composable
 private fun ConfigurableWidgetCard(
     widgetUiModel: DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget,
+    mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     modifier: Modifier
@@ -137,6 +143,7 @@ private fun ConfigurableWidgetCard(
 
         DashboardWidget.Type.BLAZE -> DashboardBlazeCard(
             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+            activityViewModel = mainActivityViewModel,
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )

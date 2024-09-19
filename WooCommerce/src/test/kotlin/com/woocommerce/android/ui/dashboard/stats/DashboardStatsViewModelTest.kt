@@ -72,7 +72,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     }
     private val timezoneProvider: TimezoneProvider = mock()
     private val observeLastUpdate: ObserveLastUpdate = mock {
-        onBlocking { invoke(any(), ArgumentMatchers.anyList()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
+        onBlocking { invoke(any(), ArgumentMatchers.anyList(), eq(false)) } doReturn flowOf(DEFAULT_LAST_UPDATE)
     }
     private val dateUtils: DateUtils = mock()
     private val parentViewModel: DashboardViewModel = mock {

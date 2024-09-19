@@ -6,6 +6,7 @@ import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
 import com.woocommerce.commons.DataPath.ANALYTICS_DATA
+import com.woocommerce.commons.MessagePath.REQUEST_APP_SETTINGS
 import com.woocommerce.commons.MessagePath.REQUEST_ORDERS
 import com.woocommerce.commons.MessagePath.REQUEST_ORDER_PRODUCTS
 import com.woocommerce.commons.MessagePath.REQUEST_SITE
@@ -26,6 +27,7 @@ class WearableConnectionService : WearableListenerService() {
             REQUEST_STATS.value -> wearableConnectionRepository.sendStatsData()
             REQUEST_ORDERS.value -> wearableConnectionRepository.sendOrdersData()
             REQUEST_ORDER_PRODUCTS.value -> wearableConnectionRepository.sendOrderProductsData(message)
+            REQUEST_APP_SETTINGS.value -> wearableConnectionRepository.sendAppSettingsData()
         }
     }
 

@@ -1,6 +1,5 @@
 package com.woocommerce.android.ai
 
-import com.google.gson.Gson
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.tools.SelectedSite
@@ -22,8 +21,6 @@ class AIRepository @Inject constructor(
         const val PRODUCT_SHARING_FEATURE = "woo_android_share_product"
         const val PRODUCT_DESCRIPTION_FEATURE = "woo_android_product_description"
         const val PRODUCT_CREATION_FEATURE = "woo_android_product_creation"
-        const val PRODUCT_NAME_FEATURE = "woo_android_product_name"
-        const val PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE = "woo_android_product_details_from_scanned_texts"
         const val ORDER_DETAIL_THANK_YOU_NOTE = "woo_android_order_detail_thank_you_note"
     }
 
@@ -55,33 +52,6 @@ class AIRepository @Inject constructor(
         return fetchJetpackAIQuery(prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
-    suspend fun generateProductName(
-        keywords: String,
-        languageISOCode: String = "en"
-    ): Result<String> {
-        val prompt = AIPrompts.generateProductNamePrompt(
-            keywords,
-            languageISOCode
-        )
-
-        return fetchJetpackAIQuery(prompt, PRODUCT_NAME_FEATURE)
-    }
-
-    suspend fun generateProductNameAndDescription(
-        keywords: String,
-        languageISOCode: String = "en"
-    ): Result<AIProductDetailsResult> {
-        val prompt = AIPrompts.generateProductNameAndDescriptionPrompt(
-            keywords,
-            languageISOCode
-        )
-
-        return fetchJetpackAIQuery(prompt, PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE, ResponseFormat.JSON)
-            .mapCatching { json ->
-                Gson().fromJson(json, AIProductDetailsResult::class.java)
-            }
-    }
-
     @Suppress("LongParameterList", "MagicNumber")
     suspend fun generateProduct(
         productKeyWords: String,
@@ -107,36 +77,6 @@ class AIRepository @Inject constructor(
             feature = PRODUCT_CREATION_FEATURE,
             format = ResponseFormat.JSON,
             maxTokens = 4000 // Specify a higher limit for max_tokens to avoid truncated responses, see pe5sF9-2UY-p2
-        )
-    }
-
-    // TODO remove this when cleaning up legacy code for product creation
-    @Suppress("LongParameterList")
-    suspend fun generateProductLegacy(
-        productName: String,
-        productKeyWords: String,
-        tone: String,
-        weightUnit: String,
-        dimensionUnit: String,
-        currency: String,
-        existingCategories: List<ProductCategory>,
-        existingTags: List<ProductTag>,
-        languageISOCode: String
-    ): Result<String> {
-        return fetchJetpackAIQuery(
-            prompt = AIPrompts.generateProductCreationPromptLegacy(
-                name = productName,
-                keywords = productKeyWords,
-                tone = tone,
-                weightUnit = weightUnit,
-                dimensionUnit = dimensionUnit,
-                currency = currency,
-                existingCategories = existingCategories.map { it.name },
-                existingTags = existingTags.map { it.name },
-                languageISOCode = languageISOCode
-            ),
-            feature = PRODUCT_CREATION_FEATURE,
-            format = ResponseFormat.JSON
         )
     }
 
@@ -192,11 +132,6 @@ class AIRepository @Inject constructor(
         val errorMessage: String,
         val errorType: String
     ) : Exception(errorMessage)
-
-    data class AIProductDetailsResult(
-        val name: String,
-        val description: String
-    )
 
     private fun JetpackAIQueryResponse.Error.mapToException() =
         JetpackAICompletionsException(

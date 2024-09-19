@@ -6,14 +6,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
@@ -24,7 +22,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_URL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_COM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
@@ -50,8 +47,6 @@ import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
-import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
-import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -105,8 +100,7 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    LoginSiteCredentialsFragment.Listener,
-    QrCodeLoginListener {
+    LoginSiteCredentialsFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
@@ -948,17 +942,6 @@ class LoginActivity :
         }
     }
 
-    override fun onScanQrCodeClicked(source: String) {
-        AnalyticsTracker.track(
-            stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_BUTTON_TAPPED,
-            properties = mapOf(
-                KEY_FLOW to VALUE_LOGIN_WITH_WORDPRESS_COM,
-                KEY_SOURCE to source
-            )
-        )
-        openQrCodeScannerFragment()
-    }
-
     private fun clearCachedSites() {
         // Clear all sites from the DB to avoid any conflicts with the new login
         // Sometimes, the same website could be fetched from different APIs (WPCom or WPApi), and if cached twice
@@ -1003,25 +986,6 @@ class LoginActivity :
                 showPrologue()
             }
         }
-    }
-
-    private fun openQrCodeScannerFragment() {
-        GmsBarcodeScanning.getClient(this).startScan()
-            .addOnSuccessListener { rawValue ->
-                if (ValidateScannedValue.validate(rawValue.rawValue)) {
-                    AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue.rawValue))
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(
-                        this,
-                        resources.getText(R.string.not_a_valid_qr_code),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
     }
 
     /**

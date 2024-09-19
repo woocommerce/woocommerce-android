@@ -678,7 +678,7 @@ class ProductDetailViewModel @Inject constructor(
                 when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
                     RequestResult.SUCCESS -> {
                         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
-                        productRepository.fetchProductOrLoadFromCache(remoteProductId)
+                        productRepository.fetchAndGetProduct(remoteProductId)
                             ?.also { updateProductState(productToUpdateFrom = it) }
                         triggerEvent(ProductExitEvent.ExitAttributesAdded)
                     }
@@ -701,7 +701,7 @@ class ProductDetailViewModel @Inject constructor(
             )
             variationRepository.createEmptyVariation(draft)
                 ?.let {
-                    productRepository.fetchProductOrLoadFromCache(draft.remoteId)
+                    productRepository.fetchAndGetProduct(draft.remoteId)
                         ?.also { updateProductState(productToUpdateFrom = it) }
                 }
         }.also {
@@ -1563,7 +1563,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (checkConnection()) {
-            val fetchedProduct = productRepository.fetchProductOrLoadFromCache(remoteProductId)
+            val fetchedProduct = productRepository.fetchAndGetProduct(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
@@ -1664,7 +1664,7 @@ class ProductDetailViewModel @Inject constructor(
     fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean {
         // first make sure an attribute with the new name doesn't already exist in the draft
         productDraftAttributes.forEach {
-            if (it.name.equals(newAttributeName, ignoreCase = true)) {
+            if (it.name.equals(newAttributeName)) {
                 triggerEvent(ShowSnackbar(R.string.product_attribute_name_already_exists))
                 return false
             }

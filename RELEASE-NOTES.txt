@@ -1,9 +1,56 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+
+20.5
+-----
+- [*] Fixes a bug that prevented users to rename the Product Variation Attributes to because of case insensitive checks [https://github.com/woocommerce/woocommerce-android/pull/12608]
+- [*] Users can directly pick product images when creating Blaze ads [https://github.com/woocommerce/woocommerce-android/pull/12610]
+
+20.4
+-----
+- [**] Users can now scan their tracking number when adding it to the order [https://github.com/woocommerce/woocommerce-android/pull/12533]
+- [*] Fixed an issue where shipping labels were incorrectly calculating the weight for packages containing multiple quantities of the same product [https://github.com/woocommerce/woocommerce-android/pull/12602]
+
+20.3
+-----
+- [**] Stopped potential crash in the orders list screen when tapping "Filters" button [https://github.com/woocommerce/woocommerce-android/pull/12482]
+- [**] Fixed a bug that caused the app to freeze after adding products to new order [https://github.com/woocommerce/woocommerce-android/pull/12493]
+- [*] Fixes error when installing Jetpack plugin from the app [https://github.com/woocommerce/woocommerce-android/issues/12364]
+- [*] [Internal] Updated the Compose WebView component to handle choosing files from the device when the web page requests it [https://github.com/woocommerce/woocommerce-android/pull/12499]
+- [*] Fixes toolbar shown twice on Package details screen while adding shipping label [https://github.com/woocommerce/woocommerce-android/pull/12489]
+- [*] Fixes navigation from product review detail screen when opened from notification [https://github.com/woocommerce/woocommerce-android/pull/12514]
+- [*] Added a blaze campaign reminder that appears after abandoning a campaign creation. [https://github.com/woocommerce/woocommerce-android/pull/12452]
+- [**] [Internal] Fix a crash during JITM cache initialisation
+- [*] Fixes an issue that caused the an incorrect App Bar visibility in some rare cases [https://github.com/woocommerce/woocommerce-android/pull/12523]
+- [*] Fixes duplicated toolbar in the Order Tracking Carriers List [https://github.com/woocommerce/woocommerce-android/pull/12537]
+- [*] Fixes an issue on the Order Tracking screen that was causing the carrier being reset unintentionally [https://github.com/woocommerce/woocommerce-android/pull/12535]
+
+20.2
+-----
+- [**] Fixed navigation in tablet mode: after order is paid, the app should redirect to order details screen. [https://github.com/woocommerce/woocommerce-android/pull/12415]
+- [*] Show the back button on the Order Edit Screen for phones [https://github.com/woocommerce/woocommerce-android/pull/12421]
+- [**] Enables support to create Blaze Evergreen campaigns [https://github.com/woocommerce/woocommerce-android/issues/12176]
+- [*] Fixed a bug that caused the button "Open Mail" to not work during Magic Link login [https://github.com/woocommerce/woocommerce-android/pull/12486]
+
+20.1
+-----
+- [*****] [Internal] Update Aztec from v1.3.45 to v2.1.4 [https://github.com/woocommerce/woocommerce-android/pull/12316]
+- [**] Fixed Orders screen being stuck at skeleton loading view in certain scenarios [https://github.com/woocommerce/woocommerce-android/pull/12387]
+- [*] Handle incorrect pin error for UK and Canadian stores during IPP [https://github.com/woocommerce/woocommerce-android/pull/12375]
+- [*] [Internal] Fixed an issue with date formatting for the Blaze campaign creation API request [https://github.com/woocommerce/woocommerce-android/pull/12372]
+- [*] Fixed a rare crash in the order editing screen. [https://github.com/woocommerce/woocommerce-android/pull/12382]
+- [*] Fixed the blaze budget screens that are unusable on small screens. [https://github.com/woocommerce/woocommerce-android/pull/12402]
+- [**] Fixed navigation on "Collect payment" button tap in order creation flow [https://github.com/woocommerce/woocommerce-android/pull/12436]
+
 20.0
 -----
-
+- [*] Fixed missing pictures in card reader tutorial on tablets [https://github.com/woocommerce/woocommerce-android/pull/12274]
+- [*] Disable QR code scanning from login flow [https://github.com/woocommerce/woocommerce-android/pull/12303]
+- [*] Fixed the hidden “Write with AI” issue that occurs when the keyboard is open. [https://github.com/woocommerce/woocommerce-android/pull/12311]
+- [*] Allowed collecting card-present payments for orders with `failed` status [https://github.com/woocommerce/woocommerce-android/pull/12349]
+- [*] [Internal] [Login] Switched back to using the `/token` endpoint for WordPress.com authentication, this fixes an issue where the SMS OTP is not triggered automatically after submitting the password [https://github.com/woocommerce/woocommerce-android/pull/12319]
+- [*] [Internal] [WEAR] Introduces Sentry support to the Wear app
 
 19.9
 -----
@@ -14,6 +61,7 @@
 - [*****] [Internal] Update Androidx-fragment from 1.6.2 to 1.8.2 [https://github.com/woocommerce/woocommerce-android/pull/12231]
 - [*****] [Internal] Update Material to 1.12.0 and Transition to 1.5.1 [https://github.com/woocommerce/woocommerce-android/pull/12237]
 - [*****] [Internal] Update Stripe Terminal SDK from 3.1.1 to 3.7.1 [https://github.com/woocommerce/woocommerce-android/pull/12239]
+- [*] [Login] Fixed an issue with the "send SMS" button during the 2FA login [https://github.com/woocommerce/woocommerce-android/pull/12306]
 - [***] Fix logic behind handling enabled/disabled states of "+ Add coupon" and "+ Add discount" buttons in the Order creation/edition flow [https://github.com/woocommerce/woocommerce-android/pull/12263].
 
 19.8

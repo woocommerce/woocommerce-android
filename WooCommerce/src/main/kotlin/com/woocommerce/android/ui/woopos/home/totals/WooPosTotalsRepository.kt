@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
@@ -13,6 +14,7 @@ import javax.inject.Inject
 class WooPosTotalsRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val dateUtils: DateUtils,
+    private val getProductById: WooPosGetProductById
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
@@ -36,6 +38,8 @@ class WooPosTotalsRepository @Inject constructor(
                         .groupingBy { it }
                         .eachCount()
                         .map { (productId, quantity) ->
+                            val productResult = getProductById(productId)!!
+
                             Order.Item.EMPTY.copy(
                                 itemId = 0L,
                                 productId = productId,
@@ -43,8 +47,8 @@ class WooPosTotalsRepository @Inject constructor(
                                 quantity = quantity.toFloat(),
                                 total = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 subtotal = EMPTY_TOTALS_SUBTOTAL_VALUE,
-                                price = EMPTY_TOTALS_SUBTOTAL_VALUE,
                                 attributesList = emptyList(),
+                                name = productResult.name,
                             )
                         }
                 )

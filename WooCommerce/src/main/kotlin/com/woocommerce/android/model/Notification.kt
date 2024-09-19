@@ -31,6 +31,12 @@ data class Notification(
     @IgnoredOnParcel
     val isReviewNotification = noteType == WooNotificationType.PRODUCT_REVIEW
 
+    @IgnoredOnParcel
+    val isBlazeNotification = noteType == WooNotificationType.BLAZE_APPROVED_NOTE ||
+        noteType == WooNotificationType.BLAZE_REJECTED_NOTE ||
+        noteType == WooNotificationType.BLAZE_CANCELLED_NOTE ||
+        noteType == WooNotificationType.BLAZE_PERFORMED_NOTE
+
     /**
      * Notifications are grouped based on the notification type and the store the notification belongs to.
      *
@@ -74,6 +80,11 @@ fun NotificationModel.getUniqueId(): Long {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.meta?.ids?.order ?: 0L
         NotificationModel.Kind.COMMENT -> this.meta?.ids?.comment ?: 0L
+        NotificationModel.Kind.BLAZE_APPROVED_NOTE,
+        NotificationModel.Kind.BLAZE_REJECTED_NOTE,
+        NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
+        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.meta?.ids?.campaignId ?: 0L
+
         else -> 0L
     }
 }
@@ -90,6 +101,11 @@ fun NotificationModel.getNoteMessage(resourceProvider: ResourceProvider): String
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.getMessageSnippet()
         NotificationModel.Kind.COMMENT -> "${this.getTitleSnippet()}: ${this.getMessageSnippet()}"
+        NotificationModel.Kind.BLAZE_APPROVED_NOTE,
+        NotificationModel.Kind.BLAZE_REJECTED_NOTE,
+        NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
+        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.getTitleSnippet()
+
         else -> resourceProvider.getString(R.string.support_push_notification_message)
     }
 }

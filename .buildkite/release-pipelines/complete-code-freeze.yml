@@ -18,3 +18,7 @@ steps:
       bundle exec fastlane complete_code_freeze skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
     agents:
         queue: "tumblr-metal"
+    retry:
+      manual:
+        # If those jobs fail, one should always prefer re-triggering a new build from ReleaseV2 rather than retrying the individual job from Buildkite
+        allowed: false

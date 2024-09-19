@@ -19,40 +19,6 @@ object AIPrompts {
         return String.format(PRODUCT_DESCRIPTION_PROMPT, name, featuresPart, languageISOCode)
     }
 
-    fun generateProductNamePrompt(
-        keywords: String,
-        languageISOCode: String = "en"
-    ): String {
-        return """
-        You are a WooCommerce SEO and marketing expert.
-        Provide a product title to enhance the store's SEO performance and sales.
-        Based on the following product keywords or key phrases:
-        $keywords
-        The response should be in the ISO language code "$languageISOCode".
-        Product titles should have a character count appropriate for the current language.
-        Do not explain the suggestion, strictly return the product name only.
-        """.trimIndent()
-    }
-
-    fun generateProductNameAndDescriptionPrompt(
-        keywords: String,
-        languageISOCode: String = "en"
-    ): String {
-        return """
-        You are a WooCommerce SEO and marketing expert.
-        Provide a product name and description to enhance the store's SEO performance and sales.
-        Do not explain the suggestion, strictly return the product name and description only
-        based on the following product keywords or key phrases:
-        $keywords
-
-        Give your response in the below JSON format:
-        {
-           "name":"The name of the product, in the ISO language code "$languageISOCode"",
-           "description":"Product description of around 100 words long, in the ISO language code "$languageISOCode""
-        }
-        """.trimIndent()
-    }
-
     private const val PRODUCT_SHARING_PROMPT = "Your task is to help a merchant create a message to share with " +
         "their customers a product named \"%1\$s\". More information about the product:\n" +
         "%2\$s\n" +

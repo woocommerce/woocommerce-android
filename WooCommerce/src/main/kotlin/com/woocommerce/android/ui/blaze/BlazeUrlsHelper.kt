@@ -21,6 +21,7 @@ class BlazeUrlsHelper @Inject constructor(
         MORE_MENU_ITEM("menu"),
         PRODUCT_DETAIL_PROMOTE_BUTTON("product_detail_promote_button"),
         MY_STORE_SECTION("my_store_section"),
+        LOCAL_NOTIFICATION_NO_CAMPAIGN_REMINDER("local_notification_no_campaign_reminder"),
         CAMPAIGN_LIST("campaign_list"),
         INTRO_VIEW("intro_view"),
     }

@@ -6,8 +6,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.subscription.SubscriptionRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.WCMetaData
-import org.wordpress.android.fluxc.model.WCMetaDataValue
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 

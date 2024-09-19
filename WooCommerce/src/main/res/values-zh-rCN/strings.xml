@@ -1,17 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-08-06 11:54:03+0000
+Translation-Revision-Date: 2024-09-10 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_value_label">字段值</string>
+    <string name="custom_fields_editor_key_label">密钥</string>
+    <string name="woopos_dialog_products_info_secondary_message">其他产品类型（如可变产品和虚拟产品）将在今后的更新中得到支持。</string>
+    <string name="woopos_dialog_products_info_primary_message">POS 目前仅可用于简单实体产品。</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">取消</string>
+    <string name="blaze_campaign_budget_duration_current_duration">时长</string>
+    <string name="blaze_campaign_budget_duration_endless_description">活动将持续进行，直到您手动将其停止。</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">指定时长</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">至 %1$s</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">安排</string>
+    <string name="blaze_campaign_budget_daily_spend_label">每日支出</string>
+    <string name="blaze_campaign_budget_duration_subtitle">您希望在广告活动上投入多少资金？活动应持续多长时间？</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">通过 Blaze 让数百万人看到您的产品，提高您的销售额</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">想要提高您的销售额？</string>
+    <string name="custom_fields_list_loading_error">加载自定义字段时出错</string>
+    <string name="custom_fields_list_title">自定义字段</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">背景变暗。 轻点即可关闭对话框。</string>
+    <string name="blaze_campaign_budget_weekly_spending">每周 %1$s</string>
+    <string name="blaze_campaign_budget_duration_endless_label">在手动停止前保持运行</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">从 %1$s 起持续进行</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">每周支出</string>
+    <string name="blaze_campaign_preview_days_duration_endless">从 %2$s 起每周 %1$s</string>
+    <string name="blaze_campaign_status_budget_weekly">每周</string>
+    <string name="blaze_campaign_status_budget_remaining">剩余</string>
+    <string name="blaze_campaign_status_budget_total">总计</string>
+    <string name="blaze_campaign_status_ctr_label">点击率</string>
+    <string name="stats_widget_battery_saver_error">您的设备似乎处于省电模式。 \n当您的商店处于活动状态时，我们无法提供其相关信息</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">带选项的弹出菜单。 轻扫即可浏览商品。</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">打开工具栏菜单</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">显示读卡器状态的工具栏。 菜单已打开。 轻点两下即可进行交互。</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">显示读卡器状态的工具栏。 轻点两下即可进行交互。</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">菜单已禁用</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">菜单已启用</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">读卡器未连接。 轻点两下即可连接</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">读卡器已连接</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">背景变暗。 轻点即可关闭菜单。</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">付款成功复选标记图标</string>
+    <string name="woopos_remove_cart_item_content_description">将此商品从购物车中移除</string>
+    <string name="woopos_exit_dialog_confirmation_message">任何进行中的订单都将丢失。</string>
+    <string name="woopos_exit_dialog_confirmation_title">退出销售点模式？</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">关闭</string>
+    <string name="woopos_dialog_products_info_background_content_description">背景变暗。 轻点即可关闭对话框。</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">轻点两下即可关闭对话框</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">仅限简单产品的对话框</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">轻点两下即可了解更多信息</string>
+    <string name="woopos_banner_simple_products_content_description">仅限简单产品的横幅</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">立即使用 Blaze Ads 推广您的产品并提高销售额。</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">提高您的销售额</string>
+    <string name="more_menu_button_payments_description">随时随地接受付款</string>
+    <string name="card_reader_payment_failed_incorrect_pin">输入的 PIN 错误。 再次尝试，或使用另一种付款方式</string>
+    <string name="woopos_menu_toolbar_content_description">菜单</string>
+    <string name="woopos_cart_item_content_description">购物车中的产品 %s，价格 %s</string>
+    <string name="woopos_product_item_content_description">产品 %s，价格 %s</string>
+    <string name="blaze_campaign_status_suspended">挂起</string>
     <string name="woopos_success_screen_total">成功支付 %1$s</string>
     <string name="woopos_new_order_button">新订单</string>
     <string name="woopos_dialog_products_info_button_label">确定</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理中创建订单</string>
-    <string name="woopos_dialog_products_info_secondary_message">要接受非简单产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
-    <string name="woopos_dialog_products_info_primary_message">POS 目前仅可用于简单实体产品。\n其他产品类型（如可变产品和虚拟产品）将在今后的更新中得到支持。</string>
+    <string name="woopos_dialog_products_info_tertiary_message">要接受非简单产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
     <string name="woopos_dialog_products_info_heading">为何看不到我的产品？</string>
     <string name="woopos_banner_simple_products_info_content_description">信息</string>
     <string name="woopos_banner_simple_products_close_content_description">关闭</string>
@@ -35,8 +89,6 @@ Language: zh_CN
     <string name="woopos_products_empty_list_message">POS 目前仅支持简单产品 – \n创建一个以开始。</string>
     <string name="woopos_products_empty_list_title">未找到受支持的产品</string>
     <string name="woopos_products_empty_list_image_description">无任何产品</string>
-    <string name="woopos_splash_message">让我们为客户服务</string>
-    <string name="woopos_splash_title">开始</string>
     <string name="woopos_get_support_title">获取支持</string>
     <string name="woopos_reader_disconnected">连接您的读卡器</string>
     <string name="ai_product_creation_photo_removed">照片已删除</string>
@@ -124,7 +176,6 @@ Language: zh_CN
     <string name="woopos_payment_failed_please_try_again">付款失败。 请重试。</string>
     <string name="woopos_cart_back_content_description">购物车图标</string>
     <string name="woopos_products_screen_title">产品</string>
-    <string name="woopos_product_image_description">产品图片</string>
     <string name="woopos_items_in_cart">%d 件商品</string>
     <string name="woopos_clear_cart_button">清除</string>
     <string name="more_menu_button_google_description">通过 Google Ads 推动销售并增加流量</string>
@@ -132,10 +183,9 @@ Language: zh_CN
     <string name="no_quantity_rules">无数量规则</string>
     <string name="blaze_campaign_preview_audience_section_title">受众</string>
     <string name="woopos_exit_confirmation_dismiss_button">取消</string>
-    <string name="woopos_exit_confirmation_confirm_button">退出</string>
-    <string name="woopos_exit_confirmation_message">是否确定要退出 POS 机？</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">退出</string>
     <string name="woopos_exit_confirmation_title">退出 POS 机</string>
-    <string name="woopos_remove_item_from_cart_content_description">将商品从购物车中移除</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">将 %s 从购物车中移除</string>
     <string name="woopos_checkout_button">结账</string>
     <string name="woopos_reader_unknown">读卡器状态未知</string>
     <string name="woopos_checkout">结账</string>
@@ -416,20 +466,16 @@ Language: zh_CN
     <string name="blaze_campaign_edit_ad_change_tagline_title">标语</string>
     <string name="blaze_campaign_edit_ad_change_image_button">更换图片</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">应用</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">开始</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">开始日期</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s 天</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">设置时长</string>
     <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
     <string name="blaze_campaign_budget_impressions_done_button">完成</string>
     <string name="blaze_campaign_budget_impressions_title">展示次数</string>
     <string name="blaze_campaign_budget_update_button">更新</string>
     <string name="blaze_campaign_budget_edit_duration_button">编辑</string>
-    <string name="blaze_campaign_budget_duration_section_title">时长</string>
     <string name="blaze_campaign_budget_reach_forecast">每天的预计受众人数</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s 每天</string>
     <string name="blaze_campaign_budget_days_duration">共计 %1$s 天</string>
-    <string name="blaze_campaign_budget_total_spend">总支出</string>
-    <string name="blaze_campaign_budget_subtitle">您愿意在产品推广活动上花费多少资金？</string>
     <string name="blaze_campaign_budget_toolbar_title">设置您的预算</string>
     <string name="blaze_campaign_preview_target_default_value">所有</string>
     <string name="blaze_campaign_preview_days_duration">从 %2$s 起 %1$s 天</string>
@@ -631,7 +677,6 @@ Language: zh_CN
     <string name="blaze_campaign_creation_intro_title">通过 Blaze 提高您商店的销售额</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">刷新广告活动列表时出错。 请稍后重试。</string>
     <string name="media_picker_dialog_title">选择媒体来源</string>
-    <string name="product_creation_package_photo_error">生成产品名称和描述时出错。</string>
     <string name="product_creation_package_photo_no_text_detected">未检测到文本。 请选择其他包装照片或手动输入产品详细信息。</string>
     <string name="order_editing_add_content_description">添加产品</string>
     <string name="order_editing_barcode_content_description">扫描条形码</string>
@@ -653,9 +698,6 @@ Language: zh_CN
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">尝试通过借记卡或信用卡完成一次 %s 付款。\n完成后将退款。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">整个过程简单、安全且私密。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">您可以直接在手机上\n接受所有类型的现场付款。 无需额外的硬件。</string>
-    <string name="blaze_campaign_status_budget">预算</string>
-    <string name="blaze_campaign_status_clicks">点击次数</string>
-    <string name="blaze_campaign_status_impressions">展示次数</string>
     <string name="blaze_campaign_status_rejected">已拒绝</string>
     <string name="blaze_campaign_status_completed">已完成</string>
     <string name="blaze_campaign_status_active">已启用</string>
@@ -688,46 +730,23 @@ Language: zh_CN
     <string name="card_reader_settings_header">设置</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">使用电子邮件手动添加详情</string>
     <string name="login_app_login_malformed_link">我们无法处理您的应用程序登录请求</string>
-    <string name="ai_product_name_copy_error">复制产品名称到剪贴板时出错。</string>
-    <string name="ai_product_name_copy_success">产品名称已复制到剪贴板。</string>
-    <string name="ai_product_name_copy_label">AI 生成的产品名称</string>
     <string name="ai_product_description_copy_error">复制产品描述到剪贴板时出错。</string>
     <string name="ai_product_description_copy_success">产品描述已复制到剪贴板。</string>
     <string name="product_creation_ai_generation_failure_message">产品生成失败。 请重试</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">清除地址并停止使用该费率</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">为该订单设置新税率</string>
     <string name="tax_rate_selector_auto_rate_details_title">自动添加税率</string>
-    <string name="ai_product_name_sheet_error_message">生成产品名称时出现问题。 请重试。</string>
-    <string name="ai_product_name_sheet_regenerate_button">重新生成</string>
-    <string name="ai_product_name_sheet_generate_button">为我写作</string>
-    <string name="ai_product_name_sheet_input_description">介绍您的产品及其独特之处！</string>
-    <string name="ai_product_name_sheet_subtitle">让 AI 为您生成有吸引力的标题</string>
-    <string name="ai_product_name_sheet_title">产品名称</string>
     <string name="empty_review_filtered_list_message">尝试禁用未读过滤器，以查看所有产品评论</string>
     <string name="empty_review_filtered_list_title">无未读产品评论</string>
-    <string name="product_creation_ai_tone_selected_content_desc">所选语调</string>
     <string name="product_creation_ai_tone_convincing">自信</string>
     <string name="product_creation_ai_tone_flowery">华丽</string>
     <string name="product_creation_ai_tone_formal">正式</string>
     <string name="product_creation_ai_tone_casual">随意</string>
-    <string name="product_creation_ai_tone_description">设置语调和声音，确保产品展现形式符合品牌调性。</string>
     <string name="product_creation_ai_tone_title">语调和声音</string>
     <string name="product_creation_ai_preview_details_section">详情</string>
-    <string name="product_creation_ai_preview_description_section">产品描述</string>
     <string name="product_creation_ai_preview_name_section">产品名称</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">您可以随时更改下方的详细信息。</string>
     <string name="product_creation_ai_preview_title">预览</string>
-    <string name="product_creation_ai_about_product_continue_button">创建产品详情</string>
-    <string name="product_creation_ai_about_product_set_tone">设置语调和声音</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">添加关键功能、优势或详情，提高产品在网上的曝光率。</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">例如，柔软的面料、结实的缝线、独特的设计</string>
-    <string name="product_creation_ai_about_product_subtitle">突出显示您产品的独特之处，让 AI 创造奇迹。</string>
-    <string name="product_creation_ai_about_product_title">关于您的产品</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">提供名称建议</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">例如：柔软的面料、结实的缝线、独特的设计。</string>
-    <string name="ai_product_creation_add_name_keywords_label">产品名称</string>
-    <string name="ai_product_creation_add_name_subtitle">或者可以轻点以获得更多名称建议，扩大您的选择范围。</string>
-    <string name="ai_product_creation_add_name_title">添加产品名称</string>
     <string name="product_creation_ai_entry_sheet_learn_more">由 AI 提供支持。 &lt;a href=\'guidelines\'&gt;&lt;u&gt;了解更多&lt;/u&gt;&lt;/a&gt;。</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">手动添加产品和详情</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">手动添加</string>
@@ -1051,7 +1070,6 @@ Language: zh_CN
     <string name="more_menu_button_coupons_description">使用特别优惠增加销售额</string>
     <string name="more_menu_button_store_description">查看商店</string>
     <string name="more_menu_button_inbox_description">保持更新</string>
-    <string name="more_menu_button_payments_description">加入移动付款功能</string>
     <string name="more_menu_button_wc_admin_description">在“管理员”上管理更多内容</string>
     <string name="more_menu_general_section_title">常规</string>
     <string name="more_menu_settings_section_title">设置</string>
@@ -1295,7 +1313,6 @@ Language: zh_CN
     <string name="login_application_passwords_help">什么是应用程序密码？</string>
     <string name="login_application_passwords_unavailable">您的站点 %1$s 似乎禁用应用程序密码功能。\n 请启用该功能以使用 WooCommerce 应用。</string>
     <string name="login_open_installation_page">打开安装页面</string>
-    <string name="not_a_valid_qr_code">扫进来的 QR code 不是 WooCommerce 代码</string>
     <string name="review_reply_failure">在发送回复时出现错误</string>
     <string name="review_reply_success">回复已发送！</string>
     <string name="wc_reply">回复</string>
@@ -1370,7 +1387,6 @@ Language: zh_CN
     <string name="domain_picker_subtitle">人们可以通过此域名在互联网上找到您。 别担心，您可以稍后进行更改。</string>
     <string name="analytics_visitors_subtitle">访客人数</string>
     <string name="or_use_password_below_qr_code_scan_option">或使用密码登录</string>
-    <string name="or_scan_qr_code_to_log_in">扫描二维码登录</string>
     <string name="simulated_reader_toast">已禁用模拟读卡器</string>
     <string name="simulated_reader_key">模拟读卡器密钥</string>
     <string name="variations_bulk_update_stock_quantity_success">已更新库存量</string>
@@ -1423,7 +1439,6 @@ Language: zh_CN
     <string name="qr_code_login_scanner_title">摄像头条形码扫描程序</string>
     <string name="dev_options">开发者选项</string>
     <string name="login_2fa_not_supported_self_hosted_site">自托管站点不支持 2FA。 请使用应用程序密码。</string>
-    <string name="login_with_qr_code">扫描二维码登录</string>
     <string name="show_password_content_description">显示密码</string>
     <string name="hide_password_content_description">隐藏密码</string>
     <string name="stats_widget_last_updated_message">截至 %1$s</string>
@@ -1698,7 +1713,7 @@ Language: zh_CN
     <string name="card_reader_interac_refund_refund_payment">退款</string>
     <string name="card_reader_interac_refund_refund_failed_header">退款失败</string>
     <string name="card_reader_interac_refund_refund_loading_header">正在准备退款</string>
-    <string name="copy">复制</string>
+    <string name="copy" tools:override="true">复制</string>
     <string name="coupons_list_search_hint">搜索优惠券</string>
     <string name="coupon_details_share_formatting_failure">无法生成优惠券代码共享信息</string>
     <string name="coupon_details_share_coupon_error">共享优惠券代码时出错。</string>
@@ -2959,7 +2974,7 @@ Language: zh_CN
     <string name="orderdetail_empty_address">未指定地址</string>
     <string name="login_need_help_finding_connected_email">需要帮助查找您连接的电子邮件？</string>
     <string name="enter_wordpress_site">此地址下的网站不是 WordPress 站点。站点必须安装 WordPress，我们才能建立连接。</string>
-    <string name="enter_email_for_site">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>
+    <string name="enter_email_for_site" content_override="true">登录 WordPress.com 来连接 &lt;b&gt;%1$s&lt;/b&gt;</string>
     <string name="country_mapping_ZW">津巴布韦</string>
     <string name="country_mapping_ZM">赞比亚</string>
     <string name="country_mapping_YE">也门</string>
@@ -3555,8 +3570,8 @@ Language: zh_CN
     <string name="login_configure_link">请查看%1$s配置说明%2$s。</string>
     <string name="login_jetpack_required">这款应用程序需要安装 Jetpack 才能关联您的商店。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">输入您要关联的 WooCommerce 商店的地址。</string>
-    <string name="enter_email_wordpress_com">使用您的 WordPress.com 帐户电子邮件地址登录，管理您的 WooCommerce 商店。</string>
+    <string name="enter_site_address" content_override="true">输入您要关联的 WooCommerce 商店的地址。</string>
+    <string name="enter_email_wordpress_com" content_override="true">使用您的 WordPress.com 帐户电子邮件地址登录，管理您的 WooCommerce 商店。</string>
     <string name="already_logged_in_wpcom">您已登录 WordPress.com 帐户，不能添加被其他帐户绑定的 WordPress.com 站点。</string>
     <string name="cant_open_url">无法打开链接</string>
     <string name="error_no_sms_app">未找到任何短信应用程序</string>
@@ -3602,17 +3617,17 @@ Language: zh_CN
     <string name="notification_channel_general_title">常规</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>正在处理</item>
