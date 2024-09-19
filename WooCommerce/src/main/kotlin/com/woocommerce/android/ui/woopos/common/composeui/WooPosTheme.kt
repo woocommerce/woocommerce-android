@@ -32,7 +32,9 @@ private object WooPosColors {
     // Adding missing colors from the old code to match exactly
     val primary = Color(0xFF9C70D3)
     val oldGrayLight = Color(0xFFF2EBFF)
+    val oldGrayMedium = Color(0xFF8D8D8D)
     val oldGrayDark = Color(0xFF616161)
+    val successGreen = Color(0xFF03D479)
 
     val primaryVariant = Color(0xFF3700B3)
     val secondary = Color(0xFF0A9400)
@@ -49,7 +51,7 @@ private object WooPosColors {
     val darkCustomColorsPaymentSuccessIconBackground = Color(0xFF00AD64)
 
     // LightCustomColors
-    val LightCustomColorsError = Color(0xFFF16618)
+    val lightCustomColorsError = Color(0xFFF16618)
 
     val Purple0 = Color(0xFFF2EDFF)
     val Purple10 = Color(0xFFF7EDF7)
@@ -162,7 +164,7 @@ private val DarkColorPalette = darkColors(
     primaryVariant = WooPosColors.primaryVariant,
     onPrimary = Color.Black,
     secondary = WooPosColors.secondary,
-    secondaryVariant = Color(0xFF8D8D8D),
+    secondaryVariant = WooPosColors.oldGrayMedium,
     surface = WooPosColors.surface,
     onSurface = Color.White,
     background = WooPosColors.Black90,
@@ -238,11 +240,11 @@ private val LightCustomColors = CustomColors(
 private val LightCustomColors = CustomColors(
     loadingSkeleton = Color(0xFFE1E1E1),
     border = Color(0xFFC6C6C8),
-    success = Color(0xFF03D479),
-    error = WooPosColors.LightCustomColorsError,
+    success = WooPosColors.successGreen,
+    error = WooPosColors.lightCustomColorsError,
     paymentSuccessBackground = Color(0xFF98F179),
     paymentSuccessText = WooPosColors.Purple90,
-    paymentSuccessIcon = Color(0xFF03D479),
+    paymentSuccessIcon = WooPosColors.successGreen,
     paymentSuccessIconBackground = Color.White,
     homeBackground = WooPosColors.Gray0,
 )
