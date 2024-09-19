@@ -51,7 +51,6 @@ private object WooPosColors {
     val darkCustomColorsBorder = Color(0xFF8D8D8D)
     val darkCustomColorsSuccess = Color(0xFF06B166)
 
-
     // LightCustomColors
     val lightCustomColorsError = Color(0xFFF16618)
     val lightCustomColorsPaymentSuccessBackground = Color(0xFF98F179)
