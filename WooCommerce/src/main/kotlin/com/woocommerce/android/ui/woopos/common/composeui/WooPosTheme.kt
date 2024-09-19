@@ -27,6 +27,26 @@ data class CustomColors(
 )
 
 private object WooPosColors {
+    // Woo POS specific colors:
+
+    val primaryVariant = Color(0xFF3700B3)
+    val secondary = Color(0xFF0A9400)
+    val surface = Color(0xFF2E2E2E)
+
+    // LightColorPalette
+    val lightColorPalettePrimaryVariant = Color(0xFF3700B3)
+    val lightColorPaletteSecondary = Color(0xFF004B3E)
+    val lightColorPaletteSecondaryVariant = Color(0xFF50575E)
+    val lightColorPaletteBackground = Color(0xFFFDFDFD)
+
+    // DarkCustomColors
+    val darkCustomColorsError = Color(0xFFBE4400)
+    val darkCustomColorsPaymentSuccessBackground = Color(0xFF005139)
+    val darkCustomColorsPaymentSuccessIconBackground = Color(0xFF00AD64)
+
+    // LightCustomColors
+    val LightCustomColorsError = Color(0xFFF16618)
+
     val Purple0 = Color(0xFFF2EDFF)
     val Purple10 = Color(0xFFF7EDF7)
     val Purple15 = Color(0xFFE5CFE8)
