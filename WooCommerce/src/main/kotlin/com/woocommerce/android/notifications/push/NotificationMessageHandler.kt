@@ -13,7 +13,7 @@ import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.WooNotificationType.NewOrder
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -128,7 +128,7 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     private fun handleWooNotification(notification: Notification) {
-        val randomNumber = if (notification.noteType == NEW_ORDER) Random.nextInt() else 0
+        val randomNumber = if (notification.noteType == NewOrder) Random.nextInt() else 0
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId, randomNumber)
         ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = notification
         if (notificationBuilder.isNotificationsEnabled()) {

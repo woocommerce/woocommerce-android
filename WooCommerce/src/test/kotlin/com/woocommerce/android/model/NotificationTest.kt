@@ -13,7 +13,7 @@ class NotificationTest {
         remoteSiteId = remoteSiteId,
         uniqueId = 0L,
         channelType = NotificationChannelType.NEW_ORDER,
-        noteType = WooNotificationType.NEW_ORDER
+        noteType = WooNotificationType.NewOrder
     )
 
     private val reviewNotification = NotificationTestUtils.generateTestNotification(
@@ -21,7 +21,7 @@ class NotificationTest {
         remoteSiteId = remoteSiteId,
         uniqueId = 0L,
         channelType = NotificationChannelType.REVIEW,
-        noteType = WooNotificationType.PRODUCT_REVIEW
+        noteType = WooNotificationType.ProductReview
     )
 
     private val otherNotification = NotificationTestUtils.generateTestNotification(
@@ -29,7 +29,7 @@ class NotificationTest {
         remoteSiteId = remoteSiteId,
         uniqueId = 0L,
         channelType = NotificationChannelType.OTHER,
-        noteType = WooNotificationType.LOCAL_REMINDER
+        noteType = WooNotificationType.LocalReminder
     )
 
     @Test

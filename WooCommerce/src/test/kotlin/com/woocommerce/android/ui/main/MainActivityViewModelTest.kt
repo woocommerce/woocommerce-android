@@ -88,7 +88,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         remoteSiteId = siteModel.siteId,
         uniqueId = TEST_NEW_ORDER_ID_1,
         channelType = NotificationChannelType.NEW_ORDER,
-        noteType = WooNotificationType.NEW_ORDER
+        noteType = WooNotificationType.NewOrder
     )
 
     private val testReviewNotification = NotificationTestUtils.generateTestNotification(
@@ -96,7 +96,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         remoteSiteId = siteModel.siteId,
         uniqueId = TEST_NEW_REVIEW_ID_1,
         channelType = NotificationChannelType.REVIEW,
-        noteType = WooNotificationType.PRODUCT_REVIEW
+        noteType = WooNotificationType.ProductReview
     )
 
     private val testBlazeNotification = NotificationTestUtils.generateTestNotification(
@@ -104,7 +104,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         remoteSiteId = siteModel.siteId,
         uniqueId = TEST_BLAZE_CAMPAIGN_ID_1,
         channelType = NotificationChannelType.OTHER,
-        noteType = WooNotificationType.BLAZE_APPROVED_NOTE
+        noteType = WooNotificationType.BlazeStatusUpdate.BlazeApprovedNote
     )
 
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
