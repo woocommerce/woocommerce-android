@@ -1,0 +1,2 @@
+20.4:
+WooCommerce uygulama deneyiminizi geliştirdik! Takip numaralarını siparişlere eklerken artık bunları zahmetsizce tarayabilirsiniz. Ayrıca gönderim etiketlerindeki sorunları düzelterek birden fazla öğesi olan paketlerde doğru ağırlık hesaplamaları olmasını sağladık. Daha sorunsuz ve güvenilir bir uygulama deneyiminin keyfini çıkarın!

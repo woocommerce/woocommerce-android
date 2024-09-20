@@ -1,0 +1,2 @@
+20.4:
+Melhoramos sua experiência no aplicativo do WooCommerce! Agora é possível verificar números de rastreamento com mais facilidade ao adicioná-los aos pedidos. E mais, corrigimos um problema com as etiquetas de envio, garantindo um cálculo de peso mais preciso para pacotes com vários itens. Aproveite uma experiência mais fluida e confiável no aplicativo!

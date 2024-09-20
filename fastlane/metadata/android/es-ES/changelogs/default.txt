@@ -1,0 +1,2 @@
+20.4:
+Hemos mejorado tu experiencia en la aplicación de WooCommerce. Ahora puedes escanear sin esfuerzo los números de seguimiento al añadirlos a los pedidos. Además, hemos solucionado un problema con las etiquetas de envío, lo que garantiza un cálculo preciso del peso de los paquetes con varios elementos. Disfruta de una experiencia más fiable y fluida en la aplicación.
