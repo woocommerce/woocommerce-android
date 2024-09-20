@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -84,9 +85,13 @@ class SupportRequestFormActivity : AppCompatActivity() {
                 )
             }
         }
+        onBackPressedDispatcher.addCallback {
+            finish()
+            adjustExitTransition()
+        }
     }
 
-    override fun onPause() {
+    private fun adjustExitTransition() {
         if (isPOS() && SystemVersionUtils.isAtMostT()) {
             @Suppress("DEPRECATION")
             overridePendingTransition(
@@ -94,7 +99,6 @@ class SupportRequestFormActivity : AppCompatActivity() {
                 R.anim.woopos_slide_out_right
             )
         }
-        super.onPause()
     }
 
     private fun isPOS(): Boolean {
@@ -149,6 +153,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressedDispatcher.onBackPressed()
+            adjustExitTransition()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -160,7 +165,10 @@ class SupportRequestFormActivity : AppCompatActivity() {
             titleId = R.string.support_request_success_title,
             messageId = R.string.support_request_success_message,
             positiveButtonId = R.string.support_request_dialog_action,
-            posBtnAction = { _, _ -> finish() }
+            posBtnAction = { _, _ ->
+                finish()
+                adjustExitTransition()
+            }
         )
     }
 
