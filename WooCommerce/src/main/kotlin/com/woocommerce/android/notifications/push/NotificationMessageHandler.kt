@@ -13,7 +13,7 @@ import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.WooNotificationType.NewOrder
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -52,10 +52,12 @@ class NotificationMessageHandler @Inject constructor(
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
 
+    @Synchronized
     fun onPushNotificationDismissed(notificationId: Int) {
         removeNotificationByNotificationIdFromSystemsBar(notificationId)
     }
 
+    @Synchronized
     fun onLocalNotificationDismissed(notificationId: Int, notificationType: String) {
         removeNotificationByNotificationIdFromSystemsBar(notificationId)
         AnalyticsTracker.track(
@@ -128,7 +130,7 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     private fun handleWooNotification(notification: Notification) {
-        val randomNumber = if (notification.noteType == NEW_ORDER) Random.nextInt() else 0
+        val randomNumber = if (notification.noteType == NewOrder) Random.nextInt() else 0
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId, randomNumber)
         ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = notification
         if (notificationBuilder.isNotificationsEnabled()) {
@@ -221,6 +223,7 @@ class NotificationMessageHandler @Inject constructor(
         notificationBuilder.cancelAllNotifications()
     }
 
+    @Synchronized
     fun removeNotificationByRemoteIdFromSystemsBar(remoteNoteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence()
@@ -237,6 +240,7 @@ class NotificationMessageHandler @Inject constructor(
         updateNotificationsState()
     }
 
+    @Synchronized
     fun removeNotificationByNotificationIdFromSystemsBar(localPushId: Int) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence()
@@ -253,6 +257,7 @@ class NotificationMessageHandler @Inject constructor(
         updateNotificationsState()
     }
 
+    @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
         // Using a copy of the map to avoid concurrency problems

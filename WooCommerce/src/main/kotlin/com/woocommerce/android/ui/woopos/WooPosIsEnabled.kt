@@ -6,6 +6,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
@@ -20,9 +22,9 @@ class WooPosIsEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val ippStore: WCInPersonPaymentsStore,
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed,
-    private val isFeatureFlagEnabled: WooPosIsFeatureFlagEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
+    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
 ) {
     private var paymentAccountCache: HashMap<LocalSiteId, WCPaymentAccountResult> = hashMapOf()
 
@@ -30,7 +32,7 @@ class WooPosIsEnabled @Inject constructor(
     suspend operator fun invoke(): Boolean {
         val selectedSite = selectedSite.getOrNull() ?: return false
 
-        if (!isFeatureFlagEnabled()) return false
+        if (!isRemoteFeatureFlagEnabled(WOO_POS)) return false
         if (!isScreenSizeAllowed()) return false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return false
 
