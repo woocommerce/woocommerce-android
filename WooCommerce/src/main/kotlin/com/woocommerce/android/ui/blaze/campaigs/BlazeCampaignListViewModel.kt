@@ -11,6 +11,9 @@ import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
 import com.woocommerce.android.ui.blaze.toUiState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -129,6 +132,15 @@ class BlazeCampaignListViewModel @Inject constructor(
         if (!appPrefsWrapper.isBlazeCelebrationScreenShown) {
             isCampaignCelebrationShown.value = true
             appPrefsWrapper.isBlazeCelebrationScreenShown = true
+        }
+    }
+
+    fun onBlazeCampaignWebViewAction(action: BlazeCampaignDetailWebViewViewModel.BlazeAction) {
+        when (action) {
+            CampaignStopped -> launch { loadCampaigns(offset = 0) }
+            None -> {
+                // Do nothing
+            }
         }
     }
 

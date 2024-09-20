@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.detail
 
+import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
@@ -9,6 +10,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,7 +20,7 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignDetailWebViewFragmentArgs by savedStateHandle.navArgs()
 
-    val viewState = ViewState(
+    var viewState = ViewState(
         urlToLoad = blazeUrlsHelper.buildCampaignDetailsUrl(navArgs.campaignId),
         blazeAction = None
     )
@@ -27,7 +29,7 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
         when {
             blazeUrlsHelper.buildCampaignsListUrl().contains(url) -> onDismiss()
             url.contains(blazeUrlsHelper.getCampaignStopUrlPath(navArgs.campaignId)) -> {
-                viewState.copy(blazeAction = CampaignStopped)
+                viewState = viewState.copy(blazeAction = CampaignStopped)
             }
         }
     }
@@ -44,8 +46,12 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
         val blazeAction: BlazeAction,
     )
 
-    sealed interface BlazeAction {
+    @Parcelize
+    sealed interface BlazeAction : Parcelable {
+        @Parcelize
         data object CampaignStopped : BlazeAction
+
+        @Parcelize
         data object None : BlazeAction
     }
 }

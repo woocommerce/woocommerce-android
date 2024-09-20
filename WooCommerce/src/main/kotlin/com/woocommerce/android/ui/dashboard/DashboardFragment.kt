@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentDashboardBinding
 import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.showDateRangePicker
@@ -39,6 +40,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
@@ -218,6 +221,12 @@ class DashboardFragment :
     private fun setupResultHandlers() {
         handleNotice(GoogleAdsWebViewFragment.WEBVIEW_RESULT) {
             navigateToGoogleAdsCreationSuccess()
+        }
+        handleResult<BlazeAction>(BlazeCampaignDetailWebViewFragment.BLAZE_WEBVIEW_RESULT) {
+            when (it) {
+                BlazeAction.None,
+                BlazeAction.CampaignStopped -> Unit // For now we don't need to do anything here
+            }
         }
     }
 

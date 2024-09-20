@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithNotice
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -58,7 +59,10 @@ class BlazeCampaignDetailWebViewFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> navigateBackWithNotice(BLAZE_WEBVIEW_DISMISSED)
-                is ExitWithResult<*> -> navigateBackWithNotice(BLAZE_WEBVIEW_RESULT)
+                is ExitWithResult<*> -> navigateBackWithResult(
+                    BLAZE_WEBVIEW_RESULT,
+                    event.data
+                )
             }
         }
     }
