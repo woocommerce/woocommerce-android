@@ -129,7 +129,7 @@ private fun WooPosCartScreen(
             }
 
             is WooPosCartState.Body.WithItems -> {
-                val productsTopMargin = 20.dp.toAdaptivePadding()
+                val productsTopMargin = 24.dp.toAdaptivePadding()
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
@@ -140,6 +140,7 @@ private fun WooPosCartScreen(
                     },
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
+                    isCheckoutButtonVisible = state.isCheckoutButtonVisible,
                     onUIEvent = onUIEvent
                 )
             }
@@ -147,8 +148,8 @@ private fun WooPosCartScreen(
 
         AnimatedVisibility(
             visible = state.isCheckoutButtonVisible,
-            enter = fadeIn(animationSpec = tween(1000)),
-            exit = fadeOut(animationSpec = tween(1000)),
+            enter = fadeIn(animationSpec = tween(300)),
+            exit = fadeOut(animationSpec = tween(300)),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp.toAdaptivePadding())
@@ -227,10 +228,16 @@ private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
     items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
+    isCheckoutButtonVisible: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
+
+    val spacerHeight by animateDpAsState(
+        targetValue = if (!isCheckoutButtonVisible) 182.dp else 0.dp,
+        label = "cart list height animation"
+    )
 
     WooPosLazyColumn(
         modifier = modifier
@@ -254,6 +261,9 @@ private fun CartBodyWithItems(
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
             )
+        }
+        item {
+            Spacer(modifier = Modifier.height(spacerHeight))
         }
     }
 }
@@ -298,8 +308,8 @@ private fun CartToolbar(
 
         AnimatedVisibility(
             visible = toolbar.backIconVisible,
-            enter = fadeIn(animationSpec = tween(1000)) + expandHorizontally(),
-            exit = fadeOut(animationSpec = tween(1000)) + shrinkHorizontally()
+            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
+            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
         ) {
             IconButton(
                 onClick = { onBackClicked() },

@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -740,6 +741,37 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val draftTerms = draftAttribute.terms
         Assertions.assertThat(draftTerms[0]).isEqualTo(secondTerm)
         Assertions.assertThat(draftTerms[1]).isEqualTo(firstTerm)
+    }
+
+    @Test
+    fun `Re-name attribute terms is saved correctly`() = testBlocking {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        val attributeName = "name"
+        val newName = attributeName.replaceFirstChar { it.uppercase() }
+
+        val attributes = ArrayList<ProductAttribute>()
+        attributes.add(
+            ProductAttribute(
+                id = 1,
+                name = attributeName,
+                isVariation = true,
+                isVisible = true,
+                terms = ArrayList<String>().also {
+                    it.add("one")
+                }
+            )
+        )
+
+        val storedProduct = product.copy(
+            attributes = attributes
+        )
+        doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
+
+        viewModel.start()
+        viewModel.renameAttributeInDraft(1, attributeName, newName)
+
+        val draftAttribute = viewModel.productDraftAttributes[0]
+        Assertions.assertThat(draftAttribute.name).isEqualTo(newName)
     }
 
     /**

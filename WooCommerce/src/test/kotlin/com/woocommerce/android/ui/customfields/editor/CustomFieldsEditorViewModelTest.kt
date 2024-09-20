@@ -171,7 +171,7 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when done is clicked, then exit with result`() = testBlocking {
+    fun `given editing an existing field, when done is clicked, then exit with result`() = testBlocking {
         setup(editing = true)
 
         val events = viewModel.event.runAndCaptureValues {
@@ -182,8 +182,31 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         assertThat(events).isEqualTo(
             MultiLiveEvent.Event.ExitWithResult(
-                data = CustomFieldUiModel(id = CUSTOM_FIELD_ID, key = "new key", value = "new value"),
+                data = CustomFieldsEditorViewModel.CustomFieldUpdateResult(
+                    CUSTOM_FIELD.key,
+                    CustomFieldUiModel(id = CUSTOM_FIELD_ID, key = "new key", value = "new value")
+                ),
                 key = CustomFieldsEditorViewModel.CUSTOM_FIELD_UPDATED_RESULT_KEY
+            )
+        )
+    }
+
+    @Test
+    fun `given creating a new field, when done is clicked, then exit with result`() = testBlocking {
+        setup(editing = false) {
+            whenever(repository.getDisplayableCustomFields(PARENT_ITEM_ID)).thenReturn(emptyList())
+        }
+
+        val events = viewModel.event.runAndCaptureValues {
+            viewModel.onKeyChanged("key")
+            viewModel.onValueChanged("value")
+            viewModel.onDoneClicked()
+        }.last()
+
+        assertThat(events).isEqualTo(
+            MultiLiveEvent.Event.ExitWithResult(
+                data = CustomFieldUiModel(key = "key", value = "value"),
+                key = CustomFieldsEditorViewModel.CUSTOM_FIELD_CREATED_RESULT_KEY
             )
         )
     }
@@ -245,5 +268,37 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
         assertThat(state.keyErrorMessage)
             .isEqualTo(UiString.UiStringRes(R.string.custom_fields_editor_key_error_underscore))
         assertThat(state.showDoneButton).isFalse()
+    }
+
+    @Test
+    fun `when tapping copy key, then copy key to clipboard`() = testBlocking {
+        setup(editing = true)
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCopyKeyClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(
+            CustomFieldsEditorViewModel.CopyContentToClipboard(
+                R.string.custom_fields_editor_key_label,
+                CUSTOM_FIELD.key
+            )
+        )
+    }
+
+    @Test
+    fun `when tapping copy value, then copy value to clipboard`() = testBlocking {
+        setup(editing = true)
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCopyValueClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(
+            CustomFieldsEditorViewModel.CopyContentToClipboard(
+                R.string.custom_fields_editor_value_label,
+                CUSTOM_FIELD.valueAsString
+            )
+        )
     }
 }
