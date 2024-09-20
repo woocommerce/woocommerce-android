@@ -237,6 +237,7 @@ class NotificationMessageHandler @Inject constructor(
         updateNotificationsState()
     }
 
+    @Synchronized
     fun removeNotificationByNotificationIdFromSystemsBar(localPushId: Int) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence()
