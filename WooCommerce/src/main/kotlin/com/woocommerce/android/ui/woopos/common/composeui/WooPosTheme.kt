@@ -58,7 +58,20 @@ private object WooPosColors {
     val lightCustomColorsLoadingSkeleton = Color(0xFFE1E1E1)
     val lightCustomColorsBorder = Color(0xFFC6C6C8)
 
-    val Purple0 = Color(0xFFF2EDFF)
+    // Woo colors from here: W5OBIbzWilNI8qely8Y4OHQd-fi-144_2
+    val WooPurple0 = Color(0xFFF2EDFF)
+    val WooPurple5 = Color(0xFFDFD1FB)
+    val WooPurple10 = Color(0xFFCFB9F6)
+    val WooPurple20 = Color(0xFFBEA0F2)
+    val WooPurple30 = Color(0xFFAD86E9)
+    val WooPurple40 = Color(0xFF966CCF)
+    val WooPurple50 = Color(0xFF7F54B3)
+    val WooPurple60 = Color(0xFF674399)
+    val WooPurple70 = Color(0xFF533582)
+    val WooPurple80 = Color(0xFF3C2861)
+    val WooPurple90 = Color(0xFF271B3D)
+    val WooPurple100 = Color(0xFF140E1F)
+
     val Purple10 = Color(0xFFF7EDF7)
     val Purple15 = Color(0xFFE5CFE8)
     val Purple20 = Color(0xFFC792E0)
