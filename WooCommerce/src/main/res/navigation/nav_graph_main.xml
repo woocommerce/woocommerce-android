@@ -856,4 +856,7 @@
             android:name="urlToLoad"
             app:argType="string" />
     </fragment>
+    <action
+        android:id="@+id/action_global_blazeCampaignDetailWebViewFragment"
+        app:destination="@id/blazeCampaignDetailWebViewFragment" />
 </navigation>

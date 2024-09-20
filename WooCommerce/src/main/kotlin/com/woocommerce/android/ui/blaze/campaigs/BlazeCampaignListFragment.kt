@@ -54,10 +54,7 @@ class BlazeCampaignListFragment : BaseFragment() {
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is BlazeCampaignListViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow()
-                is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(
-                    event.url,
-                    event.urlToTriggerExit
-                )
+                is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(event.url)
             }
         }
     }
@@ -68,13 +65,9 @@ class BlazeCampaignListFragment : BaseFragment() {
         }
     }
 
-    private fun openCampaignDetails(url: String, urlToTriggerExit: String) {
+    private fun openCampaignDetails(url: String) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                urlToLoad = url,
-                urlsToTriggerExit = arrayOf(urlToTriggerExit),
-                title = getString(R.string.blaze_campaign_details_title)
-            )
+            NavGraphMainDirections.actionGlobalBlazeCampaignDetailWebViewFragment(urlToLoad = url)
         )
     }
 }

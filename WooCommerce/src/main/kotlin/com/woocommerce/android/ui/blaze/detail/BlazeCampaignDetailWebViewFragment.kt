@@ -11,17 +11,18 @@ import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewScreen
-import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.internal.userAgent
+import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class BlazeCampaignDetailWebViewFragment : BaseFragment() {
+    companion object {
+        const val BLAZE_WEBVIEW_DISMISSED = "blaze-webview-dismissed"
+    }
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -54,8 +55,7 @@ class BlazeCampaignDetailWebViewFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ExitWithResult<*> -> navigateBackWithNotice(WEBVIEW_RESULT)
-                is Exit -> navigateBackWithNotice(WEBVIEW_DISMISSED)
+                is Exit -> navigateBackWithNotice(BLAZE_WEBVIEW_DISMISSED)
             }
         }
     }

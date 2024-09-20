@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.blaze.detail
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -11,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.web.WCWebView
+import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun BlazeCampaignDetailWebViewScreen(
