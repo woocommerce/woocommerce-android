@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
-import com.woocommerce.android.ui.woopos.WooPosIsFeatureFlagEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -90,10 +89,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
-    private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled = mock {
-        onBlocking { invoke() } doReturn true
-    }
-
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
@@ -116,7 +111,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             isGoogleForWooEnabled = isGoogleForWooEnabled,
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             isWooPosEnabled = isWooPosEnabled,
-            isWooPosFFEnabled = isWooPosFFEnabled,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }

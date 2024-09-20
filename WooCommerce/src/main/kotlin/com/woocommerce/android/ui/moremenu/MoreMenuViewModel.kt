@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
-import com.woocommerce.android.ui.woopos.WooPosIsFeatureFlagEnabled
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -71,7 +70,6 @@ class MoreMenuViewModel @Inject constructor(
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val isWooPosEnabled: WooPosIsEnabled,
-    private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
@@ -458,24 +456,17 @@ class MoreMenuViewModel @Inject constructor(
         .onStart { emit("") }
 
     private fun checkFeaturesAvailability(): Flow<Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>> {
-        val initialState = MoreMenuItemButton.Type.entries.associateWith { MoreMenuItemButton.State.Loading }
-            .toMutableMap()
+        val initialState = MoreMenuItemButton.Type.entries.associateWith {
+            MoreMenuItemButton.State.Loading
+        }.toMutableMap()
 
-        val flows = mutableListOf(
+        return listOf(
             doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
-        )
-
-        // While this in development better to not show loading state for WooPos at all
-        if (isWooPosFFEnabled()) {
-            flows += doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
-        } else {
-            initialState[MoreMenuItemButton.Type.WooPos] = MoreMenuItemButton.State.Hidden
-        }
-
-        return flows.merge()
+            doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
+        ).merge()
             .map { update ->
                 initialState[update.first] = update.second
                 initialState
