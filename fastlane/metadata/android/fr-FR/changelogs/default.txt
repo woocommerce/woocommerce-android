@@ -1,0 +1,2 @@
+20.4 :
+Nous avons amélioré votre expérience dans l’application WooCommerce ! Vous pouvez désormais scanner sans effort les numéros de suivi lorsque vous les ajoutez aux commandes. Nous avons également corrigé un problème concernant les étiquettes d’expédition, pour un calcul précis du poids des colis contenant plusieurs articles. Profitez d’une expérience plus fluide et plus fiable dans l’application !
