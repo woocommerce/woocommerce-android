@@ -51,6 +51,30 @@ class BlazeRepository @Inject constructor(
         const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
     }
 
+    fun observeObjectives() = blazeCampaignsStore.observeBlazeCampaignObjectives().map {
+        it.map { objective ->
+            Objective(
+                objective.id,
+                objective.title,
+                objective.description,
+                objective.suitableForDescription
+            )
+        }
+    }
+
+    suspend fun fetchObjectives(): Result<Unit> {
+        val result = blazeCampaignsStore.fetchBlazeCampaignObjectives(selectedSite.get())
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch objectives: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+
+            else -> Result.success(Unit)
+        }
+    }
+
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
         .map { it.map { language -> Language(language.id, language.name) } }
 
@@ -377,6 +401,14 @@ class BlazeRepository @Inject constructor(
         @Parcelize
         data class RemoteImage(val mediaId: Long, override val uri: String) : BlazeCampaignImage
     }
+
+    @Parcelize
+    data class Objective(
+        val id: String,
+        val title: String,
+        val description: String,
+        val suitableForDescription: String
+    ) : Parcelable
 
     @Parcelize
     data class TargetingParameters(
