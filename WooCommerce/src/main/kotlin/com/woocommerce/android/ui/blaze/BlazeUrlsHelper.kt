@@ -15,6 +15,8 @@ class BlazeUrlsHelper @Inject constructor(
 
     fun buildCampaignDetailsUrl(campaignId: String): String = "$BASE_URL/campaigns/$campaignId/${getSiteUrl()}"
 
+    fun getCampaignStopUrlPath(campaignId: String): String = "/campaigns/$campaignId/stop"
+
     private fun getSiteUrl() = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
 
     enum class BlazeFlowSource(val trackingName: String) {

@@ -28,7 +28,7 @@ fun BlazeCampaignDetailWebViewScreen(
         }
     ) { paddingValues ->
         WCWebView(
-            url = viewModel.urlToLoad,
+            url = viewModel.viewState.urlToLoad,
             userAgent = userAgent,
             wpComAuthenticator = wpComAuthenticator,
             onUrlLoaded = onUrlLoaded,

@@ -54,7 +54,7 @@ class BlazeCampaignListFragment : BaseFragment() {
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is BlazeCampaignListViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow()
-                is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(event.url)
+                is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(event.campaignId)
             }
         }
     }
@@ -67,7 +67,7 @@ class BlazeCampaignListFragment : BaseFragment() {
 
     private fun openCampaignDetails(url: String) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignDetailWebViewFragment(urlToLoad = url)
+            NavGraphMainDirections.actionGlobalBlazeCampaignDetailWebViewFragment(campaignId = url)
         )
     }
 }

@@ -11,18 +11,30 @@ import javax.inject.Inject
 @HiltViewModel
 class BlazeCampaignDetailWebViewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val blazeUrlsHelper: BlazeUrlsHelper
+    private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignDetailWebViewFragmentArgs by savedStateHandle.navArgs()
-    val urlToLoad = navArgs.urlToLoad
+
+    val viewState = ViewState(
+        urlToLoad = blazeUrlsHelper.buildCampaignDetailsUrl(navArgs.campaignId),
+        campaignCancelled = false
+    )
 
     fun onUrlLoaded(url: String) {
-        if (blazeUrlsHelper.buildCampaignsListUrl().contains(url)) {
-            triggerEvent(Exit)
+        when {
+            blazeUrlsHelper.buildCampaignsListUrl().contains(url) -> triggerEvent(Exit)
+            url.contains(blazeUrlsHelper.getCampaignStopUrlPath(navArgs.campaignId)) -> {
+                viewState.copy(campaignCancelled = true)
+            }
         }
     }
 
     fun onDismiss() {
         triggerEvent(Exit)
     }
+
+    data class ViewState(
+        val urlToLoad: String,
+        val campaignCancelled: Boolean,
+    )
 }

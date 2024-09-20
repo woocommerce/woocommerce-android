@@ -853,7 +853,7 @@
         android:name="com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment"
         android:label="BlazeCampaignDetailWebViewFragment">
         <argument
-            android:name="urlToLoad"
+            android:name="campaignId"
             app:argType="string" />
     </fragment>
     <action

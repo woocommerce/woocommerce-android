@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.toUiState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -34,7 +33,6 @@ class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val selectedSite: SelectedSite,
-    private val blazeUrlsHelper: BlazeUrlsHelper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val currencyFormatter: CurrencyFormatter,
@@ -81,10 +79,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
         if (navArgs.campaignId != null) {
             triggerEvent(
-                ShowCampaignDetails(
-                    url = blazeUrlsHelper.buildCampaignDetailsUrl(navArgs.campaignId!!),
-                    urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
-                )
+                ShowCampaignDetails(campaignId = navArgs.campaignId!!)
             )
         }
         launch {
@@ -122,10 +117,7 @@ class BlazeCampaignListViewModel @Inject constructor(
             properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.CAMPAIGN_LIST.trackingName)
         )
         triggerEvent(
-            ShowCampaignDetails(
-                url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId),
-                urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
-            )
+            ShowCampaignDetails(campaignId)
         )
     }
 
@@ -153,8 +145,5 @@ class BlazeCampaignListViewModel @Inject constructor(
     )
 
     data class LaunchBlazeCampaignCreation(val source: BlazeFlowSource) : Event()
-    data class ShowCampaignDetails(
-        val url: String,
-        val urlToTriggerExit: String
-    ) : Event()
+    data class ShowCampaignDetails(val campaignId: String) : Event()
 }

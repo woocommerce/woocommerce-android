@@ -122,7 +122,9 @@ private fun HandleEvents(
 
                 is DashboardBlazeViewModel.ShowCampaignDetails -> {
                     navController.navigateSafely(
-                        NavGraphMainDirections.actionGlobalBlazeCampaignDetailWebViewFragment(urlToLoad = event.url)
+                        NavGraphMainDirections.actionGlobalBlazeCampaignDetailWebViewFragment(
+                            campaignId = event.campaignId
+                        )
                     )
                 }
             }
