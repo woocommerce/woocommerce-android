@@ -13,6 +13,7 @@
 -----
 - [**] Users can now scan their tracking number when adding it to the order [https://github.com/woocommerce/woocommerce-android/pull/12533]
 - [*] Fixed an issue where shipping labels were incorrectly calculating the weight for packages containing multiple quantities of the same product [https://github.com/woocommerce/woocommerce-android/pull/12602]
+- [**] [WEAR] Introduces three new complications for the Wear app: Orders Total, Orders Count, and Visitors [https://github.com/woocommerce/woocommerce-android/pull/12558]
 
 20.3
 -----
