@@ -464,7 +464,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `test remove notifications concurrently without throwing ConcurrentModificationException`() {
+    fun `remove notifications concurrently without throwing ConcurrentModificationException`() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
         val notificationsCount = 100
         repeat(notificationsCount) {
