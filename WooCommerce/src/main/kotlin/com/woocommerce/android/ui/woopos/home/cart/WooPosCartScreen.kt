@@ -425,7 +425,9 @@ private fun ProductItem(
 
     AnimatedVisibility(
         visible = hasAnimationStarted,
-        enter = expandVertically(animationSpec = tween(durationMillis = 200)),
+        enter = expandVertically(
+            animationSpec = tween(durationMillis = 200)
+        ),
         exit = shrinkVertically()
     ) {
         WooPosCard(
