@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class BlazeCampaignDetailWebViewFragment : BaseFragment() {
     companion object {
         const val BLAZE_WEBVIEW_DISMISSED = "blaze-webview-dismissed"
+        const val BLAZE_WEBVIEW_RESULT = "blaze-webview-result"
     }
 
     override val activityAppBarStatus: AppBarStatus
@@ -56,6 +58,7 @@ class BlazeCampaignDetailWebViewFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> navigateBackWithNotice(BLAZE_WEBVIEW_DISMISSED)
+                is ExitWithResult<*> -> navigateBackWithNotice(BLAZE_WEBVIEW_RESULT)
             }
         }
     }
