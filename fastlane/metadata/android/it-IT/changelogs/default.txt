@@ -1,2 +1,0 @@
-20.4:
-Abbiamo migliorato l'esperienza dell'app WooCommerce! Ora puoi scansionare facilmente i codici di tracciamento quando li aggiungi agli ordini. Inoltre, abbiamo risolto un problema con le etichette di spedizione, così da assicurare un calcolo del peso più preciso per i pacchetti contenenti più articoli. Goditi un'esperienza di app più fluida e affidabile!

@@ -1,2 +1,0 @@
-20.4:
-Vi har förbättrat din WooCommerce-appupplevelse. Du kan nu enkelt skanna spårningsnummer när du lägger till dem för beställningar. Vi har dessutom åtgärdat ett problem med fraktetiketter, vilket säkerställer korrekta viktberäkningar för paket med flera artiklar. Ta del av en smidigare och stabilare appupplevelse.
