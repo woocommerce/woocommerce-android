@@ -91,6 +91,21 @@
             app:destination="@id/variationPickerFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/productSelectorDialogFragment"
+        android:name="com.woocommerce.android.ui.products.selector.ProductSelectorDialogFragment"
+        android:label="ProductSelectorDialogFragment">
+        <action
+            android:id="@+id/action_productSelectorDialogFragment_to_nav_graph_product_filters"
+            app:destination="@id/nav_graph_product_filters">
+            <argument android:name="selectedStockStatus" app:argType="string" app:nullable="true" />
+            <argument android:name="selectedProductType" app:argType="string" app:nullable="true" />
+            <argument android:name="selectedProductStatus" app:argType="string" app:nullable="true" />
+            <argument android:name="selectedProductCategoryId" app:argType="string" app:nullable="true" />
+            <argument android:name="selectedProductCategoryName" app:argType="string" app:nullable="true" />
+        </action>
+    </fragment>
+
     <include app:graph="@navigation/nav_graph_product_filters" />
 
     <fragment
