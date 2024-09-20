@@ -1,0 +1,2 @@
+20.4:
+Kami telah menyempurnakan aplikasi WooCommerce untuk Anda! Kini, nomor pelacakan dapat dipindai dengan mudah saat ditambahkan ke pesanan. Kami juga sudah membereskan masalah label pengiriman agar penghitungan berat untuk paket dengan beberapa item tetap akurat.  Nikmati aplikasi yang lebih lancar dan andal!

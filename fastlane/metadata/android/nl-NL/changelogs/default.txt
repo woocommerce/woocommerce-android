@@ -1,0 +1,2 @@
+20.4:
+We hebben je WooCommerce-appervaring verbeterd! Je kan trackingnummers nu moeiteloos scannen wanneer je ze toevoegt aan bestellingen. Ook hebben we een probleem met verzendlabels opgelost, zodat de gewichtsberekeningen ook voor pakketten met meerdere voorwerpen nauwkeurig zijn. Dankzij deze update werkt de app nog soepeler en stabieler!
