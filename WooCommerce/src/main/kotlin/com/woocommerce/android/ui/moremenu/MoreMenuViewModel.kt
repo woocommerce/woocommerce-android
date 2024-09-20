@@ -456,19 +456,17 @@ class MoreMenuViewModel @Inject constructor(
         .onStart { emit("") }
 
     private fun checkFeaturesAvailability(): Flow<Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>> {
-        val initialState = MoreMenuItemButton.Type.entries.associateWith { MoreMenuItemButton.State.Loading }
-            .toMutableMap()
+        val initialState = MoreMenuItemButton.Type.entries.associateWith {
+            MoreMenuItemButton.State.Loading
+        }.toMutableMap()
 
-        val flows = mutableListOf(
+        return listOf(
             doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
-        )
-
-        flows += doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
-
-        return flows.merge()
+            doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
+        ).merge()
             .map { update ->
                 initialState[update.first] = update.second
                 initialState
