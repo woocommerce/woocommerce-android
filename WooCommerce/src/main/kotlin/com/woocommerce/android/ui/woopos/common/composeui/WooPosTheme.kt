@@ -137,17 +137,6 @@ private object WooPosColors {
     val Black60 = Color(0xFF6A6A6A)
     val Black80 = Color(0xFF363636)
     val BlackAlpha008 = Color(0x14212121)
-    val JetpackGreen40 = Color(0xFF069E08)
-    val JetpackBlack = Color(0xFF0B2621)
-    val WpBlue = Color(0xFF399CE3)
-    val BlazeYellow5 = Color(0xFFF5E6B3)
-    val BlazeYellow70 = Color(0xFF674600)
-    val BlazeGreen5 = Color(0xFFB8E6BF)
-    val BlazeGreen60 = Color(0xFF007017)
-    val BlazeBlue5 = Color(0xFFBBE0FA)
-    val BlazeBlue60 = Color(0xFF055D9C)
-    val BlazeRed5 = Color(0xFFFACFD2)
-    val BlazeRed6 = Color(0xFFB32D2E)
 }
 
 /*
