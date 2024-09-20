@@ -7,6 +7,7 @@
 - [*] Fixes a bug that prevented users to rename the Product Variation Attributes to because of case insensitive checks [https://github.com/woocommerce/woocommerce-android/pull/12608]
 - [*] Users can directly pick product images when creating Blaze ads [https://github.com/woocommerce/woocommerce-android/pull/12610]
 - [*] Enables Blaze feature for sites with Blaze for WooCommerce plugin installed and active [https://github.com/woocommerce/woocommerce-android/pull/12640]
+- [*] Fix for ConcurrentModificationException while removing notification [https://github.com/woocommerce/woocommerce-android/pull/12646]
 
 20.4
 -----
