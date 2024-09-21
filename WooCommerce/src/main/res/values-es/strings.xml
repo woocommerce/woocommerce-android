@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-10 17:54:04+0000
+Translation-Revision-Date: 2024-09-19 16:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_key_error_underscore">Clave no válida: elimina el carácter «_» del principio.</string>
+    <string name="custom_fields_editor_key_error_duplicate">Esta clave ya se utiliza para otro campo personalizado.\nActualmente, la aplicación no permite crear claves duplicadas. Utiliza wp-admin para duplicar una clave si es necesario.</string>
+    <string name="custom_fields_add_button">Añadir campos personalizados</string>
+    <string name="custom_fields_list_field_deleted">Campo personalizado borrado</string>
+    <string name="custom_fields_list_saving_failed">No se han podido guardar los cambios; inténtalo de nuevo</string>
+    <string name="custom_fields_list_saving_succeeded">Cambios guardados</string>
+    <string name="custom_fields_list_progress_dialog_title">Guardando cambios</string>
+    <string name="woopos_no_internet_message">Parece que no estás conectado a Internet. Comprueba que tienes activado el wifi. Si te vas a conectar con datos móviles, asegúrate de que estén activados en los ajustes de tu dispositivo.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">No se ha podido realizar la exploración. Inténtalo de nuevo más tarde</string>
     <string name="custom_fields_editor_value_label">Valor</string>
     <string name="custom_fields_editor_key_label">Clave</string>
     <string name="woopos_dialog_products_info_secondary_message">Otros tipos de productos, como los variables y los virtuales, estarán disponibles en futuras actualizaciones.</string>
@@ -201,7 +210,7 @@ Language: es
     <string name="product_stock_status_low_stock">Pocas existencias</string>
     <string name="order_detail_shipping_header">ENVÍO</string>
     <string name="order_creation_feedback_action">Comparte tu opinión</string>
-    <string name="order_creation_shipping_feedback_message">¿Se compra fácilmente en Woo?</string>
+    <string name="order_creation_shipping_feedback_message">¿Es fácil gestionar envíos con Woo?</string>
     <string name="order_creation_shipping_feedback_title">¡Se ha añadido el envío!</string>
     <string name="order_creation_shipping_edit">Editar envío</string>
     <string name="order_creation_shipping_title_edit">Editar envío</string>
@@ -261,7 +270,7 @@ Language: es
     <string name="analytics_session_no_available_description">Los análisis de sesiones se basan en los recuentos de visitantes únicos, que no están disponibles para rangos de fechas personalizados</string>
     <string name="analytics_session_no_available">Datos de la sesión no disponibles</string>
     <string name="my_store_widget_unavailable">No disponible</string>
-    <string name="my_store_widget_stats_title">Rendimiento</string>
+    <string name="my_store_widget_stats_title">Estadísticas</string>
     <string name="dashboard_stats_custom_range_label">Personalizado</string>
     <string name="dashboard_stats_edit_granularity_content_description">Botón de cambio de rango de fechas</string>
     <string name="images_unavailable_notice">Las imágenes no están disponibles porque tu sitio está marcado como privado. Puedes modificar este ajuste cambiando al modo Próximamente.\n</string>
@@ -303,7 +312,7 @@ Language: es
     <string name="analytics_bundles_list_header_title">Paquetes</string>
     <string name="analytics_bundles_list_items_sold">Paquetes vendidos</string>
     <string name="my_store_widget_blaze_title">Campañas de Blaze</string>
-    <string name="my_store_widget_top_products_title">Mejor rendimiento</string>
+    <string name="my_store_widget_top_products_title">Productos más vendidos</string>
     <string name="product_list_unsaved_product_unselected_message">¿Seguro que deseas descartar los cambios realizados a este producto?</string>
     <string name="product_list_unsaved_product_unselected_title">Vas a descartar los cambios en %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">La función de estadísticas no admite la visualización de los datos de visitantes y conversiones para rangos de fechas arbitrarios.\n\nSin embargo, puedes pulsar un valor del gráfico para consultar los visitantes y las conversiones de ese rango específico.</string>
@@ -758,8 +767,8 @@ Language: es
     <string name="tax_rate_selector_auto_rate_subtitle">Esto no afectará a los pedidos en línea</string>
     <string name="tax_rate_selector_auto_rate_label">Añadir este tipo a todos los pedidos creados</string>
     <string name="tax_rate_selector_empty_list_button_alt">Editar tipos impositivos</string>
-    <string name="tax_rate_selector_empty_list_button">Editar tipos impositivos en el escritorio</string>
-    <string name="tax_rate_selector_empty_list_message">Añade tipos impositivos al escritorio. Solo se mostrarán aquí los tipos impositivos con información sobre la ubicación.</string>
+    <string name="tax_rate_selector_empty_list_button">Editar tipos impositivos en wp-admin</string>
+    <string name="tax_rate_selector_empty_list_message">Añade tipos impositivos en wp-admin. Solo se mostrarán aquí los tipos impositivos con información sobre la ubicación.</string>
     <string name="tax_rate_selector_empty_list_title">No hemos encontrado tipos impositivos</string>
     <string name="store_onboarding_payments_setup_description">Descubre otros proveedores de pago y \nelige un proveedor de pago.</string>
     <string name="store_onboarding_payments_pre_setup_title_generic">Métodos de pago</string>
@@ -1070,7 +1079,7 @@ Language: es
     <string name="more_menu_button_coupons_description">Aumentar las ventas con ofertas especiales</string>
     <string name="more_menu_button_store_description">Ver tu tienda</string>
     <string name="more_menu_button_inbox_description">Mantengase actualizado</string>
-    <string name="more_menu_button_wc_admin_description">Gestionar más en la administración</string>
+    <string name="more_menu_button_wc_admin_description">Gestionar más en wp-admin</string>
     <string name="more_menu_general_section_title">General</string>
     <string name="more_menu_settings_section_title">Ajustes</string>
     <string name="bundled_products_info_notice">Puedes editar productos agrupados en el escritorio del sitio web.</string>
@@ -2357,7 +2366,7 @@ Language: es
     <string name="settings_store">Ajustes de la tienda</string>
     <string name="product_attributes">Atributos</string>
     <string name="order_refunds_shipping_refund_variable_notice">Puedes reembolsar %1$s</string>
-    <string name="orderdetail_collect_payment_button">Recepción de pago</string>
+    <string name="orderdetail_collect_payment_button">Recibir pago</string>
     <string name="and">y</string>
     <string name="product_attribute_remove">¿Eliminar este atributo?</string>
     <string name="product_any_attribute_hint">Cualquiera</string>
@@ -3369,7 +3378,7 @@ Language: es
     <string name="logviewer_share_error">No se ha podido compartir el registro</string>
     <string name="logviewer_error_copy_to_clipboard">Se ha producido un error al copiar en el portapapeles</string>
     <string name="logviewer_copied_to_clipboard">Se ha copiado el registro en el portapapeles</string>
-    <string name="logviewer_activity_title">Registro de solicitud</string>
+    <string name="logviewer_activity_title">Ver logs de la aplicación</string>
     <string name="support_push_notification_message">Nuevo mensaje de \"Ayuda y soporte técnico\"</string>
     <string name="support_push_notification_title">WooCommerce</string>
     <string name="support_contact_email_not_set">No se ha configurado</string>
