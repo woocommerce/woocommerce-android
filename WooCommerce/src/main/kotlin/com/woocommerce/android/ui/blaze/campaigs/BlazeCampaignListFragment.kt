@@ -58,14 +58,19 @@ class BlazeCampaignListFragment : BaseFragment() {
                 is Exit -> findNavController().popBackStack()
                 is BlazeCampaignListViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow()
                 is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(event.campaignId)
+                is BlazeCampaignListViewModel.LaunchBlazeCampaignCreationForProduct ->
+                    openBlazeCreationFlow(event.productId)
             }
         }
         handleResults()
     }
 
-    private fun openBlazeCreationFlow() {
+    private fun openBlazeCreationFlow(productId: Long? = null) {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(source = BlazeFlowSource.CAMPAIGN_LIST)
+            blazeCampaignCreationDispatcher.startCampaignCreation(
+                source = BlazeFlowSource.CAMPAIGN_LIST,
+                productId = productId
+            )
         }
     }
 

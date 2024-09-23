@@ -42,6 +42,9 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
@@ -224,8 +227,15 @@ class DashboardFragment :
         }
         handleResult<BlazeAction>(BlazeCampaignDetailWebViewFragment.BLAZE_WEBVIEW_RESULT) {
             when (it) {
-                BlazeAction.None,
-                BlazeAction.CampaignStopped -> Unit // For now we don't need to do anything here
+                None,
+                CampaignStopped -> Unit // We don't need to handle actions here
+                is PromoteProductAgain ->
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        blazeCampaignCreationDispatcher.startCampaignCreation(
+                            BlazeFlowSource.MY_STORE_SECTION,
+                            it.productId
+                        )
+                    }
             }
         }
     }

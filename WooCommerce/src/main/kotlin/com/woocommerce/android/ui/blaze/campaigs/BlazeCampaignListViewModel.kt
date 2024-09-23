@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.ui.blaze.toUiState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -138,9 +139,14 @@ class BlazeCampaignListViewModel @Inject constructor(
     fun onBlazeCampaignWebViewAction(action: BlazeCampaignDetailWebViewViewModel.BlazeAction) {
         when (action) {
             CampaignStopped -> launch { loadCampaigns(offset = 0) }
-            None -> {
-                // Do nothing
-            }
+            is PromoteProductAgain -> triggerEvent(
+                LaunchBlazeCampaignCreationForProduct(
+                    productId = action.productId,
+                    source = BlazeFlowSource.CAMPAIGN_LIST
+                )
+            )
+
+            None -> Unit // Do nothing
         }
     }
 
@@ -157,5 +163,10 @@ class BlazeCampaignListViewModel @Inject constructor(
     )
 
     data class LaunchBlazeCampaignCreation(val source: BlazeFlowSource) : Event()
+    data class LaunchBlazeCampaignCreationForProduct(
+        val productId: Long?,
+        val source: BlazeFlowSource,
+    ) : Event()
+
     data class ShowCampaignDetails(val campaignId: String) : Event()
 }

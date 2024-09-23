@@ -17,6 +17,8 @@ class BlazeUrlsHelper @Inject constructor(
 
     fun getCampaignStopUrlPath(campaignId: String): String = "/campaigns/$campaignId/stop"
 
+    fun getBlazePromoteAgainPath(): String = "blazepress-widget=post"
+
     private fun getSiteUrl() = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
 
     enum class BlazeFlowSource(val trackingName: String) {

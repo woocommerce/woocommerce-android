@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -31,13 +32,25 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
             url.contains(blazeUrlsHelper.getCampaignStopUrlPath(navArgs.campaignId)) -> {
                 viewState = viewState.copy(blazeAction = CampaignStopped)
             }
+
+            url.contains(blazeUrlsHelper.getBlazePromoteAgainPath()) -> {
+                viewState = viewState.copy(
+                    blazeAction = PromoteProductAgain(productId = extractProductIdFromUrl(url))
+                )
+                onDismiss()
+            }
         }
     }
 
+    private fun extractProductIdFromUrl(url: String): Long? =
+        url.substringAfter("post-")
+            .substringBefore("_campaign")
+            .toLongOrNull()
+
     fun onDismiss() {
         when (viewState.blazeAction) {
-            CampaignStopped -> triggerEvent(ExitWithResult(viewState.blazeAction))
             None -> triggerEvent(Exit)
+            else -> triggerEvent(ExitWithResult(viewState.blazeAction))
         }
     }
 
@@ -50,6 +63,9 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
     sealed interface BlazeAction : Parcelable {
         @Parcelize
         data object CampaignStopped : BlazeAction
+
+        @Parcelize
+        data class PromoteProductAgain(val productId: Long?) : BlazeAction
 
         @Parcelize
         data object None : BlazeAction
