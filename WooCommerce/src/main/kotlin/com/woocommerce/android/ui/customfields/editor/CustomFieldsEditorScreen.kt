@@ -165,6 +165,7 @@ private fun CustomFieldsEditorScreen(
                         content = state.customField.value,
                         onContentChanged = onValueChanged,
                         label = stringResource(R.string.custom_fields_editor_value_label),
+                        enableSourceEditor = false,
                         minLines = 5
                     )
                 }
