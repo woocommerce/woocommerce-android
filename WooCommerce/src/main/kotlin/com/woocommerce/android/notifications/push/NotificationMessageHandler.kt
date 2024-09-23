@@ -256,8 +256,7 @@ class NotificationMessageHandler @Inject constructor(
 
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
-        // Using a copy of the map to avoid concurrency problems
-        activeNotificationsMap.toMap().asSequence().forEach { row ->
+        activeNotificationsMap.asSequence().forEach { row ->
             if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
             } else {
