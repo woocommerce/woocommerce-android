@@ -163,36 +163,36 @@ private object WooPosColors {
 }
 
 private val DarkColorPalette = darkColors(
-    primary = WooPosColors.primary, // val primary = Color(0xFF9C70D3)
-    primaryVariant = WooPosColors.primaryVariant, // val primaryVariant = Color(0xFF3700B3)
+    primary = WooPosColors.primary,
+    primaryVariant = WooPosColors.primaryVariant,
     onPrimary = Color.Black,
-    secondary = WooPosColors.secondary, // val secondary = Color(0xFF0A9400)
-    secondaryVariant = WooPosColors.oldGrayMedium, // val oldGrayMedium = Color(0xFF8D8D8D)
-    surface = WooPosColors.surface, // val surface = Color(0xFF2E2E2E)
+    secondary = WooPosColors.secondary,
+    secondaryVariant = WooPosColors.oldGrayMedium,
+    surface = WooPosColors.surface,
     onSurface = Color.White,
-    background = WooPosColors.Black90, // val Black90 = Color(0xFF121212)
+    background = WooPosColors.Black90,
     onBackground = Color.White,
 )
 
 private val LightColorPalette = lightColors(
-    primary = WooPosColors.Purple50, // val Purple50 = Color(0xFF7F54B3)
-    primaryVariant = WooPosColors.primaryVariant, // val primaryVariant = Color(0xFF3700B3)
+    primary = WooPosColors.Purple50,
+    primaryVariant = WooPosColors.primaryVariant,
     onPrimary = Color.White,
-    secondary = WooPosColors.lightColorPaletteSecondary, // val lightColorPaletteSecondary = Color(0xFF004B3E)
+    secondary = WooPosColors.lightColorPaletteSecondary,
     secondaryVariant = WooPosColors.lightColorPaletteSecondaryVariant,
     surface = Color.White,
     onSurface = Color.Black,
-    background = WooPosColors.lightColorPaletteBackground, // val lightColorPaletteBackground = Color(0xFFFDFDFD)
+    background = WooPosColors.lightColorPaletteBackground,
     onBackground = Color.Black,
 )
 
 private val DarkCustomColors = CustomColors(
-    loadingSkeleton = WooPosColors.darkCustomloadingSkeleton, // val darkCustomloadingSkeleton = Color(0xFF616161)
+    loadingSkeleton = WooPosColors.darkCustomloadingSkeleton,
     border = WooPosColors.oldGrayMedium,
-    success = WooPosColors.darkCustomColorsSuccess, // val darkCustomColorsSuccess = Color(0xFF06B166)
-    error = WooPosColors.darkCustomColorsError, // val darkCustomColorsError = Color(0xFFBE4400)
+    success = WooPosColors.darkCustomColorsSuccess,
+    error = WooPosColors.darkCustomColorsError,
     paymentSuccessBackground = WooPosColors.darkCustomColorsPaymentSuccessBackground,
-    paymentSuccessText = WooPosColors.oldGrayLight, // val oldGrayLight = Color(0xFFF2EBFF)
+    paymentSuccessText = WooPosColors.oldGrayLight,
     paymentSuccessIcon = Color.White,
     paymentSuccessIconBackground = WooPosColors.darkCustomColorsPaymentSuccessIconBackground,
     homeBackground = WooPosColors.darkCustomColorsHomeBackground
@@ -200,14 +200,14 @@ private val DarkCustomColors = CustomColors(
 
 private val LightCustomColors = CustomColors(
     loadingSkeleton = WooPosColors.lightCustomColorsLoadingSkeleton,
-    border = WooPosColors.lightCustomColorsBorder, // val lightCustomColorsBorder = Color(0xFFC6C6C8)
-    success = WooPosColors.lightCustomColorsSuccess, // val lightCustomColorsSuccess = Color(0xFF03D479)
-    error = WooPosColors.lightCustomColorsError, // val lightCustomColorsError = Color(0xFFF16618)
+    border = WooPosColors.lightCustomColorsBorder,
+    success = WooPosColors.lightCustomColorsSuccess,
+    error = WooPosColors.lightCustomColorsError,
     paymentSuccessBackground = WooPosColors.lightCustomColorsPaymentSuccessBackground,
-    paymentSuccessText = WooPosColors.Purple90, // val Purple90 = Color(0xFF271B3D)
-    paymentSuccessIcon = WooPosColors.lightCustomColorsSuccess, // val lightCustomColorsSuccess = Color(0xFF03D479)
+    paymentSuccessText = WooPosColors.Purple90,
+    paymentSuccessIcon = WooPosColors.lightCustomColorsSuccess,
     paymentSuccessIconBackground = Color.White,
-    homeBackground = WooPosColors.Gray0 // val Gray0 = Color(0xFFF6F7F7)
+    homeBackground = WooPosColors.Gray0
 )
 
 private val LocalCustomColors = staticCompositionLocalOf {
