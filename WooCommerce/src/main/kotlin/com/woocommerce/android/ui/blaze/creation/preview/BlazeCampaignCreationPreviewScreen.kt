@@ -273,29 +273,29 @@ fun CampaignHeader(
                         onClick = { /*TODO*/ },
                     )
                 }
-            }
-        }
-        if (adDetails.isContentSuggestedByAi) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_ai),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(colorResource(id = R.color.color_on_surface_medium)),
-                    modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.image_minor_50))
-                        .padding(end = dimensionResource(id = R.dimen.minor_100))
-                )
-                Text(
-                    text = stringResource(id = R.string.blaze_campaign_edit_ad_suggested_by_ai),
-                    style = MaterialTheme.typography.body2,
-                    color = colorResource(id = R.color.color_on_surface_medium),
-                )
+                if (adDetails.isContentSuggestedByAi) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_ai),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(colorResource(id = R.color.color_on_surface_medium)),
+                            modifier = Modifier
+                                .size(dimensionResource(id = R.dimen.image_minor_50))
+                                .padding(end = dimensionResource(id = R.dimen.minor_100))
+                        )
+                        Text(
+                            text = stringResource(id = R.string.blaze_campaign_edit_ad_suggested_by_ai),
+                            style = MaterialTheme.typography.body2,
+                            color = colorResource(id = R.color.color_on_surface_medium),
+                        )
+                    }
+                }
             }
         }
         WCTextButton(
