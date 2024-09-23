@@ -469,6 +469,8 @@ dependencies {
     implementation "com.google.guava:guava:$guavaVersion"
 
     implementation "com.google.protobuf:protobuf-javalite:$protobufVersion"
+
+    lintChecks "com.android.security.lint:lint:$securityLintVersion"
 }
 
 protobuf {
