@@ -1,19 +1,48 @@
 package com.woocommerce.android.ui.customfields.editor
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Colors
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
@@ -95,6 +124,8 @@ private fun CustomFieldsEditorScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
+        var useHtmlEditor by remember { mutableStateOf(true) }
+
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
@@ -112,20 +143,39 @@ private fun CustomFieldsEditorScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (state.isHtml) {
-                OutlinedAztecEditor(
-                    content = state.customField.value,
-                    onContentChanged = onValueChanged,
-                    label = stringResource(R.string.custom_fields_editor_value_label),
-                    minLines = 5
-                )
-            } else {
-                WCOutlinedTextField(
-                    value = state.customField.value,
-                    onValueChange = onValueChanged,
-                    label = stringResource(R.string.custom_fields_editor_value_label),
-                    minLines = 5
-                )
+            Toggle(
+                useHtmlEditor = useHtmlEditor,
+                onToggle = { useHtmlEditor = it },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Box {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = useHtmlEditor,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    OutlinedAztecEditor(
+                        content = state.customField.value,
+                        onContentChanged = onValueChanged,
+                        label = stringResource(R.string.custom_fields_editor_value_label),
+                        minLines = 5
+                    )
+                }
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = !useHtmlEditor,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    WCOutlinedTextField(
+                        value = state.customField.value,
+                        onValueChange = onValueChanged,
+                        label = stringResource(R.string.custom_fields_editor_value_label),
+                        minLines = 5
+                    )
+                }
             }
         }
 
@@ -138,7 +188,97 @@ private fun CustomFieldsEditorScreen(
     }
 }
 
+@Composable
+private fun Toggle(
+    useHtmlEditor: Boolean,
+    onToggle: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .background(
+                MaterialTheme.colors.toggleBackgroundColor,
+                MaterialTheme.shapes.medium
+            )
+    ) {
+        var size by remember { mutableStateOf(DpSize.Zero) }
+
+        val animationStiffness = 100f
+
+        val offset by animateDpAsState(
+            targetValue = if (useHtmlEditor) size.width else 0.dp,
+            animationSpec = spring(stiffness = animationStiffness),
+            label = "offset"
+        )
+        val textAlpha by animateFloatAsState(
+            targetValue = if (useHtmlEditor) 1f else 0.5f,
+            animationSpec = spring(stiffness = animationStiffness),
+            label = "text alpha"
+        )
+        val htmlTextColor by animateColorAsState(
+            targetValue = if (useHtmlEditor) MaterialTheme.colors.onPrimary else LocalContentColor.current,
+            animationSpec = spring(stiffness = animationStiffness),
+            label = "html text color"
+        )
+        val textTextColor by animateColorAsState(
+            targetValue = if (useHtmlEditor) LocalContentColor.current else MaterialTheme.colors.onPrimary,
+            animationSpec = spring(stiffness = animationStiffness),
+            label = "regular text color"
+        )
+
+        val density = LocalDensity.current
+
+        val boxShape = MaterialTheme.shapes.medium
+        Box(
+            modifier = Modifier
+                .size(size)
+                .offset(x = offset)
+                .shadow(1.dp, MaterialTheme.shapes.medium)
+                .background(
+                    MaterialTheme.colors.primary,
+                    boxShape
+                )
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .width(IntrinsicSize.Max)
+        ) {
+            Text(
+                text = stringResource(R.string.custom_fields_editor_text_toggle),
+                color = textTextColor.copy(alpha = 1.5f - textAlpha),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 128.dp)
+                    .onSizeChanged {
+                        size = with(density) {
+                            DpSize(it.width.toDp(), it.height.toDp())
+                        }
+                    }
+                    .clickable(onClick = { onToggle(false) })
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .weight(1f)
+            )
+            Text(
+                text = stringResource(R.string.custom_fields_editor_html_toggle),
+                color = htmlTextColor.copy(alpha = textAlpha),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .clickable(onClick = { onToggle(true) })
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .weight(1f)
+            )
+        }
+    }
+}
+
+private val Colors.toggleBackgroundColor: Color
+    @Composable
+    get() = if (isLight) MaterialTheme.colors.background else Color.DarkGray
+
 @LightDarkThemePreviews
+@Preview
 @Composable
 private fun CustomFieldsEditorScreenPreview() {
     WooThemeWithBackground {
