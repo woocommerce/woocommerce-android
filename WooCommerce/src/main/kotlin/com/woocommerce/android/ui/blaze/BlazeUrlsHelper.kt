@@ -8,7 +8,7 @@ class BlazeUrlsHelper @Inject constructor(
 ) {
     companion object {
         private const val HTTP_PATTERN = "(https?://)"
-        private const val BASE_URL = "https://wordpress.com/advertising"
+        const val BASE_URL = "https://wordpress.com/advertising"
         const val PROMOTE_AGAIN_URL_PATH = "blazepress-widget=post"
     }
 

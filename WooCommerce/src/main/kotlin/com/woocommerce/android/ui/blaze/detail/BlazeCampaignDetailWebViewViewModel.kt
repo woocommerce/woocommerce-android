@@ -28,7 +28,7 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
 
     fun onUrlLoaded(url: String) {
         when {
-            blazeUrlsHelper.buildCampaignsListUrl().contains(url) -> onDismiss()
+            blazeUrlsHelper.buildCampaignsListUrl() == url -> onDismiss()
             url.contains(blazeUrlsHelper.getCampaignStopUrlPath(navArgs.campaignId)) -> {
                 viewState = viewState.copy(blazeAction = CampaignStopped)
             }
