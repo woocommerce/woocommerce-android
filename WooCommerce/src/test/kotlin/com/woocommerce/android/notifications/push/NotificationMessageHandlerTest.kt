@@ -113,7 +113,7 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
-//        verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("User is not logged in!"))
+        verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("User is not logged in!"))
     }
 
     @Test
@@ -130,20 +130,20 @@ class NotificationMessageHandlerTest {
     fun `when the notification payload data is empty, then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
-//        verify(wooLogWrapper, only()).e(
-//            eq(WooLog.T.NOTIFS),
-//            eq("Push notification received without a valid Bundle!")
-//        )
+        verify(wooLogWrapper, only()).e(
+            eq(WooLog.T.NOTIFS),
+            eq("Push notification received without a valid Bundle!")
+        )
     }
 
     @Test
     fun `when the user id does not match, then do not process the notification`() {
         notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
         verify(accountStore, atLeastOnce()).hasAccessToken()
-//        verify(wooLogWrapper, only()).e(
-//            eq(WooLog.T.NOTIFS),
-//            eq("WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
-//        )
+        verify(wooLogWrapper, only()).e(
+            eq(WooLog.T.NOTIFS),
+            eq("WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
+        )
     }
 
     @Test
@@ -155,7 +155,7 @@ class NotificationMessageHandlerTest {
             )
         )
 
-//        verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("Notification data is empty!"))
+        verify(wooLogWrapper, only()).e(eq(WooLog.T.NOTIFS), eq("Notification data is empty!"))
     }
 
     @Test
