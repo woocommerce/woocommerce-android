@@ -71,6 +71,7 @@ fun CustomFieldsEditorScreen(viewModel: CustomFieldsEditorViewModel) {
             onDeleteClicked = viewModel::onDeleteClicked,
             onCopyKeyClicked = viewModel::onCopyKeyClicked,
             onCopyValueClicked = viewModel::onCopyValueClicked,
+            onEditorModeChanged = viewModel::onEditorModeChanged,
             onBackButtonClick = viewModel::onBackClick,
         )
     }
@@ -85,6 +86,7 @@ private fun CustomFieldsEditorScreen(
     onDeleteClicked: () -> Unit,
     onCopyKeyClicked: () -> Unit,
     onCopyValueClicked: () -> Unit,
+    onEditorModeChanged: (Boolean) -> Unit,
     onBackButtonClick: () -> Unit,
 ) {
     BackHandler { onBackButtonClick() }
@@ -128,8 +130,6 @@ private fun CustomFieldsEditorScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
-        var useHtmlEditor by remember { mutableStateOf(true) }
-
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
@@ -148,8 +148,8 @@ private fun CustomFieldsEditorScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Toggle(
-                useHtmlEditor = useHtmlEditor,
-                onToggle = { useHtmlEditor = it },
+                useHtmlEditor = state.useHtmlEditor,
+                onToggle = onEditorModeChanged,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
@@ -157,7 +157,7 @@ private fun CustomFieldsEditorScreen(
 
             Box {
                 androidx.compose.animation.AnimatedVisibility(
-                    visible = useHtmlEditor,
+                    visible = state.useHtmlEditor,
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
@@ -169,7 +169,7 @@ private fun CustomFieldsEditorScreen(
                     )
                 }
                 androidx.compose.animation.AnimatedVisibility(
-                    visible = !useHtmlEditor,
+                    visible = !state.useHtmlEditor,
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
@@ -300,15 +300,20 @@ private val Colors.toggleBackgroundColor: Color
 @Preview
 @Composable
 private fun CustomFieldsEditorScreenPreview() {
+    var useHtmlEditor by remember { mutableStateOf(false) }
     WooThemeWithBackground {
         CustomFieldsEditorScreen(
-            CustomFieldsEditorViewModel.UiState(customField = CustomFieldUiModel("key", "value")),
+            CustomFieldsEditorViewModel.UiState(
+                customField = CustomFieldUiModel("key", "value"),
+                useHtmlEditor = useHtmlEditor,
+            ),
             onKeyChanged = {},
             onValueChanged = {},
             onDoneClicked = {},
             onDeleteClicked = {},
             onCopyKeyClicked = {},
             onCopyValueClicked = {},
+            onEditorModeChanged = { useHtmlEditor = it },
             onBackButtonClick = {}
         )
     }
