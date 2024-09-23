@@ -82,7 +82,6 @@ private object WooPosColors {
     val Purple60Alpha33 = Color(0x33674399)
     val Purple80 = Color(0xFF3C2861)
     val Purple90 = Color(0xFF271B3D)
-    val PurpleDarkSecondary = Color(0x99EBEBF5)
 
     val Pink10 = Color(0xFFED9BB8)
     val Pink30 = Color(0xFFEB6594)
