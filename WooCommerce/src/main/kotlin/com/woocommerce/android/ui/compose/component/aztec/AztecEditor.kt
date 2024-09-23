@@ -242,6 +242,7 @@ fun AztecEditor(
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@Suppress("CyclomaticComplexMethod")
 @Composable
 private fun InternalAztecEditor(
     state: AztecEditorState,
