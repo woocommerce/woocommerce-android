@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-09 20:54:04+0000
+Translation-Revision-Date: 2024-09-19 12:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_key_error_underscore">مفتاح غير صالح: يرجى إزالة رمز \"_\" من البداية.</string>
+    <string name="custom_fields_editor_key_error_duplicate">هذا المفتاح مستخدم بالفعل لحقل مخصص آخر.\nلا يدعم التطبيق حاليًا إنشاء مفاتيح مكررة. يرجى استخدام مسؤول ووردبريس لتكرار مفتاح إذا لزم الأمر.</string>
+    <string name="custom_fields_add_button">إضافة حقول مخصصة</string>
+    <string name="custom_fields_list_field_deleted">تم حذف الحقل المخصص</string>
+    <string name="custom_fields_list_saving_failed">فشل حفظ التغييرات، يرجى المحاولة مجددًا</string>
+    <string name="custom_fields_list_saving_succeeded">تم حفظ التغييرات</string>
+    <string name="custom_fields_list_progress_dialog_title">حفظ التغييرات</string>
+    <string name="woopos_no_internet_message">يبدو أنك غير متصل بالإنترنت. تأكد من تشغيل شبكة Wi-Fi الخاصة بك. إذا كنت تستخدم بيانات الهاتف المحمول، فتأكد من تمكينها ضمن إعدادات الجهاز لديك.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">فشل الفحص. يرجى المحاولة مجددًا في وقت لاحق</string>
     <string name="custom_fields_editor_value_label">القيمة</string>
     <string name="custom_fields_editor_key_label">المفتاح</string>
     <string name="woopos_dialog_products_info_secondary_message">أما أنواع المنتجات الأخرى، مثل: المنتجات المتغيرة والظاهرية، ستتوفر في التحديثات المستقبلية.</string>
