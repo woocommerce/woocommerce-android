@@ -137,7 +137,7 @@ private fun WooPosProductsScreen(
 
                 is WooPosProductsViewState.Content -> MaterialTheme.colors.onSurface
             }
-            ProductsToolbar(state.value, modifier, titleColor, onToolbarInfoIconClicked)
+            ProductsToolbar(state.value, titleColor, onToolbarInfoIconClicked)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -175,13 +175,13 @@ private fun WooPosProductsScreen(
 @Composable
 private fun ProductsToolbar(
     productViewState: WooPosProductsViewState,
-    modifier: Modifier,
     titleColor: Color,
     onToolbarInfoIconClicked: () -> Unit,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth().height(40.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top,
     ) {
         Text(
             text = stringResource(id = R.string.woopos_products_screen_title),

@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 20.5
+We’re excited to bring you a smoother experience with our latest update! We've resolved an issue that prevented renaming Product Variation Attributes and fixed a bug related to notification removal. Plus, users can now easily select product images when creating Blaze ads, and the Blaze feature is now fully enabled for sites with the Blaze for WooCommerce plugin active. Enjoy the improvements!
+
 ## 20.4
 We've enhanced your WooCommerce app experience! You can now effortlessly scan tracking numbers when adding them to orders. Plus, we've fixed an issue with shipping labels, ensuring accurate weight calculations for packages with multiple items. Enjoy a smoother, more reliable app experience!
 

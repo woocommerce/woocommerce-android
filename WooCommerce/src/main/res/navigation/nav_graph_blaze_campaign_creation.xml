@@ -98,6 +98,9 @@
         <argument
             android:name="aiSuggestionsForAd"
             app:argType="com.woocommerce.android.ui.blaze.BlazeRepository$AiSuggestionForAd[]" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationEditAdFragment_to_productImagePickerFragment"
+            app:destination="@id/productImagePickerFragment" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignBudgetFragment"
@@ -183,4 +186,12 @@
         android:id="@+id/blazeCampaignSuccessBottomSheetFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.success.BlazeCampaignSuccessBottomSheetFragment"
         android:label="BlazeCampaignSuccessBottomSheetFragment" />
+    <fragment
+        android:id="@+id/productImagePickerFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.ad.ProductImagePickerFragment"
+        android:label="ProductImagePickerFragment">
+        <argument
+            android:name="productId"
+            app:argType="long" />
+    </fragment>
 </navigation>
