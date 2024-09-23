@@ -1,2 +1,0 @@
-20.4:
-Wir haben dein Erlebnis mit der WooCommerce-App verbessert! Du kannst nun mühelos Sendungsverfolgungsnummern scannen, wenn du sie zu Bestellungen hinzufügst. Außerdem haben wir ein Problem mit den Versandetiketten behoben. Jetzt ist sichergestellt, dass Gewichtsberechnungen für Pakete mit mehreren Artikeln korrekt sind. Freu dich auf ein reibungsloseres und zuverlässigeres App-Erlebnis!
