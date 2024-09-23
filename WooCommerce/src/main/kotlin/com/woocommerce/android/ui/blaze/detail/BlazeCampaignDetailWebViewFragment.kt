@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.extensions.navigateBackWithNotice
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
@@ -22,7 +22,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BlazeCampaignDetailWebViewFragment : BaseFragment() {
     companion object {
-        const val BLAZE_WEBVIEW_DISMISSED = "blaze-webview-dismissed"
         const val BLAZE_WEBVIEW_RESULT = "blaze-webview-result"
     }
 
@@ -58,7 +57,7 @@ class BlazeCampaignDetailWebViewFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is Exit -> navigateBackWithNotice(BLAZE_WEBVIEW_DISMISSED)
+                is Exit -> findNavController().popBackStack()
                 is ExitWithResult<*> -> navigateBackWithResult(
                     BLAZE_WEBVIEW_RESULT,
                     event.data
