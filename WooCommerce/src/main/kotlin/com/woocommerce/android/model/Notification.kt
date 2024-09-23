@@ -26,16 +26,13 @@ data class Notification(
     val data: String? = null
 ) : Parcelable {
     @IgnoredOnParcel
-    val isOrderNotification = noteType == WooNotificationType.NEW_ORDER
+    val isOrderNotification = noteType is WooNotificationType.NewOrder
 
     @IgnoredOnParcel
-    val isReviewNotification = noteType == WooNotificationType.PRODUCT_REVIEW
+    val isReviewNotification = noteType is WooNotificationType.ProductReview
 
     @IgnoredOnParcel
-    val isBlazeNotification = noteType == WooNotificationType.BLAZE_APPROVED_NOTE ||
-        noteType == WooNotificationType.BLAZE_REJECTED_NOTE ||
-        noteType == WooNotificationType.BLAZE_CANCELLED_NOTE ||
-        noteType == WooNotificationType.BLAZE_PERFORMED_NOTE
+    val isBlazeNotification = noteType is WooNotificationType.BlazeStatusUpdate
 
     /**
      * Notifications are grouped based on the notification type and the store the notification belongs to.

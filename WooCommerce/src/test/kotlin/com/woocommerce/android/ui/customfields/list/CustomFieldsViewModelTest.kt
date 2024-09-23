@@ -217,7 +217,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         setup()
 
         val state = viewModel.state.runAndCaptureValues {
-            viewModel.onCustomFieldUpdated(customField)
+            viewModel.onCustomFieldUpdated(CUSTOM_FIELDS.first().key, customField)
             advanceUntilIdle()
         }.last()
 
@@ -230,8 +230,8 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         setup()
 
         val state = viewModel.state.runAndCaptureValues {
-            viewModel.onCustomFieldUpdated(customField.copy(value = "new value"))
-            viewModel.onCustomFieldUpdated(customField.copy(value = "new value 2"))
+            viewModel.onCustomFieldUpdated(CUSTOM_FIELDS.first().key, customField.copy(value = "new value"))
+            viewModel.onCustomFieldUpdated(CUSTOM_FIELDS.first().key, customField.copy(value = "new value 2"))
             advanceUntilIdle()
         }.last()
 
@@ -254,6 +254,25 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         assertThat(state.customFields).hasSize(CUSTOM_FIELDS.size + 1)
         assertThat(state.customFields.last().key).isEqualTo(customField.key)
         assertThat(state.customFields.last().value).isEqualTo(customField.value)
+    }
+
+    @Test
+    fun `when adding a custom field then updating it, then confirm the field is not duplicated`() = testBlocking {
+        val customField = CustomFieldUiModel(
+            key = "new key",
+            value = "new value"
+        )
+        setup()
+
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onCustomFieldInserted(customField)
+            viewModel.onCustomFieldUpdated(customField.key, customField.copy(value = "new value 2"))
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state.customFields).hasSize(CUSTOM_FIELDS.size + 1)
+        assertThat(state.customFields.last().key).isEqualTo(customField.key)
+        assertThat(state.customFields.last().value).isEqualTo("new value 2")
     }
 
     @Test
@@ -325,7 +344,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
 
         setup()
 
-        viewModel.onCustomFieldUpdated(updatedField)
+        viewModel.onCustomFieldUpdated(CUSTOM_FIELDS.first().key, updatedField)
         viewModel.onCustomFieldInserted(insertedField)
         viewModel.onSaveClicked()
 

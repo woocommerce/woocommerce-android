@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-09 15:54:03+0000
+Translation-Revision-Date: 2024-09-19 12:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_key_error_underscore">Chave inválida: remova o caractere \"_\" do início.</string>
+    <string name="custom_fields_editor_key_error_duplicate">Esta chave já está sendo utilizada por outro campo personalizado.\nO aplicativo atual não aceita criação de chaves duplicadas. Se necessário, use o Painel WP Admin para duplicar uma chave.</string>
+    <string name="custom_fields_add_button">Adicionar campos personalizados</string>
+    <string name="custom_fields_list_field_deleted">Campo personalizado excluído</string>
+    <string name="custom_fields_list_saving_failed">Falha ao salvar alterações, tente novamente</string>
+    <string name="custom_fields_list_saving_succeeded">Alterações salvas</string>
+    <string name="custom_fields_list_progress_dialog_title">Salvando alterações</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">Falha na verificação. Tente novamente mais tarde</string>
+    <string name="woopos_no_internet_message">Parece que você não está conectado à Internet. Verifique se seu Wi-Fi está ligado. Se você estiver usando dados móveis, verifique se a opção está ativada nas configurações do seu dispositivo.</string>
     <string name="custom_fields_editor_value_label">Valor</string>
     <string name="custom_fields_editor_key_label">Chave</string>
     <string name="woopos_dialog_products_info_secondary_message">Outros tipos de produtos, como variáveis e virtuais, serão disponibilizados em atualizações futuras.</string>
