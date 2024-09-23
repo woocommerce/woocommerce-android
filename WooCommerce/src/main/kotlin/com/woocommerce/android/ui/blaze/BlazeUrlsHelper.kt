@@ -9,6 +9,7 @@ class BlazeUrlsHelper @Inject constructor(
     companion object {
         private const val HTTP_PATTERN = "(https?://)"
         private const val BASE_URL = "https://wordpress.com/advertising"
+        const val PROMOTE_AGAIN_URL_PATH = "blazepress-widget=post"
     }
 
     fun buildCampaignsListUrl(): String = "$BASE_URL/campaigns/${getSiteUrl()}"
@@ -16,8 +17,6 @@ class BlazeUrlsHelper @Inject constructor(
     fun buildCampaignDetailsUrl(campaignId: String): String = "$BASE_URL/campaigns/$campaignId/${getSiteUrl()}"
 
     fun getCampaignStopUrlPath(campaignId: String): String = "/campaigns/$campaignId/stop"
-
-    fun getBlazePromoteAgainPath(): String = "blazepress-widget=post"
 
     private fun getSiteUrl() = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
 

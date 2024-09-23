@@ -33,7 +33,7 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
                 viewState = viewState.copy(blazeAction = CampaignStopped)
             }
 
-            url.contains(blazeUrlsHelper.getBlazePromoteAgainPath()) -> {
+            url.contains(BlazeUrlsHelper.PROMOTE_AGAIN_URL_PATH) -> {
                 viewState = viewState.copy(
                     blazeAction = PromoteProductAgain(productId = extractProductIdFromUrl(url))
                 )
