@@ -20,6 +20,11 @@ class BlazeUrlsHelper @Inject constructor(
 
     private fun getSiteUrl() = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
 
+    fun extractProductIdFromPromoteAgainUrl(url: String): Long? =
+        url.substringAfter("post-")
+            .substringBefore("_campaign")
+            .toLongOrNull()
+
     enum class BlazeFlowSource(val trackingName: String) {
         MORE_MENU_ITEM("menu"),
         PRODUCT_DETAIL_PROMOTE_BUTTON("product_detail_promote_button"),

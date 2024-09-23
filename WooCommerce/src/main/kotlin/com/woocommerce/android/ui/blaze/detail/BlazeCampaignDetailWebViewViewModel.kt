@@ -35,17 +35,14 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
 
             url.contains(BlazeUrlsHelper.PROMOTE_AGAIN_URL_PATH) -> {
                 viewState = viewState.copy(
-                    blazeAction = PromoteProductAgain(productId = extractProductIdFromUrl(url))
+                    blazeAction = PromoteProductAgain(
+                        productId = blazeUrlsHelper.extractProductIdFromPromoteAgainUrl(url)
+                    )
                 )
                 onDismiss()
             }
         }
     }
-
-    private fun extractProductIdFromUrl(url: String): Long? =
-        url.substringAfter("post-")
-            .substringBefore("_campaign")
-            .toLongOrNull()
 
     fun onDismiss() {
         when (viewState.blazeAction) {
