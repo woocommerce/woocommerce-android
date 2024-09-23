@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
@@ -49,7 +50,7 @@ class NotificationMessageHandler @Inject constructor(
         @VisibleForTesting
         const val MAX_INBOX_ITEMS = 5
 
-        private val activeNotificationsMap = mutableMapOf<Int, Notification>()
+        private val activeNotificationsMap = ConcurrentHashMap<Int, Notification>()
     }
 
     @Synchronized
