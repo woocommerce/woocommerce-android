@@ -11,12 +11,14 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,6 +53,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -133,65 +136,70 @@ private fun CustomFieldsEditorScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { paddingValues ->
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            WCOutlinedTextField(
-                value = state.customField.key,
-                onValueChange = onKeyChanged,
-                label = stringResource(R.string.custom_fields_editor_key_label),
-                helperText = state.keyErrorMessage?.getText(),
-                isError = state.keyErrorMessage != null,
-                singleLine = true
-            )
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .heightIn(max = max(maxHeight, 320.dp))
+            ) {
+                WCOutlinedTextField(
+                    value = state.customField.key,
+                    onValueChange = onKeyChanged,
+                    label = stringResource(R.string.custom_fields_editor_key_label),
+                    helperText = state.keyErrorMessage?.getText(),
+                    isError = state.keyErrorMessage != null,
+                    singleLine = true
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Toggle(
-                useHtmlEditor = state.useHtmlEditor,
-                onToggle = onEditorModeChanged,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+                Toggle(
+                    useHtmlEditor = state.useHtmlEditor,
+                    onToggle = onEditorModeChanged,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            Box {
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = state.useHtmlEditor,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    OutlinedAztecEditor(
-                        content = state.customField.value,
-                        onContentChanged = onValueChanged,
-                        label = stringResource(R.string.custom_fields_editor_value_label),
-                        enableSourceEditor = false,
-                        minLines = 5
-                    )
-                }
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = !state.useHtmlEditor,
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    WCOutlinedTextField(
-                        value = state.customField.value,
-                        onValueChange = onValueChanged,
-                        label = stringResource(R.string.custom_fields_editor_value_label),
-                        minLines = 5
-                    )
+                Box {
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = state.useHtmlEditor,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        OutlinedAztecEditor(
+                            content = state.customField.value,
+                            onContentChanged = onValueChanged,
+                            label = stringResource(R.string.custom_fields_editor_value_label),
+                            enableSourceEditor = false,
+                            minLines = 5
+                        )
+                    }
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = !state.useHtmlEditor,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        WCOutlinedTextField(
+                            value = state.customField.value,
+                            onValueChange = onValueChanged,
+                            label = stringResource(R.string.custom_fields_editor_value_label),
+                            minLines = 5
+                        )
+                    }
                 }
             }
-        }
 
-        state.discardChangesDialogState?.let {
-            DiscardChangesDialog(
-                discardButton = it.onDiscard,
-                dismissButton = it.onCancel
-            )
+            state.discardChangesDialogState?.let {
+                DiscardChangesDialog(
+                    discardButton = it.onDiscard,
+                    dismissButton = it.onCancel
+                )
+            }
         }
     }
 }
