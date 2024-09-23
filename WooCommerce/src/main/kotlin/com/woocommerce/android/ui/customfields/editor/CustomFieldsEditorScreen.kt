@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.customfields.editor
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -33,6 +34,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -221,28 +224,28 @@ private fun Toggle(
                 MaterialTheme.shapes.medium
             )
     ) {
-        var size by remember { mutableStateOf(DpSize.Zero) }
-
-        val animationStiffness = 100f
+        var size by rememberSaveable(stateSaver = DpSize.Saver) {
+            mutableStateOf(DpSize.Zero)
+        }
 
         val offset by animateDpAsState(
             targetValue = if (useHtmlEditor) size.width else 0.dp,
-            animationSpec = spring(stiffness = animationStiffness),
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "offset"
         )
         val textAlpha by animateFloatAsState(
             targetValue = if (useHtmlEditor) 1f else 0.5f,
-            animationSpec = spring(stiffness = animationStiffness),
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "text alpha"
         )
         val htmlTextColor by animateColorAsState(
             targetValue = if (useHtmlEditor) MaterialTheme.colors.onPrimary else LocalContentColor.current,
-            animationSpec = spring(stiffness = animationStiffness),
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "html text color"
         )
         val textTextColor by animateColorAsState(
             targetValue = if (useHtmlEditor) LocalContentColor.current else MaterialTheme.colors.onPrimary,
-            animationSpec = spring(stiffness = animationStiffness),
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
             label = "regular text color"
         )
 
@@ -296,6 +299,13 @@ private fun Toggle(
 private val Colors.toggleBackgroundColor: Color
     @Composable
     get() = if (isLight) MaterialTheme.colors.background else Color.DarkGray
+
+private val DpSize.Companion.Saver by lazy {
+    listSaver(
+        save = { listOf(it.width.value, it.height.value) },
+        restore = { DpSize((it[0] as Float).dp, (it[1] as Float).dp) }
+    )
+}
 
 @LightDarkThemePreviews
 @Preview
