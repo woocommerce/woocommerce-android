@@ -4303,6 +4303,7 @@
     <string name="custom_fields_editor_key_error_underscore">Invalid key: please remove the \"_\" character from the beginning.</string>
     <string name="custom_fields_editor_copy_key">Copy Key</string>
     <string name="custom_fields_editor_copy_value">Copy Value</string>
+    <string name="custom_fields_editor_toggle_accessibility_description">Toggle between text and HTML editors</string>
     <string name="custom_fields_editor_text_toggle">Text</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
 </resources>
