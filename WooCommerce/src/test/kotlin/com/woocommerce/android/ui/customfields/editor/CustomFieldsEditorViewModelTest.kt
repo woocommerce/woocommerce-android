@@ -301,4 +301,15 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `when toggle editor mode, then update the state`() = testBlocking {
+        setup(editing = true)
+
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onEditorModeChanged(true)
+        }.last()
+
+        assertThat(state.useHtmlEditor).isTrue()
+    }
 }
