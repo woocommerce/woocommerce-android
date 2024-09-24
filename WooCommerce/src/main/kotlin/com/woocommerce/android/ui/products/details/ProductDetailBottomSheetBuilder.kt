@@ -61,6 +61,7 @@ class ProductDetailBottomSheetBuilder(
                     product.getCustomFields()
                 )
             }
+
             EXTERNAL -> {
                 listOfNotNull(
                     product.getCategories(),
@@ -70,6 +71,7 @@ class ProductDetailBottomSheetBuilder(
                     product.getCustomFields()
                 )
             }
+
             GROUPED -> {
                 listOfNotNull(
                     product.getCategories(),
@@ -79,6 +81,7 @@ class ProductDetailBottomSheetBuilder(
                     product.getCustomFields()
                 )
             }
+
             VARIABLE, VARIABLE_SUBSCRIPTION -> {
                 listOfNotNull(
                     product.getShipping(),
@@ -89,6 +92,7 @@ class ProductDetailBottomSheetBuilder(
                     product.getCustomFields()
                 )
             }
+
             else -> {
                 listOfNotNull(
                     product.getCategories(),
@@ -198,7 +202,9 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private suspend fun Product.getCustomFields(): ProductDetailBottomSheetUiItem? {
-        if(customFieldsRepository.hasDisplayableCustomFields(remoteId)) return null
+        if (remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID ||
+            customFieldsRepository.hasDisplayableCustomFields(remoteId)
+        ) return null
 
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.CUSTOM_FIELDS,
