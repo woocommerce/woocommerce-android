@@ -132,6 +132,17 @@
         <action
             android:id="@+id/action_productDetailFragment_to_AIProductCreationSurveyBottomSheet"
             app:destination="@id/AIProductCreationSurveyBottomSheet" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_customFields"
+            app:destination="@id/nav_graph_custom_fields" >
+            <argument
+                android:name="parentItemId"
+                app:argType="long" />
+            <argument
+                android:name="parentItemType"
+                app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType"
+                android:defaultValue="PRODUCT" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -536,6 +547,7 @@
     <include app:graph="@navigation/nav_graph_add_product_category" />
     <include app:graph="@navigation/nav_graph_product_settings" />
     <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
+    <include app:graph="@navigation/nav_graph_custom_fields" />
 
     <action
         android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
