@@ -39,6 +39,6 @@ fun NavController.navigateSafely(
     navOptions: NavOptions? = null
 ) {
     if (currentDestination?.id != resId) {
-            navigate(resId, bundle, navOptions)
-        }
+        navigate(resId, bundle, navOptions)
+    }
 }
