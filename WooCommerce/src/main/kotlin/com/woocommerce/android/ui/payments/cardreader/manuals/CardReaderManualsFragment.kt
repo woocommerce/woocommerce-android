@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
@@ -50,7 +51,8 @@ class CardReaderManualsFragment : BaseFragment() {
                                             contentDescription = stringResource(R.string.back)
                                         )
                                     }
-                                }
+                                },
+                                backgroundColor = colorResource(id = R.color.color_toolbar),
                             )
                         }
                     ) { innerPadding ->
