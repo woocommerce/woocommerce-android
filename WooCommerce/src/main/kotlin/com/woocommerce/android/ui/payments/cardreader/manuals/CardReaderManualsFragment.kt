@@ -53,8 +53,8 @@ class CardReaderManualsFragment : BaseFragment() {
                                 }
                             )
                         }
-                    ) {
-                        ManualsScreen(cardReaderManualsViewModel = viewModel)
+                    ) { innerPadding ->
+                        ManualsScreen(cardReaderManualsViewModel = viewModel, contentPadding = innerPadding)
                     }
                 }
             }
