@@ -9,25 +9,8 @@ import androidx.navigation.fragment.FragmentNavigator
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.util.BuildConfig
 
-/**
- * Prevents crashes caused by rapidly double-clicking views which navigate to the same
- * destination twice
- */
-object CallThrottler {
-    private const val DELAY = 200
-    private var lastTime: Long = 0
-
-    fun throttle(call: () -> Unit) {
-        if (System.currentTimeMillis() - lastTime > DELAY) {
-            lastTime = System.currentTimeMillis()
-            call()
-        }
-    }
-}
-
 fun NavController.navigateSafely(
     directions: NavDirections,
-    skipThrottling: Boolean = false,
     extras: FragmentNavigator.Extras? = null,
     navOptions: NavOptions? = null
 ) {
@@ -47,13 +30,7 @@ fun NavController.navigateSafely(
         }
     }
 
-    if (skipThrottling) {
-        navigateSafelyInternal(directions, navOptions, extras)
-    } else {
-        CallThrottler.throttle {
-            navigateSafelyInternal(directions, navOptions, extras)
-        }
-    }
+    navigateSafelyInternal(directions, navOptions, extras)
 }
 
 fun NavController.navigateSafely(
@@ -61,9 +38,7 @@ fun NavController.navigateSafely(
     bundle: Bundle? = null,
     navOptions: NavOptions? = null
 ) {
-    CallThrottler.throttle {
-        if (currentDestination?.id != resId) {
+    if (currentDestination?.id != resId) {
             navigate(resId, bundle, navOptions)
         }
-    }
 }

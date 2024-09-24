@@ -69,7 +69,7 @@ class CardReaderTutorialDialogFragment : PaymentsBaseDialogFragment(R.layout.car
             is CardReaderFlowParam.PaymentOrRefund -> {
                 val action = CardReaderTutorialDialogFragmentDirections
                     .actionCardReaderTutorialDialogFragmentToCardReaderPaymentDialogFragment(param, args.cardReaderType)
-                findNavController().navigateSafely(action, skipThrottling = true)
+                findNavController().navigateSafely(action)
             }
         }
     }
