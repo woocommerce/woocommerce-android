@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.FeatureAnnouncement
+import com.woocommerce.android.model.FeatureAnnouncementItem
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
@@ -33,8 +34,6 @@ import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,7 +41,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
 import org.wordpress.android.fluxc.store.SiteStore
+import org.wordpress.android.util.StringUtils
 import javax.inject.Inject
 
 @HiltViewModel
@@ -225,28 +226,74 @@ class MainActivityViewModel @Inject constructor(
         } else if (count > 0) UnseenReviews(count) else Hidden
 
     fun showFeatureAnnouncementIfNeeded() {
-        launch {
-            val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
-
-            // Feature Announcement dialog can be shown on app resume, if these criteria are filled:
-            // 1. Current version is different from the last version where announcement was shown
-            // 2. Announcement content is valid and can be displayed
-            cachedAnnouncement?.let {
-                if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
-                    cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
-                ) {
-                    WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
-                    analyticsTrackerWrapper.track(
-                        AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,
-                        mapOf(
-                            AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
-                                AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_UPGRADE
+        triggerEvent(
+            ShowFeatureAnnouncement(
+                WhatsNewAnnouncementModel(
+                    appVersionName = "1.0",
+                    announcementVersion = 1,
+                    minimumAppVersion = "1.0",
+                    maximumAppVersion = "1.0",
+                    appVersionTargets = listOf("1.0"),
+                    detailsUrl = "https://woocommerce.com",
+                    isLocalized = true,
+                    features = listOf(
+                        WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature(
+                            title = "Title",
+                            subtitle = "Subtitle Subtitle Subtitle Subtitle Subtitle Subtitle Subtitle Subtitle Subtitle Subtitle Subtitle  Subtitle",
+                            iconBase64 = "IconBase64",
+                            iconUrl = "IconUrl"
                         )
-                    )
-                    triggerEvent(ShowFeatureAnnouncement(it))
-                }
+                    ),
+                    responseLocale = "en"
+                ).build()
+            )
+        )
+//        launch {
+//            val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
+//
+//            // Feature Announcement dialog can be shown on app resume, if these criteria are filled:
+//            // 1. Current version is different from the last version where announcement was shown
+//            // 2. Announcement content is valid and can be displayed
+//            cachedAnnouncement?.let {
+//                if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
+//                    cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
+//                ) {
+//                    WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
+//                    analyticsTrackerWrapper.track(
+//                        AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,
+//                        mapOf(
+//                            AnalyticsTracker.KEY_ANNOUNCEMENT_VIEW_SOURCE to
+//                                AnalyticsTracker.VALUE_ANNOUNCEMENT_SOURCE_UPGRADE
+//                        )
+//                    )
+//
+//                }
+//            }
+//        }
+    }
+
+    fun WhatsNewAnnouncementModel.build(): FeatureAnnouncement {
+        return FeatureAnnouncement(
+            appVersionName,
+            announcementVersion,
+            minimumAppVersion,
+            maximumAppVersion,
+            appVersionTargets,
+            detailsUrl,
+            isLocalized,
+            features.map {
+                it.build()
             }
-        }
+        )
+    }
+
+    fun WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature.build(): FeatureAnnouncementItem {
+        return FeatureAnnouncementItem(
+            StringUtils.notNullStr(title),
+            StringUtils.notNullStr(subtitle),
+            StringUtils.notNullStr(iconBase64),
+            StringUtils.notNullStr(iconUrl)
+        )
     }
 
     fun checkForNotificationsPermission(hasNotificationsPermission: Boolean) {

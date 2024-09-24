@@ -4,59 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_surface">
+    android:background="@color/color_surface"
+    android:padding="@dimen/major_250">
 
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineStart"
-        android:layout_width="wrap_content"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/feature_announcement_dialog_heading"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/major_250" />
+        android:text="@string/settings_whats_new"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.Woo.Headline4"
+        android:textColor="@color/color_on_surface_high"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guidelineEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="@dimen/major_250" />
-
-    <androidx.core.widget.NestedScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/feature_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/close_feature_announcement_button"
-        app:layout_constraintEnd_toEndOf="@+id/guidelineEnd"
-        app:layout_constraintStart_toStartOf="@+id/guidelineStart">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/feature_announcement_dialog_heading"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/whats_new_dialog_heading_top_margin"
-                android:text="@string/settings_whats_new"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.Woo.Headline4"
-                android:textColor="@color/color_on_surface_high" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/feature_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_250"
-                android:overScrollMode="never"
-                tools:itemCount="5"
-                tools:listitem="@layout/feature_announcement_list_item" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
+        android:layout_marginVertical="@dimen/major_100"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toTopOf="@id/close_feature_announcement_button"
+        app:layout_constraintEnd_toEndOf="@id/feature_announcement_dialog_heading"
+        app:layout_constraintHeight_min="350dp"
+        app:layout_constraintStart_toStartOf="@id/feature_announcement_dialog_heading"
+        app:layout_constraintTop_toBottomOf="@id/feature_announcement_dialog_heading"
+        tools:itemCount="5"
+        tools:listitem="@layout/feature_announcement_list_item" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/close_feature_announcement_button"
@@ -65,8 +40,7 @@
         android:layout_height="wrap_content"
         android:text="@string/continue_button"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
-        app:layout_constraintStart_toStartOf="@id/guidelineStart"
-        android:layout_marginBottom="@dimen/major_100" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
