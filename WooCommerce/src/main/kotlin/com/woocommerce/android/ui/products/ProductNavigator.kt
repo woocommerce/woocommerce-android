@@ -463,6 +463,10 @@ class ProductNavigator @Inject constructor() {
                 )
                 fragment.findNavController().navigateSafely(action)
             }
+
+            is ProductNavigationTarget.ViewCustomFields -> {
+                TODO()
+            }
         }
     }
 
