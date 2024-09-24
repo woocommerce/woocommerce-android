@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-10 09:54:11+0000
+Translation-Revision-Date: 2024-09-17 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_key_error_underscore">間違ったキー: 先頭の「_」文字を削除してください。</string>
+    <string name="custom_fields_editor_key_error_duplicate">このキーはすでに別のカスタムフィールドで使用されています。\n現在、アプリは複製キーの作成をサポートしていません。 必要に応じて、wp-admin を使用してキーを複製してください。</string>
+    <string name="custom_fields_add_button">カスタムフィールドを追加</string>
+    <string name="custom_fields_list_field_deleted">カスタムフィールドを削除しました</string>
+    <string name="custom_fields_list_saving_failed">変更を保存できませんでした。もう一度お試しください</string>
+    <string name="custom_fields_list_saving_succeeded">変更を保存しました</string>
+    <string name="custom_fields_list_progress_dialog_title">変更を保存中</string>
+    <string name="woopos_no_internet_message">インターネットに接続されていないようです。 Wi-Fi がオンになっていることをご確認ください。 モバイルデータを使用している場合、デバイスの設定で有効になっていることを確認してください。 </string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください</string>
     <string name="custom_fields_editor_value_label">値</string>
     <string name="custom_fields_editor_key_label">キー</string>
     <string name="woopos_dialog_products_info_secondary_message">バリエーションや仮想などの他の商品タイプは、今後のアップデートで利用可能になります。</string>
