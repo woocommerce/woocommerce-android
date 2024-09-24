@@ -2594,7 +2594,10 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun onCustomFieldsClicked() {
-        TODO("Not yet implemented")
+        require(isProductStoredAtSite) {
+            "Can't launch custom fields when product is not saved yet"
+        }
+        triggerEvent(ProductNavigationTarget.ViewCustomFields(getRemoteProductId()))
     }
 
     private fun observeProductCategorySearchQuery() {
