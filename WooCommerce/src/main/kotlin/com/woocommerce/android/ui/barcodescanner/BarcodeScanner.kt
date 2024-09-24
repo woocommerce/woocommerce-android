@@ -95,7 +95,7 @@ fun BarcodeScanner(
                             previewView.height.toFloat() / 2
                         )
                         val action = FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF).apply {
-                            // Confusing naming - that means focus and metering will reset after 2 seconds
+                            // Confusing naming - that means focus and metering will reset after 5 seconds
                             setAutoCancelDuration(5, TimeUnit.SECONDS)
                         }.build()
                         camera.cameraControl.startFocusAndMetering(action)
