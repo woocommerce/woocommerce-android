@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -50,29 +51,33 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
+        setupToolbar(binding)
+
 
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-            title = resources.getString(R.string.card_reader_onboarding_title)
+            title = resources.getString(R.string.payments_hub_title)
             setDisplayHomeAsUpEnabled(true)
         }
 
-        /*
-           private fun setupToolbar(binding: FragmentCardReaderOnboardingBinding) {
-        binding.toolbar.title = resources.getString(R.string.card_reader_onboarding_title)
-        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
-            requireActivity(),
-            R.drawable.ic_back_24dp
-        )
-        binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
-        }
-    }
-         */
+
 
         observeEvents(binding)
         observeViewState(binding)
         initResultHandlers()
     }
+
+
+     private fun setupToolbar(binding: FragmentCardReaderDetailBinding) {
+  binding.toolbar.title = resources.getString(R.string.payments_hub_title)
+  binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+      requireActivity(),
+      R.drawable.ic_back_24dp
+  )
+  binding.toolbar.setNavigationOnClickListener {
+      findNavController().navigateUp()
+  }
+}
+
 
     private fun observeEvents(binding: FragmentCardReaderDetailBinding) {
         viewModel.event.observe(
