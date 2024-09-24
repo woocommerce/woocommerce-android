@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
@@ -49,15 +50,13 @@ class NotificationMessageHandler @Inject constructor(
         @VisibleForTesting
         const val MAX_INBOX_ITEMS = 5
 
-        private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
+        private val activeNotificationsMap = ConcurrentHashMap<Int, Notification>()
     }
 
-    @Synchronized
     fun onPushNotificationDismissed(notificationId: Int) {
         removeNotificationByNotificationIdFromSystemsBar(notificationId)
     }
 
-    @Synchronized
     fun onLocalNotificationDismissed(notificationId: Int, notificationType: String) {
         removeNotificationByNotificationIdFromSystemsBar(notificationId)
         AnalyticsTracker.track(
@@ -132,13 +131,13 @@ class NotificationMessageHandler @Inject constructor(
     private fun handleWooNotification(notification: Notification) {
         val randomNumber = if (notification.noteType == NewOrder) Random.nextInt() else 0
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId, randomNumber)
-        ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = notification
+        activeNotificationsMap[getLocalPushId(localPushId, randomNumber)] = notification
         if (notificationBuilder.isNotificationsEnabled()) {
             analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_RECEIVED, notification)
             analyticsTracker.flush()
         }
 
-        val isGroupNotification = ACTIVE_NOTIFICATIONS_MAP.size > 1
+        val isGroupNotification = activeNotificationsMap.size > 1
         with(notificationBuilder) {
             buildAndDisplayWooNotification(
                 pushId = localPushId,
@@ -147,7 +146,7 @@ class NotificationMessageHandler @Inject constructor(
             )
 
             if (isGroupNotification) {
-                val notesMap = ACTIVE_NOTIFICATIONS_MAP.toMap()
+                val notesMap = activeNotificationsMap.toMap()
                 val message = notesMap.values.take(MAX_INBOX_ITEMS).joinToString("\n") {
                     it.noteMessage.orEmpty()
                 }
@@ -183,23 +182,23 @@ class NotificationMessageHandler @Inject constructor(
     // This solution is a temporary HACK to generate a random number for each new order notification
     // and use that number to group notifications along with notification_note_id
     private fun getLocalPushIdForNoteId(noteId: Long, randomNumber: Int): Int {
-        for (id in ACTIVE_NOTIFICATIONS_MAP.keys) {
-            val notification = ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(id, randomNumber)]
+        for (id in activeNotificationsMap.keys) {
+            val notification = activeNotificationsMap[getLocalPushId(id, randomNumber)]
             if (notification?.remoteNoteId == noteId) {
                 return id
             }
         }
-        return PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
+        return PUSH_NOTIFICATION_ID + activeNotificationsMap.size
     }
 
-    private fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
-    private fun clearNotifications() = ACTIVE_NOTIFICATIONS_MAP.clear()
+    private fun hasNotifications() = activeNotificationsMap.isNotEmpty()
+    private fun clearNotifications() = activeNotificationsMap.clear()
 
     /**
      * Find the matching notification and send a track event for [PUSH_NOTIFICATION_TAPPED].
      */
     fun markNotificationTapped(remoteNoteId: Long) {
-        ACTIVE_NOTIFICATIONS_MAP.asSequence()
+        activeNotificationsMap.asSequence()
             .firstOrNull { it.value.remoteNoteId == remoteNoteId }?.let { row ->
                 analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_TAPPED, row.value)
                 analyticsTracker.flush()
@@ -210,7 +209,7 @@ class NotificationMessageHandler @Inject constructor(
      * Loop over all active notifications and send the [PUSH_NOTIFICATION_TAPPED] track event for each one.
      */
     fun markNotificationsOfTypeTapped(type: NotificationChannelType) {
-        ACTIVE_NOTIFICATIONS_MAP.asSequence()
+        activeNotificationsMap.asSequence()
             .filter { it.value.channelType == type }
             .forEach { row ->
                 analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_TAPPED, row.value)
@@ -223,10 +222,9 @@ class NotificationMessageHandler @Inject constructor(
         notificationBuilder.cancelAllNotifications()
     }
 
-    @Synchronized
     fun removeNotificationByRemoteIdFromSystemsBar(remoteNoteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
-        ACTIVE_NOTIFICATIONS_MAP.asSequence()
+        activeNotificationsMap.asSequence()
             .forEach { row ->
                 if (row.value.remoteNoteId == remoteNoteId) {
                     notificationBuilder.cancelNotification(row.key)
@@ -236,14 +234,13 @@ class NotificationMessageHandler @Inject constructor(
             }
 
         clearNotifications()
-        ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
+        activeNotificationsMap.putAll(keptNotifs)
         updateNotificationsState()
     }
 
-    @Synchronized
     fun removeNotificationByNotificationIdFromSystemsBar(localPushId: Int) {
         val keptNotifs = HashMap<Int, Notification>()
-        ACTIVE_NOTIFICATIONS_MAP.asSequence()
+        activeNotificationsMap.asSequence()
             .forEach { row ->
                 if (row.key == localPushId) {
                     notificationBuilder.cancelNotification(row.key)
@@ -253,15 +250,13 @@ class NotificationMessageHandler @Inject constructor(
             }
 
         clearNotifications()
-        ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
+        activeNotificationsMap.putAll(keptNotifs)
         updateNotificationsState()
     }
 
-    @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
-        // Using a copy of the map to avoid concurrency problems
-        ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
+        activeNotificationsMap.asSequence().forEach { row ->
             if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
                 notificationBuilder.cancelNotification(row.key)
             } else {
@@ -269,7 +264,7 @@ class NotificationMessageHandler @Inject constructor(
             }
         }
         clearNotifications()
-        ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
+        activeNotificationsMap.putAll(keptNotifs)
         updateNotificationsState()
     }
 

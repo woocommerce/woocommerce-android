@@ -4,7 +4,7 @@
 
 20.6
 -----
-
+- [*][Internal] Replace mutable map with Thread safe map for storing all active notifications [https://github.com/woocommerce/woocommerce-android/pull/12655]
 
 20.5
 -----
