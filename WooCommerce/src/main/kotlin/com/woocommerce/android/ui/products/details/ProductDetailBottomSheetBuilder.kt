@@ -204,7 +204,9 @@ class ProductDetailBottomSheetBuilder(
     private suspend fun Product.getCustomFields(): ProductDetailBottomSheetUiItem? {
         if (remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID ||
             customFieldsRepository.hasDisplayableCustomFields(remoteId)
-        ) return null
+        ) {
+            return null
+        }
 
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.CUSTOM_FIELDS,

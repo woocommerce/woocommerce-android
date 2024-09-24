@@ -1008,7 +1008,9 @@ class ProductDetailCardBuilder(
     private suspend fun Product.customFields(): ProductProperty? {
         if (remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID ||
             !customFieldsRepository.hasDisplayableCustomFields(this.remoteId)
-        ) return null
+        ) {
+            return null
+        }
 
         return ComplexProperty(
             string.product_custom_fields,

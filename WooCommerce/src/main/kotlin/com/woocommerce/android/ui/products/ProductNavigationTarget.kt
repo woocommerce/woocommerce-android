@@ -180,5 +180,5 @@ sealed class ProductNavigationTarget : Event() {
         val productName: String
     ) : ProductNavigationTarget()
 
-    data class ViewCustomFields(val productId: Long): ProductNavigationTarget()
+    data class ViewCustomFields(val productId: Long) : ProductNavigationTarget()
 }
