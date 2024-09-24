@@ -64,40 +64,42 @@ fun BarcodeScanner(
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 try {
-                    val cameraProvider = cameraProviderFuture.get()
-                    val imageAnalysisUseCase = ImageAnalysis.Builder()
-                        .setTargetResolution(
-                            Size(
-                                previewView.width,
-                                previewView.height
-                            )
-                        ).setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-                        .apply {
-                            setAnalyzer(ContextCompat.getMainExecutor(context), onNewFrame)
-                        }
+                    previewView.post {
+                        val cameraProvider = cameraProviderFuture.get()
+                        val imageAnalysisUseCase = ImageAnalysis.Builder()
+                            .setTargetResolution(
+                                Size(
+                                    previewView.width,
+                                    previewView.height
+                                )
+                            ).setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
+                            .build()
+                            .apply {
+                                setAnalyzer(ContextCompat.getMainExecutor(context), onNewFrame)
+                            }
 
-                    cameraProvider.unbindAll()
-                    val camera = cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        selector,
-                        cameraPreview,
-                        imageAnalysisUseCase
-                    )
+                        cameraProvider.unbindAll()
+                        val camera = cameraProvider.bindToLifecycle(
+                            lifecycleOwner,
+                            selector,
+                            cameraPreview,
+                            imageAnalysisUseCase
+                        )
 
-                    val factory = SurfaceOrientedMeteringPointFactory(
-                        previewView.width.toFloat(),
-                        previewView.height.toFloat()
-                    )
-                    val centerPoint = factory.createPoint(
-                        previewView.width.toFloat() / 2,
-                        previewView.height.toFloat() / 2
-                    )
-                    val action = FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF).apply {
-                        // Confusing naming - that means focus and metering will reset after 2 seconds
-                        setAutoCancelDuration(2, TimeUnit.SECONDS)
-                    }.build()
-                    camera.cameraControl.startFocusAndMetering(action)
+                        val factory = SurfaceOrientedMeteringPointFactory(
+                            previewView.width.toFloat(),
+                            previewView.height.toFloat()
+                        )
+                        val centerPoint = factory.createPoint(
+                            previewView.width.toFloat() / 2,
+                            previewView.height.toFloat() / 2
+                        )
+                        val action = FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF).apply {
+                            // Confusing naming - that means focus and metering will reset after 2 seconds
+                            setAutoCancelDuration(5, TimeUnit.SECONDS)
+                        }.build()
+                        camera.cameraControl.startFocusAndMetering(action)
+                    }
                 } catch (e: Exception) {
                     onBindingException(e)
                 }
