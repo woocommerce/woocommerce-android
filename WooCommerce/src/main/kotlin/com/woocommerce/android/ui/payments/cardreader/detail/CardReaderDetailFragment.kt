@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.cardreader.detail
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -52,11 +51,6 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
         setupToolbar(binding)
-
-        (requireActivity() as AppCompatActivity).supportActionBar?.apply {
-            title = resources.getString(R.string.payments_hub_title)
-            setDisplayHomeAsUpEnabled(true)
-        }
 
         observeEvents(binding)
         observeViewState(binding)
