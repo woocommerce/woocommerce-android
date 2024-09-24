@@ -53,31 +53,26 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
         val binding = FragmentCardReaderDetailBinding.bind(view)
         setupToolbar(binding)
 
-
         (requireActivity() as AppCompatActivity).supportActionBar?.apply {
             title = resources.getString(R.string.payments_hub_title)
             setDisplayHomeAsUpEnabled(true)
         }
-
-
 
         observeEvents(binding)
         observeViewState(binding)
         initResultHandlers()
     }
 
-
-     private fun setupToolbar(binding: FragmentCardReaderDetailBinding) {
-  binding.toolbar.title = resources.getString(R.string.payments_hub_title)
-  binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
-      requireActivity(),
-      R.drawable.ic_back_24dp
-  )
-  binding.toolbar.setNavigationOnClickListener {
-      findNavController().navigateUp()
-  }
-}
-
+    private fun setupToolbar(binding: FragmentCardReaderDetailBinding) {
+        binding.toolbar.title = resources.getString(R.string.payments_hub_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
 
     private fun observeEvents(binding: FragmentCardReaderDetailBinding) {
         viewModel.event.observe(
