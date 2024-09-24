@@ -271,7 +271,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isBlazeEnabled = isBlazeEnabled,
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
-                determineProductPasswordApi = determineProductPasswordApi
+                determineProductPasswordApi = determineProductPasswordApi,
+                customFieldsRepository = mock()
             )
         )
 
@@ -1168,7 +1169,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isBlazeEnabled = isBlazeEnabled,
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
-                determineProductPasswordApi = determineProductPasswordApi
+                determineProductPasswordApi = determineProductPasswordApi,
+                customFieldsRepository = mock()
             )
         )
         viewModel.start()
