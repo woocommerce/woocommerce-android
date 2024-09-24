@@ -24,6 +24,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget
@@ -96,6 +97,7 @@ class ProductDetailCardBuilder(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
+    private val customFieldsRepository: CustomFieldsRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     private var blazeCtaShownTracked = false
@@ -198,6 +200,7 @@ class ProductDetailCardBuilder(
                 product.shortDescription(),
                 product.linkedProducts(),
                 product.downloads(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -216,6 +219,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -235,6 +239,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -256,6 +261,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -278,6 +284,7 @@ class ProductDetailCardBuilder(
                 product.shortDescription(),
                 product.linkedProducts(),
                 product.downloads(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -299,6 +306,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -318,6 +326,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -337,6 +346,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -357,6 +367,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -992,6 +1003,17 @@ class ProductDetailCardBuilder(
                 )
             }
         }
+    }
+
+    private suspend fun Product.customFields(): ProductProperty? {
+        if (!customFieldsRepository.hasDisplayableCustomFields(this.remoteId)) return null
+
+        return ComplexProperty(
+            string.product_custom_fields,
+            resources.getString(R.string.product_custom_fields_desc),
+            drawable.ic_custom_fields,
+            onClick = viewModel::onCustomFieldsClicked
+        )
     }
 }
 

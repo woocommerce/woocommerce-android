@@ -48,6 +48,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
@@ -158,6 +159,7 @@ class ProductDetailViewModel @Inject constructor(
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val determineProductPasswordApi: DetermineProductPasswordApi,
+    private val customFieldsRepository: CustomFieldsRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -284,6 +286,7 @@ class ProductDetailViewModel @Inject constructor(
             appPrefsWrapper = appPrefsWrapper,
             isBlazeEnabled = isBlazeEnabled,
             isProductCurrentlyPromoted = isProductCurrentlyPromoted,
+            customFieldsRepository = customFieldsRepository,
             analyticsTrackerWrapper = tracker,
         )
     }
@@ -2581,12 +2584,17 @@ class ProductDetailViewModel @Inject constructor(
     fun onProductCategorySearchQueryChanged(query: String) {
         productCategorySearchQuery.value = query
     }
+
     fun onProductCategorySearchStateChanged(open: Boolean) {
         productCategorySearchQuery.value = if (open) {
             productCategorySearchQuery.value.orEmpty()
         } else {
             null
         }
+    }
+
+    fun onCustomFieldsClicked() {
+        TODO("Not yet implemented")
     }
 
     private fun observeProductCategorySearchQuery() {
