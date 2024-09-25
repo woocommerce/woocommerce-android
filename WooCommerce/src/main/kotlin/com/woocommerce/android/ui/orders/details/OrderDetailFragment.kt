@@ -425,7 +425,7 @@ class OrderDetailFragment :
                 showInstallWcShippingBanner(it)
             }
             new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
-                binding.customFieldsCard.isVisible = it
+                binding.customFieldsCard.root.isVisible = it
             }
             new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
                 binding.orderDetailsAICard.isVisible = it

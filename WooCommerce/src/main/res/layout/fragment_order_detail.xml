@@ -106,13 +106,9 @@
                         android:contentDescription="@string/shipping" />
 
                     <!-- Custom fields button -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomFieldsCard
+                    <include
                         android:id="@+id/customFieldsCard"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
+                        layout="@layout/order_detail_custom_fields_card" />
 
                     <!-- Refunds Info -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailRefundsView
