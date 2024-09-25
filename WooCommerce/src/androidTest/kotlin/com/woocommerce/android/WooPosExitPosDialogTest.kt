@@ -4,7 +4,9 @@ package com.woocommerce.android
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -145,6 +147,46 @@ class WooPosExitPosDialogTest : TestBase() {
             composeTestRule.onNodeWithText(
                 composeTestRule.activity.getString(R.string.woopos_exit_dialog_confirmation_confirm_button)
             ).assertIsDisplayed()
+            true
+        }
+    }
+
+    @Test
+    fun testExitPOSDialogIsDismissedWhenCloseButtonClicked() = runTest {
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_menu_button"
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_popup_menu_${R.string.woopos_exit_confirmation_title}",
+                useUnmergedTree = true
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog_close").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog")
+                .assertIsNotDisplayed()
             true
         }
     }

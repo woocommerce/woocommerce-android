@@ -79,6 +79,7 @@ fun WooPosExitConfirmationDialog(
                 onClick = { onDismissRequest() },
                 modifier = modifier
                     .align(Alignment.TopEnd)
+                    .testTag("woo_pos_exit_confirmation_dialog_close")
             ) {
                 Icon(
                     Icons.Default.Close,
