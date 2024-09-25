@@ -426,6 +426,13 @@ class OrderDetailFragment :
             }
             new.isCustomFieldsButtonShown?.takeIfNotEqualTo(old?.isCustomFieldsButtonShown) {
                 binding.customFieldsCard.root.isVisible = it
+                if (it && !FeatureFlag.CUSTOM_FIELDS.isEnabled()) {
+                    // When the feature flag is disabled, keep the original text and hide the icon
+                    with(binding.customFieldsCard.customFieldsButton) {
+                        icon = null
+                        text = getString(R.string.orderdetail_view_custom_fields)
+                    }
+                }
             }
             new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
                 binding.orderDetailsAICard.isVisible = it
