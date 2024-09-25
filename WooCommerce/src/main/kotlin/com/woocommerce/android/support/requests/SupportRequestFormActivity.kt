@@ -85,8 +85,8 @@ class SupportRequestFormActivity : AppCompatActivity() {
             } else {
                 @Suppress("DEPRECATION")
                 overridePendingTransition(
-                    R.anim.woopos_slide_in_left,
-                    R.anim.woopos_slide_out_right
+                    R.anim.woopos_slide_in_right,
+                    R.anim.woopos_slide_out_left
                 )
             }
         }
