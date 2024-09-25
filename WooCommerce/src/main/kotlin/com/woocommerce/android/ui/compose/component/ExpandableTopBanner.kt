@@ -37,13 +37,14 @@ fun ExpandableTopBanner(
     title: String,
     message: String,
     buttons: @Composable RowScope.() -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    expandedByDefault: Boolean = false,
 ) {
     Card(
         shape = RectangleShape,
         modifier = modifier
     ) {
-        var isExpanded by rememberSaveable { mutableStateOf(false) }
+        var isExpanded by rememberSaveable { mutableStateOf(expandedByDefault) }
 
         Column {
             Row(
@@ -95,7 +96,8 @@ fun ExpandableTopBanner(
     title: String,
     message: String,
     onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    expandedByDefault: Boolean = false,
 ) {
     ExpandableTopBanner(
         title = title,
@@ -107,7 +109,8 @@ fun ExpandableTopBanner(
                 Text(stringResource(id = R.string.dismiss))
             }
         },
-        modifier = modifier
+        modifier = modifier,
+        expandedByDefault = expandedByDefault,
     )
 }
 
