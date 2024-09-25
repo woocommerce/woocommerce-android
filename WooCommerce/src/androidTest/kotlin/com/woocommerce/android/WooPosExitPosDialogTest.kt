@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -96,6 +97,54 @@ class WooPosExitPosDialogTest : TestBase() {
             composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog")
                 .assertExists()
                 .assertIsDisplayed()
+            true
+        }
+    }
+
+    @Test
+    fun testExitPOSDialogIsDisplayedWithProperLabels() = runTest {
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_menu_button"
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_popup_menu_${R.string.woopos_exit_confirmation_title}",
+                useUnmergedTree = true
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithText(
+                composeTestRule.activity.getString(R.string.woopos_exit_dialog_confirmation_title)
+            ).assertIsDisplayed()
+            true
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithText(
+                composeTestRule.activity.getString(R.string.woopos_exit_dialog_confirmation_message)
+            ).assertIsDisplayed()
+            true
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithText(
+                composeTestRule.activity.getString(R.string.woopos_exit_dialog_confirmation_confirm_button)
+            ).assertIsDisplayed()
             true
         }
     }
