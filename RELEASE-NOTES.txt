@@ -5,6 +5,7 @@
 20.6
 -----
 - [*] Users can set a password to protect products when signed in using site credentials (compatible with WooCommerce 8.1.0 and higher) [https://github.com/woocommerce/woocommerce-android/pull/12642]
+- [*] [Internal] Revert the UserAgent ANR fix to confirm if it's causing the WebView related crash [https://github.com/woocommerce/woocommerce-android/pull/12697]
 
 20.5
 -----
