@@ -444,6 +444,10 @@ class MainActivity :
             }
         }
 
+        supportFragmentManager.primaryNavigationFragment?.let { fragment ->
+            updateAppBarVisibility(fragment)
+        }
+
         super.onBackPressed()
     }
 
@@ -1220,6 +1224,20 @@ class MainActivity :
             directions = action,
             extras = extras,
         )
+    }
+
+    override fun onAttachFragment(fragment: Fragment) {
+        super.onAttachFragment(fragment)
+        updateAppBarVisibility(fragment)
+    }
+
+    private fun updateAppBarVisibility(fragment: Fragment) {
+        (fragment as? BaseFragment)?.let {
+            when (it.activityAppBarStatus) {
+                is AppBarStatus.Hidden -> supportActionBar?.hide()
+                is AppBarStatus.Visible -> supportActionBar?.show()
+            }
+        }
     }
 
     override fun showFeedbackSurvey() {
