@@ -230,4 +230,44 @@ class WooPosExitPosDialogTest : TestBase() {
             true
         }
     }
+
+    @Test
+    fun testWoPosHomeScreenIsDismissedWhenExitButtonClicked() = runTest {
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_menu_button"
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_popup_menu_${R.string.woopos_exit_confirmation_title}",
+                useUnmergedTree = true
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog_exit").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_home_screen")
+                .assertIsNotDisplayed()
+            true
+        }
+    }
 }
