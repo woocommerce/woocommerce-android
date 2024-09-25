@@ -126,6 +126,7 @@ fun Shape.toCornerRadius(density: Density): Dp {
     }
 }
 
+@Suppress("MagicNumber")
 sealed class ShadowType {
     abstract val alpha : Float
     abstract val shadowRadiusCoefficient: Float
