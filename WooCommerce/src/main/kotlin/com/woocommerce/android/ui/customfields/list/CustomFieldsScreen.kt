@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.list
 
+import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
@@ -130,6 +132,7 @@ private fun CustomFieldsScreen(
                     title = stringResource(id = R.string.custom_fields_list_top_banner_title),
                     message = stringResource(id = R.string.custom_fields_list_top_banner_message),
                     onDismiss = state.topBannerState.onDismiss,
+                    expandedByDefault = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
