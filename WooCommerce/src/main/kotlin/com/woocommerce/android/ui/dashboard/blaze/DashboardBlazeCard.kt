@@ -93,7 +93,6 @@ private fun HandleEvents(
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
-    val campaignDetailsTitle = stringResource(id = R.string.blaze_campaign_details_title)
 
     DisposableEffect(event, navController, lifecycleOwner) {
         val activityObserver = Observer { event: MultiLiveEvent.Event ->
@@ -123,10 +122,8 @@ private fun HandleEvents(
 
                 is DashboardBlazeViewModel.ShowCampaignDetails -> {
                     navController.navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-                            title = campaignDetailsTitle
+                        NavGraphMainDirections.actionGlobalBlazeCampaignDetailWebViewFragment(
+                            campaignId = event.campaignId
                         )
                     )
                 }
