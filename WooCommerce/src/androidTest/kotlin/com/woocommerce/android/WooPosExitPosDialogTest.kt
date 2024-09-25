@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -68,7 +67,7 @@ class WooPosExitPosDialogTest : TestBase() {
     }
 
     @Test
-    fun testExitPOSDialogIsDisplayedWhenExitButtonClicked() = runTest {
+    fun testExitPOSConfirmationDialogIsDisplayedWhenExitButtonClicked() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -104,7 +103,7 @@ class WooPosExitPosDialogTest : TestBase() {
     }
 
     @Test
-    fun testExitPOSDialogIsDisplayedWithProperLabels() = runTest {
+    fun testExitPOSConfirmationDialogIsDisplayedWithProperLabels() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -152,7 +151,7 @@ class WooPosExitPosDialogTest : TestBase() {
     }
 
     @Test
-    fun testExitPOSDialogIsDismissedWhenCloseButtonClicked() = runTest {
+    fun testExitPOSConfirmationDialogIsDismissedWhenCloseButtonClicked() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -192,7 +191,7 @@ class WooPosExitPosDialogTest : TestBase() {
     }
 
     @Test
-    fun testExitPOSDialogIsDismissedWhenExitButtonClicked() = runTest {
+    fun testExitPOSConfirmationDialogIsDismissedWhenExitButtonClicked() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
