@@ -273,16 +273,14 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag(
-                "woo_pos_product_info_dialog_background"
-            ).performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_info_dialog_background")
+                .performClick()
             true
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag(
-                "woo_pos_product_info_dialog"
-            ).assertIsNotDisplayed()
+            composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
+                .assertIsNotDisplayed()
             true
         }
     }
