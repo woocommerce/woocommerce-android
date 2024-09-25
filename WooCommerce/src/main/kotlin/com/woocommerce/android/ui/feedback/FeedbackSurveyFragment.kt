@@ -69,7 +69,6 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentFeedbackSurveyBinding.bind(view)
 
-        // Setup toolbar
         setupToolbar(binding.toolbar)
 
         configureWebView()
