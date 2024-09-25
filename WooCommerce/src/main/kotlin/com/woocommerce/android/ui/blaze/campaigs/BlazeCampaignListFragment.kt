@@ -11,10 +11,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -54,27 +57,32 @@ class BlazeCampaignListFragment : BaseFragment() {
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is BlazeCampaignListViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow()
-                is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(
-                    event.url,
-                    event.urlToTriggerExit
-                )
+                is BlazeCampaignListViewModel.ShowCampaignDetails -> openCampaignDetails(event.campaignId)
+                is BlazeCampaignListViewModel.LaunchBlazeCampaignCreationForProduct ->
+                    openBlazeCreationFlow(event.productId)
             }
         }
+        handleResults()
     }
 
-    private fun openBlazeCreationFlow() {
+    private fun openBlazeCreationFlow(productId: Long? = null) {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(source = BlazeFlowSource.CAMPAIGN_LIST)
+            blazeCampaignCreationDispatcher.startCampaignCreation(
+                source = BlazeFlowSource.CAMPAIGN_LIST,
+                productId = productId
+            )
         }
     }
 
-    private fun openCampaignDetails(url: String, urlToTriggerExit: String) {
+    private fun openCampaignDetails(url: String) {
         findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                urlToLoad = url,
-                urlsToTriggerExit = arrayOf(urlToTriggerExit),
-                title = getString(R.string.blaze_campaign_details_title)
-            )
+            NavGraphMainDirections.actionGlobalBlazeCampaignDetailWebViewFragment(campaignId = url)
         )
+    }
+
+    private fun handleResults() {
+        handleResult<BlazeAction>(BlazeCampaignDetailWebViewFragment.BLAZE_WEBVIEW_RESULT) {
+            viewModel.onBlazeCampaignWebViewAction(it)
+        }
     }
 }
