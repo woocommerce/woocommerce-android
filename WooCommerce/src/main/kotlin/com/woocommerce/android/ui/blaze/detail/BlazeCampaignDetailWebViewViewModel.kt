@@ -20,6 +20,8 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
     private val blazeUrlsHelper: BlazeUrlsHelper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignDetailWebViewFragmentArgs by savedStateHandle.navArgs()
+    private val stopUrlPath = blazeUrlsHelper.getCampaignStopUrlPath(navArgs.campaignId)
+    private val blazeCampaignListUrl = blazeUrlsHelper.buildCampaignsListUrl()
 
     var viewState = ViewState(
         urlToLoad = blazeUrlsHelper.buildCampaignDetailsUrl(navArgs.campaignId),
@@ -28,8 +30,8 @@ class BlazeCampaignDetailWebViewViewModel @Inject constructor(
 
     fun onUrlLoaded(url: String) {
         when {
-            blazeUrlsHelper.buildCampaignsListUrl() == url -> onDismiss()
-            url.contains(blazeUrlsHelper.getCampaignStopUrlPath(navArgs.campaignId)) -> {
+            blazeCampaignListUrl == url -> onDismiss()
+            url.contains(stopUrlPath) -> {
                 viewState = viewState.copy(blazeAction = CampaignStopped)
             }
 
