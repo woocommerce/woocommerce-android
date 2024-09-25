@@ -67,7 +67,8 @@ fun WooPosExitConfirmationDialog(
                 Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
                 WooPosButton(
                     modifier = modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .testTag("woo_pos_exit_confirmation_dialog_exit"),
                     onClick = {
                         onExit()
                     },
