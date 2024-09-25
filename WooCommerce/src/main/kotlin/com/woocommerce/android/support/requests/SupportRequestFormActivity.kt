@@ -2,6 +2,7 @@ package com.woocommerce.android.support.requests
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.activity.viewModels
@@ -21,6 +22,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Show
 import com.woocommerce.android.support.zendesk.TicketType
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -55,6 +57,53 @@ class SupportRequestFormActivity : AppCompatActivity() {
             observeViewModelEvents(this)
         }
         viewModel.onViewCreated()
+
+        adjustActivityTransitions()
+    }
+
+    override fun finish() {
+        super.finish()
+        adjustExitTransition()
+    }
+
+    private fun SupportRequestFormActivity.adjustActivityTransitions() {
+        if (isPOS()) {
+            if (SystemVersionUtils.isAtLeastU()) {
+                overrideActivityTransition(
+                    OVERRIDE_TRANSITION_CLOSE,
+                    R.anim.woopos_slide_in_left,
+                    R.anim.woopos_slide_out_right,
+                    Color.TRANSPARENT
+                )
+                overrideActivityTransition(
+                    OVERRIDE_TRANSITION_OPEN,
+                    R.anim.woopos_slide_in_right,
+                    R.anim.woopos_slide_out_left,
+                    Color.TRANSPARENT
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                overridePendingTransition(
+                    R.anim.woopos_slide_in_right,
+                    R.anim.woopos_slide_out_left
+                )
+            }
+        }
+    }
+
+    private fun adjustExitTransition() {
+        if (isPOS() && SystemVersionUtils.isAtMostT()) {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(
+                R.anim.woopos_slide_in_left,
+                R.anim.woopos_slide_out_right
+            )
+        }
+    }
+
+    private fun isPOS(): Boolean {
+        val origin: HelpOrigin? = intent.extras?.serializable(ORIGIN_KEY)
+        return origin == HelpOrigin.POS
     }
 
     private fun ActivitySupportRequestFormBinding.setupActionBar() {
@@ -115,7 +164,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             titleId = R.string.support_request_success_title,
             messageId = R.string.support_request_success_message,
             positiveButtonId = R.string.support_request_dialog_action,
-            posBtnAction = { _, _ -> finish() }
+            posBtnAction = { _, _ ->
+                finish()
+            }
         )
     }
 
