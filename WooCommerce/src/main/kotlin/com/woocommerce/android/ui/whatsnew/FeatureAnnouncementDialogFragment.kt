@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FeatureAnnouncementDialogFragment : DialogFragment() {
-    @Inject lateinit var displayAsDialog: FeatureAnnouncementDisplayAsDialog
+    @Inject lateinit var sizeSetup: FeatureAnnouncementSizeSetupHelper
 
     private val viewModel: FeatureAnnouncementViewModel by viewModels()
     private val navArgs: FeatureAnnouncementDialogFragmentArgs by navArgs()
@@ -31,12 +31,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (displayAsDialog()) {
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog)
-        } else {
-            /* This draws the dialog as full screen */
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
-        }
+        lifecycle.addObserver(sizeSetup)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
