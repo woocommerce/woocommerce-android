@@ -841,7 +841,7 @@ class OrderCreateEditFormFragment :
                         val childrenConfigCount = item.getConfiguration()?.childrenConfiguration?.keys?.size ?: 0
                         when {
                             item is OrderCreationProduct.ProductItemWithRules && childrenConfigCount > 0
-                                 -> {
+                            -> {
                                 val modifier = if (isExpanded) {
                                     Modifier.border(
                                         1.dp,
