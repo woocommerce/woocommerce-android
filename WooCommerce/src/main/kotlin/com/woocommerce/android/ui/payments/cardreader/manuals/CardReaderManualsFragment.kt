@@ -38,26 +38,8 @@ class CardReaderManualsFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
-                    Scaffold(
-                        topBar = {
-                            TopAppBar(
-                                title = { Text(stringResource(R.string.settings_card_reader_manuals)) },
-                                navigationIcon = {
-                                    IconButton(onClick = { findNavController().navigateUp() }) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.ic_back_24dp),
-                                            contentDescription = stringResource(R.string.back)
-                                        )
-                                    }
-                                },
-                                backgroundColor = colorResource(id = R.color.color_toolbar),
-                            )
-                        }
-                    ) { innerPadding ->
-                        CardReaderManualsScreen(cardReaderManualsViewModel = viewModel, contentPadding = innerPadding)
-                    }
-                }
+                val navController = findNavController()
+                CardReaderManualsScaffold(viewModel = viewModel, navController = navController)
             }
         }
     }
