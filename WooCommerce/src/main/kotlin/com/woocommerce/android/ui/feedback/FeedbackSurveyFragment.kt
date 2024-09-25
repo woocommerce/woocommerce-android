@@ -80,7 +80,8 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
 
     private fun setupToolbar(toolbar: MaterialToolbar) {
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.title = getString(R.string.feedback_survey_request_title)
+        (requireActivity() as AppCompatActivity).supportActionBar?.title =
+            getString(R.string.feedback_survey_request_title)
         toolbar.setNavigationIcon(R.drawable.ic_gridicons_cross_24dp)
         toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
