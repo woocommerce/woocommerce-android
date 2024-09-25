@@ -27,7 +27,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.woocommerce.android.R
 
 @Composable
-fun ManualsScreen(
+fun CardReaderManualsScreen(
     cardReaderManualsViewModel: CardReaderManualsViewModel = viewModel(),
     contentPadding: PaddingValues
 ) {
