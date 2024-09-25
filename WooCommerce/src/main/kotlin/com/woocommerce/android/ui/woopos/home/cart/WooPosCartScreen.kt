@@ -432,7 +432,7 @@ private fun ProductItem(
     ) {
         WooPosCard(
             modifier = modifier
-                .height(64.dp)
+                .height(72.dp)
                 .semantics { contentDescription = itemContentDescription },
             elevation = elevation,
             shape = RoundedCornerShape(8.dp),
@@ -451,7 +451,7 @@ private fun ProductItem(
                     placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(72.dp)
                 )
 
                 Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
@@ -485,7 +485,7 @@ private fun ProductItem(
                     IconButton(
                         onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(32.dp)
                             .semantics { contentDescription = removeButtonContentDescription }
                     ) {
                         Icon(
