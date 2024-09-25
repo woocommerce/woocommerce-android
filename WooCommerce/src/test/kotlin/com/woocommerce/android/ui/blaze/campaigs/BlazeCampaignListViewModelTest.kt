@@ -6,7 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ShowCampaignDetails
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
@@ -15,7 +14,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -37,7 +35,6 @@ import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore.BlazeCampaign
 class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val blazeUrlsHelper: BlazeUrlsHelper = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val siteModel: SiteModel = mock()
@@ -56,8 +53,6 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         whenever(blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get())).thenReturn(campaignsEntityFlow)
         whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
             .thenReturn(BlazeCampaignsResult(EMPTY_BLAZE_CAMPAIGN_MODEL))
-        whenever(blazeUrlsHelper.buildCampaignDetailsUrl(CAMPAIGN_ID)).thenReturn(CAMPAIGN_URL)
-        whenever(blazeUrlsHelper.buildCampaignsListUrl()).thenReturn(CAMPAIGN_LIST_URL)
     }
 
     @Test
@@ -104,7 +99,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         viewModel.onLoadMoreCampaigns()
         val errorEvent = viewModel.event.captureValues().filterIsInstance<Event.ShowSnackbar>().last()
 
-        Assertions.assertThat(errorEvent.message).isEqualTo(R.string.blaze_campaign_list_error_fetching_campaigns)
+        assertThat(errorEvent.message).isEqualTo(R.string.blaze_campaign_list_error_fetching_campaigns)
     }
 
     @Test
@@ -114,7 +109,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         createViewModel(isPostCampaignCreation = true)
         val state = viewModel.state.captureValues().last()
 
-        Assertions.assertThat(state.isCampaignCelebrationShown).isTrue()
+        assertThat(state.isCampaignCelebrationShown).isTrue()
         verify(appPrefsWrapper).isBlazeCelebrationScreenShown = true
     }
 
@@ -126,7 +121,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             createViewModel(isPostCampaignCreation = true)
             val state = viewModel.state.captureValues().last()
 
-            Assertions.assertThat(state.isCampaignCelebrationShown).isFalse()
+            assertThat(state.isCampaignCelebrationShown).isFalse()
         }
 
     @Test
@@ -138,7 +133,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             viewModel.onCampaignCelebrationDismissed()
         }.last()
 
-        Assertions.assertThat(state.isCampaignCelebrationShown).isFalse()
+        assertThat(state.isCampaignCelebrationShown).isFalse()
     }
 
     @Test
@@ -147,7 +142,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
 
         val state = viewModel.state.captureValues().last()
 
-        Assertions.assertThat(state.isCampaignCelebrationShown).isFalse()
+        assertThat(state.isCampaignCelebrationShown).isFalse()
     }
 
     @Test
@@ -159,7 +154,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
                 if (it is ShowCampaignDetails) event = it
             }
 
-            assertThat(event).isEqualTo(ShowCampaignDetails(CAMPAIGN_URL, CAMPAIGN_LIST_URL))
+            assertThat(event).isEqualTo(ShowCampaignDetails(CAMPAIGN_ID))
         }
 
     private fun createViewModel(isPostCampaignCreation: Boolean = false, campaignId: String? = null) {
@@ -170,7 +165,6 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             ).toSavedStateHandle(),
             blazeCampaignsStore = blazeCampaignsStore,
             selectedSite = selectedSite,
-            blazeUrlsHelper = blazeUrlsHelper,
             appPrefsWrapper = appPrefsWrapper,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             currencyFormatter = currencyFormatter,
@@ -190,8 +184,6 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         const val TOTAL_BUDGET = 100.0
         const val SPENT_BUDGET = 0.0
         const val TARGET_URN = "urn:wpcom:post:199247490:9"
-        const val CAMPAIGN_URL = "https://wordpress.com/campaigns"
-        const val CAMPAIGN_LIST_URL = "https://wordpress.com/campaigns/list"
 
         val BLAZE_CAMPAIGN_MODEL = BlazeCampaignModel(
             campaignId = CAMPAIGN_ID,

@@ -106,7 +106,8 @@ object ProductHelper {
             bundleMinSize = null,
             bundleMaxSize = null,
             groupOfQuantity = null,
-            combineVariationQuantities = null
+            combineVariationQuantities = null,
+            password = null,
         )
     }
 
