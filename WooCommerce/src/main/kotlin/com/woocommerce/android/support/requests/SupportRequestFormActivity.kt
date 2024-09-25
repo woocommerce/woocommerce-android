@@ -62,6 +62,11 @@ class SupportRequestFormActivity : AppCompatActivity() {
         adjustActivityTransitions()
     }
 
+    override fun finish() {
+        super.finish()
+        adjustExitTransition()
+    }
+
     private fun SupportRequestFormActivity.adjustActivityTransitions() {
         if (isPOS()) {
             if (SystemVersionUtils.isAtLeastU()) {
@@ -84,10 +89,6 @@ class SupportRequestFormActivity : AppCompatActivity() {
                     R.anim.woopos_slide_out_right
                 )
             }
-        }
-        onBackPressedDispatcher.addCallback {
-            finish()
-            adjustExitTransition()
         }
     }
 
@@ -153,7 +154,6 @@ class SupportRequestFormActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
             onBackPressedDispatcher.onBackPressed()
-            adjustExitTransition()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -167,7 +167,6 @@ class SupportRequestFormActivity : AppCompatActivity() {
             positiveButtonId = R.string.support_request_dialog_action,
             posBtnAction = { _, _ ->
                 finish()
-                adjustExitTransition()
             }
         )
     }
