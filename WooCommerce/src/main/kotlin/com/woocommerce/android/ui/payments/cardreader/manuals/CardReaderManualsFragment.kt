@@ -25,7 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CardReaderManualsFragment : BaseFragment() {
-    override fun getFragmentTitle() = resources.getString(R.string.settings_card_reader_manuals)
     private val viewModel: CardReaderManualsViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
