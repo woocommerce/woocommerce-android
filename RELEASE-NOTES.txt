@@ -2,15 +2,22 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+20.6
+-----
+- [*] Users can set a password to protect products when signed in using site credentials (compatible with WooCommerce 8.1.0 and higher) [https://github.com/woocommerce/woocommerce-android/pull/12642]
+
 20.5
 -----
 - [*] Fixes a bug that prevented users to rename the Product Variation Attributes to because of case insensitive checks [https://github.com/woocommerce/woocommerce-android/pull/12608]
 - [*] Users can directly pick product images when creating Blaze ads [https://github.com/woocommerce/woocommerce-android/pull/12610]
+- [*] Enables Blaze feature for sites with Blaze for WooCommerce plugin installed and active [https://github.com/woocommerce/woocommerce-android/pull/12640]
+- [*] Fix for ConcurrentModificationException while removing notification [https://github.com/woocommerce/woocommerce-android/pull/12646]
 
 20.4
 -----
 - [**] Users can now scan their tracking number when adding it to the order [https://github.com/woocommerce/woocommerce-android/pull/12533]
 - [*] Fixed an issue where shipping labels were incorrectly calculating the weight for packages containing multiple quantities of the same product [https://github.com/woocommerce/woocommerce-android/pull/12602]
+- [**] [WEAR] Introduces three new complications for the Wear app: Orders Total, Orders Count, and Visitors [https://github.com/woocommerce/woocommerce-android/pull/12558]
 
 20.3
 -----

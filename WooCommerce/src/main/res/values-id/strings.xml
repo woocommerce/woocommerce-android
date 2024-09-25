@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-10 09:54:04+0000
+Translation-Revision-Date: 2024-09-17 12:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_key_error_underscore">Kunci tidak valid: hapus karakter \"_\" dari awal.</string>
+    <string name="custom_fields_editor_key_error_duplicate">Kunci ini sudah digunakan untuk kolom kustom yang lain. \nSaat ini aplikasi tidak mendukung pembuatan kunci duplikat.  Bila perlu, gunakan wp-admin untuk membuat duplikat kunci. </string>
+    <string name="custom_fields_add_button">Tambahkan kolom khusus</string>
+    <string name="custom_fields_list_saving_succeeded">Perubahan tersimpan</string>
+    <string name="custom_fields_list_progress_dialog_title">Menyimpan perubahan</string>
+    <string name="woopos_no_internet_message">Tampaknya Anda tidak terhubung ke internet. Pastikan Wi-Fi Anda aktif. Jika Anda menggunakan data seluler, aktifkan di pengaturan perangkat Anda.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
+    <string name="custom_fields_list_field_deleted">Kolom Kustom telah dihapus</string>
+    <string name="custom_fields_list_saving_failed">Gagal menyimpan perubahan, coba lagi</string>
     <string name="custom_fields_editor_value_label">Nilai</string>
     <string name="custom_fields_editor_key_label">Kunci</string>
     <string name="woopos_dialog_products_info_secondary_message">Jenis produk lain, seperti variabel dan virtual, akan tersedia dalam pembaruan mendatang.</string>
