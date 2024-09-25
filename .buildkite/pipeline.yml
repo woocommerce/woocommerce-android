@@ -55,6 +55,8 @@ steps:
           comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "**/build/reports/diff/*"
 
   ########################################
   - group: "🛠 Prototype Builds"
