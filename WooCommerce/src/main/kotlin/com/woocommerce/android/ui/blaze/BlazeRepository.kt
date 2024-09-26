@@ -191,7 +191,8 @@ class BlazeRepository @Inject constructor(
             destinationParameters = DestinationParameters(
                 targetUrl = product.permalink,
                 parameters = emptyMap()
-            )
+            ),
+            objectiveId = ""
         )
     }
 
@@ -318,7 +319,8 @@ class BlazeRepository @Inject constructor(
                         topics = it.interests.map { interest -> interest.id }
                     )
                 },
-                isEndlessCampaign = campaignDetails.budget.isEndlessCampaign
+                isEndlessCampaign = campaignDetails.budget.isEndlessCampaign,
+                objectiveId = campaignDetails.objectiveId
             )
         )
 
@@ -384,6 +386,7 @@ class BlazeRepository @Inject constructor(
         val budget: Budget,
         val targetingParameters: TargetingParameters,
         val destinationParameters: DestinationParameters,
+        val objectiveId: String
     ) : Parcelable
 
     sealed interface BlazeCampaignImage : Parcelable {
