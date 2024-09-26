@@ -31,8 +31,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.StripeAccountPendingRequirement
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySurveyScreen
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySurveyScreen
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
@@ -1679,7 +1679,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySummaryScreen::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapToPaySummaryScreen::class.java)
     }
 
     @Test
@@ -1741,7 +1741,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         initViewModel(OpenInHub.TAP_TO_PAY_SUMMARY)
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySummaryScreen::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapToPaySummaryScreen::class.java)
     }
 
     @Test
@@ -1790,7 +1790,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         // THEN
-        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapTooPaySurveyScreen::class.java)
+        assertThat(viewModel.event.value).isInstanceOf(NavigateToTapToPaySurveyScreen::class.java)
     }
 
     @Test
