@@ -119,7 +119,6 @@ class WooPosProductScreenTest : TestBase() {
                 .assertExists()
             true
         }
-
     }
 
     @Test
@@ -210,6 +209,23 @@ class WooPosProductScreenTest : TestBase() {
             true
         }
 
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .performClick()
+            true
+        }
+
+        // asserting the checkout button is not displayed when we move to the checkout screen
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .assertIsNotDisplayed()
+            true
+        }
     }
 
     @Test
@@ -327,13 +343,11 @@ class WooPosProductScreenTest : TestBase() {
             true
         }
 
-
         composeTestRule.waitUntil(5000) {
             composeTestRule.onNodeWithTag("product_list")
                 .assertIsNotDisplayed()
             true
         }
-
     }
 
     private fun mapJSONToProduct(productJSON: JSONObject): ProductData {

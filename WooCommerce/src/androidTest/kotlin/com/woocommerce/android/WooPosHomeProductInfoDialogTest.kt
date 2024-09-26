@@ -94,8 +94,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
     }
 
     @Test
-    fun testProductInfoDialogIsDisplayedOnIconClick()  = runTest {
-
+    fun testProductInfoDialogIsDisplayedOnIconClick() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -171,8 +170,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
     }
 
     @Test
-    fun testProductInfoDialogIsDismissedWhenCloseClick()  = runTest {
-
+    fun testProductInfoDialogIsDismissedWhenCloseClick() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -207,8 +205,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
     }
 
     @Test
-    fun testProductInfoDialogIsDismissedWhenPrimaryButtonClicked()  = runTest {
-
+    fun testProductInfoDialogIsDismissedWhenPrimaryButtonClicked() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -226,7 +223,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
         composeTestRule.waitUntil(5000) {
             composeTestRule.onNodeWithContentDescription(
                 composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-                )
+            )
                 .assertExists()
             true
         }
@@ -249,8 +246,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
     }
 
     @Test
-    fun testProductInfoDialogIsDismissedWhenOutsideDialogClicked()  = runTest {
-
+    fun testProductInfoDialogIsDismissedWhenOutsideDialogClicked() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
