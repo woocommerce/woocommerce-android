@@ -4,6 +4,7 @@
 20.7
 -----
 - [**] Improve barcode scanner reading accuracy [https://github.com/woocommerce/woocommerce-android/pull/12673]
+- [Internal] AI product creation banner is in products now [https://github.com/woocommerce/woocommerce-android/pull/12705]
 
 20.6
 -----
