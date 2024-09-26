@@ -809,7 +809,7 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId, event.isOpenedFromPush)
+                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId)
                 ViewBlazeCampaignList -> showBlazeCampaignList(campaignId = null)
                 is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
@@ -851,7 +851,7 @@ class MainActivity :
         observeBottomBarState()
     }
 
-    private fun showBlazeCampaignList(campaignId: String?, isOpenedFromPush: Boolean = false) {
+    private fun showBlazeCampaignList(campaignId: String?) {
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
 
@@ -859,7 +859,6 @@ class MainActivity :
             MoreMenuFragmentDirections.actionMoreMenuToBlazeCampaignListFragment(
                 campaignId = campaignId
             ),
-            skipThrottling = isOpenedFromPush
         )
     }
 

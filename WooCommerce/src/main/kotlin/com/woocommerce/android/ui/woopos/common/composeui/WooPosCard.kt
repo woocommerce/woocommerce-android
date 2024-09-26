@@ -48,6 +48,7 @@ fun WooPosCard(
     contentColor: Color = contentColorFor(backgroundColor),
     border: BorderStroke? = null,
     elevation: Dp = 1.dp,
+    shadowType: ShadowType = ShadowType.Normal,
     content: @Composable () -> Unit
 ) {
     val absoluteElevation = LocalAbsoluteElevation.current + elevation
@@ -65,7 +66,8 @@ fun WooPosCard(
                         absoluteElevation = absoluteElevation
                     ),
                     border = border,
-                    elevation = elevation
+                    elevation = elevation,
+                    shadowType = shadowType
                 )
                 .semantics(mergeDescendants = false) {
                     isTraversalGroup = true
@@ -83,16 +85,17 @@ private fun Modifier.surface(
     shape: Shape,
     backgroundColor: Color,
     border: BorderStroke?,
-    elevation: Dp
+    elevation: Dp,
+    shadowType: ShadowType
 ): Modifier {
     return this
         .drawShadow(
             color = Color.Black,
             borderRadius = shape.toCornerRadius(LocalDensity.current),
-            shadowRadius = elevation,
-            alpha = 0.24f,
+            shadowRadius = elevation * shadowType.shadowRadiusCoefficient,
+            alpha = shadowType.alpha,
             offsetX = 0.dp,
-            offsetY = elevation * 0.5f
+            offsetY = elevation * shadowType.offsetYCoefficient
         )
         .then(if (border != null) Modifier.border(border, shape) else Modifier)
         .background(color = backgroundColor, shape = shape)
@@ -120,6 +123,25 @@ fun Shape.toCornerRadius(density: Density): Dp {
         }
     } else {
         0.dp
+    }
+}
+
+@Suppress("MagicNumber")
+sealed class ShadowType {
+    abstract val alpha: Float
+    abstract val shadowRadiusCoefficient: Float
+    abstract val offsetYCoefficient: Float
+
+    data object Soft : ShadowType() {
+        override val alpha = 0.1f
+        override val shadowRadiusCoefficient = 1.4F
+        override val offsetYCoefficient = 0.7f
+    }
+
+    data object Normal : ShadowType() {
+        override val alpha = 0.24f
+        override val shadowRadiusCoefficient = 1F
+        override val offsetYCoefficient = 0.5f
     }
 }
 

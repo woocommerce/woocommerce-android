@@ -119,7 +119,6 @@ private fun HandleEvents(
                     navController.navigateSafely(
                         directions = OrderListFragmentDirections
                             .actionOrderListFragmentToOrderDetailFragment(event.orderId, longArrayOf()),
-                        skipThrottling = true
                     )
                 }
             }

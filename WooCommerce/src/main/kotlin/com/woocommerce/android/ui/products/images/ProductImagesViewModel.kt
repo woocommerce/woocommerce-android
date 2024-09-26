@@ -81,7 +81,7 @@ class ProductImagesViewModel @Inject constructor(
             clearImageUploadErrors()
             triggerEvent(ShowImageSourceDialog)
         } else if (navArgs.selectedImage != null) {
-            triggerEvent(ShowImageDetail(navArgs.selectedImage!!, true))
+            triggerEvent(ShowImageDetail(navArgs.selectedImage!!))
         }
 
         observeImageUploadEvents()
@@ -266,7 +266,7 @@ class ProductImagesViewModel @Inject constructor(
     object ShowCamera : MultiLiveEvent.Event()
     object ShowWPMediaPicker : MultiLiveEvent.Event()
     data class ShowDeleteImageConfirmation(val image: Product.Image) : MultiLiveEvent.Event()
-    data class ShowImageDetail(val image: Product.Image, val isOpenedDirectly: Boolean = false) : MultiLiveEvent.Event()
+    data class ShowImageDetail(val image: Product.Image) : MultiLiveEvent.Event()
 
     sealed class ProductImagesState : Parcelable {
         @Parcelize

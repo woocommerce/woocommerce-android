@@ -116,7 +116,6 @@ private fun HandleEvents(
                         directions = CouponListFragmentDirections.actionCouponListFragmentToCouponDetailsFragment(
                             couponId = event.couponId
                         ),
-                        skipThrottling = true,
                         navOptions = navOptions {
                             popUpTo(R.id.dashboard)
                             anim {
