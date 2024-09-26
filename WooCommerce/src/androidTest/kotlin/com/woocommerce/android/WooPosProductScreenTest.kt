@@ -148,7 +148,7 @@ class WooPosProductScreenTest : TestBase() {
     }
 
     @Test
-    fun testCheckoutButtonIsNotVisibleWhenCartListIsEmpty() = runTest {
+    fun testCheckoutButtonVisibility() = runTest {
         val productsJSONArray = MocksReader().readAllProductsToArray()
         val products = mutableListOf<ProductData>()
         for (productJSON in productsJSONArray.iterator()) {
