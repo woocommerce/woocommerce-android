@@ -16,8 +16,14 @@ data class CustomFieldUiModel(
     val key: String,
     val value: String,
     val id: Long? = null,
+    val isJson: Boolean = false
 ) : Parcelable {
-    constructor(customField: CustomField) : this(customField.key, customField.valueAsString, customField.id)
+    constructor(customField: CustomField) : this(
+        key = customField.key,
+        value = customField.valueAsString,
+        id = customField.id,
+        isJson = customField.isJson
+    )
 
     val valueStrippedHtml: String
         get() = HtmlUtils.fastStripHtml(value)
@@ -25,11 +31,17 @@ data class CustomFieldUiModel(
     @IgnoredOnParcel
     val contentType: CustomFieldContentType = CustomFieldContentType.fromMetadataValue(value)
 
-    fun toDomainModel() = CustomField(
-        id = id ?: 0, // Use 0 for new custom fields
-        key = key,
-        value = WCMetaDataValue.StringValue(value) // Treat all updates as string values
-    )
+    fun toDomainModel(): CustomField {
+        require(!isJson) {
+            "Editing JSON custom fields is not supported, this shouldn't be called for JSON custom fields"
+        }
+
+        return CustomField(
+            id = id ?: 0, // Use 0 for new custom fields
+            key = key,
+            value = WCMetaDataValue.StringValue(value) // Treat all updates as string values
+        )
+    }
 }
 
 enum class CustomFieldContentType {
