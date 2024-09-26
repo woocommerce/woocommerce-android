@@ -149,6 +149,56 @@ class WooPosProductScreenTest : TestBase() {
         }
     }
 
+    @Test
+    fun testCheckoutButtonIsNotVisibleWhenCartListIsEmpty() = runTest {
+        val productsJSONArray = MocksReader().readAllProductsToArray()
+        val products = mutableListOf<ProductData>()
+        for (productJSON in productsJSONArray.iterator()) {
+            products.add(mapJSONToProduct(productJSON))
+        }
+        val firstProduct = products.first()
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_list")
+                .assertIsNotDisplayed()
+            true
+        }
+
+        // asserting the checkout button is not displayed when the cart is empty
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .assertIsNotDisplayed()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_${firstProduct.name}")
+                .assertExists()
+            true
+        }
+
+        // asserting the checkout button is displayed when the cart has items
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .assertIsDisplayed()
+            true
+        }
+    }
+
     private fun mapJSONToProduct(productJSON: JSONObject): ProductData {
         return ProductData(
             id = productJSON.getInt("id"),
