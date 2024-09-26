@@ -122,7 +122,7 @@ ext {
     mediapickerVersion = '0.3.1'
     wordPressLoginVersion = '1.18.0'
     aboutAutomatticVersion = '0.0.6'
-    automatticTracksVersion = '6.0.2'
+    automatticTracksVersion = '5.0.0'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
     stripeTerminalVersion = '3.7.1'
