@@ -1,19 +1,19 @@
 package com.woocommerce.android.wear.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import com.google.android.horologist.compose.pager.PagerScreen
 import com.woocommerce.android.wear.ui.orders.list.OrdersListScreen
-import com.woocommerce.android.wear.ui.orders.list.OrdersListViewModel
 import com.woocommerce.android.wear.ui.stats.StoreStatsScreen
-import com.woocommerce.android.wear.ui.stats.StoreStatsViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MyStoreScreen(
-    storeStatsViewModel: StoreStatsViewModel,
-    ordersListViewModel: OrdersListViewModel
+    navController: NavController
 ) {
     val pageState = rememberPagerState(pageCount = { 2 })
     PagerScreen(
@@ -21,8 +21,8 @@ fun MyStoreScreen(
         modifier = Modifier.fillMaxSize()
     ) { page ->
         when (page) {
-            STATS_PAGE -> StoreStatsScreen(viewModel = storeStatsViewModel)
-            ORDERS_PAGE -> OrdersListScreen(viewModel = ordersListViewModel)
+            STATS_PAGE -> StoreStatsScreen()
+            ORDERS_PAGE -> OrdersListScreen(navController = navController)
         }
     }
 }
