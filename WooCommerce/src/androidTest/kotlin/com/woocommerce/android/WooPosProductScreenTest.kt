@@ -278,6 +278,61 @@ class WooPosProductScreenTest : TestBase() {
                 .isNotDisplayed()
             true
         }
+    }
+
+    @Test
+    fun testClickingCheckoutButtonHidesProductsScreen() = runTest {
+        val productsJSONArray = MocksReader().readAllProductsToArray()
+        val products = mutableListOf<ProductData>()
+        for (productJSON in productsJSONArray.iterator()) {
+            products.add(mapJSONToProduct(productJSON))
+        }
+        val firstProduct = products.first()
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_list")
+                .assertIsNotDisplayed()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_${firstProduct.name}")
+                .assertExists()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .assertIsDisplayed()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .performClick()
+            true
+        }
+
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("product_list")
+                .assertIsNotDisplayed()
+            true
+        }
 
     }
 
