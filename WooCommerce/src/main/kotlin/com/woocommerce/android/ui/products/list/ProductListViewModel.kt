@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.list
 
-import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -42,8 +41,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -82,7 +79,7 @@ class ProductListViewModel @Inject constructor(
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
     @Suppress("OPT_IN_USAGE")
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ProductListViewState())
     private var viewState by viewStateLiveData
 
     private val productFilterOptions: MutableMap<WCProductStore.ProductFilterOption, String> by lazy {
@@ -746,31 +743,6 @@ class ProductListViewModel @Inject constructor(
     }
 
     object OnProductSortingChanged
-
-    @Parcelize
-    data class ViewState(
-        val isSkeletonShown: Boolean? = null,
-        val isLoading: Boolean? = null,
-        val isLoadingMore: Boolean? = null,
-        val canLoadMore: Boolean? = null,
-        val isRefreshing: Boolean? = null,
-        val query: String? = null,
-        val isSkuSearch: Boolean = false,
-        val filterCount: Int? = null,
-        val isSearchActive: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null,
-        val sortingTitleResource: Int? = null,
-        val displaySortAndFilterCard: Boolean? = null,
-        val isAddProductButtonVisible: Boolean? = null,
-        val productListState: ProductListState? = null,
-        val selectionCount: Int? = null
-    ) : Parcelable {
-        @IgnoredOnParcel
-        val isBottomNavBarVisible = isSearchActive != true && productListState != ProductListState.Selecting
-
-        @IgnoredOnParcel
-        val isFilteringActive = filterCount != null && filterCount > 0
-    }
 
     enum class ProductListState { Selecting, Browsing }
 }
