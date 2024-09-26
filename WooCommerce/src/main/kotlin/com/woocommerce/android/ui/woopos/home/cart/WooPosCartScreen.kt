@@ -122,7 +122,8 @@ private fun WooPosCartScreen(
                 WooPosButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp.toAdaptivePadding()),
+                        .padding(16.dp.toAdaptivePadding())
+                        .testTag("woo_pos_checkout_button"),
                     text = stringResource(R.string.woopos_checkout_button),
                     onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
                 )
@@ -187,7 +188,8 @@ private fun CartBodyWithItems(
 
     WooPosLazyColumn(
         modifier = Modifier
-            .padding(horizontal = 16.dp.toAdaptivePadding()),
+            .padding(horizontal = 16.dp.toAdaptivePadding())
+            .testTag("woo_pos_cart_list"),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,

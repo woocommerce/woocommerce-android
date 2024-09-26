@@ -3,8 +3,11 @@
 package com.woocommerce.android
 
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.datastore.core.DataStore
@@ -118,6 +121,32 @@ class WooPosProductScreenTest : TestBase() {
             true
         }
 
+    }
+
+    @Test
+    fun testCheckoutButtonIsNotVisibleWhenCartListIsNotDisplayed() = runTest {
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        // asserting the cart is empty
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_list")
+                .assertIsNotDisplayed()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .assertIsNotDisplayed()
+            true
+        }
     }
 
     private fun mapJSONToProduct(productJSON: JSONObject): ProductData {
