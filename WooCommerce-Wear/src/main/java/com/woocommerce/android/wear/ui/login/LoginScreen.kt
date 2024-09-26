@@ -23,6 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Text
@@ -31,19 +34,28 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
 import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
+import com.woocommerce.android.wear.ui.NavRoutes
+import com.woocommerce.android.wear.ui.NavRoutes.MY_STORE
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Logged
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Timeout
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Waiting
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel) {
+fun LoginScreen(navController: NavController) {
+    val viewModel: LoginViewModel = hiltViewModel()
     val viewState by viewModel.viewState.observeAsState()
     LoginScreen(
-        isLoading = viewState?.isLoading ?: false,
+        loginState = viewState?.loginState ?: Waiting,
+        navController = navController,
         onTryAgainClicked = viewModel::reloadData
     )
 }
 
 @Composable
 fun LoginScreen(
-    isLoading: Boolean,
+    loginState: LoginState,
+    navController: NavController,
     onTryAgainClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -54,11 +66,19 @@ fun LoginScreen(
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            if (isLoading) {
-                TimeText()
-                LoginLoadingScreen(modifier)
-            } else {
-                LoginInstructionsScreen(onTryAgainClicked, modifier)
+            when (loginState) {
+                Logged -> {
+                    navController.navigate(MY_STORE.route) {
+                        popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
+                    }
+                }
+                Timeout -> {
+                    LoginInstructionsScreen(onTryAgainClicked, modifier)
+                }
+                Waiting -> {
+                    TimeText()
+                    LoginLoadingScreen(modifier)
+                }
             }
         }
     }
@@ -137,7 +157,8 @@ private fun LoginLoadingScreen(
 @Composable
 fun PreviewError() {
     LoginScreen(
-        isLoading = false,
+        loginState = Timeout,
+        navController = rememberNavController(),
         onTryAgainClicked = {}
     )
 }
@@ -147,7 +168,8 @@ fun PreviewError() {
 @Composable
 fun PreviewLoading() {
     LoginScreen(
-        isLoading = true,
+        loginState = Waiting,
+        navController = rememberNavController(),
         onTryAgainClicked = {}
     )
 }
