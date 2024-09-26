@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.products.ai.banner
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
@@ -24,7 +24,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun AIProductDescriptionDialog(
+fun AIProductDescriptionDialogScreen(
     onTryNowButtonClick: () -> Unit,
     onMaybeLaterButtonClick: () -> Unit
 ) {
@@ -79,6 +79,6 @@ fun AIProductDescriptionDialog(
 @Composable
 fun PreviewAIProductDescriptionDialog() {
     WooThemeWithBackground {
-        AIProductDescriptionDialog({}, {})
+        AIProductDescriptionDialogScreen({}, {})
     }
 }

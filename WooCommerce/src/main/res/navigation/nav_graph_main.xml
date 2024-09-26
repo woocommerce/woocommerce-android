@@ -750,7 +750,7 @@
         app:destination="@id/privacyBannerFragment" />
     <dialog
         android:id="@+id/AIProductDescriptionDialogFragment"
-        android:name="com.woocommerce.android.ui.dashboard.AIProductDescriptionDialogFragment"
+        android:name="com.woocommerce.android.ui.products.ai.banner.AIProductBannerDialogFragment"
         android:label="AIProductDescriptionDialogFragment" />
     <dialog
         android:id="@+id/createTestOrderDialogFragment"

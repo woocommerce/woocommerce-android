@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.products.ai.banner
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,19 +13,19 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R.style
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.dashboard.AIProductDescriptionDialogViewModel.TryAIProductDescriptionGeneration
+import com.woocommerce.android.ui.products.ai.banner.AIProductBannerDialogViewModel.TryAIProductDescriptionGeneration
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 
 @AndroidEntryPoint
-class AIProductDescriptionDialogFragment : DialogFragment() {
+class AIProductBannerDialogFragment : DialogFragment() {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
     }
 
-    private val viewModel: AIProductDescriptionDialogViewModel by viewModels()
+    private val viewModel: AIProductBannerDialogViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +42,7 @@ class AIProductDescriptionDialogFragment : DialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    AIProductDescriptionDialog(viewModel::onTryNowButtonClicked, viewModel::onDismissButtonClicked)
+                    AIProductDescriptionDialogScreen(viewModel::onTryNowButtonClicked, viewModel::onDismissButtonClicked)
                 }
             }
         }

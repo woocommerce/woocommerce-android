@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.products.ai.banner
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -8,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class AIProductDescriptionDialogViewModel @Inject constructor(
+class AIProductBannerDialogViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     fun onTryNowButtonClicked() {
