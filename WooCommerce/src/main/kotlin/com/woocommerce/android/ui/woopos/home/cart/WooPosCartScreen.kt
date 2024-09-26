@@ -424,6 +424,7 @@ private fun ProductItem(
                     modifier = Modifier
                         .size(24.dp)
                         .semantics { contentDescription = removeButtonContentDescription }
+                        .testTag("woo_pos_cart_item_close_icon")
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),

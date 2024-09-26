@@ -195,6 +195,20 @@ class WooPosProductScreenTest : TestBase() {
                 .assertIsDisplayed()
             true
         }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_close_icon")
+                .performClick()
+            true
+        }
+
+        // asserting the checkout button is not displayed when the cart items are removed
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .assertIsNotDisplayed()
+            true
+        }
+
     }
 
     private fun mapJSONToProduct(productJSON: JSONObject): ProductData {
