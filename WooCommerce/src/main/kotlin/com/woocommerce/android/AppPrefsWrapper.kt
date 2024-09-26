@@ -20,8 +20,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
 
-    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
-
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
 
     var blazeFirstTimeWithoutCampaign by AppPrefs::blazeFirstTimeWithoutCampaign
