@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -57,6 +58,9 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
     companion object {
         const val KEY_SUBSCRIPTION_FREE_TRIAL_RESULT = "key_subscription_free_trial_result"
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     private val resourceProvider: ResourceProvider by lazy { ResourceProvider(requireContext()) }
 
