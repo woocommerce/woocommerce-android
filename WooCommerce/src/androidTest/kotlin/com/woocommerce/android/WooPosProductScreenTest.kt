@@ -5,6 +5,7 @@ package com.woocommerce.android
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -197,7 +198,7 @@ class WooPosProductScreenTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_cart_item_close_icon")
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_close_icon_${firstProduct.name}")
                 .performClick()
             true
         }
@@ -206,6 +207,75 @@ class WooPosProductScreenTest : TestBase() {
         composeTestRule.waitUntil(5000) {
             composeTestRule.onNodeWithTag("woo_pos_checkout_button")
                 .assertIsNotDisplayed()
+            true
+        }
+
+    }
+
+    @Test
+    fun testCartItemRemovalFunctionality() = runTest {
+        val productsJSONArray = MocksReader().readAllProductsToArray()
+        val products = mutableListOf<ProductData>()
+        for (productJSON in productsJSONArray.iterator()) {
+            products.add(mapJSONToProduct(productJSON))
+        }
+        val firstProduct = products.first()
+        val secondProduct = products[1]
+        val thirdProduct = products[2]
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_list")
+                .assertIsNotDisplayed()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            true
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_item${secondProduct.name}").performClick()
+            true
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_item${thirdProduct.name}").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_${firstProduct.name}")
+                .assertExists()
+            true
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_${secondProduct.name}")
+                .assertExists()
+            true
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_${thirdProduct.name}")
+                .assertExists()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_close_icon_${secondProduct.name}")
+                .performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_${secondProduct.name}")
+                .isNotDisplayed()
             true
         }
 
