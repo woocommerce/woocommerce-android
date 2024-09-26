@@ -6,6 +6,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigator
+import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.woocommerce.android.WooCommerce
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.util.BuildConfig
 
@@ -14,23 +16,12 @@ fun NavController.navigateSafely(
     extras: FragmentNavigator.Extras? = null,
     navOptions: NavOptions? = null
 ) {
-    fun navigateSafelyInternal(
-        directions: NavDirections,
-        navOptions: NavOptions?,
-        extras: FragmentNavigator.Extras?
-    ) {
-        try {
-            navigate(directions.actionId, directions.arguments, navOptions, extras)
-        } catch (e: IllegalArgumentException) {
-            if (BuildConfig.DEBUG) {
-                throw e
-            } else {
-                WooLog.w(WooLog.T.UTILS, e.toString())
-            }
-        }
-    }
-
-    navigateSafelyInternal(directions, navOptions, extras)
+    navigateSafelyInternal(
+        actionId = directions.actionId,
+        arguments = directions.arguments,
+        navOptions = navOptions,
+        extras = extras
+    )
 }
 
 fun NavController.navigateSafely(
@@ -39,6 +30,31 @@ fun NavController.navigateSafely(
     navOptions: NavOptions? = null
 ) {
     if (currentDestination?.id != resId) {
-        navigate(resId, bundle, navOptions)
+        navigateSafelyInternal(
+            actionId = resId,
+            arguments = bundle,
+            navOptions = navOptions
+        )
     }
 }
+
+private fun NavController.navigateSafelyInternal(
+    actionId: Int,
+    arguments: Bundle?,
+    navOptions: NavOptions?,
+    extras: FragmentNavigator.Extras? = null
+) {
+    try {
+        navigate(actionId, arguments, navOptions, extras)
+    } catch (e: IllegalArgumentException) {
+        if (BuildConfig.DEBUG) {
+            throw e
+        } else {
+            WooLog.w(WooLog.T.UTILS, e.toString())
+            crashLogging?.recordException(e)
+        }
+    }
+}
+
+private val NavController.crashLogging: CrashLogging?
+    get() = (context.applicationContext as? WooCommerce)?.appInitializer?.get()?.crashLogging
