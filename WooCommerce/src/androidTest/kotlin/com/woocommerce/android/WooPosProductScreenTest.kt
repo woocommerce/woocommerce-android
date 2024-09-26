@@ -8,6 +8,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -399,6 +400,70 @@ class WooPosProductScreenTest : TestBase() {
 
         composeTestRule.waitUntil(5000) {
             composeTestRule.onNodeWithTag("woo_pos_totals_loaded_screen")
+                .assertIsDisplayed()
+            true
+        }
+    }
+
+    @Test
+    fun testClickingCheckoutButtonDisplaysCollectPaymentButton() = runTest {
+        val productsJSONArray = MocksReader().readAllProductsToArray()
+        val products = mutableListOf<ProductData>()
+        for (productJSON in productsJSONArray.iterator()) {
+            products.add(mapJSONToProduct(productJSON))
+        }
+        val firstProduct = products.first()
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                false
+            }
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_list")
+                .assertIsNotDisplayed()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_${firstProduct.name}")
+                .assertExists()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .assertIsDisplayed()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_checkout_button")
+                .performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_totals_loaded_screen")
+                .assertIsDisplayed()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithText(
+                composeTestRule.activity.getString(
+                    R.string.woopos_payment_collect_payment_label
+                )
+            )
                 .assertIsDisplayed()
             true
         }
