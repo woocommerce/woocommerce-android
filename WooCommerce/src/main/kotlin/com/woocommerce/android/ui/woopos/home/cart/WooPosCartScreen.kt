@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
@@ -405,8 +406,9 @@ private fun ProductItem(
         hasAnimationStarted = true
     }
 
+    val cardElevation = 6.dp
     val elevation by animateDpAsState(
-        targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
+        targetValue = if (hasAnimationStarted) cardElevation else 0.dp,
         animationSpec = tween(durationMillis = 150, delayMillis = 250),
         label = "elevation"
     )
@@ -418,7 +420,7 @@ private fun ProductItem(
     )
 
     LaunchedEffect(elevation) {
-        if (elevation == 4.dp) {
+        if (elevation == cardElevation) {
             onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
         }
     }
@@ -435,6 +437,7 @@ private fun ProductItem(
                 .height(72.dp)
                 .semantics { contentDescription = itemContentDescription },
             elevation = elevation,
+            shadowType = ShadowType.Soft,
             shape = RoundedCornerShape(8.dp),
         ) {
             Row(

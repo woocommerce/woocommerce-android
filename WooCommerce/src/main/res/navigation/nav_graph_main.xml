@@ -848,4 +848,15 @@
         android:id="@+id/googleAdsCampaignSuccessBottomSheetFragment"
         android:name="com.woocommerce.android.ui.google.ads.success.GoogleAdsCampaignSuccessBottomSheetFragment"
         android:label="GoogleAdsCampaignSuccessBottomSheetFragment" />
+    <fragment
+        android:id="@+id/blazeCampaignDetailWebViewFragment"
+        android:name="com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment"
+        android:label="BlazeCampaignDetailWebViewFragment">
+        <argument
+            android:name="campaignId"
+            app:argType="string" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_blazeCampaignDetailWebViewFragment"
+        app:destination="@id/blazeCampaignDetailWebViewFragment" />
 </navigation>
