@@ -33,7 +33,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun CardReaderManualsScaffold(
+fun CardReaderManualsScreen(
     viewModel: CardReaderManualsViewModel,
     navController: NavController
 ) {
@@ -60,7 +60,7 @@ fun CardReaderManualsScaffold(
 }
 
 @Composable
-fun CardReaderManualsScreen(
+private fun CardReaderManualsScreen(
     cardReaderManualsViewModel: CardReaderManualsViewModel = viewModel(),
     contentPadding: PaddingValues
 ) {

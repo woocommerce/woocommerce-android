@@ -29,7 +29,7 @@ class CardReaderManualsFragment : BaseFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val navController = findNavController()
-                CardReaderManualsScaffold(viewModel = viewModel, navController = navController)
+                CardReaderManualsScreen(viewModel = viewModel, navController = navController)
             }
         }
     }
