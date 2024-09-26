@@ -41,8 +41,8 @@ fun <T : Any?> SavedStateHandle.getNullableStateFlow(
     key: String = clazz.name
 ): MutableStateFlow<T> {
     if (!Parcelable::class.java.isAssignableFrom(clazz) &&
-        !Serializable::class.java.isAssignableFrom(clazz)
-        && !clazz.isPrimitive
+        !Serializable::class.java.isAssignableFrom(clazz) &&
+        !clazz.isPrimitive
     ) {
         error("getStateFlow supports only types that are either Parcelable or Serializable or primitives")
     }

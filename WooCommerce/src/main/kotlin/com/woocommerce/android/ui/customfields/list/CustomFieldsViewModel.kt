@@ -50,7 +50,10 @@ class CustomFieldsViewModel @Inject constructor(
     )
     private val pendingChanges = savedStateHandle.getStateFlow(viewModelScope, PendingChanges())
     private val overlayedFieldId = savedStateHandle.getNullableStateFlow(
-        viewModelScope, null, Long::class.java, "overlayedFieldId"
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = Long::class.java,
+        key = "overlayedFieldId"
     )
 
     private val bannerDismissed = appPrefs.observePrefs()

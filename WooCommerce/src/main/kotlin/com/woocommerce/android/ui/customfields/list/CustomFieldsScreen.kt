@@ -350,7 +350,8 @@ private fun JsonCustomFieldViewerPreview() {
                     value =
                     """|{
                        |    "Key": "Value"
-                       |}""".trimMargin()
+                       |}
+                       |""".trimMargin()
                 )
             ),
             onDismiss = {}
