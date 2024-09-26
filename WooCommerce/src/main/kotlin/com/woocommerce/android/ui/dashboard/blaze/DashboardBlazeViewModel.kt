@@ -14,7 +14,6 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.MY_STORE_SECTION
 import com.woocommerce.android.ui.blaze.ObserveMostRecentBlazeCampaign
 import com.woocommerce.android.ui.blaze.toUiState
@@ -55,7 +54,6 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
-    private val blazeUrlsHelper: BlazeUrlsHelper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val currencyFormatter: CurrencyFormatter,
     private val numberExtensionsWrapper: NumberExtensionsWrapper
@@ -154,10 +152,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     )
                 )
                 triggerEvent(
-                    ShowCampaignDetails(
-                        url = blazeUrlsHelper.buildCampaignDetailsUrl(campaign.campaignId),
-                        urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
-                    )
+                    ShowCampaignDetails(campaignId = campaign.campaignId)
                 )
             },
             onCreateCampaignClicked = {
@@ -256,10 +251,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     data class LaunchBlazeCampaignCreation(val productId: Long?) : MultiLiveEvent.Event()
 
     object ShowAllCampaigns : MultiLiveEvent.Event()
-    data class ShowCampaignDetails(
-        val url: String,
-        val urlToTriggerExit: String
-    ) : MultiLiveEvent.Event()
+    data class ShowCampaignDetails(val campaignId: String) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

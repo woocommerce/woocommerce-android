@@ -2,22 +2,18 @@ package com.woocommerce.android.ui.blaze
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
-import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
-import com.woocommerce.android.util.RemoteFeatureFlag.WOO_BLAZE
 import javax.inject.Inject
 
 class IsBlazeEnabled @Inject constructor(
-    private val selectedSite: SelectedSite,
-    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled
+    private val selectedSite: SelectedSite
 ) {
     companion object {
         private const val BLAZE_FOR_WOOCOMMERCE_PLUGIN_SLUG = "blaze-ads"
     }
 
-    suspend operator fun invoke(): Boolean = selectedSite.getIfExists()?.isAdmin ?: false &&
+    operator fun invoke(): Boolean = selectedSite.getIfExists()?.isAdmin ?: false &&
         hasAValidJetpackConnectionForBlaze() &&
-        selectedSite.getIfExists()?.canBlaze ?: false &&
-        isRemoteFeatureFlagEnabled(WOO_BLAZE)
+        selectedSite.getIfExists()?.canBlaze ?: false
 
     /**
      * In order for Blaze to work, the site requires the Jetpack Sync module to be enabled. This means not all
