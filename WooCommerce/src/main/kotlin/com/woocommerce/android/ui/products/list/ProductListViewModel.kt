@@ -691,6 +691,7 @@ class ProductListViewModel @Inject constructor(
                         delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
                     )
                 }
+
                 else -> {
                     exitSelectionMode()
                     onFailure()
@@ -746,5 +747,4 @@ class ProductListViewModel @Inject constructor(
     }
 
     object OnProductSortingChanged
-
 }

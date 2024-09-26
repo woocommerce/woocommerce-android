@@ -42,7 +42,10 @@ class AIProductBannerDialogFragment : DialogFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    AIProductDescriptionDialogScreen(viewModel::onTryNowButtonClicked, viewModel::onDismissButtonClicked)
+                    AIProductDescriptionDialogScreen(
+                        viewModel::onTryNowButtonClicked,
+                        viewModel::onDismissButtonClicked
+                    )
                 }
             }
         }

@@ -14,6 +14,7 @@ sealed class ProductListEvent : MultiLiveEvent.Event() {
         val productCategoryFilter: String?,
         val selectedCategoryName: String?
     ) : ProductListEvent()
+
     data class ShowProductUpdateStockStatusScreen(val productsIds: List<Long>) : ProductListEvent()
     sealed class ShowUpdateDialog : ProductListEvent() {
         abstract val productsIds: List<Long>
@@ -21,10 +22,12 @@ sealed class ProductListEvent : MultiLiveEvent.Event() {
         data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
         data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
     }
+
     data class ShowDiscardProductChangesConfirmationDialog(
         val productId: Long,
         val productName: String,
     ) : ProductListEvent()
+
     data class OpenProduct(
         val productId: Long,
         val oldPosition: Int,
@@ -36,5 +39,5 @@ sealed class ProductListEvent : MultiLiveEvent.Event() {
 
     data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
 
-    data object ShowAIProductBannerDialog: ProductListEvent()
+    data object ShowAIProductBannerDialog : ProductListEvent()
 }
