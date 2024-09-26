@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -366,7 +367,8 @@ private fun ProductItem(
         modifier = modifier
             .height(64.dp)
             .semantics { contentDescription = itemContentDescription }
-            .graphicsLayer(alpha = alpha),
+            .graphicsLayer(alpha = alpha)
+            .testTag("woo_pos_cart_item_${item.name}"),
         elevation = elevation,
         shape = RoundedCornerShape(8.dp),
     ) {
