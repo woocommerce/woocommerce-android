@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ai.banner.AIProductBannerDialogShouldBeShown
 import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.list.ProductListEvent.SelectProducts
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAIProductBannerDialog
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductSortingBottomSheet
@@ -60,7 +61,7 @@ class ProductListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
-    private val aiProductBannerDialogShouldBeShown: AIProductBannerDialogShouldBeShown
+    aiProductBannerDialogShouldBeShown: AIProductBannerDialogShouldBeShown
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -113,7 +114,7 @@ class ProductListViewModel @Inject constructor(
             .launchIn(this)
 
         if (aiProductBannerDialogShouldBeShown()) {
-            triggerEvent(MultiLiveEvent.Event.ShowAIProductBannerDialog)
+            triggerEvent(ShowAIProductBannerDialog)
         }
     }
 

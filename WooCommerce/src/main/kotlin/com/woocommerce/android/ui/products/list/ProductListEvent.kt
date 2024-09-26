@@ -35,4 +35,6 @@ sealed class ProductListEvent : MultiLiveEvent.Event() {
     data object OpenEmptyProduct : ProductListEvent()
 
     data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
+
+    data object ShowAIProductBannerDialog: ProductListEvent()
 }
