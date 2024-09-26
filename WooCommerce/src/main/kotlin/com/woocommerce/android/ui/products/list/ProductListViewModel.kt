@@ -111,7 +111,10 @@ class ProductListViewModel @Inject constructor(
             .launchIn(this)
 
         if (aiProductBannerDialogShouldBeShown()) {
-            triggerEvent(ShowAIProductBannerDialog)
+            triggerEventWithDelay(
+                ShowAIProductBannerDialog,
+                delay = 500
+            )
         }
     }
 
@@ -123,7 +126,7 @@ class ProductListViewModel @Inject constructor(
 
     fun isSearching() = viewState.isSearchActive == true
 
-    fun isSelecting() = viewState.productListState == ProductListState.Selecting
+    fun isSelecting() = viewState.productListState == ProductListViewState.ProductListState.Selecting
 
     fun isSkuSearch() = isSearching() && viewState.isSkuSearch
 
@@ -504,7 +507,7 @@ class ProductListViewModel @Inject constructor(
 
     private fun enterSelectionMode(count: Int) {
         viewState = viewState.copy(
-            productListState = ProductListState.Selecting,
+            productListState = ProductListViewState.ProductListState.Selecting,
             isAddProductButtonVisible = false,
             selectionCount = count
         )
@@ -512,7 +515,7 @@ class ProductListViewModel @Inject constructor(
 
     fun exitSelectionMode() {
         viewState = viewState.copy(
-            productListState = ProductListState.Browsing,
+            productListState = ProductListViewState.ProductListState.Browsing,
             isAddProductButtonVisible = true,
             selectionCount = null
         )
@@ -744,5 +747,4 @@ class ProductListViewModel @Inject constructor(
 
     object OnProductSortingChanged
 
-    enum class ProductListState { Selecting, Browsing }
 }

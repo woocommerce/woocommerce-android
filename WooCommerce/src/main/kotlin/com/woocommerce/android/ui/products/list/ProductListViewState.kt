@@ -19,12 +19,14 @@ data class ProductListViewState(
     val sortingTitleResource: Int? = null,
     val displaySortAndFilterCard: Boolean? = null,
     val isAddProductButtonVisible: Boolean? = null,
-    val productListState: ProductListViewModel.ProductListState? = null,
+    val productListState: ProductListState? = null,
     val selectionCount: Int? = null
 ) : Parcelable {
     @IgnoredOnParcel
-    val isBottomNavBarVisible = isSearchActive != true && productListState != ProductListViewModel.ProductListState.Selecting
+    val isBottomNavBarVisible = isSearchActive != true && productListState != ProductListState.Selecting
 
     @IgnoredOnParcel
     val isFilteringActive = filterCount != null && filterCount > 0
+
+    enum class ProductListState { Selecting, Browsing }
 }

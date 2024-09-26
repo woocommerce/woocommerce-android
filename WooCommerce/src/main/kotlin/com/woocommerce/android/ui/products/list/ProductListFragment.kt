@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.products.list.ProductListEvent.OpenEmptyProduc
 import com.woocommerce.android.ui.products.list.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.list.ProductListEvent.SelectProducts
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAIProductBannerDialog
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
@@ -403,6 +404,12 @@ class ProductListFragment :
                     )
                 }
 
+                is ShowAIProductBannerDialog -> {
+                    findNavController().navigateSafely(
+                        ProductListFragmentDirections.actionProductListFragmentToAIProductBannerDialogFragment()
+                    )
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -503,9 +510,9 @@ class ProductListFragment :
             .show()
     }
 
-    private fun handleListState(productListState: ProductListViewModel.ProductListState) {
+    private fun handleListState(productListState: ProductListViewState.ProductListState) {
         when (productListState) {
-            ProductListViewModel.ProductListState.Selecting -> {
+            ProductListViewState.ProductListState.Selecting -> {
                 actionMode = (requireActivity() as AppCompatActivity)
                     .startSupportActionMode(this@ProductListFragment)
                 delayMultiSelection()
@@ -513,7 +520,7 @@ class ProductListFragment :
                 enableProductSortAndFiltersCard(false)
             }
 
-            ProductListViewModel.ProductListState.Browsing -> {
+            ProductListViewState.ProductListState.Browsing -> {
                 actionMode?.finish()
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
