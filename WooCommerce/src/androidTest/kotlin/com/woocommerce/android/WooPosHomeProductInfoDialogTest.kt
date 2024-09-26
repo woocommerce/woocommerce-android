@@ -76,6 +76,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -102,6 +103,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -133,6 +135,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -178,6 +181,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -213,6 +217,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -254,6 +259,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }

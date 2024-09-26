@@ -80,6 +80,7 @@ class WooPosProductScreenTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -100,6 +101,7 @@ class WooPosProductScreenTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -131,6 +133,7 @@ class WooPosProductScreenTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -148,6 +151,7 @@ class WooPosProductScreenTest : TestBase() {
         }
     }
 
+    @Suppress("LongMethod")
     @Test
     fun testCheckoutButtonVisibility() = runTest {
         val productsJSONArray = MocksReader().readAllProductsToArray()
@@ -163,6 +167,7 @@ class WooPosProductScreenTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -229,6 +234,7 @@ class WooPosProductScreenTest : TestBase() {
         }
     }
 
+    @Suppress("LongMethod")
     @Test
     fun testCartItemRemovalFunctionality() = runTest {
         val productsJSONArray = MocksReader().readAllProductsToArray()
@@ -246,6 +252,7 @@ class WooPosProductScreenTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -312,6 +319,7 @@ class WooPosProductScreenTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -366,6 +374,7 @@ class WooPosProductScreenTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -420,6 +429,7 @@ class WooPosProductScreenTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
