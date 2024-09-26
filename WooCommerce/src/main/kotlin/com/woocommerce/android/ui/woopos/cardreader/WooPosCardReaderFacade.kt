@@ -12,12 +12,14 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity.Com
 import com.woocommerce.android.util.parcelable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class WooPosCardReaderFacade @Inject constructor(
-    private val cardReaderManager: CardReaderManager
+    private val cardReaderManager: CardReaderManager,
+    ippFlowObserver: IppFlowObserver,
 ) : DefaultLifecycleObserver {
     private var paymentResultLauncher: ActivityResultLauncher<Intent>? = null
     private var activity: AppCompatActivity? = null
@@ -28,6 +30,8 @@ class WooPosCardReaderFacade @Inject constructor(
         WooPosCardReaderPaymentStatus.Unknown
     )
     val paymentStatus: Flow<WooPosCardReaderPaymentStatus> = _paymentStatus
+
+    val paymentFlowState: StateFlow<IppFlowObserver.PaymentFlowState> = ippFlowObserver.state
 
     override fun onCreate(owner: LifecycleOwner) {
         activity = owner as AppCompatActivity
