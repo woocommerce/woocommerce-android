@@ -46,6 +46,7 @@
                 android:layout_height="@dimen/image_major_150"
                 android:layout_marginTop="@dimen/major_250"
                 android:src="@drawable/img_success_tablet"
+                android:contentDescription="@string/feedback_completed_title_message"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/completion_title" />
@@ -86,6 +87,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/major_150"
                 android:src="@drawable/img_crowdsignal_attribution"
+                android:contentDescription="@null"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_back_to_store" />
