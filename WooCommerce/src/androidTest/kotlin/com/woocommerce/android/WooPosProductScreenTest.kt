@@ -107,7 +107,7 @@ class WooPosProductScreenTest : TestBase() {
         }
         // asserting the cart is empty initially
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_cart_item${firstProduct.name}")
+            composeTestRule.onNodeWithTag("woo_pos_cart_item_${firstProduct.name}")
                 .assertDoesNotExist()
             true
         }
