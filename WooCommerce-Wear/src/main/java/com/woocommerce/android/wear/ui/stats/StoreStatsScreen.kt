@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.PositionIndicator
@@ -42,7 +43,8 @@ import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
 
 @Composable
-fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
+fun StoreStatsScreen() {
+    val viewModel = hiltViewModel<StoreStatsViewModel>()
     LocalLifecycleOwner.current.lifecycle.addObserver(viewModel)
     val viewState by viewModel.viewState.observeAsState()
     StoreStatsScreen(

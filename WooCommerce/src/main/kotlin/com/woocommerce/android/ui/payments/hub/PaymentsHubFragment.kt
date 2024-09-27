@@ -26,8 +26,8 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapTooPaySurveyScreen
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
+import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySurveyScreen
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -131,14 +131,14 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 is PaymentsHubViewModel.PaymentsHubEvents.ShowToast -> {
                     ToastUtils.showToast(context, getString(event.message))
                 }
-                is NavigateToTapTooPaySummaryScreen -> {
+                is NavigateToTapToPaySummaryScreen -> {
                     findNavController().navigate(
                         PaymentsHubFragmentDirections.actionCardReaderHubFragmentToTapToPaySummaryFragment(
                             TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment
                         )
                     )
                 }
-                is NavigateToTapTooPaySurveyScreen -> {
+                is NavigateToTapToPaySurveyScreen -> {
                     NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.PAYMENTS_HUB_TAP_TO_PAY)
                         .apply {
                             findNavController().navigateSafely(this)

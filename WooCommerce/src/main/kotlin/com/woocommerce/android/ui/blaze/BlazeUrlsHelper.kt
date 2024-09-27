@@ -8,14 +8,22 @@ class BlazeUrlsHelper @Inject constructor(
 ) {
     companion object {
         private const val HTTP_PATTERN = "(https?://)"
-        private const val BASE_URL = "https://wordpress.com/advertising"
+        const val BASE_URL = "https://wordpress.com/advertising"
+        const val PROMOTE_AGAIN_URL_PATH = "blazepress-widget=post"
     }
 
     fun buildCampaignsListUrl(): String = "$BASE_URL/campaigns/${getSiteUrl()}"
 
     fun buildCampaignDetailsUrl(campaignId: String): String = "$BASE_URL/campaigns/$campaignId/${getSiteUrl()}"
 
+    fun getCampaignStopUrlPath(campaignId: String): String = "/campaigns/$campaignId/stop"
+
     private fun getSiteUrl() = selectedSite.get().url.replace(Regex(HTTP_PATTERN), "")
+
+    fun extractProductIdFromPromoteAgainUrl(url: String): Long? =
+        url.substringAfter("post-")
+            .substringBefore("_campaign")
+            .toLongOrNull()
 
     enum class BlazeFlowSource(val trackingName: String) {
         MORE_MENU_ITEM("menu"),
