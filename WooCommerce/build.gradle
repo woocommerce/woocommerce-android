@@ -448,8 +448,6 @@ dependencies {
     implementation 'androidx.hilt:hilt-navigation-compose:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
-    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
-    implementation "com.google.accompanist:accompanist-systemuicontroller:$composeAccompanistVersion"
     implementation "io.coil-kt:coil-compose:$coilVersion"
     implementation "io.coil-kt:coil-svg:$coilVersion"
 
