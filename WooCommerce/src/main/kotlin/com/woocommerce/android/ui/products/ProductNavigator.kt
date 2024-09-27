@@ -176,7 +176,6 @@ class ProductNavigator @Inject constructor() {
                 val visibility = target.visibility.toString()
                 val action = ProductSettingsFragmentDirections
                     .actionProductSettingsFragmentToProductVisibilityFragment(
-                        target.isApplicationPasswordsLogin,
                         visibility,
                         target.password
                     )

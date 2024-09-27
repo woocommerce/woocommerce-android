@@ -4296,6 +4296,8 @@
     <string name="custom_fields_list_saving_succeeded">Changes saved</string>
     <string name="custom_fields_list_saving_failed">Saving changes failed, please try again</string>
     <string name="custom_fields_list_field_deleted">Custom Field deleted</string>
+    <string name="custom_fields_list_top_banner_title">View and edit Custom Fields</string>
+    <string name="custom_fields_list_top_banner_message">When saving changes to custom fields, they will take effect immediately.</string>
     <string name="custom_fields_add_button">Add custom fields</string>
     <string name="custom_fields_editor_key_label">Key</string>
     <string name="custom_fields_editor_value_label">Value</string>
@@ -4303,4 +4305,7 @@
     <string name="custom_fields_editor_key_error_underscore">Invalid key: please remove the \"_\" character from the beginning.</string>
     <string name="custom_fields_editor_copy_key">Copy Key</string>
     <string name="custom_fields_editor_copy_value">Copy Value</string>
+    <string name="custom_fields_editor_toggle_accessibility_description">Toggle between text and HTML editors</string>
+    <string name="custom_fields_editor_text_toggle">Text</string>
+    <string name="custom_fields_editor_html_toggle">HTML</string>
 </resources>
