@@ -107,7 +107,7 @@ class WooPosProductScreenTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${firstProduct.name}").performClick()
             true
         }
 
@@ -174,7 +174,7 @@ class WooPosProductScreenTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${firstProduct.name}").performClick()
             true
         }
 
@@ -205,7 +205,7 @@ class WooPosProductScreenTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${firstProduct.name}").performClick()
             true
         }
 
@@ -247,15 +247,15 @@ class WooPosProductScreenTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${firstProduct.name}").performClick()
             true
         }
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${secondProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${secondProduct.name}").performClick()
             true
         }
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${thirdProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${thirdProduct.name}").performClick()
             true
         }
 
@@ -309,7 +309,7 @@ class WooPosProductScreenTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${firstProduct.name}").performClick()
             true
         }
 
@@ -359,7 +359,7 @@ class WooPosProductScreenTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${firstProduct.name}").performClick()
             true
         }
 
@@ -409,7 +409,7 @@ class WooPosProductScreenTest : TestBase() {
         }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_item${firstProduct.name}").performClick()
+            composeTestRule.onNodeWithTag("woo_pos_product_item_${firstProduct.name}").performClick()
             true
         }
 
