@@ -31,7 +31,7 @@ class FetchOrderProducts @Inject constructor(
         return selectDataSource(selectedSite, orderId)
             .combineWithTimeout(TIMEOUT_FOR_ORDER_PRODUCTS) { orderProducts, isTimeout ->
                 when {
-                    orderProducts.isNotEmpty() -> Finished(orderProducts)
+                    orderProducts != null -> Finished(orderProducts)
                     isTimeout.not() -> Waiting
                     else -> Error
                 }
@@ -41,9 +41,10 @@ class FetchOrderProducts @Inject constructor(
     private suspend fun selectDataSource(
         selectedSite: SiteModel,
         orderId: Long
-    ): Flow<List<WearOrderedProduct>> {
+    ): Flow<List<WearOrderedProduct>?> {
         return when {
             connectionStatus.isStoreConnected() -> flow {
+                emit(null)
                 ordersRepository.fetchOrderRefunds(selectedSite, orderId)
                     .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
                     .let { emit(it) }
