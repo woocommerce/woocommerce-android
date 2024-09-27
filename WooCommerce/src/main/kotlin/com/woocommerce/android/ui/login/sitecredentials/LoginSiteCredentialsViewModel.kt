@@ -317,6 +317,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                             )
                         )
                     } else {
+                        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE)
                         triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
                     }
                 } else {
