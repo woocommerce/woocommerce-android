@@ -2,7 +2,6 @@ package com.woocommerce.android.background
 
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import kotlinx.coroutines.async
@@ -13,14 +12,13 @@ import javax.inject.Inject
 
 class UpdateAnalyticsDataByRangeSelection @Inject constructor(
     private val analyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
-    private val analyticsRepository: AnalyticsRepository,
+    private val backgroundUpdateAnalyticsRepository: BackgroundUpdateAnalyticsRepository,
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
-    @Suppress("LongMethod")
     suspend operator fun invoke(
         selectedRange: StatsTimeRangeSelection,
         forceCardUpdates: List<AnalyticsCards> = emptyList()
-    ): Boolean {
+    ): Result<Unit> {
         val visibleCards = analyticsCardsConfiguration.invoke()
             .first()
             .filter { analyticCardConfiguration -> analyticCardConfiguration.isVisible }
@@ -28,104 +26,124 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
             .union(forceCardUpdates)
 
         return coroutineScope {
-            val asyncCalls = visibleCards.map { visibleCard ->
-                when (visibleCard) {
-                    AnalyticsCards.Revenue -> {
+            val apiCalls = getAPICalls(visibleCards)
+            val apiCallsResults = mutableMapOf<BackgroundAPICalls, Result<Any>>()
+            val asyncCalls = apiCalls.map { call ->
+                when (call) {
+                    BackgroundAPICalls.REVENUE_STATS -> {
                         async {
-                            val result = analyticsRepository.fetchRevenueData(
-                                selectedRange,
-                                AnalyticsRepository.FetchStrategy.ForceNew
-                            )
-                            val isSuccess = result is AnalyticsRepository.RevenueResult.RevenueData
-                            if (isSuccess) {
-                                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                                    selectedRange,
-                                    AnalyticsUpdateDataStore.AnalyticData.REVENUE
-                                )
-                            }
-                            isSuccess
+                            apiCallsResults[call] =
+                                backgroundUpdateAnalyticsRepository.fetchRevenueStats(selectedRange)
                         }
                     }
 
-                    AnalyticsCards.Orders -> {
+                    BackgroundAPICalls.TOP_PERFORMERS -> {
                         async {
-                            val result = analyticsRepository.fetchOrdersData(
-                                selectedRange,
-                                AnalyticsRepository.FetchStrategy.ForceNew
-                            )
-                            val isSuccess = result is AnalyticsRepository.OrdersResult.OrdersData
-                            if (isSuccess) {
-                                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                                    selectedRange,
-                                    AnalyticsUpdateDataStore.AnalyticData.ORDERS
-                                )
-                            }
-                            isSuccess
+                            apiCallsResults[call] =
+                                backgroundUpdateAnalyticsRepository.fetchTopPerformers(selectedRange)
                         }
                     }
 
-                    AnalyticsCards.Products -> {
+                    BackgroundAPICalls.VISITORS_STATS -> {
                         async {
-                            val result = analyticsRepository.fetchProductsData(
-                                selectedRange,
-                                AnalyticsRepository.FetchStrategy.ForceNew
-                            )
-                            val isSuccess = result is AnalyticsRepository.ProductsResult.ProductsData
-                            if (isSuccess) {
-                                analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                                    selectedRange,
-                                    AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
-                                )
-                            }
-                            isSuccess
+                            apiCallsResults[call] =
+                                backgroundUpdateAnalyticsRepository.fetchVisitorsStats(selectedRange)
                         }
                     }
 
-                    AnalyticsCards.Session -> {
-                        async {
-                            val result = analyticsRepository.fetchVisitorsData(
-                                selectedRange,
-                                AnalyticsRepository.FetchStrategy.ForceNew
-                            )
-                            when (result) {
-                                is AnalyticsRepository.VisitorsResult.VisitorsData -> {
-                                    analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                                        selectedRange,
-                                        AnalyticsUpdateDataStore.AnalyticData.VISITORS
-                                    )
-                                    true
-                                }
-                                is AnalyticsRepository.VisitorsResult.VisitorsNotSupported -> true
-                                else -> {
-                                    false
-                                }
-                            }
-                        }
-                    }
-
-                    AnalyticsCards.Bundles -> {
-                        async {
-                            val result = analyticsRepository.fetchProductBundlesStats(selectedRange)
-                            result is AnalyticsRepository.BundlesResult.BundlesData
-                        }
-                    }
-
-                    AnalyticsCards.GiftCards -> {
-                        async {
-                            val result = analyticsRepository.fetchGiftCardsStats(selectedRange)
-                            result is AnalyticsRepository.GiftCardResult.GiftCardData
-                        }
-                    }
-
-                    AnalyticsCards.GoogleAds -> {
-                        async {
-                            val result = analyticsRepository.fetchGoogleAdsStats(selectedRange)
-                            result is AnalyticsRepository.GoogleAdsResult.GoogleAdsData
-                        }
-                    }
+                    BackgroundAPICalls.GIFT_CARDS_STATS -> TODO()
+                    BackgroundAPICalls.PRODUCT_BUNDLES_STATS -> TODO()
+                    BackgroundAPICalls.GOOGLE_ADS_STATS -> TODO()
                 }
             }
-            asyncCalls.awaitAll().all { it }
+
+            asyncCalls.awaitAll()
+
+            updateLastUpdatedTime(selectedRange, apiCallsResults)
+
+            val errors = apiCallsResults.values.filter { it.isFailure }.map {
+                it.exceptionOrNull()
+                    ?: Exception("${UpdateAnalyticsDataByRangeSelection::class.java.name} Unknown error")
+            }
+
+            when {
+                errors.isEmpty() -> {
+                    Result.success(Unit)
+                }
+                errors.size == 1 -> {
+                    Result.failure(errors.first())
+                }
+                else -> {
+                    Result.failure(MultipleErrorsException(errors))
+                }
+            }
         }
+    }
+
+    private suspend fun updateLastUpdatedTime(
+        selectedRange: StatsTimeRangeSelection,
+        apiCallsResults: MutableMap<BackgroundAPICalls, Result<Any>>
+    ) {
+        if (apiCallsResults[BackgroundAPICalls.REVENUE_STATS]?.isSuccess == true) {
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                selectedRange,
+                AnalyticsUpdateDataStore.AnalyticData.REVENUE
+            )
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                selectedRange,
+                AnalyticsUpdateDataStore.AnalyticData.ORDERS
+            )
+        }
+        if (apiCallsResults[BackgroundAPICalls.REVENUE_STATS]?.isSuccess == true &&
+            apiCallsResults[BackgroundAPICalls.TOP_PERFORMERS]?.isSuccess == true
+        ) {
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                selectedRange,
+                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+            )
+        }
+        if (apiCallsResults[BackgroundAPICalls.VISITORS_STATS]?.isSuccess == true) {
+            analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                selectedRange,
+                AnalyticsUpdateDataStore.AnalyticData.VISITORS
+            )
+        }
+    }
+
+    private fun getAPICalls(visibleCards: Set<AnalyticsCards>): Set<BackgroundAPICalls> {
+        val apiCalls = mutableSetOf<BackgroundAPICalls>()
+        visibleCards.forEach { visibleCard ->
+            when (visibleCard) {
+                AnalyticsCards.Revenue -> {
+                    apiCalls.add(BackgroundAPICalls.REVENUE_STATS)
+                }
+
+                AnalyticsCards.Orders -> {
+                    apiCalls.add(BackgroundAPICalls.REVENUE_STATS)
+                }
+
+                AnalyticsCards.Products -> {
+                    apiCalls.add(BackgroundAPICalls.REVENUE_STATS)
+                    apiCalls.add(BackgroundAPICalls.TOP_PERFORMERS)
+                }
+
+                AnalyticsCards.Session -> {
+                    apiCalls.add(BackgroundAPICalls.VISITORS_STATS)
+                }
+
+                AnalyticsCards.Bundles -> {
+                    // apiCalls.add(BackgroundAPICalls.PRODUCT_BUNDLES_STATS)
+                }
+
+                AnalyticsCards.GiftCards -> {
+                    // apiCalls.add(BackgroundAPICalls.GIFT_CARDS_STATS)
+                }
+
+                AnalyticsCards.GoogleAds -> {
+                    // apiCalls.add(BackgroundAPICalls.GOOGLE_ADS_STATS)
+                }
+            }
+        }
+        return apiCalls
     }
 }
