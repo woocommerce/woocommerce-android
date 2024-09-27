@@ -1,4 +1,1 @@
-- [*] Users can set a password to protect products when signed in using site credentials (compatible with WooCommerce 8.1.0 and higher) [https://github.com/woocommerce/woocommerce-android/pull/12642]
-- [*] [Internal] Revert the UserAgent ANR fix to confirm if it's causing the WebView related crash [https://github.com/woocommerce/woocommerce-android/pull/12697]
-- [*] When promoting a Blaze product from campaign detail webview, the native flow will be triggered [https://github.com/woocommerce/woocommerce-android/pull/12648]
-
+We're excited to bring you new features in our WooCommerce app! Users can now set a password to protect products when signed in with site credentials, enhancing security for WooCommerce 8.1.0 and above. Also, promoting a Blaze product from the campaign detail will now trigger a smoother native flow. Enjoy the updates!
