@@ -1,1 +1,4 @@
-We’re excited to bring you a smoother experience with our latest update! We've resolved an issue that prevented renaming Product Variation Attributes and fixed a bug related to notification removal. Plus, users can now easily select product images when creating Blaze ads, and the Blaze feature is now fully enabled for sites with the Blaze for WooCommerce plugin active. Enjoy the improvements!
+- [*] Users can set a password to protect products when signed in using site credentials (compatible with WooCommerce 8.1.0 and higher) [https://github.com/woocommerce/woocommerce-android/pull/12642]
+- [*] [Internal] Revert the UserAgent ANR fix to confirm if it's causing the WebView related crash [https://github.com/woocommerce/woocommerce-android/pull/12697]
+- [*] When promoting a Blaze product from campaign detail webview, the native flow will be triggered [https://github.com/woocommerce/woocommerce-android/pull/12648]
+
