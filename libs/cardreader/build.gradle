@@ -40,8 +40,4 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
-
-    androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
-    androidTestImplementation "androidx.test:rules:$androidxTestCoreVersion"
-    androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
 }
