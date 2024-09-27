@@ -1,6 +1,7 @@
 package com.woocommerce.android.wear.ui.orders.details
 
 import com.woocommerce.android.BaseUnitTest
+import com.woocommerce.android.wear.model.Refund
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
 import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.orders.OrdersRepository
@@ -38,14 +39,16 @@ class FetchOrderProductsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `returns Error when phone connection is not available`() = testBlocking {
+    fun `returns Cache when no connection is not available`() = testBlocking {
+        val cachedProducts = emptyList<Refund>()
+
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(false)
         whenever(ordersRepository.getOrderFromId(selectedSite, 1L)).thenReturn(null)
-        whenever(ordersRepository.getOrderRefunds(selectedSite, 1L)).thenReturn(emptyList())
+        whenever(ordersRepository.getOrderRefunds(selectedSite, 1L)).thenReturn(cachedProducts)
 
         val result = sut.invoke(selectedSite, 1L).last()
 
-        assertThat(result).isEqualTo(OrderProductsRequest.Error)
+        assertThat(result).isEqualTo(Finished(emptyList()))
     }
 
     @Test
@@ -62,10 +65,10 @@ class FetchOrderProductsTest : BaseUnitTest() {
 
     @Test
     fun `returns Waiting when no order products and not timeout`() = testBlocking {
-        whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
         whenever(
-            ordersRepository.observeOrderProductsDataChanges(1L, selectedSite.siteId)
-        ).thenReturn(flowOf(emptyList()))
+            ordersRepository.fetchOrderRefunds(selectedSite, 1L)
+        ).thenReturn(null)
 
         val result = sut.invoke(selectedSite, 1L).first()
 
@@ -74,10 +77,10 @@ class FetchOrderProductsTest : BaseUnitTest() {
 
     @Test
     fun `returns Error when no order products and timeout`() = testBlocking {
-        whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
+        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
         whenever(
-            ordersRepository.observeOrderProductsDataChanges(1L, selectedSite.siteId)
-        ).thenReturn(flowOf(emptyList()))
+            ordersRepository.fetchOrderRefunds(selectedSite, 1L)
+        ).thenReturn(null)
 
         val result = sut.invoke(selectedSite, 1L)
             .filter { it !is Waiting }
