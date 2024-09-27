@@ -191,7 +191,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun retryApplicationPasswordsCheck() = launch {
-        fetchUserInfo()
+        login()
     }
 
     private suspend fun login() {
