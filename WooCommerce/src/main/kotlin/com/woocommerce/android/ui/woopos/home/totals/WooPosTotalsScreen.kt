@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -105,7 +106,8 @@ private fun TotalsLoaded(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp.toAdaptivePadding()),
+            .padding(16.dp.toAdaptivePadding())
+            .testTag("woo_pos_totals_loaded_screen"),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

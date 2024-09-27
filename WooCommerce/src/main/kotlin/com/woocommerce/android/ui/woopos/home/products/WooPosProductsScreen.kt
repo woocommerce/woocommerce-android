@@ -351,7 +351,8 @@ private fun ProductItem(
     )
     Card(
         modifier = modifier
-            .semantics { contentDescription = itemContentDescription },
+            .semantics { contentDescription = itemContentDescription }
+            .testTag("woo_pos_product_item${item.name}"),
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {

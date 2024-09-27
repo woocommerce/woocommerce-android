@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -121,7 +122,8 @@ private fun WooPosCartScreen(
                 WooPosButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp.toAdaptivePadding()),
+                        .padding(16.dp.toAdaptivePadding())
+                        .testTag("woo_pos_checkout_button"),
                     text = stringResource(R.string.woopos_checkout_button),
                     onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
                 )
@@ -186,7 +188,8 @@ private fun CartBodyWithItems(
 
     WooPosLazyColumn(
         modifier = Modifier
-            .padding(horizontal = 16.dp.toAdaptivePadding()),
+            .padding(horizontal = 16.dp.toAdaptivePadding())
+            .testTag("woo_pos_cart_list"),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(8.dp.toAdaptivePadding()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -366,7 +369,8 @@ private fun ProductItem(
         modifier = modifier
             .height(64.dp)
             .semantics { contentDescription = itemContentDescription }
-            .graphicsLayer(alpha = alpha),
+            .graphicsLayer(alpha = alpha)
+            .testTag("woo_pos_cart_item_${item.name}"),
         elevation = elevation,
         shape = RoundedCornerShape(8.dp),
     ) {
@@ -420,6 +424,7 @@ private fun ProductItem(
                     modifier = Modifier
                         .size(24.dp)
                         .semantics { contentDescription = removeButtonContentDescription }
+                        .testTag("woo_pos_cart_item_close_icon_${item.name}")
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
