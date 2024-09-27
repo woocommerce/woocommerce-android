@@ -139,13 +139,13 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                 false
             }
         }
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
+        composeTestRule.onNodeWithTag(
+            "woo_pos_simple_products_dialog_info_close_icon"
         ).performClick()
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithContentDescription(
-                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+            composeTestRule.onNodeWithTag(
+                "woo_pos_simple_products_banner_icon"
             ).performClick()
             true
         }
@@ -196,8 +196,8 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             true
         }
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
+        composeTestRule.onNodeWithTag(
+            "woo_pos_simple_products_dialog_info_close_icon"
         ).performClick()
 
         composeTestRule.waitUntil(5000) {
@@ -237,10 +237,8 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
         ).performClick()
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(
-                R.string.woopos_banner_simple_products_dialog_primary_button_content_description
-            )
+        composeTestRule.onNodeWithTag(
+            "woo_pos_simple_product_info_dialog_primary_button"
         ).performClick()
 
         composeTestRule.waitUntil(5000) {

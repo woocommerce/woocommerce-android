@@ -95,6 +95,7 @@ fun WooPosProductInfoDialog(
                             end.linkTo(parent.end)
                         }
                         .focusable(enabled = false)
+                        .testTag("woo_pos_simple_products_dialog_info_close_icon")
                 ) {
                     Icon(
                         modifier = Modifier
@@ -154,7 +155,8 @@ fun WooPosProductInfoDialog(
                             .fillMaxWidth()
                             .semantics {
                                 contentDescription = primaryButtonContentDescription
-                            },
+                            }
+                            .testTag("woo_pos_simple_product_info_dialog_primary_button"),
                         border = BorderStroke(2.dp, MaterialTheme.colors.primary),
                         shape = RoundedCornerShape(8.dp),
                     ) {

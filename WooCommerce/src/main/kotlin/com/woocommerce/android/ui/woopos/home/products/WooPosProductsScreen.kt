@@ -193,7 +193,9 @@ private fun ProductsToolbar(
             is WooPosProductsViewState.Content -> {
                 if (productViewState.bannerState.isBannerHiddenByUser) {
                     IconButton(
-                        modifier = Modifier.size(40.dp),
+                        modifier = Modifier
+                            .size(40.dp)
+                            .testTag("woo_pos_simple_products_banner_icon"),
                         onClick = {
                             onToolbarInfoIconClicked()
                         }
