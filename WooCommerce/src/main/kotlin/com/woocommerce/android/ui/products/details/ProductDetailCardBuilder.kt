@@ -24,6 +24,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget
@@ -79,6 +80,7 @@ import com.woocommerce.android.ui.products.subscriptions.expirationDisplayValue
 import com.woocommerce.android.ui.products.subscriptions.trialDisplayValue
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -96,6 +98,7 @@ class ProductDetailCardBuilder(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
+    private val customFieldsRepository: CustomFieldsRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     private var blazeCtaShownTracked = false
@@ -198,6 +201,7 @@ class ProductDetailCardBuilder(
                 product.shortDescription(),
                 product.linkedProducts(),
                 product.downloads(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -216,6 +220,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -235,6 +240,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -256,6 +262,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -278,6 +285,7 @@ class ProductDetailCardBuilder(
                 product.shortDescription(),
                 product.linkedProducts(),
                 product.downloads(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -299,6 +307,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -318,6 +327,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -337,6 +347,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -357,6 +368,7 @@ class ProductDetailCardBuilder(
                 product.tags(),
                 product.shortDescription(),
                 product.linkedProducts(),
+                product.customFields(),
                 product.productType()
             ).filterNotEmpty()
         )
@@ -992,6 +1004,22 @@ class ProductDetailCardBuilder(
                 )
             }
         }
+    }
+
+    private suspend fun Product.customFields(): ProductProperty? {
+        if (!FeatureFlag.CUSTOM_FIELDS.isEnabled() ||
+            remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID ||
+            !customFieldsRepository.hasDisplayableCustomFields(this.remoteId)
+        ) {
+            return null
+        }
+
+        return ComplexProperty(
+            string.product_custom_fields,
+            resources.getString(R.string.product_custom_fields_desc),
+            drawable.ic_custom_fields,
+            onClick = viewModel::onCustomFieldsClicked
+        )
     }
 }
 

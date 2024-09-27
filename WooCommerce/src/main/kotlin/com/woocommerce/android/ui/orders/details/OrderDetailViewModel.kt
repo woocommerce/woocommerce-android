@@ -64,6 +64,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -310,7 +311,8 @@ class OrderDetailViewModel @Inject constructor(
 
     private suspend fun checkOrderMetaData() {
         viewState = viewState.copy(
-            isCustomFieldsButtonShown = orderDetailRepository.orderHasMetadata(navArgs.orderId)
+            isCustomFieldsButtonShown = FeatureFlag.CUSTOM_FIELDS.isEnabled() ||
+                orderDetailRepository.orderHasMetadata(navArgs.orderId)
         )
     }
 
