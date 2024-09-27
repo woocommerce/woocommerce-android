@@ -31,7 +31,7 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
         val updateOrderListBySelectedStoreResult = updateOrderListBySelectedStore(true)
         return when {
             accountRepository.isUserLoggedIn().not() -> Result.success()
-            updateAnalyticsDashboardRangeSelectionsResult && updateOrderListBySelectedStoreResult -> {
+            updateAnalyticsDashboardRangeSelectionsResult && updateOrderListBySelectedStoreResult.isSuccess -> {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.BACKGROUND_DATA_SYNCED,
                     mapOf(AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime))
@@ -42,7 +42,7 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
             else -> {
                 val errorDescription = when {
                     updateAnalyticsDashboardRangeSelectionsResult.not() &&
-                        updateOrderListBySelectedStoreResult.not() -> {
+                        updateOrderListBySelectedStoreResult.isFailure -> {
                         "Orders & Dashboard stats refresh failed."
                     }
 
