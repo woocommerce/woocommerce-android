@@ -46,7 +46,7 @@ class FetchOrderProducts @Inject constructor(
             connectionStatus.isStoreConnected() -> flow {
                 emit(null)
                 ordersRepository.fetchOrderRefunds(selectedSite, orderId)
-                    .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
+                    ?.asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
                     .let { emit(it) }
             }
 
@@ -59,6 +59,7 @@ class FetchOrderProducts @Inject constructor(
             }
 
             else -> flow {
+                emit(null)
                 ordersRepository.getOrderRefunds(selectedSite, orderId)
                     .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
                     .let { emit(it) }
