@@ -121,26 +121,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given shown login error dialog, when user chooses wp-admin login, then show login webview`() = testBlocking {
-        setup {
-            whenever(wpApiSiteRepository.getSiteByLocalId(testSite.id)).thenReturn(
-                testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
-            )
-        }
-
-        val state = viewModel.viewState.runAndCaptureValues {
-            viewModel.onStartWebAuthorizationClick()
-        }.last()
-
-        assertThat(state).isEqualTo(
-            LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState(
-                authorizationUrl = urlAuthFull,
-                userAgent = userAgent
-            )
-        )
-    }
-
-    @Test
     fun `when changing username, then update state`() = testBlocking {
         setup()
 
@@ -324,19 +304,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
-            applicationPasswordsUnavailableEvents.tryEmit(mock())
-        }
-
-        assertThat(viewModel.event.value)
-            .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
-    }
-
-    @Test
-    fun `given application pwd disabled and wp-login-php inaccessible, when choosing webview login, then show error`() = testBlocking {
-        setup()
-
-        viewModel.viewState.observeForTesting {
-            viewModel.onStartWebAuthorizationClick()
             applicationPasswordsUnavailableEvents.tryEmit(mock())
         }
 
