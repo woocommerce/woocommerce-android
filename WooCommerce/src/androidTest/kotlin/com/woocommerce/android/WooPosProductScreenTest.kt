@@ -17,17 +17,16 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
-import com.woocommerce.android.e2e.helpers.util.MocksReader
-import com.woocommerce.android.e2e.helpers.util.ProductData
-import com.woocommerce.android.e2e.helpers.util.iterator
 import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
+import com.woocommerce.android.e2e.tests.ui.productCappuccino
+import com.woocommerce.android.e2e.tests.ui.productCappuccinoAlmondMedium
+import com.woocommerce.android.e2e.tests.ui.productSalad
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.test.runTest
-import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -88,12 +87,7 @@ class WooPosProductScreenTest : TestBase() {
 
     @Test
     fun testCartItemIsAddedWhenProductItemClicked() = runTest {
-        val productsJSONArray = MocksReader().readAllProductsToArray()
-        val products = mutableListOf<ProductData>()
-        for (productJSON in productsJSONArray.iterator()) {
-            products.add(mapJSONToProduct(productJSON))
-        }
-        val firstProduct = products.first()
+        val firstProduct = productSalad
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -154,12 +148,7 @@ class WooPosProductScreenTest : TestBase() {
     @Suppress("LongMethod")
     @Test
     fun testCheckoutButtonVisibility() = runTest {
-        val productsJSONArray = MocksReader().readAllProductsToArray()
-        val products = mutableListOf<ProductData>()
-        for (productJSON in productsJSONArray.iterator()) {
-            products.add(mapJSONToProduct(productJSON))
-        }
-        val firstProduct = products.first()
+        val firstProduct = productSalad
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -237,14 +226,9 @@ class WooPosProductScreenTest : TestBase() {
     @Suppress("LongMethod")
     @Test
     fun testCartItemRemovalFunctionality() = runTest {
-        val productsJSONArray = MocksReader().readAllProductsToArray()
-        val products = mutableListOf<ProductData>()
-        for (productJSON in productsJSONArray.iterator()) {
-            products.add(mapJSONToProduct(productJSON))
-        }
-        val firstProduct = products.first()
-        val secondProduct = products[1]
-        val thirdProduct = products[2]
+        val firstProduct = productSalad
+        val secondProduct = productCappuccino
+        val thirdProduct = productCappuccinoAlmondMedium
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -306,12 +290,7 @@ class WooPosProductScreenTest : TestBase() {
 
     @Test
     fun testClickingCheckoutButtonHidesProductsScreen() = runTest {
-        val productsJSONArray = MocksReader().readAllProductsToArray()
-        val products = mutableListOf<ProductData>()
-        for (productJSON in productsJSONArray.iterator()) {
-            products.add(mapJSONToProduct(productJSON))
-        }
-        val firstProduct = products.first()
+        val firstProduct = productSalad
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -361,12 +340,7 @@ class WooPosProductScreenTest : TestBase() {
 
     @Test
     fun testClickingCheckoutButtonDisplaysTotalsScreen() = runTest {
-        val productsJSONArray = MocksReader().readAllProductsToArray()
-        val products = mutableListOf<ProductData>()
-        for (productJSON in productsJSONArray.iterator()) {
-            products.add(mapJSONToProduct(productJSON))
-        }
-        val firstProduct = products.first()
+        val firstProduct = productSalad
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -416,12 +390,7 @@ class WooPosProductScreenTest : TestBase() {
 
     @Test
     fun testClickingCheckoutButtonDisplaysCollectPaymentButton() = runTest {
-        val productsJSONArray = MocksReader().readAllProductsToArray()
-        val products = mutableListOf<ProductData>()
-        for (productJSON in productsJSONArray.iterator()) {
-            products.add(mapJSONToProduct(productJSON))
-        }
-        val firstProduct = products.first()
+        val firstProduct = productSalad
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -477,18 +446,5 @@ class WooPosProductScreenTest : TestBase() {
                 .assertIsDisplayed()
             true
         }
-    }
-
-    private fun mapJSONToProduct(productJSON: JSONObject): ProductData {
-        return ProductData(
-            id = productJSON.getInt("id"),
-            name = productJSON.getString("name"),
-            stockStatusRaw = productJSON.getString("stock_status"),
-            priceDiscountedRaw = productJSON.getString("price"),
-            priceRegularRaw = productJSON.getString("regular_price"),
-            typeRaw = productJSON.getString("type"),
-            rating = productJSON.getInt("average_rating"),
-            reviewsCount = productJSON.getInt("rating_count")
-        )
     }
 }
