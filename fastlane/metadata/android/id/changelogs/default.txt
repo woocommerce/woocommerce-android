@@ -1,2 +1,0 @@
-20.5:
-Dengan gembira kami hadirkan pengalaman yang lebih baik lewat pembaruan ini! Kami telah mengatasi isu yang menggagalkan perubahan nama Atribut Variasi Produk dan memperbaiki bug terkait penghapusan pemberitahuan. Pengguna kini juga dapat dengan mudah memilih gambar produk saat membuat iklan Blaze. Selain itu, fitur Blaze kini sepenuhnya diaktifkan untuk situs yang mengaktifkan plugin Blaze for WooCommerce. Nikmati semua penyempurnaan ini!
