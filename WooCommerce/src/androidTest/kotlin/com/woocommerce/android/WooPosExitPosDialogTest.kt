@@ -75,6 +75,7 @@ class WooPosExitPosDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -111,6 +112,7 @@ class WooPosExitPosDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -159,6 +161,7 @@ class WooPosExitPosDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -199,6 +202,7 @@ class WooPosExitPosDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
@@ -239,6 +243,7 @@ class WooPosExitPosDialogTest : TestBase() {
                     .assertIsDisplayed()
                 true
             } catch (e: AssertionError) {
+                e.printStackTrace()
                 false
             }
         }
