@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,9 @@ fun WooPosExitConfirmationDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Box(
-            modifier = modifier.padding(40.dp.toAdaptivePadding())
+            modifier = modifier
+                .padding(40.dp.toAdaptivePadding())
+                .testTag("woo_pos_exit_confirmation_dialog")
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = modifier.height(48.dp.toAdaptivePadding()))
@@ -64,7 +67,8 @@ fun WooPosExitConfirmationDialog(
                 Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
                 WooPosButton(
                     modifier = modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .testTag("woo_pos_exit_confirmation_dialog_exit"),
                     onClick = {
                         onExit()
                     },
@@ -76,6 +80,7 @@ fun WooPosExitConfirmationDialog(
                 onClick = { onDismissRequest() },
                 modifier = modifier
                     .align(Alignment.TopEnd)
+                    .testTag("woo_pos_exit_confirmation_dialog_close")
             ) {
                 Icon(
                     Icons.Default.Close,

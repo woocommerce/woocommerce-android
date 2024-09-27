@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -32,7 +31,7 @@ import javax.inject.Inject
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class WooPosHomeProductInfoDialogTest : TestBase() {
+class WooPosExitPosDialogTest : TestBase() {
     @get:Rule(order = 1)
     val rule = HiltAndroidRule(this)
 
@@ -68,7 +67,7 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
     }
 
     @Test
-    fun testProductInfoDialogIconIsDisplayedOnProductsScreenIfSimpleProductsBannerIsNotVisible() = runTest {
+    fun testExitPOSConfirmationDialogIsDisplayedWhenExitButtonClicked() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -80,100 +79,81 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                 false
             }
         }
-
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
-        ).performClick()
-
-        composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithContentDescription(
-                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-            )
-                .assertIsDisplayed()
-            true
-        }
-    }
-
-    @Test
-    fun testProductInfoDialogIsDisplayedOnIconClick() = runTest {
-        composeTestRule.waitUntil(5000) {
-            try {
-                composeTestRule.onNodeWithTag("product_list")
-                    .assertExists()
-                    .assertIsDisplayed()
-                true
-            } catch (e: AssertionError) {
-                e.printStackTrace()
-                false
-            }
-        }
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
-        ).performClick()
-
-        composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithContentDescription(
-                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-            )
-                .performClick()
-            true
-        }
-
-        composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
-                .assertIsDisplayed()
-            true
-        }
-    }
-
-    @Test
-    fun testProductInfoDialogIsDisplayedWithProperLabels() = runTest {
-        composeTestRule.waitUntil(5000) {
-            try {
-                composeTestRule.onNodeWithTag("product_list")
-                    .assertExists()
-                    .assertIsDisplayed()
-                true
-            } catch (e: AssertionError) {
-                e.printStackTrace()
-                false
-            }
-        }
-        composeTestRule.onNodeWithTag(
-            "woo_pos_simple_products_dialog_info_close_icon"
-        ).performClick()
 
         composeTestRule.waitUntil(5000) {
             composeTestRule.onNodeWithTag(
-                "woo_pos_simple_products_banner_icon"
+                "woo_pos_menu_button"
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_popup_menu_${R.string.woopos_exit_confirmation_title}",
+                useUnmergedTree = true
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog")
+                .assertExists()
+                .assertIsDisplayed()
+            true
+        }
+    }
+
+    @Test
+    fun testExitPOSConfirmationDialogIsDisplayedWithProperLabels() = runTest {
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                e.printStackTrace()
+                false
+            }
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_menu_button"
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_popup_menu_${R.string.woopos_exit_confirmation_title}",
+                useUnmergedTree = true
             ).performClick()
             true
         }
 
         composeTestRule.waitUntil(5000) {
             composeTestRule.onNodeWithText(
-                composeTestRule.activity.getString(R.string.woopos_dialog_products_info_heading)
-            )
-                .assertIsDisplayed()
+                composeTestRule.activity.getString(R.string.woopos_exit_dialog_confirmation_title)
+            ).assertIsDisplayed()
             true
         }
-
-        composeTestRule.onNodeWithText(
-            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_primary_message)
-        )
-            .assertIsDisplayed()
-        composeTestRule.onNodeWithText(
-            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_secondary_message)
-        )
-            .assertIsDisplayed()
-        composeTestRule.onNodeWithText(
-            composeTestRule.activity.getString(R.string.woopos_dialog_products_info_button_label)
-        )
-            .assertIsDisplayed()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithText(
+                composeTestRule.activity.getString(R.string.woopos_exit_dialog_confirmation_message)
+            ).assertIsDisplayed()
+            true
+        }
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithText(
+                composeTestRule.activity.getString(R.string.woopos_exit_dialog_confirmation_confirm_button)
+            ).assertIsDisplayed()
+            true
+        }
     }
 
     @Test
-    fun testProductInfoDialogIsDismissedWhenCloseClick() = runTest {
+    fun testExitPOSConfirmationDialogIsDismissedWhenCloseButtonClicked() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -185,31 +165,36 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                 false
             }
         }
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
-        ).performClick()
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithContentDescription(
-                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
+            composeTestRule.onNodeWithTag(
+                "woo_pos_menu_button"
             ).performClick()
             true
         }
 
-        composeTestRule.onNodeWithTag(
-            "woo_pos_simple_products_dialog_info_close_icon"
-        ).performClick()
-
         composeTestRule.waitUntil(5000) {
             composeTestRule.onNodeWithTag(
-                "woo_pos_product_info_dialog"
-            ).assertIsNotDisplayed()
+                "woo_pos_popup_menu_${R.string.woopos_exit_confirmation_title}",
+                useUnmergedTree = true
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog_close").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog")
+                .assertIsNotDisplayed()
             true
         }
     }
 
     @Test
-    fun testProductInfoDialogIsDismissedWhenPrimaryButtonClicked() = runTest {
+    fun testExitPOSConfirmationDialogIsDismissedWhenExitButtonClicked() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
                 composeTestRule.onNodeWithTag("product_list")
@@ -221,29 +206,71 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
                 false
             }
         }
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
-        ).performClick()
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithContentDescription(
-                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-            )
-                .assertExists()
+            composeTestRule.onNodeWithTag(
+                "woo_pos_menu_button"
+            ).performClick()
             true
         }
 
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-        ).performClick()
-
-        composeTestRule.onNodeWithTag(
-            "woo_pos_simple_product_info_dialog_primary_button"
-        ).performClick()
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_popup_menu_${R.string.woopos_exit_confirmation_title}",
+                useUnmergedTree = true
+            ).performClick()
+            true
+        }
 
         composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
-                .assertDoesNotExist()
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog_exit").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog")
+                .assertIsNotDisplayed()
+            true
+        }
+    }
+
+    @Test
+    fun testWoPosHomeScreenIsDismissedWhenExitButtonClicked() = runTest {
+        composeTestRule.waitUntil(5000) {
+            try {
+                composeTestRule.onNodeWithTag("product_list")
+                    .assertExists()
+                    .assertIsDisplayed()
+                true
+            } catch (e: AssertionError) {
+                e.printStackTrace()
+                false
+            }
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_menu_button"
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag(
+                "woo_pos_popup_menu_${R.string.woopos_exit_confirmation_title}",
+                useUnmergedTree = true
+            ).performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_exit_confirmation_dialog_exit").performClick()
+            true
+        }
+
+        composeTestRule.waitUntil(5000) {
+            composeTestRule.onNodeWithTag("woo_pos_home_screen")
+                .assertIsNotDisplayed()
             true
         }
     }

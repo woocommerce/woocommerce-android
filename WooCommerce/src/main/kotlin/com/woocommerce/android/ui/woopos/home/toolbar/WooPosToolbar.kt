@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
@@ -202,7 +203,9 @@ private fun MenuButtonWithPopUpMenu(
         shape = RoundedCornerShape(8.dp),
     ) {
         TextButton(
-            modifier = Modifier.semantics { contentDescription = menuContentDescription },
+            modifier = Modifier
+                .semantics { contentDescription = menuContentDescription }
+                .testTag("woo_pos_menu_button"),
             onClick = onClick,
             contentPadding = PaddingValues(0.dp),
             colors = ButtonDefaults.textButtonColors(
@@ -262,10 +265,12 @@ private fun PopUpMenuItem(
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+        println("popupmenuid: woo_pos_popup_menu_${menuItem.title}")
         Text(
             modifier = Modifier
                 .padding(vertical = 8.dp.toAdaptivePadding())
-                .weight(1f),
+                .weight(1f)
+                .testTag("woo_pos_popup_menu_${menuItem.title}"),
             text = stringResource(id = menuItem.title),
             color = MaterialTheme.colors.onSurface,
             style = MaterialTheme.typography.body1,
