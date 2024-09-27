@@ -50,7 +50,6 @@ class OrdersRepository @Inject constructor(
         .takeUnless { it.isError }
         ?.model
         ?.map { it.toAppModel() }
-        ?: emptyList()
 
     suspend fun getStoredOrders(
         selectedSite: SiteModel

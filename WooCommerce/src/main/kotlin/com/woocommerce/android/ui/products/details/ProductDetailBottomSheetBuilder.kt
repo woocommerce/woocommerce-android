@@ -5,6 +5,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.SubscriptionProductVariation
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -20,11 +21,13 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.variations.VariationRepository
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
     private val resources: ResourceProvider,
-    private val variationRepository: VariationRepository
+    private val variationRepository: VariationRepository,
+    private val customFieldsRepository: CustomFieldsRepository
 ) {
     enum class ProductDetailBottomSheetType(
         @StringRes val titleResource: Int,
@@ -35,7 +38,8 @@ class ProductDetailBottomSheetBuilder(
         PRODUCT_TAGS(string.product_tags, string.bottom_sheet_tags_desc),
         SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
         LINKED_PRODUCTS(string.product_detail_linked_products, string.bottom_sheet_linked_products_desc),
-        PRODUCT_DOWNLOADS(string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc)
+        PRODUCT_DOWNLOADS(string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc),
+        CUSTOM_FIELDS(string.product_custom_fields, string.product_custom_fields_desc)
     }
 
     data class ProductDetailBottomSheetUiItem(
@@ -45,7 +49,7 @@ class ProductDetailBottomSheetBuilder(
     )
 
     @Suppress("LongMethod")
-    fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
+    suspend fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
         return when (product.productType) {
             SIMPLE, SUBSCRIPTION -> {
                 listOfNotNull(
@@ -54,39 +58,48 @@ class ProductDetailBottomSheetBuilder(
                     product.getTags(),
                     product.getShortDescription(),
                     product.getLinkedProducts(),
-                    product.getDownloadableFiles()
+                    product.getDownloadableFiles(),
+                    product.getCustomFields()
                 )
             }
+
             EXTERNAL -> {
                 listOfNotNull(
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),
-                    product.getLinkedProducts()
+                    product.getLinkedProducts(),
+                    product.getCustomFields()
                 )
             }
+
             GROUPED -> {
                 listOfNotNull(
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),
-                    product.getLinkedProducts()
+                    product.getLinkedProducts(),
+                    product.getCustomFields()
                 )
             }
+
             VARIABLE, VARIABLE_SUBSCRIPTION -> {
                 listOfNotNull(
                     product.getShipping(),
                     product.getCategories(),
                     product.getTags(),
                     product.getShortDescription(),
-                    product.getLinkedProducts()
+                    product.getLinkedProducts(),
+                    product.getCustomFields()
                 )
             }
+
             else -> {
                 listOfNotNull(
                     product.getCategories(),
                     product.getTags(),
-                    product.getShortDescription()
+                    product.getShortDescription(),
+                    product.getCustomFields()
                 )
             }
         }
@@ -186,6 +199,20 @@ class ProductDetailBottomSheetBuilder(
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.PRODUCT_DOWNLOADS,
             AddProductDownloadableFile
+        )
+    }
+
+    private suspend fun Product.getCustomFields(): ProductDetailBottomSheetUiItem? {
+        if (!FeatureFlag.CUSTOM_FIELDS.isEnabled() ||
+            remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID ||
+            customFieldsRepository.hasDisplayableCustomFields(remoteId)
+        ) {
+            return null
+        }
+
+        return ProductDetailBottomSheetUiItem(
+            ProductDetailBottomSheetType.CUSTOM_FIELDS,
+            ProductNavigationTarget.ViewCustomFields(remoteId)
         )
     }
 }

@@ -8,23 +8,27 @@ import android.widget.EditText
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalTextInputService
@@ -53,7 +57,7 @@ import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.glideloader.GlideImageLoader
 import org.wordpress.aztec.source.SourceViewEditText
-import org.wordpress.aztec.toolbar.IAztecToolbar
+import org.wordpress.aztec.toolbar.AztecToolbar
 import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
 
 /**
@@ -65,6 +69,7 @@ import org.wordpress.aztec.toolbar.IAztecToolbarClickListener
  * @param label The label to display above the editor
  * @param minLines The minimum number of lines the editor should have
  * @param maxLines The maximum number of lines the editor should have
+ * @param enableSourceEditor Whether the the toolbar will have a button to enable the source editor
  * @param calypsoMode Whether the editor should be in calypso mode, for more information on calypso mode see https://github.com/wordpress-mobile/AztecEditor-Android/pull/309
  */
 @Composable
@@ -75,7 +80,8 @@ fun OutlinedAztecEditor(
     label: String? = null,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
-    calypsoMode: Boolean = false
+    enableSourceEditor: Boolean = true,
+    calypsoMode: Boolean = false,
 ) {
     val state = rememberAztecEditorState(initialContent = content)
     val contentState by rememberUpdatedState(content)
@@ -96,6 +102,7 @@ fun OutlinedAztecEditor(
         label = label,
         minLines = minLines,
         maxLines = maxLines,
+        enableSourceEditor = enableSourceEditor,
         calypsoMode = calypsoMode
     )
 }
@@ -108,6 +115,7 @@ fun OutlinedAztecEditor(
  * @param label The label to display above the editor
  * @param minLines The minimum number of lines the editor should have
  * @param maxLines The maximum number of lines the editor should have
+ * @param enableSourceEditor Whether the the toolbar will have a button to enable the source editor
  * @param calypsoMode Whether the editor should be in calypso mode, for more information on calypso mode see https://github.com/wordpress-mobile/AztecEditor-Android/pull/309
  */
 @Composable
@@ -117,6 +125,7 @@ fun OutlinedAztecEditor(
     label: String? = null,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
+    enableSourceEditor: Boolean = true,
     calypsoMode: Boolean = false
 ) {
     InternalAztecEditor(
@@ -138,6 +147,7 @@ fun OutlinedAztecEditor(
         label = label,
         minLines = minLines,
         maxLines = maxLines,
+        enableSourceEditor = enableSourceEditor,
         calypsoMode = calypsoMode
     )
 }
@@ -151,6 +161,7 @@ fun OutlinedAztecEditor(
  * @param label The label to display above the editor
  * @param minLines The minimum number of lines the editor should have
  * @param maxLines The maximum number of lines the editor should have
+ * @param enableSourceEditor Whether the the toolbar will have a button to enable the source editor
  * @param calypsoMode Whether the editor should be in calypso mode, for more information on calypso mode see https://github.com/wordpress-mobile/AztecEditor-Android/pull/309
  */
 @Composable
@@ -161,6 +172,7 @@ fun AztecEditor(
     label: String? = null,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
+    enableSourceEditor: Boolean = true,
     calypsoMode: Boolean = false
 ) {
     val state = rememberAztecEditorState(initialContent = content)
@@ -182,6 +194,7 @@ fun AztecEditor(
         label = label,
         minLines = minLines,
         maxLines = maxLines,
+        enableSourceEditor = enableSourceEditor,
         calypsoMode = calypsoMode
     )
 }
@@ -194,6 +207,7 @@ fun AztecEditor(
  * @param label The label to display above the editor
  * @param minLines The minimum number of lines the editor should have
  * @param maxLines The maximum number of lines the editor should have
+ * @param enableSourceEditor Whether the the toolbar will have a button to enable the source editor
  * @param calypsoMode Whether the editor should be in calypso mode, for more information on calypso mode see https://github.com/wordpress-mobile/AztecEditor-Android/pull/309
  */
 @Composable
@@ -203,6 +217,7 @@ fun AztecEditor(
     label: String? = null,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
+    enableSourceEditor: Boolean = true,
     calypsoMode: Boolean = false
 ) {
     InternalAztecEditor(
@@ -221,11 +236,13 @@ fun AztecEditor(
         label = label,
         minLines = minLines,
         maxLines = maxLines,
+        enableSourceEditor = enableSourceEditor,
         calypsoMode = calypsoMode
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
+@Suppress("CyclomaticComplexMethod")
 @Composable
 private fun InternalAztecEditor(
     state: AztecEditorState,
@@ -234,29 +251,45 @@ private fun InternalAztecEditor(
     label: String? = null,
     minLines: Int = 1,
     maxLines: Int = Int.MAX_VALUE,
+    enableSourceEditor: Boolean,
     calypsoMode: Boolean = false
 ) {
     val localContext = LocalContext.current
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val textInputService = LocalTextInputService.current
 
-    val viewsHolder = remember(localContext) { aztecViewsProvider(localContext) }
+    val viewsHolder = remember(localContext, enableSourceEditor) { aztecViewsProvider(localContext) }
     val listener = remember { createToolbarListener { state.toggleHtmlEditor() } }
-    val aztec = remember(localContext) {
-        Aztec.with(viewsHolder.visualEditor, viewsHolder.sourceEditor, viewsHolder.toolbar, listener)
-            .setImageGetter(GlideImageLoader(localContext))
+    val aztec = remember(viewsHolder) {
+        if (!enableSourceEditor && !state.isHtmlEditorEnabled) {
+            // Make sure we have the correct state when the source editor is disabled, they could go out of sync
+            // if [enableSourceEditor] was changed when the source editor was the one being used
+            state.toggleHtmlEditor()
+        }
+
+        val aztec = if (enableSourceEditor) {
+            Aztec.with(viewsHolder.visualEditor, viewsHolder.sourceEditor, viewsHolder.toolbar, listener)
+        } else {
+            Aztec.with(viewsHolder.visualEditor, viewsHolder.toolbar, listener)
+        }
+
+        aztec.setImageGetter(GlideImageLoader(localContext))
     }
+
     var sourceEditorMinHeight by rememberSaveable { mutableStateOf(0) }
 
     // Toggle the editor mode when the state changes
-    LaunchedEffect(Unit) {
+    LaunchedEffect(aztec, enableSourceEditor) {
         snapshotFlow { state.isHtmlEditorEnabled }
             .drop(1) // Skip the initial value to avoid toggling the editor when it's first created
-            .collect { aztec.toolbar.toggleEditorMode() }
+            .collect {
+                if (!enableSourceEditor) error("The source editor is disabled, the editor mode cannot be toggled")
+                aztec.toolbar.toggleEditorMode()
+            }
     }
 
     // Update the content of the editor when the state changes
-    LaunchedEffect(state.content) {
+    LaunchedEffect(state.content, aztec) {
         if (state.isHtmlEditorEnabled) {
             if (aztec.visualEditor.toHtml() != state.content) {
                 aztec.visualEditor.fromHtml(state.content)
@@ -280,61 +313,64 @@ private fun InternalAztecEditor(
         )
     }
 
-    AndroidView(
-        factory = {
-            // Set initial content
-            aztec.visualEditor.fromHtml(state.content)
-            aztec.sourceEditor?.displayStyledAndFormattedHtml(state.content)
+    // `key` is needed to force re-creating the AndroidView when a new Aztec instance is created
+    key(aztec) {
+        AndroidView(
+            factory = {
+                // Set initial content
+                aztec.visualEditor.fromHtml(state.content)
+                aztec.sourceEditor?.displayStyledAndFormattedHtml(state.content)
 
-            aztec.visualEditor.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-                // Because the editors could have different number of lines, we don't set the minLines
-                // of the source editor, so we set the minHeight instead to match the visual editor
-                sourceEditorMinHeight = aztec.visualEditor.height
-            }
+                aztec.visualEditor.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                    // Because the editors could have different number of lines, we don't set the minLines
+                    // of the source editor, so we set the minHeight instead to match the visual editor
+                    sourceEditorMinHeight = aztec.visualEditor.height
+                }
 
-            aztec.visualEditor.doAfterTextChanged {
-                if (!state.isHtmlEditorEnabled) return@doAfterTextChanged
-                state.updateContent(aztec.visualEditor.toHtml())
-            }
-            aztec.sourceEditor?.doAfterTextChanged {
-                val sourceEditor = aztec.sourceEditor
-                if (state.isHtmlEditorEnabled || sourceEditor == null) return@doAfterTextChanged
-                state.updateContent(sourceEditor.getPureHtml())
-            }
+                aztec.visualEditor.doAfterTextChanged {
+                    if (!state.isHtmlEditorEnabled) return@doAfterTextChanged
+                    state.updateContent(aztec.visualEditor.toHtml())
+                }
+                aztec.sourceEditor?.doAfterTextChanged {
+                    val sourceEditor = aztec.sourceEditor
+                    if (state.isHtmlEditorEnabled || sourceEditor == null) return@doAfterTextChanged
+                    state.updateContent(sourceEditor.getPureHtml())
+                }
 
-            val focusChangeListener = OnFocusChangeListener { _, focused ->
-                focusState.value = focused
-            }
-            aztec.visualEditor.onFocusChangeListener = focusChangeListener
-            aztec.sourceEditor?.onFocusChangeListener = focusChangeListener
+                val focusChangeListener = OnFocusChangeListener { _, focused ->
+                    focusState.value = focused
+                }
+                aztec.visualEditor.onFocusChangeListener = focusChangeListener
+                aztec.sourceEditor?.onFocusChangeListener = focusChangeListener
 
-            viewsHolder.layout
-        },
-        update = {
-            if (aztec.visualEditor.isInCalypsoMode != calypsoMode) {
-                aztec.visualEditor.isInCalypsoMode = calypsoMode
-                aztec.sourceEditor?.setCalypsoMode(calypsoMode)
-            }
+                viewsHolder.layout
+            },
+            update = {
+                if (aztec.visualEditor.isInCalypsoMode != calypsoMode) {
+                    aztec.visualEditor.isInCalypsoMode = calypsoMode
+                    aztec.sourceEditor?.setCalypsoMode(calypsoMode)
+                }
 
-            if (sourceEditorMinHeight != aztec.sourceEditor?.minHeight) {
-                aztec.sourceEditor?.minHeight = sourceEditorMinHeight
-            }
-            if (minLines != -1 && minLines != aztec.visualEditor.minLines) {
-                aztec.visualEditor.minLines = minLines
-            }
-            if (maxLines != Int.MAX_VALUE && maxLines != aztec.visualEditor.maxLines) {
-                aztec.visualEditor.maxLines = maxLines
-                aztec.sourceEditor?.maxLines = maxLines
-            }
+                if (sourceEditorMinHeight != aztec.sourceEditor?.minHeight) {
+                    aztec.sourceEditor?.minHeight = sourceEditorMinHeight
+                }
+                if (minLines != -1 && minLines != aztec.visualEditor.minLines) {
+                    aztec.visualEditor.minLines = minLines
+                }
+                if (maxLines != Int.MAX_VALUE && maxLines != aztec.visualEditor.maxLines) {
+                    aztec.visualEditor.maxLines = maxLines
+                    aztec.sourceEditor?.maxLines = maxLines
+                }
 
-            if (aztec.visualEditor.label != label) {
-                aztec.visualEditor.label = label
-                aztec.sourceEditor?.label = label
-            }
-        },
-        modifier = modifier
-            .bringIntoViewRequester(bringIntoViewRequester)
-    )
+                if (aztec.visualEditor.label != label) {
+                    aztec.visualEditor.label = label
+                    aztec.sourceEditor?.label = label
+                }
+            },
+            modifier = modifier
+                .bringIntoViewRequester(bringIntoViewRequester)
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class, InternalTextApi::class)
@@ -407,7 +443,7 @@ private data class AztecViewsHolder(
     val layout: ViewGroup,
     val visualEditor: AztecText,
     val sourceEditor: SourceViewEditText,
-    val toolbar: IAztecToolbar
+    val toolbar: AztecToolbar
 )
 
 @Composable
@@ -436,15 +472,33 @@ private fun OutlinedAztecEditorPreview() {
 private fun AztecEditorPreview() {
     val state = rememberAztecEditorState("")
 
+    var enableSourceEditor by remember { mutableStateOf(true) }
+
     WooThemeWithBackground {
         Column {
             AztecEditor(
                 state = state,
                 label = "Label",
+                enableSourceEditor = enableSourceEditor,
             )
 
-            TextButton(onClick = { state.toggleHtmlEditor() }) {
+            TextButton(
+                onClick = { state.toggleHtmlEditor() },
+                enabled = enableSourceEditor
+            ) {
                 Text("Toggle Html Mode")
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text("Enable Source Editor")
+                Switch(
+                    checked = enableSourceEditor,
+                    onCheckedChange = { enableSourceEditor = it },
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
         }
     }

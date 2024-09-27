@@ -99,7 +99,6 @@ private fun HandleEvents(event: LiveData<MultiLiveEvent.Event>) {
                             launchedFromNotification = false,
                             remoteReviewId = event.review.remoteId
                         ),
-                        skipThrottling = true
                     )
                 }
             }

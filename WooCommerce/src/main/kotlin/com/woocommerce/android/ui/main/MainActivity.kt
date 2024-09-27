@@ -444,6 +444,10 @@ class MainActivity :
             }
         }
 
+        supportFragmentManager.primaryNavigationFragment?.let { fragment ->
+            updateAppBarVisibility(fragment)
+        }
+
         super.onBackPressed()
     }
 
@@ -805,7 +809,7 @@ class MainActivity :
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
-                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId, event.isOpenedFromPush)
+                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId)
                 ViewBlazeCampaignList -> showBlazeCampaignList(campaignId = null)
                 is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
@@ -847,7 +851,7 @@ class MainActivity :
         observeBottomBarState()
     }
 
-    private fun showBlazeCampaignList(campaignId: String?, isOpenedFromPush: Boolean = false) {
+    private fun showBlazeCampaignList(campaignId: String?) {
         binding.bottomNav.currentPosition = MORE
         binding.bottomNav.active(MORE.position)
 
@@ -855,7 +859,6 @@ class MainActivity :
             MoreMenuFragmentDirections.actionMoreMenuToBlazeCampaignListFragment(
                 campaignId = campaignId
             ),
-            skipThrottling = isOpenedFromPush
         )
     }
 
@@ -1220,6 +1223,20 @@ class MainActivity :
             directions = action,
             extras = extras,
         )
+    }
+
+    override fun onAttachFragment(fragment: Fragment) {
+        super.onAttachFragment(fragment)
+        updateAppBarVisibility(fragment)
+    }
+
+    private fun updateAppBarVisibility(fragment: Fragment) {
+        (fragment as? BaseFragment)?.let {
+            when (it.activityAppBarStatus) {
+                is AppBarStatus.Hidden -> supportActionBar?.hide()
+                is AppBarStatus.Visible -> supportActionBar?.show()
+            }
+        }
     }
 
     override fun showFeedbackSurvey() {

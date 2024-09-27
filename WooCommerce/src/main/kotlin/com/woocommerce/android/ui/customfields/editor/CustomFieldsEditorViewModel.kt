@@ -52,19 +52,24 @@ class CustomFieldsEditorViewModel @Inject constructor(
         clazz = UiString::class.java,
         key = "keyErrorMessage"
     )
+    private val useHtmlEditor = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = false,
+        key = "useHtmlEditor"
+    )
     private val storedValue = navArgs.customField
-    private val isHtml = storedValue?.valueStrippedHtml != storedValue?.value
 
     val state = combine(
         customFieldDraft,
         showDiscardChangesDialog.mapToState(),
-        keyErrorMessage
-    ) { customField, discardChangesDialogState, keyErrorMessage ->
+        keyErrorMessage,
+        useHtmlEditor
+    ) { customField, discardChangesDialogState, keyErrorMessage, useHtmlEditor ->
         UiState(
             customField = customField,
             hasChanges = storedValue?.key.orEmpty() != customField.key ||
                 storedValue?.value.orEmpty() != customField.value,
-            isHtml = isHtml,
+            useHtmlEditor = useHtmlEditor,
             discardChangesDialogState = discardChangesDialogState,
             keyErrorMessage = keyErrorMessage,
             isCreatingNewItem = storedValue == null
@@ -123,6 +128,10 @@ class CustomFieldsEditorViewModel @Inject constructor(
         triggerEvent(CopyContentToClipboard(R.string.custom_fields_editor_value_label, customFieldDraft.value.value))
     }
 
+    fun onEditorModeChanged(useHtmlEditor: Boolean) {
+        this.useHtmlEditor.update { useHtmlEditor }
+    }
+
     fun onBackClick() {
         if (state.value?.hasChanges == true) {
             showDiscardChangesDialog.value = true
@@ -145,10 +154,10 @@ class CustomFieldsEditorViewModel @Inject constructor(
     data class UiState(
         val customField: CustomFieldUiModel = CustomFieldUiModel("", ""),
         val hasChanges: Boolean = false,
-        val isHtml: Boolean = false,
+        val useHtmlEditor: Boolean = false,
         val discardChangesDialogState: DiscardChangesDialogState? = null,
         val keyErrorMessage: UiString? = null,
-        val isCreatingNewItem: Boolean = false
+        val isCreatingNewItem: Boolean = false,
     ) {
         val showDoneButton
             get() = customField.key.isNotEmpty() && hasChanges && keyErrorMessage == null
