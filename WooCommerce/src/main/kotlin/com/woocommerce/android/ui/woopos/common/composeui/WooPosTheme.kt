@@ -188,7 +188,7 @@ private val DarkCustomColors = CustomColors(
     error = WooPosColors.darkCustomColorsError,
     paymentSuccessBackground = WooPosColors.darkCustomColorsHomeBackground,
     paymentSuccessText = WooPosColors.oldGrayLight,
-    paymentSuccessIcon = Color.Black,
+    paymentSuccessIcon = WooPosColors.darkCustomColorsHomeBackground,
     homeBackground = WooPosColors.darkCustomColorsHomeBackground
 )
 
