@@ -27,7 +27,6 @@ android {
 }
 
 dependencies {
-    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.mockito:mockito-inline:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
