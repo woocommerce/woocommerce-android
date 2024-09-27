@@ -12,6 +12,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 
 @Composable
 fun WooPosBackgroundOverlay(
@@ -22,7 +23,8 @@ fun WooPosBackgroundOverlay(
     AnimatedVisibility(
         visible = isVisible,
         enter = fadeIn(initialAlpha = 0.3f),
-        exit = fadeOut(targetAlpha = 0.0f)
+        exit = fadeOut(targetAlpha = 0.0f),
+        modifier = modifier.testTag("woo_pos_product_info_dialog_background")
     ) {
         Box(
             modifier = modifier
