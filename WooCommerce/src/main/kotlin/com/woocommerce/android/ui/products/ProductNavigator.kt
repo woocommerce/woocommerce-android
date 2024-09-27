@@ -463,6 +463,13 @@ class ProductNavigator @Inject constructor() {
                 )
                 fragment.findNavController().navigateSafely(action)
             }
+
+            is ProductNavigationTarget.ViewCustomFields -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCustomFields(
+                    parentItemId = target.productId
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
         }
     }
 
