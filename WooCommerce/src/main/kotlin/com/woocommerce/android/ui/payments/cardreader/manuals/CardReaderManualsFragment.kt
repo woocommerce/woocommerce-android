@@ -7,16 +7,18 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.R
+import androidx.navigation.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CardReaderManualsFragment : BaseFragment() {
-    override fun getFragmentTitle() = resources.getString(R.string.settings_card_reader_manuals)
     private val viewModel: CardReaderManualsViewModel by viewModels()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,9 +28,8 @@ class CardReaderManualsFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                WooThemeWithBackground {
-                    ManualsScreen()
-                }
+                val navController = findNavController()
+                CardReaderManualsScreen(viewModel = viewModel, navController = navController)
             }
         }
     }

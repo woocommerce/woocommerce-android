@@ -10,6 +10,7 @@ import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.appbar.MaterialToolbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.SURVEY_SCREEN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -29,14 +30,19 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_TAP_TO_PAY_FEEDBACK
 import com.woocommerce.android.databinding.FragmentFeedbackSurveyBinding
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.widgets.CustomProgressDialog
 
-class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_feedback_survey) {
+class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
     companion object {
         const val TAG = "feedback_survey"
         private const val QUERY_PARAMETER_MESSAGE = "msg"
         private const val SURVEY_DONE_QUERY_MESSAGE = "done"
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     private var progressDialog: CustomProgressDialog? = null
     private var surveyCompleted: Boolean = false
@@ -63,10 +69,23 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentFeedbackSurveyBinding.bind(view)
 
+        setupToolbar(binding.toolbar)
+
         configureWebView()
         savedInstanceState?.let {
             binding.webView.restoreState(it)
         } ?: binding.webView.loadUrl(getSurveyUrlFromArguments())
+    }
+
+    private fun setupToolbar(toolbar: MaterialToolbar) {
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        (requireActivity() as AppCompatActivity).supportActionBar?.title =
+            getString(R.string.feedback_survey_request_title)
+        toolbar.setNavigationIcon(R.drawable.ic_gridicons_cross_24dp)
+        toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+        activity?.invalidateOptionsMenu()
     }
 
     private fun getSurveyUrlFromArguments(): String = arguments.customUrl ?: arguments.surveyType.url
@@ -86,14 +105,6 @@ class FeedbackSurveyFragment : androidx.fragment.app.Fragment(R.layout.fragment_
                 KEY_FEEDBACK_ACTION to VALUE_FEEDBACK_OPENED
             )
         )
-
-        activity?.let {
-            it.invalidateOptionsMenu()
-            it.title = getString(R.string.feedback_survey_request_title)
-            (it as? AppCompatActivity)
-                ?.supportActionBar
-                ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
-        }
     }
 
     override fun onStop() {
