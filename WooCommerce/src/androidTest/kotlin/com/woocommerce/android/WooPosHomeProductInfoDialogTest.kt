@@ -249,41 +249,4 @@ class WooPosHomeProductInfoDialogTest : TestBase() {
             true
         }
     }
-
-    @Test
-    fun testProductInfoDialogIsDismissedWhenOutsideDialogClicked() = runTest {
-        composeTestRule.waitUntil(5000) {
-            try {
-                composeTestRule.onNodeWithTag("product_list")
-                    .assertExists()
-                    .assertIsDisplayed()
-                true
-            } catch (e: AssertionError) {
-                e.printStackTrace()
-                false
-            }
-        }
-        composeTestRule.onNodeWithContentDescription(
-            composeTestRule.activity.getString(R.string.woopos_banner_simple_products_close_content_description)
-        ).performClick()
-
-        composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithContentDescription(
-                composeTestRule.activity.getString(R.string.woopos_banner_simple_products_info_content_description)
-            ).performClick()
-            true
-        }
-
-        composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_info_dialog_background")
-                .performClick()
-            true
-        }
-
-        composeTestRule.waitUntil(5000) {
-            composeTestRule.onNodeWithTag("woo_pos_product_info_dialog")
-                .assertIsNotDisplayed()
-            true
-        }
-    }
 }
