@@ -78,7 +78,7 @@ android {
 }
 
 dependencies {
-    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
+    implementation(libs.androidx.lifecycle.process)
 
     implementation "androidx.test.uiautomator:uiautomator:2.2.0"
     implementation "junit:junit:$jUnitVersion"

@@ -409,8 +409,8 @@ dependencies {
     // ViewModel and LiveData
     implementation "androidx.fragment:fragment-ktx:1.8.2"
     implementation "androidx.activity:activity-ktx:1.8.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.androidx.lifecycle.process)
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
@@ -448,7 +448,7 @@ dependencies {
 
     implementation 'androidx.hilt:hilt-navigation-compose:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation "io.coil-kt:coil-compose:$coilVersion"
     implementation "io.coil-kt:coil-svg:$coilVersion"
 
