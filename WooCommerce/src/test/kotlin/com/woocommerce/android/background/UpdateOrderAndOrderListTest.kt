@@ -35,12 +35,12 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
         val defaultSiteId = 2L
         val defaultOrderId = 5L
         whenever(siteStore.getSiteBySiteId(defaultSiteId)).thenReturn(null)
-        whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(true)
+        whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(Result.success(Unit))
 
         val result = sut(defaultSiteId, defaultOrderId)
 
         // Assertions
-        Assert.assertFalse(result)
+        Assert.assertFalse(result.isSuccess)
     }
 
     @Test
@@ -54,12 +54,12 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
 
         whenever(siteStore.getSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
         whenever(orderStore.fetchSingleOrderSync(eq(defaultSite), eq(defaultOrderId))).thenReturn(fetchOrderError)
-        whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(true)
+        whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(Result.success(Unit))
 
         val result = sut(defaultSiteId, defaultOrderId)
 
         // Assertions
-        Assert.assertFalse(result)
+        Assert.assertFalse(result.isSuccess)
     }
 
     @Test
@@ -71,12 +71,13 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
 
         whenever(siteStore.getSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
         whenever(orderStore.fetchSingleOrderSync(eq(defaultSite), eq(defaultOrderId))).thenReturn(fetchOrderResult)
-        whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(false)
+        whenever(updateOrdersListByStoreId.invoke(any(), any()))
+            .thenReturn(Result.failure(Exception("Unhandled error")))
 
         val result = sut(defaultSiteId, defaultOrderId)
 
         // Assertions
-        Assert.assertFalse(result)
+        Assert.assertFalse(result.isSuccess)
     }
 
     @Test
@@ -88,11 +89,11 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
 
         whenever(siteStore.getSiteBySiteId(defaultSiteId)).thenReturn(defaultSite)
         whenever(orderStore.fetchSingleOrderSync(eq(defaultSite), eq(defaultOrderId))).thenReturn(fetchOrderResult)
-        whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(true)
+        whenever(updateOrdersListByStoreId.invoke(any(), any())).thenReturn(Result.success(Unit))
 
         val result = sut(defaultSiteId, defaultOrderId)
 
         // Assertions
-        Assert.assertTrue(result)
+        Assert.assertTrue(result.isSuccess)
     }
 }
