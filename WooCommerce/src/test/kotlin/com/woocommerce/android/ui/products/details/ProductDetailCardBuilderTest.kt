@@ -152,7 +152,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a product has no displayable fields, then hide the custom fields card`() = testBlocking {
+    fun `given a product is saved on server, when a product has no displayable fields, then hide the custom fields card`() = testBlocking {
         whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn false
 
         productStub = ProductTestUtils.generateProduct(productId = 1L)
@@ -167,7 +167,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when a product has displayable fields, then show the custom fields card`() = testBlocking {
+    fun `given a product is saved on server, when a product has displayable fields, then show the custom fields card`() = testBlocking {
         whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn true
 
         productStub = ProductTestUtils.generateProduct(productId = 1L)
