@@ -267,11 +267,13 @@ private fun JsonCustomFieldViewer(
             shape = MaterialTheme.shapes.medium,
         ) {
             val jsonFormatted = remember(customField.value) {
-                if (customField.value.trimStart().startsWith("[")) {
-                    JSONArray(customField.value).toString(4)
-                } else {
-                    JSONObject(customField.value).toString(4)
-                }
+                runCatching {
+                    if (customField.value.trimStart().startsWith("[")) {
+                        JSONArray(customField.value).toString(4)
+                    } else {
+                        JSONObject(customField.value).toString(4)
+                    }
+                }.getOrDefault(customField.value)
             }
 
             Column(
@@ -347,11 +349,7 @@ private fun JsonCustomFieldViewerPreview() {
                 CustomField(
                     id = 0,
                     key = "key1",
-                    value =
-                    """|{
-                       |    "Key": "Value"
-                       |}
-                       |""".trimMargin()
+                    value = "[{\"key\": \"value\"}]"
                 )
             ),
             onDismiss = {}
