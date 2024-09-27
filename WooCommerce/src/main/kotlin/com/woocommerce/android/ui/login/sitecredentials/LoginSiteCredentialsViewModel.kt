@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -308,10 +309,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     val errorMessage = detectedErrorMessage
                         ?.toPresentableString()
                         ?: resourceProvider.getString(R.string.error_generic)
-                    ShowApplicationPasswordTutorialScreen(
-                        url = site.fullAuthorizationUrl.orEmpty(),
-                        errorMessage = errorMessage
-                    ).let { triggerEvent(it) }
+                    if (site.fullAuthorizationUrl.isNotNullOrEmpty()) {
+                        triggerEvent(
+                            ShowApplicationPasswordTutorialScreen(
+                                url = site.applicationPasswordsAuthorizeUrl,
+                                errorMessage = errorMessage
+                            )
+                        )
+                    } else {
+                        triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
+                    }
                 } else {
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
