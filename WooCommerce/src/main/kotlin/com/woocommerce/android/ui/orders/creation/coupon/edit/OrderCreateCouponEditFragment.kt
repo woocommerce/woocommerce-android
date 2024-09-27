@@ -8,7 +8,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
@@ -17,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OrderCreateCouponEditFragment : BaseFragment() {
-    private val args: OrderCreateCouponEditFragmentArgs by navArgs()
     private val viewModel by viewModels<OrderCreateCouponDetailsViewModel>()
 
     override fun onCreateView(
