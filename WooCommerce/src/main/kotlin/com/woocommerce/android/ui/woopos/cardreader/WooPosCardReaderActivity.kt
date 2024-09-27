@@ -9,25 +9,32 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.parcelable
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_card_reader) {
     val viewModel: WooPosCardReaderViewModel by viewModels()
+    private val cardReaderPaymentViewModel: CardReaderPaymentViewModel by viewModels()
+    @Inject
+    lateinit var observer: IppFlowObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
-        val navHostFragment = supportFragmentManager.findFragmentById(
-            R.id.woopos_card_reader_nav_host_fragment
-        ) as NavHostFragment
 
-        setupNavGraph(navHostFragment)
-        observeResult(navHostFragment)
+        // TODO: insert [CardReaderPaymentDialogFragmentArgs] to bundle/savedStateHandle so that it can be used in [CardReaderPaymentViewModel].
+        // TODO: start with [SelectPaymentMethodViewModel] and observe their events and state, also propagating state to [IppFlowObserver].
+        cardReaderPaymentViewModel.onViewCreated()
+        cardReaderPaymentViewModel.start()
+        cardReaderPaymentViewModel.viewStateData.observe(this) { viewState ->
+            observer.notify(viewState, cardReaderPaymentViewModel)
+        }
     }
 
     private fun observeResult(navHostFragment: NavHostFragment) {
