@@ -1,0 +1,2 @@
+20.5:
+We zijn enthousiast over onze nieuwste update, die je een soepelere ervaring biedt! We hebben een probleem bij het hernoemen van eigenschappen van productvariaties en een bug omtrent het verwijderen van meldingen opgelost. Bovendien kunnen gebruikers nu makkelijk productafbeeldingen selecteren wanneer ze Blaze-advertenties maken, en is de Blaze-functie nu volledig ingeschakeld voor sites met de plugin Blaze for WooCommerce. Geniet van de verbeteringen!
