@@ -64,6 +64,18 @@ class FetchOrderProductsTest : BaseUnitTest() {
     }
 
     @Test
+    fun `returns Finished when order products are empty`() = testBlocking {
+        val expectedProducts = emptyList<WearOrderedProduct>()
+        whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
+        whenever(ordersRepository.observeOrderProductsDataChanges(1L, selectedSite.siteId))
+            .thenReturn(flowOf(expectedProducts))
+
+        val result = sut.invoke(selectedSite, 1L).first()
+
+        assertThat(result).isEqualTo(Finished(expectedProducts))
+    }
+
+    @Test
     fun `returns Waiting when no order products and not timeout`() = testBlocking {
         whenever(connectionStatus.isStoreConnected()).thenReturn(true)
         whenever(
