@@ -97,7 +97,7 @@ class CustomFieldsViewModel @Inject constructor(
                     onCancel = { showDiscardChangesDialog.value = false }
                 )
             },
-            topBannerState = bannerDismissed.takeIf { !it }?.let {
+            topBannerState = (!bannerDismissed && pendingChanges.hasChanges).takeIf { it }?.let {
                 TopBannerState {
                     appPrefs.isCustomFieldsTopBannerDismissed = true
                 }

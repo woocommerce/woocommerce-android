@@ -411,20 +411,23 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given custom fields top banner is not dismissed, when screen is opened, then banner is shown`() =
-        testBlocking {
-            appPrefs.isCustomFieldsTopBannerDismissed = false
-            setup()
+    fun `given custom fields top banner is not dismissed, when screen is opened, then banner is shown`() = testBlocking {
+        appPrefs.isCustomFieldsTopBannerDismissed = false
+        setup()
+        // Trigger a change to make sure the banner is shown
+        viewModel.onCustomFieldInserted(CustomFieldUiModel(key = "key", value = "value"))
 
-            val state = viewModel.state.getOrAwaitValue()
+        val state = viewModel.state.getOrAwaitValue()
 
-            assertThat(state.topBannerState).isNotNull
-        }
+        assertThat(state.topBannerState).isNotNull
+    }
 
     @Test
     fun `given custom fields top banner is shown, when banner is dismissed, then banner is not shown`() = testBlocking {
         appPrefs.isCustomFieldsTopBannerDismissed = false
         setup()
+        // Trigger a change to make sure the banner is shown
+        viewModel.onCustomFieldInserted(CustomFieldUiModel(key = "key", value = "value"))
 
         val initialState = viewModel.state.getOrAwaitValue()
         val state = viewModel.state.runAndCaptureValues {
