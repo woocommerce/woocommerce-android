@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.blaze.creation.preview
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_CONFIRM_DETAILS_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_TAPPED
@@ -15,6 +16,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignDetails
+import com.woocommerce.android.ui.blaze.BlazeRepository.Objective
 import com.woocommerce.android.ui.blaze.Location
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
@@ -44,6 +46,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
     private val campaignDetails = savedStateHandle.getNullableStateFlow(
@@ -60,8 +63,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     val viewState = combine(
         campaignDetails.filterNotNull(),
         adDetailsState,
-        dialogState
-    ) { campaignDetails, adDetailsState, dialogState ->
+        dialogState,
+        blazeRepository.observeObjectives()
+    ) { campaignDetails, adDetailsState, dialogState, objectives ->
+        val selectedObjective = getSelectedObjective(objectives)
         CampaignPreviewUiState(
             adDetails = when (adDetailsState) {
                 AdDetailsUiState.LOADING -> AdDetailsUi.Loading
@@ -73,10 +78,19 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     isContentSuggestedByAi = isAdContentGeneratedByAi(campaignDetails)
                 )
             },
-            campaignDetails = campaignDetails.toCampaignDetailsUi(),
+            campaignDetails = campaignDetails.toCampaignDetailsUi(selectedObjective),
             dialogState = dialogState
         )
     }.asLiveData()
+
+    private fun getSelectedObjective(objectives: List<Objective>) =
+        if (objectives.isNotEmpty()
+            && appPrefsWrapper.blazeCampaignSelectedObjective.isNotEmpty()
+        ) {
+            objectives
+                .find { it.id == appPrefsWrapper.blazeCampaignSelectedObjective }
+                ?.toSelectedObjectiveUi()
+        } else null
 
     init {
         loadData()
@@ -234,10 +248,11 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     )
                 }
             }
+            blazeRepository.fetchObjectives()
         }
     }
 
-    private fun CampaignDetails.toCampaignDetailsUi() = CampaignDetailsUi(
+    private fun CampaignDetails.toCampaignDetailsUi(selectedObjective: SelectedObjectiveUi?) = CampaignDetailsUi(
         budget = getBudgetDetails(),
         targetDetails = listOf(
             getTargetLanguagesDetails(),
@@ -245,7 +260,13 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             getTargetLocationsDetails(),
             getTargetInterestsDetails(),
         ),
-        destinationUrl = getTargetDestinationDetails()
+        destinationUrl = getTargetDestinationDetails(),
+        selectedObjective = selectedObjective
+    )
+
+    private fun Objective.toSelectedObjectiveUi() = SelectedObjectiveUi(
+        id = id,
+        displayTitle = title
     )
 
     private fun CampaignDetails.getBudgetDetails() =
@@ -365,6 +386,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val budget: CampaignDetailItemUi,
         val targetDetails: List<CampaignDetailItemUi>,
         val destinationUrl: CampaignDetailItemUi,
+        val selectedObjective: SelectedObjectiveUi?
     )
 
     data class CampaignDetailItemUi(
@@ -403,5 +425,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     data class NavigateToPaymentSummary(
         val campaignDetails: CampaignDetails
+    ) : MultiLiveEvent.Event()
+
+    data class SelectedObjectiveUi(
+        val id: String,
+        val displayTitle: String
     ) : MultiLiveEvent.Event()
 }

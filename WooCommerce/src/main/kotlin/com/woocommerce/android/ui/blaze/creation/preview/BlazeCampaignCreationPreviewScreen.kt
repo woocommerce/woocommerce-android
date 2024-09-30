@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPr
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
+import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.SelectedObjectiveUi
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -449,7 +450,11 @@ fun CampaignScreenPreview() {
                     displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
                     onItemSelected = {},
                     maxLinesValue = 1,
-                )
+                ),
+                selectedObjective = SelectedObjectiveUi(
+                    id = "sales",
+                    displayTitle = "Sales",
+                ),
             )
         ),
         onBackPressed = { },
