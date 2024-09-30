@@ -13,6 +13,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStatus
@@ -129,6 +130,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productCategories = ProductTestUtils.generateProductCategories()
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
     private val determineProductPasswordApi: DetermineProductPasswordApi = mock()
+    private val customFieldsRepository: CustomFieldsRepository = mock {
+        onBlocking { hasDisplayableCustomFields(any()) } doReturn false
+    }
 
     private lateinit var viewModel: ProductDetailViewModel
 
@@ -271,7 +275,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isBlazeEnabled = isBlazeEnabled,
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
-                determineProductPasswordApi = determineProductPasswordApi
+                determineProductPasswordApi = determineProductPasswordApi,
+                customFieldsRepository = customFieldsRepository
             )
         )
 
@@ -1136,41 +1141,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given selected site is private, when product detail is opened, then images are not available`() = testBlocking {
         // GIVEN
-        val selectedSite: SelectedSite = mock {
-            on { get() } doReturn SiteModel().apply { setIsPrivate(true) }
-        }
-
+        whenever(selectedSite.get()).thenReturn(SiteModel().apply { setIsPrivate(true) })
         savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
             .toSavedStateHandle()
-        viewModel = spy(
-            ProductDetailViewModel(
-                savedState = savedState,
-                dispatchers = coroutinesTestRule.testDispatchers,
-                parameterRepository = parameterRepository,
-                productRepository = productRepository,
-                networkStatus = networkStatus,
-                currencyFormatter = currencyFormatter,
-                resources = resources,
-                productCategoriesRepository = productCategoriesRepository,
-                productTagsRepository = productTagsRepository,
-                mediaFilesRepository = mediaFilesRepository,
-                variationRepository = variationRepository,
-                mediaFileUploadHandler = mediaFileUploadHandler,
-                appPrefsWrapper = prefsWrapper,
-                addonRepository = addonRepository,
-                generateVariationCandidates = generateVariationCandidates,
-                duplicateProduct = mock(),
-                tracker = tracker,
-                selectedSite = selectedSite,
-                getBundledProductsCount = mock(),
-                getComponentProducts = mock(),
-                productListRepository = mock(),
-                isBlazeEnabled = isBlazeEnabled,
-                isProductCurrentlyPromoted = mock(),
-                isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
-                determineProductPasswordApi = determineProductPasswordApi
-            )
-        )
+
+        setup()
         viewModel.start()
 
         // WHEN
