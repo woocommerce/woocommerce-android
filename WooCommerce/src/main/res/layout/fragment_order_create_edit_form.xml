@@ -96,6 +96,12 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/shipping" />
 
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/coupons_applied"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/coupons" />
+
             <include
                 android:id="@+id/additional_info_collection_section"
                 layout="@layout/order_creation_additional_info_collection_section" />

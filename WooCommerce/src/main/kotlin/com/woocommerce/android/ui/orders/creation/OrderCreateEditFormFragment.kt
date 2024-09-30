@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -414,6 +415,8 @@ class OrderCreateEditFormFragment :
 
         observeViewStateChanges(binding)
 
+        bindCouponSection(binding)
+
         viewModel.event.observe(viewLifecycleOwner) { handleViewModelEvents(it, binding) }
     }
     private fun bindShippingLinesSection(binding: FragmentOrderCreateEditFormBinding) {
@@ -449,6 +452,19 @@ class OrderCreateEditFormFragment :
                             onAction = { viewModel.onSendShippingFeedback() },
                             onClose = { viewModel.onCloseShippingFeedback() },
                         )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun bindCouponSection(binding: FragmentOrderCreateEditFormBinding) {
+        binding.couponsApplied.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                viewModel.orderDraft.observeAsState().value?.couponLines?.let { couponLines ->
+                    WooThemeWithBackground {
+                        Text(text = "Applied coupons:" + couponLines.toString())
                     }
                 }
             }
