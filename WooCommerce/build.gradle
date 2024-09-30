@@ -400,6 +400,7 @@ dependencies {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
     }
+    androidTestImplementation "org.apache.httpcomponents:httpclient-android:$httpClientAndroidVersion"
 
     implementation("com.zendesk:support:5.0.8") {
         exclude group: 'com.android.support', module: 'support-annotations'
