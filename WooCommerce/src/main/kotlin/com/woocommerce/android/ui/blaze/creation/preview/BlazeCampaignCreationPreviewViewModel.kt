@@ -264,7 +264,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         return CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_objective),
             displayValue = selectedObjectiveDisplayValue,
-            onItemSelected = {} // TODO Implement navigation to objective selection screen
+            onItemSelected = { triggerEvent(NavigateToObjectiveSelectionScreen) }
         )
     }
 
@@ -425,4 +425,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     data class NavigateToPaymentSummary(
         val campaignDetails: CampaignDetails
     ) : MultiLiveEvent.Event()
+
+    data object NavigateToObjectiveSelectionScreen : MultiLiveEvent.Event()
 }
