@@ -45,8 +45,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val blazeRepository: BlazeRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
     private val campaignDetails = savedStateHandle.getNullableStateFlow(
@@ -258,7 +257,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     private fun getSelectedObjective(objectives: List<Objective>): CampaignDetailItemUi {
         val selectedObjectiveDisplayValue = objectives
-            .find { it.id == appPrefsWrapper.blazeCampaignSelectedObjective }
+            .find { it.id == campaignDetails.value?.objectiveId }
             ?.title
             ?: resourceProvider.getString(R.string.blaze_campaign_preview_details_choose_objective)
         return CampaignDetailItemUi(
