@@ -6,6 +6,7 @@ import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage
+import com.woocommerce.android.ui.blaze.BlazeRepository.Objective
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.Device
 import com.woocommerce.android.ui.blaze.Interest
@@ -64,6 +65,7 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         private val languages = listOf(Language("en", "English"), Language("es", "Spanish"))
         private val interests = listOf(Interest("1", "Interest 1"), Interest("2", "Interest 2"))
         private val devices = listOf(Device("1", "Device 1"), Device("2", "Device 2"))
+        private val objectives = listOf(Objective("sales", "Sales", "Get more sales", ""))
     }
 
     private val currencyFormatter: CurrencyFormatter = mock {
@@ -78,6 +80,7 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         on { observeDevices() } doReturn flowOf(devices)
         on { observeInterests() } doReturn flowOf(interests)
         on { observeLanguages() } doReturn flowOf(languages)
+        on { observeObjectives() } doReturn flowOf(objectives)
     }
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private lateinit var viewModel: BlazeCampaignCreationPreviewViewModel
