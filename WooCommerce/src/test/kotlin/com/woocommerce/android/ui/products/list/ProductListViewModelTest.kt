@@ -13,7 +13,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
-import com.woocommerce.android.ui.products.ai.banner.AIProductBannerDialogShouldBeShown
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -48,7 +47,6 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
-    private val aiProductBannerDialogShouldBeShown: AIProductBannerDialogShouldBeShown = mock()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
@@ -70,7 +68,6 @@ class ProductListViewModelTest : BaseUnitTest() {
                 selectedSite,
                 wooCommerceStore,
                 isWindowClassLargeThanCompact,
-                aiProductBannerDialogShouldBeShown,
             )
         )
     }
@@ -699,22 +696,5 @@ class ProductListViewModelTest : BaseUnitTest() {
             AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
             mapOf("horizontal_size_class" to "compact")
         )
-    }
-
-    @Test
-    fun `given ai product banner should be shown, when vm init, then ShowAIProductBannerDialog event emitted`() = testBlocking {
-        // given
-        whenever(aiProductBannerDialogShouldBeShown()).thenReturn(true)
-
-        createViewModel()
-
-        val events = mutableListOf<MultiLiveEvent.Event>()
-        viewModel.event.observeForever {
-            events.add(it)
-        }
-        advanceUntilIdle()
-
-        // then
-        assertThat(events.count { it is ProductListEvent.ShowAIProductBannerDialog }).isEqualTo(1)
     }
 }

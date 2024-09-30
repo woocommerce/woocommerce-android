@@ -56,7 +56,6 @@ import com.woocommerce.android.ui.products.list.ProductListEvent.OpenEmptyProduc
 import com.woocommerce.android.ui.products.list.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.list.ProductListEvent.SelectProducts
-import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAIProductBannerDialog
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
 import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
@@ -401,12 +400,6 @@ class ProductListFragment :
                     showDiscardProductChangesConfirmationDialog(
                         event.productName,
                         event.productId
-                    )
-                }
-
-                is ShowAIProductBannerDialog -> {
-                    findNavController().navigateSafely(
-                        ProductListFragmentDirections.actionProductListFragmentToAIProductBannerDialogFragment()
                     )
                 }
 
