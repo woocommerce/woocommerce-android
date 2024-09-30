@@ -98,7 +98,7 @@ class CustomFieldsViewModel @Inject constructor(
         customFieldsWithChanges,
         overlayedFieldId
     ) { (customFields, _), fieldId ->
-        customFields.find { it.id == fieldId }
+        fieldId?.let { customFields.find { it.id == fieldId } }
     }.asLiveData()
 
     fun onBackClick() {
