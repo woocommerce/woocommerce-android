@@ -1,2 +1,0 @@
-20.5:
-Vi är glada att kunna ge dig en smidigare upplevelse med vår senaste uppdatering. Vi har åtgärdat ett problem som gjorde att det inte gick att byta namn på produktvariationsattribut och korrigerat en bugg relaterad till notisborttagning. Användare kan nu dessutom enkelt välja produktbilder när de skapar Blaze-annonser, och Blaze-funktionen är nu fullt aktiverad för webbplatser med ett aktivt Blaze för WooCommerce-tillägg. Njut av förbättringarna.

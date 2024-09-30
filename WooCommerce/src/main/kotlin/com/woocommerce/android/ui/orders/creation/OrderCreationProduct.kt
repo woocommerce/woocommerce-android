@@ -132,9 +132,14 @@ class OrderCreationProductMapper @Inject constructor(
                 (item.itemId in childrenMap.keys).not()
             }.map { item ->
                 val productInfo = getProductInformation(item, currencySymbol)
-                createOrderCreationProduct(item, productInfo, rulesMap[item.productId])
-            }
-                .toMutableList()
+                if (item.containsMetadata) {
+                    createOrderCreationProduct(item, productInfo, rulesMap[item.productId])
+                } else {
+                    // If the Line item contains no metadata, the children and parent data will never be available
+                    // We simply consider that the product is already loaded
+                    createOrderCreationProduct(item, productInfo, rulesMap[item.productId], emptyList())
+                }
+            }.toMutableList()
 
             for (parentId in childrenMap.keys) {
                 val parent = itemsMap[parentId] ?: continue

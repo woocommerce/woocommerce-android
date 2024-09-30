@@ -1,2 +1,0 @@
-20.5:
-Ficamos felizes em trazer uma experiência mais fluida nesta atualização! Corrigimos um problema que impedia de renomear os atributos de variação do produto, além de um bug que ocorria ao remover uma notificação. E mais, agora ficou mais fácil para os usuários selecionarem as imagens de produto ao criarem anúncios do Blaze. Além disso, as funcionalidades do Blaze estão totalmente disponíveis para sites com o plugin Blaze for WooCommerce ativo. Aproveite as melhorias!
