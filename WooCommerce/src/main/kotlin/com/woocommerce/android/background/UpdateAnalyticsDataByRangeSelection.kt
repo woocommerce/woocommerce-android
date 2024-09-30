@@ -28,7 +28,7 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
         return coroutineScope {
             val apiCalls = getAPICalls(visibleCards)
             val apiCallsResults = mutableMapOf<BackgroundAPICalls, Result<Any>>()
-            val asyncCalls = apiCalls.map { call ->
+            val asyncCalls = apiCalls.mapNotNull { call ->
                 when (call) {
                     BackgroundAPICalls.REVENUE_STATS -> {
                         async {
@@ -50,10 +50,7 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                                 backgroundUpdateAnalyticsRepository.fetchVisitorsStats(selectedRange)
                         }
                     }
-
-                    BackgroundAPICalls.GIFT_CARDS_STATS -> TODO()
-                    BackgroundAPICalls.PRODUCT_BUNDLES_STATS -> TODO()
-                    BackgroundAPICalls.GOOGLE_ADS_STATS -> TODO()
+                    else -> null
                 }
             }
 
@@ -131,17 +128,7 @@ class UpdateAnalyticsDataByRangeSelection @Inject constructor(
                     apiCalls.add(BackgroundAPICalls.VISITORS_STATS)
                 }
 
-                AnalyticsCards.Bundles -> {
-                    // apiCalls.add(BackgroundAPICalls.PRODUCT_BUNDLES_STATS)
-                }
-
-                AnalyticsCards.GiftCards -> {
-                    // apiCalls.add(BackgroundAPICalls.GIFT_CARDS_STATS)
-                }
-
-                AnalyticsCards.GoogleAds -> {
-                    // apiCalls.add(BackgroundAPICalls.GOOGLE_ADS_STATS)
-                }
+                else -> { }
             }
         }
         return apiCalls
