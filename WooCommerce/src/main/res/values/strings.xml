@@ -3761,7 +3761,7 @@
     <string name="more_menu_button_settings_description">Update your preferences</string>
 
     <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
-    <string name="more_menu_button_woo_pos_description">Use the app as a cash register</string>
+    <string name="more_menu_button_woo_pos_description">Accept payments at your physical store</string>
 
     <string name="more_menu_customers_title">Customers</string>
 

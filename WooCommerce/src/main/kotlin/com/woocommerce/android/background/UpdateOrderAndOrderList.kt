@@ -31,7 +31,7 @@ class UpdateOrderAndOrderList @Inject constructor(
                     MultipleErrorsException(
                         listOf(
                             Exception(
-                                "$classSimpleName ${orderFetchedSuccess.error.message}"
+                                "$classSimpleName ${orderFetchedSuccess.error?.message}"
                             ),
                             Exception(
                                 "$classSimpleName ${listFetchedSuccess.exceptionOrNull()?.message}"

@@ -838,9 +838,10 @@ class OrderCreateEditFormFragment :
                 Column {
                     state.value.forEach { item ->
                         var isExpanded by rememberSaveable { mutableStateOf(false) }
+                        val childrenConfigCount = item.getConfiguration()?.childrenConfiguration?.keys?.size ?: 0
                         when {
-                            item is OrderCreationProduct.ProductItemWithRules &&
-                                item.getConfiguration().childrenConfiguration?.keys?.size?.compareTo(0) == 1 -> {
+                            item is OrderCreationProduct.ProductItemWithRules && childrenConfigCount > 0
+                            -> {
                                 val modifier = if (isExpanded) {
                                     Modifier.border(
                                         1.dp,

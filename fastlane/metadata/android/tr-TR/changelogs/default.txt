@@ -1,2 +1,0 @@
-20.5:
-En son güncellememizle size daha sorunsuz bir deneyim getirmekten heyecan duyuyoruz! Ürün Varyasyon Nitelikleri'ni yeniden adlandırmayı önleyen bir sorunu çözdük ve bildirim kaldırmayla ilgili bir hatayı düzelttik. Ayrıca kullanıcılar Blaze reklamları oluştururken artık kolaylıkla ürün görselleri seçebilir ve Blaze özelliği artık Blaze for WooCommerce eklentisi etkin olan sitelerde tamamen etkinleştirildi. İyileştirmelerin keyfini çıkarın!
