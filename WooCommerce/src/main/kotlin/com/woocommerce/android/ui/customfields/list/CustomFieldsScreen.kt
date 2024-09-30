@@ -87,6 +87,7 @@ fun CustomFieldsScreen(
             onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
             onAddCustomFieldClicked = viewModel::onAddCustomFieldClicked,
+            onLearnMoreClicked = viewModel::onLearnMoreClicked,
             onBackClick = viewModel::onBackClick,
             snackbarHostState = snackbarHostState
         )
@@ -109,6 +110,7 @@ private fun CustomFieldsScreen(
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onAddCustomFieldClicked: () -> Unit,
+    onLearnMoreClicked: () -> Unit,
     onBackClick: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
@@ -173,7 +175,7 @@ private fun CustomFieldsScreen(
                     )
                 } else {
                     CustomFieldsEmptyView(
-                        onLearnMoreTapped = {},
+                        onLearnMoreClicked = onLearnMoreClicked,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -226,7 +228,7 @@ private fun CustomFieldsList(
 
 @Composable
 private fun CustomFieldsEmptyView(
-    onLearnMoreTapped: () -> Unit,
+    onLearnMoreClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -254,7 +256,7 @@ private fun CustomFieldsEmptyView(
             style = MaterialTheme.typography.body1
         )
 
-        WCColoredButton(onClick = onLearnMoreTapped) {
+        WCColoredButton(onClick = onLearnMoreClicked) {
             Text(text = stringResource(id = R.string.learn_more))
         }
 
@@ -416,6 +418,7 @@ private fun CustomFieldsScreenPreview() {
             onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
             onAddCustomFieldClicked = {},
+            onLearnMoreClicked = {},
             onBackClick = {}
         )
     }
@@ -452,6 +455,7 @@ private fun CustomFieldsEmptyViewPreview() {
             onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
             onAddCustomFieldClicked = {},
+            onLearnMoreClicked = {},
             onBackClick = {}
         )
     }

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.customfields.list
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
 import org.wordpress.android.fluxc.model.metadata.UpdateMetadataRequest
 import javax.inject.Inject
 
@@ -35,6 +37,15 @@ class CustomFieldsViewModel @Inject constructor(
     private val appPrefs: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        @VisibleForTesting
+        const val PRODUCTS_HELP_DOCUMENT = "https://woocommerce.com/document/custom-product-fields/"
+
+        @VisibleForTesting
+        const val ORDERS_HELP_DOCUMENT =
+            "https://woocommerce.com/document/managing-orders/view-edit-or-add-an-order/#custom-fields"
+    }
+
     private val args: CustomFieldsFragmentArgs by savedStateHandle.navArgs()
     val parentItemId: Long = args.parentItemId
 
@@ -181,6 +192,14 @@ class CustomFieldsViewModel @Inject constructor(
                 }
             )
         )
+    }
+
+    fun onLearnMoreClicked() {
+        val url = when (args.parentItemType) {
+            MetaDataParentItemType.PRODUCT -> PRODUCTS_HELP_DOCUMENT
+            MetaDataParentItemType.ORDER -> ORDERS_HELP_DOCUMENT
+        }
+        triggerEvent(MultiLiveEvent.Event.OpenUrl(url))
     }
 
     fun onSaveClicked() {
