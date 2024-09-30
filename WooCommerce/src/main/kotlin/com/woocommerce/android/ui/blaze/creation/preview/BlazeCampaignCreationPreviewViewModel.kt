@@ -56,6 +56,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         clazz = CampaignDetails::class.java
     )
     private var aiSuggestions: List<AiSuggestionForAd> = emptyList()
+    private var campaignObjectives: List<Objective> = emptyList()
 
     private val adDetailsState = savedStateHandle.getStateFlow(viewModelScope, AdDetailsUiState.LOADING)
     private val dialogState = MutableStateFlow<DialogState?>(null)
@@ -66,7 +67,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         dialogState,
         blazeRepository.observeObjectives()
     ) { campaignDetails, adDetailsState, dialogState, objectives ->
-        val selectedObjective = getSelectedObjective(objectives)
+        campaignObjectives = objectives
         CampaignPreviewUiState(
             adDetails = when (adDetailsState) {
                 AdDetailsUiState.LOADING -> AdDetailsUi.Loading
@@ -78,19 +79,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     isContentSuggestedByAi = isAdContentGeneratedByAi(campaignDetails)
                 )
             },
-            campaignDetails = campaignDetails.toCampaignDetailsUi(selectedObjective),
+            campaignDetails = campaignDetails.toCampaignDetailsUi(),
             dialogState = dialogState
         )
     }.asLiveData()
-
-    private fun getSelectedObjective(objectives: List<Objective>) =
-        if (objectives.isNotEmpty()
-            && appPrefsWrapper.blazeCampaignSelectedObjective.isNotEmpty()
-        ) {
-            objectives
-                .find { it.id == appPrefsWrapper.blazeCampaignSelectedObjective }
-                ?.toSelectedObjectiveUi()
-        } else null
 
     init {
         loadData()
@@ -252,7 +244,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
-    private fun CampaignDetails.toCampaignDetailsUi(selectedObjective: SelectedObjectiveUi?) = CampaignDetailsUi(
+    private fun CampaignDetails.toCampaignDetailsUi() = CampaignDetailsUi(
         budget = getBudgetDetails(),
         targetDetails = listOf(
             getTargetLanguagesDetails(),
@@ -261,13 +253,20 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             getTargetInterestsDetails(),
         ),
         destinationUrl = getTargetDestinationDetails(),
-        selectedObjective = selectedObjective
+        selectedObjective = getSelectedObjective(campaignObjectives)
     )
 
-    private fun Objective.toSelectedObjectiveUi() = SelectedObjectiveUi(
-        id = id,
-        displayTitle = title
-    )
+    private fun getSelectedObjective(objectives: List<Objective>): CampaignDetailItemUi {
+        val selectedObjectiveDisplayValue = objectives
+            .find { it.id == appPrefsWrapper.blazeCampaignSelectedObjective }
+            ?.title
+            ?: resourceProvider.getString(R.string.blaze_campaign_preview_details_choose_objective)
+        return CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_objective),
+            displayValue = selectedObjectiveDisplayValue,
+            onItemSelected = {} // TODO Implement navigation to objective selection screen
+        )
+    }
 
     private fun CampaignDetails.getBudgetDetails() =
         CampaignDetailItemUi(
@@ -386,7 +385,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val budget: CampaignDetailItemUi,
         val targetDetails: List<CampaignDetailItemUi>,
         val destinationUrl: CampaignDetailItemUi,
-        val selectedObjective: SelectedObjectiveUi?
+        val selectedObjective: CampaignDetailItemUi
     )
 
     data class CampaignDetailItemUi(
@@ -425,10 +424,5 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
 
     data class NavigateToPaymentSummary(
         val campaignDetails: CampaignDetails
-    ) : MultiLiveEvent.Event()
-
-    data class SelectedObjectiveUi(
-        val id: String,
-        val displayTitle: String
     ) : MultiLiveEvent.Event()
 }

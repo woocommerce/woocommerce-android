@@ -50,7 +50,6 @@ import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPr
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailItemUi
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignDetailsUi
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.CampaignPreviewUiState
-import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.SelectedObjectiveUi
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -320,7 +319,7 @@ fun CampaignDetails(
             style = MaterialTheme.typography.body2
         )
         // Budget
-        CampaignPropertyGroupItem(items = listOf(campaignDetails.budget))
+        CampaignPropertyGroupItem(items = listOf(campaignDetails.selectedObjective, campaignDetails.budget))
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience
@@ -451,9 +450,10 @@ fun CampaignScreenPreview() {
                     onItemSelected = {},
                     maxLinesValue = 1,
                 ),
-                selectedObjective = SelectedObjectiveUi(
-                    id = "sales",
-                    displayTitle = "Sales",
+                selectedObjective = CampaignDetailItemUi(
+                    displayTitle = stringResource(R.string.blaze_campaign_preview_details_objective),
+                    displayValue = "Sales",
+                    onItemSelected = {},
                 ),
             )
         ),
