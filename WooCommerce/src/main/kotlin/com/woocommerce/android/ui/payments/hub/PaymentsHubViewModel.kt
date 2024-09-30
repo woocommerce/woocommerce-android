@@ -386,7 +386,7 @@ class PaymentsHubViewModel @Inject constructor(
 
     private fun onTapToPayClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_TAPPED)
-        triggerEvent(PaymentsHubEvents.NavigateToTapTooPaySummaryScreen)
+        triggerEvent(PaymentsHubEvents.NavigateToTapToPaySummaryScreen)
     }
 
     private fun onTapToPayFeedbackClicked() {
@@ -395,7 +395,7 @@ class PaymentsHubViewModel @Inject constructor(
             FeatureFeedbackSettings.Feature.TAP_TO_PAY,
             FeatureFeedbackSettings.FeedbackState.GIVEN
         )
-        triggerEvent(PaymentsHubEvents.NavigateToTapTooPaySurveyScreen)
+        triggerEvent(PaymentsHubEvents.NavigateToTapToPaySurveyScreen)
     }
 
     private fun onAboutTTPClicked(countryConfig: CardReaderConfigForSupportedCountry) {
@@ -495,7 +495,7 @@ class PaymentsHubViewModel @Inject constructor(
                             }
                         } else {
                             triggerEvent(
-                                PaymentsHubEvents.NavigateToTapTooPaySummaryScreen
+                                PaymentsHubEvents.NavigateToTapToPaySummaryScreen
                             )
                         }
                     }
@@ -567,8 +567,8 @@ class PaymentsHubViewModel @Inject constructor(
         ) : PaymentsHubEvents()
 
         data object NavigateToOrderCreationScreen : PaymentsHubEvents()
-        data object NavigateToTapTooPaySummaryScreen : PaymentsHubEvents()
-        data object NavigateToTapTooPaySurveyScreen : PaymentsHubEvents()
+        data object NavigateToTapToPaySummaryScreen : PaymentsHubEvents()
+        data object NavigateToTapToPaySurveyScreen : PaymentsHubEvents()
         data class NavigateToCardReaderManualsScreen(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : PaymentsHubEvents()

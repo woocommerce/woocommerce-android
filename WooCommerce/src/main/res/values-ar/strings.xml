@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-19 12:54:04+0000
+Translation-Revision-Date: 2024-09-23 18:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">نسخ القيمة</string>
+    <string name="custom_fields_editor_copy_key">نسخ المفتاح</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">صورة المنتج</string>
+    <string name="blaze_campaign_product_photo_picker_empty">لم يتم العثور على الصور</string>
+    <string name="blaze_campaign_product_photo_picker_title">صور المنتج</string>
+    <string name="image_source_product_images">اختيار صورة منتج موجودة</string>
     <string name="custom_fields_editor_key_error_underscore">مفتاح غير صالح: يرجى إزالة رمز \"_\" من البداية.</string>
     <string name="custom_fields_editor_key_error_duplicate">هذا المفتاح مستخدم بالفعل لحقل مخصص آخر.\nلا يدعم التطبيق حاليًا إنشاء مفاتيح مكررة. يرجى استخدام مسؤول ووردبريس لتكرار مفتاح إذا لزم الأمر.</string>
     <string name="custom_fields_add_button">إضافة حقول مخصصة</string>

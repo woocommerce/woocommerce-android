@@ -427,7 +427,6 @@ class OrderCreateEditViewModel @Inject constructor(
                         ScanningSource.ORDER_LIST
                     )
                 }
-                handleCouponEditResult()
                 launch {
                     updateAutoTaxRateSettingState()
                     updateTaxRateSelectorButtonState()
@@ -457,7 +456,6 @@ class OrderCreateEditViewModel @Inject constructor(
                         updateCouponAndDiscountButtonsState(order)
                         updateAddShippingButtonVisibility(order)
                         updateAddGiftCardButtonVisibility(order)
-                        handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
                         _pendingSelectedItems.value = _orderDraft.value.selectedItems()
                     }
@@ -554,12 +552,6 @@ class OrderCreateEditViewModel @Inject constructor(
             BillingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_billing_address)
             ShippingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_shipping_address)
         }
-
-    private fun handleCouponEditResult() {
-        args.couponEditResult?.let {
-            handleCouponEditResult()
-        }
-    }
 
     private fun handleCouponEditResult(couponEditResult: OrderCreateCouponDetailsViewModel.CouponEditResult) {
         when (couponEditResult) {

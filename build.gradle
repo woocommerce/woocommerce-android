@@ -100,7 +100,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-9a51a9dfcfdb247e15dc14ad025ddee9e3285ff8'
+    fluxCVersion = '2.98.0'
     glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -143,7 +143,6 @@ ext {
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
     composeBOMVersion = "2024.04.00"
     composeCompilerVersion = "1.5.9"
-    composeAccompanistVersion = "0.32.0"
     wearComposeVersion = "1.3.1"
 
     // Testing

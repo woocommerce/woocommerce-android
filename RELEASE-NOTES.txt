@@ -3,8 +3,13 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 20.7
 -----
+
+
+20.7
+-----
 - [**] Improve barcode scanner reading accuracy [https://github.com/woocommerce/woocommerce-android/pull/12673]
 - [Internal] AI product creation banner is in products now [https://github.com/woocommerce/woocommerce-android/pull/12705]
+- [**] Fixed bug with coupons disappearing from the order creation screen unexpectedly [https://github.com/woocommerce/woocommerce-android/pull/12724]
 
 20.6
 -----

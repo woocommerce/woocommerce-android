@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-19 09:54:03+0000
+Translation-Revision-Date: 2024-09-24 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Copier la valeur</string>
+    <string name="custom_fields_editor_copy_key">Copier la clé</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Photo du produit</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Aucune photo trouvée</string>
+    <string name="blaze_campaign_product_photo_picker_title">Photos du produit</string>
+    <string name="image_source_product_images">Choisir une photo de produit existante</string>
     <string name="custom_fields_editor_key_error_underscore">Clé non valide : veuillez supprimer le caractère « _ » se trouvant au début.</string>
     <string name="custom_fields_editor_key_error_duplicate">Cette clé est déjà utilisée pour un autre champ personnalisé.\nL’application ne prend actuellement pas en charge la création de clés dupliquées. Veuillez utiliser WP Admin pour dupliquer une clé si nécessaire.</string>
     <string name="custom_fields_add_button">Ajouter des champs personnalisés</string>

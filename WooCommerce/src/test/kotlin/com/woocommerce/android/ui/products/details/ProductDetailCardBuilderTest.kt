@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.products.details
 
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -17,8 +19,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
@@ -28,12 +32,19 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     private val isBlazeEnabled: IsBlazeEnabled = mock {
         onBlocking { invoke() } doReturn false
     }
+    private val customFieldsRepository: CustomFieldsRepository = mock {
+        onBlocking { hasDisplayableCustomFields(any()) } doReturn false
+    }
 
     @Before
     fun setUp() {
+        val viewModel: ProductDetailViewModel = mock {
+            on { getShippingClassByRemoteShippingClassId(any()) } doReturn ""
+        }
+
         val resources: ResourceProvider = mock {
-            on { getString(any()) } doReturn ""
-            on { getString(any(), anyVararg()) } doReturn ""
+            on { getString(any()) } doAnswer { it.arguments[0].toString() }
+            on { getString(any(), anyVararg()) } doAnswer { it.arguments[0].toString() + it.arguments[1].toString() }
         }
 
         val addonRepo: AddonRepository = mock {
@@ -45,7 +56,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
         sut = ProductDetailCardBuilder(
-            viewModel = mock(),
+            viewModel = viewModel,
             selectedSite = selectedSite,
             resources = resources,
             currencyFormatter = mock(),
@@ -55,7 +66,8 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             appPrefsWrapper = mock(),
             isBlazeEnabled = isBlazeEnabled,
             isProductCurrentlyPromoted = mock(),
-            analyticsTrackerWrapper = mock()
+            analyticsTrackerWrapper = mock(),
+            customFieldsRepository = customFieldsRepository
         )
     }
 
@@ -137,5 +149,48 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             }
 
         Assert.assertTrue("Expected a Product card with Quantity Rules", foundQuantityRulesCard)
+    }
+
+    @Test
+    fun `given a product is saved on server, when a product has no displayable fields, then hide the custom fields card`() = testBlocking {
+        whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn false
+
+        productStub = ProductTestUtils.generateProduct(productId = 1L)
+        val cards = sut.buildPropertyCards(productStub, "")
+
+        val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
+        val customFieldsCard = properties.find {
+            it is ProductProperty.ComplexProperty &&
+                it.title == R.string.product_custom_fields
+        }
+        Assertions.assertThat(customFieldsCard).isNull()
+    }
+
+    @Test
+    fun `given a product is saved on server, when a product has displayable fields, then show the custom fields card`() = testBlocking {
+        whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn true
+
+        productStub = ProductTestUtils.generateProduct(productId = 1L)
+        val cards = sut.buildPropertyCards(productStub, "")
+
+        val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
+        val customFieldsCard = properties.find {
+            it is ProductProperty.ComplexProperty &&
+                it.title == R.string.product_custom_fields
+        }
+        Assertions.assertThat(customFieldsCard).isNotNull
+    }
+
+    @Test
+    fun `when a new is not saved on the server, then hide the custom fields card`() = testBlocking {
+        productStub = ProductTestUtils.generateProduct(productId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+        val cards = sut.buildPropertyCards(productStub, "")
+
+        val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
+        val customFieldsCard = properties.find {
+            it is ProductProperty.ComplexProperty &&
+                it.title == R.string.product_custom_fields
+        }
+        Assertions.assertThat(customFieldsCard).isNull()
     }
 }
