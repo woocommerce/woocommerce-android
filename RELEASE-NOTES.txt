@@ -8,6 +8,7 @@
 20.7
 -----
 - [**] Improve barcode scanner reading accuracy [https://github.com/woocommerce/woocommerce-android/pull/12673]
+- [**] Fixed bug with coupons disappearing from the order creation screen unexpectedly [https://github.com/woocommerce/woocommerce-android/pull/12724]
 
 20.6
 -----
