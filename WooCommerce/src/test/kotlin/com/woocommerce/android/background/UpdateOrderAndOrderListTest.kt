@@ -41,6 +41,7 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
 
         // Assertions
         Assert.assertFalse(result.isSuccess)
+        Assert.assertTrue(result.isFailure)
     }
 
     @Test
@@ -60,6 +61,7 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
 
         // Assertions
         Assert.assertFalse(result.isSuccess)
+        Assert.assertTrue(result.isFailure)
     }
 
     @Test
@@ -78,6 +80,7 @@ class UpdateOrderAndOrderListTest : BaseUnitTest() {
 
         // Assertions
         Assert.assertFalse(result.isSuccess)
+        Assert.assertTrue(result.isFailure)
     }
 
     @Test
