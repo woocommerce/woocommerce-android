@@ -65,10 +65,13 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
     }
     private lateinit var viewModel: CustomFieldsViewModel
 
-    suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+    suspend fun setup(
+        parentItemType: MetaDataParentItemType = PARENT_ITEM_TYPE,
+        prepareMocks: suspend () -> Unit = {}
+    ) {
         prepareMocks()
         viewModel = CustomFieldsViewModel(
-            savedStateHandle = CustomFieldsFragmentArgs(PARENT_ITEM_ID, PARENT_ITEM_TYPE).toSavedStateHandle(),
+            savedStateHandle = CustomFieldsFragmentArgs(PARENT_ITEM_ID, parentItemType).toSavedStateHandle(),
             repository = repository,
             appPrefs = appPrefs,
             resourceProvider = resourceProvider
@@ -468,5 +471,27 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(overlayedField).isNull()
+    }
+
+    @Test
+    fun `given product custom fields, when learn more button is tapped, then open correct URL`() = testBlocking {
+        setup(parentItemType = MetaDataParentItemType.PRODUCT)
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onLearnMoreClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.OpenUrl(CustomFieldsViewModel.PRODUCTS_HELP_DOCUMENT))
+    }
+
+    @Test
+    fun `given order custom fields, when learn more button is tapped, then open correct URL`() = testBlocking {
+        setup(parentItemType = MetaDataParentItemType.ORDER)
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onLearnMoreClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.OpenUrl(CustomFieldsViewModel.ORDERS_HELP_DOCUMENT))
     }
 }
