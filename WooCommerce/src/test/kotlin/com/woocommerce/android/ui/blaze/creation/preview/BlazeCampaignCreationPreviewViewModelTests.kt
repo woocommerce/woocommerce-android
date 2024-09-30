@@ -57,7 +57,8 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
                 targetUrl = "http://test_url",
                 parameters = emptyMap()
             ),
-            targetingParameters = BlazeRepository.TargetingParameters()
+            targetingParameters = BlazeRepository.TargetingParameters(),
+            objectiveId = "sales"
         )
         private val locations = listOf(Location(1, "Location 1"), Location(2, "Location 2"))
         private val languages = listOf(Language("en", "English"), Language("es", "Spanish"))
