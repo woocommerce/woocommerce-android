@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-19 16:54:03+0000
+Translation-Revision-Date: 2024-09-24 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Wert kopieren</string>
+    <string name="custom_fields_editor_copy_key">Schlüssel kopieren</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Produktfoto</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Keine Fotos gefunden</string>
+    <string name="blaze_campaign_product_photo_picker_title">Produktfotos</string>
+    <string name="image_source_product_images">Vorhandenes Produktfoto auswählen</string>
     <string name="custom_fields_editor_key_error_underscore">Ungültiger Schlüssel: Bitte entferne „_“ vom Anfang des Schlüssels.</string>
     <string name="custom_fields_editor_key_error_duplicate">Dieser Schlüssel wird bereits für ein anderes individuelles Feld verwendet.\nDie App unterstützt derzeit nicht das Erstellen von doppelten Schlüsseln. Bitte verwende wp-admin, um einen Schlüssel zu duplizieren, falls dies erforderlich ist.</string>
     <string name="custom_fields_add_button">Individuelle Felder hinzufügen</string>
