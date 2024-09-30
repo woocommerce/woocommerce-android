@@ -24,6 +24,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
 
+    var blazeFirstTimeWithoutCampaign by AppPrefs::blazeFirstTimeWithoutCampaign
+
+    var isBlazeNoCampaignReminderShown by AppPrefs::isBlazeNoCampaignReminderShown
+
+    var isBlazeAbandonedCampaignReminderShown by AppPrefs::isBlazeAbandonedCampaignReminderShown
+
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 
     var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
@@ -31,6 +37,8 @@ class AppPrefsWrapper @Inject constructor() {
     var timesAiProductCreationSurveyDisplayed by AppPrefs::timesAiProductCreationSurveyDisplayed
 
     var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
+
+    var isCustomFieldsTopBannerDismissed by AppPrefs::isCustomFieldsTopBannerDismissed
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
@@ -372,9 +380,15 @@ class AppPrefsWrapper @Inject constructor() {
     fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? =
         AppPrefs.getNotificationChannelTypeSuffix(channel)
 
-    fun setBlazeNoCampaignReminderShown(siteId: Long) {
-        AppPrefs.setBlazeNoCampaignReminderShown(siteId)
+    fun removeBlazeFirstTimeWithoutCampaign() {
+        AppPrefs.removeBlazeFirstTimeWithoutCampaign()
     }
 
-    fun getBlazeNoCampaignReminderShown(siteId: Long) = AppPrefs.getBlazeNoCampaignReminderShown(siteId)
+    fun existsBlazeFirstTimeWithoutCampaign() = AppPrefs.existsBlazeFirstTimeWithoutCampaign()
+
+    fun setBlazeCampaignCreated() {
+        AppPrefs.setBlazeCampaignCreated()
+    }
+
+    fun getBlazeCampaignCreated() = AppPrefs.getBlazeCampaignCreated()
 }

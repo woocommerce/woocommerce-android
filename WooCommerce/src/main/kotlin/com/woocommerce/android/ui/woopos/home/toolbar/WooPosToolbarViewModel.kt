@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnCar
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOutsideOfToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
+import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +27,7 @@ class WooPosToolbarViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val getSupportFacade: WooPosGetSupportFacade,
+    private val networkStatus: WooPosNetworkStatus,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosToolbarState(
@@ -92,7 +94,15 @@ class WooPosToolbarViewModel @Inject constructor(
                     cardReaderFacade.disconnectFromReader()
                 }
             }
-            WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> cardReaderFacade.connectToReader()
+            WooPosToolbarState.WooPosCardReaderStatus.NotConnected -> {
+                if (!networkStatus.isConnected()) {
+                    viewModelScope.launch {
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.NoInternet)
+                    }
+                } else {
+                    cardReaderFacade.connectToReader()
+                }
+            }
         }
     }
 

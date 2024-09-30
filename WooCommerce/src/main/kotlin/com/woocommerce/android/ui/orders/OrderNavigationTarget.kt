@@ -45,6 +45,7 @@ sealed class OrderNavigationTarget : Event() {
         val orderId: Long,
         val selectedProvider: String
     ) : OrderNavigationTarget()
+    object OpenTrackingBarcodeScanning : OrderNavigationTarget()
     data class PrintShippingLabel(val remoteOrderId: Long, val shippingLabelId: Long) : OrderNavigationTarget()
     data class ViewShippingLabelPaperSizes(val currentPaperSize: ShippingLabelPaperSize) : OrderNavigationTarget()
     object ViewCreateShippingLabelInfo : OrderNavigationTarget()

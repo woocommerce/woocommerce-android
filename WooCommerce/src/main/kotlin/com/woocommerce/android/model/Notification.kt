@@ -26,10 +26,13 @@ data class Notification(
     val data: String? = null
 ) : Parcelable {
     @IgnoredOnParcel
-    val isOrderNotification = noteType == WooNotificationType.NEW_ORDER
+    val isOrderNotification = noteType is WooNotificationType.NewOrder
 
     @IgnoredOnParcel
-    val isReviewNotification = noteType == WooNotificationType.PRODUCT_REVIEW
+    val isReviewNotification = noteType is WooNotificationType.ProductReview
+
+    @IgnoredOnParcel
+    val isBlazeNotification = noteType is WooNotificationType.BlazeStatusUpdate
 
     /**
      * Notifications are grouped based on the notification type and the store the notification belongs to.
@@ -74,6 +77,11 @@ fun NotificationModel.getUniqueId(): Long {
     return when (this.type) {
         NotificationModel.Kind.STORE_ORDER -> this.meta?.ids?.order ?: 0L
         NotificationModel.Kind.COMMENT -> this.meta?.ids?.comment ?: 0L
+        NotificationModel.Kind.BLAZE_APPROVED_NOTE,
+        NotificationModel.Kind.BLAZE_REJECTED_NOTE,
+        NotificationModel.Kind.BLAZE_CANCELLED_NOTE,
+        NotificationModel.Kind.BLAZE_PERFORMED_NOTE -> this.meta?.ids?.campaignId ?: 0L
+
         else -> 0L
     }
 }

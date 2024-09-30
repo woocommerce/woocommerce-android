@@ -17,13 +17,7 @@ data class WooPosHomeState(
         @Parcelize
         sealed class Cart : ScreenPositionState() {
             @Parcelize
-            sealed class Visible : Cart() {
-                @Parcelize
-                data object Empty : Cart()
-
-                @Parcelize
-                data object NotEmpty : Cart()
-            }
+            data object Visible : Cart()
 
             @Parcelize
             data object Hidden : Cart()
@@ -49,6 +43,9 @@ data class WooPosHomeState(
 
         @IgnoredOnParcel
         val secondaryMessage: Int = R.string.woopos_dialog_products_info_secondary_message
+
+        @IgnoredOnParcel
+        val tertiaryMessage: Int = R.string.woopos_dialog_products_info_tertiary_message
 
         @IgnoredOnParcel
         val primaryButton: PrimaryButton = PrimaryButton(

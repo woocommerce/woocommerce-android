@@ -78,7 +78,6 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import java.util.Date
 import java.util.function.Consumer
@@ -1291,9 +1290,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(productListRepository).searchProductList(
+            verify(fetchProductBySKU).invoke(
                 "123",
-                WCProductStore.SkuSearchOptions.ExactSearch
+                BarcodeFormat.FormatUPCA,
             )
         }
     }
@@ -1348,9 +1347,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(productListRepository, never()).searchProductList(
-                "123",
-                WCProductStore.SkuSearchOptions.ExactSearch
+            verify(fetchProductBySKU, never()).invoke(
+                eq("123"),
+                any()
             )
         }
     }
@@ -1374,12 +1373,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                productListRepository.searchProductList(
+                fetchProductBySKU.invoke(
                     "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
+                    BarcodeFormat.FormatUPCA,
                 )
             ).thenReturn(
-                listOf(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1419,11 +1418,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                productListRepository.searchProductList(
+                fetchProductBySKU.invoke(
                     "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
+                    BarcodeFormat.FormatUPCA,
                 )
-            ).thenReturn(null)
+            ).thenReturn(
+                Result.failure(Exception())
+            )
 
             createSut(navArgs)
 
@@ -1433,44 +1434,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
                     KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
                     KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `given scanning initiated from the order list screen, when product search via sku succeeds but contains no product, then track event with proper source`() {
-        testBlocking {
-            val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
-                "12345",
-                BarcodeFormat.FormatQRCode,
-            ).toSavedStateHandle()
-            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
-                SiteParameters(
-                    currencyCode = "",
-                    currencySymbol = null,
-                    currencyFormattingParameters = null,
-                    weightUnit = null,
-                    dimensionUnit = null,
-                    gmtOffset = 0F
-                )
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            createSut(navArgs)
-
-            verify(tracker).track(
-                AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
-                mapOf(
-                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
-                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
-                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
                 )
             )
         }
@@ -1495,12 +1458,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                productListRepository.searchProductList(
+                fetchProductBySKU.invoke(
                     "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
+                    BarcodeFormat.FormatUPCA,
                 )
             ).thenReturn(
-                listOf(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1543,13 +1506,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     gmtOffset = 0F
                 )
             )
+
             whenever(
-                productListRepository.searchProductList(
+                fetchProductBySKU.invoke(
                     "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
+                    BarcodeFormat.FormatUPCA,
                 )
             ).thenReturn(
-                listOf(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                     )

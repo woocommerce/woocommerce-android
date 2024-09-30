@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -21,12 +22,14 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesRepositor
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -44,6 +47,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -124,6 +128,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
     private val productCategories = ProductTestUtils.generateProductCategories()
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
+    private val determineProductPasswordApi: DetermineProductPasswordApi = mock()
 
     private lateinit var viewModel: ProductDetailViewModel
 
@@ -266,6 +271,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isBlazeEnabled = isBlazeEnabled,
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
+                determineProductPasswordApi = determineProductPasswordApi
             )
         )
 
@@ -302,7 +308,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays the product detail view correctly`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
 
         var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -314,12 +320,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given nothing returned from repo, when view model started, the error status emitted`() = testBlocking {
-        whenever(productRepository.fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)).thenReturn(null)
+        whenever(productRepository.fetchAndGetProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
         whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
 
         viewModel.start()
 
-        verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
+        verify(productRepository, times(1)).fetchAndGetProduct(PRODUCT_REMOTE_ID)
 
         Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
         Assertions.assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
@@ -332,7 +338,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given nothing returned from repo with INVALID_PRODUCT_ID error, when view model started, the error status emitted with invalid id text`() =
         testBlocking {
-            whenever(productRepository.fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)).thenReturn(null)
+            whenever(productRepository.fetchAndGetProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
             whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
             whenever(productRepository.lastFetchProductErrorType).thenReturn(
                 WCProductStore.ProductErrorType.INVALID_PRODUCT_ID
@@ -340,7 +346,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
+            verify(productRepository, times(1)).fetchAndGetProduct(PRODUCT_REMOTE_ID)
 
             Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
             Assertions.assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
@@ -363,7 +369,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         verify(productRepository, times(1)).getProductAsync(PRODUCT_REMOTE_ID)
-        verify(productRepository, times(0)).fetchProductOrLoadFromCache(any())
+        verify(productRepository, times(0)).fetchAndGetProduct(any())
 
         Assertions.assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
     }
@@ -371,7 +377,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product detail skeleton correctly`() = testBlocking {
         doReturn(null).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
 
         val auxiliaryStates = ArrayList<ProductDetailViewModel.ProductDetailViewState.AuxiliaryState>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
@@ -392,7 +398,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays the updated product detail view correctly`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
 
         var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -410,7 +416,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `When update product price is null, product detail view displayed correctly`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
 
         var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -433,7 +439,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `When update product price is zero, product detail view displayed correctly`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
 
         var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -742,10 +748,41 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         Assertions.assertThat(draftTerms[1]).isEqualTo(firstTerm)
     }
 
+    @Test
+    fun `Re-name attribute terms is saved correctly`() = testBlocking {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        val attributeName = "name"
+        val newName = attributeName.replaceFirstChar { it.uppercase() }
+
+        val attributes = ArrayList<ProductAttribute>()
+        attributes.add(
+            ProductAttribute(
+                id = 1,
+                name = attributeName,
+                isVariation = true,
+                isVisible = true,
+                terms = ArrayList<String>().also {
+                    it.add("one")
+                }
+            )
+        )
+
+        val storedProduct = product.copy(
+            attributes = attributes
+        )
+        doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
+
+        viewModel.start()
+        viewModel.renameAttributeInDraft(1, attributeName, newName)
+
+        val draftAttribute = viewModel.productDraftAttributes[0]
+        Assertions.assertThat(draftAttribute.name).isEqualTo(newName)
+    }
+
     /**
      * Protection for a race condition bug in Variations.
      *
-     * We're requiring [ProductDetailRepository.fetchProductOrLoadFromCache] to be called right after
+     * We're requiring [ProductDetailRepository.fetchAndGetProduct] to be called right after
      * [VariationRepository.createEmptyVariation] to fix a race condition problem in the Product Details page. The
      * bug can be reproduced inconsistently by following these steps:
      *
@@ -783,7 +820,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
             doReturn(product.copy(numVariations = 1_914)).whenever(productRepository)
-                .fetchProductOrLoadFromCache(eq(product.remoteId))
+                .fetchAndGetProduct(eq(product.remoteId))
 
             // When
             viewModel.onGenerateVariationClicked()
@@ -791,7 +828,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             // Then
             verify(variationRepository, times(1)).createEmptyVariation(eq(product))
             // Prove that we fetched from the API.
-            verify(productRepository, times(1)).fetchProductOrLoadFromCache(eq(product.remoteId))
+            verify(productRepository, times(1)).fetchAndGetProduct(eq(product.remoteId))
 
             // The VM state should have been updated with the _fetched_ product's numVariations
             Assertions.assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
@@ -801,7 +838,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `when there image upload errors, then show a snackbar`() = testBlocking {
         val errorEvents = MutableSharedFlow<List<MediaFileUploadHandler.ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
-        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
         doReturn(product).whenever(productRepository).getProductAsync(any())
         val errorMessage = "message"
         doReturn(errorMessage).whenever(resources).getString(any(), anyVararg())
@@ -829,7 +866,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `when image uploads gets cleared, then auto-dismiss the snackbar`() = testBlocking {
         val errorEvents = MutableSharedFlow<List<MediaFileUploadHandler.ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
-        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
+        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
         doReturn(product).whenever(productRepository).getProductAsync(any())
 
         viewModel.start()
@@ -1131,6 +1168,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isBlazeEnabled = isBlazeEnabled,
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
+                determineProductPasswordApi = determineProductPasswordApi
             )
         )
         viewModel.start()
@@ -1154,6 +1192,72 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         // THEN
         Assertions.assertThat(productData?.areImagesAvailable).isTrue()
+    }
+
+    @Test
+    fun `given product password API uses CORE, when product details are fetched, then use password from the model`() = testBlocking {
+        // GIVEN
+        val password = "password"
+        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.CORE)
+        whenever(productRepository.getProductAsync(any())).thenReturn(product.copy(password = password))
+
+        // WHEN
+        viewModel.start()
+        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+
+        // THEN
+        Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
+        verify(productRepository, never()).fetchProductPassword(any())
+    }
+
+    @Test
+    fun `given product password API uses WPCOM, when product details are fetched, then fetch password from the API`() = testBlocking {
+        // GIVEN
+        val password = "password"
+        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
+        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+        whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
+
+        // WHEN
+        viewModel.start()
+        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+
+        // THEN
+        Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
+        verify(productRepository).fetchProductPassword(any())
+    }
+
+    @Test
+    fun `given product password API uses WPCOM, when product is saved, then update password using WPCOM API`() = testBlocking {
+        // GIVEN
+        val password = "password"
+        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
+        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+        whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
+        whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
+
+        // WHEN
+        viewModel.start()
+        viewModel.updateProductVisibility(ProductVisibility.PASSWORD_PROTECTED, "newPassword")
+        viewModel.onSaveButtonClicked()
+
+        // THEN
+        verify(productRepository).updateProductPassword(eq(product.remoteId), eq("newPassword"))
+    }
+
+    @Test
+    fun `given product password API is not supported, when product details are fetched, then password is empty`() = testBlocking {
+        // GIVEN
+        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.UNSUPPORTED)
+        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+
+        // WHEN
+        viewModel.start()
+        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+
+        // THEN
+        Assertions.assertThat(viewState.draftPassword).isNull()
+        verify(productRepository, never()).fetchProductPassword(any())
     }
 
     private val productsDraft

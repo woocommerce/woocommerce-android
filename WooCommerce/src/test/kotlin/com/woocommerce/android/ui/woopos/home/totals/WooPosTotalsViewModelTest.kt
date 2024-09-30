@@ -4,23 +4,26 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -39,6 +42,10 @@ class WooPosTotalsViewModelTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
+    private val networkStatus: WooPosNetworkStatus = mock()
+
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+
     private fun createMockSavedStateHandle(): SavedStateHandle {
         return SavedStateHandle(
             mapOf(
@@ -48,7 +55,9 @@ class WooPosTotalsViewModelTest {
         )
     }
 
-    private val cardReaderFacade: WooPosCardReaderFacade = mock()
+    private val cardReaderFacade: WooPosCardReaderFacade = mock {
+        on { paymentStatus }.thenReturn(MutableStateFlow(WooPosCardReaderPaymentStatus.Unknown))
+    }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private companion object {
@@ -74,7 +83,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given checkoutstarted, when vm created, then order creation is started`() = runTest {
+    fun `given checkout started, when vm created, then order creation is started`() = runTest {
         // GIVEN
         val productIds = listOf(1L, 2L, 3L)
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
@@ -98,7 +107,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(
                     subtotal = BigDecimal("1.00"),
                 )
-            )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
@@ -131,7 +142,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given checkoutstarted and successfully created order, when vm created, then totals state correctly calculated`() =
+    fun `given checkout started and successfully created order, when vm created, then totals state correctly calculated`() =
         runTest {
             // GIVEN
             val productIds = listOf(1L, 2L, 3L)
@@ -154,7 +165,9 @@ class WooPosTotalsViewModelTest {
                     Order.Item.EMPTY.copy(
                         subtotal = BigDecimal("1.00"),
                     )
-                )
+                ),
+                total = BigDecimal("5.00"),
+                productsTotal = BigDecimal("3.00"),
             )
             val totalsRepository: WooPosTotalsRepository = mock {
                 onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
@@ -189,11 +202,9 @@ class WooPosTotalsViewModelTest {
                 on { events }.thenReturn(mock())
             }
             val savedState = createMockSavedStateHandle()
-            val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
             val viewModel = createViewModel(
                 savedState = savedState,
                 parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-                childrenToParentEventSender = childrenToParentEventSender,
             )
 
             // WHEN
@@ -291,7 +302,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
                 Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00"))
-            )
+            ),
+            total = BigDecimal("5.00"),
+            productsTotal = BigDecimal("3.00"),
         )
 
         whenever(totalsRepository.createOrderWithProducts(productIds)).thenReturn(
@@ -309,8 +322,9 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `when CollectPaymentClicked emillted, then should collect payment`() = runTest {
+    fun `when CollectPaymentClicked is emitted, then should collect payment`() = runTest {
         // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
         val productIds = listOf(1L, 2L, 3L)
         val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -331,7 +345,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(
                     subtotal = BigDecimal("1.00"),
                 )
-            )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
         )
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
@@ -343,9 +359,6 @@ class WooPosTotalsViewModelTest {
             onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
             onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
         }
-        whenever(cardReaderFacade.collectPayment(any())).thenReturn(
-            WooPosCardReaderPaymentResult.Success
-        )
 
         // WHEN
         val viewModel = createViewModel(
@@ -384,7 +397,9 @@ class WooPosTotalsViewModelTest {
                 Order.Item.EMPTY.copy(
                     subtotal = BigDecimal("1.00"),
                 )
-            )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
         )
 
         val totalsRepository: WooPosTotalsRepository = mock {
@@ -450,10 +465,168 @@ class WooPosTotalsViewModelTest {
         )
     }
 
+    @Test
+    fun `given payment status is success, when payment flow started, then OrderSuccessfullyPaid event and update state to PaymentSuccess`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            id = 123L,
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
+            ),
+            total = BigDecimal("3.00"),
+            productsTotal = BigDecimal("1.00"),
+        )
+
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(any()) }.thenReturn(Result.success(order))
+        }
+
+        val savedState = createMockSavedStateHandle()
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("1.00")) }.thenReturn("$1.00")
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("$2.00")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("$3.00")
+        }
+
+        val paymentStatusFlow = MutableStateFlow<WooPosCardReaderPaymentStatus>(WooPosCardReaderPaymentStatus.Unknown)
+        whenever(cardReaderFacade.paymentStatus).thenReturn(paymentStatusFlow)
+
+        val viewModel = createViewModel(
+            savedState = savedState,
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
+        paymentStatusFlow.value = WooPosCardReaderPaymentStatus.Success
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isEqualTo(
+            WooPosTotalsViewState.PaymentSuccess(orderTotalText = "$3.00")
+        )
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
+    }
+
+    @org.junit.Test
+    fun `given there is no internet, when trying to complete payment, then trigger proper event`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(false)
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
+        )
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
+                Result.success(order)
+            )
+        }
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+        viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.NoInternet)
+    }
+
+    @org.junit.Test
+    fun `given there is no internet, when trying to complete payment, then collect payment method is not called`() = runTest {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(false)
+        val productIds = listOf(1L, 2L, 3L)
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(productIds))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            totalTax = BigDecimal("2.00"),
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                ),
+                Order.Item.EMPTY.copy(
+                    subtotal = BigDecimal("1.00"),
+                )
+            ),
+            productsTotal = BigDecimal("3.00"),
+            total = BigDecimal("5.00"),
+        )
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderWithProducts(productIds = productIds) }.thenReturn(
+                Result.success(order)
+            )
+        }
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+            onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+            onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+        viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
+
+        // THEN
+        verify(cardReaderFacade, never()).collectPayment(any())
+    }
+
     private fun createViewModel(
         resourceProvider: ResourceProvider = mock(),
         parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock(),
-        childrenToParentEventSender: WooPosChildrenToParentEventSender = mock(),
         totalsRepository: WooPosTotalsRepository = mock(),
         priceFormat: WooPosFormatPrice = mock(),
         savedState: SavedStateHandle = SavedStateHandle(),
@@ -465,6 +638,7 @@ class WooPosTotalsViewModelTest {
         totalsRepository,
         priceFormat,
         analyticsTracker,
-        savedState,
+        networkStatus,
+        savedState
     )
 }

@@ -19,9 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -48,12 +48,15 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackgroundOverlay
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarState.WooPosCardReaderStatus
+
+private val TOOLBAR_ELEVATION = 6.dp
 
 @Composable
 fun WooPosFloatingToolbar(modifier: Modifier = Modifier) {
@@ -166,6 +169,7 @@ private fun Toolbar(
                     contentDescription = labels.cardReaderStatusContentDescription
                 },
             state = cardReaderStatus,
+            menuCardDisabled = menuCardDisabled,
         ) { onUIEvent(WooPosToolbarUIEvent.OnCardReaderStatusClicked) }
 
         MenuButtonWithPopUpMenu(
@@ -196,10 +200,10 @@ private fun MenuButtonWithPopUpMenu(
     onClick: () -> Unit
 ) {
     val menuContentDescription = stringResource(id = R.string.woopos_menu_toolbar_content_description)
-    Card(
+    WooPosCard(
         modifier = modifier,
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(8.dp),
     ) {
         TextButton(
@@ -237,9 +241,9 @@ private fun PopUpMenu(
     menuItems: List<Menu.MenuItem>,
     onClick: (Menu.MenuItem) -> Unit
 ) {
-    Card(
+    WooPosCard(
         modifier = modifier.width(214.dp),
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
     ) {
         Column {
             Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
@@ -285,6 +289,7 @@ private fun PopUpMenuItem(
 private fun CardReaderStatusButton(
     modifier: Modifier,
     state: WooPosCardReaderStatus,
+    menuCardDisabled: Boolean,
     onClick: () -> Unit
 ) {
     val transition = updateTransition(
@@ -330,33 +335,41 @@ private fun CardReaderStatusButton(
         }
     }
 
-    Card(
+    WooPosCard(
         modifier = modifier
             .height(56.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 8.dp,
+        elevation = TOOLBAR_ELEVATION,
         shape = RoundedCornerShape(8.dp),
     ) {
-        TextButton(
-            onClick = onClick,
-            modifier = Modifier
-                .padding(8.dp.toAdaptivePadding())
-                .border(
-                    width = 2.dp,
-                    color = borderColor,
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .height(40.dp),
+        Surface(
+            color = if (menuCardDisabled) {
+                MaterialTheme.colors.onSurface.copy(alpha = 0.2f)
+            } else {
+                Color.Transparent
+            },
         ) {
-            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
-            Circle(size = 12.dp, color = illustrationColor)
-            Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
-            ReaderStatusText(
-                modifier = Modifier.animateContentSize(),
-                title = title,
-                color = textColor,
-            )
-            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+            TextButton(
+                onClick = onClick,
+                modifier = Modifier
+                    .padding(8.dp.toAdaptivePadding())
+                    .border(
+                        width = 2.dp,
+                        color = borderColor,
+                        shape = RoundedCornerShape(4.dp)
+                    )
+                    .height(40.dp),
+            ) {
+                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+                Circle(size = 12.dp, color = illustrationColor)
+                Spacer(modifier = Modifier.width(4.dp.toAdaptivePadding()))
+                ReaderStatusText(
+                    modifier = Modifier.animateContentSize(),
+                    title = title,
+                    color = textColor,
+                )
+                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+            }
         }
     }
 }

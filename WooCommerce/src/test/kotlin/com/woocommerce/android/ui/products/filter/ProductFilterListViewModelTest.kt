@@ -186,32 +186,34 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given composite products is not installed  display explore option for composite product type`() = testBlocking {
-        whenever(pluginRepository.getPluginsInfo(any(), any())).thenReturn(
-            mapOf(
-                WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName to installedPlugin,
-                WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName to installedPlugin,
-                WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS.pluginName to notInstalledPlugin
+    fun `given composite products is not installed  display explore option for composite product type`() =
+        testBlocking {
+            whenever(pluginRepository.getPluginsInfo(any(), any())).thenReturn(
+                mapOf(
+                    WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName to installedPlugin,
+                    WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName to installedPlugin,
+                    WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS.pluginName to notInstalledPlugin
+                )
             )
-        )
-        var productFilters: List<ProductFilterListViewModel.FilterListItemUiModel> = emptyList()
-        productFilterListViewModel.filterListItems.observeForever {
-            productFilters = it
+            var productFilters: List<ProductFilterListViewModel.FilterListItemUiModel> = emptyList()
+            productFilterListViewModel.filterListItems.observeForever {
+                productFilters = it
+            }
+
+            productFilterListViewModel.loadFilters()
+
+            val productTypeFilter =
+                productFilters.find { it.filterItemKey == WCProductStore.ProductFilterOption.TYPE }!!
+
+            val exploreOptions = productTypeFilter.filterOptionListItems
+                .filterIsInstance<ProductFilterListViewModel.FilterListOptionItemUiModel.ExploreOptionItemUiModel>()
+
+            // Only one explore option for composite
+            Assertions.assertThat(exploreOptions.size).isEqualTo(1)
+            exploreOptions.forEach { option ->
+                Assertions.assertThat(option.url).isEqualTo(PluginUrls.COMPOSITE_URL)
+            }
         }
-
-        productFilterListViewModel.loadFilters()
-
-        val productTypeFilter = productFilters.find { it.filterItemKey == WCProductStore.ProductFilterOption.TYPE }!!
-
-        val exploreOptions = productTypeFilter.filterOptionListItems
-            .filterIsInstance<ProductFilterListViewModel.FilterListOptionItemUiModel.ExploreOptionItemUiModel>()
-
-        // Only one explore option for composite
-        Assertions.assertThat(exploreOptions.size).isEqualTo(1)
-        exploreOptions.forEach { option ->
-            Assertions.assertThat(option.url).isEqualTo(PluginUrls.COMPOSITE_URL)
-        }
-    }
 
     @Test
     fun `given all extensions installed then DON'T display explore options`() = testBlocking {
@@ -253,5 +255,28 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             AnalyticsEvent.PRODUCT_FILTER_LIST_EXPLORE_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_TYPE to exploreOption.filterOptionItemValue)
         )
+    }
+
+    @Test
+    fun `when product filter types are displayed, then DON'T include not filterable product types`() = testBlocking {
+        whenever(pluginRepository.getPluginsInfo(any(), any())).thenReturn(emptyMap())
+
+        var productFilters: List<ProductFilterListViewModel.FilterListItemUiModel> = emptyList()
+        productFilterListViewModel.filterListItems.observeForever {
+            productFilters = it
+        }
+
+        productFilterListViewModel.loadFilters()
+        val productTypeFilter = productFilters
+            .find { it.filterItemKey == WCProductStore.ProductFilterOption.TYPE }!!
+            .filterOptionListItems
+            .filterIsInstance<
+                ProductFilterListViewModel.FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel
+                >()
+
+        val hasNoFilterableProductTypeOptions = productTypeFilter.any {
+            it.filterOptionItemValue == ProductType.VARIATION.value
+        }
+        assertFalse(hasNoFilterableProductTypeOptions)
     }
 }

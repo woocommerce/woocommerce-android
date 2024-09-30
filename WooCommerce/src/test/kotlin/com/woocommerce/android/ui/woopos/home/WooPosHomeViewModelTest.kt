@@ -44,7 +44,7 @@ class WooPosHomeViewModelTest {
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
         }
 
     @Test
@@ -80,7 +80,7 @@ class WooPosHomeViewModelTest {
             // THEN
             verify(parentToChildrenEventSender).sendToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
             assertThat(viewModel.state.value.screenPositionState)
-                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible.NotEmpty)
+                .isEqualTo(WooPosHomeState.ScreenPositionState.Cart.Visible)
         }
 
     @Test
@@ -128,7 +128,6 @@ class WooPosHomeViewModelTest {
             val viewModel = createViewModel()
 
             // WHEN
-            eventsFlow.emit(ChildToParentEvent.CartStatusChanged.NotEmpty)
             eventsFlow.emit(ChildToParentEvent.ExitPosClicked)
 
             // THEN
@@ -207,6 +206,24 @@ class WooPosHomeViewModelTest {
             (viewModel.state.value.productsInfoDialog).secondaryMessage
         ).isEqualTo(
             R.string.woopos_dialog_products_info_secondary_message
+        )
+    }
+
+    @Test
+    fun `given info icon is clicked in products screen, when product info dialog is displayed, then ensure dialog tertiary message is correct`() {
+        // GIVEN
+        whenever(childrenToParentEventReceiver.events).thenReturn(
+            flowOf(ChildToParentEvent.ProductsDialogInfoIconClicked)
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(
+            (viewModel.state.value.productsInfoDialog).tertiaryMessage
+        ).isEqualTo(
+            R.string.woopos_dialog_products_info_tertiary_message
         )
     }
 

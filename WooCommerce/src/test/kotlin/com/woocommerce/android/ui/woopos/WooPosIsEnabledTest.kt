@@ -5,6 +5,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -30,7 +32,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     private val ippStore: WCInPersonPaymentsStore = mock()
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker = mock()
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
-    private val isFeatureFlagEnabled: WooPosIsFeatureFlagEnabled = mock()
+    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() }.thenReturn("6.6.0")
     }
@@ -45,14 +47,14 @@ class WooPosIsEnabledTest : BaseUnitTest() {
         whenever(cardReaderOnboardingChecker.getOnboardingState()).thenReturn(onboardingCompleted)
         whenever(isScreenSizeAllowed()).thenReturn(true)
         whenever(ippStore.loadAccount(any(), any())).thenReturn(buildPaymentAccountResult())
-        whenever(isFeatureFlagEnabled()).thenReturn(true)
+        whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(true)
 
         sut = WooPosIsEnabled(
             selectedSite = selectedSite,
             ippStore = ippStore,
             cardReaderOnboardingChecker = cardReaderOnboardingChecker,
             isScreenSizeAllowed = isScreenSizeAllowed,
-            isFeatureFlagEnabled = isFeatureFlagEnabled,
+            isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
             getWooCoreVersion = getWooCoreVersion,
         )
     }
@@ -67,7 +69,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
             whenever(onboardingCompleted.preferredPlugin).thenReturn(PluginType.WOOCOMMERCE_PAYMENTS)
             whenever(ippStore.loadAccount(any(), any()))
                 .thenReturn(buildPaymentAccountResult(countryCode = "US", defaultCurrency = "USD"))
-            whenever(isFeatureFlagEnabled()).thenReturn(true)
+            whenever(isRemoteFeatureFlagEnabled(WOO_POS)).thenReturn(true)
 
             assertTrue(sut())
         }
@@ -129,7 +131,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
 
     @Test
     fun `given feature flag disabled, then return false`() = testBlocking {
-        whenever(isFeatureFlagEnabled.invoke()).thenReturn(false)
+        whenever(isRemoteFeatureFlagEnabled.invoke(WOO_POS)).thenReturn(false)
         assertFalse(sut())
     }
 

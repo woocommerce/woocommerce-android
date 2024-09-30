@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -24,6 +25,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun WooPosExitConfirmationDialog(
@@ -35,10 +38,9 @@ fun WooPosExitConfirmationDialog(
     onDismissRequest: () -> Unit,
     onExit: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     WooPosDialogWrapper(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(148.dp.toAdaptivePadding()),
+        modifier = modifier,
         isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(
             id = R.string.woopos_dialog_exit_confirmation_background_content_description
@@ -70,7 +72,11 @@ fun WooPosExitConfirmationDialog(
                         .fillMaxWidth()
                         .testTag("woo_pos_exit_confirmation_dialog_exit"),
                     onClick = {
-                        onExit()
+                        scope.launch {
+                            onDismissRequest()
+                            delay(300)
+                            onExit()
+                        }
                     },
                     text = dismissButtonText
                 )

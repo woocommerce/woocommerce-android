@@ -6,7 +6,6 @@ import android.content.Context
  * "Feature flags" are used to hide in-progress features from release versions
  */
 enum class FeatureFlag {
-    WOO_POS,
     DB_DOWNGRADE,
     INBOX,
     WC_SHIPPING_BANNER,
@@ -14,7 +13,10 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     NEW_SHIPPING_SUPPORT,
     GOOGLE_ADS_M1,
-    SHOW_INBOX_CTA;
+    SHOW_INBOX_CTA,
+    ENDLESS_CAMPAIGNS_SUPPORT,
+    CUSTOM_FIELDS,
+    REVAMP_WOO_SHIPPING;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -22,15 +24,17 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE,
+            CUSTOM_FIELDS,
+            REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             INBOX,
             SHOW_INBOX_CTA,
-            GOOGLE_ADS_M1 -> true
+            GOOGLE_ADS_M1,
+            ENDLESS_CAMPAIGNS_SUPPORT -> true
         }
     }
 }

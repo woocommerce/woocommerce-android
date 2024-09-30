@@ -8,6 +8,7 @@
     <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_refunds" />
     <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_custom_fields" />
 
     <dialog
         android:id="@+id/itemSelectorDialog"
@@ -297,6 +298,17 @@
         <action
             android:id="@+id/action_orderDetailFragment_to_AIThankYouNoteBottomSheetFragment"
             app:destination="@id/AIThankYouNoteBottomSheetFragment" />
+        <action
+            android:id="@+id/action_orderDetailFragment_to_customFieldsFragment"
+            app:destination="@id/nav_graph_custom_fields" >
+            <argument
+                android:name="parentItemId"
+                app:argType="long" />
+            <argument
+                android:name="parentItemType"
+                app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType"
+                android:defaultValue="ORDER" />
+        </action>
     </fragment>
     <dialog
         android:id="@+id/orderStatusSelectorDialog"
@@ -394,6 +406,11 @@
             app:argType="com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelAddressValidator$AddressType" />
     </fragment>
     <fragment
+        android:id="@+id/barcodeScanningFragment"
+        android:name="com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment"
+        android:label="BarcodeScanningFragment"
+        tools:layout="@layout/fragment_barcode_scanning" />
+    <fragment
         android:id="@+id/addOrderShipmentTrackingFragment"
         android:name="com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingFragment"
         tools:layout="@layout/fragment_add_shipment_tracking">
@@ -412,6 +429,9 @@
         <action
             android:id="@+id/action_addOrderShipmentTrackingFragment_to_addOrderTrackingProviderListFragment"
             app:destination="@id/addOrderTrackingProviderListFragment" />
+        <action
+            android:id="@+id/action_addOrderShipmentTrackingFragment_to_barcodeScanningFragment"
+            app:destination="@id/barcodeScanningFragment" />
     </fragment>
     <fragment
         android:id="@+id/editShippingLabelPackagesFragment"

@@ -7,6 +7,7 @@ import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.extensions.sumByFloat
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.OptionalVariantAttribute
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.parcelize.Parcelize
@@ -147,7 +148,8 @@ class ProductConfiguration(
     val rules: ProductRules,
     val configurationType: ConfigurationType,
     val configuration: Map<String, String?>,
-    val childrenConfiguration: Map<Long, Map<String, String?>>? = null
+    val childrenConfiguration: Map<Long, Map<String, String?>>? = null,
+    val variationAttributesSelection: Map<Long, VariableProductSelection> = emptyMap()
 ) : Parcelable {
     companion object {
         const val PARENT_KEY = -1L
@@ -207,15 +209,15 @@ class ProductConfiguration(
             val isIncluded = isOptional && optionalValue || isOptional.not() && itemQuantity > 0f
 
             val isVariable = entry.value.containsKey(VariableProductRule.KEY)
-            val attributesAreNullOrEmpty = entry.value[VariableProductRule.KEY].isNullOrEmpty()
+            val attributesAreNull = entry.value[VariableProductRule.KEY] == null
 
-            if (isIncluded && isVariable && attributesAreNullOrEmpty) {
+            if (isIncluded && isVariable && attributesAreNull) {
                 issues[entry.key] = resourceProvider.getString(R.string.configuration_variable_selection)
             }
         }
     }
 
-    fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String): ProductConfiguration {
+    fun updateChildrenConfiguration(itemId: Long, ruleKey: String, value: String?): ProductConfiguration {
         val updatedChildConfiguration = childrenConfiguration?.get(itemId)?.let { childConfiguration ->
             val mutableConfiguration = childConfiguration.toMutableMap()
             mutableConfiguration[ruleKey] = value
@@ -231,10 +233,56 @@ class ProductConfiguration(
             rules,
             configurationType,
             configuration,
-            updatedChildrenConfiguration
+            updatedChildrenConfiguration,
+            variationAttributesSelection
         )
     }
+
+    fun updateVariationAttributesConfiguration(
+        itemId: Long,
+        variationId: Long,
+        attributes: List<OptionalVariantAttribute>
+    ): ProductConfiguration {
+        val variantAttributes = attributes.map {
+            VariantAttribute(
+                id = it.id,
+                name = it.name,
+                selectedOption = it.option,
+                selectableOptions = it.selectableOptions
+            )
+        }
+
+        val updatedVariableProductSelection = variationAttributesSelection[itemId]
+            ?.copy(variationId = variationId, attributes = variantAttributes)
+            ?: VariableProductSelection(variationId, variantAttributes)
+
+        return variationAttributesSelection.toMutableMap()
+            .apply { put(itemId, updatedVariableProductSelection) }
+            .let { updatedVariableProductSelectionMap ->
+                ProductConfiguration(
+                    rules,
+                    configurationType,
+                    configuration,
+                    childrenConfiguration,
+                    updatedVariableProductSelectionMap
+                )
+            }
+    }
 }
+
+@Parcelize
+data class VariableProductSelection(
+    val variationId: Long,
+    val attributes: List<VariantAttribute>
+) : Parcelable
+
+@Parcelize
+data class VariantAttribute(
+    val id: Long?,
+    val name: String?,
+    val selectedOption: String?,
+    val selectableOptions: List<String>
+) : Parcelable
 
 enum class ConfigurationType { BUNDLE, UNKNOWN }
 
