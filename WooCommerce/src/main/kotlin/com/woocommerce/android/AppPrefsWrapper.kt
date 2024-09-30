@@ -14,8 +14,6 @@ import javax.inject.Inject
 class AppPrefsWrapper @Inject constructor() {
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
-    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
-
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
 
     var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
