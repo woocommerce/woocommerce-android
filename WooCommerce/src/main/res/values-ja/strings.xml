@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-17 09:54:03+0000
+Translation-Revision-Date: 2024-09-24 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">値をコピー</string>
+    <string name="custom_fields_editor_copy_key">キーをコピー</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">商品写真</string>
+    <string name="blaze_campaign_product_photo_picker_empty">写真が見つかりませんでした</string>
+    <string name="blaze_campaign_product_photo_picker_title">商品写真</string>
+    <string name="image_source_product_images">既存の商品写真を選択</string>
     <string name="custom_fields_editor_key_error_underscore">間違ったキー: 先頭の「_」文字を削除してください。</string>
     <string name="custom_fields_editor_key_error_duplicate">このキーはすでに別のカスタムフィールドで使用されています。\n現在、アプリは複製キーの作成をサポートしていません。 必要に応じて、wp-admin を使用してキーを複製してください。</string>
     <string name="custom_fields_add_button">カスタムフィールドを追加</string>
@@ -948,8 +954,6 @@ Language: ja_JP
     <string name="error_troubleshooting">トラブルシューティング</string>
     <string name="orderlist_parsing_error_message">このエラーはプラグインとの競合に関連する可能性があります。 しばらくしてから再度お試しいただくか、サポートをご依頼ください。</string>
     <string name="orderlist_parsing_error_title">データを読み込めませんでした。</string>
-    <string name="ai_product_description_dialog_message">AI で簡単に説明を追加します。 今すぐこの機能をお試しください。</string>
-    <string name="ai_product_description_dialog_title">AI で商品説明を追加する</string>
     <string name="ai_product_description_note_dialog_confirmation">OK</string>
     <string name="ai_product_description_note_dialog_message">この商品説明は AI を活用したツールを使用して生成されています。 コンテンツを確認して編集し、ブランドやメッセージと合っていることを確認してください。</string>
     <string name="ai_product_description_note_dialog_heading">良い出だしです !</string>

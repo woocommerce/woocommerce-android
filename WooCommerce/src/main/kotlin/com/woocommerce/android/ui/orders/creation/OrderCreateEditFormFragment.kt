@@ -67,6 +67,8 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
+import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditFragment.Companion.KEY_COUPON_EDIT_RESULT
 import com.woocommerce.android.ui.orders.creation.customerlist.OrderCustomerListFragment
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardFragment.Companion.GIFT_CARD_RESULT
 import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftCardViewModel.GiftCardResult
@@ -199,7 +201,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun handleCouponEditResult() {
-        args.couponEditResult?.let {
+        handleResult<OrderCreateCouponDetailsViewModel.CouponEditResult>(KEY_COUPON_EDIT_RESULT) {
             viewModel.onCouponEditResult(it)
         }
     }
@@ -838,9 +840,10 @@ class OrderCreateEditFormFragment :
                 Column {
                     state.value.forEach { item ->
                         var isExpanded by rememberSaveable { mutableStateOf(false) }
+                        val childrenConfigCount = item.getConfiguration()?.childrenConfiguration?.keys?.size ?: 0
                         when {
-                            item is OrderCreationProduct.ProductItemWithRules &&
-                                item.getConfiguration().childrenConfiguration?.keys?.size?.compareTo(0) == 1 -> {
+                            item is OrderCreationProduct.ProductItemWithRules && childrenConfigCount > 0
+                            -> {
                                 val modifier = if (isExpanded) {
                                     Modifier.border(
                                         1.dp,

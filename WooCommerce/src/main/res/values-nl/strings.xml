@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-18 11:54:04+0000
+Translation-Revision-Date: 2024-09-25 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Waarde kopiëren</string>
+    <string name="custom_fields_editor_copy_key">Sleutel kopiëren</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Productafbeelding</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Geen foto\'s gevonden</string>
+    <string name="blaze_campaign_product_photo_picker_title">Productafbeeldingen</string>
+    <string name="image_source_product_images">Een bestaande productfoto kiezen</string>
     <string name="custom_fields_editor_key_error_underscore">Ongeldige sleutel: verwijder het teken \'_\' van het begin.</string>
     <string name="custom_fields_editor_key_error_duplicate">Deze sleutel wordt al gebruikt voor een ander aangepast veld.\nDe app ondersteunt momenteel niet het aanmaken van meerdere identieke sleutels. Gebruik wp-admin om een sleutel te kopiëren als dit nodig is.</string>
     <string name="custom_fields_add_button">Aangepaste velden toevoegen</string>
@@ -948,8 +954,6 @@ Language: nl
     <string name="error_troubleshooting">Probleemoplossing</string>
     <string name="orderlist_parsing_error_message">Dit kan liggen aan een conflict met een plugin. Probeer het later opnieuw of neem contact met ons op zodat wij je kunnen helpen.</string>
     <string name="orderlist_parsing_error_title">We konden je gegevens niet laden.</string>
-    <string name="ai_product_description_dialog_message">Voeg in mum van tijd beschrijvingen toe met behulp van AI. Bekijk deze functie vandaag nog!</string>
-    <string name="ai_product_description_dialog_title">AI-productbeschrijving toevoegen</string>
     <string name="ai_product_description_note_dialog_confirmation">Duidelijk</string>
     <string name="ai_product_description_note_dialog_message">Onthoud dat deze productbeschrijving is gegenereerd met ons AI-hulpmiddel. Bekijk en bewerk de content om er zeker van te zijn dat deze bij je merk en boodschap past.</string>
     <string name="ai_product_description_note_dialog_heading">Geweldige start!</string>

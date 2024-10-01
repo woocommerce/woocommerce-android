@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-19 12:54:03+0000
+Translation-Revision-Date: 2024-09-24 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Copiar valor</string>
+    <string name="custom_fields_editor_copy_key">Copiar chave</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Foto do produto</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Nenhuma foto encontrada</string>
+    <string name="blaze_campaign_product_photo_picker_title">Fotos do produto</string>
+    <string name="image_source_product_images">Escolher foto de um produto existente</string>
     <string name="custom_fields_editor_key_error_underscore">Chave inválida: remova o caractere \"_\" do início.</string>
     <string name="custom_fields_editor_key_error_duplicate">Esta chave já está sendo utilizada por outro campo personalizado.\nO aplicativo atual não aceita criação de chaves duplicadas. Se necessário, use o Painel WP Admin para duplicar uma chave.</string>
     <string name="custom_fields_add_button">Adicionar campos personalizados</string>
@@ -948,8 +954,6 @@ Language: pt_BR
     <string name="error_troubleshooting">Solução de problemas</string>
     <string name="orderlist_parsing_error_title">Não foi possível carregar seus dados.</string>
     <string name="orderlist_parsing_error_message">É possível que seja um conflito com o plugin. Tente novamente mais tarde ou fale a gente. Vamos ter prazer em ajudar você!</string>
-    <string name="ai_product_description_dialog_message">Adicione descrições em um piscar de olhos com IA. Experimente nossa funcionalidade hoje mesmo!</string>
-    <string name="ai_product_description_dialog_title">Adicionar descrição do produto com IA</string>
     <string name="ai_product_description_note_dialog_confirmation">Entendi</string>
     <string name="ai_product_description_note_dialog_message">Saiba que esta descrição do produto foi gerada usando nossa ferramenta com IA. Revise e edite o conteúdo para garantir que esteja alinhado com sua marca e mensagem.</string>
     <string name="ai_product_description_note_dialog_heading">Ótimo começo!</string>

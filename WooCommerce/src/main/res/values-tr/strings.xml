@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-20 09:54:06+0000
+Translation-Revision-Date: 2024-09-23 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Değeri Kopyala</string>
+    <string name="custom_fields_editor_copy_key">Anahtarı Kopyala</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Ürün fotoğrafı</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Fotoğraf bulunamadı</string>
+    <string name="blaze_campaign_product_photo_picker_title">Ürün Fotoğrafları</string>
+    <string name="image_source_product_images">Mevcut bir ürün fotoğrafı seç</string>
     <string name="custom_fields_editor_key_error_underscore">Geçersiz anahtar: Lütfen en baştaki \"_\" karakterini kaldırın.</string>
     <string name="custom_fields_editor_key_error_duplicate">Bu anahtar zaten başka bir özel alan için kullanılıyor.\nUygulama şu anda yinelenen anahtar oluşturmayı desteklemiyor. Lütfen gerekirse bir anahtarı yinelemek için wp yöneticisini kullanın.</string>
     <string name="custom_fields_add_button">Özel alanlar ekle</string>
@@ -948,8 +954,6 @@ Language: tr
     <string name="error_troubleshooting">Sorun giderme</string>
     <string name="orderlist_parsing_error_message">Bu, bir eklentiyle çakışmadan kaynaklanabilir. Lütfen daha sonra tekrar deneyin veya bize ulaşın, size yardımcı olmaktan memnuniyet duyarız.</string>
     <string name="orderlist_parsing_error_title">Verileriniz yüklenemedi.</string>
-    <string name="ai_product_description_dialog_message">Yapay zekayla açıklamaları anında ekleyin. Özelliğimizi bugün deneyin!</string>
-    <string name="ai_product_description_dialog_title">Yapay zekayla ürün açıklaması ekleyin</string>
     <string name="ai_product_description_note_dialog_confirmation">Anladım</string>
     <string name="ai_product_description_note_dialog_message">Bu ürün açıklamasının yapay zeka destekli aracımız kullanılarak oluşturulduğunu lütfen unutmayın. Lütfen markanız ve vermek istediğiniz mesajla uyumlu olduğundan emin olmak için bu açıklamayı inceleyip düzenleyin.</string>
     <string name="ai_product_description_note_dialog_heading">Mükemmel başlangıç!</string>
