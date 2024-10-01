@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.customfields.list
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +65,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -262,6 +267,15 @@ private fun JsonCustomFieldViewer(
     customField: CustomFieldUiModel,
     onDismiss: () -> Unit
 ) {
+    // We use this to disable focus on the text fields used to show the key and value as it's not needed for our case
+    val inactiveInteractionSource = remember {
+        object : MutableInteractionSource {
+            override val interactions: Flow<Interaction> = emptyFlow()
+            override suspend fun emit(interaction: Interaction) {}
+            override fun tryEmit(interaction: Interaction): Boolean = false
+        }
+    }
+
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = MaterialTheme.shapes.medium,
@@ -285,7 +299,8 @@ private fun JsonCustomFieldViewer(
                     onValueChange = {},
                     label = { Text(text = stringResource(id = R.string.custom_fields_editor_key_label)) },
                     readOnly = true,
-                    modifier = Modifier
+                    interactionSource = inactiveInteractionSource,
+                    modifier = Modifier.focusable(enabled = false)
                 )
 
                 OutlinedTextField(
@@ -293,6 +308,7 @@ private fun JsonCustomFieldViewer(
                     onValueChange = {},
                     label = { Text(text = stringResource(id = R.string.custom_fields_editor_value_label)) },
                     readOnly = true,
+                    interactionSource = inactiveInteractionSource,
                     modifier = Modifier.weight(1f, fill = false)
                 )
 
