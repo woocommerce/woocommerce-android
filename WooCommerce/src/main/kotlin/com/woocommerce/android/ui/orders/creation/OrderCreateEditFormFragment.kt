@@ -76,6 +76,7 @@ import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftC
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
+import com.woocommerce.android.ui.orders.creation.shipping.CouponFormSection
 import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingFragment.Companion.REMOVE_SHIPPING_RESULT
 import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingFragment.Companion.UPDATE_SHIPPING_RESULT
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineFormSection
@@ -464,8 +465,11 @@ class OrderCreateEditFormFragment :
             setContent {
                 viewModel.orderDraft.observeAsState().value?.couponLines?.let { couponLines ->
                     WooThemeWithBackground {
-                        Text(text = "Applied coupons:" + couponLines.toString())
-                    }
+                        CouponFormSection(
+                            couponDetails = couponLines,
+                            //formatCurrency = { amount -> currencyFormatter.formatCurrency(amount) },
+                            onRemoveCoupon = { couponCode -> viewModel.onCouponRemoved(couponCode) }
+                        )                    }
                 }
             }
         }
