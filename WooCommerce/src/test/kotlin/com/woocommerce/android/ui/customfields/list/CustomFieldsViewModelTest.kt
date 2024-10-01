@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.customfields.list
 
+import android.text.TextUtils
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
@@ -19,16 +22,23 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
+import org.mockito.MockedStatic
+import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
 import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
+import org.wordpress.android.util.HtmlUtils
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CustomFieldsViewModelTest : BaseUnitTest() {
@@ -63,7 +73,24 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.getArgument<Int>(0).toString() }
     }
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+
     private lateinit var viewModel: CustomFieldsViewModel
+
+    private lateinit var htmlUtilsStaticMock: MockedStatic<HtmlUtils>
+
+    @Before
+    fun prepare() {
+        /** [HtmlUtils.fastStripHtml] uses internally [TextUtils.isEmpty], so we need to mock it */
+        htmlUtilsStaticMock = mockStatic(HtmlUtils::class.java)
+        whenever(HtmlUtils.fastStripHtml(any())).thenAnswer { invocation -> invocation.arguments[0] }
+    }
+
+    @After
+    fun tearDown() {
+        htmlUtilsStaticMock.close()
+    }
+
 
     suspend fun setup(
         parentItemType: MetaDataParentItemType = PARENT_ITEM_TYPE,
@@ -74,7 +101,8 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
             savedStateHandle = CustomFieldsFragmentArgs(PARENT_ITEM_ID, parentItemType).toSavedStateHandle(),
             repository = repository,
             appPrefs = appPrefs,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            analyticsTracker = analyticsTracker
         )
     }
 
@@ -89,6 +117,10 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
             assertThat(state.customFields[index].key).isEqualTo(customField.key)
             assertThat(state.customFields[index].value).isEqualTo(customField.valueAsString)
         }
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELDS_LIST_LOADED),
+            properties = any()
+        )
     }
 
     @Test
@@ -215,6 +247,10 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(CustomFieldsViewModel.OpenCustomFieldEditor(uiModel))
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_TAPPED),
+            properties = any()
+        )
     }
 
     @Test
@@ -226,6 +262,10 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(CustomFieldsViewModel.OpenCustomFieldEditor(null))
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.ADD_CUSTOM_FIELD_TAPPED),
+            properties = any()
+        )
     }
 
     @Test
@@ -384,6 +424,12 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_failed))
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELDS_SAVING_FAILED),
+            errorContext = any(),
+            errorType = any(),
+            errorDescription = anyOrNull()
+        )
     }
 
     @Test
@@ -397,6 +443,10 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_succeeded))
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELDS_SAVED_SUCCESSFULLY),
+            properties = any()
+        )
     }
 
     @Test
@@ -454,6 +504,10 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(overlayedField).isEqualTo(uiModel)
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_TAPPED),
+            properties = any()
+        )
     }
 
     @Test

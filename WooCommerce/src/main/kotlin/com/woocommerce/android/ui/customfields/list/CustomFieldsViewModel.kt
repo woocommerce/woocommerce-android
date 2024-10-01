@@ -58,7 +58,7 @@ class CustomFieldsViewModel @Inject constructor(
     private val isRefreshing = MutableStateFlow(false)
     private val isSaving = MutableStateFlow(false)
     private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
-        .shareIn(viewModelScope, started = SharingStarted.Lazily)
+        .shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
 
     private val showDiscardChangesDialog = savedStateHandle.getStateFlow(
         scope = viewModelScope,

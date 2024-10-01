@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.customfields.editor
 
 import android.text.TextUtils
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
@@ -18,7 +20,9 @@ import org.junit.Test
 import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.util.HtmlUtils
 
@@ -31,21 +35,21 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
     }
 
     private val repository = mock<CustomFieldsRepository>()
+    private val analyticsTracker = mock<AnalyticsTrackerWrapper>()
     private lateinit var viewModel: CustomFieldsEditorViewModel
-    private lateinit var textUtilsStaticMock: MockedStatic<TextUtils>
+
+    private lateinit var htmlUtilsStaticMock: MockedStatic<HtmlUtils>
 
     @Before
     fun prepare() {
         /** [HtmlUtils.fastStripHtml] uses internally [TextUtils.isEmpty], so we need to mock it */
-        textUtilsStaticMock = mockStatic(TextUtils::class.java)
-        whenever(TextUtils.isEmpty(any())).thenAnswer { invocation ->
-            invocation.getArgument<String>(0).isEmpty()
-        }
+        htmlUtilsStaticMock = mockStatic(HtmlUtils::class.java)
+        whenever(HtmlUtils.fastStripHtml(any())).thenAnswer { invocation -> invocation.arguments[0] }
     }
 
     @After
     fun tearDown() {
-        textUtilsStaticMock.close()
+        htmlUtilsStaticMock.close()
     }
 
     suspend fun setup(editing: Boolean, prepareMocks: suspend () -> Unit = {}) {
@@ -55,7 +59,17 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
                 parentItemId = PARENT_ITEM_ID,
                 customField = if (editing) CustomFieldUiModel(CUSTOM_FIELD) else null
             ).toSavedStateHandle(),
-            repository = repository
+            repository = repository,
+            analyticsTracker = analyticsTracker
+        )
+    }
+
+    @Test
+    fun `when the screen is opened, then track loaded event`() = testBlocking {
+        setup(editing = true)
+
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_LOADED), properties = any()
         )
     }
 
@@ -189,6 +203,9 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
                 key = CustomFieldsEditorViewModel.CUSTOM_FIELD_UPDATED_RESULT_KEY
             )
         )
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED), properties = any()
+        )
     }
 
     @Test
@@ -208,6 +225,9 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
                 data = CustomFieldUiModel(key = "key", value = "value"),
                 key = CustomFieldsEditorViewModel.CUSTOM_FIELD_CREATED_RESULT_KEY
             )
+        )
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED), properties = any()
         )
     }
 
@@ -311,5 +331,8 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(state.useHtmlEditor).isTrue()
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_PICKER_TAPPED), properties = any()
+        )
     }
 }
