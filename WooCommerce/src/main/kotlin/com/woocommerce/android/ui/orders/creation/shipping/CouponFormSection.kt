@@ -32,8 +32,8 @@ fun CouponFormSection(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text(text = "Coupon: ${coupon.code}")
-                    Text(text = "Discount: ${coupon.discount}")
+                    Text(text = coupon.code)
+                    Text(text = "  ${coupon.discount}")
                 }
                 IconButton(onClick = { onRemoveCoupon(coupon.code) }) {
                     Icon(
