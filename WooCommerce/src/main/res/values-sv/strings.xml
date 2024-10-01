@@ -954,8 +954,6 @@ Language: sv_SE
     <string name="error_troubleshooting">Felsökning</string>
     <string name="orderlist_parsing_error_message">Detta kan bero på en tilläggskonflikt. Försök igen senare eller kontakta oss så hjälper vi dig gärna.</string>
     <string name="orderlist_parsing_error_title">Vi kunde inte ladda dina data.</string>
-    <string name="ai_product_description_dialog_message">Lägg till beskrivningar på nolltid med AI. Prova vår funktion idag.</string>
-    <string name="ai_product_description_dialog_title">Lägg till produktbeskrivning med AI</string>
     <string name="ai_product_description_note_dialog_confirmation">Jag förstår</string>
     <string name="ai_product_description_note_dialog_message">Tänk på att den här produktbeskrivningen har genererats med vårt AI-drivna verktyg. Granska och redigera innehållet för att säkerställa att det överensstämmer med ditt varumärke och ditt budskap.</string>
     <string name="ai_product_description_note_dialog_heading">Bra start!</string>
