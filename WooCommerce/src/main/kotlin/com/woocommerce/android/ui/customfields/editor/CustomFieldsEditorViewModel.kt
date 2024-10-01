@@ -127,6 +127,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     fun onDeleteClicked() {
+        analyticsTracker.track(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DELETE_TAPPED)
         triggerEvent(
             MultiLiveEvent.Event.ExitWithResult(data = navArgs.customField, key = CUSTOM_FIELD_DELETED_RESULT_KEY)
         )

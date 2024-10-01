@@ -275,6 +275,7 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
                 key = CustomFieldsEditorViewModel.CUSTOM_FIELD_DELETED_RESULT_KEY
             )
         )
+        verify(analyticsTracker).track(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DELETE_TAPPED)
     }
 
     @Test
