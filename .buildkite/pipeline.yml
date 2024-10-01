@@ -44,10 +44,7 @@ steps:
           - "**/build/reports/detekt/detekt.html"
 
       - label: "lint"
-        command: |
-          echo "--- 🧹 Linting"
-          cp gradle.properties-example gradle.properties
-          ./gradlew lintJalapenoDebug
+        command: .buildkite/commands/lint.sh
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/lint-results*.*"
@@ -55,9 +52,11 @@ steps:
       - label: "Dependency Tree Diff"
         command: |
           cp gradle.properties-example gradle.properties
-          .buildkite/commands/dependency-tree-diff.sh
+          comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "**/build/reports/diff/*"
 
   ########################################
   - group: "🛠 Prototype Builds"

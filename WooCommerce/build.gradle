@@ -1,13 +1,10 @@
 import io.sentry.android.gradle.extensions.InstrumentationFeature
-import se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask
-import se.bjurr.violations.lib.model.SEVERITY
 
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'com.google.dagger.hilt.android'
-    id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin'
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.gms.google-services'
@@ -213,6 +210,8 @@ android {
     }
 
     lintOptions {
+        sarifReport System.getenv('CI') ? true : false
+        checkDependencies true
         disable 'InvalidPackage'
     }
 
@@ -241,7 +240,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "com.google.android.material:material:$materialVersion"
-    implementation "androidx.transition:transition-ktx:$transitionVersion"
+    implementation "androidx.transition:transition:$transitionVersion"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation("androidx.browser:browser:1.5.0") {
         exclude group: 'com.google.guava', module: 'listenablefuture'
@@ -250,8 +249,10 @@ dependencies {
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation "androidx.datastore:datastore:1.0.0"
 
-    implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
+    implementation "androidx.navigation:navigation-common:$gradle.ext.navigationVersion"
+    implementation "androidx.navigation:navigation-fragment:$gradle.ext.navigationVersion"
+    implementation "androidx.navigation:navigation-runtime:$gradle.ext.navigationVersion"
+    implementation "androidx.navigation:navigation-ui:$gradle.ext.navigationVersion"
 
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
 
@@ -321,8 +322,8 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     ksp "com.github.bumptech.glide:compiler:$glideVersion"
     implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
-    implementation 'com.google.android.play:app-update-ktx:2.1.0'
-    implementation 'com.google.android.play:review-ktx:2.0.1'
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:review:2.0.1'
 
     implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'
 
@@ -409,7 +410,6 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:1.8.2"
     implementation "androidx.activity:activity-ktx:1.8.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
 
     // Coroutines
@@ -449,8 +449,6 @@ dependencies {
     implementation 'androidx.hilt:hilt-navigation-compose:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
-    implementation "com.google.accompanist:accompanist-swiperefresh:$composeAccompanistVersion"
-    implementation "com.google.accompanist:accompanist-systemuicontroller:$composeAccompanistVersion"
     implementation "io.coil-kt:coil-compose:$coilVersion"
     implementation "io.coil-kt:coil-svg:$coilVersion"
 
@@ -467,6 +465,8 @@ dependencies {
     implementation "com.google.guava:guava:$guavaVersion"
 
     implementation "com.google.protobuf:protobuf-javalite:$protobufVersion"
+
+    lintChecks "com.android.security.lint:lint:$securityLintVersion"
 }
 
 protobuf {
@@ -538,62 +538,6 @@ android.buildTypes.all { buildType ->
     if ((file("google-services.json").text) == (file("google-services.json-example").text)) {
         println("WARNING: You're using the example google-services.json file. Google login will fail.")
     }
-}
-
-tasks.register("violationCommentsToGitHub", ViolationCommentsToGitHubTask) {
-    repositoryOwner = "woocommerce"
-    repositoryName = "woocommerce-android"
-    pullRequestId = System.properties['GITHUB_PULLREQUESTID']
-    username = System.properties['GITHUB_USERNAME']
-    password = System.properties['GITHUB_PASSWORD']
-    oAuth2Token = System.properties['GITHUB_OAUTH2TOKEN']
-    gitHubUrl = "https://api.github.com/"
-    createCommentWithAllSingleFileComments = false
-    createSingleFileComments = true
-    commentOnlyChangedContent = true
-    minSeverity = SEVERITY.INFO //ERROR, INFO, WARN
-    commentTemplate = """
-**Reporter**: {{violation.reporter}}{{#violation.rule}}\n
-**Rule**: {{violation.rule}}{{/violation.rule}}
-**Severity**: {{violation.severity}}
-**File**: {{violation.file}}:{{violation.startLine}}{{#violation.source}}
-**Source**: {{violation.source}}{{/violation.source}}
-{{violation.message}}
-"""
-    violations = [
-            ["CHECKSTYLE", ".", ".*/build/.*/detekt/.*\\.xml\$", "Detekt"]
-    ]
-}
-
-tasks.register("dependencyTreeDiffCommentToGitHub", ViolationCommentsToGitHubTask) {
-    repositoryOwner = "woocommerce"
-    repositoryName = "woocommerce-android"
-    pullRequestId = System.properties['GITHUB_PULLREQUESTID']
-    oAuth2Token = System.properties['GITHUB_OAUTH2TOKEN']
-    gitHubUrl = "https://api.github.com/"
-    createCommentWithAllSingleFileComments = true
-    createSingleFileComments = false
-    commentOnlyChangedContent = true
-    commentOnlyChangedFiles = false
-    minSeverity = SEVERITY.INFO
-    commentTemplate = """
-### The PR caused the following dependency changes:
-
-<details><summary>expand</summary>
-<p>
-
-```diff
-{{{violation.message}}}
-```
-
-</p>
-</details>
-
-*Please review and act accordingly*
-"""
-    violations = [
-            ["GENERIC", ".", ".*/build/.*/diff/.*\\.txt\$", "DependenciesDiffChecker"],
-    ]
 }
 
 task printVersionName {

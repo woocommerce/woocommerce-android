@@ -61,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
@@ -137,7 +138,7 @@ private fun WooPosProductsScreen(
 
                 is WooPosProductsViewState.Content -> MaterialTheme.colors.onSurface
             }
-            ProductsToolbar(state.value, modifier, titleColor, onToolbarInfoIconClicked)
+            ProductsToolbar(state.value, titleColor, onToolbarInfoIconClicked)
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -175,13 +176,13 @@ private fun WooPosProductsScreen(
 @Composable
 private fun ProductsToolbar(
     productViewState: WooPosProductsViewState,
-    modifier: Modifier,
     titleColor: Color,
     onToolbarInfoIconClicked: () -> Unit,
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier.fillMaxWidth().height(40.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top,
     ) {
         Text(
             text = stringResource(id = R.string.woopos_products_screen_title),
@@ -299,6 +300,8 @@ private fun ProductLoadingItem() {
     WooPosCard(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
+        elevation = 6.dp,
+        shadowType = ShadowType.Soft,
     ) {
         Row(
             modifier = Modifier
@@ -351,6 +354,8 @@ private fun ProductItem(
             .semantics { contentDescription = itemContentDescription },
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
+        elevation = 6.dp,
+        shadowType = ShadowType.Soft,
     ) {
         Row(
             modifier = Modifier

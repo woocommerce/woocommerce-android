@@ -1,14 +1,15 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
@@ -129,7 +130,7 @@ private fun WooPosCartScreen(
             }
 
             is WooPosCartState.Body.WithItems -> {
-                val productsTopMargin = 20.dp.toAdaptivePadding()
+                val productsTopMargin = 24.dp.toAdaptivePadding()
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
@@ -140,6 +141,7 @@ private fun WooPosCartScreen(
                     },
                     items = state.body.itemsInCart,
                     areItemsRemovable = state.areItemsRemovable,
+                    isCheckoutButtonVisible = state.isCheckoutButtonVisible,
                     onUIEvent = onUIEvent
                 )
             }
@@ -147,8 +149,8 @@ private fun WooPosCartScreen(
 
         AnimatedVisibility(
             visible = state.isCheckoutButtonVisible,
-            enter = fadeIn(animationSpec = tween(1000)),
-            exit = fadeOut(animationSpec = tween(1000)),
+            enter = fadeIn(animationSpec = tween(300)),
+            exit = fadeOut(animationSpec = tween(300)),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp.toAdaptivePadding())
@@ -227,10 +229,16 @@ private fun CartBodyWithItems(
     modifier: Modifier = Modifier,
     items: List<WooPosCartState.Body.WithItems.Item>,
     areItemsRemovable: Boolean,
+    isCheckoutButtonVisible: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
     val listState = rememberLazyListState()
     ScrollToTopHandler(items, listState)
+
+    val spacerHeight by animateDpAsState(
+        targetValue = if (!isCheckoutButtonVisible) 182.dp else 0.dp,
+        label = "cart list height animation"
+    )
 
     WooPosLazyColumn(
         modifier = modifier
@@ -254,6 +262,9 @@ private fun CartBodyWithItems(
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
             )
+        }
+        item {
+            Spacer(modifier = Modifier.height(spacerHeight))
         }
     }
 }
@@ -298,8 +309,8 @@ private fun CartToolbar(
 
         AnimatedVisibility(
             visible = toolbar.backIconVisible,
-            enter = fadeIn(animationSpec = tween(1000)) + expandHorizontally(),
-            exit = fadeOut(animationSpec = tween(1000)) + shrinkHorizontally()
+            enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
+            exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
         ) {
             IconButton(
                 onClick = { onBackClicked() },
@@ -395,19 +406,11 @@ private fun ProductItem(
         hasAnimationStarted = true
     }
 
+    val cardElevation = 6.dp
     val elevation by animateDpAsState(
-        targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
-        animationSpec = tween(durationMillis = 250, delayMillis = 200),
+        targetValue = if (hasAnimationStarted) cardElevation else 0.dp,
+        animationSpec = tween(durationMillis = 150, delayMillis = 250),
         label = "elevation"
-    )
-
-    val alpha by animateFloatAsState(
-        targetValue = if (hasAnimationStarted) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 200,
-            easing = LinearEasing
-        ),
-        label = "alpha"
     )
 
     val itemContentDescription = stringResource(
@@ -416,79 +419,87 @@ private fun ProductItem(
         item.price
     )
 
-    LaunchedEffect(alpha) {
-        if (alpha == 1f) {
+    LaunchedEffect(elevation) {
+        if (elevation == cardElevation) {
             onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
         }
     }
 
-    WooPosCard(
-        modifier = modifier
-            .height(64.dp)
-            .semantics { contentDescription = itemContentDescription }
-            .graphicsLayer(alpha = alpha),
-        elevation = elevation,
-        shape = RoundedCornerShape(8.dp),
+    AnimatedVisibility(
+        visible = hasAnimationStarted,
+        enter = expandVertically(
+            animationSpec = tween(durationMillis = 200)
+        ),
+        exit = shrinkVertically()
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        WooPosCard(
+            modifier = modifier
+                .height(72.dp)
+                .semantics { contentDescription = itemContentDescription },
+            elevation = elevation,
+            shadowType = ShadowType.Soft,
+            shape = RoundedCornerShape(8.dp),
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(item.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(64.dp)
-            )
-
-            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
-
-            Column(
-                modifier = Modifier.weight(1f)
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = item.name,
-                    style = MaterialTheme.typography.body1,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.clearAndSetSemantics { }
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(item.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                    error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                    placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(72.dp)
                 )
-                Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                Text(
-                    text = item.price,
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.clearAndSetSemantics { }
-                )
-            }
 
-            if (canRemoveItems) {
-                Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
 
-                val removeButtonContentDescription = stringResource(
-                    id = R.string.woopos_remove_item_button_from_cart_content_description,
-                    item.name
-                )
-                IconButton(
-                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-                    modifier = Modifier
-                        .size(24.dp)
-                        .semantics { contentDescription = removeButtonContentDescription }
+                Column(
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                        tint = MaterialTheme.colors.onBackground,
-                        contentDescription = null,
+                    Text(
+                        text = item.name,
+                        style = MaterialTheme.typography.body1,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
+                    Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                    Text(
+                        text = item.price,
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.clearAndSetSemantics { }
                     )
                 }
+
+                if (canRemoveItems) {
+                    Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+
+                    val removeButtonContentDescription = stringResource(
+                        id = R.string.woopos_remove_item_button_from_cart_content_description,
+                        item.name
+                    )
+                    IconButton(
+                        onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .semantics { contentDescription = removeButtonContentDescription }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
+                            tint = MaterialTheme.colors.onBackground,
+                            contentDescription = null,
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
             }
-            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         }
     }
 }

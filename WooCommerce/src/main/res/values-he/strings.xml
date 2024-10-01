@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-10 15:54:04+0000
+Translation-Revision-Date: 2024-09-25 09:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">להעתיק את הערך</string>
+    <string name="custom_fields_editor_copy_key">להעתיק את המפתח</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">תמונת המוצר</string>
+    <string name="blaze_campaign_product_photo_picker_empty">לא נמצאו תמונות</string>
+    <string name="blaze_campaign_product_photo_picker_title">תמונות המוצר</string>
+    <string name="image_source_product_images">יש לבחור תמונה של מוצר קיים</string>
+    <string name="custom_fields_editor_key_error_underscore">מפתח לא תקין: יש להסיר את התו \"_\" מההתחלה.</string>
+    <string name="custom_fields_editor_key_error_duplicate">כבר השתמשת במפתח הזה בשדה מותאם אחר.\nהאפליקציה לא תומכת כרגע ביצירה של מפתחות כפולים. אם צריך, יש להשתמש ב\'ניהול WP\' כדי לשכפל מפתח.</string>
+    <string name="custom_fields_add_button">להוסיף שדה מותאם</string>
+    <string name="custom_fields_list_field_deleted">השדה המותאם נמחק</string>
+    <string name="custom_fields_list_saving_failed">שמירת השינויים נכשלה, יש לנסות שוב</string>
+    <string name="custom_fields_list_saving_succeeded">השינויים נשמרו</string>
+    <string name="custom_fields_list_progress_dialog_title">שומר שינויים</string>
+    <string name="woopos_no_internet_message">נראה שהחיבור לאינטרנט לא פעיל אצלך. יש לוודא שהחיבור ל-Wi-Fi הופעל. אם ברצונך להשתמש בנתונים הניידים, עליך לוודא שהאפשרות הופעלה בהגדרות המכשיר.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
     <string name="custom_fields_editor_value_label">ערך</string>
     <string name="custom_fields_editor_key_label">מפתח</string>
     <string name="woopos_dialog_products_info_secondary_message">סוגי מוצרים אחרים, כמו מוצרים עם סוגים או מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד.</string>

@@ -15,13 +15,7 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
-import com.woocommerce.android.notifications.WooNotificationType.BLAZE_APPROVED_NOTE
-import com.woocommerce.android.notifications.WooNotificationType.BLAZE_CANCELLED_NOTE
-import com.woocommerce.android.notifications.WooNotificationType.BLAZE_PERFORMED_NOTE
-import com.woocommerce.android.notifications.WooNotificationType.BLAZE_REJECTED_NOTE
-import com.woocommerce.android.notifications.WooNotificationType.LOCAL_REMINDER
-import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
-import com.woocommerce.android.notifications.WooNotificationType.PRODUCT_REVIEW
+import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER
 import com.woocommerce.android.notifications.local.LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER
@@ -196,7 +190,7 @@ class MainActivityViewModel @Inject constructor(
         notificationHandler.markNotificationTapped(notification.remoteNoteId)
         notificationHandler.removeNotificationByNotificationIdFromSystemsBar(localPushId)
         when (notification.noteType) {
-            NEW_ORDER -> {
+            is WooNotificationType.NewOrder -> {
                 when {
                     siteStore.getSiteBySiteId(notification.remoteSiteId) != null -> triggerEvent(
                         ViewOrderDetail(
@@ -209,22 +203,16 @@ class MainActivityViewModel @Inject constructor(
                 }
             }
 
-            PRODUCT_REVIEW -> {
+            is WooNotificationType.ProductReview -> {
                 analyticsTrackerWrapper.track(REVIEW_OPEN)
                 triggerEvent(ViewReviewDetail(notification.uniqueId))
             }
 
-            BLAZE_APPROVED_NOTE,
-            BLAZE_REJECTED_NOTE,
-            BLAZE_CANCELLED_NOTE,
-            BLAZE_PERFORMED_NOTE -> triggerEvent(
-                ViewBlazeCampaignDetail(
-                    campaignId = notification.uniqueId.toString(),
-                    isOpenedFromPush = true
-                )
+            is WooNotificationType.BlazeStatusUpdate -> triggerEvent(
+                ViewBlazeCampaignDetail(campaignId = notification.uniqueId.toString())
             )
 
-            LOCAL_REMINDER -> error("Local reminder notification should not be handled here")
+            is WooNotificationType.LocalReminder -> error("Local reminder notification should not be handled here")
         }
     }
 
@@ -362,7 +350,7 @@ class MainActivityViewModel @Inject constructor(
     data class ShowFeatureAnnouncement(val announcement: FeatureAnnouncement) : Event()
     data class ViewReviewDetail(val uniqueId: Long) : Event()
     data class ViewOrderDetail(val uniqueId: Long, val remoteNoteId: Long) : Event()
-    data class ViewBlazeCampaignDetail(val campaignId: String, val isOpenedFromPush: Boolean) : Event()
+    data class ViewBlazeCampaignDetail(val campaignId: String) : Event()
     object ViewBlazeCampaignList : Event()
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()

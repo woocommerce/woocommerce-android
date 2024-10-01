@@ -27,7 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
@@ -42,17 +45,19 @@ import com.woocommerce.android.wear.compose.component.ScrollingLazyColumnAdapter
 import com.woocommerce.android.wear.compose.theme.WooColors
 import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
+import com.woocommerce.android.wear.ui.NavRoutes.ORDER_DETAILS
 import com.woocommerce.android.wear.ui.orders.FormatOrderData.OrderItem
 
 @Composable
-fun OrdersListScreen(viewModel: OrdersListViewModel) {
+fun OrdersListScreen(navController: NavController) {
+    val viewModel = hiltViewModel<OrdersListViewModel>()
     LocalLifecycleOwner.current.lifecycle.addObserver(viewModel)
     val viewState by viewModel.viewState.observeAsState()
     OrdersListScreen(
         isLoading = viewState?.isLoading ?: false,
         isError = viewState?.isError ?: false,
         orders = viewState?.orders.orEmpty(),
-        onOrderClicked = viewModel::onOrderItemClick,
+        navController = navController,
         onRetryClicked = viewModel::reloadData
     )
 }
@@ -62,7 +67,7 @@ fun OrdersListScreen(
     isLoading: Boolean,
     isError: Boolean,
     orders: List<OrderItem>,
-    onOrderClicked: (orderId: Long) -> Unit,
+    navController: NavController,
     onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -84,7 +89,7 @@ fun OrdersListScreen(
                         onRetryClicked = onRetryClicked
                     )
 
-                    else -> OrdersLazyColumn(orders, onOrderClicked, modifier)
+                    else -> OrdersLazyColumn(orders, navController, modifier)
                 }
             }
         }
@@ -94,7 +99,7 @@ fun OrdersListScreen(
 @Composable
 private fun OrdersLazyColumn(
     orders: List<OrderItem>,
-    onOrderClicked: (orderId: Long) -> Unit,
+    navController: NavController,
     modifier: Modifier
 ) {
     val state = rememberScalingLazyListState(
@@ -129,7 +134,7 @@ private fun OrdersLazyColumn(
             items(orders) {
                 OrderListItem(
                     order = it,
-                    onOrderClicked = onOrderClicked,
+                    navController = navController,
                     modifier = modifier
                 )
             }
@@ -140,13 +145,13 @@ private fun OrdersLazyColumn(
 @Composable
 fun OrderListItem(
     order: OrderItem,
-    onOrderClicked: (orderId: Long) -> Unit,
+    navController: NavController,
     modifier: Modifier
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(15.dp))
-            .clickable { onOrderClicked(order.id) }
+            .clickable { navController.navigate(ORDER_DETAILS.withArgs(order.id)) }
             .background(Color.DarkGray)
             .padding(10.dp)
             .fillMaxWidth()
@@ -204,7 +209,7 @@ fun Preview() {
     OrdersListScreen(
         isLoading = false,
         isError = false,
-        onOrderClicked = {},
+        navController = rememberNavController(),
         onRetryClicked = {},
         orders = listOf(
             OrderItem(

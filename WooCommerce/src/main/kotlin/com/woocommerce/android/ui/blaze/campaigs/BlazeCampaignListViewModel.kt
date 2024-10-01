@@ -10,8 +10,11 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.ui.blaze.toUiState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -34,7 +37,6 @@ class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val selectedSite: SelectedSite,
-    private val blazeUrlsHelper: BlazeUrlsHelper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val currencyFormatter: CurrencyFormatter,
@@ -81,10 +83,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
         if (navArgs.campaignId != null) {
             triggerEvent(
-                ShowCampaignDetails(
-                    url = blazeUrlsHelper.buildCampaignDetailsUrl(navArgs.campaignId!!),
-                    urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
-                )
+                ShowCampaignDetails(campaignId = navArgs.campaignId!!)
             )
         }
         launch {
@@ -122,10 +121,7 @@ class BlazeCampaignListViewModel @Inject constructor(
             properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.CAMPAIGN_LIST.trackingName)
         )
         triggerEvent(
-            ShowCampaignDetails(
-                url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId),
-                urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
-            )
+            ShowCampaignDetails(campaignId)
         )
     }
 
@@ -137,6 +133,20 @@ class BlazeCampaignListViewModel @Inject constructor(
         if (!appPrefsWrapper.isBlazeCelebrationScreenShown) {
             isCampaignCelebrationShown.value = true
             appPrefsWrapper.isBlazeCelebrationScreenShown = true
+        }
+    }
+
+    fun onBlazeCampaignWebViewAction(action: BlazeCampaignDetailWebViewViewModel.BlazeAction) {
+        when (action) {
+            CampaignStopped -> launch { loadCampaigns(offset = 0) }
+            is PromoteProductAgain -> triggerEvent(
+                LaunchBlazeCampaignCreationForProduct(
+                    productId = action.productId,
+                    source = BlazeFlowSource.CAMPAIGN_LIST
+                )
+            )
+
+            None -> Unit // Do nothing
         }
     }
 
@@ -153,8 +163,10 @@ class BlazeCampaignListViewModel @Inject constructor(
     )
 
     data class LaunchBlazeCampaignCreation(val source: BlazeFlowSource) : Event()
-    data class ShowCampaignDetails(
-        val url: String,
-        val urlToTriggerExit: String
+    data class LaunchBlazeCampaignCreationForProduct(
+        val productId: Long?,
+        val source: BlazeFlowSource,
     ) : Event()
+
+    data class ShowCampaignDetails(val campaignId: String) : Event()
 }

@@ -188,7 +188,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 productListRepository = mock(),
                 isBlazeEnabled = isBlazeEnabled,
                 isProductCurrentlyPromoted = mock(),
-                isWindowClassLargeThanCompact = mock()
+                isWindowClassLargeThanCompact = mock(),
+                determineProductPasswordApi = mock(),
+                customFieldsRepository = mock(),
             )
         )
 

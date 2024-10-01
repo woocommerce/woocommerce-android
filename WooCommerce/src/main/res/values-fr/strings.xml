@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-11 09:54:04+0000
+Translation-Revision-Date: 2024-09-24 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Copier la valeur</string>
+    <string name="custom_fields_editor_copy_key">Copier la clé</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Photo du produit</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Aucune photo trouvée</string>
+    <string name="blaze_campaign_product_photo_picker_title">Photos du produit</string>
+    <string name="image_source_product_images">Choisir une photo de produit existante</string>
+    <string name="custom_fields_editor_key_error_underscore">Clé non valide : veuillez supprimer le caractère « _ » se trouvant au début.</string>
+    <string name="custom_fields_editor_key_error_duplicate">Cette clé est déjà utilisée pour un autre champ personnalisé.\nL’application ne prend actuellement pas en charge la création de clés dupliquées. Veuillez utiliser WP Admin pour dupliquer une clé si nécessaire.</string>
+    <string name="custom_fields_add_button">Ajouter des champs personnalisés</string>
+    <string name="custom_fields_list_field_deleted">Champ personnalisé supprimé</string>
+    <string name="custom_fields_list_saving_failed">Échec de l’enregistrement des modifications, veuillez réessayer</string>
+    <string name="custom_fields_list_saving_succeeded">Modifications enregistrées</string>
+    <string name="custom_fields_list_progress_dialog_title">Enregistrement des modifications</string>
+    <string name="woopos_no_internet_message">Il semblerait que vous ne soyez pas connecté(e) à Internet. Assurez-vous que votre Wi-Fi est activé. Si vous utilisez des données mobiles, assurez-vous qu’elles sont activées dans les réglages de votre appareil.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">Échec du scan. Veuillez réessayer plus tard</string>
     <string name="custom_fields_editor_value_label">Valeur</string>
     <string name="custom_fields_editor_key_label">Clé</string>
     <string name="woopos_dialog_products_info_secondary_message">D’autres types de produits, tels que les produits virtuels et variables, seront disponibles dans les prochaines mises à jour.</string>

@@ -128,6 +128,7 @@ object AppPrefs {
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
         AI_PRODUCT_CREATION_SURVEY_DISMISSED,
+        CUSTOM_FIELDS_TOP_BANNER_DISMISSED,
     }
 
     /**
@@ -268,6 +269,10 @@ object AppPrefs {
     var chaChingSoundIssueDialogDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
+
+    var isCustomFieldsTopBannerDismissed: Boolean
+        get() = getBoolean(DeletablePrefKey.CUSTOM_FIELDS_TOP_BANNER_DISMISSED, false)
+        set(value) = setBoolean(DeletablePrefKey.CUSTOM_FIELDS_TOP_BANNER_DISMISSED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

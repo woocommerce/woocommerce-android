@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-09 13:54:04+0000
+Translation-Revision-Date: 2024-09-24 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Copia valore</string>
+    <string name="custom_fields_editor_copy_key">Copia chiave</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Foto prodotto</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Nessuna foto trovata</string>
+    <string name="blaze_campaign_product_photo_picker_title">Foto prodotti</string>
+    <string name="image_source_product_images">Scegli la foto di un prodotto esistente</string>
+    <string name="custom_fields_editor_key_error_underscore">Chiave non valida: rimuovere il carattere \"_\" dall\'inizio.</string>
+    <string name="custom_fields_editor_key_error_duplicate">Questa chiave è già utilizzata in un altro campo personalizzato.\nAttualmente l\'applicazione non supporta la creazione di chiavi duplicate. Usare wp-admin per duplicare una chiave, se necessario.</string>
+    <string name="custom_fields_add_button">Aggiungi campi personalizzati</string>
+    <string name="custom_fields_list_field_deleted">Campo personalizzato eliminato</string>
+    <string name="custom_fields_list_saving_failed">Impossibile salvare le modifiche, riprovare</string>
+    <string name="custom_fields_list_saving_succeeded">Modifiche salvate</string>
+    <string name="custom_fields_list_progress_dialog_title">Salvataggio delle modifiche in corso</string>
+    <string name="woopos_no_internet_message">Sembra non ci sia connessione a Internet. Assicurati che il Wi-Fi sia acceso. Se stai utilizzando i dati mobili, accertati che siano abilitati nelle impostazioni del dispositivo.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">Scansione non riuscita. Riprova più tardi</string>
     <string name="custom_fields_editor_value_label">Valore</string>
     <string name="custom_fields_editor_key_label">Chiave</string>
     <string name="woopos_dialog_products_info_secondary_message">Altri tipi di prodotti, come quelli variabili e quelli virtuali, saranno disponibili in seguito a futuri aggiornamenti.</string>

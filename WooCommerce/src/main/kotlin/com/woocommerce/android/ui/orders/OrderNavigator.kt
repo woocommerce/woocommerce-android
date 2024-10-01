@@ -166,7 +166,7 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
                     CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, target.paymentTypeFlow)
                 )
-                fragment.findNavController().navigateSafely(directions = action, skipThrottling = true)
+                fragment.findNavController().navigateSafely(directions = action)
             }
             is ViewPrintingInstructions -> {
                 val action = OrderDetailFragmentDirections

@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.feedback
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.appbar.MaterialToolbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.SURVEY_SCREEN
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -16,13 +18,18 @@ import com.woocommerce.android.databinding.FragmentFeedbackCompletedBinding
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.help.HelpOrigin.FEEDBACK_SURVEY
+import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.feedback.SurveyType.MAIN
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.widgets.WooClickableSpan
 
-class FeedbackCompletedFragment : androidx.fragment.app.Fragment(R.layout.fragment_feedback_completed) {
+class FeedbackCompletedFragment : BaseFragment(R.layout.fragment_feedback_completed) {
     companion object {
         const val TAG = "survey_completed"
     }
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     private val feedbackContext by lazy {
         (navArgs<FeedbackCompletedFragmentArgs>().value).let {
@@ -43,20 +50,23 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment(R.layout.fragme
             clickAction = WooClickableSpan { activity?.startHelpActivity(FEEDBACK_SURVEY) }
         )
         binding.btnBackToStore.setOnClickListener { activity?.onBackPressedDispatcher?.onBackPressed() }
+        setupToolbar(binding.toolbar)
+    }
+
+    private fun setupToolbar(toolbar: MaterialToolbar) {
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = getString(R.string.feedback_completed_title)
+        toolbar.setNavigationIcon(R.drawable.ic_gridicons_cross_24dp)
+        toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+        activity?.invalidateOptionsMenu()
     }
 
     override fun onResume() {
         super.onResume()
 
         trackSurveyCompletedScreenAnalytics()
-
-        activity?.let {
-            it.invalidateOptionsMenu()
-            it.title = getString(R.string.feedback_completed_title)
-            (it as? AppCompatActivity)
-                ?.supportActionBar
-                ?.setHomeAsUpIndicator(R.drawable.ic_gridicons_cross_24dp)
-        }
     }
 
     override fun onStop() {

@@ -8,10 +8,12 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStatus
@@ -21,12 +23,14 @@ import com.woocommerce.android.ui.products.categories.ProductCategoriesRepositor
 import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.ui.products.settings.ProductVisibility
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -44,6 +48,7 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -124,6 +129,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
     private val productCategories = ProductTestUtils.generateProductCategories()
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
+    private val determineProductPasswordApi: DetermineProductPasswordApi = mock()
+    private val customFieldsRepository: CustomFieldsRepository = mock {
+        onBlocking { hasDisplayableCustomFields(any()) } doReturn false
+    }
 
     private lateinit var viewModel: ProductDetailViewModel
 
@@ -266,6 +275,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isBlazeEnabled = isBlazeEnabled,
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
+                determineProductPasswordApi = determineProductPasswordApi,
+                customFieldsRepository = customFieldsRepository
             )
         )
 
@@ -742,6 +753,37 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         Assertions.assertThat(draftTerms[1]).isEqualTo(firstTerm)
     }
 
+    @Test
+    fun `Re-name attribute terms is saved correctly`() = testBlocking {
+        viewModel.productDetailViewStateData.observeForever { _, _ -> }
+        val attributeName = "name"
+        val newName = attributeName.replaceFirstChar { it.uppercase() }
+
+        val attributes = ArrayList<ProductAttribute>()
+        attributes.add(
+            ProductAttribute(
+                id = 1,
+                name = attributeName,
+                isVariation = true,
+                isVisible = true,
+                terms = ArrayList<String>().also {
+                    it.add("one")
+                }
+            )
+        )
+
+        val storedProduct = product.copy(
+            attributes = attributes
+        )
+        doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
+
+        viewModel.start()
+        viewModel.renameAttributeInDraft(1, attributeName, newName)
+
+        val draftAttribute = viewModel.productDraftAttributes[0]
+        Assertions.assertThat(draftAttribute.name).isEqualTo(newName)
+    }
+
     /**
      * Protection for a race condition bug in Variations.
      *
@@ -1099,40 +1141,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given selected site is private, when product detail is opened, then images are not available`() = testBlocking {
         // GIVEN
-        val selectedSite: SelectedSite = mock {
-            on { get() } doReturn SiteModel().apply { setIsPrivate(true) }
-        }
-
+        whenever(selectedSite.get()).thenReturn(SiteModel().apply { setIsPrivate(true) })
         savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
             .toSavedStateHandle()
-        viewModel = spy(
-            ProductDetailViewModel(
-                savedState = savedState,
-                dispatchers = coroutinesTestRule.testDispatchers,
-                parameterRepository = parameterRepository,
-                productRepository = productRepository,
-                networkStatus = networkStatus,
-                currencyFormatter = currencyFormatter,
-                resources = resources,
-                productCategoriesRepository = productCategoriesRepository,
-                productTagsRepository = productTagsRepository,
-                mediaFilesRepository = mediaFilesRepository,
-                variationRepository = variationRepository,
-                mediaFileUploadHandler = mediaFileUploadHandler,
-                appPrefsWrapper = prefsWrapper,
-                addonRepository = addonRepository,
-                generateVariationCandidates = generateVariationCandidates,
-                duplicateProduct = mock(),
-                tracker = tracker,
-                selectedSite = selectedSite,
-                getBundledProductsCount = mock(),
-                getComponentProducts = mock(),
-                productListRepository = mock(),
-                isBlazeEnabled = isBlazeEnabled,
-                isProductCurrentlyPromoted = mock(),
-                isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
-            )
-        )
+
+        setup()
         viewModel.start()
 
         // WHEN
@@ -1154,6 +1167,72 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         // THEN
         Assertions.assertThat(productData?.areImagesAvailable).isTrue()
+    }
+
+    @Test
+    fun `given product password API uses CORE, when product details are fetched, then use password from the model`() = testBlocking {
+        // GIVEN
+        val password = "password"
+        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.CORE)
+        whenever(productRepository.getProductAsync(any())).thenReturn(product.copy(password = password))
+
+        // WHEN
+        viewModel.start()
+        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+
+        // THEN
+        Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
+        verify(productRepository, never()).fetchProductPassword(any())
+    }
+
+    @Test
+    fun `given product password API uses WPCOM, when product details are fetched, then fetch password from the API`() = testBlocking {
+        // GIVEN
+        val password = "password"
+        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
+        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+        whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
+
+        // WHEN
+        viewModel.start()
+        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+
+        // THEN
+        Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
+        verify(productRepository).fetchProductPassword(any())
+    }
+
+    @Test
+    fun `given product password API uses WPCOM, when product is saved, then update password using WPCOM API`() = testBlocking {
+        // GIVEN
+        val password = "password"
+        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
+        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+        whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
+        whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
+
+        // WHEN
+        viewModel.start()
+        viewModel.updateProductVisibility(ProductVisibility.PASSWORD_PROTECTED, "newPassword")
+        viewModel.onSaveButtonClicked()
+
+        // THEN
+        verify(productRepository).updateProductPassword(eq(product.remoteId), eq("newPassword"))
+    }
+
+    @Test
+    fun `given product password API is not supported, when product details are fetched, then password is empty`() = testBlocking {
+        // GIVEN
+        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.UNSUPPORTED)
+        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+
+        // WHEN
+        viewModel.start()
+        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+
+        // THEN
+        Assertions.assertThat(viewState.draftPassword).isNull()
+        verify(productRepository, never()).fetchProductPassword(any())
     }
 
     private val productsDraft

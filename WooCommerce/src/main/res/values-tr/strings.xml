@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-10 13:54:03+0000
+Translation-Revision-Date: 2024-09-23 14:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Değeri Kopyala</string>
+    <string name="custom_fields_editor_copy_key">Anahtarı Kopyala</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Ürün fotoğrafı</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Fotoğraf bulunamadı</string>
+    <string name="blaze_campaign_product_photo_picker_title">Ürün Fotoğrafları</string>
+    <string name="image_source_product_images">Mevcut bir ürün fotoğrafı seç</string>
+    <string name="custom_fields_editor_key_error_underscore">Geçersiz anahtar: Lütfen en baştaki \"_\" karakterini kaldırın.</string>
+    <string name="custom_fields_editor_key_error_duplicate">Bu anahtar zaten başka bir özel alan için kullanılıyor.\nUygulama şu anda yinelenen anahtar oluşturmayı desteklemiyor. Lütfen gerekirse bir anahtarı yinelemek için wp yöneticisini kullanın.</string>
+    <string name="custom_fields_add_button">Özel alanlar ekle</string>
+    <string name="custom_fields_list_field_deleted">Özel Alan silindi</string>
+    <string name="custom_fields_list_saving_failed">Değişiklikler kaydedilemedi, lütfen yeniden deneyin</string>
+    <string name="custom_fields_list_saving_succeeded">Değişiklikler kaydedildi</string>
+    <string name="custom_fields_list_progress_dialog_title">Değişiklikler kaydediliyor</string>
+    <string name="woopos_no_internet_message">Görünüşe göre internete bağlı değilsiniz. Wi-Fi ağınızın açık olduğundan emin olun. Mobil veri kullanıyorsanız cihazınızın ayarlarında etkinleştirildiğinden emin olun.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">Tarama başarısız. Lütfen daha sonra tekrar deneyin</string>
     <string name="custom_fields_editor_value_label">Değer</string>
     <string name="custom_fields_editor_key_label">Anahtar</string>
     <string name="woopos_dialog_products_info_secondary_message">Değişken ve sanal gibi diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak.</string>

@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-10 09:54:03+0000
+Translation-Revision-Date: 2024-09-24 09:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">复制值</string>
+    <string name="custom_fields_editor_copy_key">复制密钥</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">产品照片</string>
+    <string name="blaze_campaign_product_photo_picker_empty">未找到照片</string>
+    <string name="blaze_campaign_product_photo_picker_title">产品照片</string>
+    <string name="image_source_product_images">选择现有的产品照片</string>
+    <string name="custom_fields_editor_key_error_underscore">密钥无效：请删除开头的“_”字符。</string>
+    <string name="custom_fields_editor_key_error_duplicate">此密钥已被用于另一个自定义字段。\n该应用程序暂不支持创建重复密钥。 如果需要，请使用 wp-admin 复制密钥。</string>
+    <string name="custom_fields_add_button">添加自定义字段</string>
+    <string name="custom_fields_list_field_deleted">自定义字段已删除</string>
+    <string name="custom_fields_list_saving_failed">更改保存失败，请重试</string>
+    <string name="custom_fields_list_saving_succeeded">更改已保存</string>
+    <string name="custom_fields_list_progress_dialog_title">正在保存更改</string>
+    <string name="woopos_no_internet_message">您似乎未连接到互联网。 请确保您的 Wi-Fi 已打开。 如果您要使用移动数据，请确保已在设备设置中将其启用。</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">扫描失败。 请稍后再试</string>
     <string name="custom_fields_editor_value_label">字段值</string>
     <string name="custom_fields_editor_key_label">密钥</string>
     <string name="woopos_dialog_products_info_secondary_message">其他产品类型（如可变产品和虚拟产品）将在今后的更新中得到支持。</string>

@@ -16,16 +16,16 @@ msgid "In this update, we’ve made a few small bug fixes and enhancements to en
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_204"
+msgctxt "release_note_206"
 msgid ""
-"20.4:\n"
-"We've enhanced your WooCommerce app experience! You can now effortlessly scan tracking numbers when adding them to orders. Plus, we've fixed an issue with shipping labels, ensuring accurate weight calculations for packages with multiple items. Enjoy a smoother, more reliable app experience!\n"
+"20.6:\n"
+"We're excited to bring you new features in our WooCommerce app! Users can now set a password to protect products when signed in with site credentials, enhancing security for WooCommerce 8.1.0 and above. Also, promoting a Blaze product from the campaign detail will now trigger a smoother native flow. Enjoy the updates!\n"
 msgstr ""
 
-msgctxt "release_note_203"
+msgctxt "release_note_205"
 msgid ""
-"20.3:\n"
-"We’ve made several enhancements to boost your experience! This update fixes crashes on the orders list screen, resolves issues with the Jetpack plugin installation, and corrects toolbar glitches in the Package details and Order Tracking screens. We’ve also added a helpful blaze campaign reminder if you leave a campaign creation unfinished. Enjoy smoother navigation and a more reliable app!\n"
+"20.5:\n"
+"We’re excited to bring you a smoother experience with our latest update! We've resolved an issue that prevented renaming Product Variation Attributes and fixed a bug related to notification removal. Plus, users can now easily select product images when creating Blaze ads, and the Blaze feature is now fully enabled for sites with the Blaze for WooCommerce plugin active. Enjoy the improvements!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

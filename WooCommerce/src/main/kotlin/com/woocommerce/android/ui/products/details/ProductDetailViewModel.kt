@@ -48,6 +48,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
@@ -115,6 +116,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -156,6 +158,8 @@ class ProductDetailViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
+    private val determineProductPasswordApi: DetermineProductPasswordApi,
+    private val customFieldsRepository: CustomFieldsRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -183,7 +187,7 @@ class ProductDetailViewModel @Inject constructor(
         savedState = savedState,
         initialValue = ProductDetailViewState(areImagesAvailable = !selectedSite.get().isPrivate)
     ) { old, new ->
-        if (old?.productDraft != new.productDraft || old?.draftPassword != new.draftPassword) {
+        if (old?.productDraft != new.productDraft) {
             new.productDraft?.let {
                 updateCards(it)
                 draftChanges.value = it
@@ -282,6 +286,7 @@ class ProductDetailViewModel @Inject constructor(
             appPrefsWrapper = appPrefsWrapper,
             isBlazeEnabled = isBlazeEnabled,
             isProductCurrentlyPromoted = isProductCurrentlyPromoted,
+            customFieldsRepository = customFieldsRepository,
             analyticsTrackerWrapper = tracker,
         )
     }
@@ -290,14 +295,12 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailBottomSheetList: LiveData<List<ProductDetailBottomSheetUiItem>> = _productDetailBottomSheetList
 
     private val productDetailBottomSheetBuilder by lazy {
-        ProductDetailBottomSheetBuilder(resources, variationRepository)
+        ProductDetailBottomSheetBuilder(resources, variationRepository, customFieldsRepository)
     }
 
     private val _hasChanges = storedProduct
         .combine(draftChanges) { storedProduct, productDraft ->
-            storedProduct?.let { product ->
-                productDraft?.isSameProduct(product) == false || viewState.isPasswordChanged
-            } ?: false
+            storedProduct?.let { product -> productDraft?.isSameProduct(product) == false } ?: false
         }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val hasChanges = _hasChanges.asLiveData()
 
@@ -716,7 +719,7 @@ class ProductDetailViewModel @Inject constructor(
         return if (storedProduct.value?.hasSettingsChanges(viewState.productDraft) == true) {
             true
         } else {
-            viewState.isPasswordChanged
+            storedProduct.value?.password != viewState.draftPassword
         }
     }
 
@@ -1172,7 +1175,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsVisibilityButtonClicked() {
         val visibility = getProductVisibility()
-        val password = viewState.draftPassword ?: viewState.storedPassword
+        val password = viewState.draftPassword ?: storedProduct.value?.password
         triggerEvent(
             ProductNavigationTarget.ViewProductVisibility(
                 selectedSite.connectionType == SiteConnectionType.ApplicationPasswords,
@@ -1502,7 +1505,9 @@ class ProductDetailViewModel @Inject constructor(
      * the product's visibility and/or password
      */
     fun updateProductVisibility(visibility: ProductVisibility, password: String?) {
-        viewState = viewState.copy(draftPassword = password)
+        viewState = viewState.copy(
+            productDraft = viewState.productDraft?.copy(password = password)
+        )
 
         when (visibility) {
             PUBLIC -> {
@@ -1527,7 +1532,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun getProductVisibility(): ProductVisibility {
         val status = viewState.productDraft?.status ?: storedProduct.value?.status
-        val password = viewState.draftPassword ?: viewState.storedPassword
+        val password = viewState.draftPassword ?: storedProduct.value?.password
         return when {
             password?.isNotEmpty() == true -> {
                 ProductVisibility.PASSWORD_PROTECTED
@@ -1547,18 +1552,17 @@ class ProductDetailViewModel @Inject constructor(
      * Sends a request to fetch the product's password
      */
     private suspend fun fetchProductPassword(remoteProductId: Long) {
-        val password = productRepository.fetchProductPassword(remoteProductId)
-
-        viewState = if (viewState.draftPassword == null) {
-            viewState.copy(
-                storedPassword = password,
-                draftPassword = password
-            )
-        } else {
-            viewState.copy(
-                storedPassword = password
-            )
+        val productPasswordApi = determineProductPasswordApi()
+        val password = when (productPasswordApi) {
+            ProductPasswordApi.WPCOM -> productRepository.fetchProductPassword(remoteProductId)
+            ProductPasswordApi.CORE -> storedProduct.value?.password
+            ProductPasswordApi.UNSUPPORTED -> return
         }
+
+        storedProduct.update { it?.copy(password = password) }
+        viewState = viewState.copy(
+            productDraft = viewState.productDraft?.copy(password = viewState.draftPassword ?: password)
+        )
     }
 
     private suspend fun fetchProduct(remoteProductId: Long) {
@@ -1664,7 +1668,7 @@ class ProductDetailViewModel @Inject constructor(
     fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean {
         // first make sure an attribute with the new name doesn't already exist in the draft
         productDraftAttributes.forEach {
-            if (it.name.equals(newAttributeName, ignoreCase = true)) {
+            if (it.name.equals(newAttributeName)) {
                 triggerEvent(ShowSnackbar(R.string.product_attribute_name_already_exists))
                 return false
             }
@@ -1948,13 +1952,15 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = false)
             return
         }
-        val result = productRepository.updateProduct(product)
+        val result = productRepository.updateProduct(product.copy(password = viewState.draftPassword))
         if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
-            if (viewState.isPasswordChanged) {
-                val password = viewState.draftPassword
+            val isPasswordChanged = storedProduct.value?.password != viewState.draftPassword
+            if (isPasswordChanged && determineProductPasswordApi() == ProductPasswordApi.WPCOM) {
+                // Update the product password using WordPress.com API
+                val password = viewState.productDraft?.password
                 if (productRepository.updateProductPassword(product.remoteId, password)) {
-                    viewState = viewState.copy(storedPassword = password)
+                    storedProduct.update { it?.copy(password = password) }
                     triggerEvent(ShowSnackbar(successMsg))
                 } else {
                     triggerEvent(ShowSnackbar(R.string.product_detail_update_product_password_error))
@@ -2578,12 +2584,20 @@ class ProductDetailViewModel @Inject constructor(
     fun onProductCategorySearchQueryChanged(query: String) {
         productCategorySearchQuery.value = query
     }
+
     fun onProductCategorySearchStateChanged(open: Boolean) {
         productCategorySearchQuery.value = if (open) {
             productCategorySearchQuery.value.orEmpty()
         } else {
             null
         }
+    }
+
+    fun onCustomFieldsClicked() {
+        require(isProductStoredAtSite) {
+            "Can't launch custom fields when product is not saved yet"
+        }
+        triggerEvent(ProductNavigationTarget.ViewCustomFields(getRemoteProductId()))
     }
 
     private fun observeProductCategorySearchQuery() {
@@ -2685,16 +2699,14 @@ class ProductDetailViewModel @Inject constructor(
         val auxiliaryState: AuxiliaryState = AuxiliaryState.None,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
-        val storedPassword: String? = null,
-        val draftPassword: String? = null,
         val showBottomSheetButton: Boolean? = null,
         val isConfirmingTrash: Boolean = false,
         val isUploadingDownloadableFile: Boolean? = null,
         val isVariationListEmpty: Boolean? = null,
         val areImagesAvailable: Boolean
     ) : Parcelable {
-        val isPasswordChanged: Boolean
-            get() = storedPassword != draftPassword
+        val draftPassword
+            get() = productDraft?.password
 
         @Parcelize
         sealed class AuxiliaryState : Parcelable {

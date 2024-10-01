@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.customfields.list
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
@@ -12,7 +13,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -47,6 +51,14 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
     private val repository: CustomFieldsRepository = mock {
         onBlocking { observeDisplayableCustomFields(PARENT_ITEM_ID) }.thenReturn(flowOf(CUSTOM_FIELDS))
     }
+    private val appPrefs: AppPrefsWrapper = mock {
+        val bannerDismissed = MutableStateFlow(false)
+        on { observePrefs() }.thenReturn(bannerDismissed.map { Unit })
+        on { isCustomFieldsTopBannerDismissed } doAnswer { bannerDismissed.value }
+        on { isCustomFieldsTopBannerDismissed = any() }.then { invocation ->
+            bannerDismissed.update { invocation.arguments[0] as Boolean }
+        }
+    }
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.getArgument<Int>(0).toString() }
     }
@@ -57,6 +69,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         viewModel = CustomFieldsViewModel(
             savedStateHandle = CustomFieldsFragmentArgs(PARENT_ITEM_ID, PARENT_ITEM_TYPE).toSavedStateHandle(),
             repository = repository,
+            appPrefs = appPrefs,
             resourceProvider = resourceProvider
         )
     }
@@ -217,7 +230,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         setup()
 
         val state = viewModel.state.runAndCaptureValues {
-            viewModel.onCustomFieldUpdated(customField)
+            viewModel.onCustomFieldUpdated(CUSTOM_FIELDS.first().key, customField)
             advanceUntilIdle()
         }.last()
 
@@ -230,8 +243,8 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         setup()
 
         val state = viewModel.state.runAndCaptureValues {
-            viewModel.onCustomFieldUpdated(customField.copy(value = "new value"))
-            viewModel.onCustomFieldUpdated(customField.copy(value = "new value 2"))
+            viewModel.onCustomFieldUpdated(CUSTOM_FIELDS.first().key, customField.copy(value = "new value"))
+            viewModel.onCustomFieldUpdated(CUSTOM_FIELDS.first().key, customField.copy(value = "new value 2"))
             advanceUntilIdle()
         }.last()
 
@@ -254,6 +267,25 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         assertThat(state.customFields).hasSize(CUSTOM_FIELDS.size + 1)
         assertThat(state.customFields.last().key).isEqualTo(customField.key)
         assertThat(state.customFields.last().value).isEqualTo(customField.value)
+    }
+
+    @Test
+    fun `when adding a custom field then updating it, then confirm the field is not duplicated`() = testBlocking {
+        val customField = CustomFieldUiModel(
+            key = "new key",
+            value = "new value"
+        )
+        setup()
+
+        val state = viewModel.state.runAndCaptureValues {
+            viewModel.onCustomFieldInserted(customField)
+            viewModel.onCustomFieldUpdated(customField.key, customField.copy(value = "new value 2"))
+            advanceUntilIdle()
+        }.last()
+
+        assertThat(state.customFields).hasSize(CUSTOM_FIELDS.size + 1)
+        assertThat(state.customFields.last().key).isEqualTo(customField.key)
+        assertThat(state.customFields.last().value).isEqualTo("new value 2")
     }
 
     @Test
@@ -325,7 +357,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
 
         setup()
 
-        viewModel.onCustomFieldUpdated(updatedField)
+        viewModel.onCustomFieldUpdated(CUSTOM_FIELDS.first().key, updatedField)
         viewModel.onCustomFieldInserted(insertedField)
         viewModel.onSaveClicked()
 
@@ -361,5 +393,38 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_succeeded))
+    }
+
+    @Test
+    fun `given custom fields top banner is dismissed, when screen is opened, then banner is not shown`() = testBlocking {
+        appPrefs.isCustomFieldsTopBannerDismissed = true
+        setup()
+
+        val state = viewModel.state.getOrAwaitValue()
+
+        assertThat(state.topBannerState).isNull()
+    }
+
+    @Test
+    fun `given custom fields top banner is not dismissed, when screen is opened, then banner is shown`() = testBlocking {
+        appPrefs.isCustomFieldsTopBannerDismissed = false
+        setup()
+
+        val state = viewModel.state.getOrAwaitValue()
+
+        assertThat(state.topBannerState).isNotNull
+    }
+
+    @Test
+    fun `given custom fields top banner is shown, when banner is dismissed, then banner is not shown`() = testBlocking {
+        appPrefs.isCustomFieldsTopBannerDismissed = false
+        setup()
+
+        val initialState = viewModel.state.getOrAwaitValue()
+        val state = viewModel.state.runAndCaptureValues {
+            initialState.topBannerState!!.onDismiss()
+        }.last()
+
+        assertThat(state.topBannerState).isNull()
     }
 }

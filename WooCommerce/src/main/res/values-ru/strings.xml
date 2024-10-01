@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-09 17:54:03+0000
+Translation-Revision-Date: 2024-09-24 09:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">Копировать значение</string>
+    <string name="custom_fields_editor_copy_key">Копировать ключ</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">Фотография товара</string>
+    <string name="blaze_campaign_product_photo_picker_empty">Нет фотографий</string>
+    <string name="blaze_campaign_product_photo_picker_title">Фотографии товара</string>
+    <string name="image_source_product_images">Выберите имеющееся фото товара</string>
+    <string name="custom_fields_editor_key_error_duplicate">Этот ключ уже применяется в другом произвольном поле.\nВ настоящий момент приложение не поддерживает создание дубликатов ключей. При необходимости создать дубликат ключа воспользуйтесь wp-admin.</string>
+    <string name="custom_fields_editor_key_error_underscore">Недопустимый ключ: удалите символ «_» в самом начале.</string>
+    <string name="custom_fields_add_button">Добавить произвольные поля</string>
+    <string name="custom_fields_list_field_deleted">Произвольное поле удалено</string>
+    <string name="custom_fields_list_saving_failed">Не удалось сохранить изменения. Повторите попытку</string>
+    <string name="custom_fields_list_saving_succeeded">Изменения сохранены</string>
+    <string name="custom_fields_list_progress_dialog_title">Сохранение изменений</string>
+    <string name="woopos_no_internet_message">Похоже, отсутствует подключение к Интернету. Убедитесь, что ваш Wi-Fi включён. Если вы используете мобильные данные, убедитесь, что они включены в настройках вашего устройства.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">Сбой сканирования. Повторите попытку позже</string>
     <string name="custom_fields_editor_value_label">Значение</string>
     <string name="custom_fields_editor_key_label">Ключ</string>
     <string name="woopos_dialog_products_info_secondary_message">Другие типы товаров, в частности виртуальные и вариативные товары, станут доступны в ближайших обновлениях.</string>

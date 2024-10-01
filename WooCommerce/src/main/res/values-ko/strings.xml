@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-10 09:54:12+0000
+Translation-Revision-Date: 2024-09-24 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_copy_value">값 복사</string>
+    <string name="custom_fields_editor_copy_key">키 복사</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">상품 사진</string>
+    <string name="blaze_campaign_product_photo_picker_empty">사진을 찾을 수 없음</string>
+    <string name="blaze_campaign_product_photo_picker_title">상품 사진</string>
+    <string name="image_source_product_images">기존 상품 사진 선택</string>
+    <string name="custom_fields_editor_key_error_underscore">유효하지 않은 키: 처음의 \"_\" 문자를 제거하세요.</string>
+    <string name="custom_fields_editor_key_error_duplicate">이 키는 이미 다른 사용자 정의 필드에 사용되었습니다.\n이 앱은 현재 중복 키 생성을 지원하지 않습니다. 필요한 경우 wp-admin을 사용하여 키를 복제하세요.</string>
+    <string name="custom_fields_add_button">사용자 정의 필드 추가</string>
+    <string name="custom_fields_list_field_deleted">사용자 정의 필드 삭제됨</string>
+    <string name="custom_fields_list_saving_failed">변경 사항을 저장하지 못했습니다. 다시 시도하세요.</string>
+    <string name="custom_fields_list_saving_succeeded">변경 사항 저장됨</string>
+    <string name="custom_fields_list_progress_dialog_title">변경 사항 저장 중</string>
+    <string name="woopos_no_internet_message">인터넷에 연결되지 않은 것 같습니다. 와이파이가 켜졌는지 확인하세요. 모바일 데이터를 사용 중이라면 기기 설정에서 활성화되었는지 확인하세요.</string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">스캔하지 못했습니다. 나중에 다시 시도하세요.</string>
     <string name="custom_fields_editor_value_label">값</string>
     <string name="custom_fields_editor_key_label">키</string>
     <string name="woopos_dialog_products_info_secondary_message">변형 상품, 가상 상품 등의 다른 상품 유형은 향후 업데이트를 통해 지원될 예정입니다.</string>
