@@ -2007,6 +2007,8 @@
     <string name="product_download_limit_count">%d downloads</string>
     <string name="product_download_expiry">Expiry</string>
     <string name="product_download_expiry_days">%d days</string>
+    <string name="product_custom_fields">Custom Fields</string>
+    <string name="product_custom_fields_desc">View and edit custom fields</string>
     <string name="product_purchase_details">Purchase details</string>
     <string name="product_share_dialog_title">Share your product</string>
     <string name="product_view_in_store">View product on store</string>
@@ -3759,7 +3761,7 @@
     <string name="more_menu_button_settings_description">Update your preferences</string>
 
     <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
-    <string name="more_menu_button_woo_pos_description">Use the app as a cash register</string>
+    <string name="more_menu_button_woo_pos_description">Accept payments at your physical store</string>
 
     <string name="more_menu_customers_title">Customers</string>
 
@@ -4305,4 +4307,7 @@
     <string name="custom_fields_editor_key_error_underscore">Invalid key: please remove the \"_\" character from the beginning.</string>
     <string name="custom_fields_editor_copy_key">Copy Key</string>
     <string name="custom_fields_editor_copy_value">Copy Value</string>
+    <string name="custom_fields_editor_toggle_accessibility_description">Toggle between text and HTML editors</string>
+    <string name="custom_fields_editor_text_toggle">Text</string>
+    <string name="custom_fields_editor_html_toggle">HTML</string>
 </resources>

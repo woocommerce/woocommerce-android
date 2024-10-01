@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
@@ -405,8 +406,9 @@ private fun ProductItem(
         hasAnimationStarted = true
     }
 
+    val cardElevation = 6.dp
     val elevation by animateDpAsState(
-        targetValue = if (hasAnimationStarted) 4.dp else 0.dp,
+        targetValue = if (hasAnimationStarted) cardElevation else 0.dp,
         animationSpec = tween(durationMillis = 150, delayMillis = 250),
         label = "elevation"
     )
@@ -418,7 +420,7 @@ private fun ProductItem(
     )
 
     LaunchedEffect(elevation) {
-        if (elevation == 4.dp) {
+        if (elevation == cardElevation) {
             onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
         }
     }
@@ -432,9 +434,10 @@ private fun ProductItem(
     ) {
         WooPosCard(
             modifier = modifier
-                .height(64.dp)
+                .height(72.dp)
                 .semantics { contentDescription = itemContentDescription },
             elevation = elevation,
+            shadowType = ShadowType.Soft,
             shape = RoundedCornerShape(8.dp),
         ) {
             Row(
@@ -451,7 +454,7 @@ private fun ProductItem(
                     placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(72.dp)
                 )
 
                 Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
@@ -485,7 +488,7 @@ private fun ProductItem(
                     IconButton(
                         onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(32.dp)
                             .semantics { contentDescription = removeButtonContentDescription }
                     ) {
                         Icon(

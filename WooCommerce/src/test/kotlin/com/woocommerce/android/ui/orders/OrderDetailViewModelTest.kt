@@ -166,7 +166,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         isProductListMenuVisible = false,
         wcShippingBannerVisible = false,
         isRefreshing = false,
-        isOrderDetailSkeletonShown = false
+        isOrderDetailSkeletonShown = false,
+        isCustomFieldsButtonShown = true,
     )
 
     private val getOrderSubscriptions: GetOrderSubscriptions = mock()

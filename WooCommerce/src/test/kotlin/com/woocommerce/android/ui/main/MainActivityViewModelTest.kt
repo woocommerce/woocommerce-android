@@ -546,8 +546,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
             .removeNotificationByNotificationIdFromSystemsBar(eq(localPushId))
         assertThat(event).isEqualTo(
             ViewBlazeCampaignDetail(
-                testBlazeNotification.uniqueId.toString(),
-                isOpenedFromPush = true
+                testBlazeNotification.uniqueId.toString()
             )
         )
     }
