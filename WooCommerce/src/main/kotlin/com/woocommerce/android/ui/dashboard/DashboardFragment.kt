@@ -52,7 +52,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Fe
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
@@ -172,11 +171,6 @@ class DashboardFragment :
                     )
 
                 is ShareStore -> ActivityUtils.shareStoreUrl(requireActivity(), event.storeUrl)
-
-                is ShowAIProductDescriptionDialog ->
-                    findNavController().navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
-                    )
 
                 is OpenEditWidgets -> {
                     findNavController().navigateSafely(

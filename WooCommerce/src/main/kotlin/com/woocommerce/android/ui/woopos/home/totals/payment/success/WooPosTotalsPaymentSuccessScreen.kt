@@ -177,7 +177,7 @@ private fun CheckMarkIcon(
         modifier = modifier
             .size(size)
             .shadow(8.dp, CircleShape)
-            .background(WooPosTheme.colors.paymentSuccessIconBackground, CircleShape)
+            .background(WooPosTheme.colors.success, CircleShape)
     ) {
         Icon(
             imageVector = Icons.Default.Check,

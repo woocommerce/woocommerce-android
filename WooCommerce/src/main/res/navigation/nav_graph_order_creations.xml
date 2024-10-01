@@ -308,21 +308,6 @@
         <argument
             android:name="orderCreationMode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
-        <action
-            android:id="@+id/action_orderCreationCouponEditFragment_to_orderCreationFragment"
-            app:destination="@id/orderCreationFragment"
-            app:enterAnim="@null"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@null"
-            app:popUpTo="@id/orderCreationFragment"
-            app:popUpToInclusive="true">
-            <argument
-                android:name="couponEditResult"
-                android:defaultValue="@null"
-                app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
-                app:nullable="true" />
-        </action>
     </fragment>
     <fragment
         android:id="@+id/customerListFragment"
