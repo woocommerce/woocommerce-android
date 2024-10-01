@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage.RemoteImage
@@ -47,6 +48,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
         onBlocking { fetchWordPressMedia(AD_IMAGE.mediaId) } doReturn
             Result.success(mediaModel)
     }
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
 
     private val createCampaignRequestCaptor = argumentCaptor<BlazeCampaignCreationRequest>()
 
@@ -54,7 +56,8 @@ class BlazeRepositoryTest : BaseUnitTest() {
         selectedSite,
         blazeCampaignsStore,
         productDetailRepository,
-        mediaFilesRepository
+        mediaFilesRepository,
+        appPrefsWrapper
     )
 
     @Test
@@ -129,6 +132,7 @@ class BlazeRepositoryTest : BaseUnitTest() {
                 budget = DEFAULT_BUDGET,
                 targetingParameters = EMPTY_TARGETING_PARAMETERS,
                 destinationParameters = EMPTY_DESTINATION_PARAMETERS,
+                objectiveId = "sales",
             )
         private val ENDLESS_CAMPAIGN_DETAILS = DEFAULT_CAMPAIGN_DETAILS.copy(
             budget = DEFAULT_BUDGET.copy(isEndlessCampaign = true)

@@ -1566,7 +1566,7 @@
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Create an order</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tap “Collect Payment” and choose “Tap to Pay”.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Present your phone to the customer.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. Your customer holds their card horizontally at the top of your phone, over the contactless symbol.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Your customer taps their card on the back of your phone.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. After you see the “Done” checkmark, your store will process the payment, and the transaction will be complete.</string>
     <string name="card_reader_tap_to_pay_about_copyright">The Contactless Symbol is a trademark owned by and used with permission of EMVCo, LLC.</string>
 
@@ -3899,6 +3899,8 @@
     <string name="blaze_campaign_preview_details_section_title">Details</string>
     <string name="blaze_campaign_preview_audience_section_title">Audience</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
+    <string name="blaze_campaign_preview_details_objective">Campaign objective</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Choose campaign objective</string>
     <string name="blaze_campaign_preview_details_language">Language</string>
     <string name="blaze_campaign_preview_details_devices">Devices</string>
     <string name="blaze_campaign_preview_details_location">Location</string>
