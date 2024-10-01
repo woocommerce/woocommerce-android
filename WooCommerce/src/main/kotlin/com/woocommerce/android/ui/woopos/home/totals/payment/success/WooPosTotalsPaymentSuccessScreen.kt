@@ -26,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -176,7 +175,6 @@ private fun CheckMarkIcon(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(size)
-            .shadow(8.dp, CircleShape)
             .background(WooPosTheme.colors.success, CircleShape)
     ) {
         Icon(
