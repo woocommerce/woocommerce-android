@@ -14,7 +14,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_I
 import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.UiString
@@ -30,7 +29,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUi
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -129,13 +127,6 @@ class DashboardViewModel @Inject constructor(
                     triggerEvent(DashboardEvent.ShowPrivacyBanner)
                 }
             }
-        }
-
-        if (selectedSite.getOrNull()?.isEligibleForAI == true &&
-            !appPrefsWrapper.wasAIProductDescriptionPromoDialogShown
-        ) {
-            triggerEvent(DashboardEvent.ShowAIProductDescriptionDialog)
-            appPrefsWrapper.wasAIProductDescriptionPromoDialogShown = true
         }
 
         updateShareStoreButtonVisibility()
@@ -332,11 +323,9 @@ class DashboardViewModel @Inject constructor(
         val showShareStoreButton: Boolean = false,
     )
 
-    sealed class DashboardEvent : MultiLiveEvent.Event() {
+    sealed class DashboardEvent : Event() {
 
         data object ShowPrivacyBanner : DashboardEvent()
-
-        data object ShowAIProductDescriptionDialog : DashboardEvent()
 
         data class ShareStore(val storeUrl: String) : DashboardEvent()
 
