@@ -91,6 +91,8 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.coupons.CouponListHandler
+import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -143,6 +145,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Sel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -209,6 +212,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private val totalsHelper: OrderCreateEditTotalsHelper,
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductBySKU: FetchProductBySKU,
+    private val couponListHandler: CouponListHandler,
+    private val couponUtils: CouponUtils,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -564,6 +569,31 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onCouponEditResult(couponEditResult: OrderCreateCouponDetailsViewModel.CouponEditResult) {
         handleCouponEditResult(couponEditResult)
     }
+
+    private val _couponDetailList = MutableStateFlow<List<DashboardCouponsViewModel.CouponUiModel>>(emptyList())
+
+    private val currencyCode = "USD"
+
+    fun fetchAndConvertCoupons(orderCouponLines: List<Order.CouponLine>) {
+        viewModelScope.launch {
+            val couponIds = orderCouponLines.map { it.id }
+            couponListHandler.fetchCoupons()
+
+            couponListHandler.couponsFlow.collect { couponList ->
+                val coupons = couponList.filter { couponIds.contains(it.id) }
+                val couponItems = coupons.map { coupon ->
+                    DashboardCouponsViewModel.CouponUiModel(
+                        id = coupon.id,
+                        code = coupon.code.orEmpty(),
+                        uses = 0,
+                        description = couponUtils.generateSummary(coupon, currencyCode)
+                    )
+                }
+                _couponDetailList.value = couponItems
+            }
+        }
+    }
+
 
     private fun getScreenSizeClassNameForAnalytics(windowSize: WindowSizeClass) =
         IsScreenLargerThanCompactValue(windowSize != WindowSizeClass.Compact).deviceTypeToAnalyticsString

@@ -8,7 +8,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -174,6 +173,10 @@ class OrderCreateEditFormFragment :
         handleTaxRateSelectionResult()
         viewModel.onDeviceConfigurationChanged(requireContext().windowSizeClass)
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) syncSelectedItems()
+
+        viewModel.orderDraft.observe(viewLifecycleOwner) { newOrderData ->
+            viewModel.fetchAndConvertCoupons(newOrderData.couponLines)
+        }
     }
 
     private fun syncSelectedItems() {
@@ -467,9 +470,10 @@ class OrderCreateEditFormFragment :
                     WooThemeWithBackground {
                         CouponFormSection(
                             couponDetails = couponLines,
-                            //formatCurrency = { amount -> currencyFormatter.formatCurrency(amount) },
+                            // formatCurrency = { amount -> currencyFormatter.formatCurrency(amount) },
                             onRemoveCoupon = { couponCode -> viewModel.onCouponRemoved(couponCode) }
-                        )                    }
+                        )
+                    }
                 }
             }
         }
