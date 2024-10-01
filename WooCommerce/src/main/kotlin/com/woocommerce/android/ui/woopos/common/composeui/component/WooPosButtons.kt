@@ -1,18 +1,19 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 fun WooPosButton(
     modifier: Modifier = Modifier,
     text: String,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        backgroundColor = MaterialTheme.colors.primary,
+        contentColor = MaterialTheme.colors.onPrimary,
+    ),
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
@@ -30,6 +35,7 @@ fun WooPosButton(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         enabled = enabled,
+        colors = colors,
         modifier = modifier
             .fillMaxWidth()
             .height(72.dp),
@@ -114,52 +120,39 @@ fun WooPosOutlinedButton(
 
 @Composable
 @WooPosPreview
-fun WooPosButtonPreview() {
+fun WooPosButtonsPreview() {
     WooPosTheme {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(32.dp),
-            contentAlignment = Alignment.Center
         ) {
+            WooPosButtonLarge(
+                text = "Button Large",
+                onClick = {},
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            WooPosOutlinedButton(
+                text = "Button Outlined",
+                onClick = {},
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             WooPosButton(
                 text = "Button",
                 onClick = {},
             )
-        }
-    }
-}
 
-@Composable
-@WooPosPreview
-fun WooPosButtonLargePreview() {
-    WooPosTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            WooPosButtonLarge(
-                text = "Button",
-                onClick = {},
-            )
-        }
-    }
-}
+            Spacer(modifier = Modifier.height(16.dp))
 
-@Composable
-@WooPosPreview
-fun WooPosOutlinedButtonPreview() {
-    WooPosTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            WooPosOutlinedButton(
-                text = "Button",
+            WooPosButton(
+                text = "Button Black And White",
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = MaterialTheme.colors.onBackground
+                ),
                 onClick = {},
             )
         }
