@@ -58,7 +58,6 @@ import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.ExpandableTopBanner
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -279,6 +278,7 @@ private fun JsonCustomFieldViewer(
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.padding(vertical = 16.dp)
         ) {
             val jsonFormatted = remember(customField.value) {
                 runCatching {
@@ -292,7 +292,7 @@ private fun JsonCustomFieldViewer(
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
             ) {
                 OutlinedTextField(
                     value = customField.key,
@@ -312,9 +312,9 @@ private fun JsonCustomFieldViewer(
                     modifier = Modifier.weight(1f, fill = false)
                 )
 
-                WCColoredButton(
+                WCTextButton(
                     onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.End)
                 ) {
                     Text(text = stringResource(id = R.string.close))
                 }
