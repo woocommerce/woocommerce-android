@@ -319,7 +319,7 @@ fun CampaignDetails(
             style = MaterialTheme.typography.body2
         )
         // Budget
-        CampaignPropertyGroupItem(items = listOf(campaignDetails.budget))
+        CampaignPropertyGroupItem(items = listOf(campaignDetails.selectedObjective, campaignDetails.budget))
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience
@@ -449,7 +449,12 @@ fun CampaignScreenPreview() {
                     displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
                     onItemSelected = {},
                     maxLinesValue = 1,
-                )
+                ),
+                selectedObjective = CampaignDetailItemUi(
+                    displayTitle = stringResource(R.string.blaze_campaign_preview_details_objective),
+                    displayValue = "Sales",
+                    onItemSelected = {},
+                ),
             )
         ),
         onBackPressed = { },

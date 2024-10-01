@@ -3899,6 +3899,8 @@
     <string name="blaze_campaign_preview_details_section_title">Details</string>
     <string name="blaze_campaign_preview_audience_section_title">Audience</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
+    <string name="blaze_campaign_preview_details_objective">Campaign objective</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Choose campaign objective</string>
     <string name="blaze_campaign_preview_details_language">Language</string>
     <string name="blaze_campaign_preview_details_devices">Devices</string>
     <string name="blaze_campaign_preview_details_location">Location</string>
