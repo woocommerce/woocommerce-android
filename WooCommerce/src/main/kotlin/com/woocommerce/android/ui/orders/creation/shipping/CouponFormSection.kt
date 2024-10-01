@@ -21,7 +21,6 @@ import java.math.BigDecimal
 @Composable
 fun CouponFormSection(
     couponDetails: List<Order.CouponLine>,
-    //formatCurrency: (BigDecimal) -> String,
     onRemoveCoupon: (String) -> Unit
 ) {
     Column {
@@ -29,7 +28,7 @@ fun CouponFormSection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),// Adjust the padding as needed
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
