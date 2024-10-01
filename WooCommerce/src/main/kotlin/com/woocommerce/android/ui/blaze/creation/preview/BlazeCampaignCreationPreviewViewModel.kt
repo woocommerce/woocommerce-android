@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -181,35 +182,54 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         )
         campaignDetails.value?.let {
             val isImageMissing = it.campaignImage is BlazeRepository.BlazeCampaignImage.None
-            val isContentMissing = it.tagLine.isEmpty() || it.description.isEmpty()
-            if (isImageMissing || isContentMissing) {
-                dialogState.value = DialogState(
-                    message = if (isImageMissing) {
-                        R.string.blaze_campaign_preview_missing_image_dialog_text
-                    } else {
-                        R.string.blaze_campaign_preview_missing_content_dialog_text
-                    },
-                    positiveButton = DialogState.DialogButton(
-                        text = if (isImageMissing) {
-                            R.string.blaze_campaign_preview_missing_image_dialog_positive_button
-                        } else {
-                            R.string.blaze_campaign_preview_missing_content_dialog_positive_button
-                        },
-                        onClick = {
-                            dialogState.value = null
-                            onEditAdClicked()
-                        }
-                    ),
-                    negativeButton = DialogState.DialogButton(
-                        text = R.string.cancel,
-                        onClick = { dialogState.value = null }
-                    )
-                )
-                return
-            }
+            val isMissingTaglineOrDesc = it.tagLine.isEmpty() || it.description.isEmpty()
+            val isObjectiveMissing = it.objectiveId.isEmpty()
 
-            triggerEvent(NavigateToPaymentSummary(it))
+            when {
+                isImageMissing -> buildMissingRequiredDataDialog(
+                    message = R.string.blaze_campaign_preview_missing_image_dialog_text,
+                    positiveButtonText = R.string.blaze_campaign_preview_missing_image_dialog_positive_button,
+                    positiveButtonOnClick = ::onEditAdClicked
+                )
+
+                isMissingTaglineOrDesc -> buildMissingRequiredDataDialog(
+                    message = R.string.blaze_campaign_preview_missing_content_dialog_text,
+                    positiveButtonText = R.string.blaze_campaign_preview_missing_content_dialog_positive_button,
+                    positiveButtonOnClick = ::onEditAdClicked
+                )
+
+                isObjectiveMissing -> buildMissingRequiredDataDialog(
+                    message = R.string.blaze_campaign_preview_missing_objective_dialog_text,
+                    positiveButtonText = R.string.blaze_campaign_preview_missing_objective_dialog_positive_button,
+                    positiveButtonOnClick = { triggerEvent(NavigateToObjectiveSelectionScreen) }
+                )
+
+                else -> triggerEvent(NavigateToPaymentSummary(it))
+            }
         }
+    }
+
+    private fun buildMissingRequiredDataDialog(
+        @StringRes message: Int,
+        @StringRes positiveButtonText: Int,
+        @StringRes negativeButtonText: Int = R.string.cancel,
+        positiveButtonOnClick: () -> Unit,
+        negativeButtonOnClick: () -> Unit = { dialogState.value = null }
+    ) {
+        dialogState.value = DialogState(
+            message = message,
+            positiveButton = DialogState.DialogButton(
+                text = positiveButtonText,
+                onClick = {
+                    dialogState.value = null
+                    positiveButtonOnClick()
+                }
+            ),
+            negativeButton = DialogState.DialogButton(
+                text = negativeButtonText,
+                onClick = negativeButtonOnClick
+            )
+        )
     }
 
     private fun isAdContentGeneratedByAi(campaignDetails: CampaignDetails?): Boolean =
