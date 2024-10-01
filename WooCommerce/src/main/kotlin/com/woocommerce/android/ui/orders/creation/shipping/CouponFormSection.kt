@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import java.math.BigDecimal
 
@@ -31,8 +35,11 @@ fun CouponFormSection(
                     Text(text = "Coupon: ${coupon.code}")
                     Text(text = "Discount: ${coupon.discount}")
                 }
-                Button(onClick = { onRemoveCoupon(coupon.code) }) {
-                    Text(text = "Remove")
+                IconButton(onClick = { onRemoveCoupon(coupon.code) }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_gridicons_trash_24dp),
+                        contentDescription = "Remove Coupon"
+                    )
                 }
             }
         }
