@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTERES
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -198,7 +199,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     positiveButtonOnClick = ::onEditAdClicked
                 )
 
-                isObjectiveMissing -> buildMissingRequiredDataDialog(
+                isObjectiveMissing && FeatureFlag.OBJECTIVE_SECTION.isEnabled() -> buildMissingRequiredDataDialog(
                     message = R.string.blaze_campaign_preview_missing_objective_dialog_text,
                     positiveButtonText = R.string.blaze_campaign_preview_missing_objective_dialog_positive_button,
                     positiveButtonOnClick = { triggerEvent(NavigateToObjectiveSelectionScreen) }
