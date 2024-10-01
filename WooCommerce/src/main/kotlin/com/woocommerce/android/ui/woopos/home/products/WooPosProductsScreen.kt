@@ -351,7 +351,7 @@ private fun ProductItem(
     WooPosCard(
         modifier = modifier
             .semantics { contentDescription = itemContentDescription }
-            .testTag("woo_pos_product_item${item.name}"),
+            .testTag("woo_pos_product_item_${item.name}"),
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
     ) {
