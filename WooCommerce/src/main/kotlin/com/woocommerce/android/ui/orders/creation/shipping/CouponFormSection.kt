@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
@@ -46,3 +47,16 @@ fun CouponFormSection(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewCouponFormSection() {
+    val sampleCoupons = listOf(
+        Order.CouponLine(code = "SUMMER21", discount = BigDecimal(10.00).toString()),
+        Order.CouponLine(code = "WELCOME5", discount = BigDecimal(5.00).toString())
+    )
+
+    CouponFormSection(
+        couponDetails = sampleCoupons,
+        onRemoveCoupon = { /* Do nothing for preview */ }
+    )
+}
