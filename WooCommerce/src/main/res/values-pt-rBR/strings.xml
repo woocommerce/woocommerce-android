@@ -954,8 +954,6 @@ Language: pt_BR
     <string name="error_troubleshooting">Solução de problemas</string>
     <string name="orderlist_parsing_error_title">Não foi possível carregar seus dados.</string>
     <string name="orderlist_parsing_error_message">É possível que seja um conflito com o plugin. Tente novamente mais tarde ou fale a gente. Vamos ter prazer em ajudar você!</string>
-    <string name="ai_product_description_dialog_message">Adicione descrições em um piscar de olhos com IA. Experimente nossa funcionalidade hoje mesmo!</string>
-    <string name="ai_product_description_dialog_title">Adicionar descrição do produto com IA</string>
     <string name="ai_product_description_note_dialog_confirmation">Entendi</string>
     <string name="ai_product_description_note_dialog_message">Saiba que esta descrição do produto foi gerada usando nossa ferramenta com IA. Revise e edite o conteúdo para garantir que esteja alinhado com sua marca e mensagem.</string>
     <string name="ai_product_description_note_dialog_heading">Ótimo começo!</string>

@@ -954,8 +954,6 @@ Language: fr
     <string name="error_troubleshooting">Résolution de problèmes</string>
     <string name="orderlist_parsing_error_message">Ceci peut être dû à un conflit avec une extension. Réessayez plus tard ou contactez-nous et nous vous aiderons avec plaisir !</string>
     <string name="orderlist_parsing_error_title">Nous n’avons pas pu charger vos données.</string>
-    <string name="ai_product_description_dialog_message">Ajoutez des descriptions en un clin d’œil grâce à l’IA. Essayez notre fonctionnalité dès aujourd’hui !</string>
-    <string name="ai_product_description_dialog_title">Ajouter la description du produit avec l’IA</string>
     <string name="ai_product_description_note_dialog_confirmation">J’ai compris</string>
     <string name="ai_product_description_note_dialog_message">N’oubliez pas que cette description de produit a été générée à l’aide de notre outil d’intelligence artificielle. Passez-la en revue et modifiez le contenu pour vous assurer qu’il correspond à votre marque et au message que vous voulez communiquer.</string>
     <string name="ai_product_description_note_dialog_heading">C’est un excellent début !</string>

@@ -76,6 +76,9 @@
         <action
             android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignPaymentSummaryFragment"
             app:destination="@id/blazeCampaignPaymentSummaryFragment" />
+        <action
+            android:id="@+id/action_blazeCampaignCreationPreviewFragment_to_blazeCampaignObjectiveFragment"
+            app:destination="@id/blazeCampaignObjectiveFragment" />
     </fragment>
     <fragment
         android:id="@+id/blazeCampaignCreationEditAdFragment"
@@ -194,4 +197,8 @@
             android:name="productId"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/blazeCampaignObjectiveFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveFragment"
+        android:label="BlazeCampaignObjectiveFragment" />
 </navigation>

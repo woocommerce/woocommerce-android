@@ -954,8 +954,6 @@ Language: he_IL
     <string name="error_troubleshooting">פתרון בעיות</string>
     <string name="orderlist_parsing_error_message">ייתכן שזה קשור להתנגשות עם תוסף. יש לנסות שוב מאוחר יותר או לפנות אלינו בכל עת ואנחנו נשמח לעזור!</string>
     <string name="orderlist_parsing_error_title">לא ניתן לטעון את הנתונים שלך.</string>
-    <string name="ai_product_description_dialog_message">להוסיף תיאורים במהירות בעזרת בינה מלאכותית. כדאי לנסות את האפשרות כבר היום!</string>
-    <string name="ai_product_description_dialog_title">להוסיף תיאור מוצר בעזרת בינה מלאכותית</string>
     <string name="ai_product_description_note_dialog_confirmation">הבנתי</string>
     <string name="ai_product_description_note_dialog_message">חשוב לשים לב שתיאור המוצר נוצר דרך כלי שאנחנו מפעילים באמצעות בינה מלאכותית. יש לבדוק ולערוך את התוכן כדי לוודא שהוא מתאים למותג ולמסר שלך.</string>
     <string name="ai_product_description_note_dialog_heading">התחלה נהדרת!</string>
