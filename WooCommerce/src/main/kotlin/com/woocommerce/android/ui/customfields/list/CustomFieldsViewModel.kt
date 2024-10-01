@@ -7,6 +7,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -20,12 +23,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import okio.utf8Size
 import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
 import org.wordpress.android.fluxc.model.metadata.UpdateMetadataRequest
 import javax.inject.Inject
@@ -35,7 +40,8 @@ class CustomFieldsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: CustomFieldsRepository,
     private val appPrefs: AppPrefsWrapper,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         @VisibleForTesting
@@ -112,6 +118,21 @@ class CustomFieldsViewModel @Inject constructor(
         fieldId?.let { customFields.find { it.id == fieldId } }
     }.asLiveData()
 
+    init {
+        launch {
+            val storedFields = customFields.first()
+            analyticsTracker.track(
+                stat = AnalyticsEvent.CUSTOM_FIELDS_LIST_LOADED,
+                properties = mapOf(
+                    "type" to args.parentItemType.name.lowercase(),
+                    "fields_count" to storedFields.size,
+                    "fields_size" to storedFields.sumOf { it.valueAsString.utf8Size() },
+                    "has_json_fields" to storedFields.any { it.isJson }
+                )
+            )
+        }
+    }
+
     fun onBackClick() {
         if (pendingChanges.value.hasChanges) {
             showDiscardChangesDialog.value = true
@@ -131,6 +152,13 @@ class CustomFieldsViewModel @Inject constructor(
     }
 
     fun onCustomFieldClicked(field: CustomFieldUiModel) {
+        analyticsTracker.track(
+            stat = AnalyticsEvent.CUSTOM_FIELD_TAPPED,
+            properties = mapOf(
+                "is_json" to field.isJson,
+                "has_html" to field.hasHtml
+            )
+        )
         if (field.isJson) {
             overlayedFieldId.value = field.id
         } else {
@@ -147,6 +175,7 @@ class CustomFieldsViewModel @Inject constructor(
     }
 
     fun onAddCustomFieldClicked() {
+        analyticsTracker.track(AnalyticsEvent.ADD_CUSTOM_FIELD_TAPPED)
         triggerEvent(OpenCustomFieldEditor(null))
     }
 
@@ -206,6 +235,16 @@ class CustomFieldsViewModel @Inject constructor(
         launch {
             isSaving.value = true
             val currentPendingChanges = pendingChanges.value
+
+            analyticsTracker.track(
+                stat = AnalyticsEvent.SAVE_CUSTOM_FIELD_TAPPED,
+                properties = mapOf(
+                    "edited_fields_count" to currentPendingChanges.editedFields.size,
+                    "added_field_count" to currentPendingChanges.insertedFields.size,
+                    "deleted_fields_count" to currentPendingChanges.deletedFieldIds.size
+                )
+            )
+
             val request = UpdateMetadataRequest(
                 parentItemId = args.parentItemId,
                 parentItemType = args.parentItemType,
@@ -219,9 +258,16 @@ class CustomFieldsViewModel @Inject constructor(
                     onSuccess = {
                         pendingChanges.value = PendingChanges()
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_succeeded))
+                        analyticsTracker.track(AnalyticsEvent.CUSTOM_FIELDS_SAVED_SUCCESSFULLY)
                     },
                     onFailure = {
                         triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.custom_fields_list_saving_failed))
+                        analyticsTracker.track(
+                            stat = AnalyticsEvent.CUSTOM_FIELDS_SAVING_FAILED,
+                            errorContext = this@CustomFieldsViewModel.javaClass.simpleName,
+                            errorType = (it as? WooException)?.error?.type?.name ?: it::class.simpleName,
+                            errorDescription = it.message
+                        )
                     }
                 )
             isSaving.value = false
