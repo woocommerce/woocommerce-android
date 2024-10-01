@@ -270,7 +270,7 @@ private fun JsonCustomFieldViewer(
     val inactiveInteractionSource = remember {
         object : MutableInteractionSource {
             override val interactions: Flow<Interaction> = emptyFlow()
-            override suspend fun emit(interaction: Interaction) {}
+            override suspend fun emit(interaction: Interaction) = Unit
             override fun tryEmit(interaction: Interaction): Boolean = false
         }
     }
