@@ -91,7 +91,6 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         htmlUtilsStaticMock.close()
     }
 
-
     suspend fun setup(
         parentItemType: MetaDataParentItemType = PARENT_ITEM_TYPE,
         prepareMocks: suspend () -> Unit = {}

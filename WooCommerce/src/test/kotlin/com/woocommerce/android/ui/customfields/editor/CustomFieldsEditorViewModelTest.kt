@@ -69,7 +69,8 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
         setup(editing = true)
 
         verify(analyticsTracker).track(
-            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_LOADED), properties = any()
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_LOADED),
+            properties = any()
         )
     }
 
@@ -204,7 +205,8 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
             )
         )
         verify(analyticsTracker).track(
-            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED), properties = any()
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED),
+            properties = any()
         )
     }
 
@@ -227,7 +229,8 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
             )
         )
         verify(analyticsTracker).track(
-            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED), properties = any()
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED),
+            properties = any()
         )
     }
 
@@ -333,7 +336,8 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         assertThat(state.useHtmlEditor).isTrue()
         verify(analyticsTracker).track(
-            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_PICKER_TAPPED), properties = any()
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_PICKER_TAPPED),
+            properties = any()
         )
     }
 }
