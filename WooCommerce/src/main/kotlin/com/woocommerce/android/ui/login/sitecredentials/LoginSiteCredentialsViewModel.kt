@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordGenerationException
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
@@ -84,6 +85,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val fetchedSiteId = savedStateHandle.getStateFlow(viewModelScope, -1, "site-id")
 
     private val loadingMessage = savedStateHandle.getStateFlow(viewModelScope, 0, "loading-message")
+
+    private val SiteModel?.fullAuthorizationUrl: String?
+        get() = this?.applicationPasswordsAuthorizeUrl
+            ?.let { url -> "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL" }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = state.flatMapLatest {
@@ -240,17 +245,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             fetchedSiteId.map { if (it == -1) null else wpApiSiteRepository.getSiteByLocalId(it) }
         ) { loadingMessage, errorDialogMessage, site ->
             ViewState.WebAuthorizationViewState(
-                authorizationUrl = generateAuthorizationUrl(site),
+                authorizationUrl = site?.fullAuthorizationUrl,
                 userAgent = userAgent,
                 loadingMessage = loadingMessage,
                 errorDialogMessage = errorDialogMessage
             )
         }
     }
-
-    private fun generateAuthorizationUrl(site: SiteModel?) =
-        site?.applicationPasswordsAuthorizeUrl
-            ?.let { url -> "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL" }
 
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value as ViewState.NativeLoginViewState)
@@ -308,10 +309,17 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     val errorMessage = detectedErrorMessage
                         ?.toPresentableString()
                         ?: resourceProvider.getString(R.string.error_generic)
-                    ShowApplicationPasswordTutorialScreen(
-                        url = generateAuthorizationUrl(site).orEmpty(),
-                        errorMessage = errorMessage
-                    ).let { triggerEvent(it) }
+                    if (site.fullAuthorizationUrl.isNotNullOrEmpty()) {
+                        triggerEvent(
+                            ShowApplicationPasswordTutorialScreen(
+                                url = site.applicationPasswordsAuthorizeUrl,
+                                errorMessage = errorMessage
+                            )
+                        )
+                    } else {
+                        analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE)
+                        triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
+                    }
                 } else {
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
@@ -342,7 +350,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     // Otherwise, the web authorization flow will handle the login
                     if (state.value == State.NativeLogin) {
                         fetchUserInfo()
-                    } else if (site.applicationPasswordsAuthorizeUrl == null) {
+                    } else if (site.applicationPasswordsAuthorizeUrl.isNullOrEmpty()) {
                         analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_URL_NOT_AVAILABLE)
                         triggerEvent(ShowApplicationPasswordsUnavailableScreen(siteAddress, site.isJetpackConnected))
                     }
