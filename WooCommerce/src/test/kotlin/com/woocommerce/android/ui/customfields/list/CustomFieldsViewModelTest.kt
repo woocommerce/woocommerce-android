@@ -28,6 +28,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType
+import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CustomFieldsViewModelTest : BaseUnitTest() {
@@ -396,24 +397,26 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given custom fields top banner is dismissed, when screen is opened, then banner is not shown`() = testBlocking {
-        appPrefs.isCustomFieldsTopBannerDismissed = true
-        setup()
+    fun `given custom fields top banner is dismissed, when screen is opened, then banner is not shown`() =
+        testBlocking {
+            appPrefs.isCustomFieldsTopBannerDismissed = true
+            setup()
 
-        val state = viewModel.state.getOrAwaitValue()
+            val state = viewModel.state.getOrAwaitValue()
 
-        assertThat(state.topBannerState).isNull()
-    }
+            assertThat(state.topBannerState).isNull()
+        }
 
     @Test
-    fun `given custom fields top banner is not dismissed, when screen is opened, then banner is shown`() = testBlocking {
-        appPrefs.isCustomFieldsTopBannerDismissed = false
-        setup()
+    fun `given custom fields top banner is not dismissed, when screen is opened, then banner is shown`() =
+        testBlocking {
+            appPrefs.isCustomFieldsTopBannerDismissed = false
+            setup()
 
-        val state = viewModel.state.getOrAwaitValue()
+            val state = viewModel.state.getOrAwaitValue()
 
-        assertThat(state.topBannerState).isNotNull
-    }
+            assertThat(state.topBannerState).isNotNull
+        }
 
     @Test
     fun `given custom fields top banner is shown, when banner is dismissed, then banner is not shown`() = testBlocking {
@@ -426,5 +429,44 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(state.topBannerState).isNull()
+    }
+
+    @Test
+    fun `when a json custom field is clicked, then show it in an overlay`() = testBlocking {
+        val customField = CustomField(
+            id = 1,
+            key = "key",
+            value = WCMetaDataValue.fromRawString("{\"key\": \"value\"}")
+        )
+        setup {
+            whenever(repository.observeDisplayableCustomFields(PARENT_ITEM_ID)).thenReturn(flowOf(listOf(customField)))
+        }
+
+        val uiModel = CustomFieldUiModel(customField)
+        val overlayedField = viewModel.overlayedField.runAndCaptureValues {
+            viewModel.onCustomFieldClicked(uiModel)
+        }.last()
+
+        assertThat(overlayedField).isEqualTo(uiModel)
+    }
+
+    @Test
+    fun `when overlayed field is dismissed, then overlay is removed`() = testBlocking {
+        val customField = CustomField(
+            id = 1,
+            key = "key",
+            value = WCMetaDataValue.fromRawString("{\"key\": \"value\"}")
+        )
+        setup {
+            whenever(repository.observeDisplayableCustomFields(PARENT_ITEM_ID)).thenReturn(flowOf(listOf(customField)))
+        }
+
+        val uiModel = CustomFieldUiModel(customField)
+        val overlayedField = viewModel.overlayedField.runAndCaptureValues {
+            viewModel.onCustomFieldClicked(uiModel)
+            viewModel.onOverlayedFieldDismissed()
+        }.last()
+
+        assertThat(overlayedField).isNull()
     }
 }

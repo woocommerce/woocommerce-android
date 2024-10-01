@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.customfields.list
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,9 +24,11 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
@@ -46,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.ExpandableTopBanner
@@ -57,6 +64,10 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import org.json.JSONArray
+import org.json.JSONObject
 
 @Composable
 fun CustomFieldsScreen(
@@ -73,6 +84,13 @@ fun CustomFieldsScreen(
             onAddCustomFieldClicked = viewModel::onAddCustomFieldClicked,
             onBackClick = viewModel::onBackClick,
             snackbarHostState = snackbarHostState
+        )
+    }
+
+    viewModel.overlayedField.observeAsState().value?.let { overlayedField ->
+        JsonCustomFieldViewer(
+            customField = overlayedField,
+            onDismiss = viewModel::onOverlayedFieldDismissed
         )
     }
 }
@@ -243,6 +261,68 @@ private fun CustomFieldItem(
     }
 }
 
+@Composable
+private fun JsonCustomFieldViewer(
+    customField: CustomFieldUiModel,
+    onDismiss: () -> Unit
+) {
+    // We use this to disable focus on the text fields used to show the key and value as it's not needed for our case
+    val inactiveInteractionSource = remember {
+        object : MutableInteractionSource {
+            override val interactions: Flow<Interaction> = emptyFlow()
+            override suspend fun emit(interaction: Interaction) = Unit
+            override fun tryEmit(interaction: Interaction): Boolean = false
+        }
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.padding(vertical = 16.dp)
+        ) {
+            val jsonFormatted = remember(customField.value) {
+                runCatching {
+                    if (customField.value.trimStart().startsWith("[")) {
+                        JSONArray(customField.value).toString(4)
+                    } else {
+                        JSONObject(customField.value).toString(4)
+                    }
+                }.getOrDefault(customField.value)
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            ) {
+                OutlinedTextField(
+                    value = customField.key,
+                    onValueChange = {},
+                    label = { Text(text = stringResource(id = R.string.custom_fields_editor_key_label)) },
+                    readOnly = true,
+                    interactionSource = inactiveInteractionSource,
+                    modifier = Modifier.focusable(enabled = false)
+                )
+
+                OutlinedTextField(
+                    value = jsonFormatted,
+                    onValueChange = {},
+                    label = { Text(text = stringResource(id = R.string.custom_fields_editor_value_label)) },
+                    readOnly = true,
+                    interactionSource = inactiveInteractionSource,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+
+                WCTextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(text = stringResource(id = R.string.close))
+                }
+            }
+        }
+    }
+}
+
 @LightDarkThemePreviews
 @Preview
 @Composable
@@ -271,6 +351,24 @@ private fun CustomFieldsScreenPreview() {
             onCustomFieldValueClicked = {},
             onAddCustomFieldClicked = {},
             onBackClick = {}
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Preview
+@Composable
+private fun JsonCustomFieldViewerPreview() {
+    WooThemeWithBackground {
+        JsonCustomFieldViewer(
+            customField = CustomFieldUiModel(
+                CustomField(
+                    id = 0,
+                    key = "key1",
+                    value = "[{\"key\": \"value\"}]"
+                )
+            ),
+            onDismiss = {}
         )
     }
 }
