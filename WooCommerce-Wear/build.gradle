@@ -195,7 +195,7 @@ dependencies {
     ksp "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
 
     // Testing
-    testImplementation "junit:junit:$jUnitVersion"
+    testImplementation(libs.junit)
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
     testImplementation "org.mockito:mockito-inline:$mockitoVersion"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
