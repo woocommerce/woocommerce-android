@@ -83,9 +83,9 @@ dependencies {
     implementation(libs.androidx.test.uiautomator)
     implementation(libs.junit)
     implementation(libs.androidx.test.ext.junit)
-    implementation "androidx.test:runner:$androidxTestCoreVersion"
-    implementation "androidx.test:rules:$androidxTestCoreVersion"
-    implementation "androidx.test:core:$androidxTestCoreVersion"
+    implementation(libs.androidx.test.main.runner)
+    implementation(libs.androidx.test.main.rules)
+    implementation(libs.androidx.test.main.core)
 }
 
 if (project.hasProperty("debugStoreFile")) {
