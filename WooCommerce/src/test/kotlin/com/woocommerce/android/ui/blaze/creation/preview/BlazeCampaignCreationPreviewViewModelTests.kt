@@ -169,6 +169,17 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
     }
 
     @Test
+    fun `when screen is opened, then fetch objectives`() = testBlocking {
+        setup {
+            whenever(blazeRepository.fetchObjectives()).doReturn(Result.success(Unit))
+        }
+
+        advanceUntilIdle()
+
+        verify(blazeRepository).fetchObjectives()
+    }
+
+    @Test
     fun `when tapping on edit ad, then open edit ad screen`() = testBlocking {
         setup()
 
@@ -478,13 +489,43 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         }
 
     @Test
+    fun `given objective is missing, when tapping on confirm, then show a dialog`() = testBlocking {
+        setup {
+            whenever(blazeRepository.generateDefaultCampaignDetails(PRODUCT_ID)).doReturn(
+                defaultCampaignDetails.copy(
+                    campaignImage = BlazeCampaignImage.LocalImage("image"),
+                    tagLine = "tagline",
+                    description = "description",
+                    objectiveId = ""
+                )
+            )
+        }
+
+        val state = viewModel.viewState.runAndCaptureValues {
+            viewModel.onConfirmClicked()
+        }.last()
+
+        assertThat(state.dialogState).isNotNull
+        assertThat(state.dialogState!!.message).isEqualTo(
+            UiString.UiStringRes(R.string.blaze_campaign_preview_missing_objective_dialog_text)
+        )
+        assertThat(state.dialogState!!.positiveButton!!.text).isEqualTo(
+            UiString.UiStringRes(R.string.blaze_campaign_preview_missing_objective_dialog_positive_button)
+        )
+        assertThat(state.dialogState!!.negativeButton!!.text).isEqualTo(
+            UiString.UiStringRes(R.string.cancel)
+        )
+    }
+
+    @Test
     fun `given campaign requirements met, when tapping on confirm, then open payment summary`() = testBlocking {
         setup {
             whenever(blazeRepository.generateDefaultCampaignDetails(PRODUCT_ID)).doReturn(
                 defaultCampaignDetails.copy(
                     campaignImage = BlazeCampaignImage.LocalImage("image"),
                     tagLine = "tagline",
-                    description = "description"
+                    description = "description",
+                    objectiveId = "sales"
                 )
             )
         }
