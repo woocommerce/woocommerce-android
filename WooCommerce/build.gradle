@@ -226,10 +226,10 @@ dependencies {
         exclude group: "com.google.guava", module: "guava"
     }
 
-    implementation platform('com.google.firebase:firebase-bom:32.7.1')
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-config'
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation(platform(libs.google.firebase.bom))
+    implementation(libs.google.firebase.messaging)
+    implementation(libs.google.firebase.config)
+    implementation(libs.google.firebase.analytics)
 
     implementation 'com.google.android.gms:play-services-auth:20.2.0'
 
