@@ -28,6 +28,9 @@ data class CustomFieldUiModel(
     val valueStrippedHtml: String
         get() = HtmlUtils.fastStripHtml(value)
 
+    val hasHtml: Boolean
+        get() = valueStrippedHtml != value
+
     @IgnoredOnParcel
     val contentType: CustomFieldContentType = CustomFieldContentType.fromMetadataValue(value)
 
