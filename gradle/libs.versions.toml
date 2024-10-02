@@ -11,6 +11,7 @@ kotlinx-coroutines = '1.8.1'
 mockito-inline = '4.6.1'
 mockito-kotlin = '4.0.0'
 stripe-terminal = '3.7.1'
+wordpress-libaddressinput = '0.0.2'
 
 [libraries]
 android-billingclient-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "android-billingclient" }
@@ -34,3 +35,4 @@ mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref =
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 stripe-terminal-localmobile = { group = "com.stripe", name = "stripeterminal-localmobile", version.ref = "stripe-terminal" }
 stripe-terminal-core = { group = "com.stripe", name = "stripeterminal-core", version.ref = "stripe-terminal" }
+wordpress-libaddressinput-common = { group = "org.wordpress", name = "libaddressinput.common", version.ref = "wordpress-libaddressinput" }
