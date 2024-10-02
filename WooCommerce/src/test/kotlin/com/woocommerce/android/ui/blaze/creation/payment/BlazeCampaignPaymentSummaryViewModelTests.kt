@@ -41,7 +41,8 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
             destinationParameters = BlazeRepository.DestinationParameters(
                 targetUrl = "https://test.com",
                 parameters = emptyMap()
-            )
+            ),
+            objectiveId = "sales"
         )
     }
 

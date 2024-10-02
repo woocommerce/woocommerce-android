@@ -6,19 +6,22 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -37,28 +40,43 @@ class CustomFieldsViewModel @Inject constructor(
 
     private val isRefreshing = MutableStateFlow(false)
     private val isSaving = MutableStateFlow(false)
+    private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
+        .shareIn(viewModelScope, started = SharingStarted.Lazily)
+
     private val showDiscardChangesDialog = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         initialValue = false,
         key = "showDiscardChangesDialog"
     )
-    private val customFields = repository.observeDisplayableCustomFields(args.parentItemId)
     private val pendingChanges = savedStateHandle.getStateFlow(viewModelScope, PendingChanges())
+    private val overlayedFieldId = savedStateHandle.getNullableStateFlow(
+        scope = viewModelScope,
+        initialValue = null,
+        clazz = Long::class.java,
+        key = "overlayedFieldId"
+    )
+
     private val bannerDismissed = appPrefs.observePrefs()
         .onStart { emit(Unit) }
         .map { appPrefs.isCustomFieldsTopBannerDismissed }
         .distinctUntilChanged()
 
-    val state = combine(
+    private val customFieldsWithChanges = combine(
         customFields,
-        pendingChanges,
+        pendingChanges
+    ) { customFields, pendingChanges ->
+        Pair(customFields.map { CustomFieldUiModel(it) }.combineWithChanges(pendingChanges), pendingChanges)
+    }
+
+    val state = combine(
+        customFieldsWithChanges,
         isRefreshing,
         isSaving,
         showDiscardChangesDialog,
         bannerDismissed
-    ) { customFields, pendingChanges, isLoading, isSaving, isShowingDiscardDialog, bannerDismissed ->
+    ) { (customFields, pendingChanges), isLoading, isSaving, isShowingDiscardDialog, bannerDismissed ->
         UiState(
-            customFields = customFields.map { CustomFieldUiModel(it) }.combineWithChanges(pendingChanges),
+            customFields = customFields,
             isRefreshing = isLoading,
             isSaving = isSaving,
             hasChanges = pendingChanges.hasChanges,
@@ -74,6 +92,13 @@ class CustomFieldsViewModel @Inject constructor(
                 }
             }
         )
+    }.asLiveData()
+
+    val overlayedField = combine(
+        customFieldsWithChanges,
+        overlayedFieldId
+    ) { (customFields, _), fieldId ->
+        fieldId?.let { customFields.find { it.id == fieldId } }
     }.asLiveData()
 
     fun onBackClick() {
@@ -95,7 +120,15 @@ class CustomFieldsViewModel @Inject constructor(
     }
 
     fun onCustomFieldClicked(field: CustomFieldUiModel) {
-        triggerEvent(OpenCustomFieldEditor(field))
+        if (field.isJson) {
+            overlayedFieldId.value = field.id
+        } else {
+            triggerEvent(OpenCustomFieldEditor(field))
+        }
+    }
+
+    fun onOverlayedFieldDismissed() {
+        overlayedFieldId.value = null
     }
 
     fun onCustomFieldValueClicked(field: CustomFieldUiModel) {

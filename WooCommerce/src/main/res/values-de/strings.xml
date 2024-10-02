@@ -954,8 +954,6 @@ Language: de
     <string name="error_troubleshooting">Problembehandlung</string>
     <string name="orderlist_parsing_error_message">Dies könnte mit einem Konflikt mit einem Plugin zusammenhängen. Bitte versuche es später erneut oder kontaktiere uns – wir helfen dir gerne weiter!</string>
     <string name="orderlist_parsing_error_title">Deine Daten konnten nicht geladen werden.</string>
-    <string name="ai_product_description_dialog_message">Füge mit KI im Handumdrehen Beschreibungen hinzu. Probiere die Funktion noch heute aus!</string>
-    <string name="ai_product_description_dialog_title">Produktbeschreibung mit KI hinzufügen</string>
     <string name="ai_product_description_note_dialog_confirmation">Verstanden</string>
     <string name="ai_product_description_note_dialog_message">Beachte bitte, dass diese Produktbeschreibung mit unserem KI-gestützten Tool erstellt wurde. Überprüfe und bearbeite den Inhalt entsprechend, damit er deiner Marke und Botschaft entspricht.</string>
     <string name="ai_product_description_note_dialog_heading">Guter Start!</string>
