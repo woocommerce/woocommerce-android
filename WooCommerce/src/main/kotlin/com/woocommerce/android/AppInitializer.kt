@@ -146,7 +146,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
 
-    @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
+    @Inject
+    @AppCoroutineScope
+    lateinit var appCoroutineScope: CoroutineScope
 
     @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
 

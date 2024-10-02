@@ -40,7 +40,9 @@ class WPComRemoteFeatureFlagRepositoryTest : BaseUnitTest() {
     fun `given fetching failure, when fetchAndCacheFeatureFlags is called, then get failure Result`() =
         testBlocking {
             whenever(featureFlagStore.fetchFeatureFlags(any(), any(), any(), any(), any()))
-                .thenReturn(FeatureFlagsStore.FeatureFlagsResult(FeatureFlagsError(FeatureFlagsErrorType.GENERIC_ERROR)))
+                .thenReturn(
+                    FeatureFlagsStore.FeatureFlagsResult(FeatureFlagsError(FeatureFlagsErrorType.GENERIC_ERROR))
+                )
 
             val result = sut.fetchAndCacheFeatureFlags()
             assertThat(result.isFailure).isTrue()
