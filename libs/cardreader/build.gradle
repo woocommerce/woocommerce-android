@@ -27,8 +27,8 @@ android {
 }
 
 dependencies {
-    implementation "com.stripe:stripeterminal-localmobile:$stripeTerminalVersion"
-    implementation "com.stripe:stripeterminal-core:$stripeTerminalVersion"
+    implementation(libs.stripe.terminal.localmobile)
+    implementation(libs.stripe.terminal.core)
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
