@@ -4,6 +4,7 @@ androidx-test-ext = '1.1.5'
 androidx-test-main = '1.4.0'
 androidx-test-uiautomator = '2.2.0'
 junit = '4.13.2'
+kotlinx-coroutines = '1.8.1'
 stripe-terminal = '3.7.1'
 
 [libraries]
@@ -17,5 +18,9 @@ androidx-test-main-rules = { group = "androidx.test", name = "rules", version.re
 androidx-test-main-runner = { group = "androidx.test", name = "runner", version.ref = "androidx-test-main" }
 androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "androidx-test-uiautomator" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 stripe-terminal-localmobile = { group = "com.stripe", name = "stripeterminal-localmobile", version.ref = "stripe-terminal" }
 stripe-terminal-core = { group = "com.stripe", name = "stripeterminal-core", version.ref = "stripe-terminal" }

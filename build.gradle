@@ -108,7 +108,6 @@ ext {
     eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.3'
     googlePlayWearableVersion = '18.1.0'
-    coroutinesVersion = '1.8.1'
     aztecVersion = 'v2.1.4'
     flipperVersion = '0.176.1'
     stateMachineVersion = '0.2.0'
