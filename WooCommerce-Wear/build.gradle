@@ -143,7 +143,7 @@ dependencies {
     implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
 
     // WearOS
-    implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
+    implementation(libs.google.play.services.wearable)
     implementation 'androidx.wear.tiles:tiles'
     implementation 'androidx.wear.tiles:tiles-material'
     implementation "com.google.android.horologist:horologist-compose-tools:$wearHorologistVersion"

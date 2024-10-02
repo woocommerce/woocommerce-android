@@ -231,7 +231,7 @@ dependencies {
     implementation(libs.google.firebase.config)
     implementation(libs.google.firebase.analytics)
 
-    implementation 'com.google.android.gms:play-services-auth:20.2.0'
+    implementation(libs.google.play.services.auth)
 
     // Support library
     implementation "androidx.core:core-ktx:$coreKtxVersion"
@@ -325,7 +325,7 @@ dependencies {
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:review:2.0.1'
 
-    implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'
+    implementation(libs.google.play.services.code.scanner)
 
     implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
     implementation "com.google.android.gms:play-services-mlkit-text-recognition-japanese:$mlkitTextRecognitionVersion"
@@ -335,7 +335,7 @@ dependencies {
     implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
 
     implementation "com.google.zxing:core:3.5.3"
-    implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
+    implementation(libs.google.play.services.wearable)
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
