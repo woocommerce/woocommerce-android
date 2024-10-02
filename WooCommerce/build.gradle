@@ -364,7 +364,7 @@ dependencies {
     })
 
     // Dependencies for Espresso UI tests
-    androidTestImplementation "androidx.test.ext:junit:$jUnitExtVersion"
+    androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation "androidx.test:rules:$androidxTestCoreVersion"
     androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"

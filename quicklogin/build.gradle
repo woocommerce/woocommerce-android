@@ -82,7 +82,7 @@ dependencies {
 
     implementation(libs.androidx.test.uiautomator)
     implementation(libs.junit)
-    implementation "androidx.test.ext:junit:$jUnitExtVersion"
+    implementation(libs.androidx.test.ext.junit)
     implementation "androidx.test:runner:$androidxTestCoreVersion"
     implementation "androidx.test:rules:$androidxTestCoreVersion"
     implementation "androidx.test:core:$androidxTestCoreVersion"
