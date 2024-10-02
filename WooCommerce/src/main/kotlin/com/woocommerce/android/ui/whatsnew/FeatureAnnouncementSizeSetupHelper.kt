@@ -41,6 +41,6 @@ class FeatureAnnouncementSizeSetupHelper @Inject constructor(
     }
 
     private companion object {
-        const val DIALOG_HEIGHT_DP = 450
+        const val DIALOG_HEIGHT_DP = 550
     }
 }
