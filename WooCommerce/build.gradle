@@ -356,7 +356,7 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockito.inline)
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
-    testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation(libs.assertj.core)
     testImplementation("androidx.arch.core:core-testing:2.1.0", {
         exclude group: 'com.android.support', module: 'support-compat'
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -366,7 +366,7 @@ dependencies {
     // Dependencies for Espresso UI tests
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.main.rules)
-    androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
+    androidTestImplementation(libs.assertj.core)
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation("androidx.test.espresso:espresso-contrib:$espressoVersion") {
         exclude group: "com.google.protobuf", module: "protobuf-lite"
