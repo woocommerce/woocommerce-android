@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.customfields.list
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.Interaction
@@ -18,7 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
@@ -43,14 +46,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.woocommerce.android.R
@@ -58,6 +62,7 @@ import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.ExpandableTopBanner
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -82,6 +87,7 @@ fun CustomFieldsScreen(
             onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
             onAddCustomFieldClicked = viewModel::onAddCustomFieldClicked,
+            onLearnMoreClicked = viewModel::onLearnMoreClicked,
             onBackClick = viewModel::onBackClick,
             snackbarHostState = snackbarHostState
         )
@@ -104,6 +110,7 @@ private fun CustomFieldsScreen(
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onAddCustomFieldClicked: () -> Unit,
+    onLearnMoreClicked: () -> Unit,
     onBackClick: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
@@ -159,16 +166,18 @@ private fun CustomFieldsScreen(
                     .padding(paddingValues)
                     .pullRefresh(state = pullToRefreshState)
             ) {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(state.customFields) { customField ->
-                        CustomFieldItem(
-                            customField = customField,
-                            onClicked = onCustomFieldClicked,
-                            onValueClicked = onCustomFieldValueClicked,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Divider()
-                    }
+                if (state.customFields.isNotEmpty()) {
+                    CustomFieldsList(
+                        customFields = state.customFields,
+                        onCustomFieldClicked = onCustomFieldClicked,
+                        onCustomFieldValueClicked = onCustomFieldValueClicked,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    CustomFieldsEmptyView(
+                        onLearnMoreClicked = onLearnMoreClicked,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
 
                 PullRefreshIndicator(
@@ -192,6 +201,66 @@ private fun CustomFieldsScreen(
                 dismissButton = it.onCancel
             )
         }
+    }
+}
+
+@Composable
+private fun CustomFieldsList(
+    customFields: List<CustomFieldUiModel>,
+    onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
+    onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(customFields) { customField ->
+            CustomFieldItem(
+                customField = customField,
+                onClicked = onCustomFieldClicked,
+                onValueClicked = onCustomFieldValueClicked
+            )
+            Divider()
+        }
+    }
+}
+
+@Composable
+private fun CustomFieldsEmptyView(
+    onLearnMoreClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(32.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(Modifier.weight(1f))
+
+        Text(
+            text = stringResource(id = R.string.custom_fields_empty_view_title),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center
+        )
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_tax),
+            contentDescription = null,
+        )
+        Text(
+            text = stringResource(id = R.string.custom_fields_empty_view_message),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body1
+        )
+
+        WCColoredButton(onClick = onLearnMoreClicked) {
+            Text(text = stringResource(id = R.string.learn_more))
+        }
+
+        Spacer(Modifier.weight(1f))
     }
 }
 
@@ -324,7 +393,6 @@ private fun JsonCustomFieldViewer(
 }
 
 @LightDarkThemePreviews
-@Preview
 @Composable
 private fun CustomFieldsScreenPreview() {
     WooThemeWithBackground {
@@ -350,13 +418,13 @@ private fun CustomFieldsScreenPreview() {
             onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
             onAddCustomFieldClicked = {},
+            onLearnMoreClicked = {},
             onBackClick = {}
         )
     }
 }
 
 @LightDarkThemePreviews
-@Preview
 @Composable
 private fun JsonCustomFieldViewerPreview() {
     WooThemeWithBackground {
@@ -369,6 +437,26 @@ private fun JsonCustomFieldViewerPreview() {
                 )
             ),
             onDismiss = {}
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun CustomFieldsEmptyViewPreview() {
+    WooThemeWithBackground {
+        CustomFieldsScreen(
+            state = CustomFieldsViewModel.UiState(
+                customFields = emptyList(),
+                topBannerState = CustomFieldsViewModel.TopBannerState { }
+            ),
+            onPullToRefresh = {},
+            onSaveClicked = {},
+            onCustomFieldClicked = {},
+            onCustomFieldValueClicked = {},
+            onAddCustomFieldClicked = {},
+            onLearnMoreClicked = {},
+            onBackClick = {}
         )
     }
 }
