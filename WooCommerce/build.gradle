@@ -327,12 +327,12 @@ dependencies {
 
     implementation(libs.google.play.services.code.scanner)
 
-    implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
-    implementation "com.google.android.gms:play-services-mlkit-text-recognition-japanese:$mlkitTextRecognitionVersion"
-    implementation "com.google.android.gms:play-services-mlkit-text-recognition-chinese:$mlkitTextRecognitionVersion"
-    implementation "com.google.android.gms:play-services-mlkit-text-recognition-korean:$mlkitTextRecognitionVersion"
+    implementation(libs.google.mlkit.text.recognition.main)
+    implementation(libs.google.mlkit.text.recognition.japanese)
+    implementation(libs.google.mlkit.text.recognition.chinese)
+    implementation(libs.google.mlkit.text.recognition.korean)
 
-    implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
+    implementation(libs.google.mlkit.barcode.scanning)
 
     implementation "com.google.zxing:core:3.5.3"
     implementation(libs.google.play.services.wearable)
