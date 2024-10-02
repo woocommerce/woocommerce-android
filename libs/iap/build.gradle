@@ -34,7 +34,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
-    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
+    testImplementation(libs.mockito.inline)
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
     testImplementation(libs.kotlinx.coroutines.test)

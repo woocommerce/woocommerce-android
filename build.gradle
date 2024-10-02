@@ -146,7 +146,6 @@ ext {
     // Testing
     assertjVersion = '3.24.1'
     espressoVersion = '3.4.0'
-    mockitoVersion = '4.6.1'
 }
 
 // Onboarding and dev env setup tasks
