@@ -112,7 +112,6 @@ ext {
     flipperVersion = '0.176.1'
     stateMachineVersion = '0.2.0'
     coreKtxVersion = '1.13.1'
-    appCompatVersion = '1.4.2'
     materialVersion = '1.12.0'
     transitionVersion = '1.5.1'
     hiltJetpackVersion = '1.1.0'

@@ -30,7 +30,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.android.billingclient.ktx)
-    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation(libs.androidx.appcompat)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
