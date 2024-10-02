@@ -411,7 +411,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given custom fields top banner is not dismissed, when screen is opened, then banner is shown`() = testBlocking {
+    fun `given custom fields top banner is not dismissed, when there are pending changes, then banner is shown`() = testBlocking {
         appPrefs.isCustomFieldsTopBannerDismissed = false
         setup()
         // Trigger a change to make sure the banner is shown
