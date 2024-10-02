@@ -9,6 +9,7 @@
 - [**] Fixed bug with coupons disappearing from the order creation screen unexpectedly [https://github.com/woocommerce/woocommerce-android/pull/12724]
 - [Internal] Fixes crash [https://github.com/woocommerce/woocommerce-android/issues/12715]
 - [*] Fixed incorrect instructions on "What is Tap to Pay" screen in the Payments section [https://github.com/woocommerce/woocommerce-android/pull/12709]
+- [***] Merchants can now view and edit custom fields of their products and orders from the app [https://github.com/woocommerce/woocommerce-android/issues/12207]
 
 20.6
 -----
