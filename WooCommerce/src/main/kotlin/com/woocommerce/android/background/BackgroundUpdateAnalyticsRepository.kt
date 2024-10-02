@@ -18,6 +18,14 @@ import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.store.WCGoogleStore
 import javax.inject.Inject
 
+/**
+ * Repository responsible for handling analytics data updates in background tasks.
+ *
+ * Unlike the AnalyticsRepository, this class does not manage cache implementation
+ * and focuses on fetching stats and providing detailed error messages for troubleshooting.
+ *
+ * @see com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
+ */
 class BackgroundUpdateAnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val googleAdsStore: WCGoogleStore,
