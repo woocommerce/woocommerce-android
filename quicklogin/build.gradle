@@ -80,7 +80,7 @@ android {
 dependencies {
     implementation(libs.androidx.lifecycle.process)
 
-    implementation "androidx.test.uiautomator:uiautomator:2.2.0"
+    implementation(libs.androidx.test.uiautomator)
     implementation "junit:junit:$jUnitVersion"
     implementation "androidx.test.ext:junit:$jUnitExtVersion"
     implementation "androidx.test:runner:$androidxTestCoreVersion"
