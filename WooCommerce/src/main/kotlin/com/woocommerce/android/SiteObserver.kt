@@ -87,6 +87,6 @@ class SiteObserver @Inject constructor(
 
     private suspend fun fetchRemoteFeatureFlags() {
         WooLog.d(UTILS, "Fetching remote feature flags")
-        featureFlagRepository.fetchFeatureFlags(PackageUtils.getVersionName(application))
+        featureFlagRepository.fetchAndCacheFeatureFlags(PackageUtils.getVersionName(application))
     }
 }
