@@ -3915,7 +3915,8 @@
     <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Add Image</string>
     <string name="blaze_campaign_preview_missing_content_dialog_text">Please add a tagline and a description for your Blaze campaign</string>
     <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Add</string>
-
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Please select an objective for the Blaze campaign</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Select objective</string>
     <!--
     Blaze campaign budget screen
     -->
