@@ -8,7 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageTab
 
 @Composable
@@ -31,11 +31,23 @@ fun WooShippingLabelsPackageCreationScreen(
         TabRow(selectedTabIndex = currentTabIndex) {
             tabs.forEachIndexed { index, pageTab ->
                 Tab(
-                    text = { Text(text = stringResource(id = pageTab.titleResource)) },
+                    text = { Text(text = pageTab.title) },
                     selected = currentTabIndex == index,
                     onClick = { /*TODO*/ }
                 )
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun WooShippingLabelsPackageCreationScreenPreview() {
+    WooShippingLabelsPackageCreationScreen(
+        tabs = listOf(
+            PageTab("Custom"),
+            PageTab("Carrier"),
+            PageTab("Saved")
+        )
+    )
 }
