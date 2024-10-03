@@ -239,7 +239,7 @@ dependencies {
     implementation(libs.androidx.recyclerview.main)
     implementation(libs.androidx.recyclerview.selection)
     implementation(libs.androidx.appcompat)
-    implementation "com.google.android.material:material:$materialVersion"
+    implementation(libs.google.material)
     implementation "androidx.transition:transition:$transitionVersion"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation("androidx.browser:browser:1.5.0") {

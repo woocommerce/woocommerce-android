@@ -13,6 +13,7 @@ androidx-test-main = '1.4.0'
 androidx-test-uiautomator = '2.2.0'
 assertj = '3.24.1'
 google-firebase-bom = '32.7.1'
+google-material = '1.12.0'
 google-mlkit-barcode-scanning = '17.2.0'
 google-mlkit-text-recognition = '16.0.0'
 google-play-services-auth = '20.2.0'
@@ -48,6 +49,7 @@ google-firebase-analytics = { group = "com.google.firebase", name = "firebase-an
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "google-firebase-bom" }
 google-firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 google-firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
 google-mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "google-mlkit-barcode-scanning" }
 google-mlkit-text-recognition-main = { group = "com.google.mlkit", name = "text-recognition", version.ref = "google-mlkit-text-recognition" }
 google-mlkit-text-recognition-japanese = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-japanese", version.ref = "google-mlkit-text-recognition" }
