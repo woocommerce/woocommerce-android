@@ -53,8 +53,9 @@ fun WooShippingLabelsPackageCreationScreen(
         pagerState.animateScrollToPage(tabIndex)
     }
     LaunchedEffect(key1 = pagerState.currentPage, pagerState.isScrollInProgress) {
-        if (!pagerState.isScrollInProgress)
+        if (!pagerState.isScrollInProgress) {
             tabIndex = pagerState.currentPage
+        }
     }
 
     Scaffold(
