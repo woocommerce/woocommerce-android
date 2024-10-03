@@ -41,5 +41,6 @@ class BlazeCampaignSuccessBottomSheetFragment : WCBottomSheetDialogFragment() {
             properties = mapOf("satisfied" to isPositive)
         )
         ChromeCustomTabUtils.launchUrl(requireContext(), BLAZE_CAMPAIGN_CREATION_SURVEY_URL_I1)
+        dismiss()
     }
 }
