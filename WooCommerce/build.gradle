@@ -246,8 +246,8 @@ dependencies {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
     implementation(libs.androidx.preference.main)
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
-    implementation "androidx.datastore:datastore:1.0.0"
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.main)
 
     implementation "androidx.navigation:navigation-common:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-fragment:$gradle.ext.navigationVersion"
