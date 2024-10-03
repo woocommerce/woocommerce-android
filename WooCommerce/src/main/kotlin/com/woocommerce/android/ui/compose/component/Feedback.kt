@@ -1,5 +1,6 @@
-package com.woocommerce.android.ui.products.ai
+package com.woocommerce.android.ui.compose.component
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,8 +21,9 @@ import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 
 @Composable
-fun AiFeedbackForm(
+fun FeedbackRequest(
     onFeedbackReceived: (Boolean) -> Unit,
+    @StringRes feedbackRequestText: Int,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -34,7 +36,7 @@ fun AiFeedbackForm(
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         Text(
-            text = stringResource(id = R.string.ai_feedback_form_message),
+            text = stringResource(id = feedbackRequestText),
             color = colorResource(id = R.color.color_on_surface_medium),
             modifier = Modifier.weight(1f)
         )

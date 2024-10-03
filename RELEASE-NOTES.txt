@@ -11,6 +11,7 @@
 - [*] Fixed incorrect instructions on "What is Tap to Pay" screen in the Payments section [https://github.com/woocommerce/woocommerce-android/pull/12709]
 - [***] Merchants can now view and edit custom fields of their products and orders from the app [https://github.com/woocommerce/woocommerce-android/issues/12207]
 - [*] Fix size of the whats new announcement dialog [https://github.com/woocommerce/woocommerce-android/pull/12692]
+- [*] Enables Blaze survey [https://github.com/woocommerce/woocommerce-android/pull/12761]
 
 20.6
 -----
