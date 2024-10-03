@@ -189,6 +189,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun retryApplicationPasswordsCheck() = launch {
+        fetchedSiteId.value = -1
         login()
     }
 
