@@ -50,20 +50,16 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         orderDetailRepository.getWooServicesPluginInfo()
             .takeIf {
                 val pluginVersion = it.version ?: "0.0.0"
-                it.isPluginReady() && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
+                it.isOperational && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
             }?.let { return true }
 
         orderDetailRepository.getWooShippingPluginInfo()
             .takeIf {
                 val pluginVersion = it.version ?: "0.0.0"
-
-                it.isPluginReady()
-                    && FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled()
+                it.isOperational
                     && pluginVersion.semverCompareTo(SUPPORTED_WC_SHIPPING_VERSION) >= 0
             }?.let { return true }
 
         return false
     }
-
-    private fun WooPlugin.isPluginReady() = isInstalled && isActive
 }
