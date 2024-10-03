@@ -115,7 +115,6 @@ ext {
     wordPressLoginVersion = '1.18.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '5.0.0'
-    workManagerVersion = '2.7.1'
     androidxCameraVersion = '1.2.3'
     guavaVersion = '33.1.0-android'
     protobufVersion = '3.25.3'

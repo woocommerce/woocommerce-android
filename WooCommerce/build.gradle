@@ -254,7 +254,7 @@ dependencies {
     implementation "androidx.navigation:navigation-runtime:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui:$gradle.ext.navigationVersion"
 
-    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+    implementation(libs.androidx.work.runtime.ktx)
 
     implementation(libs.androidx.core.splashscreen)
 
