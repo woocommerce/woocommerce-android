@@ -129,7 +129,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCShippingPlugin(installed = false, active = false)
 
         // When
-        val isShippingPluginReady = sut.isShippingPluginReady
+        val isShippingPluginReady = sut.shippingPluginSupport.isSupported()
 
         // Then
         assertThat(isShippingPluginReady).isTrue
@@ -142,7 +142,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCShippingPlugin(installed = true, active = true)
 
         // When
-        val isShippingPluginReady = sut.isShippingPluginReady
+        val isShippingPluginReady = sut.shippingPluginSupport.isSupported()
 
         // Then
         assertThat(isShippingPluginReady).isTrue
@@ -155,7 +155,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         givenWCShippingPlugin(installed = false, active = false)
 
         // When
-        val isShippingPluginReady = sut.isShippingPluginReady
+        val isShippingPluginReady = sut.shippingPluginSupport.isSupported()
 
         // Then
         assertThat(isShippingPluginReady).isFalse

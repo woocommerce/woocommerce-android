@@ -93,7 +93,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("LargeClass")
+@Suppress("LargeClass, LongParameterList")
 class OrderDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
@@ -770,7 +770,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchSLCreationEligibilityAsync() = async {
-        if (shippingLabelOnboardingRepository.isShippingPluginReady) {
+        if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
             orderDetailRepository.fetchSLCreationEligibility(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
@@ -802,7 +802,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        if (shippingLabelOnboardingRepository.isShippingPluginReady) {
+        if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
@@ -874,7 +874,7 @@ class OrderDetailViewModel @Inject constructor(
 
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 
-        val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.isShippingPluginReady &&
+        val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.id) &&
             !orderEligibleForInPersonPayments
 
