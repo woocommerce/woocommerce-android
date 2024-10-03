@@ -1,7 +1,13 @@
 package com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
@@ -33,17 +39,30 @@ fun WooShippingLabelsPackageCreationScreen(
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = tabIndex) {
-            tabs.forEachIndexed { index, pageTab ->
-                Tab(
-                    text = { Text(text = pageTab.title) },
-                    selected = tabIndex == index,
-                    onClick = { tabIndex = index }
-                )
+    Scaffold(
+        topBar = {
+            TabRow(selectedTabIndex = tabIndex) {
+                tabs.forEachIndexed { index, pageTab ->
+                    Tab(
+                        text = { Text(text = pageTab.title) },
+                        selected = tabIndex == index,
+                        onClick = { tabIndex = index }
+                    )
+                }
+            }
+        },
+        content = { paddingValues ->
+            Column(
+                modifier = modifier
+                    .background(MaterialTheme.colors.surface)
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(text = "Content for ${tabs[tabIndex].title}")
             }
         }
-    }
+    )
 }
 
 @Preview
