@@ -236,8 +236,8 @@ dependencies {
     // Support library
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.constraintlayout.main)
-    implementation "androidx.recyclerview:recyclerview:1.3.2"
-    implementation "androidx.recyclerview:recyclerview-selection:1.1.0"
+    implementation(libs.androidx.recyclerview.main)
+    implementation(libs.androidx.recyclerview.selection)
     implementation(libs.androidx.appcompat)
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.transition:transition:$transitionVersion"
