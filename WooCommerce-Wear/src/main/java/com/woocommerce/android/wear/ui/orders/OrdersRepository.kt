@@ -54,6 +54,7 @@ class OrdersRepository @Inject constructor(
     suspend fun getStoredOrders(
         selectedSite: SiteModel
     ) = orderStore.getOrdersForSite(selectedSite)
+        .sortedByDescending { it.dateCreated }
 
     suspend fun getOrderFromId(
         selectedSite: SiteModel,
