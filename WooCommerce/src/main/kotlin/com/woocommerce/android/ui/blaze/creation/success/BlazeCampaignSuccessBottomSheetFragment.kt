@@ -19,11 +19,15 @@ class BlazeCampaignSuccessBottomSheetFragment : WCBottomSheetDialogFragment() {
     @Inject
     lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
+    @Inject
+    lateinit var shouldShowFeedbackRequest: ShouldShowFeedbackRequest
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
             BlazeCampaignSuccessBottomSheet(
                 ::onDoneClicked,
-                ::onFeedbackRequestTapped
+                ::onFeedbackRequestTapped,
+                shouldShowFeedbackRequest
             )
         }
     }

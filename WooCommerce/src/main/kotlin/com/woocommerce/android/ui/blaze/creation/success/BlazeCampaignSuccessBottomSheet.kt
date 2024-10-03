@@ -18,6 +18,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -33,6 +38,20 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+
+@Composable
+fun BlazeCampaignSuccessBottomSheet(
+    onDoneTapped: () -> Unit,
+    onRequestFeedback: (Boolean) -> Unit,
+    shouldShowFeedbackRequest: ShouldShowFeedbackRequest,
+) {
+    var showFeedbackRequest by remember { mutableStateOf(false) }
+    LaunchedEffect(shouldShowFeedbackRequest) {
+        showFeedbackRequest = shouldShowFeedbackRequest()
+    }
+
+    BlazeCampaignSuccessBottomSheet(onDoneTapped, onRequestFeedback)
+}
 
 @Composable
 fun BlazeCampaignSuccessBottomSheet(
@@ -139,5 +158,8 @@ fun RequestFeedback(
 @LightDarkThemePreviews
 @Composable
 private fun BlazeCampaignSuccessBottomSheetPreview() {
-    BlazeCampaignSuccessBottomSheet(onDoneTapped = {})
+    BlazeCampaignSuccessBottomSheet(
+        onDoneTapped = {},
+        onRequestFeedback = {}
+    )
 }
