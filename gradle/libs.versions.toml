@@ -1,6 +1,8 @@
 [versions]
 android-billingclient = '5.0.0'
 androidx-appcompat = '1.4.2'
+androidx-constraintlayout-compose = '1.0.1'
+androidx-constraintlayout-main = '2.1.4'
 androidx-core-main = '1.13.1'
 androidx-core-splashscreen = '1.0.1'
 androidx-lifecycle = '2.7.0'
@@ -24,6 +26,8 @@ wordpress-libaddressinput = '0.0.2'
 [libraries]
 android-billingclient-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "android-billingclient" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidx-constraintlayout-compose" }
+androidx-constraintlayout-main = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout-main" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-main" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidx-core-splashscreen" }
 androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
