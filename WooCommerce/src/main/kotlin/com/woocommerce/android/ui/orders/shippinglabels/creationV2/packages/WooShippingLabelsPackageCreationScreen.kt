@@ -21,10 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageTab
-import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType
 import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.CARRIER
 import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.CUSTOM
 import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.SAVED
+import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.forms.WooShippingCarrierPackageScreen
+import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.forms.WooShippingCustomPackageCreationScreen
+import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.forms.WooShippingSavedPackageScreen
 
 @Composable
 fun WooShippingLabelsPackageCreationScreen(
@@ -63,17 +65,10 @@ fun WooShippingLabelsPackageCreationScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                val currentTab = tabs[tabIndex]
-                when (currentTab.type) {
-                    CUSTOM -> {
-                        Text(text = "Custom tab content")
-                    }
-                    CARRIER -> {
-                        Text(text = "Carrier tab content")
-                    }
-                    SAVED -> {
-                        Text(text = "Saved tab content")
-                    }
+                when (tabs[tabIndex].type) {
+                    CUSTOM -> WooShippingCustomPackageCreationScreen()
+                    CARRIER -> WooShippingCarrierPackageScreen()
+                    SAVED -> WooShippingSavedPackageScreen()
                 }
             }
         }
