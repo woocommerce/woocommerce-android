@@ -393,6 +393,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         setup {
             whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
                 .thenReturn(Result.failure(Exception()))
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.success(testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }))
         }
 
         val event = viewModel.event.runAndCaptureValues {
