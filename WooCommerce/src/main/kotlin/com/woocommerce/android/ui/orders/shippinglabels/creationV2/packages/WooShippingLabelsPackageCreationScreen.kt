@@ -6,7 +6,11 @@ import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -25,16 +29,17 @@ fun WooShippingLabelsPackageCreationScreen(
 @Composable
 fun WooShippingLabelsPackageCreationScreen(
     modifier: Modifier = Modifier,
-    currentTabIndex: Int = 0,
     tabs: List<PageTab>
 ) {
+    var tabIndex by remember { mutableIntStateOf(0) }
+
     Column(modifier = modifier.fillMaxSize()) {
-        TabRow(selectedTabIndex = currentTabIndex) {
+        TabRow(selectedTabIndex = tabIndex) {
             tabs.forEachIndexed { index, pageTab ->
                 Tab(
                     text = { Text(text = pageTab.title) },
-                    selected = currentTabIndex == index,
-                    onClick = { /*TODO*/ }
+                    selected = tabIndex == index,
+                    onClick = { tabIndex = index }
                 )
             }
         }
