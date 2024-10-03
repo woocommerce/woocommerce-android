@@ -9,8 +9,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
 @HiltViewModel
 class WooShippingLabelsPackageCreationViewModel @Inject constructor(
@@ -25,7 +25,6 @@ class WooShippingLabelsPackageCreationViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     private fun createPageTabs(): List<PageTab> {
-
         return listOf(
             PageTab(resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_custom)),
             PageTab(resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_carrier)),
