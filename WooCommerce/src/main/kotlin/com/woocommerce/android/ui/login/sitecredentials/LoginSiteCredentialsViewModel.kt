@@ -312,7 +312,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     if (site.fullAuthorizationUrl.isNotNullOrEmpty()) {
                         triggerEvent(
                             ShowApplicationPasswordTutorialScreen(
-                                url = site.applicationPasswordsAuthorizeUrl,
+                                url = site.fullAuthorizationUrl!!,
                                 errorMessage = errorMessage
                             )
                         )

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthentic
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -385,5 +386,24 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.event.value)
             .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
+    }
+
+    @Test
+    fun `given application passwords enabled and login fails for an unknown reason, when user attempts to sign-in, then show WebView login flow`() = testBlocking {
+        setup {
+            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.failure(Exception()))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onUsernameChanged(testUsername)
+            viewModel.onPasswordChanged(testPassword)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onContinueClick()
+        }.last()
+
+        assertThat(event).isInstanceOf(LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen::class.java)
+        assertThat((event as LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen).url)
+            .isEqualTo(urlAuthFull)
     }
 }
