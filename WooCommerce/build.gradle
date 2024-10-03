@@ -245,7 +245,7 @@ dependencies {
     implementation(libs.androidx.browser) {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }
-    implementation "androidx.preference:preference:1.2.0"
+    implementation(libs.androidx.preference.main)
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     implementation "androidx.datastore:datastore:1.0.0"
 
