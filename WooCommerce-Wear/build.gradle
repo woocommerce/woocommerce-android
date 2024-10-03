@@ -135,7 +135,7 @@ dependencies {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("org.wordpress:utils:$wordPressUtilsVersion") {
+    implementation(libs.wordpress.utils) {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }

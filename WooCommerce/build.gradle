@@ -258,7 +258,7 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
 
-    implementation("org.wordpress:utils:$wordPressUtilsVersion") {
+    implementation(libs.wordpress.utils) {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
