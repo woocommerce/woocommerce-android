@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,8 @@ import kotlinx.parcelize.Parcelize
 
 @HiltViewModel
 class WooShippingLabelsPackageCreationViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
 
     private val _viewState = savedState.getStateFlow(
@@ -23,10 +25,11 @@ class WooShippingLabelsPackageCreationViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     private fun createPageTabs(): List<PageTab> {
+
         return listOf(
-            PageTab(R.string.woo_shipping_labels_package_creation_tab_custom),
-            PageTab(R.string.woo_shipping_labels_package_creation_tab_carrier),
-            PageTab(R.string.woo_shipping_labels_package_creation_tab_saved),
+            PageTab(resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_custom)),
+            PageTab(resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_carrier)),
+            PageTab(resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_saved)),
         )
     }
 
@@ -37,6 +40,6 @@ class WooShippingLabelsPackageCreationViewModel @Inject constructor(
 
     @Parcelize
     data class PageTab(
-        val titleResource: Int
+        val title: String
     ) : Parcelable
 }
