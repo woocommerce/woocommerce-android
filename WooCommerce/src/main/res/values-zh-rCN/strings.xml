@@ -954,8 +954,6 @@ Language: zh_CN
     <string name="error_troubleshooting">故障排除</string>
     <string name="orderlist_parsing_error_message">这可能与插件冲突有关。 请稍后再试或与我们联系，我们很乐意为您提供帮助！</string>
     <string name="orderlist_parsing_error_title">我们无法加载您的数据。</string>
-    <string name="ai_product_description_dialog_message">使用 AI 快速添加描述。 立即试用我们的功能！</string>
-    <string name="ai_product_description_dialog_title">使用 AI 添加产品描述</string>
     <string name="ai_product_description_note_dialog_confirmation">知道了</string>
     <string name="ai_product_description_note_dialog_message">请注意，此产品描述是使用我们的 AI 赋能工具生成的。 请检查和编辑内容以确保相关内容与您的品牌和消息相契合。</string>
     <string name="ai_product_description_note_dialog_heading">不错的开局！</string>

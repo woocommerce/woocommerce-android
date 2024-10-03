@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls.FETCH_PAYMENT_METHOD_URL_PATH
 import com.woocommerce.android.AppUrls.WPCOM_ADD_PAYMENT_METHOD
 import com.woocommerce.android.BuildConfig
@@ -36,7 +37,8 @@ class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val productDetailRepository: ProductDetailRepository,
-    private val mediaFilesRepository: MediaFilesRepository
+    private val mediaFilesRepository: MediaFilesRepository,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) {
     companion object {
         private const val BLAZE_CAMPAIGN_CREATION_ORIGIN = "wc-android"
@@ -191,7 +193,8 @@ class BlazeRepository @Inject constructor(
             destinationParameters = DestinationParameters(
                 targetUrl = product.permalink,
                 parameters = emptyMap()
-            )
+            ),
+            objectiveId = appPrefsWrapper.blazeCampaignSelectedObjective
         )
     }
 
@@ -318,7 +321,8 @@ class BlazeRepository @Inject constructor(
                         topics = it.interests.map { interest -> interest.id }
                     )
                 },
-                isEndlessCampaign = campaignDetails.budget.isEndlessCampaign
+                isEndlessCampaign = campaignDetails.budget.isEndlessCampaign,
+                objectiveId = campaignDetails.objectiveId
             )
         )
 
@@ -384,6 +388,7 @@ class BlazeRepository @Inject constructor(
         val budget: Budget,
         val targetingParameters: TargetingParameters,
         val destinationParameters: DestinationParameters,
+        val objectiveId: String
     ) : Parcelable
 
     sealed interface BlazeCampaignImage : Parcelable {

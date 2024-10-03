@@ -73,9 +73,6 @@
             android:id="@+id/action_dashboard_to_aboutYourStoreFragment"
             app:destination="@id/aboutYourStoreFragment" />
         <action
-            android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
-            app:destination="@id/AIProductDescriptionDialogFragment" />
-        <action
             android:id="@+id/action_dashboard_to_nameYourStoreDialogFragment"
             app:destination="@id/nameYourStoreDialogFragment" />
         <action
@@ -608,7 +605,7 @@
             app:nullable="false" />
     </dialog>
     <action
-        android:id="@+id/action_open_Whatsnew_from_Main"
+        android:id="@+id/action_global_FeatureAnnouncementDialogFragmentOnMain"
         app:destination="@id/featureAnnouncementDialogFragmentOnMain"
         app:enterAnim="@anim/activity_fade_in"
         app:exitAnim="@null"
@@ -748,10 +745,6 @@
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
-    <dialog
-        android:id="@+id/AIProductDescriptionDialogFragment"
-        android:name="com.woocommerce.android.ui.dashboard.AIProductDescriptionDialogFragment"
-        android:label="AIProductDescriptionDialogFragment" />
     <dialog
         android:id="@+id/createTestOrderDialogFragment"
         android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"

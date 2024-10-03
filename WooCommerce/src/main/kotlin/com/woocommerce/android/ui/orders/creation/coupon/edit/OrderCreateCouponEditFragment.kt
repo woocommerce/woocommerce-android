@@ -8,17 +8,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponEditFragmentDirections.Companion.actionOrderCreationCouponEditFragmentToOrderCreationFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class OrderCreateCouponEditFragment : BaseFragment() {
-    private val args: OrderCreateCouponEditFragmentArgs by navArgs()
     private val viewModel by viewModels<OrderCreateCouponDetailsViewModel>()
 
     override fun onCreateView(
@@ -44,19 +41,19 @@ class OrderCreateCouponEditFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon -> {
-                    val action = actionOrderCreationCouponEditFragmentToOrderCreationFragment(
-                        mode = args.orderCreationMode,
-                        couponEditResult = OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon(
-                            it.couponCode
-                        ),
-                        sku = null,
-                        barcodeFormat = null
+                    navigateBackWithResult(
+                        key = KEY_COUPON_EDIT_RESULT,
+                        result = it,
+                        destinationId = R.id.orderCreationFragment
                     )
-                    findNavController().navigate(action)
                 }
             }
         }
     }
 
     override fun getFragmentTitle() = getString(R.string.order_creation_remove_this_coupon)
+
+    companion object {
+        const val KEY_COUPON_EDIT_RESULT = "key_coupon_edit_result"
+    }
 }

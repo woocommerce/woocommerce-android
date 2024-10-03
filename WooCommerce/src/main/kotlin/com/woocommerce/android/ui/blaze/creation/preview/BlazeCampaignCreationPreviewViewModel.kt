@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.preview
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -15,6 +16,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.ui.blaze.BlazeRepository.CampaignDetails
+import com.woocommerce.android.ui.blaze.BlazeRepository.Objective
 import com.woocommerce.android.ui.blaze.Location
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.DEVICE
@@ -22,6 +24,7 @@ import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.INTERES
 import com.woocommerce.android.ui.blaze.creation.targets.BlazeTargetType.LANGUAGE
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -43,7 +46,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     private val blazeRepository: BlazeRepository,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationPreviewFragmentArgs by savedStateHandle.navArgs()
     private val campaignDetails = savedStateHandle.getNullableStateFlow(
@@ -53,6 +56,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         clazz = CampaignDetails::class.java
     )
     private var aiSuggestions: List<AiSuggestionForAd> = emptyList()
+    private var campaignObjectives: List<Objective> = emptyList()
 
     private val adDetailsState = savedStateHandle.getStateFlow(viewModelScope, AdDetailsUiState.LOADING)
     private val dialogState = MutableStateFlow<DialogState?>(null)
@@ -60,8 +64,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     val viewState = combine(
         campaignDetails.filterNotNull(),
         adDetailsState,
-        dialogState
-    ) { campaignDetails, adDetailsState, dialogState ->
+        dialogState,
+        blazeRepository.observeObjectives()
+    ) { campaignDetails, adDetailsState, dialogState, objectives ->
+        campaignObjectives = objectives
         CampaignPreviewUiState(
             adDetails = when (adDetailsState) {
                 AdDetailsUiState.LOADING -> AdDetailsUi.Loading
@@ -177,35 +183,54 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         )
         campaignDetails.value?.let {
             val isImageMissing = it.campaignImage is BlazeRepository.BlazeCampaignImage.None
-            val isContentMissing = it.tagLine.isEmpty() || it.description.isEmpty()
-            if (isImageMissing || isContentMissing) {
-                dialogState.value = DialogState(
-                    message = if (isImageMissing) {
-                        R.string.blaze_campaign_preview_missing_image_dialog_text
-                    } else {
-                        R.string.blaze_campaign_preview_missing_content_dialog_text
-                    },
-                    positiveButton = DialogState.DialogButton(
-                        text = if (isImageMissing) {
-                            R.string.blaze_campaign_preview_missing_image_dialog_positive_button
-                        } else {
-                            R.string.blaze_campaign_preview_missing_content_dialog_positive_button
-                        },
-                        onClick = {
-                            dialogState.value = null
-                            onEditAdClicked()
-                        }
-                    ),
-                    negativeButton = DialogState.DialogButton(
-                        text = R.string.cancel,
-                        onClick = { dialogState.value = null }
-                    )
-                )
-                return
-            }
+            val isMissingTaglineOrDesc = it.tagLine.isEmpty() || it.description.isEmpty()
+            val isObjectiveMissing = it.objectiveId.isEmpty()
 
-            triggerEvent(NavigateToPaymentSummary(it))
+            when {
+                isImageMissing -> buildMissingRequiredDataDialog(
+                    message = R.string.blaze_campaign_preview_missing_image_dialog_text,
+                    positiveButtonText = R.string.blaze_campaign_preview_missing_image_dialog_positive_button,
+                    positiveButtonOnClick = ::onEditAdClicked
+                )
+
+                isMissingTaglineOrDesc -> buildMissingRequiredDataDialog(
+                    message = R.string.blaze_campaign_preview_missing_content_dialog_text,
+                    positiveButtonText = R.string.blaze_campaign_preview_missing_content_dialog_positive_button,
+                    positiveButtonOnClick = ::onEditAdClicked
+                )
+
+                isObjectiveMissing && FeatureFlag.OBJECTIVE_SECTION.isEnabled() -> buildMissingRequiredDataDialog(
+                    message = R.string.blaze_campaign_preview_missing_objective_dialog_text,
+                    positiveButtonText = R.string.blaze_campaign_preview_missing_objective_dialog_positive_button,
+                    positiveButtonOnClick = { triggerEvent(NavigateToObjectiveSelectionScreen) }
+                )
+
+                else -> triggerEvent(NavigateToPaymentSummary(it))
+            }
         }
+    }
+
+    private fun buildMissingRequiredDataDialog(
+        @StringRes message: Int,
+        @StringRes positiveButtonText: Int,
+        @StringRes negativeButtonText: Int = R.string.cancel,
+        positiveButtonOnClick: () -> Unit,
+        negativeButtonOnClick: () -> Unit = { dialogState.value = null }
+    ) {
+        dialogState.value = DialogState(
+            message = message,
+            positiveButton = DialogState.DialogButton(
+                text = positiveButtonText,
+                onClick = {
+                    dialogState.value = null
+                    positiveButtonOnClick()
+                }
+            ),
+            negativeButton = DialogState.DialogButton(
+                text = negativeButtonText,
+                onClick = negativeButtonOnClick
+            )
+        )
     }
 
     private fun isAdContentGeneratedByAi(campaignDetails: CampaignDetails?): Boolean =
@@ -234,6 +259,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     )
                 }
             }
+            blazeRepository.fetchObjectives()
         }
     }
 
@@ -245,8 +271,21 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             getTargetLocationsDetails(),
             getTargetInterestsDetails(),
         ),
-        destinationUrl = getTargetDestinationDetails()
+        destinationUrl = getTargetDestinationDetails(),
+        selectedObjective = getSelectedObjective(campaignObjectives)
     )
+
+    private fun getSelectedObjective(objectives: List<Objective>): CampaignDetailItemUi {
+        val selectedObjectiveDisplayValue = objectives
+            .find { it.id == campaignDetails.value?.objectiveId }
+            ?.title
+            ?: resourceProvider.getString(R.string.blaze_campaign_preview_details_choose_objective)
+        return CampaignDetailItemUi(
+            displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_objective),
+            displayValue = selectedObjectiveDisplayValue,
+            onItemSelected = { triggerEvent(NavigateToObjectiveSelectionScreen) }
+        )
+    }
 
     private fun CampaignDetails.getBudgetDetails() =
         CampaignDetailItemUi(
@@ -365,6 +404,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val budget: CampaignDetailItemUi,
         val targetDetails: List<CampaignDetailItemUi>,
         val destinationUrl: CampaignDetailItemUi,
+        val selectedObjective: CampaignDetailItemUi
     )
 
     data class CampaignDetailItemUi(
@@ -404,4 +444,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     data class NavigateToPaymentSummary(
         val campaignDetails: CampaignDetails
     ) : MultiLiveEvent.Event()
+
+    data object NavigateToObjectiveSelectionScreen : MultiLiveEvent.Event()
 }
