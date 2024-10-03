@@ -35,12 +35,12 @@ class WooPosIsEnabled @Inject constructor(
         val startTime = System.currentTimeMillis()
         val selectedSite = selectedSite.getOrNull() ?: return@coroutineScope false
 
+        val onboardingStatusDeferred = async {  cardReaderOnboardingChecker.getOnboardingState() }
+        val paymentAccountDeferred = async { getOrFetchPaymentAccount(selectedSite, WOOCOMMERCE_PAYMENTS) }
+
         if (!isRemoteFeatureFlagEnabled(WOO_POS)) return@coroutineScope false
         if (!isScreenSizeAllowed()) return@coroutineScope false
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
-
-        val onboardingStatusDeferred = async {  cardReaderOnboardingChecker.getOnboardingState() }
-        val paymentAccountDeferred = async { getOrFetchPaymentAccount(selectedSite, WOOCOMMERCE_PAYMENTS) }
 
         val onboardingStatus = onboardingStatusDeferred.await()
         if (onboardingStatus.preferredPlugin != PluginType.WOOCOMMERCE_PAYMENTS) return@coroutineScope false
