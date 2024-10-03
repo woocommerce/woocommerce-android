@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.list
 
-import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -21,12 +20,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductStatus
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ScrollToTop
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.SelectProducts
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowUpdateDialog
+import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.list.ProductListEvent.SelectProducts
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -40,8 +39,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -79,7 +76,7 @@ class ProductListViewModel @Inject constructor(
      * with @OptIn(LiveDelegateSavedStateAPI::class).
      */
     @Suppress("OPT_IN_USAGE")
-    val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
+    val viewStateLiveData = LiveDataDelegate(savedState, ProductListViewState())
     private var viewState by viewStateLiveData
 
     private val productFilterOptions: MutableMap<WCProductStore.ProductFilterOption, String> by lazy {
@@ -119,7 +116,7 @@ class ProductListViewModel @Inject constructor(
 
     fun isSearching() = viewState.isSearchActive == true
 
-    fun isSelecting() = viewState.productListState == ProductListState.Selecting
+    fun isSelecting() = viewState.productListState == ProductListViewState.ProductListState.Selecting
 
     fun isSkuSearch() = isSearching() && viewState.isSkuSearch
 
@@ -500,7 +497,7 @@ class ProductListViewModel @Inject constructor(
 
     private fun enterSelectionMode(count: Int) {
         viewState = viewState.copy(
-            productListState = ProductListState.Selecting,
+            productListState = ProductListViewState.ProductListState.Selecting,
             isAddProductButtonVisible = false,
             selectionCount = count
         )
@@ -508,7 +505,7 @@ class ProductListViewModel @Inject constructor(
 
     fun exitSelectionMode() {
         viewState = viewState.copy(
-            productListState = ProductListState.Browsing,
+            productListState = ProductListViewState.ProductListState.Browsing,
             isAddProductButtonVisible = true,
             selectionCount = null
         )
@@ -684,6 +681,7 @@ class ProductListViewModel @Inject constructor(
                         delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
                     )
                 }
+
                 else -> {
                     exitSelectionMode()
                     onFailure()
@@ -739,65 +737,4 @@ class ProductListViewModel @Inject constructor(
     }
 
     object OnProductSortingChanged
-
-    @Parcelize
-    data class ViewState(
-        val isSkeletonShown: Boolean? = null,
-        val isLoading: Boolean? = null,
-        val isLoadingMore: Boolean? = null,
-        val canLoadMore: Boolean? = null,
-        val isRefreshing: Boolean? = null,
-        val query: String? = null,
-        val isSkuSearch: Boolean = false,
-        val filterCount: Int? = null,
-        val isSearchActive: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null,
-        val sortingTitleResource: Int? = null,
-        val displaySortAndFilterCard: Boolean? = null,
-        val isAddProductButtonVisible: Boolean? = null,
-        val productListState: ProductListState? = null,
-        val selectionCount: Int? = null
-    ) : Parcelable {
-        @IgnoredOnParcel
-        val isBottomNavBarVisible = isSearchActive != true && productListState != ProductListState.Selecting
-
-        @IgnoredOnParcel
-        val isFilteringActive = filterCount != null && filterCount > 0
-    }
-
-    sealed class ProductListEvent : MultiLiveEvent.Event() {
-        data object ScrollToTop : ProductListEvent()
-        data object ShowAddProductBottomSheet : ProductListEvent()
-        data object ShowProductSortingBottomSheet : ProductListEvent()
-        data class ShowProductFilterScreen(
-            val stockStatusFilter: String?,
-            val productTypeFilter: String?,
-            val productStatusFilter: String?,
-            val productCategoryFilter: String?,
-            val selectedCategoryName: String?
-        ) : ProductListEvent()
-        data class ShowProductUpdateStockStatusScreen(val productsIds: List<Long>) : ProductListEvent()
-        sealed class ShowUpdateDialog : ProductListEvent() {
-            abstract val productsIds: List<Long>
-
-            data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
-            data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
-        }
-        data class ShowDiscardProductChangesConfirmationDialog(
-            val productId: Long,
-            val productName: String,
-        ) : ProductListEvent()
-        data class OpenProduct(
-            val productId: Long,
-            val oldPosition: Int,
-            val newPosition: Int,
-            val sharedView: View?
-        ) : ProductListEvent()
-
-        data object OpenEmptyProduct : ProductListEvent()
-
-        data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
-    }
-
-    enum class ProductListState { Selecting, Browsing }
 }

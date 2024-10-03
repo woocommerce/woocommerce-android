@@ -231,8 +231,6 @@ class AnalyticsTracker private constructor(
         const val KEY_DATE = "date"
         const val KEY_GRANULARITY = "granularity"
         const val KEY_SOURCE = "source"
-        const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
-        const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
         const val KEY_WAITING_TIME = "waiting_time"
         const val KEY_IS_NON_ATOMIC = "is_non_atomic"
         const val KEY_CAUSE = "cause"

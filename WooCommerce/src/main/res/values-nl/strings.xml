@@ -954,8 +954,6 @@ Language: nl
     <string name="error_troubleshooting">Probleemoplossing</string>
     <string name="orderlist_parsing_error_message">Dit kan liggen aan een conflict met een plugin. Probeer het later opnieuw of neem contact met ons op zodat wij je kunnen helpen.</string>
     <string name="orderlist_parsing_error_title">We konden je gegevens niet laden.</string>
-    <string name="ai_product_description_dialog_message">Voeg in mum van tijd beschrijvingen toe met behulp van AI. Bekijk deze functie vandaag nog!</string>
-    <string name="ai_product_description_dialog_title">AI-productbeschrijving toevoegen</string>
     <string name="ai_product_description_note_dialog_confirmation">Duidelijk</string>
     <string name="ai_product_description_note_dialog_message">Onthoud dat deze productbeschrijving is gegenereerd met ons AI-hulpmiddel. Bekijk en bewerk de content om er zeker van te zijn dat deze bij je merk en boodschap past.</string>
     <string name="ai_product_description_note_dialog_heading">Geweldige start!</string>
