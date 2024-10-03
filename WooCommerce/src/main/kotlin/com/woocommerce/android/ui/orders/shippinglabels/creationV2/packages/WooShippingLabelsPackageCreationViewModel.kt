@@ -20,17 +20,25 @@ class WooShippingLabelsPackageCreationViewModel @Inject constructor(
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = ViewState(createPageTabs())
+        initialValue = ViewState(pageTabs)
     )
     val viewState = _viewState.asLiveData()
 
-    private fun createPageTabs(): List<PageTab> {
-        return listOf(
-            PageTab(resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_custom)),
-            PageTab(resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_carrier)),
-            PageTab(resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_saved)),
+    private val pageTabs
+        get() = listOf(
+            PageTab(
+                type = PageType.CUSTOM,
+                title = resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_custom)
+            ),
+            PageTab(
+                type = PageType.CARRIER,
+                title = resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_carrier)
+            ),
+            PageTab(
+                type = PageType.SAVED,
+                title = resourceProvider.getString(R.string.woo_shipping_labels_package_creation_tab_saved)
+            )
         )
-    }
 
     @Parcelize
     data class ViewState(
@@ -39,6 +47,13 @@ class WooShippingLabelsPackageCreationViewModel @Inject constructor(
 
     @Parcelize
     data class PageTab(
-        val title: String
+        val title: String,
+        val type: PageType
     ) : Parcelable
+
+    enum class PageType {
+        CUSTOM,
+        CARRIER,
+        SAVED
+    }
 }
