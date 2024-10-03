@@ -103,12 +103,11 @@ private fun CustomFieldsEditorScreen(
                 title = "Custom Field",
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
-                    if (state.showDoneButton) {
-                        WCTextButton(
-                            onClick = onDoneClicked,
-                            text = stringResource(R.string.done)
-                        )
-                    }
+                    WCTextButton(
+                        onClick = onDoneClicked,
+                        text = stringResource(R.string.done),
+                        enabled = state.enableDoneButton
+                    )
                     WCOverflowMenu(
                         items = listOfNotNull(
                             R.string.custom_fields_editor_copy_key,
