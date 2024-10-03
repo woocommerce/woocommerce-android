@@ -21,6 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageTab
+import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType
+import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.CARRIER
+import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.CUSTOM
+import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.SAVED
 
 @Composable
 fun WooShippingLabelsPackageCreationScreen(
@@ -59,7 +63,18 @@ fun WooShippingLabelsPackageCreationScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                Text(text = "Content for ${tabs[tabIndex].title}")
+                val currentTab = tabs[tabIndex]
+                when (currentTab.type) {
+                    CUSTOM -> {
+                        Text(text = "Custom tab content")
+                    }
+                    CARRIER -> {
+                        Text(text = "Carrier tab content")
+                    }
+                    SAVED -> {
+                        Text(text = "Saved tab content")
+                    }
+                }
             }
         }
     )
@@ -71,9 +86,9 @@ fun WooShippingLabelsPackageCreationScreenPreview() {
     WooThemeWithBackground {
         WooShippingLabelsPackageCreationScreen(
             tabs = listOf(
-                PageTab("Custom"),
-                PageTab("Carrier"),
-                PageTab("Saved")
+                PageTab("Custom", CUSTOM),
+                PageTab("Carrier", CARRIER),
+                PageTab("Saved", SAVED)
             )
         )
     }
