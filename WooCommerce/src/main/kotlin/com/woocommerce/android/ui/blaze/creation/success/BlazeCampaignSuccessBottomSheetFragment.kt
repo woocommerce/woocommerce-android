@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.woocommerce.android.AppUrls.BLAZE_CAMPAIGN_CREATION_SURVEY_URL_I1
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -39,10 +38,7 @@ class BlazeCampaignSuccessBottomSheetFragment : WCBottomSheetDialogFragment() {
     private fun onFeedbackRequestTapped(isPositive: Boolean) {
         analyticsTracker.track(
             stat = AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_FEEDBACK,
-            properties = mapOf(
-                AnalyticsTracker.KEY_SOURCE to "satisfied",
-                AnalyticsTracker.KEY_IS_USEFUL to isPositive
-            )
+            properties = mapOf("satisfied" to isPositive)
         )
         ChromeCustomTabUtils.launchUrl(requireContext(), BLAZE_CAMPAIGN_CREATION_SURVEY_URL_I1)
     }
