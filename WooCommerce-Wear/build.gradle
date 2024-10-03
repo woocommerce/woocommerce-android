@@ -139,8 +139,8 @@ dependencies {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
-    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
-    implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
+    implementation(libs.automattic.tracks.android)
+    implementation(libs.automattic.tracks.crashlogging)
 
     // WearOS
     implementation(libs.google.play.services.wearable)
