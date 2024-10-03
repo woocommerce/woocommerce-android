@@ -25,11 +25,11 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            OBJECTIVE_SECTION -> false
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
+            REVAMP_WOO_SHIPPING,
+            OBJECTIVE_SECTION -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             INBOX,
