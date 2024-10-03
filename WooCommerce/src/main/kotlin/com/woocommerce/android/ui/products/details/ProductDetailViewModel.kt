@@ -2597,6 +2597,7 @@ class ProductDetailViewModel @Inject constructor(
         require(isProductStoredAtSite) {
             "Can't launch custom fields when product is not saved yet"
         }
+        tracker.track(stat = AnalyticsEvent.PRODUCT_DETAIL_CUSTOM_FIELDS_TAPPED)
         triggerEvent(ProductNavigationTarget.ViewCustomFields(getRemoteProductId()))
     }
 

@@ -16,6 +16,7 @@ import org.mockito.kotlin.whenever
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -56,13 +57,13 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
                 selectedRange = yesterday,
                 forceCardUpdates = forceCardUpdates
             )
-        ).doReturn(true)
+        ).doReturn(Result.success(Unit))
         whenever(
             updateAnalyticsData.invoke(
                 selectedRange = today,
                 forceCardUpdates = forceCardUpdates
             )
-        ).doReturn(true)
+        ).doReturn(Result.success(Unit))
 
         sut.invoke()
 
@@ -88,7 +89,7 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
                 selectedRange = today,
                 forceCardUpdates = forceCardUpdates
             )
-        ).doReturn(true)
+        ).doReturn(Result.success(Unit))
 
         sut.invoke()
 
@@ -101,7 +102,7 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
     @Test
     fun `when one update fails then return false`() = runTest {
         val forceCardUpdates = listOf(AnalyticsCards.Products, AnalyticsCards.Revenue, AnalyticsCards.Session)
-
+        val exception = Exception("Update failed")
         whenever(getSelectedRangeForTopPerformers.invoke()).doReturn(flowOf(today))
         whenever(getSelectedRangeForDashboardStats.invoke()).doReturn(flowOf(yesterday))
 
@@ -110,18 +111,20 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
                 selectedRange = today,
                 forceCardUpdates = forceCardUpdates
             )
-        ).doReturn(true)
+        ).doReturn(Result.success(Unit))
 
         whenever(
             updateAnalyticsData.invoke(
                 selectedRange = yesterday,
                 forceCardUpdates = forceCardUpdates
             )
-        ).doReturn(false)
+        ).doReturn(Result.failure(exception))
 
         val result = sut.invoke()
 
-        assertFalse(result)
+        assertFalse(result.isSuccess)
+        assertTrue(result.isFailure)
+        assertEquals(result.exceptionOrNull(), exception)
     }
 
     @Test
@@ -136,17 +139,17 @@ class UpdateAnalyticsDashboardRangeSelectionsTest : BaseUnitTest() {
                 selectedRange = today,
                 forceCardUpdates = forceCardUpdates
             )
-        ).doReturn(true)
+        ).doReturn(Result.success(Unit))
 
         whenever(
             updateAnalyticsData.invoke(
                 selectedRange = yesterday,
                 forceCardUpdates = forceCardUpdates
             )
-        ).doReturn(true)
+        ).doReturn(Result.success(Unit))
 
         val result = sut.invoke()
 
-        assertTrue(result)
+        assertTrue(result.isSuccess)
     }
 }

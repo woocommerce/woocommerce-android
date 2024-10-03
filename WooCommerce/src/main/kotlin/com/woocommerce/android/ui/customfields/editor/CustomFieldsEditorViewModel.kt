@@ -6,6 +6,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
@@ -26,7 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomFieldsEditorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val repository: CustomFieldsRepository
+    private val repository: CustomFieldsRepository,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val CUSTOM_FIELD_CREATED_RESULT_KEY = "custom_field_created"
@@ -76,6 +80,13 @@ class CustomFieldsEditorViewModel @Inject constructor(
         )
     }.asLiveData()
 
+    init {
+        analyticsTracker.track(
+            stat = AnalyticsEvent.CUSTOM_FIELD_EDITOR_LOADED,
+            properties = mapOf(AnalyticsTracker.KEY_TYPE to if (navArgs.customField == null) "new" else "edit")
+        )
+    }
+
     fun onKeyChanged(key: String) {
         keyErrorMessage.value = if (key.startsWith("_")) {
             UiString.UiStringRes(R.string.custom_fields_editor_key_error_underscore)
@@ -91,6 +102,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
 
     fun onDoneClicked() {
         launch {
+            analyticsTracker.track(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED)
             val value = requireNotNull(customFieldDraft.value)
             if (value.id == null) {
                 // Check for duplicate keys before inserting the new custom field
@@ -115,6 +127,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     fun onDeleteClicked() {
+        analyticsTracker.track(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DELETE_TAPPED)
         triggerEvent(
             MultiLiveEvent.Event.ExitWithResult(data = navArgs.customField, key = CUSTOM_FIELD_DELETED_RESULT_KEY)
         )
@@ -129,6 +142,10 @@ class CustomFieldsEditorViewModel @Inject constructor(
     }
 
     fun onEditorModeChanged(useHtmlEditor: Boolean) {
+        analyticsTracker.track(
+            stat = AnalyticsEvent.CUSTOM_FIELD_EDITOR_PICKER_TAPPED,
+            properties = mapOf(AnalyticsTracker.KEY_TYPE to if (useHtmlEditor) "aztec" else "text")
+        )
         this.useHtmlEditor.update { useHtmlEditor }
     }
 
@@ -159,7 +176,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
         val keyErrorMessage: UiString? = null,
         val isCreatingNewItem: Boolean = false,
     ) {
-        val showDoneButton
+        val enableDoneButton
             get() = customField.key.isNotEmpty() && hasChanges && keyErrorMessage == null
     }
 

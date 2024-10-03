@@ -212,7 +212,8 @@ class ProductDetailBottomSheetBuilder(
 
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.CUSTOM_FIELDS,
-            ProductNavigationTarget.ViewCustomFields(remoteId)
+            ProductNavigationTarget.ViewCustomFields(remoteId),
+            AnalyticsEvent.PRODUCT_DETAIL_CUSTOM_FIELDS_TAPPED
         )
     }
 }

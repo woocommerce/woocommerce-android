@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.customfields.editor
 
 import android.text.TextUtils
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
@@ -18,7 +20,9 @@ import org.junit.Test
 import org.mockito.MockedStatic
 import org.mockito.Mockito.mockStatic
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.util.HtmlUtils
 
@@ -31,21 +35,21 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
     }
 
     private val repository = mock<CustomFieldsRepository>()
+    private val analyticsTracker = mock<AnalyticsTrackerWrapper>()
     private lateinit var viewModel: CustomFieldsEditorViewModel
-    private lateinit var textUtilsStaticMock: MockedStatic<TextUtils>
+
+    private lateinit var htmlUtilsStaticMock: MockedStatic<HtmlUtils>
 
     @Before
     fun prepare() {
         /** [HtmlUtils.fastStripHtml] uses internally [TextUtils.isEmpty], so we need to mock it */
-        textUtilsStaticMock = mockStatic(TextUtils::class.java)
-        whenever(TextUtils.isEmpty(any())).thenAnswer { invocation ->
-            invocation.getArgument<String>(0).isEmpty()
-        }
+        htmlUtilsStaticMock = mockStatic(HtmlUtils::class.java)
+        whenever(HtmlUtils.fastStripHtml(any())).thenAnswer { invocation -> invocation.arguments[0] }
     }
 
     @After
     fun tearDown() {
-        textUtilsStaticMock.close()
+        htmlUtilsStaticMock.close()
     }
 
     suspend fun setup(editing: Boolean, prepareMocks: suspend () -> Unit = {}) {
@@ -55,7 +59,18 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
                 parentItemId = PARENT_ITEM_ID,
                 customField = if (editing) CustomFieldUiModel(CUSTOM_FIELD) else null
             ).toSavedStateHandle(),
-            repository = repository
+            repository = repository,
+            analyticsTracker = analyticsTracker
+        )
+    }
+
+    @Test
+    fun `when the screen is opened, then track loaded event`() = testBlocking {
+        setup(editing = true)
+
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_LOADED),
+            properties = any()
         )
     }
 
@@ -104,47 +119,47 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given editing an existing field, when key is changed, then show done button`() = testBlocking {
+    fun `given editing an existing field, when key is changed, then enable done button`() = testBlocking {
         setup(editing = true)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onKeyChanged("new key")
         }.last()
 
-        assertThat(state.showDoneButton).isTrue()
+        assertThat(state.enableDoneButton).isTrue()
     }
 
     @Test
-    fun `given editing an existing field, when value is changed, then show done button`() = testBlocking {
+    fun `given editing an existing field, when value is changed, then enable done button`() = testBlocking {
         setup(editing = true)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onValueChanged("new value")
         }.last()
 
-        assertThat(state.showDoneButton).isTrue()
+        assertThat(state.enableDoneButton).isTrue()
     }
 
     @Test
-    fun `given creating a new field, when the key is not empty, then show done button`() = testBlocking {
+    fun `given creating a new field, when the key is not empty, then enable done button`() = testBlocking {
         setup(editing = false)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onKeyChanged("key")
         }.last()
 
-        assertThat(state.showDoneButton).isTrue()
+        assertThat(state.enableDoneButton).isTrue()
     }
 
     @Test
-    fun `when key is empty, then hide done button`() = testBlocking {
+    fun `when key is empty, then disable done button`() = testBlocking {
         setup(editing = false)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onKeyChanged("")
         }.last()
 
-        assertThat(state.showDoneButton).isFalse()
+        assertThat(state.enableDoneButton).isFalse()
     }
 
     @Test
@@ -189,6 +204,10 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
                 key = CustomFieldsEditorViewModel.CUSTOM_FIELD_UPDATED_RESULT_KEY
             )
         )
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED),
+            properties = any()
+        )
     }
 
     @Test
@@ -209,6 +228,10 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
                 key = CustomFieldsEditorViewModel.CUSTOM_FIELD_CREATED_RESULT_KEY
             )
         )
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DONE_TAPPED),
+            properties = any()
+        )
     }
 
     @Test
@@ -226,7 +249,7 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         assertThat(state.keyErrorMessage)
             .isEqualTo(UiString.UiStringRes(R.string.custom_fields_editor_key_error_duplicate))
-        assertThat(state.showDoneButton).isFalse()
+        assertThat(state.enableDoneButton).isFalse()
     }
 
     @Test
@@ -255,6 +278,7 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
                 key = CustomFieldsEditorViewModel.CUSTOM_FIELD_DELETED_RESULT_KEY
             )
         )
+        verify(analyticsTracker).track(AnalyticsEvent.CUSTOM_FIELD_EDITOR_DELETE_TAPPED)
     }
 
     @Test
@@ -267,7 +291,7 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         assertThat(state.keyErrorMessage)
             .isEqualTo(UiString.UiStringRes(R.string.custom_fields_editor_key_error_underscore))
-        assertThat(state.showDoneButton).isFalse()
+        assertThat(state.enableDoneButton).isFalse()
     }
 
     @Test
@@ -311,5 +335,9 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(state.useHtmlEditor).isTrue()
+        verify(analyticsTracker).track(
+            stat = eq(AnalyticsEvent.CUSTOM_FIELD_EDITOR_PICKER_TAPPED),
+            properties = any()
+        )
     }
 }

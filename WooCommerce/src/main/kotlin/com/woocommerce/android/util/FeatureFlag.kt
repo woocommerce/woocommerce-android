@@ -16,7 +16,8 @@ enum class FeatureFlag {
     SHOW_INBOX_CTA,
     ENDLESS_CAMPAIGNS_SUPPORT,
     CUSTOM_FIELDS,
-    REVAMP_WOO_SHIPPING;
+    REVAMP_WOO_SHIPPING,
+    OBJECTIVE_SECTION;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -27,13 +28,14 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            CUSTOM_FIELDS,
-            REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
+            REVAMP_WOO_SHIPPING,
+            OBJECTIVE_SECTION -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             INBOX,
             SHOW_INBOX_CTA,
             GOOGLE_ADS_M1,
+            CUSTOM_FIELDS,
             ENDLESS_CAMPAIGNS_SUPPORT -> true
         }
     }
