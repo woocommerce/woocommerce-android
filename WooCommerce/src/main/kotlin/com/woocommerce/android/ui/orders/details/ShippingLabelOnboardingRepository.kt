@@ -55,8 +55,8 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         orderDetailRepository.getWooShippingPluginInfo()
             .takeIf {
                 val pluginVersion = it.version ?: "0.0.0"
-                it.isOperational
-                    && pluginVersion.semverCompareTo(SUPPORTED_WC_SHIPPING_VERSION) >= 0
+                it.isOperational &&
+                    pluginVersion.semverCompareTo(SUPPORTED_WC_SHIPPING_VERSION) >= 0
             }?.let {
                 return if (FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled()) {
                     ShippingLabelSupport.WC_SHIPPING_SUPPORTED
