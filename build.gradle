@@ -109,7 +109,6 @@ ext {
     aztecVersion = 'v2.1.4'
     flipperVersion = '0.176.1'
     stateMachineVersion = '0.2.0'
-    transitionVersion = '1.5.1'
     hiltJetpackVersion = '1.1.0'
     wordPressUtilsVersion = '3.5.0'
     mediapickerVersion = '0.3.1'
