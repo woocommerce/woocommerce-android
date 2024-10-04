@@ -34,6 +34,7 @@ androidx-work = '2.7.1'
 apache-commons-text = '1.10.0'
 apache-http-client-android = '4.3.5.1'
 automattic-about = '0.0.6'
+automattic-measure-builds = '2.1.2'
 automattic-tracks = '5.0.0'
 assertj = '3.24.1'
 bumptech-glide = '4.16.0'
@@ -221,6 +222,7 @@ zendesk-support = { group = "com.zendesk", name = "support", version.ref = "zend
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
+automattic-measure-builds = { id = "com.automattic.android.measure-builds", version.ref = "automattic-measure-builds" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
