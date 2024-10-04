@@ -396,7 +396,7 @@ dependencies {
         androidTestImplementation(libs.json.path) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
-        androidTestImplementation('commons-fileupload:commons-fileupload:1.5') {
+        androidTestImplementation(libs.commons.fileupload) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
     }
