@@ -456,7 +456,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    coreLibraryDesugaring(libs.android.desugar)
 
     // CameraX
     implementation "androidx.camera:camera-camera2:$androidxCameraVersion"
