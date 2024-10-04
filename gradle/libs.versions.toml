@@ -1,5 +1,6 @@
 [versions]
 android-billingclient = '5.0.0'
+androidx-activity = '1.8.0'
 androidx-appcompat = '1.4.2'
 androidx-arch-core = '2.1.0'
 androidx-browser = '1.5.0'
@@ -63,6 +64,8 @@ zendesk = '5.0.8'
 
 [libraries]
 android-billingclient-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "android-billingclient" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }

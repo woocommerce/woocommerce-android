@@ -408,7 +408,7 @@ dependencies {
 
     // ViewModel and LiveData
     implementation(libs.androidx.fragment.ktx)
-    implementation "androidx.activity:activity-ktx:1.8.0"
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.process)
 
@@ -437,7 +437,7 @@ dependencies {
     // Jetpack Compose
     implementation platform("androidx.compose:compose-bom:$composeBOMVersion")
     // Dependencies managed by BOM
-    implementation 'androidx.activity:activity-compose'
+    implementation(libs.androidx.activity.compose)
     implementation 'androidx.compose.material:material'
     implementation 'androidx.compose.animation:animation'
     implementation 'androidx.compose.ui:ui-tooling'
