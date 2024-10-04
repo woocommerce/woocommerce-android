@@ -5,23 +5,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BlazeCampaignCreationIntroFragment : BaseFragment() {
     private val viewModel: BlazeCampaignCreationIntroViewModel by viewModels()
+
+    @Inject
+    lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -33,6 +37,7 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.INTRO_VIEW)
         handleEvents()
         handleResults()
     }
@@ -40,25 +45,23 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm -> {
-                    findNavController().navigateSafely(
-                        directions = BlazeCampaignCreationIntroFragmentDirections
-                            .actionBlazeCampaignCreationIntroFragmentToBlazeCampaignCreationPreviewFragment(
-                                productId = event.productId,
-                                source = event.source
-                            ),
-                        navOptions = navOptions {
-                            popUpTo(R.id.blazeCampaignCreationIntroFragment) { inclusive = true }
-                        }
-                    )
-                }
+                is BlazeCampaignCreationIntroViewModel.ShowCampaignCreationForm ->
+                    startBlazeCampaignCreationFlow(event.source, event.productId)
 
-                is BlazeCampaignCreationIntroViewModel.ShowProductSelector -> {
-                    navigateToProductSelectorScreen()
-                }
+                is BlazeCampaignCreationIntroViewModel.ShowProductSelector ->
+                    startBlazeCampaignCreationFlow(BlazeFlowSource.INTRO_VIEW)
 
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun startBlazeCampaignCreationFlow(source: BlazeFlowSource, productId: Long? = null) {
+        lifecycleScope.launch {
+            blazeCampaignCreationDispatcher.startCampaignCreation(
+                productId = productId,
+                source = source
+            )
         }
     }
 
@@ -66,18 +69,5 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductSelected(it.first().id)
         }
-    }
-
-    private fun navigateToProductSelectorScreen() {
-        findNavController().navigateSafely(
-            BlazeCampaignCreationIntroFragmentDirections
-                .actionBlazeCampaignCreationIntroFragmentToNavGraphProductSelector(
-                    selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
-                    selectionHandling = ProductSelectorViewModel.SelectionHandling.SIMPLE,
-                    screenTitleOverride = getString(R.string.blaze_campaign_creation_product_selector_title),
-                    ctaButtonTextOverride = getString(R.string.blaze_campaign_creation_product_selector_cta_button),
-                    productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined
-                )
-        )
     }
 }
