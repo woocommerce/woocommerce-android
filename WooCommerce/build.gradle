@@ -450,8 +450,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation "io.coil-kt:coil-compose:$coilVersion"
-    implementation "io.coil-kt:coil-svg:$coilVersion"
+    implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
