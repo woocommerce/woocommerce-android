@@ -418,7 +418,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.play.services)
     testImplementation(libs.kotlinx.coroutines.test)
 
-    testImplementation 'app.cash.turbine:turbine:1.0.0'
+    testImplementation(libs.cashapp.turbine)
 
     implementation "org.apache.commons:commons-text:$commonsText"
     implementation "commons-io:commons-io:$commonsIO"
