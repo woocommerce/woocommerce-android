@@ -1,5 +1,4 @@
 pluginManagement {
-    gradle.ext.agpVersion = '8.5.1'
     gradle.ext.googleServicesVersion = '4.4.0'
     gradle.ext.daggerVersion = '2.50'
     gradle.ext.detektVersion = '1.23.5'
@@ -30,8 +29,6 @@ pluginManagement {
 
     plugins {
         id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
-        id 'com.android.application' version gradle.ext.agpVersion
-        id 'com.android.library' version gradle.ext.agpVersion
         id 'com.automattic.android.measure-builds' version gradle.ext.measureBuildsVersion
         id 'com.google.gms.google-services' version gradle.ext.googleServicesVersion
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion

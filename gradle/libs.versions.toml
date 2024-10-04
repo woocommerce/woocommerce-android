@@ -1,4 +1,5 @@
 [versions]
+agp = '8.5.1'
 android-billingclient = '5.0.0'
 android-desugar = '2.0.4'
 android-security-lint = '1.0.1'
@@ -202,3 +203,8 @@ wordpress-aztec-main = { group = "org.wordpress", name = "aztec", version.ref = 
 wordpress-aztec-glide-loader = { group = "org.wordpress.aztec", name = "glide-loader", version.ref = "wordpress-aztec" }
 wordpress-utils = { group = "org.wordpress", name = "utils", version.ref = "wordpress-utils" }
 zendesk-support = { group = "com.zendesk", name = "support", version.ref = "zendesk" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+android-test = { id = "com.android.test", version.ref = "agp" }
