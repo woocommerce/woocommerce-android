@@ -49,6 +49,7 @@ facebook-flipper = '0.176.1'
 facebook-shimmer = '0.5.0'
 facebook-soloader = '0.10.4'
 fastlane-screengrab = '2.1.1'
+fladle = '0.17.5'
 google-dagger = "2.50"
 google-firebase-bom = '32.7.1'
 google-gson = '2.10.1'
@@ -238,6 +239,7 @@ androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", ver
 automattic-measure-builds = { id = "com.automattic.android.measure-builds", version.ref = "automattic-measure-builds" }
 dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+fladle = { id = "com.osacky.fladle", version.ref = "fladle" }
 google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "google-protobuf-plugin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }

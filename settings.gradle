@@ -1,6 +1,4 @@
 pluginManagement {
-    gradle.ext.fladleVersion = '0.17.5'
-
     repositories {
         google()
         exclusiveContent {
@@ -15,10 +13,6 @@ pluginManagement {
             }
         }
         gradlePluginPortal()
-    }
-
-    plugins {
-        id "com.osacky.fladle" version gradle.ext.fladleVersion
     }
 }
 

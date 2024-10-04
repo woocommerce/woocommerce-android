@@ -10,7 +10,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.protobuf)
-    id "com.osacky.fladle"
+    alias(libs.plugins.fladle)
 }
 
 fladle {
