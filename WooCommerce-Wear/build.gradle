@@ -175,7 +175,7 @@ dependencies {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.main)
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation(libs.google.gson)
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
