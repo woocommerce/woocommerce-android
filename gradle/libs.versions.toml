@@ -43,6 +43,7 @@ cashapp-turbine = '1.0.0'
 coil = '2.1.0'
 commons-fileupload = '1.5'
 commons-io = '2.11.0'
+dependency-analysis = '1.28.0'
 detekt = '1.23.5'
 facebook-flipper = '0.176.1'
 facebook-shimmer = '0.5.0'
@@ -235,6 +236,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation" }
 automattic-measure-builds = { id = "com.automattic.android.measure-builds", version.ref = "automattic-measure-builds" }
+dependency-analysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependency-analysis" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 google-protobuf = { id = "com.google.protobuf", version.ref = "google-protobuf-plugin" }
