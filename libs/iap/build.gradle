@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -35,7 +35,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockito.inline)
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.kotlinx.coroutines.test)
 }

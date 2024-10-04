@@ -2,8 +2,8 @@ import io.sentry.android.gradle.extensions.InstrumentationFeature
 
 plugins {
     alias(libs.plugins.android.application)
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.parcelize'
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.dagger.hilt)
     id 'com.google.devtools.ksp'
     id 'io.sentry.android.gradle'
@@ -198,7 +198,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockito.inline)
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
+    testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.androidx.arch.core.testing) {
         exclude group: 'com.android.support', module: 'support-compat'
