@@ -123,4 +123,25 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `given no campaign yet, when starting the flow from intro screen, then start flow without intro`() =
+        testBlocking {
+            setup {
+                whenever(blazeRepository.getMostRecentCampaign()).thenReturn(null)
+            }
+
+            var event: BlazeCampaignCreationDispatcherEvent? = null
+            dispatcher.startCampaignCreation(
+                source = BlazeFlowSource.INTRO_VIEW,
+                productId = 1L
+            ) { event = it }
+
+            assertThat(event).isEqualTo(
+                BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationForm(
+                    productId = 1L,
+                    blazeSource = BlazeFlowSource.INTRO_VIEW
+                )
+            )
+        }
 }
