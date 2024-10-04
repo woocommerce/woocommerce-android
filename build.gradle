@@ -100,7 +100,6 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
     eventBusVersion = '3.3.1'

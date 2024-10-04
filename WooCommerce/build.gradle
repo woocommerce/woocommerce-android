@@ -319,9 +319,9 @@ dependencies {
 
     implementation(libs.mpandroidchart)
 
-    implementation "com.github.bumptech.glide:glide:$glideVersion"
-    ksp "com.github.bumptech.glide:compiler:$glideVersion"
-    implementation "com.github.bumptech.glide:volley-integration:$glideVersion@aar"
+    implementation(libs.bumptech.glide.main)
+    ksp(libs.bumptech.glide.compiler)
+    implementation(libs.bumptech.glide.volley.integration)
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:review:2.0.1'
 
