@@ -376,7 +376,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.uiautomator)
 
     // Dependencies for screenshots
-    androidTestImplementation 'tools.fastlane:screengrab:2.1.1'
+    androidTestImplementation(libs.fastlane.screengrab)
     androidTestImplementation('com.github.tomakehurst:wiremock') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
