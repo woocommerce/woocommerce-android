@@ -122,9 +122,6 @@ ext {
     composeCompilerVersion = "1.5.9"
     composeAccompanistVersion = "0.32.0"
     wearComposeVersion = "1.3.1"
-
-    // Testing
-    espressoVersion = '3.4.0'
 }
 
 // Onboarding and dev env setup tasks

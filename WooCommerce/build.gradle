@@ -367,8 +367,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.main.rules)
     androidTestImplementation(libs.assertj.core)
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation("androidx.test.espresso:espresso-contrib:$espressoVersion") {
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.espresso.contrib) {
         exclude group: "com.google.protobuf", module: "protobuf-lite"
     }
     androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
