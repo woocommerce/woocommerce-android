@@ -407,7 +407,7 @@ dependencies {
     }
 
     // ViewModel and LiveData
-    implementation "androidx.fragment:fragment-ktx:1.8.2"
+    implementation(libs.androidx.fragment.ktx)
     implementation "androidx.activity:activity-ktx:1.8.0"
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.process)
