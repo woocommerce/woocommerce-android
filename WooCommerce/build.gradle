@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.dagger.hilt)
     id 'io.sentry.android.gradle'
-    id 'androidx.navigation.safeargs.kotlin'
+    alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
     id "com.google.protobuf"
@@ -249,10 +249,10 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.main)
 
-    implementation "androidx.navigation:navigation-common:$gradle.ext.navigationVersion"
-    implementation "androidx.navigation:navigation-fragment:$gradle.ext.navigationVersion"
-    implementation "androidx.navigation:navigation-runtime:$gradle.ext.navigationVersion"
-    implementation "androidx.navigation:navigation-ui:$gradle.ext.navigationVersion"
+    implementation(libs.androidx.navigation.common)
+    implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation.runtime)
+    implementation(libs.androidx.navigation.ui)
 
     implementation(libs.androidx.work.runtime.ktx)
 
@@ -445,7 +445,7 @@ dependencies {
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.text.google.fonts)
-    implementation 'androidx.navigation:navigation-compose'
+    implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintlayout.compose)
