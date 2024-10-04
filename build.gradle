@@ -103,7 +103,6 @@ ext {
     constraintLayoutVersion = '1.2.0'
     eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.3'
-    androidxCameraVersion = '1.2.3'
     guavaVersion = '33.1.0-android'
     protobufVersion = '3.25.3'
     wearHorologistVersion = '0.6.10'

@@ -5,6 +5,7 @@ androidx-activity = '1.8.0'
 androidx-appcompat = '1.4.2'
 androidx-arch-core = '2.1.0'
 androidx-browser = '1.5.0'
+androidx-camera = '1.2.3'
 androidx-cardview = '1.0.0'
 androidx-compose-bom = '2024.04.00'
 androidx-compose-compiler = '1.5.9'
@@ -79,6 +80,9 @@ androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", ve
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "androidx-camera" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "androidx-camera" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "androidx-camera" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "androidx-cardview" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
 androidx-compose-animation-main = { group = "androidx.compose.animation", name = "animation" }
