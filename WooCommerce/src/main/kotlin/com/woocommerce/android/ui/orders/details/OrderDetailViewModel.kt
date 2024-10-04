@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -656,7 +657,14 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCreateShippingLabelButtonTapped() {
         tracker.trackShippinhLabelTapped()
-        triggerEvent(StartShippingLabelCreationFlow(order.id))
+        if (
+            FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
+            shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
+        ) {
+            triggerEvent(StartWooShippingLabelCreationFlow(order.id))
+        } else {
+            triggerEvent(StartShippingLabelCreationFlow(order.id))
+        }
     }
 
     fun onMarkOrderCompleteButtonTapped() {
