@@ -105,7 +105,6 @@ ext {
     googlePlayCoreVersion = '1.10.3'
     protobufVersion = '3.25.3'
     wearHorologistVersion = '0.6.10'
-    securityLintVersion = '1.0.1'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
     composeAccompanistVersion = "0.32.0"

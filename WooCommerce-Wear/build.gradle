@@ -215,7 +215,7 @@ dependencies {
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    lintChecks "com.android.security.lint:lint:$securityLintVersion"
+    lintChecks(libs.android.security.lint)
 }
 
 def checkGradlePropertiesFile() {

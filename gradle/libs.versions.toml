@@ -1,6 +1,7 @@
 [versions]
 android-billingclient = '5.0.0'
 android-desugar = '2.0.4'
+android-security-lint = '1.0.1'
 androidx-activity = '1.8.0'
 androidx-appcompat = '1.4.2'
 androidx-arch-core = '2.1.0'
@@ -76,6 +77,7 @@ zendesk = '5.0.8'
 [libraries]
 android-billingclient-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "android-billingclient" }
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar" }
+android-security-lint = { group = "com.android.security.lint", name = "lint", version.ref = "android-security-lint" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidx-activity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }

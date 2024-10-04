@@ -467,7 +467,7 @@ dependencies {
 
     implementation "com.google.protobuf:protobuf-javalite:$protobufVersion"
 
-    lintChecks "com.android.security.lint:lint:$securityLintVersion"
+    lintChecks(libs.android.security.lint)
 }
 
 protobuf {
