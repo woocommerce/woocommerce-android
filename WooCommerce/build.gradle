@@ -339,7 +339,7 @@ dependencies {
 
     // Debug dependencies
     debugImplementation(libs.facebook.flipper.main)
-    debugImplementation "com.facebook.soloader:soloader:0.10.4"
+    debugImplementation(libs.facebook.soloader)
     debugImplementation(libs.facebook.flipper.network.plugin) {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites

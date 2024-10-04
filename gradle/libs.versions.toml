@@ -24,6 +24,7 @@ assertj = '3.24.1'
 bumptech-glide = '4.16.0'
 facebook-flipper = '0.176.1'
 facebook-shimmer = '0.5.0'
+facebook-soloader = '0.10.4'
 google-firebase-bom = '32.7.1'
 google-material = '1.12.0'
 google-mlkit-barcode-scanning = '17.2.0'
@@ -90,6 +91,7 @@ bumptech-glide-volley-integration = { group = "com.github.bumptech.glide", name 
 facebook-flipper-main = { group = "com.facebook.flipper", name = "flipper", version.ref = "facebook-flipper" }
 facebook-flipper-network-plugin = { group = "com.facebook.flipper", name = "flipper-network-plugin", version.ref = "facebook-flipper" }
 facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "facebook-shimmer" }
+facebook-soloader = { group = "com.facebook.soloader", name = "soloader", version.ref = "facebook-soloader" }
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "google-firebase-bom" }
 google-firebase-config = { group = "com.google.firebase", name = "firebase-config" }
