@@ -283,13 +283,13 @@ dependencies {
         exclude group: "org.wordpress", module: "fluxc"
     }
 
-    implementation("org.wordpress:aztec:$aztecVersion") {
+    implementation(libs.wordpress.aztec.main) {
         exclude group: "com.android.volley"
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation("org.wordpress.aztec:glide-loader:$aztecVersion") {
+    implementation(libs.wordpress.aztec.glide.loader) {
         exclude group: "com.android.volley"
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
