@@ -110,7 +110,6 @@ ext {
     stateMachineVersion = '0.2.0'
     hiltJetpackVersion = '1.1.0'
     mediapickerVersion = '0.3.1'
-    wordPressLoginVersion = '1.18.0'
     aboutAutomatticVersion = '0.0.6'
     androidxCameraVersion = '1.2.3'
     guavaVersion = '33.1.0-android'

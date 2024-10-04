@@ -278,7 +278,7 @@ dependencies {
         exclude group: "org.wordpress", module: "utils"
     }
 
-    implementation("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
+    implementation("$gradle.ext.loginFlowBinaryPath:${libs.versions.wordpress.login.get()}") {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
