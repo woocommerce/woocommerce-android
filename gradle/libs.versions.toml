@@ -1,6 +1,7 @@
 [versions]
 android-billingclient = '5.0.0'
 androidx-appcompat = '1.4.2'
+androidx-arch-core = '2.1.0'
 androidx-browser = '1.5.0'
 androidx-cardview = '1.0.0'
 androidx-constraintlayout-compose = '1.0.1'
@@ -53,6 +54,7 @@ wordpress-utils = '3.5.0'
 [libraries]
 android-billingclient-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "android-billingclient" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "androidx-cardview" }
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidx-constraintlayout-compose" }
