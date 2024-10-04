@@ -144,15 +144,15 @@ dependencies {
 
     // WearOS
     implementation(libs.google.play.services.wearable)
-    implementation 'androidx.wear.tiles:tiles'
-    implementation 'androidx.wear.tiles:tiles-material'
+    implementation(libs.androidx.wear.tiles.main)
+    implementation(libs.androidx.wear.tiles.material)
     implementation "com.google.android.horologist:horologist-compose-tools:$wearHorologistVersion"
     implementation "com.google.android.horologist:horologist-tiles:$wearHorologistVersion"
     implementation "com.google.android.horologist:horologist-compose-layout:$wearHorologistVersion"
-    implementation 'androidx.wear.watchface:watchface-complications-data-source-ktx:1.2.1'
-    implementation "androidx.wear.compose:compose-material:$wearComposeVersion"
-    implementation "androidx.wear.compose:compose-foundation:$wearComposeVersion"
-    implementation 'androidx.wear:wear-tooling-preview:1.0.0'
+    implementation(libs.androidx.wear.watchface.complications.data.source.ktx)
+    implementation(libs.androidx.wear.compose.material)
+    implementation(libs.androidx.wear.compose.foundation)
+    implementation(libs.androidx.wear.tooling.preview)
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
