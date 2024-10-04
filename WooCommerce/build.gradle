@@ -7,7 +7,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'
-    id 'com.google.gms.google-services'
+    alias(libs.plugins.google.services)
     id 'com.google.devtools.ksp'
     id "com.google.protobuf"
     id "com.osacky.fladle"

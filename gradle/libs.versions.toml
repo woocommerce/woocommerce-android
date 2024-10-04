@@ -57,6 +57,7 @@ google-play-review = '2.0.1'
 google-play-services-auth = '20.2.0'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '18.1.0'
+google-services = '4.4.0'
 google-zxing = '3.5.3'
 gravatar = '0.2.0'
 jackson-databind = '2.12.7.1'
@@ -208,3 +209,4 @@ zendesk-support = { group = "com.zendesk", name = "support", version.ref = "zend
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }

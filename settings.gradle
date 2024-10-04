@@ -1,5 +1,4 @@
 pluginManagement {
-    gradle.ext.googleServicesVersion = '4.4.0'
     gradle.ext.daggerVersion = '2.50'
     gradle.ext.detektVersion = '1.23.5'
     gradle.ext.kotlinVersion = '1.9.22'
@@ -30,7 +29,6 @@ pluginManagement {
     plugins {
         id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
         id 'com.automattic.android.measure-builds' version gradle.ext.measureBuildsVersion
-        id 'com.google.gms.google-services' version gradle.ext.googleServicesVersion
         id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
         id 'io.sentry.android.gradle' version gradle.ext.sentryVersion
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion

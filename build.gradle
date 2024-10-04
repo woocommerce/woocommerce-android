@@ -12,7 +12,7 @@ plugins {
     id 'org.jetbrains.kotlin.android' apply false
     id 'com.google.dagger.hilt.android' apply false
     id 'androidx.navigation.safeargs.kotlin' apply false
-    id 'com.google.gms.google-services' apply false
+    alias(libs.plugins.google.services).apply(false)
     id 'com.google.devtools.ksp' apply false
 }
 
