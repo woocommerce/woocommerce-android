@@ -1,5 +1,4 @@
 pluginManagement {
-    gradle.ext.detektVersion = '1.23.5'
     gradle.ext.kotlinVersion = '1.9.22'
     gradle.ext.kspVersion = '1.9.22-1.0.17'
     gradle.ext.measureBuildsVersion = '2.1.2'
@@ -28,7 +27,6 @@ pluginManagement {
     plugins {
         id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
         id 'com.automattic.android.measure-builds' version gradle.ext.measureBuildsVersion
-        id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
         id 'io.sentry.android.gradle' version gradle.ext.sentryVersion
         id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
         id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion

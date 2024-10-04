@@ -3,7 +3,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id 'io.gitlab.arturbosch.detekt'
+    alias(libs.plugins.detekt)
     id 'com.automattic.android.measure-builds'
     id "com.autonomousapps.dependency-analysis"
     alias(libs.plugins.android.application).apply(false)
@@ -24,7 +24,7 @@ measureBuilds {
 }
 
 allprojects {
-    apply plugin: 'io.gitlab.arturbosch.detekt'
+    apply plugin: libs.plugins.detekt.get().pluginId
 
     repositories {
         google()
@@ -83,7 +83,7 @@ detektAll.configure {
 }
 
 dependencies {
-    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$gradle.ext.detektVersion"
+    detektPlugins(libs.detekt.formatting)
 }
 
 task clean(type: Delete) {
