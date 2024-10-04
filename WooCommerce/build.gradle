@@ -390,7 +390,7 @@ dependencies {
         androidTestImplementation(libs.jetty.webapp) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
-        androidTestImplementation('com.fasterxml.jackson.core:jackson-databind:2.12.7.1') {
+        androidTestImplementation(libs.jackson.databind) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
         androidTestImplementation('com.jayway.jsonpath:json-path:2.9.0') {
