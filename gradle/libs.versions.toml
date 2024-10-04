@@ -31,6 +31,7 @@ kotlinx-coroutines = '1.8.1'
 mockito-inline = '4.6.1'
 mockito-kotlin = '4.0.0'
 stripe-terminal = '3.7.1'
+wordpress-fluxc = 'trunk-7ad6ce4c250ba435d8d8c7feb898bceb259fb007'
 wordpress-libaddressinput = '0.0.2'
 wordpress-utils = '3.5.0'
 
