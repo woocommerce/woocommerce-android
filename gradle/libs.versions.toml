@@ -42,6 +42,7 @@ mockito-inline = '4.6.1'
 mockito-kotlin = '4.0.0'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
+squareup-leakcanary = '2.14'
 stripe-terminal = '3.7.1'
 wordpress-aztec = 'v2.1.4'
 wordpress-fluxc = 'trunk-7ad6ce4c250ba435d8d8c7feb898bceb259fb007'
@@ -118,6 +119,7 @@ mockito-inline = { group = "org.mockito", name = "mockito-inline", version.ref =
 mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" }
 photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref = "photoview" }
+squareup-leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "squareup-leakcanary" }
 stripe-terminal-localmobile = { group = "com.stripe", name = "stripeterminal-localmobile", version.ref = "stripe-terminal" }
 stripe-terminal-core = { group = "com.stripe", name = "stripeterminal-core", version.ref = "stripe-terminal" }
 wordpress-libaddressinput-common = { group = "org.wordpress", name = "libaddressinput.common", version.ref = "wordpress-libaddressinput" }

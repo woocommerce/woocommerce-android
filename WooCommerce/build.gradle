@@ -348,7 +348,7 @@ dependencies {
     }
 
     if (isLeakCanaryEnabled()) {
-        debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
+        debugImplementation(libs.squareup.leakcanary.android)
     }
 
     // Dependencies for local unit tests
