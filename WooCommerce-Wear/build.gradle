@@ -146,9 +146,9 @@ dependencies {
     implementation(libs.google.play.services.wearable)
     implementation(libs.androidx.wear.tiles.main)
     implementation(libs.androidx.wear.tiles.material)
-    implementation "com.google.android.horologist:horologist-compose-tools:$wearHorologistVersion"
-    implementation "com.google.android.horologist:horologist-tiles:$wearHorologistVersion"
-    implementation "com.google.android.horologist:horologist-compose-layout:$wearHorologistVersion"
+    implementation(libs.google.horologist.compose.tools)
+    implementation(libs.google.horologist.tiles)
+    implementation(libs.google.horologist.compose.layout)
     implementation(libs.androidx.wear.watchface.complications.data.source.ktx)
     implementation(libs.androidx.wear.compose.material)
     implementation(libs.androidx.wear.compose.foundation)

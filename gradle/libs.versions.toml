@@ -46,6 +46,7 @@ facebook-soloader = '0.10.4'
 fastlane-screengrab = '2.1.1'
 google-firebase-bom = '32.7.1'
 google-guava = '33.1.0-android'
+google-horologist = '0.6.10'
 google-material = '1.12.0'
 google-mlkit-barcode-scanning = '17.2.0'
 google-mlkit-text-recognition = '16.0.0'
@@ -161,6 +162,9 @@ google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", ve
 google-firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 google-firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 google-guava = { group = "com.google.guava", name = "guava", version.ref = "google-guava" }
+google-horologist-compose-layout = { group = "com.google.android.horologist", name = "horologist-compose-layout", version.ref = "google-horologist" }
+google-horologist-compose-tools = { group = "com.google.android.horologist", name = "horologist-compose-tools", version.ref = "google-horologist" }
+google-horologist-tiles = { group = "com.google.android.horologist", name = "horologist-tiles", version.ref = "google-horologist" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
 google-mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "google-mlkit-barcode-scanning" }
 google-mlkit-text-recognition-main = { group = "com.google.mlkit", name = "text-recognition", version.ref = "google-mlkit-text-recognition" }
