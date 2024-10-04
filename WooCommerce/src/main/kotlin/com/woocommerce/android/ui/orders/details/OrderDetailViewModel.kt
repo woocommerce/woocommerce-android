@@ -93,7 +93,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("LargeClass, LongParameterList")
+@Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 class OrderDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
