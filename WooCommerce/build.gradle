@@ -387,7 +387,7 @@ dependencies {
         androidTestImplementation(libs.wiremock) {
             because("newer versions of WireMock use Java APIs not available on Android")
         }
-        androidTestImplementation('org.eclipse.jetty:jetty-webapp:9.4.51.v20230217') {
+        androidTestImplementation(libs.jetty.webapp) {
             because("version shipped with WireMock 2.26.3 contains security vulnerabilities")
         }
         androidTestImplementation('com.fasterxml.jackson.core:jackson-databind:2.12.7.1') {
