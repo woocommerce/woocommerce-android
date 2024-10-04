@@ -334,7 +334,7 @@ dependencies {
 
     implementation(libs.google.mlkit.barcode.scanning)
 
-    implementation "com.google.zxing:core:3.5.3"
+    implementation(libs.google.zxing.core)
     implementation(libs.google.play.services.wearable)
 
     // Debug dependencies

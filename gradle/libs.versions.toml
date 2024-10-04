@@ -32,6 +32,7 @@ google-play-review = '2.0.1'
 google-play-services-auth = '20.2.0'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '18.1.0'
+google-zxing = '3.5.3'
 gravatar = '0.2.0'
 junit = '4.13.2'
 kotlinx-coroutines = '1.8.1'
@@ -101,6 +102,7 @@ google-play-review = { group = "com.google.android.play", name = "review", versi
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google-play-services-auth" }
 google-play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "google-play-services-code-scanner" }
 google-play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "google-play-services-wearable" }
+google-zxing-core = { group = "com.google.zxing", name = "core", version.ref = "google-zxing" }
 gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
