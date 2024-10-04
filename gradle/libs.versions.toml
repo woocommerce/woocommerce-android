@@ -22,6 +22,7 @@ automattic-about = '0.0.6'
 automattic-tracks = '5.0.0'
 assertj = '3.24.1'
 bumptech-glide = '4.16.0'
+facebook-flipper = '0.176.1'
 facebook-shimmer = '0.5.0'
 google-firebase-bom = '32.7.1'
 google-material = '1.12.0'
@@ -86,6 +87,8 @@ automattic-tracks-crashlogging = { group = "com.automattic.tracks", name = "cras
 bumptech-glide-main = { group = "com.github.bumptech.glide", name = "glide", version.ref = "bumptech-glide" }
 bumptech-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "bumptech-glide" }
 bumptech-glide-volley-integration = { group = "com.github.bumptech.glide", name = "volley-integration", version.ref = "bumptech-glide" }
+facebook-flipper-main = { group = "com.facebook.flipper", name = "flipper", version.ref = "facebook-flipper" }
+facebook-flipper-network-plugin = { group = "com.facebook.flipper", name = "flipper-network-plugin", version.ref = "facebook-flipper" }
 facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "facebook-shimmer" }
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "google-firebase-bom" }

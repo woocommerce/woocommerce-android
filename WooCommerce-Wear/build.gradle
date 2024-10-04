@@ -207,9 +207,9 @@ dependencies {
     })
 
     // Debug dependencies
-    debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
+    debugImplementation(libs.facebook.flipper.main)
     debugImplementation "com.facebook.soloader:soloader:0.10.4"
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
+    debugImplementation(libs.facebook.flipper.network.plugin) {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
