@@ -377,14 +377,14 @@ dependencies {
 
     // Dependencies for screenshots
     androidTestImplementation(libs.fastlane.screengrab)
-    androidTestImplementation('com.github.tomakehurst:wiremock') {
+    androidTestImplementation(libs.wiremock.get().module.toString()) {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
         exclude group: 'org.apache.commons', module: 'commons-lang3'
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
     }
     constraints {
-        androidTestImplementation("com.github.tomakehurst:wiremock:2.26.3") {
+        androidTestImplementation(libs.wiremock) {
             because("newer versions of WireMock use Java APIs not available on Android")
         }
         androidTestImplementation('org.eclipse.jetty:jetty-webapp:9.4.51.v20230217') {
