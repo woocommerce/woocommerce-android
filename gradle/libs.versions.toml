@@ -17,6 +17,7 @@ androidx-test-main = '1.4.0'
 androidx-test-uiautomator = '2.2.0'
 androidx-transition = '1.5.1'
 androidx-work = '2.7.1'
+automattic-about = '0.0.6'
 automattic-tracks = '5.0.0'
 assertj = '3.24.1'
 facebook-shimmer = '0.5.0'
@@ -67,6 +68,7 @@ androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiaut
 androidx-transition = { group = "androidx.transition", name = "transition", version.ref = "androidx-transition" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work" }
 assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
+automattic-about = { group = "com.automattic", name = "about", version.ref = "automattic-about" }
 automattic-tracks-android = { group = "com.automattic", name = "Automattic-Tracks-Android", version.ref = "automattic-tracks" }
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }
 automattic-tracks-crashlogging = { group = "com.automattic.tracks", name = "crashlogging", version.ref = "automattic-tracks" }

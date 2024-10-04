@@ -304,7 +304,7 @@ dependencies {
     implementation(libs.facebook.shimmer)
     implementation(libs.photoview)
 
-    implementation "com.automattic:about:$aboutAutomatticVersion"
+    implementation(libs.automattic.about)
 
     // Dagger
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
