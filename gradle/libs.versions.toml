@@ -58,6 +58,7 @@ wordpress-fluxc = 'trunk-7ad6ce4c250ba435d8d8c7feb898bceb259fb007'
 wordpress-login = '1.18.0'
 wordpress-libaddressinput = '0.0.2'
 wordpress-utils = '3.5.0'
+zendesk = '5.0.8'
 
 [libraries]
 android-billingclient-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "android-billingclient" }
@@ -145,3 +146,4 @@ wordpress-libaddressinput-common = { group = "org.wordpress", name = "libaddress
 wordpress-aztec-main = { group = "org.wordpress", name = "aztec", version.ref = "wordpress-aztec" }
 wordpress-aztec-glide-loader = { group = "org.wordpress.aztec", name = "glide-loader", version.ref = "wordpress-aztec" }
 wordpress-utils = { group = "org.wordpress", name = "utils", version.ref = "wordpress-utils" }
+zendesk-support = { group = "com.zendesk", name = "support", version.ref = "zendesk" }

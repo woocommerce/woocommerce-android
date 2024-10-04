@@ -402,7 +402,7 @@ dependencies {
     }
     androidTestImplementation(libs.apache.http.client.android)
 
-    implementation("com.zendesk:support:5.0.8") {
+    implementation(libs.zendesk.support) {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
