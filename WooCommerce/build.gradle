@@ -4,7 +4,7 @@ plugins {
     alias(libs.plugins.android.application)
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.parcelize'
-    id 'com.google.dagger.hilt.android'
+    alias(libs.plugins.google.dagger.hilt)
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'
     alias(libs.plugins.google.services)
@@ -307,15 +307,15 @@ dependencies {
     implementation(libs.automattic.about)
 
     // Dagger
-    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    implementation(libs.google.dagger.hilt.android.main)
     implementation(libs.androidx.hilt.navigation.fragment)
     implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.hilt.work)
 
     ksp(libs.androidx.hilt.compiler)
-    ksp "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
-    implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
-    ksp "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
+    ksp(libs.google.dagger.hilt.compiler)
+    implementation(libs.google.dagger.android.support)
+    ksp(libs.google.dagger.android.processor)
 
     implementation(libs.mpandroidchart)
 
@@ -371,8 +371,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso.contrib) {
         exclude group: "com.google.protobuf", module: "protobuf-lite"
     }
-    androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
-    kspAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
+    androidTestImplementation(libs.google.dagger.hilt.android.testing)
+    kspAndroidTest(libs.google.dagger.hilt.android.compiler)
     androidTestImplementation(libs.androidx.test.uiautomator)
 
     // Dependencies for screenshots

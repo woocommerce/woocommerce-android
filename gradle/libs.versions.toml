@@ -45,6 +45,7 @@ facebook-flipper = '0.176.1'
 facebook-shimmer = '0.5.0'
 facebook-soloader = '0.10.4'
 fastlane-screengrab = '2.1.1'
+google-dagger = "2.50"
 google-firebase-bom = '32.7.1'
 google-gson = '2.10.1'
 google-guava = '33.1.0-android'
@@ -160,6 +161,12 @@ facebook-flipper-network-plugin = { group = "com.facebook.flipper", name = "flip
 facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "facebook-shimmer" }
 facebook-soloader = { group = "com.facebook.soloader", name = "soloader", version.ref = "facebook-soloader" }
 fastlane-screengrab = { group = "tools.fastlane", name = "screengrab", version.ref = "fastlane-screengrab" }
+google-dagger-android-processor = { group = "com.google.dagger", name = "dagger-android-processor", version.ref = "google-dagger" }
+google-dagger-android-support = { group = "com.google.dagger", name = "dagger-android-support", version.ref = "google-dagger" }
+google-dagger-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "google-dagger" }
+google-dagger-hilt-android-main = { group = "com.google.dagger", name = "hilt-android", version.ref = "google-dagger" }
+google-dagger-hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "google-dagger" }
+google-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "google-dagger" }
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "google-firebase-bom" }
 google-firebase-config = { group = "com.google.firebase", name = "firebase-config" }
@@ -209,4 +216,5 @@ zendesk-support = { group = "com.zendesk", name = "support", version.ref = "zend
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
+google-dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-dagger" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
