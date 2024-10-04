@@ -104,7 +104,6 @@ ext {
     constraintLayoutVersion = '1.2.0'
     eventBusVersion = '3.3.1'
     googlePlayCoreVersion = '1.10.3'
-    stateMachineVersion = '0.2.0'
     mediapickerVersion = '0.3.1'
     androidxCameraVersion = '1.2.3'
     guavaVersion = '33.1.0-android'

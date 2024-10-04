@@ -57,6 +57,7 @@ mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
 squareup-leakcanary = '2.14'
 stripe-terminal = '3.7.1'
+tinder-statemachine = '0.2.0'
 wiremock = '2.26.3'
 wordpress-aztec = 'v2.1.4'
 wordpress-fluxc = 'trunk-7ad6ce4c250ba435d8d8c7feb898bceb259fb007'
@@ -152,6 +153,7 @@ photoview = { group = "com.github.chrisbanes", name = "PhotoView", version.ref =
 squareup-leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "squareup-leakcanary" }
 stripe-terminal-localmobile = { group = "com.stripe", name = "stripeterminal-localmobile", version.ref = "stripe-terminal" }
 stripe-terminal-core = { group = "com.stripe", name = "stripeterminal-core", version.ref = "stripe-terminal" }
+tinder-statemachine = { group = "com.tinder.statemachine", name = "statemachine", version.ref = "tinder-statemachine" }
 wiremock = { group = "com.github.tomakehurst", name = "wiremock", version.ref = "wiremock" }
 wordpress-libaddressinput-common = { group = "org.wordpress", name = "libaddressinput.common", version.ref = "wordpress-libaddressinput" }
 wordpress-aztec-main = { group = "org.wordpress", name = "aztec", version.ref = "wordpress-aztec" }

@@ -423,7 +423,7 @@ dependencies {
     implementation(libs.apache.commons.text)
     implementation(libs.commons.io)
 
-    implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
+    implementation(libs.tinder.statemachine)
 
     implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
         exclude group: "org.wordpress", module: "utils"
