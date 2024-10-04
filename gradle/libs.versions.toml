@@ -63,6 +63,7 @@ wordpress-aztec = 'v2.1.4'
 wordpress-fluxc = 'trunk-7ad6ce4c250ba435d8d8c7feb898bceb259fb007'
 wordpress-login = '1.18.0'
 wordpress-libaddressinput = '0.0.2'
+wordpress-mediapicker = '0.3.1'
 wordpress-utils = '3.5.0'
 zendesk = '5.0.8'
 

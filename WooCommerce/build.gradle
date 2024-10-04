@@ -425,11 +425,11 @@ dependencies {
 
     implementation(libs.tinder.statemachine)
 
-    implementation("${gradle.ext.mediaPickerBinaryPath}:$mediapickerVersion") {
+    implementation("${gradle.ext.mediaPickerBinaryPath}:${libs.versions.wordpress.mediapicker.get()}") {
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("${gradle.ext.mediaPickerSourceCameraBinaryPath}:$mediapickerVersion")
-    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:$mediapickerVersion") {
+    implementation("${gradle.ext.mediaPickerSourceCameraBinaryPath}:${libs.versions.wordpress.mediapicker.get()}")
+    implementation("${gradle.ext.mediaPickerSourceWordPressBinaryPath}:${libs.versions.wordpress.mediapicker.get()}") {
         exclude group: "org.wordpress", module: "utils"
         exclude group: "org.wordpress", module: "fluxc"
     }
