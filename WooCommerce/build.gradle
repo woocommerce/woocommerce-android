@@ -8,7 +8,7 @@ plugins {
     id 'io.sentry.android.gradle'
     id 'androidx.navigation.safeargs.kotlin'
     alias(libs.plugins.google.services)
-    id 'com.google.devtools.ksp'
+    alias(libs.plugins.ksp)
     id "com.google.protobuf"
     id "com.osacky.fladle"
 }

@@ -14,7 +14,7 @@ plugins {
     alias(libs.plugins.google.dagger.hilt).apply(false)
     id 'androidx.navigation.safeargs.kotlin' apply false
     alias(libs.plugins.google.services).apply(false)
-    id 'com.google.devtools.ksp' apply false
+    alias(libs.plugins.ksp).apply(false)
 }
 
 measureBuilds {
