@@ -420,7 +420,7 @@ dependencies {
 
     testImplementation(libs.cashapp.turbine)
 
-    implementation "org.apache.commons:commons-text:$commonsText"
+    implementation(libs.apache.commons.text)
     implementation "commons-io:commons-io:$commonsIO"
 
     implementation "com.tinder.statemachine:statemachine:$stateMachineVersion"
