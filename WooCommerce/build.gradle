@@ -308,11 +308,11 @@ dependencies {
 
     // Dagger
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
-    implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
-    implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
-    implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
+    implementation(libs.androidx.hilt.navigation.fragment)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
 
-    ksp "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
+    ksp(libs.androidx.hilt.compiler)
     ksp "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
     implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
     ksp "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
@@ -446,7 +446,7 @@ dependencies {
     implementation 'androidx.compose.ui:ui-text-google-fonts'
     implementation 'androidx.navigation:navigation-compose'
 
-    implementation 'androidx.hilt:hilt-navigation-compose:1.1.0'
+    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation "io.coil-kt:coil-compose:$coilVersion"
