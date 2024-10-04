@@ -151,7 +151,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion composeCompilerVersion
+        kotlinCompilerExtensionVersion libs.versions.androidx.compose.compiler.get()
     }
 
     flavorDimensions "buildType"
@@ -435,15 +435,16 @@ dependencies {
     }
 
     // Jetpack Compose
-    implementation platform("androidx.compose:compose-bom:$composeBOMVersion")
+    implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     // Dependencies managed by BOM
     implementation(libs.androidx.activity.compose)
-    implementation 'androidx.compose.material:material'
-    implementation 'androidx.compose.animation:animation'
-    implementation 'androidx.compose.ui:ui-tooling'
-    implementation 'androidx.compose.runtime:runtime-livedata'
-    implementation "androidx.compose.material:material-icons-extended"
-    implementation 'androidx.compose.ui:ui-text-google-fonts'
+    implementation(libs.androidx.compose.material.main)
+    implementation(libs.androidx.compose.animation.main)
+    implementation(libs.androidx.compose.ui.tooling.main)
+    implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation 'androidx.navigation:navigation-compose'
 
     implementation(libs.androidx.hilt.navigation.compose)
@@ -452,8 +453,8 @@ dependencies {
     implementation "io.coil-kt:coil-compose:$coilVersion"
     implementation "io.coil-kt:coil-svg:$coilVersion"
 
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.3.2'
-    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
 
