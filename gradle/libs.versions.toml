@@ -19,6 +19,7 @@ androidx-transition = '1.5.1'
 androidx-work = '2.7.1'
 automattic-tracks = '5.0.0'
 assertj = '3.24.1'
+facebook-shimmer = '0.5.0'
 google-firebase-bom = '32.7.1'
 google-material = '1.12.0'
 google-mlkit-barcode-scanning = '17.2.0'
@@ -68,6 +69,7 @@ assertj-core = { group = "org.assertj", name = "assertj-core", version.ref = "as
 automattic-tracks-android = { group = "com.automattic", name = "Automattic-Tracks-Android", version.ref = "automattic-tracks" }
 automattic-tracks-experimentation = { group = "com.automattic.tracks", name = "experimentation", version.ref = "automattic-tracks" }
 automattic-tracks-crashlogging = { group = "com.automattic.tracks", name = "crashlogging", version.ref = "automattic-tracks" }
+facebook-shimmer = { group = "com.facebook.shimmer", name = "shimmer", version.ref = "facebook-shimmer" }
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "google-firebase-bom" }
 google-firebase-config = { group = "com.google.firebase", name = "firebase-config" }
