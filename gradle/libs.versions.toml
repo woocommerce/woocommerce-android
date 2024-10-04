@@ -27,6 +27,8 @@ google-firebase-bom = '32.7.1'
 google-material = '1.12.0'
 google-mlkit-barcode-scanning = '17.2.0'
 google-mlkit-text-recognition = '16.0.0'
+google-play-app-update = '2.1.0'
+google-play-review = '2.0.1'
 google-play-services-auth = '20.2.0'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '18.1.0'
@@ -94,6 +96,8 @@ google-mlkit-text-recognition-main = { group = "com.google.mlkit", name = "text-
 google-mlkit-text-recognition-japanese = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-japanese", version.ref = "google-mlkit-text-recognition" }
 google-mlkit-text-recognition-chinese = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-chinese", version.ref = "google-mlkit-text-recognition" }
 google-mlkit-text-recognition-korean = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-korean", version.ref = "google-mlkit-text-recognition" }
+google-play-app-update = { group = "com.google.android.play", name = "app-update", version.ref = "google-play-app-update" }
+google-play-review = { group = "com.google.android.play", name = "review", version.ref = "google-play-review" }
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google-play-services-auth" }
 google-play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "google-play-services-code-scanner" }
 google-play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "google-play-services-wearable" }

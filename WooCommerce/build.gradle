@@ -322,8 +322,8 @@ dependencies {
     implementation(libs.bumptech.glide.main)
     ksp(libs.bumptech.glide.compiler)
     implementation(libs.bumptech.glide.volley.integration)
-    implementation 'com.google.android.play:app-update:2.1.0'
-    implementation 'com.google.android.play:review:2.0.1'
+    implementation(libs.google.play.app.update)
+    implementation(libs.google.play.review)
 
     implementation(libs.google.play.services.code.scanner)
 
