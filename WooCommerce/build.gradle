@@ -302,7 +302,7 @@ dependencies {
     debugImplementation project(":libs:iap")
 
     implementation(libs.facebook.shimmer)
-    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation(libs.photoview)
 
     implementation "com.automattic:about:$aboutAutomatticVersion"
 
