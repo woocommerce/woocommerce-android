@@ -32,7 +32,6 @@ class WooPosIsEnabled @Inject constructor(
 
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean = coroutineScope {
-        val startTime = System.currentTimeMillis()
         val selectedSite = selectedSite.getOrNull() ?: return@coroutineScope false
 
         val onboardingStatusDeferred = async { cardReaderOnboardingChecker.getOnboardingState() }
@@ -48,9 +47,8 @@ class WooPosIsEnabled @Inject constructor(
 
         val paymentAccount = paymentAccountDeferred.await() ?: return@coroutineScope false
         if (paymentAccount.country.lowercase() != "us") return@coroutineScope false
-        if (paymentAccount.storeCurrencies.default.lowercase() != "usd") return@coroutineScope true
+        if (paymentAccount.storeCurrencies.default.lowercase() != "usd") return@coroutineScope false
 
-        println("WooPosIsEnabled: ${System.currentTimeMillis() - startTime}ms")
         return@coroutineScope true
     }
 
