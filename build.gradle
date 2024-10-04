@@ -102,10 +102,6 @@ tasks.register("installGitHooks", Copy) {
     fileMode 0777
 }
 
-ext {
-    protobufVersion = '3.25.3'
-}
-
 // Onboarding and dev env setup tasks
 task checkBundler(type: Exec) {
     doFirst {

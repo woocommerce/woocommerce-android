@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
-    id "com.google.protobuf"
+    alias(libs.plugins.google.protobuf)
     id "com.osacky.fladle"
 }
 
@@ -465,14 +465,14 @@ dependencies {
 
     implementation(libs.google.guava)
 
-    implementation "com.google.protobuf:protobuf-javalite:$protobufVersion"
+    implementation(libs.google.protobuf.javalite)
 
     lintChecks(libs.android.security.lint)
 }
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:$protobufVersion"
+        artifact = libs.google.protobuf.protoc.get().toString()
     }
 
     // Generates the java Protobuf-lite code for the Protobufs in this project. See
