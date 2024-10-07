@@ -75,7 +75,7 @@ object SubscriptionDetailsMapper {
                 if (day == 0) {
                     SubscriptionPaymentSyncDate.None
                 } else {
-                    SubscriptionPaymentSyncDate.MonthDay(day, month)
+                    SubscriptionPaymentSyncDate.MonthDay(month = month, day = day)
                 }
             }
 
