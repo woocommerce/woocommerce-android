@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.SubscriptionDetailsMapper
+import com.woocommerce.android.model.SubscriptionPaymentSyncDate
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.wordpress.android.fluxc.model.WCProductModel
 import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -47,6 +49,57 @@ class SubscriptionDetailsMapperTest : BaseUnitTest() {
             assertThat(subscription.trialLength).isEqualTo(2)
             assertThat(subscription.oneTimeShipping).isEqualTo(false)
         }
+    }
+
+    @Test
+    fun `when sync date contains both a day and month, then parse it successfully`() {
+        val metadata = """ [ {
+                "id": 5182,
+                "key": ${WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE},
+                "value": {
+                    "day": 1,
+                    "month": 9
+                }
+            }]
+            """
+        val result = SubscriptionDetailsMapper.toAppModel(metadata)
+        assertThat(result).isNotNull
+        assertThat(result!!.paymentsSyncDate).isEqualTo(
+            SubscriptionPaymentSyncDate.MonthDay(month = 9, day = 1)
+        )
+    }
+
+    @Test
+    fun `when sync data day is 0, then parse it successfully`() {
+        val metadata = """ [ {
+                "id": 5182,
+                "key": ${WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE},
+                "value": {
+                    "day": 0,
+                    "month": 0
+                }
+            }]
+            """
+        val result = SubscriptionDetailsMapper.toAppModel(metadata)
+        assertThat(result).isNotNull
+        assertThat(result!!.paymentsSyncDate).isEqualTo(
+            SubscriptionPaymentSyncDate.None
+        )
+    }
+
+    @Test
+    fun `when sync date contains only a day, then parse it successfully`() {
+        val metadata = """ [ {
+                "id": 5182,
+                "key": ${WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE},
+                "value": 1
+            }]
+            """
+        val result = SubscriptionDetailsMapper.toAppModel(metadata)
+        assertThat(result).isNotNull
+        assertThat(result!!.paymentsSyncDate).isEqualTo(
+            SubscriptionPaymentSyncDate.Day(1)
+        )
     }
 
     /**
