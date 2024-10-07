@@ -33,12 +33,14 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
@@ -187,8 +189,8 @@ class ProductDetailViewModel @Inject constructor(
         savedState = savedState,
         initialValue = ProductDetailViewState(areImagesAvailable = !selectedSite.get().isPrivate)
     ) { old, new ->
-        if (old?.productDraft != new.productDraft) {
-            new.productDraft?.let {
+        if (old?.productAggregateDraft != new.productAggregateDraft) {
+            new.productAggregateDraft?.let {
                 updateCards(it)
                 draftChanges.value = it
             }
@@ -200,9 +202,9 @@ class ProductDetailViewModel @Inject constructor(
      * The goal of this is to allow composition of reactive streams using the product draft changes,
      * we need a separate stream because [LiveDataDelegate] supports a single observer.
      */
-    private val draftChanges = MutableStateFlow<Product?>(null)
+    private val draftChanges = MutableStateFlow<ProductAggregate?>(null)
 
-    private val storedProduct = MutableStateFlow<Product?>(null)
+    private val storedProduct = MutableStateFlow<ProductAggregate?>(null)
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -300,7 +302,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private val _hasChanges = storedProduct
         .combine(draftChanges) { storedProduct, productDraft ->
-            storedProduct?.let { product -> productDraft?.isSameProduct(product) == false } ?: false
+            storedProduct?.let { product -> productDraft?.isSame(product) == false } ?: false
         }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val hasChanges = _hasChanges.asLiveData()
 
@@ -318,8 +320,8 @@ class ProductDetailViewModel @Inject constructor(
 
     val menuButtonsState = draftChanges
         .filterNotNull()
-        .combine(_hasChanges) { productDraft, hasChanges ->
-            Pair(productDraft, hasChanges)
+        .combine(_hasChanges) { draft, hasChanges ->
+            Pair(draft.product, hasChanges)
         }.map { (productDraft, hasChanges) ->
             val canBeSavedAsDraft = this.isAddNewProductFlow &&
                 !isProductStoredAtSite &&
@@ -456,15 +458,18 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun initializeStoredProductAfterRestoration() {
+        // TODO: fetch subscription details
         launch {
             if (isAddNewProductFlow && !isProductStoredAtSite) {
-                storedProduct.value = createDefaultProductForAddFlow()
+                storedProduct.value = ProductAggregate(createDefaultProductForAddFlow(), null)
             } else {
                 when (val mode = navArgs.mode) {
                     is ProductDetailFragment.Mode.ShowProduct -> {
-                        storedProduct.value = productRepository.getProductAsync(
+                        productRepository.getProductAsync(
                             viewState.productDraft?.remoteId ?: mode.remoteProductId
-                        )
+                        )?.let {
+                            storedProduct.value = ProductAggregate(it, null)
+                        }
                     }
 
                     ProductDetailFragment.Mode.Loading -> {
@@ -711,15 +716,15 @@ class ProductDetailViewModel @Inject constructor(
             attributeListViewState = attributeListViewState.copy(progressDialogState = ProgressDialogState.Hidden)
         }
 
-    fun hasCategoryChanges() = storedProduct.value?.hasCategoryChanges(viewState.productDraft) ?: false
+    fun hasCategoryChanges() = storedProduct.value?.product?.hasCategoryChanges(viewState.productDraft) ?: false
 
-    fun hasTagChanges() = storedProduct.value?.hasTagChanges(viewState.productDraft) ?: false
+    fun hasTagChanges() = storedProduct.value?.product?.hasTagChanges(viewState.productDraft) ?: false
 
     fun hasSettingsChanges(): Boolean {
-        return if (storedProduct.value?.hasSettingsChanges(viewState.productDraft) == true) {
+        return if (storedProduct.value?.product?.hasSettingsChanges(viewState.productDraft) == true) {
             true
         } else {
-            storedProduct.value?.password != viewState.draftPassword
+            storedProduct.value?.product?.password != viewState.draftPassword
         }
     }
 
@@ -847,7 +852,7 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
-    fun hasExternalLinkChanges() = storedProduct.value?.hasExternalLinkChanges(viewState.productDraft) ?: false
+    fun hasExternalLinkChanges() = storedProduct.value?.product?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
     /**
      * Called when the back= button is clicked in a product sub detail screen
@@ -1138,7 +1143,7 @@ class ProductDetailViewModel @Inject constructor(
         storedProduct.value?.let {
             tracker.track(
                 event,
-                mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.remoteId)
+                mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.product.remoteId)
             )
         }
     }
@@ -1175,7 +1180,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsVisibilityButtonClicked() {
         val visibility = getProductVisibility()
-        val password = viewState.draftPassword ?: storedProduct.value?.password
+        val password = viewState.draftPassword ?: storedProduct.value?.product?.password
         triggerEvent(
             ProductNavigationTarget.ViewProductVisibility(
                 selectedSite.connectionType == SiteConnectionType.ApplicationPasswords,
@@ -1222,12 +1227,12 @@ class ProductDetailViewModel @Inject constructor(
     ) {
         updateProductDraft(type = productType.value, isVirtual = isVirtual)
 
-        viewState.productDraft?.let { productDraft ->
-            if (productType == ProductType.SUBSCRIPTION && productDraft.subscription == null) {
+        viewState.productAggregateDraft?.let { productAggregateDraft ->
+            if (productType == ProductType.SUBSCRIPTION && productAggregateDraft.subscription == null) {
                 viewState = viewState.copy(
-                    productDraft = productDraft.copy(
+                    productAggregateDraft = productAggregateDraft.copy(
                         subscription = ProductHelper.getDefaultSubscriptionDetails().copy(
-                            price = productDraft.regularPrice
+                            price = productAggregateDraft.product.regularPrice
                         )
                     )
                 )
@@ -1331,12 +1336,12 @@ class ProductDetailViewModel @Inject constructor(
                 saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
                     saleEndDate
                 } else {
-                    storedProduct.value?.saleEndDateGmt
+                    storedProduct.value?.product?.saleEndDateGmt
                 },
                 saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
                     saleStartDate ?: product.saleStartDateGmt
                 } else {
-                    storedProduct.value?.saleStartDateGmt
+                    storedProduct.value?.product?.saleStartDateGmt
                 },
                 downloads = downloads ?: product.downloads,
                 downloadLimit = downloadLimit ?: product.downloadLimit,
@@ -1353,17 +1358,16 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun updateProductSubscription(
-        price: BigDecimal? = viewState.productDraft?.subscription?.price,
+        price: BigDecimal? = viewState.productAggregateDraft?.subscription?.price,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
-        signUpFee: BigDecimal? = viewState.productDraft?.subscription?.signUpFee,
+        signUpFee: BigDecimal? = viewState.productAggregateDraft?.subscription?.signUpFee,
         length: Int? = null,
         trialLength: Int? = null,
         trialPeriod: SubscriptionPeriod? = null,
         oneTimeShipping: Boolean? = null
     ) {
-        viewState.productDraft?.let { product ->
-            val subscription = product.subscription ?: return
+        viewState.productAggregateDraft?.subscription?.let { subscription ->
             // The length ranges depend on the subscription period (days,weeks,months,years) and interval. If these
             // change we need to reset the length to "Never expire". This replicates web behavior
             val updatedLength = subscription.resetSubscriptionLengthIfThePeriodOrIntervalChanged(
@@ -1381,7 +1385,7 @@ class ProductDetailViewModel @Inject constructor(
                 trialPeriod = trialPeriod ?: subscription.trialPeriod,
                 oneTimeShipping = oneTimeShipping ?: subscription.oneTimeShipping
             )
-            viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
+            viewState = viewState.copy(subscriptionDraft = updatedSubscription)
         }
     }
 
@@ -1402,10 +1406,13 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun updateCards(product: Product) {
+    private fun updateCards(productAggregate: ProductAggregate) {
         launch(dispatchers.io) {
             mutex.withLock {
-                val cards = cardBuilder.buildPropertyCards(product, storedProduct.value?.sku ?: "")
+                val cards = cardBuilder.buildPropertyCards(
+                    productAggregate = productAggregate,
+                    originalSku = storedProduct.value?.product?.sku ?: ""
+                )
                 withContext(dispatchers.main) {
                     _productDetailCards.value = cards
                 }
@@ -1415,7 +1422,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun fetchBottomSheetList() {
-        viewState.productDraft?.let {
+        viewState.productAggregateDraft?.let {
             launch(dispatchers.computation) {
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
@@ -1477,7 +1484,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     private fun trackProductDetailLoaded() {
         if (hasTrackedProductDetailLoaded.not()) {
-            storedProduct.value?.let { product ->
+            storedProduct.value?.product?.let { product ->
                 launch {
                     val properties = mapOf(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
@@ -1506,7 +1513,9 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun updateProductVisibility(visibility: ProductVisibility, password: String?) {
         viewState = viewState.copy(
-            productDraft = viewState.productDraft?.copy(password = password)
+            productAggregateDraft = viewState.productAggregateDraft?.copy(
+                product = viewState.productDraft!!.copy(password = password)
+            )
         )
 
         when (visibility) {
@@ -1531,8 +1540,8 @@ class ProductDetailViewModel @Inject constructor(
      * then the visibility is `PRIVATE`, otherwise it's `PUBLIC`.
      */
     fun getProductVisibility(): ProductVisibility {
-        val status = viewState.productDraft?.status ?: storedProduct.value?.status
-        val password = viewState.draftPassword ?: storedProduct.value?.password
+        val status = viewState.productDraft?.status ?: storedProduct.value?.product?.status
+        val password = viewState.draftPassword ?: storedProduct.value?.product?.password
         return when {
             password?.isNotEmpty() == true -> {
                 ProductVisibility.PASSWORD_PROTECTED
@@ -1555,13 +1564,15 @@ class ProductDetailViewModel @Inject constructor(
         val productPasswordApi = determineProductPasswordApi()
         val password = when (productPasswordApi) {
             ProductPasswordApi.WPCOM -> productRepository.fetchProductPassword(remoteProductId)
-            ProductPasswordApi.CORE -> storedProduct.value?.password
+            ProductPasswordApi.CORE -> storedProduct.value?.product?.password
             ProductPasswordApi.UNSUPPORTED -> return
         }
 
-        storedProduct.update { it?.copy(password = password) }
+        storedProduct.update { it?.copy(product = it.product.copy(password = password)) }
         viewState = viewState.copy(
-            productDraft = viewState.productDraft?.copy(password = viewState.draftPassword ?: password)
+            productAggregateDraft = viewState.productAggregateDraft?.copy(
+                product = viewState.productDraft!!.copy(password = viewState.draftPassword ?: password)
+            )
         )
     }
 
@@ -1853,7 +1864,7 @@ class ProductDetailViewModel @Inject constructor(
         triggerEvent(ProductNavigationTarget.RenameProductAttribute(attributeName))
     }
 
-    fun hasAttributeChanges() = storedProduct.value?.hasAttributeChanges(viewState.productDraft) ?: false
+    fun hasAttributeChanges() = storedProduct.value?.product?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
      * Used by the add attribute screen to fetch the list of store-wide product attributes
@@ -1955,12 +1966,12 @@ class ProductDetailViewModel @Inject constructor(
         val result = productRepository.updateProduct(product.copy(password = viewState.draftPassword))
         if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
-            val isPasswordChanged = storedProduct.value?.password != viewState.draftPassword
+            val isPasswordChanged = storedProduct.value?.product?.password != viewState.draftPassword
             if (isPasswordChanged && determineProductPasswordApi() == ProductPasswordApi.WPCOM) {
                 // Update the product password using WordPress.com API
                 val password = viewState.productDraft?.password
                 if (productRepository.updateProductPassword(product.remoteId, password)) {
-                    storedProduct.update { it?.copy(password = password) }
+                    storedProduct.update { it?.copy(product = it.product.copy(password = password)) }
                     triggerEvent(ShowSnackbar(successMsg))
                 } else {
                     triggerEvent(ShowSnackbar(R.string.product_detail_update_product_password_error))
@@ -2063,7 +2074,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun updateProductState(productToUpdateFrom: Product) {
         val updatedDraft = viewState.productDraft?.let { currentDraft ->
-            if (storedProduct.value?.isSameProduct(currentDraft) == true) {
+            if (storedProduct.value?.product?.isSameProduct(currentDraft) == true) {
                 productToUpdateFrom
             } else {
                 productToUpdateFrom.mergeProduct(currentDraft)
@@ -2072,11 +2083,9 @@ class ProductDetailViewModel @Inject constructor(
 
         loadProductTaxAndShippingClassDependencies(updatedDraft)
 
-        viewState = viewState.copy(
-            productDraft = updatedDraft,
-            auxiliaryState = ProductDetailViewState.AuxiliaryState.None
-        )
-        storedProduct.value = productToUpdateFrom
+        viewState = viewState.copy(productDraft = updatedDraft)
+            .copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.None)
+        storedProduct.update { it?.copy(product = updatedDraft) }
     }
 
     private fun loadProductTaxAndShippingClassDependencies(product: Product) {
@@ -2097,6 +2106,7 @@ class ProductDetailViewModel @Inject constructor(
         imageUploadsJob?.cancel()
         imageUploadsJob = launch {
             draftChanges
+                .map { it?.product }
                 .distinctUntilChanged { old, new -> old?.remoteId == new?.remoteId }
                 .map { getRemoteProductId() }
                 .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddNewProductFlow }
@@ -2578,7 +2588,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun hasSubscriptionExpirationChanges(): Boolean {
-        return storedProduct.value?.subscription?.length != viewState.productDraft?.subscription?.length
+        return storedProduct.value?.subscription?.length != viewState.subscriptionDraft?.length
     }
 
     fun onProductCategorySearchQueryChanged(query: String) {
@@ -2696,7 +2706,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     @Parcelize
     data class ProductDetailViewState(
-        val productDraft: Product? = null,
+        val productAggregateDraft: ProductAggregate? = null,
         val auxiliaryState: AuxiliaryState = AuxiliaryState.None,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
@@ -2706,8 +2716,22 @@ class ProductDetailViewModel @Inject constructor(
         val isVariationListEmpty: Boolean? = null,
         val areImagesAvailable: Boolean
     ) : Parcelable {
+        val productDraft
+            get() = productAggregateDraft?.product
+        val subscriptionDraft
+            get() = productAggregateDraft?.subscription
         val draftPassword
             get() = productDraft?.password
+
+        fun copy(productDraft: Product?) = copy(
+            productAggregateDraft = productDraft?.let {
+                productAggregateDraft?.copy(product = it)
+            }
+        )
+
+        fun copy(subscriptionDraft: SubscriptionDetails) = copy(
+            productAggregateDraft = productAggregateDraft?.copy(subscription = subscriptionDraft)
+        )
 
         @Parcelize
         sealed class AuxiliaryState : Parcelable {

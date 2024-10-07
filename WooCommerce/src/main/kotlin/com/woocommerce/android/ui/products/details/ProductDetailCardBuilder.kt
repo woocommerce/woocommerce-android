@@ -19,6 +19,8 @@ import com.woocommerce.android.extensions.filterNotEmpty
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSet
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
+import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionProductVariation
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
@@ -110,38 +112,41 @@ class ProductDetailCardBuilder(
 
     private val onTooltipDismiss = { appPrefsWrapper.isAIProductDescriptionTooltipDismissed = true }
 
-    suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
+    suspend fun buildPropertyCards(
+        productAggregate: ProductAggregate,
+        originalSku: String
+    ): List<ProductPropertyCard> {
         this.originalSku = originalSku
 
         val cards = mutableListOf<ProductPropertyCard>()
-        cards.addIfNotEmpty(getPrimaryCard(product))
+        cards.addIfNotEmpty(getPrimaryCard(productAggregate))
 
-        cards.addIfNotEmpty(getBlazeCard(product))
+        cards.addIfNotEmpty(getBlazeCard(productAggregate))
 
-        when (product.productType) {
-            SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(product))
-            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(product))
-            GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(product))
-            EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(product))
-            SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(product))
-            VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableSubscriptionProductCard(product))
-            BUNDLE -> cards.addIfNotEmpty(getBundleProductsCard(product))
-            COMPOSITE -> cards.addIfNotEmpty(getCompositeProductsCard(product))
-            else -> cards.addIfNotEmpty(getOtherProductCard(product))
+        when (productAggregate.product.productType) {
+            SIMPLE -> cards.addIfNotEmpty(getSimpleProductCard(productAggregate))
+            VARIABLE -> cards.addIfNotEmpty(getVariableProductCard(productAggregate))
+            GROUPED -> cards.addIfNotEmpty(getGroupedProductCard(productAggregate))
+            EXTERNAL -> cards.addIfNotEmpty(getExternalProductCard(productAggregate))
+            SUBSCRIPTION -> cards.addIfNotEmpty(getSubscriptionProductCard(productAggregate))
+            VARIABLE_SUBSCRIPTION -> cards.addIfNotEmpty(getVariableSubscriptionProductCard(productAggregate))
+            BUNDLE -> cards.addIfNotEmpty(getBundleProductsCard(productAggregate))
+            COMPOSITE -> cards.addIfNotEmpty(getCompositeProductsCard(productAggregate))
+            else -> cards.addIfNotEmpty(getOtherProductCard(productAggregate))
         }
 
         return cards
     }
 
-    private fun getPrimaryCard(product: Product): ProductPropertyCard {
-        val showTooltip = product.description.isEmpty() &&
+    private fun getPrimaryCard(productAggregate: ProductAggregate): ProductPropertyCard {
+        val showTooltip = productAggregate.product.description.isEmpty() &&
             !appPrefsWrapper.isAIProductDescriptionTooltipDismissed &&
             appPrefsWrapper.getAIDescriptionTooltipShownNumber() <= MAXIMUM_TIMES_TO_SHOW_TOOLTIP
         return ProductPropertyCard(
             type = PRIMARY,
             properties = (
-                listOf(product.title()) +
-                    product.description(
+                listOf(productAggregate.product.title()) +
+                    productAggregate.product.description(
                         showAIButton = selectedSite.get().isEligibleForAI,
                         showTooltip = showTooltip,
                         onWriteWithAIClicked = viewModel::onWriteWithAIClicked,
@@ -151,15 +156,15 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private suspend fun getBlazeCard(product: Product): ProductPropertyCard? {
-        val isProductPublic = product.status == ProductStatus.PUBLISH &&
+    private suspend fun getBlazeCard(productAggregate: ProductAggregate): ProductPropertyCard? {
+        val isProductPublic = productAggregate.product.status == ProductStatus.PUBLISH &&
             viewModel.getProductVisibility() == ProductVisibility.PUBLIC
 
         @Suppress("ComplexCondition")
         if (!isBlazeEnabled() ||
             !isProductPublic ||
             viewModel.isProductUnderCreation ||
-            isProductCurrentlyPromoted(product.remoteId.toString())
+            isProductCurrentlyPromoted(productAggregate.product.remoteId.toString())
         ) {
             return null
         }
@@ -186,169 +191,169 @@ class ProductDetailCardBuilder(
         )
     }
 
-    private suspend fun getSimpleProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getSimpleProductCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.price(),
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.inventory(SIMPLE),
-                product.addons(),
-                product.quantityRules(),
-                product.shipping(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.downloads(),
-                product.customFields(),
-                product.productType()
+                productAggregate.price(),
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.inventory(SIMPLE),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.shipping(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.downloads(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
 
-    private suspend fun getGroupedProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getGroupedProductCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.groupedProducts(),
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.inventory(GROUPED),
-                product.addons(),
-                product.quantityRules(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.customFields(),
-                product.productType()
+                productAggregate.product.groupedProducts(),
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.inventory(GROUPED),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
 
-    private suspend fun getExternalProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getExternalProductCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.price(),
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.externalLink(),
-                product.inventory(EXTERNAL),
-                product.addons(),
-                product.quantityRules(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.customFields(),
-                product.productType()
+                productAggregate.price(),
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.externalLink(),
+                productAggregate.product.inventory(EXTERNAL),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
 
-    private suspend fun getVariableProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getVariableProductCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.warning(),
-                product.variations(),
-                product.variationAttributes(),
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.inventory(VARIABLE),
-                product.addons(),
-                product.quantityRules(),
-                product.shipping(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.customFields(),
-                product.productType()
+                productAggregate.product.warning(),
+                productAggregate.product.variations(),
+                productAggregate.product.variationAttributes(),
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.inventory(VARIABLE),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.shipping(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
 
-    private suspend fun getSubscriptionProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getSubscriptionProductCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.price(),
-                product.subscriptionExpirationDate(),
-                product.subscriptionTrial(),
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.inventory(SIMPLE),
-                product.addons(),
-                product.quantityRules(),
-                product.shipping(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.downloads(),
-                product.customFields(),
-                product.productType()
+                productAggregate.price(),
+                productAggregate.subscription?.subscriptionExpirationDate(),
+                productAggregate.subscription?.subscriptionTrial(),
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.inventory(SIMPLE),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.shipping(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.downloads(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
 
-    private suspend fun getVariableSubscriptionProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getVariableSubscriptionProductCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.warning(),
-                product.variations(),
-                product.variationAttributes(),
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.inventory(VARIABLE),
-                product.addons(),
-                product.quantityRules(),
-                product.shipping(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.customFields(),
-                product.productType()
+                productAggregate.product.warning(),
+                productAggregate.product.variations(),
+                productAggregate.product.variationAttributes(),
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.inventory(VARIABLE),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.shipping(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
 
-    private suspend fun getBundleProductsCard(product: Product): ProductPropertyCard {
+    private suspend fun getBundleProductsCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.bundleProducts(),
-                product.price(),
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.inventory(SIMPLE),
-                product.addons(),
-                product.quantityRules(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.customFields(),
-                product.productType()
+                productAggregate.product.bundleProducts(),
+                productAggregate.price(),
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.inventory(SIMPLE),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
 
-    private suspend fun getCompositeProductsCard(product: Product): ProductPropertyCard {
+    private suspend fun getCompositeProductsCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                product.componentProducts(),
-                product.price(),
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.inventory(SIMPLE),
-                product.addons(),
-                product.quantityRules(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.customFields(),
-                product.productType()
+                productAggregate.product.componentProducts(),
+                productAggregate.price(),
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.inventory(SIMPLE),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
@@ -357,19 +362,19 @@ class ProductDetailCardBuilder(
      * Used for product types the app doesn't support yet (ex: subscriptions), uses a subset
      * of properties since we can't be sure pricing, shipping, etc., are applicable
      */
-    private suspend fun getOtherProductCard(product: Product): ProductPropertyCard {
+    private suspend fun getOtherProductCard(productAggregate: ProductAggregate): ProductPropertyCard {
         return ProductPropertyCard(
             type = SECONDARY,
             properties = listOf(
-                if (viewModel.isProductUnderCreation) null else product.productReviews(),
-                product.addons(),
-                product.quantityRules(),
-                product.categories(),
-                product.tags(),
-                product.shortDescription(),
-                product.linkedProducts(),
-                product.customFields(),
-                product.productType()
+                if (viewModel.isProductUnderCreation) null else productAggregate.product.productReviews(),
+                productAggregate.product.addons(),
+                productAggregate.product.quantityRules(),
+                productAggregate.product.categories(),
+                productAggregate.product.tags(),
+                productAggregate.product.shortDescription(),
+                productAggregate.product.linkedProducts(),
+                productAggregate.product.customFields(),
+                productAggregate.product.productType()
             ).filterNotEmpty()
         )
     }
@@ -463,16 +468,16 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.shipping(): ProductProperty? {
-        return if (!this.isVirtual && hasShipping) {
-            val weightWithUnits = this.getWeightWithUnits(parameters.weightUnit)
-            val sizeWithUnits = this.getSizeWithUnits(parameters.dimensionUnit)
+    private fun ProductAggregate.shipping(): ProductProperty? {
+        return if (!this.product.isVirtual && hasShipping) {
+            val weightWithUnits = product.getWeightWithUnits(parameters.weightUnit)
+            val sizeWithUnits = product.getSizeWithUnits(parameters.dimensionUnit)
             val shippingGroup = mapOf(
                 Pair(resources.getString(string.product_weight), weightWithUnits),
                 Pair(resources.getString(string.product_dimensions), sizeWithUnits),
                 Pair(
                     resources.getString(string.product_shipping_class),
-                    viewModel.getShippingClassByRemoteShippingClassId(this.shippingClassId)
+                    viewModel.getShippingClassByRemoteShippingClassId(this.product.shippingClassId)
                 ),
                 Pair(
                     resources.getString(string.subscription_one_time_shipping),
@@ -492,22 +497,22 @@ class ProductDetailCardBuilder(
                 viewModel.onEditProductCardClicked(
                     ViewProductShipping(
                         ShippingData(
-                            weight = weight,
-                            length = length,
-                            width = width,
-                            height = height,
-                            shippingClassSlug = shippingClass,
-                            shippingClassId = shippingClassId,
-                            subscriptionShippingData = if (productType == SUBSCRIPTION ||
-                                this.productType == VARIABLE_SUBSCRIPTION
+                            weight = product.weight,
+                            length = product.length,
+                            width = product.width,
+                            height = product.height,
+                            shippingClassSlug = product.shippingClass,
+                            shippingClassId = product.shippingClassId,
+                            subscriptionShippingData = if (product.productType == SUBSCRIPTION ||
+                                product.productType == VARIABLE_SUBSCRIPTION
                             ) {
                                 ShippingData.SubscriptionShippingData(
                                     oneTimeShipping = subscription?.oneTimeShipping ?: false,
-                                    canEnableOneTimeShipping = if (productType == SUBSCRIPTION) {
+                                    canEnableOneTimeShipping = if (product.productType == SUBSCRIPTION) {
                                         subscription?.supportsOneTimeShipping ?: false
                                     } else {
                                         // For variable subscription products, we need to check against the variations
-                                        variationRepository.getProductVariationList(remoteId).all {
+                                        variationRepository.getProductVariationList(product.remoteId).all {
                                             (it as? SubscriptionProductVariation)?.subscriptionDetails
                                                 ?.supportsOneTimeShipping ?: false
                                         }
@@ -552,16 +557,16 @@ class ProductDetailCardBuilder(
         }
     }
 
-    private fun Product.price(): ProductProperty {
+    private fun ProductAggregate.price(): ProductProperty {
         val pricingData = PricingData(
-            taxClass = taxClass,
-            taxStatus = taxStatus,
-            isSaleScheduled = isSaleScheduled,
-            saleStartDate = saleStartDateGmt,
-            saleEndDate = saleEndDateGmt,
-            regularPrice = regularPrice,
-            salePrice = salePrice,
-            isSubscription = this.productType == SUBSCRIPTION,
+            taxClass = product.taxClass,
+            taxStatus = product.taxStatus,
+            isSaleScheduled = product.isSaleScheduled,
+            saleStartDate = product.saleStartDateGmt,
+            saleEndDate = product.saleEndDateGmt,
+            regularPrice = product.regularPrice,
+            salePrice = product.salePrice,
+            isSubscription = product.productType == SUBSCRIPTION,
             subscriptionPeriod = subscription?.period,
             subscriptionInterval = subscription?.periodInterval,
             subscriptionSignUpFee = subscription?.signUpFee,
@@ -578,7 +583,7 @@ class ProductDetailCardBuilder(
             string.product_price,
             pricingGroup,
             drawable.ic_gridicons_money,
-            showTitle = this.regularPrice.isSet()
+            showTitle = product.regularPrice.isSet()
         ) {
             viewModel.onEditProductCardClicked(
                 ViewProductPricing(pricingData),
@@ -894,43 +899,37 @@ class ProductDetailCardBuilder(
             )
         }
 
-    private fun Product.subscriptionExpirationDate(): ProductProperty? =
-        this.subscription?.let { subscription ->
-            PropertyGroup(
-                title = string.product_subscription_expiration_title,
-                icon = drawable.ic_calendar_expiration,
-                properties = mapOf(
-                    resources.getString(string.subscription_expire) to subscription.expirationDisplayValue(
-                        resources
-                    )
-                ),
-                showTitle = true,
-                onClick = {
-                    viewModel.onEditProductCardClicked(
-                        ViewProductSubscriptionExpiration(subscription),
-                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTION_EXPIRATION_TAPPED
-                    )
-                }
+    private fun SubscriptionDetails.subscriptionExpirationDate(): ProductProperty = PropertyGroup(
+        title = string.product_subscription_expiration_title,
+        icon = drawable.ic_calendar_expiration,
+        properties = mapOf(
+            resources.getString(string.subscription_expire) to expirationDisplayValue(
+                resources
+            )
+        ),
+        showTitle = true,
+        onClick = {
+            viewModel.onEditProductCardClicked(
+                ViewProductSubscriptionExpiration(this),
+                AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTION_EXPIRATION_TAPPED
             )
         }
+    )
 
-    private fun Product.subscriptionTrial(): ProductProperty? =
-        this.subscription?.let { subscription ->
-            PropertyGroup(
-                title = string.product_subscription_free_trial_title,
-                icon = drawable.ic_hourglass_empty,
-                properties = mapOf(
-                    resources.getString(string.subscription_free_trial) to subscription.trialDisplayValue(resources)
-                ),
-                showTitle = true,
-                onClick = {
-                    viewModel.onEditProductCardClicked(
-                        ViewProductSubscriptionFreeTrial(subscription),
-                        AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTION_FREE_TRIAL_TAPPED
-                    )
-                }
+    private fun SubscriptionDetails.subscriptionTrial(): ProductProperty = PropertyGroup(
+        title = string.product_subscription_free_trial_title,
+        icon = drawable.ic_hourglass_empty,
+        properties = mapOf(
+            resources.getString(string.subscription_free_trial) to trialDisplayValue(resources)
+        ),
+        showTitle = true,
+        onClick = {
+            viewModel.onEditProductCardClicked(
+                ViewProductSubscriptionFreeTrial(this),
+                AnalyticsEvent.PRODUCT_DETAILS_VIEW_SUBSCRIPTION_FREE_TRIAL_TAPPED
             )
         }
+    )
 
     private fun Product.warning(): ProductProperty? {
         val variations = variationRepository.getProductVariationList(this.remoteId)
