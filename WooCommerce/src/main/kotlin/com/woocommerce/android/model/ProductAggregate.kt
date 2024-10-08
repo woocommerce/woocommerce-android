@@ -14,7 +14,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ProductAggregate(
     val product: Product,
-    val subscription: SubscriptionDetails?
+    val subscription: SubscriptionDetails? = null
 ) : Parcelable {
     val hasShipping: Boolean
         get() = product.hasShipping || subscription?.oneTimeShipping == true
