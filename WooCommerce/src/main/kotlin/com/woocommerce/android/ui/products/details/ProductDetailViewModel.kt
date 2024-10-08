@@ -444,31 +444,30 @@ class ProductDetailViewModel @Inject constructor(
     private fun startAddNewProduct() {
         val defaultProduct = createDefaultProductForAddFlow()
         viewState = viewState.copy(
-            productDraft = defaultProduct
+            productAggregateDraft = defaultProduct
         )
         updateProductState(defaultProduct)
         trackProductDetailLoaded()
     }
 
-    private fun createDefaultProductForAddFlow(): Product {
+    private fun createDefaultProductForAddFlow(): ProductAggregate {
         val preferredSavedType = appPrefsWrapper.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
         val isProductVirtual = appPrefsWrapper.isSelectedProductVirtual()
-        return ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
+        return ProductAggregate(ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual))
     }
 
     private fun initializeStoredProductAfterRestoration() {
-        // TODO: fetch subscription details
         launch {
             if (isAddNewProductFlow && !isProductStoredAtSite) {
-                storedProductAggregate.value = ProductAggregate(createDefaultProductForAddFlow(), null)
+                storedProductAggregate.value = createDefaultProductForAddFlow()
             } else {
                 when (val mode = navArgs.mode) {
                     is ProductDetailFragment.Mode.ShowProduct -> {
-                        productRepository.getProductAsync(
+                        productRepository.getProductAggregate(
                             viewState.productDraft?.remoteId ?: mode.remoteProductId
                         )?.let {
-                            storedProductAggregate.value = ProductAggregate(it, null)
+                            storedProductAggregate.value = it
                         }
                     }
 
@@ -686,7 +685,7 @@ class ProductDetailViewModel @Inject constructor(
                 when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
                     RequestResult.SUCCESS -> {
                         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
-                        productRepository.fetchAndGetProduct(remoteProductId)
+                        productRepository.fetchAndGetProductAggregate(remoteProductId)
                             ?.also { updateProductState(productToUpdateFrom = it) }
                         triggerEvent(ProductExitEvent.ExitAttributesAdded)
                     }
@@ -709,7 +708,7 @@ class ProductDetailViewModel @Inject constructor(
             )
             variationRepository.createEmptyVariation(draft)
                 ?.let {
-                    productRepository.fetchAndGetProduct(draft.remoteId)
+                    productRepository.fetchAndGetProductAggregate(draft.remoteId)
                         ?.also { updateProductState(productToUpdateFrom = it) }
                 }
         }.also {
@@ -1461,13 +1460,13 @@ class ProductDetailViewModel @Inject constructor(
 
         launch {
             // fetch product
-            val productInDb = productRepository.getProductAsync(remoteProductId)
-            if (productInDb != null) {
+            val productAggregateInDb = productRepository.getProductAggregate(remoteProductId)
+            if (productAggregateInDb != null) {
                 val shouldFetch = remoteProductId != getRemoteProductId()
-                updateProductState(productInDb)
+                updateProductState(productAggregateInDb)
 
                 val cachedVariationCount = productRepository.getCachedVariationCount(remoteProductId)
-                if (shouldFetch || cachedVariationCount != productInDb.numVariations) {
+                if (shouldFetch || cachedVariationCount != productAggregateInDb.product.numVariations) {
                     fetchProduct(remoteProductId)
                     fetchProductPassword(remoteProductId)
                 }
@@ -1578,7 +1577,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (checkConnection()) {
-            val fetchedProduct = productRepository.fetchAndGetProduct(remoteProductId)
+            val fetchedProduct = productRepository.fetchAndGetProductAggregate(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
@@ -2072,20 +2071,22 @@ class ProductDetailViewModel @Inject constructor(
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.productDraft?.shippingClass ?: ""
 
-    private fun updateProductState(productToUpdateFrom: Product) {
-        val updatedDraft = viewState.productDraft?.let { currentDraft ->
-            if (storedProductAggregate.value?.product?.isSameProduct(currentDraft) == true) {
+    private fun updateProductState(productToUpdateFrom: ProductAggregate) {
+        val updatedDraft = viewState.productAggregateDraft?.let { currentDraft ->
+            if (storedProductAggregate.value?.isSame(currentDraft) == true) {
                 productToUpdateFrom
             } else {
-                productToUpdateFrom.mergeProduct(currentDraft)
+                productToUpdateFrom.merge(currentDraft)
             }
         } ?: productToUpdateFrom
 
-        loadProductTaxAndShippingClassDependencies(updatedDraft)
+        loadProductTaxAndShippingClassDependencies(updatedDraft.product)
 
-        viewState = viewState.copy(productDraft = updatedDraft)
-            .copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.None)
-        storedProductAggregate.update { it?.copy(product = updatedDraft) ?: ProductAggregate(updatedDraft) }
+        viewState = viewState.copy(
+            productAggregateDraft = updatedDraft,
+            auxiliaryState = ProductDetailViewState.AuxiliaryState.None
+        )
+        storedProductAggregate.value = productToUpdateFrom
     }
 
     private fun loadProductTaxAndShippingClassDependencies(product: Product) {
