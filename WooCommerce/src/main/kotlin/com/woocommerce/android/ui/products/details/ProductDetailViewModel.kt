@@ -454,7 +454,7 @@ class ProductDetailViewModel @Inject constructor(
         val preferredSavedType = appPrefsWrapper.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
         val isProductVirtual = appPrefsWrapper.isSelectedProductVirtual()
-        return ProductAggregate(ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual))
+        return ProductHelper.getDefaultProductAggregate(defaultProductType, isProductVirtual)
     }
 
     private fun initializeStoredProductAfterRestoration() {
