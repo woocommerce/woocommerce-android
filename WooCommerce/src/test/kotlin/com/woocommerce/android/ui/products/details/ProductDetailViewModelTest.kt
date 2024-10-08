@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.NetworkStatus
@@ -124,7 +125,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val prefsWrapper: AppPrefsWrapper = mock()
     private val productUtils = ProductUtils()
 
-    private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
+    private val productAggregate = ProductAggregate(ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID))
     private val productWithTagsAndCategories = ProductTestUtils.generateProductWithTagsAndCategories(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
     private val productCategories = ProductTestUtils.generateProductCategories()
@@ -141,7 +142,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     private val productWithParameters = ProductDetailViewModel.ProductDetailViewState(
-        productDraft = product,
+        productAggregateDraft = productAggregate,
         auxiliaryState = ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true,
@@ -152,8 +153,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         ProductPropertyCard(
             type = ProductPropertyCard.Type.PRIMARY,
             properties = listOf(
-                ProductProperty.Editable(R.string.product_detail_title_hint, product.name),
-                ProductProperty.ComplexProperty(R.string.product_description, product.description)
+                ProductProperty.Editable(R.string.product_detail_title_hint, productAggregate.product.name),
+                ProductProperty.ComplexProperty(R.string.product_description, productAggregate.product.description)
             )
         ),
         ProductPropertyCard(
@@ -181,8 +182,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 ),
                 ProductProperty.RatingBar(
                     R.string.product_reviews,
-                    resources.getString(R.string.product_ratings_count, product.ratingCount),
-                    product.averageRating,
+                    resources.getString(R.string.product_ratings_count, productAggregate.product.ratingCount),
+                    productAggregate.product.averageRating,
                     R.drawable.ic_reviews
                 ),
                 ProductProperty.PropertyGroup(
@@ -227,7 +228,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 ),
                 ProductProperty.ComplexProperty(
                     R.string.product_short_description,
-                    product.shortDescription,
+                    productAggregate.product.shortDescription,
                     R.drawable.ic_gridicons_align_left
                 ),
                 ProductProperty.ComplexProperty(
@@ -296,7 +297,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays the product detail properties correctly`() = testBlocking {
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(productWithTagsAndCategories).whenever(productRepository).getProductAsync(any())
+        doReturn(ProductAggregate(productWithTagsAndCategories)).whenever(productRepository).getProductAggregate(any())
 
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
@@ -312,8 +313,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product detail view correctly`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+        doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
 
         var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -325,12 +326,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given nothing returned from repo, when view model started, the error status emitted`() = testBlocking {
-        whenever(productRepository.fetchAndGetProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
-        whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
+        whenever(productRepository.fetchAndGetProductAggregate(PRODUCT_REMOTE_ID)).thenReturn(null)
+        whenever(productRepository.getProductAggregate(PRODUCT_REMOTE_ID)).thenReturn(null)
 
         viewModel.start()
 
-        verify(productRepository, times(1)).fetchAndGetProduct(PRODUCT_REMOTE_ID)
+        verify(productRepository, times(1)).fetchAndGetProductAggregate(PRODUCT_REMOTE_ID)
 
         Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
         Assertions.assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
@@ -343,15 +344,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given nothing returned from repo with INVALID_PRODUCT_ID error, when view model started, the error status emitted with invalid id text`() =
         testBlocking {
-            whenever(productRepository.fetchAndGetProduct(PRODUCT_REMOTE_ID)).thenReturn(null)
-            whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
+            whenever(productRepository.fetchAndGetProductAggregate(PRODUCT_REMOTE_ID)).thenReturn(null)
+            whenever(productRepository.getProductAggregate(PRODUCT_REMOTE_ID)).thenReturn(null)
             whenever(productRepository.lastFetchProductErrorType).thenReturn(
                 WCProductStore.ProductErrorType.INVALID_PRODUCT_ID
             )
 
             viewModel.start()
 
-            verify(productRepository, times(1)).fetchAndGetProduct(PRODUCT_REMOTE_ID)
+            verify(productRepository, times(1)).fetchAndGetProductAggregate(PRODUCT_REMOTE_ID)
 
             Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
             Assertions.assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
@@ -363,7 +364,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not fetch product from api when not connected`() = testBlocking {
-        doReturn(offlineProduct).whenever(productRepository).getProductAsync(any())
+        doReturn(ProductAggregate(offlineProduct)).whenever(productRepository).getProductAggregate(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
@@ -373,16 +374,16 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        verify(productRepository, times(1)).getProductAsync(PRODUCT_REMOTE_ID)
-        verify(productRepository, times(0)).fetchAndGetProduct(any())
+        verify(productRepository, times(1)).getProductAggregate(PRODUCT_REMOTE_ID)
+        verify(productRepository, times(0)).fetchAndGetProductAggregate(any())
 
         Assertions.assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
     }
 
     @Test
     fun `Shows and hides product detail skeleton correctly`() = testBlocking {
-        doReturn(null).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
+        doReturn(null).whenever(productRepository).getProductAggregate(any())
+        doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
 
         val auxiliaryStates = ArrayList<ProductDetailViewModel.ProductDetailViewState.AuxiliaryState>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
@@ -402,8 +403,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the updated product detail view correctly`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+        doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
 
         var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -420,8 +421,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `When update product price is null, product detail view displayed correctly`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+        doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
 
         var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -443,8 +444,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `When update product price is zero, product detail view displayed correctly`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+        doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
 
         var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -466,7 +467,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays update menu action if product is edited`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
@@ -485,7 +486,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays progress dialog when product is edited`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         doReturn(Pair(false, null)).whenever(productRepository).updateProduct(any())
 
         val isProgressDialogShown = ArrayList<Boolean>()
@@ -504,7 +505,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Do not update product when not connected`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
         var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
@@ -526,7 +527,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Display error message on generic update product error`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         doReturn(Pair(false, WCProductStore.ProductError())).whenever(productRepository).updateProduct(any())
 
         var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
@@ -550,7 +551,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Display error message on min-max quantities update product error`() = testBlocking {
         val displayErrorMessage = "This is an error message"
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         doReturn(
             Pair(
                 false,
@@ -582,7 +583,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Display success message on update product success`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any())
 
         var successSnackbarShown = false
@@ -603,19 +604,19 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(1)).updateProduct(any())
-        verify(productRepository, times(2)).getProductAsync(PRODUCT_REMOTE_ID)
+        verify(productRepository, times(2)).getProductAggregate(PRODUCT_REMOTE_ID)
 
         Assertions.assertThat(successSnackbarShown).isTrue()
         Assertions.assertThat(productData?.isProgressDialogShown).isFalse
         Assertions.assertThat(hasChanges).isFalse()
-        Assertions.assertThat(productData?.productDraft).isEqualTo(product)
+        Assertions.assertThat(productData?.productAggregateDraft).isEqualTo(productAggregate)
     }
 
     @Test
     fun `Correctly sorts the Product Categories By their Parent Ids and by name`() {
         testBlocking {
             val sortedByNameAndParent = viewModel.sortAndStyleProductCategories(
-                product,
+                productAggregate.product,
                 productCategories
             ).toList()
             Assertions.assertThat(sortedByNameAndParent[0].category).isEqualTo(productCategories[0])
@@ -680,7 +681,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Should update view state with not null sale end date when sale is scheduled`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
 
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = true)
@@ -691,20 +692,22 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Should update with stored product sale end date when sale is not scheduled`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
 
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = false)
 
-        Assertions.assertThat(productsDraft?.saleEndDateGmt).isEqualTo(product.saleEndDateGmt)
+        Assertions.assertThat(productsDraft?.saleEndDateGmt).isEqualTo(productAggregate.product.saleEndDateGmt)
     }
 
     @Test
     fun `Should update sale end date when sale schedule is unknown but stored product sale is scheduled`() =
         testBlocking {
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
-            val storedProduct = product.copy(isSaleScheduled = true)
-            doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
+            val storedProductAggregate = productAggregate.copy(
+                product = productAggregate.product.copy(isSaleScheduled = true)
+            )
+            doReturn(storedProductAggregate).whenever(productRepository).getProductAggregate(any())
 
             viewModel.start()
             viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = null)
@@ -715,11 +718,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Should update with null sale end date and stored product has scheduled sale`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        val storedProduct = product.copy(
-            saleEndDateGmt = SALE_END_DATE,
-            isSaleScheduled = true
+        val storedProductAggregate = productAggregate.copy(
+            product = productAggregate.product.copy(
+                saleEndDateGmt = SALE_END_DATE,
+                isSaleScheduled = true
+            )
         )
-        doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
+        doReturn(storedProductAggregate).whenever(productRepository).getProductAggregate(any())
 
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = null)
@@ -730,12 +735,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Re-ordering attribute terms is saved correctly`() = testBlocking {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        val storedProduct = product.copy(
-            attributes = ProductTestUtils.generateProductAttributeList()
+        val storedProductAggregate = productAggregate.copy(
+            product = productAggregate.product.copy(
+                attributes = ProductTestUtils.generateProductAttributeList()
+            )
         )
-        doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
+        doReturn(storedProductAggregate).whenever(productRepository).getProductAggregate(any())
 
-        val attribute = storedProduct.attributes[0]
+        val attribute = storedProductAggregate.product.attributes[0]
         val firstTerm = attribute.terms[0]
         val secondTerm = attribute.terms[1]
 
@@ -772,10 +779,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             )
         )
 
-        val storedProduct = product.copy(
-            attributes = attributes
+        val storedProductAggregate = productAggregate.copy(
+            product = productAggregate.product.copy(attributes = attributes)
         )
-        doReturn(storedProduct).whenever(productRepository).getProductAsync(any())
+        doReturn(storedProductAggregate).whenever(productRepository).getProductAggregate(any())
 
         viewModel.start()
         viewModel.renameAttributeInDraft(1, attributeName, newName)
@@ -787,7 +794,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     /**
      * Protection for a race condition bug in Variations.
      *
-     * We're requiring [ProductDetailRepository.fetchAndGetProduct] to be called right after
+     * We're requiring [ProductDetailRepository.fetchAndGetProductAggregate] to be called right after
      * [VariationRepository.createEmptyVariation] to fix a race condition problem in the Product Details page. The
      * bug can be reproduced inconsistently by following these steps:
      *
@@ -811,7 +818,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `When generating a variation, the latest Product should be fetched from the site`() =
         testBlocking {
             // Given
-            doReturn(product).whenever(productRepository).getProductAsync(any())
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
 
             var productData: ProductDetailViewModel.ProductDetailViewState? = null
             viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -824,16 +831,16 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             Assertions.assertThat(productData?.productDraft?.numVariations).isZero()
 
             doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
-            doReturn(product.copy(numVariations = 1_914)).whenever(productRepository)
-                .fetchAndGetProduct(eq(product.remoteId))
+            doReturn(productAggregate.copy(product = productAggregate.product.copy(numVariations = 1_914)))
+                .whenever(productRepository).fetchAndGetProductAggregate(eq(productAggregate.product.remoteId))
 
             // When
             viewModel.onGenerateVariationClicked()
 
             // Then
-            verify(variationRepository, times(1)).createEmptyVariation(eq(product))
+            verify(variationRepository, times(1)).createEmptyVariation(eq(productAggregate.product))
             // Prove that we fetched from the API.
-            verify(productRepository, times(1)).fetchAndGetProduct(eq(product.remoteId))
+            verify(productRepository, times(1)).fetchAndGetProductAggregate(eq(productAggregate.remoteId))
 
             // The VM state should have been updated with the _fetched_ product's numVariations
             Assertions.assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
@@ -843,8 +850,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `when there image upload errors, then show a snackbar`() = testBlocking {
         val errorEvents = MutableSharedFlow<List<MediaFileUploadHandler.ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
-        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         val errorMessage = "message"
         doReturn(errorMessage).whenever(resources).getString(any(), anyVararg())
 
@@ -871,8 +878,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `when image uploads gets cleared, then auto-dismiss the snackbar`() = testBlocking {
         val errorEvents = MutableSharedFlow<List<MediaFileUploadHandler.ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
-        doReturn(product).whenever(productRepository).fetchAndGetProduct(any())
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
 
         viewModel.start()
         errorEvents.emit(emptyList())
@@ -882,7 +889,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Publish option not shown when product is published except addProduct flow`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
@@ -894,7 +901,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Publish option not shown when product is published privately except addProduct flow`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
@@ -906,7 +913,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Publish option shown when product is Draft`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
@@ -919,7 +926,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Publish option shown when product is Pending Review`() = testBlocking {
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
@@ -933,7 +940,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Save option shown when product has changes except add product flow irrespective of product statuses`() =
         testBlocking {
-            doReturn(product).whenever(productRepository).getProductAsync(any())
+            doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
@@ -941,7 +948,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
             // Trigger changes
-            viewModel.updateProductDraft(title = product.name + "2")
+            viewModel.updateProductDraft(title = productAggregate.product.name + "2")
 
             Assertions.assertThat(menuButtonsState?.saveOption).isTrue()
         }
@@ -949,7 +956,11 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `when restoring saved state, then re-fetch stored product to correctly calculate hasChanges`() = testBlocking {
         // Make sure draft product has different data than draft product
-        doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProductAsync(any())
+        doReturn(
+            productAggregate.copy(
+                product = productAggregate.product.copy(name = productAggregate.product.name + "test")
+            )
+        ).whenever(productRepository).getProductAggregate(any())
         savedState.set(ProductDetailViewModel.ProductDetailViewState::class.java.name, productWithParameters)
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
@@ -964,10 +975,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given regular price set, when updating inventory, then price remains unchanged`() = testBlocking {
         doReturn(
-            product.copy(
-                regularPrice = BigDecimal(99)
-            )
-        ).whenever(productRepository).getProductAsync(any())
+            productAggregate.copy(product = productAggregate.product.copy(regularPrice = BigDecimal(99)))
+        ).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.start()
 
@@ -979,10 +988,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given sale price set, when updating attributes, then price remains unchanged`() = testBlocking {
         doReturn(
-            product.copy(
-                salePrice = BigDecimal(99)
-            )
-        ).whenever(productRepository).getProductAsync(any())
+            productAggregate.copy(product = productAggregate.product.copy(salePrice = BigDecimal(99)))
+        ).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.start()
 
@@ -994,10 +1001,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given regular price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
         doReturn(
-            product.copy(
-                regularPrice = BigDecimal(99)
-            )
-        ).whenever(productRepository).getProductAsync(any())
+            productAggregate.copy(product = productAggregate.product.copy(regularPrice = BigDecimal(99)))
+        ).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.start()
 
@@ -1009,10 +1014,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given sale price greater than 0, when setting price to 0, then price is set to zero`() = testBlocking {
         doReturn(
-            product.copy(
-                regularPrice = BigDecimal(99)
-            )
-        ).whenever(productRepository).getProductAsync(any())
+            productAggregate.copy(product = productAggregate.product.copy(regularPrice = BigDecimal(99)))
+        ).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.start()
 
@@ -1024,10 +1027,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given regular price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
         doReturn(
-            product.copy(
-                regularPrice = BigDecimal(99)
-            )
-        ).whenever(productRepository).getProductAsync(any())
+            productAggregate.copy(product = productAggregate.product.copy(regularPrice = BigDecimal(99)))
+        ).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.start()
 
@@ -1039,10 +1040,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given sale price greater than 0, when setting price to null, then price is set to null`() = testBlocking {
         doReturn(
-            product.copy(
-                regularPrice = BigDecimal(99)
-            )
-        ).whenever(productRepository).getProductAsync(any())
+            productAggregate.copy(product = productAggregate.product.copy(regularPrice = BigDecimal(99)))
+        ).whenever(productRepository).getProductAggregate(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
         viewModel.start()
 
@@ -1059,7 +1058,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             images = uris
         ).toSavedStateHandle()
 
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
 
         mediaFileUploadHandler = mock {
             on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
@@ -1095,66 +1094,70 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given tablet, when loaded remote products, then PRODUCT_DETAIL_LOADED tracked with regular horizontal class`() = testBlocking {
-        // GIVEN
-        whenever(isWindowClassLargeThanCompact()).thenReturn(true)
+    fun `given tablet, when loaded remote products, then PRODUCT_DETAIL_LOADED tracked with regular horizontal class`() =
+        testBlocking {
+            // GIVEN
+            whenever(isWindowClassLargeThanCompact()).thenReturn(true)
 
-        // WHEN
-        setup()
+            // WHEN
+            setup()
 
-        // THEN
-        verify(tracker).track(
-            eq(AnalyticsEvent.PRODUCT_DETAIL_LOADED),
-            eq(mapOf("horizontal_size_class" to "regular"))
-        )
-    }
-
-    @Test
-    fun `given not tablet, when loaded remote products, then PRODUCT_DETAIL_LOADED tracked with compact horizontal class`() = testBlocking {
-        // GIVEN
-        whenever(isWindowClassLargeThanCompact()).thenReturn(false)
-
-        // WHEN
-        setup()
-
-        // THEN
-        verify(tracker, times(2)).track(
-            eq(AnalyticsEvent.PRODUCT_DETAIL_LOADED),
-            eq(mapOf("horizontal_size_class" to "compact"))
-        )
-    }
+            // THEN
+            verify(tracker).track(
+                eq(AnalyticsEvent.PRODUCT_DETAIL_LOADED),
+                eq(mapOf("horizontal_size_class" to "regular"))
+            )
+        }
 
     @Test
-    fun `given product updated successfuly, when onPublishButtonClicked, then ProductUpdated event emitted`() = testBlocking {
-        // GIVEN
-        whenever(productRepository.getProductAsync(any())).thenReturn(product)
-        whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
-        viewModel.start()
+    fun `given not tablet, when loaded remote products, then PRODUCT_DETAIL_LOADED tracked with compact horizontal class`() =
+        testBlocking {
+            // GIVEN
+            whenever(isWindowClassLargeThanCompact()).thenReturn(false)
 
-        // WHEN
-        viewModel.onPublishButtonClicked()
+            // WHEN
+            setup()
 
-        // THEN
-        Assertions.assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.ProductUpdated)
-    }
+            // THEN
+            verify(tracker, times(2)).track(
+                eq(AnalyticsEvent.PRODUCT_DETAIL_LOADED),
+                eq(mapOf("horizontal_size_class" to "compact"))
+            )
+        }
 
     @Test
-    fun `given selected site is private, when product detail is opened, then images are not available`() = testBlocking {
-        // GIVEN
-        whenever(selectedSite.get()).thenReturn(SiteModel().apply { setIsPrivate(true) })
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
-            .toSavedStateHandle()
+    fun `given product updated successfuly, when onPublishButtonClicked, then ProductUpdated event emitted`() =
+        testBlocking {
+            // GIVEN
+            whenever(productRepository.getProductAggregate(any())).thenReturn(productAggregate)
+            whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
+            viewModel.start()
 
-        setup()
-        viewModel.start()
+            // WHEN
+            viewModel.onPublishButtonClicked()
 
-        // WHEN
-        var productData: ProductDetailViewModel.ProductDetailViewState? = null
-        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+            // THEN
+            Assertions.assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.ProductUpdated)
+        }
 
-        // THEN
-        Assertions.assertThat(productData?.areImagesAvailable).isFalse()
-    }
+    @Test
+    fun `given selected site is private, when product detail is opened, then images are not available`() =
+        testBlocking {
+            // GIVEN
+            whenever(selectedSite.get()).thenReturn(SiteModel().apply { setIsPrivate(true) })
+            savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+                .toSavedStateHandle()
+
+            setup()
+            viewModel.start()
+
+            // WHEN
+            var productData: ProductDetailViewModel.ProductDetailViewState? = null
+            viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+            // THEN
+            Assertions.assertThat(productData?.areImagesAvailable).isFalse()
+        }
 
     @Test
     fun `given selected site is public, when product detail is opened, then images are available`() = testBlocking {
@@ -1170,70 +1173,75 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given product password API uses CORE, when product details are fetched, then use password from the model`() = testBlocking {
-        // GIVEN
-        val password = "password"
-        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.CORE)
-        whenever(productRepository.getProductAsync(any())).thenReturn(product.copy(password = password))
+    fun `given product password API uses CORE, when product details are fetched, then use password from the model`() =
+        testBlocking {
+            // GIVEN
+            val password = "password"
+            whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.CORE)
+            whenever(productRepository.getProductAggregate(any()))
+                .thenReturn(productAggregate.copy(product = productAggregate.product.copy(password = password)))
 
-        // WHEN
-        viewModel.start()
-        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+            // WHEN
+            viewModel.start()
+            val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
 
-        // THEN
-        Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
-        verify(productRepository, never()).fetchProductPassword(any())
-    }
-
-    @Test
-    fun `given product password API uses WPCOM, when product details are fetched, then fetch password from the API`() = testBlocking {
-        // GIVEN
-        val password = "password"
-        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
-        whenever(productRepository.getProductAsync(any())).thenReturn(product)
-        whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
-
-        // WHEN
-        viewModel.start()
-        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
-
-        // THEN
-        Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
-        verify(productRepository).fetchProductPassword(any())
-    }
+            // THEN
+            Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
+            verify(productRepository, never()).fetchProductPassword(any())
+        }
 
     @Test
-    fun `given product password API uses WPCOM, when product is saved, then update password using WPCOM API`() = testBlocking {
-        // GIVEN
-        val password = "password"
-        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
-        whenever(productRepository.getProductAsync(any())).thenReturn(product)
-        whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
-        whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
+    fun `given product password API uses WPCOM, when product details are fetched, then fetch password from the API`() =
+        testBlocking {
+            // GIVEN
+            val password = "password"
+            whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
+            whenever(productRepository.getProductAggregate(any())).thenReturn(productAggregate)
+            whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
 
-        // WHEN
-        viewModel.start()
-        viewModel.updateProductVisibility(ProductVisibility.PASSWORD_PROTECTED, "newPassword")
-        viewModel.onSaveButtonClicked()
+            // WHEN
+            viewModel.start()
+            val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
 
-        // THEN
-        verify(productRepository).updateProductPassword(eq(product.remoteId), eq("newPassword"))
-    }
+            // THEN
+            Assertions.assertThat(viewState.draftPassword).isEqualTo(password)
+            verify(productRepository).fetchProductPassword(any())
+        }
 
     @Test
-    fun `given product password API is not supported, when product details are fetched, then password is empty`() = testBlocking {
-        // GIVEN
-        whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.UNSUPPORTED)
-        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+    fun `given product password API uses WPCOM, when product is saved, then update password using WPCOM API`() =
+        testBlocking {
+            // GIVEN
+            val password = "password"
+            whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
+            whenever(productRepository.getProductAggregate(any())).thenReturn(productAggregate)
+            whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
+            whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
 
-        // WHEN
-        viewModel.start()
-        val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+            // WHEN
+            viewModel.start()
+            viewModel.updateProductVisibility(ProductVisibility.PASSWORD_PROTECTED, "newPassword")
+            viewModel.onSaveButtonClicked()
 
-        // THEN
-        Assertions.assertThat(viewState.draftPassword).isNull()
-        verify(productRepository, never()).fetchProductPassword(any())
-    }
+            // THEN
+            verify(productRepository).updateProductPassword(eq(productAggregate.remoteId), eq("newPassword"))
+        }
+
+    @Test
+    fun `given product password API is not supported, when product details are fetched, then password is empty`() =
+        testBlocking {
+            // GIVEN
+            whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.UNSUPPORTED)
+            whenever(productRepository.getProductAggregate(any())).thenReturn(productAggregate)
+
+            // WHEN
+            viewModel.start()
+            val viewState = viewModel.productDetailViewStateData.liveData.getOrAwaitValue()
+
+            // THEN
+            Assertions.assertThat(viewState.draftPassword).isNull()
+            verify(productRepository, never()).fetchProductPassword(any())
+        }
 
     private val productsDraft
         get() = viewModel.productDetailViewStateData.liveData.value?.productDraft

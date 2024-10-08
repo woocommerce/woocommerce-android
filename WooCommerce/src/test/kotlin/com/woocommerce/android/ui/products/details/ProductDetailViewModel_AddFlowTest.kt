@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
@@ -222,7 +223,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @Test
     fun `Display success message on add product success`() = testBlocking {
         // given
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
         doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
 
         var successSnackbarShown = false
@@ -244,7 +245,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onPublishButtonClicked()
 
         // then
-        verify(productRepository, times(1)).getProductAsync(1L)
+        verify(productRepository, times(1)).getProductAggregate(1L)
 
         Assertions.assertThat(successSnackbarShown).isTrue()
         Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
@@ -308,7 +309,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `Display correct message on updating a freshly added product`() =
         testBlocking {
             // given
-            doReturn(product).whenever(productRepository).getProductAsync(any())
+            doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
             doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
 
             var successSnackbarShown = false
@@ -330,7 +331,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.onPublishButtonClicked()
 
             // then
-            verify(productRepository, times(1)).getProductAsync(1L)
+            verify(productRepository, times(1)).getProductAggregate(1L)
 
             Assertions.assertThat(successSnackbarShown).isTrue()
             Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
@@ -399,7 +400,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @Test
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
         doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(product).whenever(productRepository).getProductAggregate(any())
         savedState = ProductDetailFragmentArgs(
             mode = ProductDetailFragment.Mode.AddNewProduct
         ).toSavedStateHandle()
@@ -454,7 +455,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `given a product is under creation, when clicking on save product, then assign uploads to the new id`() =
         testBlocking {
             doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
-            doReturn(product).whenever(productRepository).getProductAsync(any())
+            doReturn(product).whenever(productRepository).getProductAggregate(any())
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
             viewModel.start()
