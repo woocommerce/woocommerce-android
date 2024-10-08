@@ -468,6 +468,7 @@ class ProductDetailCardBuilder(
         }
     }
 
+    @Suppress("LongMethod")
     private fun ProductAggregate.shipping(): ProductProperty? {
         return if (!this.product.isVirtual && hasShipping) {
             val weightWithUnits = product.getWeightWithUnits(parameters.weightUnit)

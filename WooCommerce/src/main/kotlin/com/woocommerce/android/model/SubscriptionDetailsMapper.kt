@@ -63,7 +63,7 @@ object SubscriptionDetailsMapper {
     }
 
     private fun WCMetaData.extractPaymentsSyncDate(): SubscriptionPaymentSyncDate? {
-        return when(isJson) {
+        return when (isJson) {
             true -> value.stringValue.let {
                 val jsonObject = JsonParser.parseString(it).asJsonObject
                 val day = jsonObject["day"].asInt

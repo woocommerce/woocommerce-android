@@ -715,7 +715,8 @@ class ProductDetailViewModel @Inject constructor(
             attributeListViewState = attributeListViewState.copy(progressDialogState = ProgressDialogState.Hidden)
         }
 
-    fun hasCategoryChanges() = storedProductAggregate.value?.product?.hasCategoryChanges(viewState.productDraft) ?: false
+    fun hasCategoryChanges() = storedProductAggregate.value
+        ?.product?.hasCategoryChanges(viewState.productDraft) ?: false
 
     fun hasTagChanges() = storedProductAggregate.value?.product?.hasTagChanges(viewState.productDraft) ?: false
 
@@ -851,7 +852,8 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
-    fun hasExternalLinkChanges() = storedProductAggregate.value?.product?.hasExternalLinkChanges(viewState.productDraft) ?: false
+    fun hasExternalLinkChanges() = storedProductAggregate.value
+        ?.product?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
     /**
      * Called when the back= button is clicked in a product sub detail screen
@@ -1863,7 +1865,8 @@ class ProductDetailViewModel @Inject constructor(
         triggerEvent(ProductNavigationTarget.RenameProductAttribute(attributeName))
     }
 
-    fun hasAttributeChanges() = storedProductAggregate.value?.product?.hasAttributeChanges(viewState.productDraft) ?: false
+    fun hasAttributeChanges() = storedProductAggregate.value
+        ?.product?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
      * Used by the add attribute screen to fetch the list of store-wide product attributes
