@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCProductModel.SubscriptionMetadataKeys
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
 import java.math.BigDecimal
 
 @Parcelize
@@ -51,45 +52,14 @@ fun SubscriptionDetails.toMetadataJson(): JsonArray {
     return jsonArray
 }
 
-fun SubscriptionDetails.toMetaData() = listOf(
-    WCMetaData(
-        id = 0,
-        key = SubscriptionMetadataKeys.SUBSCRIPTION_PRICE,
-        value = price?.toString().orEmpty()
-    ),
-    WCMetaData(
-        id = 0,
-        key = SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD,
-        value = period.value
-    ),
-    WCMetaData(
-        id = 0,
-        key = SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD_INTERVAL,
-        value = periodInterval.toString()
-    ),
-    WCMetaData(
-        id = 0,
-        key = SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH,
-        value = length?.toString().orEmpty()
-    ),
-    WCMetaData(
-        id = 0,
-        key = SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE,
-        value = signUpFee?.toString().orEmpty()
-    ),
-    WCMetaData(
-        id = 0,
-        key = SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD,
-        value = (trialPeriod ?: SubscriptionPeriod.Day).value
-    ),
-    WCMetaData(
-        id = 0,
-        key = SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH,
-        value = (trialLength ?: 0).toString()
-    ),
-    WCMetaData(
-        id = 0,
-        key = SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING,
-        value = if (oneTimeShipping) "yes" else "no"
-    )
+fun SubscriptionDetails.toMetaData() = mapOf(
+    SubscriptionMetadataKeys.SUBSCRIPTION_PRICE to WCMetaDataValue(price?.toString().orEmpty()),
+    SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD to WCMetaDataValue(period.value),
+    SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD_INTERVAL to WCMetaDataValue(periodInterval),
+    SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH to WCMetaDataValue(length?.toString().orEmpty()),
+    SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE to WCMetaDataValue(signUpFee?.toString().orEmpty()),
+    SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD to
+        WCMetaDataValue((trialPeriod ?: SubscriptionPeriod.Day).value),
+    SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH to WCMetaDataValue(trialLength?.toString().orEmpty()),
+    SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING to WCMetaDataValue(if (oneTimeShipping) "yes" else "no"),
 )

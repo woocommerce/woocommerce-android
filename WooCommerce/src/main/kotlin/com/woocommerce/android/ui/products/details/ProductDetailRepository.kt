@@ -132,7 +132,9 @@ class ProductDetailRepository @Inject constructor(
                 val metadataChanges = MetadataChanges(
                     // Even though the subscription keys are passed as new metadata here, the server will replace any
                     // existing keys with the new ones.
-                    insertedMetadata = updatedProductAggregate.subscription?.toMetaData() ?: emptyList()
+                    insertedMetadata = updatedProductAggregate.subscription?.toMetaData()?.map { (key, value) ->
+                        WCMetaData(id = 0L, key = key, value = value)
+                    } ?: emptyList()
                 )
                 val payload = WCProductStore.UpdateProductPayload(
                     site = selectedSite.get(),
@@ -161,12 +163,16 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun addProduct(product: Product): Pair<Boolean, Long> {
+    suspend fun addProduct(productAggregate: ProductAggregate): Pair<Boolean, Long> {
         return try {
             suspendCoroutineWithTimeout<Pair<Boolean, Long>>(AppConstants.REQUEST_TIMEOUT) {
                 continuationAddProduct = it
-                val model = product.toDataModel(null)
-                val payload = WCProductStore.AddProductPayload(selectedSite.get(), model)
+                val model = productAggregate.product.toDataModel(null)
+                val payload = WCProductStore.AddProductPayload(
+                    site = selectedSite.get(),
+                    product = model,
+                    metadata = productAggregate.subscription?.toMetaData()
+                )
                 dispatcher.dispatch(WCProductActionBuilder.newAddProductAction(payload))
             } ?: Pair(false, 0L) // request timed out
         } catch (e: CancellationException) {
@@ -174,6 +180,13 @@ class ProductDetailRepository @Inject constructor(
             Pair(false, 0L)
         }
     }
+
+    /**
+     * Fires the request to add a product
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun addProduct(product: Product): Pair<Boolean, Long> = addProduct(ProductAggregate(product, null))
 
     /**
      * Fires the request to update the product password
