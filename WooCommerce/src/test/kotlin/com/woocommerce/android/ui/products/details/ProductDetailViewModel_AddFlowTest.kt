@@ -339,10 +339,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             Assertions.assertThat(productData?.productDraft).isEqualTo(product)
 
             // when
-            doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any())
+            doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any<ProductAggregate>())
 
             viewModel.onPublishButtonClicked()
-            verify(productRepository, times(1)).updateProduct(any())
+            verify(productRepository, times(1)).updateProduct(any<ProductAggregate>())
 
             viewModel.event.observeForever {
                 if (it is ShowSnackbar && it.message == R.string.product_detail_save_product_success) {

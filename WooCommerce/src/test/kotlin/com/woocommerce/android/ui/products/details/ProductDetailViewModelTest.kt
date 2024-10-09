@@ -487,7 +487,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays progress dialog when product is edited`() = testBlocking {
         doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
-        doReturn(Pair(false, null)).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(false, null)).whenever(productRepository).updateProduct(any<ProductAggregate>())
 
         val isProgressDialogShown = ArrayList<Boolean>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
@@ -520,7 +520,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onSaveButtonClicked()
 
-        verify(productRepository, times(0)).updateProduct(any())
+        verify(productRepository, times(0)).updateProduct(any<ProductAggregate>())
         Assertions.assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
         Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
     }
@@ -528,7 +528,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Display error message on generic update product error`() = testBlocking {
         doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
-        doReturn(Pair(false, WCProductStore.ProductError())).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(false, WCProductStore.ProductError())).whenever(productRepository)
+            .updateProduct(any<ProductAggregate>())
 
         var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -542,7 +543,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onSaveButtonClicked()
 
-        verify(productRepository, times(1)).updateProduct(any())
+        verify(productRepository, times(1)).updateProduct(any<ProductAggregate>())
         Assertions.assertThat(snackbar)
             .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_detail_update_product_error))
         Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
@@ -561,7 +562,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 )
             )
         )
-            .whenever(productRepository).updateProduct(any())
+            .whenever(productRepository).updateProduct(any<ProductAggregate>())
 
         var showUpdateProductError: ProductDetailViewModel.ShowUpdateProductError? = null
         viewModel.event.observeForever {
@@ -575,7 +576,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onSaveButtonClicked()
 
-        verify(productRepository, times(1)).updateProduct(any())
+        verify(productRepository, times(1)).updateProduct(any<ProductAggregate>())
         Assertions.assertThat(showUpdateProductError)
             .isEqualTo(ProductDetailViewModel.ShowUpdateProductError(displayErrorMessage))
         Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
@@ -584,7 +585,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Display success message on update product success`() = testBlocking {
         doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
-        doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any<ProductAggregate>())
 
         var successSnackbarShown = false
         viewModel.event.observeForever {
@@ -603,7 +604,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onSaveButtonClicked()
 
-        verify(productRepository, times(1)).updateProduct(any())
+        verify(productRepository, times(1)).updateProduct(any<ProductAggregate>())
         verify(productRepository, times(2)).getProductAggregate(PRODUCT_REMOTE_ID)
 
         Assertions.assertThat(successSnackbarShown).isTrue()
@@ -1130,7 +1131,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             // GIVEN
             whenever(productRepository.getProductAggregate(any())).thenReturn(productAggregate)
-            whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
+            whenever(productRepository.updateProduct(any<ProductAggregate>())).thenReturn(Pair(true, null))
             viewModel.start()
 
             // WHEN
@@ -1216,7 +1217,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             whenever(determineProductPasswordApi.invoke()).thenReturn(ProductPasswordApi.WPCOM)
             whenever(productRepository.getProductAggregate(any())).thenReturn(productAggregate)
             whenever(productRepository.fetchProductPassword(any())).thenReturn(password)
-            whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
+            whenever(productRepository.updateProduct(any<ProductAggregate>())).thenReturn(Pair(true, null))
 
             // WHEN
             viewModel.start()

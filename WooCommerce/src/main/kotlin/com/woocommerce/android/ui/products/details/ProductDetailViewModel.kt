@@ -1035,8 +1035,8 @@ class ProductDetailViewModel @Inject constructor(
             stat = AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
             properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to navArgs.isAIContent)
         )
-        viewState.productDraft?.let {
-            val product = if (isPublish) it.copy(status = ProductStatus.PUBLISH) else it
+        viewState.productAggregateDraft?.let {
+            val product = if (isPublish) it.copy(product = it.product.copy(status = ProductStatus.PUBLISH)) else it
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(isPublish, product) }
         }
@@ -1960,19 +1960,21 @@ class ProductDetailViewModel @Inject constructor(
      * Updates the product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed.
      */
-    private suspend fun updateProduct(isPublish: Boolean, product: Product) {
+    private suspend fun updateProduct(isPublish: Boolean, productAggregate: ProductAggregate) {
         if (!checkConnection()) {
             viewState = viewState.copy(isProgressDialogShown = false)
             return
         }
-        val result = productRepository.updateProduct(product.copy(password = viewState.draftPassword))
+        val result = productRepository.updateProduct(
+            productAggregate.copy(product = productAggregate.product.copy(password = viewState.draftPassword))
+        )
         if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
             val isPasswordChanged = storedProductAggregate.value?.product?.password != viewState.draftPassword
             if (isPasswordChanged && determineProductPasswordApi() == ProductPasswordApi.WPCOM) {
                 // Update the product password using WordPress.com API
                 val password = viewState.productDraft?.password
-                if (productRepository.updateProductPassword(product.remoteId, password)) {
+                if (productRepository.updateProductPassword(productAggregate.remoteId, password)) {
                     storedProductAggregate.update { it?.copy(product = it.product.copy(password = password)) }
                     triggerEvent(ShowSnackbar(successMsg))
                 } else {
@@ -1988,7 +1990,7 @@ class ProductDetailViewModel @Inject constructor(
                 productDraft = null
             )
             triggerEvent(ProductUpdated)
-            loadRemoteProduct(product.remoteId)
+            loadRemoteProduct(productAggregate.remoteId)
         } else {
             result.second?.let {
                 if (it.canDisplayMessage) {

@@ -50,3 +50,46 @@ fun SubscriptionDetails.toMetadataJson(): JsonArray {
     }
     return jsonArray
 }
+
+fun SubscriptionDetails.toMetaData() = listOf(
+    WCMetaData(
+        id = 0,
+        key = SubscriptionMetadataKeys.SUBSCRIPTION_PRICE,
+        value = price?.toString().orEmpty()
+    ),
+    WCMetaData(
+        id = 0,
+        key = SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD,
+        value = period.value
+    ),
+    WCMetaData(
+        id = 0,
+        key = SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD_INTERVAL,
+        value = periodInterval.toString()
+    ),
+    WCMetaData(
+        id = 0,
+        key = SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH,
+        value = length?.toString().orEmpty()
+    ),
+    WCMetaData(
+        id = 0,
+        key = SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE,
+        value = signUpFee?.toString().orEmpty()
+    ),
+    WCMetaData(
+        id = 0,
+        key = SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD,
+        value = (trialPeriod ?: SubscriptionPeriod.Day).value
+    ),
+    WCMetaData(
+        id = 0,
+        key = SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH,
+        value = (trialLength ?: 0).toString()
+    ),
+    WCMetaData(
+        id = 0,
+        key = SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING,
+        value = if (oneTimeShipping) "yes" else "no"
+    )
+)

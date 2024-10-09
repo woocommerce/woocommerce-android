@@ -15,6 +15,7 @@ import com.woocommerce.android.model.SubscriptionDetailsMapper
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
+import com.woocommerce.android.model.toMetaData
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.util.ContinuationWrapper
@@ -37,6 +38,7 @@ import org.wordpress.android.fluxc.action.WCProductAction.FETCH_SINGLE_PRODUCT_S
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATED_PRODUCT
 import org.wordpress.android.fluxc.action.WCProductAction.UPDATE_PRODUCT_PASSWORD
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
+import org.wordpress.android.fluxc.model.metadata.MetadataChanges
 import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.store.WCGlobalAttributeStore
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -120,20 +122,38 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun updateProduct(updatedProduct: Product): Pair<Boolean, WCProductStore.ProductError?> {
+    suspend fun updateProduct(updatedProductAggregate: ProductAggregate): Pair<Boolean, WCProductStore.ProductError?> {
         return try {
             suspendCoroutineWithTimeout<Pair<Boolean, WCProductStore.ProductError?>>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateProduct = it
 
-                val cachedProduct = getCachedWCProductModel(updatedProduct.remoteId)
-                val product = updatedProduct.toDataModel(cachedProduct)
-                val payload = WCProductStore.UpdateProductPayload(selectedSite.get(), product)
+                val cachedProduct = getCachedWCProductModel(updatedProductAggregate.remoteId)
+                val product = updatedProductAggregate.product.toDataModel(cachedProduct)
+                val metadataChanges = MetadataChanges(
+                    // Even though the subscription keys are passed as new metadata here, the server will replace any
+                    // existing keys with the new ones.
+                    insertedMetadata = updatedProductAggregate.subscription?.toMetaData() ?: emptyList()
+                )
+                val payload = WCProductStore.UpdateProductPayload(
+                    site = selectedSite.get(),
+                    product = product,
+                    metadataChanges = metadataChanges
+                )
                 dispatcher.dispatch(WCProductActionBuilder.newUpdateProductAction(payload))
             } ?: Pair(false, null) // request timed out
         } catch (e: CancellationException) {
             WooLog.e(PRODUCTS, "Exception encountered while updating product", e)
             Pair(false, null)
         }
+    }
+
+    /**
+     * Fires the request to update the product
+     *
+     * @return the result of the action as a [Boolean]
+     */
+    suspend fun updateProduct(updatedProduct: Product): Pair<Boolean, WCProductStore.ProductError?> {
+        return updateProduct(ProductAggregate(updatedProduct, null))
     }
 
     /**
