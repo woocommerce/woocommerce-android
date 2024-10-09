@@ -376,7 +376,7 @@ class ProductDetailViewModel @Inject constructor(
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
      */
     val isProductUnderCreation: Boolean
-        get() = isAddNewProductFlow and isProductStoredAtSite.not()
+        get() = isAddNewProductFlow && isProductStoredAtSite.not()
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
@@ -1019,8 +1019,8 @@ class ProductDetailViewModel @Inject constructor(
     fun saveAsDraftIfNewVariableProduct() = launch {
         viewState.productAggregateDraft
             ?.takeIf {
-                isProductStoredAtSite.not() and
-                    it.product.productType.isVariableProduct() and
+                isProductStoredAtSite.not() &&
+                    it.product.productType.isVariableProduct() &&
                     (it.product.status == DRAFT)
             }
             ?.takeIf { addProduct(it).first }
