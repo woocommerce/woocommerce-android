@@ -23,6 +23,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Date
@@ -272,6 +273,28 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
         (productSavingState as AiProductPreviewViewModel.SavingProductState.Error).let {
             assertThat(it.messageRes).isEqualTo(R.string.ai_product_creation_error_media_upload)
         }
+    }
+
+    @Test
+    fun `given a local image uploaded successfully, when retrying after an error, then don't reupload the image`() = testBlocking {
+        setup(
+            args = AiProductPreviewFragmentArgs(
+                productFeatures = PRODUCT_FEATURES,
+                image = Image.LocalImage("path")
+            )
+        ) {
+            whenever(uploadImage.invoke(any()))
+                .thenReturn(Result.success(Product.Image(1, "url", "url", Date())))
+            whenever(saveAiGeneratedProduct.invoke(any(), anyOrNull()))
+                .thenReturn(Result.failure(Exception()))
+        }
+
+        advanceUntilIdle()
+        viewModel.onSaveProductAsDraft()
+        advanceUntilIdle()
+        viewModel.onSaveProductAsDraft()
+
+        verify(uploadImage, times(1)).invoke(Image.LocalImage("path"))
     }
 
     @Test
