@@ -2,12 +2,17 @@ package com.woocommerce.android.ui.products.ai
 
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductCategory
+import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ai.preview.UploadImage
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 class SaveAiGeneratedProduct @Inject constructor(
@@ -16,50 +21,37 @@ class SaveAiGeneratedProduct @Inject constructor(
     private val productDetailRepository: ProductDetailRepository,
     private val uploadImage: UploadImage
 ) {
-    @Suppress("ReturnCount")
     suspend operator fun invoke(
         product: Product,
         selectedImage: Image?
-    ): AiProductSaveResult {
-        // upload the selected image
-        val image = selectedImage?.let { uploadImage(it) }?.getOrElse {
-            WooLog.e(WooLog.T.PRODUCTS, "Failed to upload the selected image", it)
-            return AiProductSaveResult.Failure.UploadImageFailure
+    ): AiProductSaveResult = coroutineScope {
+        // Start uploading the selected image
+        val imageTask = selectedImage?.let { selectedImage -> startUploadingImage(selectedImage) }
+
+        val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
+        // Start create missing categories
+        val categoriesTask = missingCategories
+            .takeIf { it.isNotEmpty() }
+            ?.let { productCategories -> startCreatingCategories(productCategories) }
+
+        // Start Create missing tags
+        val missingTags = product.tags.filter { it.remoteTagId == 0L }
+        val tagsTask = missingTags
+            .takeIf { it.isNotEmpty() }
+            ?.let { productTags -> startCreatingTags(productTags) }
+
+        // Wait for the image to be uploaded
+        val image = imageTask?.await()?.getOrElse {
+            return@coroutineScope AiProductSaveResult.Failure.UploadImageFailure
         }
 
-        // Create missing categories
-        val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
-        val createdCategories = missingCategories
-            .takeIf { it.isNotEmpty() }?.let { productCategories ->
-                WooLog.d(
-                    tag = WooLog.T.PRODUCTS,
-                    message = "Create the missing product categories ${productCategories.map { it.name }}"
-                )
-                productCategoriesRepository.addProductCategories(productCategories)
-            }?.fold(
-                onSuccess = { it },
-                onFailure = {
-                    WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
-                    return AiProductSaveResult.Failure.Generic(image?.asWPMediaLibraryImage())
-                }
-            )
-
-        // Create missing tags
-        val missingTags = product.tags.filter { it.remoteTagId == 0L }
-        val createdTags = missingTags
-            .takeIf { it.isNotEmpty() }?.let { productTags ->
-                WooLog.d(
-                    tag = WooLog.T.PRODUCTS,
-                    message = "Create the missing product tags ${productTags.map { it.name }}"
-                )
-                productTagsRepository.addProductTags(productTags.map { it.name })
-            }?.fold(
-                onSuccess = { it },
-                onFailure = {
-                    WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
-                    return AiProductSaveResult.Failure.Generic(image?.asWPMediaLibraryImage())
-                }
-            )
+        // Wait for the created categories and tags
+        val createdCategories = categoriesTask?.await()?.getOrElse {
+            return@coroutineScope AiProductSaveResult.Failure.Generic(image?.asWPMediaLibraryImage())
+        }
+        val createdTags = tagsTask?.await()?.getOrElse {
+            return@coroutineScope AiProductSaveResult.Failure.Generic(image?.asWPMediaLibraryImage())
+        }
 
         val updatedProduct = product.copy(
             categories = product.categories - missingCategories.toSet() + createdCategories.orEmpty(),
@@ -68,13 +60,46 @@ class SaveAiGeneratedProduct @Inject constructor(
             status = ProductStatus.DRAFT
         )
 
-        return productDetailRepository.addProduct(updatedProduct).let { (success, productId) ->
+        productDetailRepository.addProduct(updatedProduct).let { (success, productId) ->
             if (success) {
+                WooLog.d(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Successfully saved the AI generated product as draft with id $productId"
+                )
                 AiProductSaveResult.Success(productId)
             } else {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to save the AI generated product as draft")
                 AiProductSaveResult.Failure.Generic(image?.asWPMediaLibraryImage())
             }
         }
+    }
+
+    private fun CoroutineScope.startUploadingImage(image: Image) = async {
+        uploadImage(image).onFailure {
+            WooLog.e(WooLog.T.PRODUCTS, "Failed to upload the selected image", it)
+        }
+    }
+
+    private fun CoroutineScope.startCreatingCategories(categories: List<ProductCategory>) = async {
+        WooLog.d(
+            tag = WooLog.T.PRODUCTS,
+            message = "Create the missing product categories ${categories.map { it.name }}"
+        )
+        productCategoriesRepository.addProductCategories(categories)
+            .onFailure {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
+            }
+    }
+
+    private fun CoroutineScope.startCreatingTags(tags: List<ProductTag>) = async {
+        WooLog.d(
+            tag = WooLog.T.PRODUCTS,
+            message = "Create the missing product tags ${tags.map { it.name }}"
+        )
+        productTagsRepository.addProductTags(tags.map { it.name })
+            .onFailure {
+                WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
+            }
     }
 
     private fun Product.Image.asWPMediaLibraryImage() = Image.WPMediaLibraryImage(this)
