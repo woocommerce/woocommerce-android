@@ -1231,10 +1231,8 @@ class ProductDetailViewModel @Inject constructor(
         viewState.productAggregateDraft?.let { productAggregateDraft ->
             if (productType == ProductType.SUBSCRIPTION && productAggregateDraft.subscription == null) {
                 viewState = viewState.copy(
-                    productAggregateDraft = productAggregateDraft.copy(
-                        subscription = ProductHelper.getDefaultSubscriptionDetails().copy(
-                            price = productAggregateDraft.product.regularPrice
-                        )
+                    subscriptionDraft = ProductHelper.getDefaultSubscriptionDetails().copy(
+                        price = productAggregateDraft.product.regularPrice
                     )
                 )
             }
@@ -1514,9 +1512,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun updateProductVisibility(visibility: ProductVisibility, password: String?) {
         viewState = viewState.copy(
-            productAggregateDraft = viewState.productAggregateDraft?.copy(
-                product = viewState.productDraft!!.copy(password = password)
-            )
+            productDraft = viewState.productDraft?.copy(password = password)
         )
 
         when (visibility) {
@@ -1571,9 +1567,7 @@ class ProductDetailViewModel @Inject constructor(
 
         storedProductAggregate.update { it?.copy(product = it.product.copy(password = password)) }
         viewState = viewState.copy(
-            productAggregateDraft = viewState.productAggregateDraft?.copy(
-                product = viewState.productDraft!!.copy(password = viewState.draftPassword ?: password)
-            )
+            productDraft = viewState.productDraft?.copy(password = viewState.draftPassword ?: password)
         )
     }
 
