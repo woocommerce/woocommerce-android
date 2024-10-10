@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.products.ai
 
+import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ai.preview.UploadImage
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -11,13 +13,20 @@ import javax.inject.Inject
 class SaveAiGeneratedProduct @Inject constructor(
     private val productCategoriesRepository: ProductCategoriesRepository,
     private val productTagsRepository: ProductTagsRepository,
-    private val productDetailRepository: ProductDetailRepository
+    private val productDetailRepository: ProductDetailRepository,
+    private val uploadImage: UploadImage
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(
         product: Product,
-        selectedImage: Product.Image?
+        selectedImage: Image?
     ): Result<Long> {
+        // upload the selected image
+        val image = selectedImage?.let { uploadImage(it) }?.getOrElse {
+            WooLog.e(WooLog.T.PRODUCTS, "Failed to upload the selected image", it)
+            return Result.failure(it)
+        }
+
         // Create missing categories
         val missingCategories = product.categories.filter { it.remoteCategoryId == 0L }
         val createdCategories = missingCategories
@@ -55,7 +64,7 @@ class SaveAiGeneratedProduct @Inject constructor(
         val updatedProduct = product.copy(
             categories = product.categories - missingCategories.toSet() + createdCategories.orEmpty(),
             tags = product.tags - missingTags.toSet() + createdTags.orEmpty(),
-            images = listOfNotNull(selectedImage),
+            images = listOfNotNull(image),
             status = ProductStatus.DRAFT
         )
 

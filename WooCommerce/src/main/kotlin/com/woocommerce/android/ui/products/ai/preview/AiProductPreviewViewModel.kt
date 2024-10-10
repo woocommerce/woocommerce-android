@@ -11,9 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
+import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.Image
-import com.woocommerce.android.model.Image.WPMediaLibraryImage
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AIProductModel
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
@@ -42,7 +41,6 @@ class AiProductPreviewViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val buildProductPreviewProperties: BuildProductPreviewProperties,
     private val generateProductWithAI: GenerateProductWithAI,
-    private val uploadImage: UploadImage,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val saveAiGeneratedProduct: SaveAiGeneratedProduct,
     private val resourceProvider: ResourceProvider
@@ -229,9 +227,7 @@ class AiProductPreviewViewModel @Inject constructor(
         val product = generatedProduct.value?.getOrNull()?.toProduct(selectedVariant.value) ?: return
         savingProductState.value = SavingProductState.Loading
         viewModelScope.launch {
-            val image = uploadSelectedImage().onFailure {
-                return@launch
-            }.getOrNull()
+            val image = imageState.value.image
             val editedFields = userEditedFields.value
 
             saveAiGeneratedProduct(
@@ -249,8 +245,12 @@ class AiProductPreviewViewModel @Inject constructor(
                     analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
                 },
                 onFailure = {
+                    val messageRes = when (it) {
+                        is MediaFilesRepository.MediaUploadException -> R.string.ai_product_creation_error_media_upload
+                        else -> R.string.error_generic
+                    }
                     savingProductState.value = SavingProductState.Error(
-                        messageRes = R.string.error_generic,
+                        messageRes = messageRes,
                         onRetryClick = ::onSaveProductAsDraft,
                         onDismissClick = { savingProductState.value = SavingProductState.Idle }
                     )
@@ -258,23 +258,6 @@ class AiProductPreviewViewModel @Inject constructor(
                 }
             )
         }
-    }
-
-    private suspend fun uploadSelectedImage(): Result<Product.Image?> {
-        val image = imageState.value.image ?: return Result.success(null)
-        return uploadImage(image)
-            .onSuccess {
-                imageState.value = imageState.value.copy(
-                    image = WPMediaLibraryImage(content = it)
-                )
-            }
-            .onFailure {
-                savingProductState.value = SavingProductState.Error(
-                    messageRes = R.string.ai_product_creation_error_media_upload,
-                    onRetryClick = ::onSaveProductAsDraft,
-                    onDismissClick = { savingProductState.value = SavingProductState.Idle }
-                )
-            }
     }
 
     private fun trackUndoEditClick(field: String) {
