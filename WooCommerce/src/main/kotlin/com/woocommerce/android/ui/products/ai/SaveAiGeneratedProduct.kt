@@ -20,11 +20,11 @@ class SaveAiGeneratedProduct @Inject constructor(
     suspend operator fun invoke(
         product: Product,
         selectedImage: Image?
-    ): Result<Long> {
+    ): AiProductSaveResult {
         // upload the selected image
         val image = selectedImage?.let { uploadImage(it) }?.getOrElse {
             WooLog.e(WooLog.T.PRODUCTS, "Failed to upload the selected image", it)
-            return Result.failure(it)
+            return AiProductSaveResult.Failure.UploadImageFailure
         }
 
         // Create missing categories
@@ -40,7 +40,7 @@ class SaveAiGeneratedProduct @Inject constructor(
                 onSuccess = { it },
                 onFailure = {
                     WooLog.e(WooLog.T.PRODUCTS, "Failed to add product categories", it)
-                    return Result.failure(it)
+                    return AiProductSaveResult.Failure.Generic(image?.asWPMediaLibraryImage())
                 }
             )
 
@@ -57,7 +57,7 @@ class SaveAiGeneratedProduct @Inject constructor(
                 onSuccess = { it },
                 onFailure = {
                     WooLog.e(WooLog.T.PRODUCTS, "Failed to add product tags", it)
-                    return Result.failure(it)
+                    return AiProductSaveResult.Failure.Generic(image?.asWPMediaLibraryImage())
                 }
             )
 
@@ -70,10 +70,20 @@ class SaveAiGeneratedProduct @Inject constructor(
 
         return productDetailRepository.addProduct(updatedProduct).let { (success, productId) ->
             if (success) {
-                Result.success(productId)
+                AiProductSaveResult.Success(productId)
             } else {
-                Result.failure(Exception("Failed to save the AI generated product"))
+                AiProductSaveResult.Failure.Generic(image?.asWPMediaLibraryImage())
             }
         }
+    }
+
+    private fun Product.Image.asWPMediaLibraryImage() = Image.WPMediaLibraryImage(this)
+}
+
+sealed interface AiProductSaveResult {
+    data class Success(val productId: Long) : AiProductSaveResult
+    sealed interface Failure : AiProductSaveResult {
+        data object UploadImageFailure : Failure
+        data class Generic(val uploadedImage: Image.WPMediaLibraryImage? = null) : Failure
     }
 }

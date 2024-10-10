@@ -11,9 +11,9 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.combine
-import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.products.ai.AIProductModel
+import com.woocommerce.android.ui.products.ai.AiProductSaveResult
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.SaveAiGeneratedProduct
@@ -230,7 +230,7 @@ class AiProductPreviewViewModel @Inject constructor(
             val image = imageState.value.image
             val editedFields = userEditedFields.value
 
-            saveAiGeneratedProduct(
+            val result = saveAiGeneratedProduct(
                 product.copy(
                     name = editedFields.names[selectedVariant.value] ?: product.name,
                     description = editedFields.descriptions[selectedVariant.value] ?: product.description,
@@ -238,17 +238,28 @@ class AiProductPreviewViewModel @Inject constructor(
                         ?: product.shortDescription
                 ),
                 image
-            ).fold(
-                onSuccess = { productId ->
+            )
+
+            when (result) {
+                is AiProductSaveResult.Success -> {
                     savingProductState.value = SavingProductState.Success
-                    triggerEvent(NavigateToProductDetailScreen(productId))
+                    triggerEvent(NavigateToProductDetailScreen(result.productId))
                     analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_SUCCESS)
-                },
-                onFailure = {
-                    val messageRes = when (it) {
-                        is MediaFilesRepository.MediaUploadException -> R.string.ai_product_creation_error_media_upload
+                }
+
+                is AiProductSaveResult.Failure -> {
+                    // Keep track of the uploaded image to avoid re-uploading it on retry
+                    (result as? AiProductSaveResult.Failure.Generic)?.uploadedImage?.let {
+                        imageState.value = imageState.value.copy(image = it)
+                    }
+
+                    val messageRes = when (result) {
+                        is AiProductSaveResult.Failure.UploadImageFailure ->
+                            R.string.ai_product_creation_error_media_upload
+
                         else -> R.string.error_generic
                     }
+
                     savingProductState.value = SavingProductState.Error(
                         messageRes = messageRes,
                         onRetryClick = ::onSaveProductAsDraft,
@@ -256,7 +267,7 @@ class AiProductPreviewViewModel @Inject constructor(
                     )
                     analyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_SAVE_AS_DRAFT_FAILED)
                 }
-            )
+            }
         }
     }
 
