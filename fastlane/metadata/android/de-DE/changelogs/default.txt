@@ -1,2 +1,0 @@
-20.6:
-Wir freuen uns, dir neue Funktionen in unserer WooCommerce-App bieten zu können! Benutzer können jetzt ein Passwort einrichten, um Produkte zu schützen, wenn sie mit den Website-Anmeldedaten angemeldet sind, wodurch WooCommerce 8.1.0 und höher über eine verbesserte Sicherheit verfügen. Außerdem löst das Bewerben eines Blaze-Produkts aus den Kampagnendetails jetzt einen reibungsloseren nativen Flow aus. Viel Spaß mit den Updates!

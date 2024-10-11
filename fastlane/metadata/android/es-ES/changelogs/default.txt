@@ -1,2 +1,0 @@
-20.6:
-Estamos encantados de ofrecerte nuevas funciones en nuestra aplicación de WooCommerce. Ahora los usuarios pueden establecer una contraseña para proteger los productos cuando acceden con las credenciales del sitio, lo que hace que mejore la seguridad en WooCommerce 8.1.0 y versiones superiores. Además, la promoción de un producto de Blaze desde los detalles de la campaña ahora activará un flujo nativo más fluido. ¡Disfruta de las actualizaciones!
