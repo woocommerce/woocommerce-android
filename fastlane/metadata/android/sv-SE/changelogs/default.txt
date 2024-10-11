@@ -1,0 +1,2 @@
+20.6:
+Vi är glada att kunna presentera ett antal nya funktioner i vår WooCommerce-app. Användare kan nu ställa in ett lösenord för att skydda produkter när de är inloggade med autentiseringsuppgifter för webbplatsen, vilket förbättrar säkerheten för WooCommerce 8.1.0 och senare. Dessutom utlöser marknadsföring av en Blaze-produkt från kampanjinformationen nu ett mjukare inbyggt flöde. Njut av uppdateringarna.
