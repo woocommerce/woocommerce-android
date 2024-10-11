@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-24 09:54:04+0000
+Translation-Revision-Date: 2024-10-01 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_html_toggle">HTML</string>
+    <string name="custom_fields_editor_text_toggle">文字</string>
+    <string name="custom_fields_editor_toggle_accessibility_description">切換文字與 HTML 編輯器</string>
+    <string name="custom_fields_list_top_banner_message">當你將變更儲存至自訂欄位時，變更會立即生效。</string>
+    <string name="custom_fields_list_top_banner_title">檢視及編輯自訂欄位</string>
+    <string name="product_custom_fields_desc">檢視及編輯自訂欄位</string>
+    <string name="product_custom_fields">自訂欄位</string>
     <string name="custom_fields_editor_copy_value">複製值</string>
     <string name="custom_fields_editor_copy_key">複製金鑰</string>
     <string name="blaze_campaign_product_photo_picker_photo_content_description">商品照片</string>

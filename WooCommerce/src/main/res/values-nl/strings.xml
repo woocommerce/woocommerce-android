@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-25 09:54:04+0000
+Translation-Revision-Date: 2024-10-03 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_html_toggle">HTML</string>
+    <string name="custom_fields_editor_text_toggle">Tekst</string>
+    <string name="custom_fields_editor_toggle_accessibility_description">Schakel tussen tekst- en HTML-editors</string>
+    <string name="custom_fields_list_top_banner_message">Wanneer je wijzigingen opslaat in aangepaste velden, worden deze wijzigingen meteen doorgevoerd.</string>
+    <string name="custom_fields_list_top_banner_title">Aangepaste velden bekijken en bewerken</string>
+    <string name="product_custom_fields_desc">Aangepaste velden bekijken en bewerken</string>
+    <string name="product_custom_fields">Aangepaste velden</string>
     <string name="custom_fields_editor_copy_value">Waarde kopiëren</string>
     <string name="custom_fields_editor_copy_key">Sleutel kopiëren</string>
     <string name="blaze_campaign_product_photo_picker_photo_content_description">Productafbeelding</string>

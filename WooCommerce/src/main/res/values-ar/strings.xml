@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-23 18:54:03+0000
+Translation-Revision-Date: 2024-10-01 09:54:10+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_editor_html_toggle">HTML</string>
+    <string name="custom_fields_editor_text_toggle">النص</string>
+    <string name="custom_fields_editor_toggle_accessibility_description">التبديل بين النص ومحررات HTML</string>
+    <string name="custom_fields_list_top_banner_message">عند حفظ التغييرات إلى حقول مخصصة، سيتم تطبيقها على الفور.</string>
+    <string name="custom_fields_list_top_banner_title">عرض حقول مخصصة وتحريرها</string>
+    <string name="product_custom_fields_desc">عرض حقول مخصصة وتحريرها</string>
+    <string name="product_custom_fields">حقول مخصصة</string>
     <string name="custom_fields_editor_copy_value">نسخ القيمة</string>
     <string name="custom_fields_editor_copy_key">نسخ المفتاح</string>
     <string name="blaze_campaign_product_photo_picker_photo_content_description">صورة المنتج</string>
