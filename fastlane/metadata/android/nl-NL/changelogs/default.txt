@@ -1,0 +1,2 @@
+20.6:
+We zijn enthousiast over de nieuwste updates van onze WooCommerce-app! Gebruikers kunnen nu een wachtwoord gebruiken wanneer ze zijn ingelogd met de inloggegevens voor de site om hun producten te beschermen. Dit zorgt voor een betere beveiliging van WooCommerce 8.1.0 en nieuwer. Daarnaast zorgt de promotie van een Blaze-product vanuit de campagnedetails voor een nog betere gebruikerservaring. Veel plezier met de updates!

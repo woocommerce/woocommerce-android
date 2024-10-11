@@ -1,0 +1,2 @@
+20.6:
+Temos o prazer de anunciar novas funcionalidades no app do WooCommerce! Agora os usuários podem definir uma senha para proteger produtos após fazer login com as credenciais do site. Isso reforça a segurança do WooCommerce 8.1.0 e superiores. Além disso, promover um produto do Blaze a partir dos detalhes da campanha resultará em um fluxo nativo mais suave. Aproveite as atualizações!
