@@ -1,2 +1,0 @@
-20.6:
-Ini dia fitur-fitur baru di aplikasi WooCommerce kami! WooCommerce versi 8.1.0 dan di atasnya kini makin aman karena pengguna dapat mengatur kata sandi untuk melindungi produk saat sudah login dengan kredensial situs. Selain itu, alur proses di dalam aplikasi saat mempromosikan produk Blaze dari rincian kampanye kini jadi lebih mulus. Selamat menikmati pembaruan kami!

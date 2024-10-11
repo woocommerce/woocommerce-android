@@ -1,2 +1,0 @@
-20.6:
-WooCommerce uygulamamızda yeni özellikler getirmekten heyecan duyuyoruz! Kullanıcılar, site kimlik bilgileriyle oturum açtığında ürünleri korumak için artık bir şifre ayarlayarak WooCommerce 8.1.0 ve üzeri sürümlerde güvenliği geliştirebilir. Ayrıca artık kampanya ayrıntılarından bir Blaze ürünü tanıtıldığında daha sorunsuz bir yerel akışı tetiklenecek. Bu güncellemelerin keyfini çıkarın!
