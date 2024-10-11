@@ -57,6 +57,7 @@ class CustomFieldsFragment : BaseFragment() {
                     action = { event.action.onClick(null) }
                 )
 
+                is MultiLiveEvent.Event.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }

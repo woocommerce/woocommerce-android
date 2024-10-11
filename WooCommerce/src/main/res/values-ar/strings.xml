@@ -961,8 +961,6 @@ Language: ar
     <string name="error_troubleshooting">حل المشكلات</string>
     <string name="orderlist_parsing_error_message">قد يرتبط ذلك بنزاع مع الاضافة. يرجى المحاولة مرة أخرى لاحقًا أو تواصل معنا وستسرنا مساعدتك!</string>
     <string name="orderlist_parsing_error_title">تعذر علينا تحميل بياناتك</string>
-    <string name="ai_product_description_dialog_message">أضف أوصاف في لمح البصر باستخدام الذكاء الاصطناعي. جرّب الميزة التي نطرحها الآن!</string>
-    <string name="ai_product_description_dialog_title">إضافة وصف المنتج باستخدام الذكاء الاصطناعي</string>
     <string name="ai_product_description_note_dialog_confirmation">فهمت</string>
     <string name="ai_product_description_note_dialog_message">ترجى مراعاة أن وصف هذا المنتج تم إنشاؤه باستخدام أداة لدينا مدعومة من الذكاء الاصطناعي. ترجى مراجعة المحتوى وتحريره لضمان محاذاته مع علامتك التجارية ورسائلك.</string>
     <string name="ai_product_description_note_dialog_heading">بداية رائعة!</string>

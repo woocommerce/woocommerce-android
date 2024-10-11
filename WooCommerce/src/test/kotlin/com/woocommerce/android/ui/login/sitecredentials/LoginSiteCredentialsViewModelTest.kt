@@ -15,10 +15,12 @@ import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthentic
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.assertj.core.api.Assertions.assertThat
@@ -26,6 +28,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -72,6 +75,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appPrefs: AppPrefsWrapper = mock()
     private val userAgent: UserAgent = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { it.arguments[0].toString() }
+    }
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -93,7 +99,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             appPrefs = appPrefs,
             userAgent = userAgent,
             applicationPasswordsClientId = clientId,
-            resourceProvider = mock()
+            resourceProvider = resourceProvider
         )
     }
 
@@ -361,5 +367,45 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             errorDescription = anyOrNull()
         )
         verify(loginAnalyticsListener).trackFailure(anyOrNull())
+    }
+
+    @Test
+    fun `given application pwd disabled and login fails, when attempting to sign in, then show error`() = testBlocking {
+        setup {
+            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.failure(Exception()))
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.success(testSite.apply { applicationPasswordsAuthorizeUrl = null }))
+        }
+
+        viewModel.viewState.observeForTesting {
+            viewModel.onUsernameChanged(testUsername)
+            viewModel.onPasswordChanged(testPassword)
+            viewModel.onContinueClick()
+        }
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
+    }
+
+    @Test
+    fun `given application passwords enabled and login fails for an unknown reason, when user attempts to sign-in, then show WebView login flow`() = testBlocking {
+        setup {
+            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.failure(Exception()))
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.success(testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onUsernameChanged(testUsername)
+            viewModel.onPasswordChanged(testPassword)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onContinueClick()
+        }.last()
+
+        assertThat(event).isInstanceOf(LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen::class.java)
+        assertThat((event as LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen).url)
+            .isEqualTo(urlAuthFull)
     }
 }

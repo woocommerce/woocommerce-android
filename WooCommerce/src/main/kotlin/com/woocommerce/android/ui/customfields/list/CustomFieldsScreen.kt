@@ -2,7 +2,12 @@ package com.woocommerce.android.ui.customfields.list
 
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.Interaction
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,15 +19,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
@@ -37,26 +46,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.ExpandableTopBanner
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.customfields.CustomField
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import org.json.JSONArray
+import org.json.JSONObject
 
 @Composable
 fun CustomFieldsScreen(
@@ -71,8 +87,16 @@ fun CustomFieldsScreen(
             onCustomFieldClicked = viewModel::onCustomFieldClicked,
             onCustomFieldValueClicked = viewModel::onCustomFieldValueClicked,
             onAddCustomFieldClicked = viewModel::onAddCustomFieldClicked,
+            onLearnMoreClicked = viewModel::onLearnMoreClicked,
             onBackClick = viewModel::onBackClick,
             snackbarHostState = snackbarHostState
+        )
+    }
+
+    viewModel.overlayedField.observeAsState().value?.let { overlayedField ->
+        JsonCustomFieldViewer(
+            customField = overlayedField,
+            onDismiss = viewModel::onOverlayedFieldDismissed
         )
     }
 }
@@ -86,6 +110,7 @@ private fun CustomFieldsScreen(
     onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
     onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
     onAddCustomFieldClicked: () -> Unit,
+    onLearnMoreClicked: () -> Unit,
     onBackClick: () -> Unit,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
@@ -97,12 +122,11 @@ private fun CustomFieldsScreen(
                 title = stringResource(id = R.string.custom_fields_list_title),
                 onNavigationButtonClick = onBackClick,
                 actions = {
-                    if (state.hasChanges) {
-                        WCTextButton(
-                            text = stringResource(id = R.string.save),
-                            onClick = onSaveClicked
-                        )
-                    }
+                    WCTextButton(
+                        text = stringResource(id = R.string.save),
+                        onClick = onSaveClicked,
+                        enabled = state.hasChanges
+                    )
                 }
             )
         },
@@ -141,16 +165,18 @@ private fun CustomFieldsScreen(
                     .padding(paddingValues)
                     .pullRefresh(state = pullToRefreshState)
             ) {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(state.customFields) { customField ->
-                        CustomFieldItem(
-                            customField = customField,
-                            onClicked = onCustomFieldClicked,
-                            onValueClicked = onCustomFieldValueClicked,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Divider()
-                    }
+                if (state.customFields.isNotEmpty()) {
+                    CustomFieldsList(
+                        customFields = state.customFields,
+                        onCustomFieldClicked = onCustomFieldClicked,
+                        onCustomFieldValueClicked = onCustomFieldValueClicked,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    CustomFieldsEmptyView(
+                        onLearnMoreClicked = onLearnMoreClicked,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
 
                 PullRefreshIndicator(
@@ -174,6 +200,66 @@ private fun CustomFieldsScreen(
                 dismissButton = it.onCancel
             )
         }
+    }
+}
+
+@Composable
+private fun CustomFieldsList(
+    customFields: List<CustomFieldUiModel>,
+    onCustomFieldClicked: (CustomFieldUiModel) -> Unit,
+    onCustomFieldValueClicked: (CustomFieldUiModel) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(customFields) { customField ->
+            CustomFieldItem(
+                customField = customField,
+                onClicked = onCustomFieldClicked,
+                onValueClicked = onCustomFieldValueClicked
+            )
+            Divider()
+        }
+    }
+}
+
+@Composable
+private fun CustomFieldsEmptyView(
+    onLearnMoreClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(32.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(Modifier.weight(1f))
+
+        Text(
+            text = stringResource(id = R.string.custom_fields_empty_view_title),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center
+        )
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_tax),
+            contentDescription = null,
+        )
+        Text(
+            text = stringResource(id = R.string.custom_fields_empty_view_message),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.body1
+        )
+
+        WCColoredButton(onClick = onLearnMoreClicked) {
+            Text(text = stringResource(id = R.string.learn_more))
+        }
+
+        Spacer(Modifier.weight(1f))
     }
 }
 
@@ -243,8 +329,69 @@ private fun CustomFieldItem(
     }
 }
 
+@Composable
+private fun JsonCustomFieldViewer(
+    customField: CustomFieldUiModel,
+    onDismiss: () -> Unit
+) {
+    // We use this to disable focus on the text fields used to show the key and value as it's not needed for our case
+    val inactiveInteractionSource = remember {
+        object : MutableInteractionSource {
+            override val interactions: Flow<Interaction> = emptyFlow()
+            override suspend fun emit(interaction: Interaction) = Unit
+            override fun tryEmit(interaction: Interaction): Boolean = false
+        }
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            modifier = Modifier.padding(vertical = 16.dp)
+        ) {
+            val jsonFormatted = remember(customField.value) {
+                runCatching {
+                    if (customField.value.trimStart().startsWith("[")) {
+                        JSONArray(customField.value).toString(4)
+                    } else {
+                        JSONObject(customField.value).toString(4)
+                    }
+                }.getOrDefault(customField.value)
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            ) {
+                OutlinedTextField(
+                    value = customField.key,
+                    onValueChange = {},
+                    label = { Text(text = stringResource(id = R.string.custom_fields_editor_key_label)) },
+                    readOnly = true,
+                    interactionSource = inactiveInteractionSource,
+                    modifier = Modifier.focusable(enabled = false)
+                )
+
+                OutlinedTextField(
+                    value = jsonFormatted,
+                    onValueChange = {},
+                    label = { Text(text = stringResource(id = R.string.custom_fields_editor_value_label)) },
+                    readOnly = true,
+                    interactionSource = inactiveInteractionSource,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+
+                WCTextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text(text = stringResource(id = R.string.close))
+                }
+            }
+        }
+    }
+}
+
 @LightDarkThemePreviews
-@Preview
 @Composable
 private fun CustomFieldsScreenPreview() {
     WooThemeWithBackground {
@@ -270,6 +417,44 @@ private fun CustomFieldsScreenPreview() {
             onCustomFieldClicked = {},
             onCustomFieldValueClicked = {},
             onAddCustomFieldClicked = {},
+            onLearnMoreClicked = {},
+            onBackClick = {}
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun JsonCustomFieldViewerPreview() {
+    WooThemeWithBackground {
+        JsonCustomFieldViewer(
+            customField = CustomFieldUiModel(
+                CustomField(
+                    id = 0,
+                    key = "key1",
+                    value = "[{\"key\": \"value\"}]"
+                )
+            ),
+            onDismiss = {}
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun CustomFieldsEmptyViewPreview() {
+    WooThemeWithBackground {
+        CustomFieldsScreen(
+            state = CustomFieldsViewModel.UiState(
+                customFields = emptyList(),
+                topBannerState = CustomFieldsViewModel.TopBannerState { }
+            ),
+            onPullToRefresh = {},
+            onSaveClicked = {},
+            onCustomFieldClicked = {},
+            onCustomFieldValueClicked = {},
+            onAddCustomFieldClicked = {},
+            onLearnMoreClicked = {},
             onBackClick = {}
         )
     }

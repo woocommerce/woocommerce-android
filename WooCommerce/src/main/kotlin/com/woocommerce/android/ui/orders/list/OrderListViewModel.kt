@@ -70,7 +70,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import okio.utf8Size
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -410,26 +409,12 @@ class OrderListViewModel @Inject constructor(
      * Track user clicked to open an order and the status of that order, along with some
      * data about the order custom fields
      */
-    fun trackOrderClickEvent(orderId: Long, orderStatus: String, windowSize: WindowSizeClass) = launch {
-        val (customFieldsCount, customFieldsSize) =
-            orderDetailRepository.getOrderMetadata(orderId)
-                .map { it.valueAsString.utf8Size() }
-                .let {
-                    Pair(
-                        // amount of custom fields in the order
-                        it.size,
-                        // total size in bytes of all custom fields in the order
-                        if (it.isEmpty()) 0 else it.reduce(Long::plus)
-                    )
-                }
-
+    fun trackOrderClickEvent(orderId: Long, orderStatus: String, windowSize: WindowSizeClass) {
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_OPEN,
             mapOf(
                 AnalyticsTracker.KEY_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus,
-                AnalyticsTracker.KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
-                AnalyticsTracker.KEY_CUSTOM_FIELDS_SIZE to customFieldsSize,
                 KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(windowSize)
             )
         )

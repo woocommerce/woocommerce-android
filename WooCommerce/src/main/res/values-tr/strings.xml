@@ -961,8 +961,6 @@ Language: tr
     <string name="error_troubleshooting">Sorun giderme</string>
     <string name="orderlist_parsing_error_message">Bu, bir eklentiyle çakışmadan kaynaklanabilir. Lütfen daha sonra tekrar deneyin veya bize ulaşın, size yardımcı olmaktan memnuniyet duyarız.</string>
     <string name="orderlist_parsing_error_title">Verileriniz yüklenemedi.</string>
-    <string name="ai_product_description_dialog_message">Yapay zekayla açıklamaları anında ekleyin. Özelliğimizi bugün deneyin!</string>
-    <string name="ai_product_description_dialog_title">Yapay zekayla ürün açıklaması ekleyin</string>
     <string name="ai_product_description_note_dialog_confirmation">Anladım</string>
     <string name="ai_product_description_note_dialog_message">Bu ürün açıklamasının yapay zeka destekli aracımız kullanılarak oluşturulduğunu lütfen unutmayın. Lütfen markanız ve vermek istediğiniz mesajla uyumlu olduğundan emin olmak için bu açıklamayı inceleyip düzenleyin.</string>
     <string name="ai_product_description_note_dialog_heading">Mükemmel başlangıç!</string>

@@ -961,8 +961,6 @@ Language: es
     <string name="error_troubleshooting">Solución de problemas</string>
     <string name="orderlist_parsing_error_message">Este problema se puede producir a causa de un conflicto con un plugin. Inténtalo de nuevo más tarde o ponte en contacto con nosotros y estaremos encantados de ayudarte.</string>
     <string name="orderlist_parsing_error_title">No hemos podido cargar los datos.</string>
-    <string name="ai_product_description_dialog_message">Añade las descripciones rápidamente con la IA. ¡Prueba nuestra función hoy mismo!</string>
-    <string name="ai_product_description_dialog_title">Añadir la descripción del producto usando la IA</string>
     <string name="ai_product_description_note_dialog_confirmation">De acuerdo</string>
     <string name="ai_product_description_note_dialog_message">Ten en cuenta que esta descripción de producto se ha generado con nuestra herramienta con tecnología de IA. Revisa y edita el contenido para asegurarte de que esté en línea con tu marca y tu mensaje.</string>
     <string name="ai_product_description_note_dialog_heading">¡Gran comienzo!</string>

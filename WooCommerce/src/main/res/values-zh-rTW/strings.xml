@@ -961,8 +961,6 @@ Language: zh_TW
     <string name="error_troubleshooting">疑難排解</string>
     <string name="orderlist_parsing_error_message">這可能與外掛程式衝突有關。 請稍後再試或與我們聯絡，我們很樂意提供協助！</string>
     <string name="orderlist_parsing_error_title">無法載入你的資料。</string>
-    <string name="ai_product_description_dialog_message">讓 AI 幫助你迅速新增說明。 立即試用我們的功能！</string>
-    <string name="ai_product_description_dialog_title">使用 AI 新增產品說明</string>
     <string name="ai_product_description_note_dialog_confirmation">知道了</string>
     <string name="ai_product_description_note_dialog_message">在此提醒，這是系統使用 AI 工具產生的產品說明。 請詳細檢閱及編輯內容，確認內容符合你的品牌形象和你想傳遞的訊息。</string>
     <string name="ai_product_description_note_dialog_heading">很棒的開始！</string>

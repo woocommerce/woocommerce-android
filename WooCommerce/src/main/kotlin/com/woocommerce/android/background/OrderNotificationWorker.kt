@@ -41,25 +41,26 @@ class OrderNotificationWorker @AssistedInject constructor(
         val startTime = System.currentTimeMillis()
         val siteId = inputData.getLong(SITE_ID, -1L)
         val orderId = inputData.getLong(ORDER_ID, -1L)
-        return when {
-            siteId == -1L || orderId == -1L -> Result.success()
-            updateOrderAndOrderList(siteId, orderId) -> {
+
+        if (siteId == -1L || orderId == -1L) return Result.success()
+
+        return updateOrderAndOrderList(siteId, orderId).fold(
+            onSuccess = {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNCED,
                     mapOf(AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime))
                 )
                 Result.success()
-            }
-
-            else -> {
+            },
+            onFailure = { exception ->
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.PUSH_NOTIFICATION_ORDER_BACKGROUND_SYNC_ERROR,
                     errorContext = this.javaClass.simpleName,
                     errorType = "ORDER_NOTIFICATION_SYNCED_ERROR",
-                    errorDescription = "Orders refresh failed."
+                    errorDescription = exception.message
                 )
                 Result.failure()
             }
-        }
+        )
     }
 }

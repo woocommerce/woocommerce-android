@@ -27,11 +27,13 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         val startTime = System.currentTimeMillis()
-        val updateAnalyticsDashboardRangeSelectionsResult = updateAnalyticsDashboardRangeSelections()
-        val updateOrderListBySelectedStoreResult = updateOrderListBySelectedStore(true)
+        val refreshDataResults = listOf(
+            updateAnalyticsDashboardRangeSelections(),
+            updateOrderListBySelectedStore(true)
+        )
         return when {
             accountRepository.isUserLoggedIn().not() -> Result.success()
-            updateAnalyticsDashboardRangeSelectionsResult && updateOrderListBySelectedStoreResult -> {
+            refreshDataResults.all { it.isSuccess } -> {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.BACKGROUND_DATA_SYNCED,
                     mapOf(AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime))
@@ -40,18 +42,11 @@ class UpdateDataOnBackgroundWorker @AssistedInject constructor(
             }
 
             else -> {
-                val errorDescription = when {
-                    updateAnalyticsDashboardRangeSelectionsResult.not() &&
-                        updateOrderListBySelectedStoreResult.not() -> {
-                        "Orders & Dashboard stats refresh failed."
-                    }
-
-                    updateAnalyticsDashboardRangeSelectionsResult.not() -> {
-                        "Dashboard stats refresh failed."
-                    }
-
-                    else -> "Orders refresh failed."
+                val errorDescription = refreshDataResults.filter { it.isFailure }.joinToString(" , ") {
+                    it.exceptionOrNull()?.message
+                        ?: "${UpdateDataOnBackgroundWorker::class.java.name} Unknown error"
                 }
+
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.BACKGROUND_DATA_SYNC_ERROR,
                     errorContext = this.javaClass.simpleName,

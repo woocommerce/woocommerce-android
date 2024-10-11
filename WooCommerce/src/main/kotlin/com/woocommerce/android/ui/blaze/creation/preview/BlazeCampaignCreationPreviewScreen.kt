@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
@@ -318,8 +319,12 @@ fun CampaignDetails(
             text = stringResource(id = R.string.blaze_campaign_preview_details_section_title),
             style = MaterialTheme.typography.body2
         )
-        // Budget
-        CampaignPropertyGroupItem(items = listOf(campaignDetails.budget))
+        // Campaign Details
+        if (FeatureFlag.OBJECTIVE_SECTION.isEnabled()) {
+            CampaignPropertyGroupItem(items = listOf(campaignDetails.selectedObjective, campaignDetails.budget))
+        } else {
+            CampaignPropertyGroupItem(items = listOf(campaignDetails.budget))
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience
@@ -449,7 +454,12 @@ fun CampaignScreenPreview() {
                     displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
                     onItemSelected = {},
                     maxLinesValue = 1,
-                )
+                ),
+                selectedObjective = CampaignDetailItemUi(
+                    displayTitle = stringResource(R.string.blaze_campaign_preview_details_objective),
+                    displayValue = "Sales",
+                    onItemSelected = {},
+                ),
             )
         ),
         onBackPressed = { },

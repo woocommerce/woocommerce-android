@@ -52,16 +52,16 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Upd
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.details.ProductDetailFragmentArgs
 import com.woocommerce.android.ui.products.filter.ProductFilterResult
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.OpenEmptyProduct
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.OpenProduct
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ScrollToTop
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.SelectProducts
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowUpdateDialog
+import com.woocommerce.android.ui.products.list.ProductListEvent.OpenEmptyProduct
+import com.woocommerce.android.ui.products.list.ProductListEvent.OpenProduct
+import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.list.ProductListEvent.SelectProducts
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductUpdateStockStatusScreen
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.TabletLayoutSetupHelper
@@ -503,9 +503,9 @@ class ProductListFragment :
             .show()
     }
 
-    private fun handleListState(productListState: ProductListViewModel.ProductListState) {
+    private fun handleListState(productListState: ProductListViewState.ProductListState) {
         when (productListState) {
-            ProductListViewModel.ProductListState.Selecting -> {
+            ProductListViewState.ProductListState.Selecting -> {
                 actionMode = (requireActivity() as AppCompatActivity)
                     .startSupportActionMode(this@ProductListFragment)
                 delayMultiSelection()
@@ -513,7 +513,7 @@ class ProductListFragment :
                 enableProductSortAndFiltersCard(false)
             }
 
-            ProductListViewModel.ProductListState.Browsing -> {
+            ProductListViewState.ProductListState.Browsing -> {
                 actionMode?.finish()
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)

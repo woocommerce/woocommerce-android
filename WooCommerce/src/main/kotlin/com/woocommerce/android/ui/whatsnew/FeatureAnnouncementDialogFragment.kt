@@ -2,7 +2,9 @@ package com.woocommerce.android.ui.whatsnew
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -12,15 +14,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementDialogFragmentBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import dagger.hilt.android.AndroidEntryPoint
-import org.wordpress.android.util.DisplayUtils
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FeatureAnnouncementDialogFragment : DialogFragment() {
-    companion object {
-        const val TAG: String = "FeatureAnnouncementDialog"
-        const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.25f
-        const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
-    }
+    @Inject lateinit var sizeSetup: FeatureAnnouncementSizeSetupHelper
 
     private val viewModel: FeatureAnnouncementViewModel by viewModels()
     private val navArgs: FeatureAnnouncementDialogFragmentArgs by navArgs()
@@ -33,12 +31,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (isTabletLandscape()) {
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog)
-        } else {
-            /* This draws the dialog as full screen */
-            setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
-        }
+        lifecycle.addObserver(sizeSetup)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,23 +40,6 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         viewModel.setAnnouncementData(navArgs.announcement)
         setupView(binding)
         setupObservers()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if (isTabletLandscape()) {
-            dialog?.window?.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
-            )
-        }
-    }
-
-    private fun isTabletLandscape(): Boolean {
-        val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
-        val isLandscape = DisplayUtils.isLandscape(context)
-
-        return isTablet && isLandscape
     }
 
     private fun setupView(binding: FeatureAnnouncementDialogFragmentBinding) {

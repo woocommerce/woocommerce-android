@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -26,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +32,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import kotlinx.coroutines.delay
@@ -121,7 +119,7 @@ fun WooPosPaymentSuccessScreen(
                 }
             )
 
-            Button(
+            WooPosButton(
                 modifier = Modifier
                     .constrainAs(button) {
                         bottom.linkTo(parent.bottom)
@@ -133,17 +131,9 @@ fun WooPosPaymentSuccessScreen(
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.onBackground
                 ),
-                shape = RoundedCornerShape(8.dp),
                 onClick = onNewTransactionClicked,
-            ) {
-                Text(
-                    text = stringResource(R.string.woopos_new_order_button),
-                    style = MaterialTheme.typography.h5,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colors.background,
-                    textAlign = TextAlign.Center
-                )
-            }
+                text = stringResource(R.string.woopos_new_order_button),
+            )
         }
     }
 }
@@ -176,8 +166,7 @@ private fun CheckMarkIcon(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .size(size)
-            .shadow(8.dp, CircleShape)
-            .background(WooPosTheme.colors.paymentSuccessIconBackground, CircleShape)
+            .background(WooPosTheme.colors.success, CircleShape)
     ) {
         Icon(
             imageVector = Icons.Default.Check,

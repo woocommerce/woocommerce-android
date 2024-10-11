@@ -113,12 +113,10 @@ object AppPrefs {
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
-        WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
-        AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
         BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN,
         BLAZE_CAMPAIGN_CREATED,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
@@ -129,6 +127,7 @@ object AppPrefs {
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
         AI_PRODUCT_CREATION_SURVEY_DISMISSED,
         CUSTOM_FIELDS_TOP_BANNER_DISMISSED,
+        BLAZE_CAMPAIGN_SELECTED_OBJECTIVE
     }
 
     /**
@@ -273,6 +272,10 @@ object AppPrefs {
     var isCustomFieldsTopBannerDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CUSTOM_FIELDS_TOP_BANNER_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.CUSTOM_FIELDS_TOP_BANNER_DISMISSED, value)
+
+    var blazeCampaignSelectedObjective: String
+        get() = getString(DeletablePrefKey.BLAZE_CAMPAIGN_SELECTED_OBJECTIVE, "")
+        set(value) = setString(DeletablePrefKey.BLAZE_CAMPAIGN_SELECTED_OBJECTIVE, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -976,16 +979,6 @@ object AppPrefs {
             value = value
         )
 
-    var wasAIProductDescriptionPromoDialogShown: Boolean
-        get() = getBoolean(
-            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
-            default = false
-        )
-        set(value) = setBoolean(
-            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
-            value = value
-        )
-
     var isAIProductDescriptionTooltipDismissed: Boolean
         get() = getBoolean(
             key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
@@ -1011,16 +1004,6 @@ object AppPrefs {
         set(value) = setString(
             key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE,
             value = value.slug
-        )
-
-    var aiProductCreationIsFirstAttempt: Boolean
-        get() = getBoolean(
-            key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
-            default = true
-        )
-        set(value) = setBoolean(
-            key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
-            value = value
         )
 
     var isBlazeCelebrationScreenShown: Boolean

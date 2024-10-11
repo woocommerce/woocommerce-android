@@ -961,8 +961,6 @@ Language: ru
     <string name="error_troubleshooting">Устранение неполадок</string>
     <string name="orderlist_parsing_error_message">Возможно, дело в конфликте с плагином. Повторите попытку позже или свяжитесь с нами. Мы будем рады помочь!</string>
     <string name="orderlist_parsing_error_title">Не удалось загрузить данные.</string>
-    <string name="ai_product_description_dialog_message">Используйте искусственный интеллект, чтобы быстро создавать описания. Попробуйте эту функцию уже сегодня!</string>
-    <string name="ai_product_description_dialog_title">Создание описания товара с помощью ИИ</string>
     <string name="ai_product_description_note_dialog_confirmation">Понятно</string>
     <string name="ai_product_description_note_dialog_message">Помните, что это описание товара было создано с помощью искусственного интеллекта. Проверьте и отредактируйте содержимое, чтобы оно точно соответствовало вашему бренду и концепции.</string>
     <string name="ai_product_description_note_dialog_heading">Превосходное начало!</string>

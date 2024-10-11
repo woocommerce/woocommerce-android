@@ -961,8 +961,6 @@ Language: ko_KR
     <string name="error_troubleshooting">문제 해결</string>
     <string name="orderlist_parsing_error_message">플러그인 충돌과 관련이 있을 수 있습니다. 나중에 다시 시도해 보세요. 또는 당사에 연락하면 기꺼이 도와드리겠습니다!</string>
     <string name="orderlist_parsing_error_title">데이터를 로드할 수 없습니다.</string>
-    <string name="ai_product_description_dialog_message">AI로 곧장 설명을 추가하세요. 지금 기능을 사용해 보세요!</string>
-    <string name="ai_product_description_dialog_title">AI로 상품 설명 추가</string>
     <string name="ai_product_description_note_dialog_confirmation">알겠습니다.</string>
     <string name="ai_product_description_note_dialog_message">이 상품 설명은 AI 기반 도구로 생성되었다는 점을 유념하시기를 바랍니다. 콘텐츠를 검토하고 브랜드 및 메시지 내용과 부합하도록 편집하시기를 바랍니다.</string>
     <string name="ai_product_description_note_dialog_heading">시작이 좋습니다!</string>

@@ -929,7 +929,7 @@ class MainActivity :
 
     private fun navigateToFeatureAnnouncement(event: ShowFeatureAnnouncement) {
         if (!PackageUtils.isTesting()) {
-            val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+            val action = NavGraphMainDirections.actionGlobalFeatureAnnouncementDialogFragmentOnMain(event.announcement)
             navController.navigateSafely(action)
         }
     }

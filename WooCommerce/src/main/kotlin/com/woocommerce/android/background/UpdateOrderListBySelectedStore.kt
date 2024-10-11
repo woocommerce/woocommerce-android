@@ -12,22 +12,31 @@ class UpdateOrderListBySelectedStore @Inject constructor(
     private val ordersStore: WCOrderStore,
     private val storeOrdersListLastUpdate: StoreOrdersListLastUpdate
 ) {
-    suspend operator fun invoke(deleteOldData: Boolean = false): Boolean {
+    suspend operator fun invoke(deleteOldData: Boolean = false): Result<Unit> {
         val listDescriptor = getWCOrderListDescriptorWithFilters()
         val response = ordersStore.fetchOrdersListFirstPage(listDescriptor, deleteOldData)
         val orders = response.model
 
-        if (response.isError || orders == null) return false
-
-        orders.map { it.orderId }.let { remoteIds ->
-            listStore.saveListFetched(
-                listDescriptor = listDescriptor,
-                remoteItemIds = remoteIds,
-                canLoadMore = remoteIds.size == listDescriptor.config.networkPageSize
+        return when {
+            response.isError -> return Result.failure(
+                Exception("${UpdateOrderListBySelectedStore::class.simpleName} ${response.error.message}")
             )
-        }
 
-        storeOrdersListLastUpdate(listDescriptor.uniqueIdentifier.value)
-        return true
+            orders == null -> Result.failure(
+                Exception("${UpdateOrderListBySelectedStore::class.simpleName} no orders fetched")
+            )
+
+            else -> {
+                orders.map { it.orderId }.let { remoteIds ->
+                    listStore.saveListFetched(
+                        listDescriptor = listDescriptor,
+                        remoteItemIds = remoteIds,
+                        canLoadMore = remoteIds.size == listDescriptor.config.networkPageSize
+                    )
+                }
+                storeOrdersListLastUpdate(listDescriptor.uniqueIdentifier.value)
+                Result.success(Unit)
+            }
+        }
     }
 }

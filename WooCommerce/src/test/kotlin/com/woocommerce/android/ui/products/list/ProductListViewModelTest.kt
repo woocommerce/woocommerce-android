@@ -315,7 +315,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         viewModel.onFiltersButtonTapped()
 
-        assertThat(events.count { it is ProductListViewModel.ProductListEvent.ShowProductFilterScreen }).isEqualTo(1)
+        assertThat(events.count { it is ProductListEvent.ShowProductFilterScreen }).isEqualTo(1)
     }
 
     @Test
@@ -336,7 +336,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         viewModel.onFiltersButtonTapped()
 
-        val event = events.first() as ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+        val event = events.first() as ProductListEvent.ShowProductFilterScreen
         assertThat(event.productStatusFilter).isEqualTo(status)
         assertThat(event.productTypeFilter).isEqualTo(type)
         assertThat(event.stockStatusFilter).isEqualTo(stockStatus)
@@ -355,7 +355,7 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         viewModel.onSortButtonTapped()
 
-        assertThat(events.count { it is ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet })
+        assertThat(events.count { it is ProductListEvent.ShowProductSortingBottomSheet })
             .isEqualTo(1)
     }
 
