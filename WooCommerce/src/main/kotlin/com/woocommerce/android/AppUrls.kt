@@ -143,4 +143,7 @@ object AppUrls {
 
     const val GOOGLE_ADMIN_DASHBOARD =
         "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard"
+
+    const val BLAZE_CAMPAIGN_CREATION_SURVEY_URL_I1 =
+        "https://wordpressdotcom.survey.fm/blaze-on-woo-mobile-survey-sept-2024-i1"
 }

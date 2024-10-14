@@ -119,47 +119,47 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given editing an existing field, when key is changed, then show done button`() = testBlocking {
+    fun `given editing an existing field, when key is changed, then enable done button`() = testBlocking {
         setup(editing = true)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onKeyChanged("new key")
         }.last()
 
-        assertThat(state.showDoneButton).isTrue()
+        assertThat(state.enableDoneButton).isTrue()
     }
 
     @Test
-    fun `given editing an existing field, when value is changed, then show done button`() = testBlocking {
+    fun `given editing an existing field, when value is changed, then enable done button`() = testBlocking {
         setup(editing = true)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onValueChanged("new value")
         }.last()
 
-        assertThat(state.showDoneButton).isTrue()
+        assertThat(state.enableDoneButton).isTrue()
     }
 
     @Test
-    fun `given creating a new field, when the key is not empty, then show done button`() = testBlocking {
+    fun `given creating a new field, when the key is not empty, then enable done button`() = testBlocking {
         setup(editing = false)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onKeyChanged("key")
         }.last()
 
-        assertThat(state.showDoneButton).isTrue()
+        assertThat(state.enableDoneButton).isTrue()
     }
 
     @Test
-    fun `when key is empty, then hide done button`() = testBlocking {
+    fun `when key is empty, then disable done button`() = testBlocking {
         setup(editing = false)
 
         val state = viewModel.state.runAndCaptureValues {
             viewModel.onKeyChanged("")
         }.last()
 
-        assertThat(state.showDoneButton).isFalse()
+        assertThat(state.enableDoneButton).isFalse()
     }
 
     @Test
@@ -249,7 +249,7 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         assertThat(state.keyErrorMessage)
             .isEqualTo(UiString.UiStringRes(R.string.custom_fields_editor_key_error_duplicate))
-        assertThat(state.showDoneButton).isFalse()
+        assertThat(state.enableDoneButton).isFalse()
     }
 
     @Test
@@ -291,7 +291,7 @@ class CustomFieldsEditorViewModelTest : BaseUnitTest() {
 
         assertThat(state.keyErrorMessage)
             .isEqualTo(UiString.UiStringRes(R.string.custom_fields_editor_key_error_underscore))
-        assertThat(state.showDoneButton).isFalse()
+        assertThat(state.enableDoneButton).isFalse()
     }
 
     @Test

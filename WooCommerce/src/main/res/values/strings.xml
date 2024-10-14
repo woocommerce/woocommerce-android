@@ -4014,6 +4014,7 @@
     <string name="blaze_campaign_created_success_title">Ready to Go!</string>
     <string name="blaze_campaign_created_success_description">We\'re reviewing your campaign. It\'ll be live within 24 hours. Exciting times ahead for your sales!</string>
     <string name="blaze_campaign_created_success_done_button">Done</string>
+    <string name="blaze_campaign_created_success_feedback_request">How was the experience with Blaze</string>
     <string name="blaze_campaign_creation_loading">Creating your campaign</string>
     <string name="blaze_campaign_creation_error_title">Error creating campaign</string>
     <string name="blaze_campaign_creation_error_payment_hint">Error creating campaign</string>
