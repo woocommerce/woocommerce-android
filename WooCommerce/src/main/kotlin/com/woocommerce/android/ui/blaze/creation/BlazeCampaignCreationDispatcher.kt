@@ -14,7 +14,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.INTRO_VIEW
 import com.woocommerce.android.ui.blaze.creation.intro.BlazeCampaignCreationIntroFragmentArgs
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewFragmentArgs
 import com.woocommerce.android.ui.blaze.notification.AbandonedCampaignReminder
@@ -59,7 +58,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         handler: (BlazeCampaignCreationDispatcherEvent) -> Unit = ::handleEvent
     ) {
         when {
-            blazeRepository.getMostRecentCampaign() == null && source != INTRO_VIEW -> handler(
+            blazeRepository.getMostRecentCampaign() == null -> handler(
                 BlazeCampaignCreationDispatcherEvent.ShowBlazeCampaignCreationIntro(productId, source)
             )
 
@@ -128,20 +127,12 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
     }
 
     private fun BaseFragment.showIntro(productId: Long?, blazeSource: BlazeFlowSource) {
-        findNavController().navigate(
-            resId = R.id.blazeCampaignCreationIntroFragment,
-            args = BlazeCampaignCreationIntroFragmentArgs(
+        findNavController().navigateToBlazeGraph(
+            startDestination = R.id.blazeCampaignCreationIntroFragment,
+            bundle = BlazeCampaignCreationIntroFragmentArgs(
                 productId = productId ?: -1L,
                 source = blazeSource
-            ).toBundle(),
-            navOptions = navOptions {
-                anim {
-                    enter = R.anim.default_enter_anim
-                    exit = R.anim.default_exit_anim
-                    popEnter = R.anim.default_pop_enter_anim
-                    popExit = R.anim.default_pop_exit_anim
-                }
-            }
+            ).toBundle()
         )
     }
 
@@ -156,6 +147,9 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
     }
 
     private fun BaseFragment.showProductSelector() {
+        val navGraph = findNavController().graph.findNode(R.id.nav_graph_blaze_campaign_creation) as NavGraph
+        navGraph.setStartDestination(R.id.nav_graph_product_selector)
+
         findNavController().navigateToBlazeGraph(
             startDestination = R.id.nav_graph_product_selector,
             bundle = ProductSelectorFragmentArgs(
