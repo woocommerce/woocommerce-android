@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_product_selector"
     app:startDestination="@id/productSelectorFragment">
+
     <dialog
         android:id="@+id/variationSelectorFragment"
         android:name="com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment"
@@ -54,6 +55,7 @@
         <argument
             android:name="productSelectorFlow"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSelectorViewModel$ProductSelectorFlow" />
+
         <action
             android:id="@+id/action_productSelectorFragment_to_variationSelectorFragment"
             app:destination="@id/variationSelectorFragment" />
@@ -88,7 +90,24 @@
             android:id="@+id/action_productSelectorFragment_to_variationPickerFragment"
             app:destination="@id/variationPickerFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/productSelectorDialogFragment"
+        android:name="com.woocommerce.android.ui.products.selector.ProductSelectorDialogFragment"
+        android:label="ProductSelectorDialogFragment">
+        <action
+            android:id="@+id/action_productSelectorDialogFragment_to_nav_graph_product_filters"
+            app:destination="@id/nav_graph_product_filters">
+            <argument android:name="selectedStockStatus" app:argType="string" app:nullable="true" />
+            <argument android:name="selectedProductType" app:argType="string" app:nullable="true" />
+            <argument android:name="selectedProductStatus" app:argType="string" app:nullable="true" />
+            <argument android:name="selectedProductCategoryId" app:argType="string" app:nullable="true" />
+            <argument android:name="selectedProductCategoryName" app:argType="string" app:nullable="true" />
+        </action>
+    </fragment>
+
     <include app:graph="@navigation/nav_graph_product_filters" />
+
     <fragment
         android:id="@+id/productConfigurationFragment"
         android:name="com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment"
@@ -100,6 +119,7 @@
             android:id="@+id/action_productConfigurationFragment_to_variationPickerFragment"
             app:destination="@id/variationPickerFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/variationPickerFragment"
         android:name="com.woocommerce.android.ui.products.variations.picker.VariationPickerFragment"
@@ -108,7 +128,7 @@
             android:name="productId"
             app:argType="long" />
         <argument
-            android:name="allowedVatiations"
+            android:name="allowedVariations"
             app:argType="long[]"
             app:nullable="true"
             android:defaultValue="@null" />

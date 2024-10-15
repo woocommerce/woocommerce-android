@@ -9,6 +9,7 @@
     <include app:graph="@navigation/nav_graph_order_filters" />
     <include app:graph="@navigation/nav_graph_products" />
     <include app:graph="@navigation/nav_graph_product_filters" />
+    <include app:graph="@navigation/nav_graph_product_selector" />
     <include app:graph="@navigation/nav_graph_order_creations" />
     <include app:graph="@navigation/nav_graph_payment_flow" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />

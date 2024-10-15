@@ -382,7 +382,7 @@
             android:name="productId"
             app:argType="long" />
         <argument
-            android:name="allowedVatiations"
+            android:name="allowedVariations"
             android:defaultValue="@null"
             app:argType="long[]"
             app:nullable="true" />

@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailFragmentDirectio
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
 import com.woocommerce.android.ui.products.grouped.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentDirections
+import com.woocommerce.android.ui.products.selector.ProductSelectorDialogFragmentDirections
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsFragmentDirections
@@ -407,7 +408,7 @@ class ProductNavigator @Inject constructor() {
 
             is ProductNavigationTarget.NavigateToProductFilter -> {
                 fragment.findNavController().navigateSafely(
-                    ProductSelectorFragmentDirections.actionProductSelectorFragmentToNavGraphProductFilters(
+                    ProductSelectorDialogFragmentDirections.actionProductSelectorDialogFragmentToNavGraphProductFilters(
                         target.stockStatus,
                         target.productType,
                         target.productStatus,
