@@ -13,10 +13,13 @@ import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderSt
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_card_reader) {
     val viewModel: WooPosCardReaderViewModel by viewModels()
+    @Inject
+    lateinit var ippPaymentUIConfig: IppPaymentUIConfig
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +28,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         val navHostFragment = supportFragmentManager.findFragmentById(
             R.id.woopos_card_reader_nav_host_fragment
         ) as NavHostFragment
+        ippPaymentUIConfig.uiConfig = IppPaymentUI.Custom.Hidden
 
         setupNavGraph(navHostFragment)
         observeResult(navHostFragment)

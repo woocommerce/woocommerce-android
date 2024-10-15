@@ -22,47 +22,42 @@ class IppPaymentStateObserver @Inject constructor() {
     val state: StateFlow<PaymentFlowState> = _state
 
     fun notify(state: CardReaderPaymentViewState, viewModel: ViewModel) {
-        _state.value =
-            when (state) {
-                is CardReaderPaymentViewState -> {
-                    when (state) {
-                        is ViewState.LoadingDataState -> DataLoading {
-                            (viewModel as CardReaderPaymentViewModel).onBackPressed()
-                        }
-
-                        is ViewState.ExternalReaderCapturingPaymentState -> PaymentCapturing
-                        is ViewState.ExternalReaderCollectPaymentState -> CollectPayment(state) {
-                            (viewModel as CardReaderPaymentViewModel).onBackPressed()
-                        }
-
-                        is ViewState.ExternalReaderFailedPaymentState -> PaymentFailed(state) {
-                            // TODO: implement "try again"
-                        }
-
-                        is ViewState.ExternalReaderPaymentSuccessfulState -> PaymentSuccessful
-                        is ViewState.ExternalReaderProcessingPaymentState -> PaymentProcessing {
-                            (viewModel as CardReaderPaymentViewModel).onBackPressed()
-                        }
-
-                        ViewState.ReFetchingOrderState -> RefreshingOrder
-
-                        is ViewState.BuiltInReaderCapturingPaymentState,
-                        is ViewState.BuiltInReaderCollectPaymentState,
-                        is ViewState.BuiltInReaderFailedPaymentState,
-                        is ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState,
-                        is ViewState.BuiltInReaderPaymentSuccessfulState,
-                        is ViewState.BuiltInReaderProcessingPaymentState,
-                        is ViewState.CollectRefundState,
-                        is ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState,
-                        is ViewState.FailedRefundState,
-                        is ViewState.PrintingReceiptState,
-                        is ViewState.ProcessingRefundState,
-                        is ViewState.RefundLoadingDataState,
-                        is ViewState.RefundSuccessfulState,
-                        ViewState.SharingReceiptState -> TODO("Not yet implemented")
-                    }
-                }
+        _state.value = when (state) {
+            is ViewState.LoadingDataState -> DataLoading {
+                (viewModel as CardReaderPaymentViewModel).onBackPressed()
             }
+
+            is ViewState.ExternalReaderCapturingPaymentState -> PaymentCapturing
+            is ViewState.ExternalReaderCollectPaymentState -> CollectPayment(state) {
+                (viewModel as CardReaderPaymentViewModel).onBackPressed()
+            }
+
+            is ViewState.ExternalReaderFailedPaymentState -> PaymentFailed(state) {
+                // TODO: implement "try again"
+            }
+
+            is ViewState.ExternalReaderPaymentSuccessfulState -> PaymentSuccessful
+            is ViewState.ExternalReaderProcessingPaymentState -> PaymentProcessing {
+                (viewModel as CardReaderPaymentViewModel).onBackPressed()
+            }
+
+            ViewState.ReFetchingOrderState -> RefreshingOrder
+
+            is ViewState.BuiltInReaderCapturingPaymentState,
+            is ViewState.BuiltInReaderCollectPaymentState,
+            is ViewState.BuiltInReaderFailedPaymentState,
+            is ViewState.BuiltInReaderPaymentSuccessfulReceiptSentAutomaticallyState,
+            is ViewState.BuiltInReaderPaymentSuccessfulState,
+            is ViewState.BuiltInReaderProcessingPaymentState,
+            is ViewState.CollectRefundState,
+            is ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState,
+            is ViewState.FailedRefundState,
+            is ViewState.PrintingReceiptState,
+            is ViewState.ProcessingRefundState,
+            is ViewState.RefundLoadingDataState,
+            is ViewState.RefundSuccessfulState,
+            ViewState.SharingReceiptState -> TODO("Not yet implemented")
+        }
     }
 
     sealed class PaymentFlowState {

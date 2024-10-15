@@ -32,6 +32,8 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.External
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment.Companion.KEY_INTERAC_SUCCESS
 import com.woocommerce.android.ui.woopos.cardreader.IppPaymentStateObserver
+import com.woocommerce.android.ui.woopos.cardreader.IppPaymentUI
+import com.woocommerce.android.ui.woopos.cardreader.IppPaymentUIConfig
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.UiHelpers.getTextOfUiString
@@ -53,9 +55,20 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
     @Inject
     lateinit var paymentFlowObserver: IppPaymentStateObserver
 
+    @Inject
+    lateinit var ippPaymentUIConfig: IppPaymentUIConfig
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.setCanceledOnTouchOutside(false)
-        return super.onCreateView(inflater, container, savedInstanceState)
+        return if (ippPaymentUIConfig.uiConfig == IppPaymentUI.Custom.Hidden) {
+            View(context)
+        } else {
+            super.onCreateView(
+                inflater,
+                container,
+                savedInstanceState
+            )
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
