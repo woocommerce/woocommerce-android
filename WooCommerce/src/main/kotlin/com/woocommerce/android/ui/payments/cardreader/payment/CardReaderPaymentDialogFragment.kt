@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInR
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulReceiptSentAutomaticallyState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.ExternalReaderPaymentSuccessfulState
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment.Companion.KEY_INTERAC_SUCCESS
+import com.woocommerce.android.ui.woopos.cardreader.IppFlowObserver
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
 import com.woocommerce.android.util.UiHelpers.getTextOfUiString
@@ -48,6 +49,9 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var paymentFlowObserver: IppFlowObserver
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.setCanceledOnTouchOutside(false)
@@ -126,6 +130,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             binding.tertiaryActionBtn.setOnClickListener {
                 viewState.onTertiaryActionClicked?.invoke()
             }
+            paymentFlowObserver.notify(viewState, viewModel)
         }
 
         viewModel.event.observe(
