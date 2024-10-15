@@ -412,10 +412,13 @@ class DashboardStatsView @JvmOverloads constructor(
             }
         }
 
-        when (visitorStatsState) {
+        when (val state = visitorStatsState) {
             is VisitorStatsViewState.Content -> showTotalVisitorStats()
             is VisitorStatsViewState.Error -> showVisitorStatsError()
-            is VisitorStatsViewState.Unavailable -> showJetpackUnavailableVisitorStats()
+            is VisitorStatsViewState.Unavailable -> showJetpackUnavailableVisitorStats(
+                showJetpackIcon = state.showJetpackIcon
+            )
+
             is VisitorStatsViewState.NotLoaded -> hideVisitorStats()
         }
     }
@@ -426,13 +429,15 @@ class DashboardStatsView @JvmOverloads constructor(
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
-    private fun showJetpackUnavailableVisitorStats() {
+    private fun showJetpackUnavailableVisitorStats(showJetpackIcon: Boolean) {
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
         binding.statsViewRow.emptyVisitorStatsIcon.apply {
+            isVisible = showJetpackIcon
             setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_jetpack_logo))
             imageTintList = null
         }
+
     }
 
     private fun showTotalVisitorStats() {
@@ -726,6 +731,7 @@ class DashboardStatsView @JvmOverloads constructor(
                     dateString,
                     statsTimeRangeSelection.revenueStatsGranularity
                 )
+
                 else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
             }.also { result -> trackUnexpectedFormat(result, dateString) }
         }
