@@ -72,6 +72,7 @@ import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.login.AuthOptions
+import org.wordpress.android.login.ConnectSiteInfoResult
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -548,10 +549,10 @@ class LoginActivity :
         showEmailLoginScreen(siteAddress)
     }
 
-    override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
+    override fun gotConnectSiteInfo(result: ConnectSiteInfoResult) {
         // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
         // with the protocol since it is needed for initiating forgot password flow etc in the login process.
-        val inputSiteAddress = urlUtils.sanitiseUrl(redirectUrl ?: siteAddress)
+        val inputSiteAddress = urlUtils.sanitiseUrl(result.urlAfterRedirects ?: result.url)
 
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
@@ -560,9 +561,10 @@ class LoginActivity :
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
-        if (hasJetpack || connectSiteInfo?.isWPCom == true) {
+        if (result.hasJetpack || connectSiteInfo?.isWPCom == true) {
             showEmailLoginScreen(null)
         } else {
+            appPrefsWrapper.isSiteWPComSuspended = result.isWPComSuspended
             loginViaSiteCredentials(inputSiteAddress)
         }
     }
