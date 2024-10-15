@@ -9,31 +9,87 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.parcelable
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewModel
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
+import com.woocommerce.android.ui.payments.cardreader.payment.ContactSupport
+import com.woocommerce.android.ui.payments.cardreader.payment.EnableNfc
+import com.woocommerce.android.ui.payments.cardreader.payment.InteracRefundSuccessful
+import com.woocommerce.android.ui.payments.cardreader.payment.PlayChaChing
+import com.woocommerce.android.ui.payments.cardreader.payment.PrintReceipt
+import com.woocommerce.android.ui.payments.cardreader.payment.PurchaseCardReader
+import com.woocommerce.android.ui.payments.cardreader.payment.ShowSnackbarInDialog
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
+import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerViewModel
+import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_card_reader) {
     val viewModel: WooPosCardReaderViewModel by viewModels()
+    // TODO: put [CardReaderPaymentDialogFragmentArgs] to bundle/savedStateHandle during intent creation so that it
+    //  can be injected into VMs by viewModels().
     private val cardReaderPaymentViewModel: CardReaderPaymentViewModel by viewModels()
+    private val cardReaderConnectViewModel: CardReaderConnectViewModel by viewModels()
+    private val statusCheckerViewModel: CardReaderStatusCheckerViewModel by viewModels()
+    private val cardReaderUpdateViewModel: CardReaderUpdateViewModel by viewModels()
+
     @Inject
-    lateinit var observer: IppFlowObserver
+    lateinit var ippObserver: IppFlowObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
-
-        // TODO: insert [CardReaderPaymentDialogFragmentArgs] to bundle/savedStateHandle so that it can be used in [CardReaderPaymentViewModel].
-        // TODO: start with [SelectPaymentMethodViewModel] and observe their events and state, also propagating state to [IppFlowObserver].
-        cardReaderPaymentViewModel.onViewCreated()
-        cardReaderPaymentViewModel.start()
-        cardReaderPaymentViewModel.viewStateData.observe(this) { viewState ->
-            observer.notify(viewState, cardReaderPaymentViewModel)
+        if (intent.getParcelableExtra<WooPosCardReaderMode>(WOO_POS_CARD_READER_MODE_KEY) == WooPosCardReaderMode.Connection) {
+            val navHostFragment = supportFragmentManager.findFragmentById(
+                R.id.woopos_card_reader_nav_host_fragment
+            ) as NavHostFragment
+            setupNavGraph(navHostFragment)
+            observeResult(navHostFragment)
+        } else if (intent.getParcelableExtra<WooPosCardReaderMode>(WOO_POS_CARD_READER_MODE_KEY) is WooPosCardReaderMode.Payment) {
+            statusCheckerViewModel.event.observe(this) { event: MultiLiveEvent.Event ->
+                when (event) {
+                    is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToWelcome -> {}
+                    is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToConnection -> {
+                        // call [CardReaderConnectViewModel] to start the connection process.
+                        cardReaderConnectViewModel.onScreenStarted()
+                    }
+                    is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment -> {
+                        // call [CardReaderPaymentViewModel] to start the payment process.
+                        cardReaderPaymentViewModel.onViewCreated()
+                        cardReaderPaymentViewModel.start()
+                    }
+                    is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToOnboarding -> {}
+                }
+            }
+            cardReaderPaymentViewModel.event.observe(this) { event ->
+                when(event) {
+                    is ShowSnackbarInDialog -> {}
+                    PlayChaChing -> {}
+                    InteracRefundSuccessful -> {}
+                    ContactSupport -> {}
+                    EnableNfc -> {}
+                    is PurchaseCardReader -> {}
+                    is PrintReceipt -> {}
+                    is MultiLiveEvent.Event.ExitWithResult<*> -> {}
+                }
+            }
+            cardReaderConnectViewModel.event.observe(this) { event ->
+                when(event) {
+                    CardReaderConnectEvent.ShowUpdateInProgress -> {
+                        cardReaderUpdateViewModel.viewStateData.observe(this) {
+                            ippObserver.notify(it, cardReaderUpdateViewModel)
+                        }
+                    }
+                }
+            }
+            cardReaderPaymentViewModel.viewStateData.observe(this) { viewState ->
+                ippObserver.notify(viewState, cardReaderPaymentViewModel)
+            }
         }
     }
 
