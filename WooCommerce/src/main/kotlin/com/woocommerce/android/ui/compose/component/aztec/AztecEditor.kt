@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.aztec.Aztec
+import org.wordpress.aztec.AztecContentChangeWatcher.AztecTextChangeObserver
 import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.ITextFormat
 import org.wordpress.aztec.glideloader.GlideImageLoader
@@ -327,10 +328,16 @@ private fun InternalAztecEditor(
                     sourceEditorMinHeight = aztec.visualEditor.height
                 }
 
-                aztec.visualEditor.doAfterTextChanged {
-                    if (!state.isHtmlEditorEnabled) return@doAfterTextChanged
-                    state.updateContent(aztec.visualEditor.toHtml())
+                val aztecObserver = object : AztecTextChangeObserver {
+                    override fun onContentChanged() {
+                        if (!state.isHtmlEditorEnabled) return
+                        state.updateContent(aztec.visualEditor.toHtml())
+                    }
                 }
+                // Save the observer as tag to hold a strong reference to it and avoid it being garbage collected
+                aztec.visualEditor.tag = aztecObserver
+                aztec.visualEditor.contentChangeWatcher.registerObserver(aztecObserver)
+
                 aztec.sourceEditor?.doAfterTextChanged {
                     val sourceEditor = aztec.sourceEditor
                     if (state.isHtmlEditorEnabled || sourceEditor == null) return@doAfterTextChanged
