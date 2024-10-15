@@ -2,10 +2,11 @@ package com.woocommerce.android.ui.woopos.cardreader;
 
 import androidx.compose.runtime.Composable
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
+import javax.inject.Inject
 import javax.inject.Singleton;
 
 @Singleton
-class IppPaymentUIConfig {
+class IppPaymentUIConfig @Inject constructor() {
     var uiConfig: IppPaymentUI = IppPaymentUI.Default
 }
 

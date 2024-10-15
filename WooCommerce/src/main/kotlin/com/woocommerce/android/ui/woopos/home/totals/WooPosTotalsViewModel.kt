@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.woopos.cardreader.IppPaymentStateObserver
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -37,6 +38,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val networkStatus: WooPosNetworkStatus,
+    private val ippObserver: IppPaymentStateObserver,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -59,6 +61,8 @@ class WooPosTotalsViewModel @Inject constructor(
         initialValue = TotalsDataState(),
         key = KEY_STATE,
     )
+
+    val paymentState: StateFlow<IppPaymentStateObserver.PaymentFlowState> = ippObserver.state
 
     init {
         listenUpEvents()

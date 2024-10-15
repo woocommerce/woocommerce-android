@@ -61,7 +61,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         dialog?.setCanceledOnTouchOutside(false)
         return if (ippPaymentUIConfig.uiConfig == IppPaymentUI.Custom.Hidden) {
-            View(context)
+            null
         } else {
             super.onCreateView(
                 inflater,
@@ -81,8 +81,10 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val binding = CardReaderPaymentDialogBinding.bind(view)
-        initObservers(binding)
+        if (ippPaymentUIConfig.uiConfig == IppPaymentUI.Default) {
+            val binding = CardReaderPaymentDialogBinding.bind(view)
+            initObservers(binding)
+        }
         initViewModel()
     }
 
