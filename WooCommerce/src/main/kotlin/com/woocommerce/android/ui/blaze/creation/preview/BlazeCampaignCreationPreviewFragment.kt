@@ -16,6 +16,8 @@ import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdF
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationFragment
+import com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveFragment
+import com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveViewModel.ObjectiveResult
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToAdDestinationScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
@@ -78,6 +80,11 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                         )
                 )
 
+                is NavigateToObjectiveSelectionScreen -> findNavController().navigateSafely(
+                    BlazeCampaignCreationPreviewFragmentDirections
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignObjectiveFragment(event.selectedId)
+                )
+
                 is NavigateToTargetSelectionScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignTargetSelectionFragment(
@@ -106,11 +113,6 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignPaymentSummaryFragment(
                             event.campaignDetails
                         )
-                )
-
-                is NavigateToObjectiveSelectionScreen -> findNavController().navigateSafely(
-                    BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignObjectiveFragment()
                 )
             }
         }
