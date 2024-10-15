@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.parcelable
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentViewModel
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.util.WooLog
@@ -20,6 +21,8 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
     val viewModel: WooPosCardReaderViewModel by viewModels()
     @Inject
     lateinit var ippPaymentUIConfig: IppPaymentUIConfig
+
+    val vm: CardReaderPaymentViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +43,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             this
         ) { requestKey, bundle ->
             when (requestKey) {
+
                 WOO_POS_CARD_PAYMENT_REQUEST_KEY -> {
                     val result = bundle.parcelable<WooPosCardReaderPaymentStatus>(
                         WOO_POS_CARD_PAYMENT_RESULT_KEY
