@@ -13,4 +13,20 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
     fun onDismissClick() {
         triggerEvent(Exit)
     }
+
+    data class ObjectiveViewState(
+        val items: List<ObjectiveItem>,
+        val selectedItemId: String? = null,
+        val isStoreSelectionButtonToggled: Boolean = false,
+    ) {
+        val isSaveButtonEnabled: Boolean
+            get() = selectedItemId != null
+    }
+
+    data class ObjectiveItem(
+        val id: String,
+        val title: String,
+        val description: String,
+        val suitableForDescription: String,
+    )
 }
