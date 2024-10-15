@@ -120,6 +120,9 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
         handleResult<EditAdResult>(BlazeCampaignCreationEditAdFragment.EDIT_AD_RESULT) {
             viewModel.onAdUpdated(it.tagline, it.description, it.campaignImage)
         }
+        handleResult<ObjectiveResult>(BlazeCampaignObjectiveFragment.BLAZE_OBJECTIVE_SELECTION_RESULT) {
+            viewModel.onObjectiveUpdated(it.objectiveId)
+        }
         handleResult<Budget>(BlazeCampaignBudgetFragment.EDIT_BUDGET_AND_DURATION_RESULT) {
             viewModel.onBudgetAndDurationUpdated(it)
         }

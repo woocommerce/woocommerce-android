@@ -125,6 +125,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onObjectiveUpdated(objectiveId: String) {
+        campaignDetails.update { it?.copy(objectiveId = objectiveId) }
+    }
+
     fun onBudgetAndDurationUpdated(updatedBudget: BlazeRepository.Budget) {
         campaignDetails.update { it?.copy(budget = updatedBudget) }
     }
