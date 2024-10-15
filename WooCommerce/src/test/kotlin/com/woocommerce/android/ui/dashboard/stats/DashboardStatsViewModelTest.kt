@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -420,4 +421,18 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             verify(parentViewModel).displayRefreshingIndicator()
             verify(parentViewModel).hideRefreshingIndicator()
         }
+
+    @Test
+    fun `given site is WPCom suspended, when visitor stats placeholder, then hide Jetpack icon`() = testBlocking {
+        setup {
+            whenever(getStats.invoke(any(), any()))
+                .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
+            whenever(appPrefsWrapper.isSiteWPComSuspended).thenReturn(true)
+        }
+
+        val visitorStatsState = viewModel.visitorStatsState.getOrAwaitValue()
+
+        Assertions.assertThat(visitorStatsState)
+            .isEqualTo(DashboardStatsViewModel.VisitorStatsViewState.Unavailable(showJetpackIcon = false))
+    }
 }
