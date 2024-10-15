@@ -37,6 +37,7 @@ class CardReaderStatusCheckerDialogFragment : PaymentsBaseDialogFragment(R.layou
                         )
                 }
                 is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment -> {
+                    // TODO: if called from POS, exit with result "ready to collect payment"
                     findNavController()
                         .navigate(
                             CardReaderStatusCheckerDialogFragmentDirections
