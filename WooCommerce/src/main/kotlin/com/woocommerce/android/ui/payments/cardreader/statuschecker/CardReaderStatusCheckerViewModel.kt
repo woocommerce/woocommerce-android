@@ -52,18 +52,22 @@ class CardReaderStatusCheckerViewModel
                     arguments.cardReaderType
                 )
             )
-            is CardReaderFlowParam.PaymentOrRefund -> {
+            is CardReaderFlowParam.PaymentOrRefund  -> {
                 val cardReaderStatus = cardReaderManager.readerStatus.value
                 if (cardReaderStatus is Connected) {
                     if (cardReaderStatus.cardReader.toCardReaderType() != arguments.cardReaderType) {
                         handleNotSelectedReaderTypeConnected(param)
                     } else {
-                        triggerEvent(
-                            StatusCheckerEvent.NavigateToPayment(
-                                param,
-                                cardReaderStatus.cardReader.toCardReaderType()
+                        if (param is CardReaderFlowParam.PaymentOrRefund.Payment && param.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS) {
+                            triggerEvent(StatusCheckerEvent.NotifyPOSReadyToCollectPayment)
+                        } else {
+                            triggerEvent(
+                                StatusCheckerEvent.NavigateToPayment(
+                                    param,
+                                    cardReaderStatus.cardReader.toCardReaderType()
+                                )
                             )
-                        )
+                        }
                     }
                 } else {
                     handleOnboardingStatus(param)
@@ -127,5 +131,7 @@ class CardReaderStatusCheckerViewModel
             val cardReaderOnboardingParams: CardReaderOnboardingParams,
             val cardReaderType: CardReaderType,
         ) : MultiLiveEvent.Event()
+
+        data object NotifyPOSReadyToCollectPayment: MultiLiveEvent.Event()
     }
 }

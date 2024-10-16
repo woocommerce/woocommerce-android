@@ -8,6 +8,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity.Companion.WOO_POS_PREPARE_FOR_CARD_PAYMENT_REQUEST_KEY
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,7 +40,6 @@ class CardReaderStatusCheckerDialogFragment : PaymentsBaseDialogFragment(R.layou
                         )
                 }
                 is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NavigateToPayment -> {
-                    // TODO: if called from POS, exit with result "ready to collect payment"
                     findNavController()
                         .navigate(
                             CardReaderStatusCheckerDialogFragmentDirections
@@ -66,6 +68,17 @@ class CardReaderStatusCheckerDialogFragment : PaymentsBaseDialogFragment(R.layou
                                     event.cardReaderType,
                                 )
                         )
+                }
+
+                is CardReaderStatusCheckerViewModel.StatusCheckerEvent.NotifyPOSReadyToCollectPayment -> {
+                    // TODO: if called from POS, exit with result "ready to collect payment"
+                    parentFragmentManager.setFragmentResult(
+                        WooPosCardReaderActivity.WOO_POS_PREPARE_FOR_CARD_PAYMENT_REQUEST_KEY,
+                        Bundle().apply {
+                            putParcelable(WOO_POS_PREPARE_FOR_CARD_PAYMENT_REQUEST_KEY, WooPosCardReaderState.ReadyForPayment)
+                        },
+                    )
+                    dismiss()
                 }
                 else -> event.isHandled = false
             }

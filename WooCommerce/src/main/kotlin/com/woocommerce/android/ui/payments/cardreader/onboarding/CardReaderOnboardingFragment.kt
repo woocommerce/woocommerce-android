@@ -406,6 +406,7 @@ sealed class CardReaderOnboardingParams : Parcelable {
     ) : CardReaderOnboardingParams()
 }
 
+// TODO: should be extracted to the root `cardreader` package
 sealed class CardReaderFlowParam : Parcelable {
     @Parcelize
     data class CardReadersHub(
