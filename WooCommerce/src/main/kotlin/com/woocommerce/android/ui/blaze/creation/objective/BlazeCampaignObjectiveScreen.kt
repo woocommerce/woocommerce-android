@@ -88,10 +88,6 @@ private fun ObjectiveScreen(
                         it.title,
                         it.description,
                         it.suitableForDescription,
-                        onClickLabel = stringResource(
-                            id = R.string.blaze_campaign_objective_select_objective_label,
-                            it.title
-                        ),
                         isSelected = it.id == state.selectedItemId,
                         onItemClick = { onObjectiveTapped(it) },
                         modifier = Modifier
@@ -113,7 +109,6 @@ fun ObjectiveListItem(
     description: String,
     suitableForDescription: String,
     isSelected: Boolean,
-    onClickLabel: String?,
     onItemClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -124,7 +119,7 @@ fun ObjectiveListItem(
         .clickable(
             role = Role.Button,
             onClick = { onItemClick() },
-            onClickLabel = onClickLabel
+            onClickLabel = stringResource(id = R.string.blaze_campaign_objective_select_objective_label, title)
         )
         .border(
             width = if (isSelected) 2.dp else 0.5.dp,
