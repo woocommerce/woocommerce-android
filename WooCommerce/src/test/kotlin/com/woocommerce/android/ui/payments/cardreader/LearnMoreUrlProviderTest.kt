@@ -62,7 +62,7 @@ class LearnMoreUrlProviderTest {
     }
 
     @Test
-    fun `given preferred plugin WcPay, when providing learn more url for COD, then WcPay COD url returned`() {
+    fun `given preferred plugin WcPay, when providing learn more url for COD, then COD url returned`() {
         // GIVEN
         whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
             .thenReturn(WOOCOMMERCE_PAYMENTS)
@@ -75,7 +75,7 @@ class LearnMoreUrlProviderTest {
     }
 
     @Test
-    fun `given preferred plugin null, when providing learn more url for COD, then WcPay COD learn more url returned`() {
+    fun `given preferred plugin null, when providing learn more url for COD, then COD learn more url returned`() {
         // GIVEN
         whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
             .thenReturn(null)
@@ -88,7 +88,7 @@ class LearnMoreUrlProviderTest {
     }
 
     @Test
-    fun `given preferred plugin Stripe, when providing learn more url for COD, then Stripe COD url returned`() {
+    fun `given preferred plugin Stripe, when providing learn more url for COD, then COD learn more url returned`() {
         // GIVEN
         whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any()))
             .thenReturn(STRIPE_EXTENSION_GATEWAY)
@@ -97,6 +97,6 @@ class LearnMoreUrlProviderTest {
         val res = provider.provideLearnMoreUrlFor(CASH_ON_DELIVERY)
 
         // THEN
-        assertThat(res).isEqualTo(AppUrls.STRIPE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY)
+        assertThat(res).isEqualTo(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY)
     }
 }
