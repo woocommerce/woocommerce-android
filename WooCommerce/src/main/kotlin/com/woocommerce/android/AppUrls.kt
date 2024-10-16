@@ -82,10 +82,7 @@ object AppUrls {
         "https://woocommerce.com/document/woopayments/in-person-payments/tap-to-pay-android/"
 
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
-        "https://woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/" +
-            "#add-cod-payment-method"
-    const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
-        "https://woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/#section-8"
+        "https://woocommerce.com/document/cash-on-delivery/"
 
     const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woocommerce.com/products/hardware/"
 
