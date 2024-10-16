@@ -83,7 +83,6 @@ data class Product(
     override val width: Float,
     override val height: Float,
     override val weight: Float,
-    val subscription: SubscriptionDetails?,
     val isSampleProduct: Boolean,
     val specialStockStatus: ProductStockStatus? = null,
     val isConfigurable: Boolean = false,
@@ -153,7 +152,6 @@ data class Product(
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
             attributes == product.attributes &&
-            subscription == product.subscription &&
             specialStockStatus == product.specialStockStatus &&
             minAllowedQuantity == product.minAllowedQuantity &&
             maxAllowedQuantity == product.maxAllowedQuantity &&
@@ -169,8 +167,7 @@ data class Product(
         get() {
             return weight > 0 ||
                 length > 0 || width > 0 || height > 0 ||
-                shippingClass.isNotEmpty() ||
-                subscription?.oneTimeShipping == true
+                shippingClass.isNotEmpty()
         }
     val productType get() = ProductType.fromString(type)
     val variationEnabledAttributes
@@ -334,7 +331,6 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
-                subscription = updatedProduct.subscription,
                 specialStockStatus = specialStockStatus,
                 minAllowedQuantity = updatedProduct.minAllowedQuantity,
                 maxAllowedQuantity = updatedProduct.maxAllowedQuantity,
@@ -482,20 +478,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.groupOfQuantity = groupOfQuantity ?: -1
         it.combineVariationQuantities = combineVariationQuantities ?: false
         it.password = password
-        // Subscription details are currently the only editable metadata fields from the app.
-        it.metadata = subscription?.toMetadataJson().toString()
     }
 }
 
 fun WCProductModel.toAppModel(): Product {
-    val productType = ProductType.fromString(type)
-    val subscription = if (
-        productType == ProductType.SUBSCRIPTION || productType == ProductType.VARIABLE_SUBSCRIPTION
-    ) {
-        SubscriptionDetailsMapper.toAppModel(this.metadata)
-    } else {
-        null
-    }
     return Product(
         remoteId = this.remoteProductId,
         parentId = this.parentId,
@@ -580,7 +566,6 @@ fun WCProductModel.toAppModel(): Product {
         upsellProductIds = this.getUpsellProductIdList(),
         variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable,
-        subscription = subscription,
         isSampleProduct = isSampleProduct,
         specialStockStatus = if (this.specialStockStatus.isNotNullOrEmpty()) {
             ProductStockStatus.fromString(this.specialStockStatus)
