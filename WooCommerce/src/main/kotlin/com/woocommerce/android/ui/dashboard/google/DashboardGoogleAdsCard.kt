@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
@@ -38,7 +39,6 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
@@ -50,7 +50,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 fun DashboardGoogleAdsCard(
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    viewModel: DashboardGoogleAdsViewModel = viewModelWithFactory { factory: DashboardGoogleAdsViewModel.Factory ->
+    viewModel: DashboardGoogleAdsViewModel = hiltViewModel { factory: DashboardGoogleAdsViewModel.Factory ->
         factory.create(parentViewModel = parentViewModel)
     }
 ) {
