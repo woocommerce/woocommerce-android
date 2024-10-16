@@ -52,8 +52,7 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
 
     fun onSaveTapped() {
         selectedId.value?.let { triggerEvent(ExitWithResult(ObjectiveResult(it))) }
-        TODO("Track")
-        // analyticsTrackerWrapper.track(BLAZE_...)
+        // TODO analyticsTrackerWrapper.track(BLAZE_...)
     }
 
     data class ObjectiveViewState(
