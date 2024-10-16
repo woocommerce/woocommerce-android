@@ -5,11 +5,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_ER
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductAttributeTerm
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingClass
+import com.woocommerce.android.model.SubscriptionDetailsMapper
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
@@ -88,6 +90,17 @@ class ProductDetailRepository @Inject constructor(
         }
 
         return getProduct(remoteProductId)
+    }
+
+    suspend fun fetchAndGetProductAggregate(remoteProductId: Long): ProductAggregate? {
+        val payload = WCProductStore.FetchSingleProductPayload(selectedSite.get(), remoteProductId)
+        val result = productStore.fetchSingleProduct(payload)
+
+        if (result.isError) {
+            lastFetchProductErrorType = result.error.type
+        }
+
+        return getProductAggregate(remoteProductId)
     }
 
     suspend fun fetchProductPassword(remoteProductId: Long): String? {
@@ -274,6 +287,12 @@ class ProductDetailRepository @Inject constructor(
 
     suspend fun getProductAsync(remoteProductId: Long): Product? = withContext(coroutineDispatchers.io) {
         getCachedWCProductModel(remoteProductId)?.toAppModel()
+    }
+
+    suspend fun getProductAggregate(remoteProductId: Long): ProductAggregate? {
+        val product = getProduct(remoteProductId) ?: return null
+        val subscriptionDetails = SubscriptionDetailsMapper.toAppModel(getProductMetadata(remoteProductId))
+        return ProductAggregate(product, subscriptionDetails)
     }
 
     fun isSkuAvailableLocally(sku: String) = !productStore.geProductExistsBySku(selectedSite.get(), sku)

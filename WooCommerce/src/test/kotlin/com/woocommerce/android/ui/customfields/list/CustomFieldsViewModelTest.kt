@@ -491,7 +491,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         val customField = CustomField(
             id = 1,
             key = "key",
-            value = WCMetaDataValue.fromRawString("{\"key\": \"value\"}")
+            value = WCMetaDataValue("{\"key\": \"value\"}")
         )
         setup {
             whenever(repository.observeDisplayableCustomFields(PARENT_ITEM_ID)).thenReturn(flowOf(listOf(customField)))
@@ -514,7 +514,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
         val customField = CustomField(
             id = 1,
             key = "key",
-            value = WCMetaDataValue.fromRawString("{\"key\": \"value\"}")
+            value = WCMetaDataValue("{\"key\": \"value\"}")
         )
         setup {
             whenever(repository.observeDisplayableCustomFields(PARENT_ITEM_ID)).thenReturn(flowOf(listOf(customField)))
