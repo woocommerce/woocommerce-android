@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -37,7 +38,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
@@ -56,7 +56,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 fun DashboardOrdersCard(
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    viewModel: DashboardOrdersViewModel = viewModelWithFactory { factory: DashboardOrdersViewModel.Factory ->
+    viewModel: DashboardOrdersViewModel = hiltViewModel { factory: DashboardOrdersViewModel.Factory ->
         factory.create(parentViewModel)
     }
 ) {
