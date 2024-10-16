@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
@@ -26,6 +27,7 @@ class MainSettingsPresenter @Inject constructor(
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val getWooVersion: GetWooCorePluginCachedVersion,
+    private val appPrefs: AppPrefsWrapper
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -65,7 +67,7 @@ class MainSettingsPresenter @Inject constructor(
     override fun setupJetpackInstallOption() {
         val supportsJetpackInstallation = selectedSite.connectionType.let {
             it == SiteConnectionType.JetpackConnectionPackage ||
-                it == SiteConnectionType.ApplicationPasswords
+                (it == SiteConnectionType.ApplicationPasswords && !appPrefs.isSiteWPComSuspended)
         }
         appSettingsFragmentView?.handleJetpackInstallOption(supportsJetpackInstallation = supportsJetpackInstallation)
     }
