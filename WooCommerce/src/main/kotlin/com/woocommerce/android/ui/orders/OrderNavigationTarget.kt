@@ -53,6 +53,7 @@ sealed class OrderNavigationTarget : Event() {
     object ViewShippingLabelFormatOptions : OrderNavigationTarget()
     data class ViewPrintCustomsForm(val invoices: List<String>, val isReprint: Boolean) : OrderNavigationTarget()
     data class StartShippingLabelCreationFlow(val orderId: Long) : OrderNavigationTarget()
+    data class StartWooShippingLabelCreationFlow(val orderId: Long) : OrderNavigationTarget()
     data class StartPaymentFlow(
         val orderId: Long,
         val paymentTypeFlow: CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType,

@@ -27,6 +27,7 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
@@ -2393,5 +2394,37 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
             mapOf(AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to shippingLines.size)
         )
+    }
+
+    @Test
+    fun `when woo shipping is installed, then navigate to the new shipping flow`() = testBlocking {
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+
+        createViewModel()
+
+        viewModel.start()
+        viewModel.onCreateShippingLabelButtonTapped()
+
+        assertThat(viewModel.event.value).isInstanceOf(StartWooShippingLabelCreationFlow::class.java)
+    }
+
+    @Test
+    fun `when woo shipping and tax is installed, then navigate to the legacy shipping flow`() = testBlocking {
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(ShippingLabelSupport.WCS_SUPPORTED)
+            .whenever(shippingLabelOnboardingRepository).shippingPluginSupport
+
+        createViewModel()
+
+        viewModel.start()
+        viewModel.onCreateShippingLabelButtonTapped()
+
+        assertThat(viewModel.event.value).isInstanceOf(OrderNavigationTarget.StartShippingLabelCreationFlow::class.java)
     }
 }
