@@ -376,7 +376,7 @@ class ProductDetailViewModel @Inject constructor(
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
      */
     val isProductUnderCreation: Boolean
-        get() = isAddNewProductFlow and isProductStoredAtSite.not()
+        get() = isAddNewProductFlow && isProductStoredAtSite.not()
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
@@ -1017,11 +1017,11 @@ class ProductDetailViewModel @Inject constructor(
      * 3. is a Draft
      */
     fun saveAsDraftIfNewVariableProduct() = launch {
-        viewState.productDraft
+        viewState.productAggregateDraft
             ?.takeIf {
-                isProductStoredAtSite.not() and
-                    it.productType.isVariableProduct() and
-                    (it.status == DRAFT)
+                isProductStoredAtSite.not() &&
+                    it.product.productType.isVariableProduct() &&
+                    (it.product.status == DRAFT)
             }
             ?.takeIf { addProduct(it).first }
             ?.let {
@@ -1035,22 +1035,22 @@ class ProductDetailViewModel @Inject constructor(
             stat = AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
             properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to navArgs.isAIContent)
         )
-        viewState.productDraft?.let {
-            val product = if (isPublish) it.copy(status = ProductStatus.PUBLISH) else it
+        viewState.productAggregateDraft?.let {
+            val product = if (isPublish) it.copy(product = it.product.copy(status = ProductStatus.PUBLISH)) else it
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(isPublish, product) }
         }
     }
 
     private fun startPublishProduct(productStatus: ProductStatus, exitWhenDone: Boolean = false) {
-        viewState.productDraft?.let {
-            val product = it.copy(status = productStatus)
-            trackPublishing(product)
+        viewState.productAggregateDraft?.let {
+            val productAggregate = it.copy(product = it.product.copy(status = productStatus))
+            trackPublishing(productAggregate.product)
 
             viewState = viewState.copy(isProgressDialogShown = true)
 
             launch {
-                val (isSuccess, newProductId) = addProduct(product)
+                val (isSuccess, newProductId) = addProduct(productAggregate)
                 viewState = viewState.copy(isProgressDialogShown = false)
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
@@ -1058,8 +1058,8 @@ class ProductDetailViewModel @Inject constructor(
                     if (isPublishingFirstProduct()) {
                         triggerEvent(
                             ProductNavigationTarget.ViewFirstProductCelebration(
-                                productName = product.name,
-                                permalink = product.permalink
+                                productName = productAggregate.product.name,
+                                permalink = productAggregate.product.permalink
                             )
                         )
                     }
@@ -1070,13 +1070,13 @@ class ProductDetailViewModel @Inject constructor(
                         )
                     }
                     tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
-                    if (product.remoteId != newProductId) {
+                    if (productAggregate.remoteId != newProductId) {
                         // Assign the current uploads to the new product id
                         mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductId)
                     }
                     if (exitWhenDone) {
                         triggerEvent(ProductNavigationTarget.ExitProduct)
-                    } else if (product.remoteId != newProductId) {
+                    } else if (productAggregate.remoteId != newProductId) {
                         // Restart observing image uploads using the new product id
                         observeImageUploadEvents()
                     }
@@ -1954,19 +1954,21 @@ class ProductDetailViewModel @Inject constructor(
      * Updates the product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed.
      */
-    private suspend fun updateProduct(isPublish: Boolean, product: Product) {
+    private suspend fun updateProduct(isPublish: Boolean, productAggregate: ProductAggregate) {
         if (!checkConnection()) {
             viewState = viewState.copy(isProgressDialogShown = false)
             return
         }
-        val result = productRepository.updateProduct(product.copy(password = viewState.draftPassword))
+        val result = productRepository.updateProduct(
+            productAggregate.copy(product = productAggregate.product.copy(password = viewState.draftPassword))
+        )
         if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
             val isPasswordChanged = storedProductAggregate.value?.product?.password != viewState.draftPassword
             if (isPasswordChanged && determineProductPasswordApi() == ProductPasswordApi.WPCOM) {
                 // Update the product password using WordPress.com API
                 val password = viewState.productDraft?.password
-                if (productRepository.updateProductPassword(product.remoteId, password)) {
+                if (productRepository.updateProductPassword(productAggregate.remoteId, password)) {
                     storedProductAggregate.update { it?.copy(product = it.product.copy(password = password)) }
                     triggerEvent(ShowSnackbar(successMsg))
                 } else {
@@ -1982,7 +1984,7 @@ class ProductDetailViewModel @Inject constructor(
                 productDraft = null
             )
             triggerEvent(ProductUpdated)
-            loadRemoteProduct(product.remoteId)
+            loadRemoteProduct(productAggregate.remoteId)
         } else {
             result.second?.let {
                 if (it.canDisplayMessage) {
@@ -2001,10 +2003,10 @@ class ProductDetailViewModel @Inject constructor(
      * Otherwise, an offline snackbar is displayed. Returns true only
      * if product successfully added
      */
-    private suspend fun addProduct(product: Product): Pair<Boolean, Long> {
+    private suspend fun addProduct(productAggregate: ProductAggregate): Pair<Boolean, Long> {
         if (!checkConnection()) return Pair(false, 0L)
 
-        val result = productRepository.addProduct(product)
+        val result = productRepository.addProduct(productAggregate)
         val (isSuccess, newProductRemoteId) = result
         if (isSuccess) {
             checkLinkedProductPromo()
@@ -2512,7 +2514,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onDuplicateProduct() {
         launch {
             tracker.track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
-            viewState.productDraft?.let { product ->
+            viewState.productAggregateDraft?.let { product ->
 
                 triggerEvent(ShowDuplicateProductInProgress)
                 val result = duplicateProduct(product)

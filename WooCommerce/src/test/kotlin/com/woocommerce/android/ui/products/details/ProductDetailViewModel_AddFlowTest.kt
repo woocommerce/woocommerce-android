@@ -224,7 +224,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `Display success message on add product success`() = testBlocking {
         // given
         doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
-        doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
+        doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any<ProductAggregate>())
 
         var successSnackbarShown = false
         viewModel.event.observeForever {
@@ -256,7 +256,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @Test
     fun `Display error message on add product failed`() = testBlocking {
         // given
-        doReturn(Pair(false, 0L)).whenever(productRepository).addProduct(any())
+        doReturn(Pair(false, 0L)).whenever(productRepository).addProduct(any<ProductAggregate>())
 
         var successSnackbarShown = false
         viewModel.event.observeForever {
@@ -310,7 +310,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         testBlocking {
             // given
             doReturn(ProductAggregate(product)).whenever(productRepository).getProductAggregate(any())
-            doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any())
+            doReturn(Pair(true, 1L)).whenever(productRepository).addProduct(any<ProductAggregate>())
 
             var successSnackbarShown = false
             viewModel.event.observeForever {
@@ -339,10 +339,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             Assertions.assertThat(productData?.productDraft).isEqualTo(product)
 
             // when
-            doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any())
+            doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any<ProductAggregate>())
 
             viewModel.onPublishButtonClicked()
-            verify(productRepository, times(1)).updateProduct(any())
+            verify(productRepository, times(1)).updateProduct(any<ProductAggregate>())
 
             viewModel.event.observeForever {
                 if (it is ShowSnackbar && it.message == R.string.product_detail_save_product_success) {
@@ -399,7 +399,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `when a new product is saved, then assign the new id to ongoing image uploads`() = testBlocking {
-        doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
+        doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
         doReturn(product).whenever(productRepository).getProductAggregate(any())
         savedState = ProductDetailFragmentArgs(
             mode = ProductDetailFragment.Mode.AddNewProduct
@@ -454,7 +454,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     @Test
     fun `given a product is under creation, when clicking on save product, then assign uploads to the new id`() =
         testBlocking {
-            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any())
+            doReturn(Pair(true, PRODUCT_REMOTE_ID)).whenever(productRepository).addProduct(any<ProductAggregate>())
             doReturn(product).whenever(productRepository).getProductAggregate(any())
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
@@ -494,7 +494,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
     @Test
     fun `given product status is draft, when save is clicked, then save product with correct status`() = testBlocking {
-        whenever(productRepository.addProduct(any())).thenAnswer { it.arguments.first() as Product }
+        whenever(productRepository.addProduct(any<ProductAggregate>())).thenAnswer { it.arguments.first() as Product }
         var viewState: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> viewState = new }
 
