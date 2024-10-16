@@ -85,9 +85,9 @@ private fun ObjectiveScreen(
             ) {
                 items(state.items) {
                     ObjectiveListItem(
-                        it.title,
-                        it.description,
-                        it.suitableForDescription,
+                        title = it.title,
+                        description = it.description,
+                        suitableForDescription = it.suitableForDescription,
                         isSelected = it.id == state.selectedItemId,
                         onItemClick = { onObjectiveTapped(it) },
                         modifier = Modifier
