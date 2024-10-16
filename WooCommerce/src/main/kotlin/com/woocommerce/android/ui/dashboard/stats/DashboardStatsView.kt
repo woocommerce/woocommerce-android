@@ -437,7 +437,6 @@ class DashboardStatsView @JvmOverloads constructor(
             setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_jetpack_logo))
             imageTintList = null
         }
-
     }
 
     private fun showTotalVisitorStats() {
