@@ -27,7 +27,7 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
 
     private val selectedId = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
-        initialValue = navArgs.selectedId,
+        initialValue = navArgs.selectedObjectiveId,
         clazz = String::class.java
     )
 

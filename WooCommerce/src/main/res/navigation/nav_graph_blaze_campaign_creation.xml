@@ -110,7 +110,7 @@
         android:name="com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveFragment"
         android:label="BlazeCampaignObjectiveFragment">
         <argument
-            android:name="selectedId"
+            android:name="selectedObjectiveId"
             app:argType="string"
             app:nullable="true" />
     </fragment>
