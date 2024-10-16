@@ -25,11 +25,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveViewModel.ObjectiveItem
 import com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveViewModel.ObjectiveViewState
@@ -81,7 +81,7 @@ private fun ObjectiveScreen(
                 .fillMaxSize()
         ) {
             LazyColumn(
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_50))
+                modifier = Modifier.padding(vertical = 4.dp)
             ) {
                 items(state.items) {
                     ObjectiveListItem(
@@ -97,8 +97,8 @@ private fun ObjectiveScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(
-                                horizontal = dimensionResource(id = R.dimen.major_100),
-                                vertical = dimensionResource(id = R.dimen.minor_50)
+                                horizontal = 16.dp,
+                                vertical = 4.dp
                             )
                     )
                 }
@@ -117,8 +117,7 @@ fun ObjectiveListItem(
     onItemClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
-    val borderSize = if (isSelected) R.dimen.minor_25 else R.dimen.minor_10
+    val roundedShape = RoundedCornerShape(8.dp)
     val borderColor = if (isSelected) R.color.woo_purple_60 else R.color.woo_gray_5
     val updatedModifier = modifier
         .clip(roundedShape)
@@ -128,7 +127,7 @@ fun ObjectiveListItem(
             onClickLabel = onClickLabel
         )
         .border(
-            width = dimensionResource(id = borderSize),
+            width = if (isSelected) 2.dp else 0.5.dp,
             color = colorResource(id = borderColor),
             shape = roundedShape
         )
@@ -138,8 +137,8 @@ fun ObjectiveListItem(
             updatedModifier.background(colorResource(id = R.color.blaze_campaign_objective_item_background))
         } else {
             updatedModifier
-        }.padding(dimensionResource(id = R.dimen.major_100)),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+        }.padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         val selectionDrawable = if (isSelected) {
             R.drawable.ic_rounded_chcekbox_checked
@@ -158,7 +157,7 @@ fun ObjectiveListItem(
 
         Column(
             modifier = Modifier.animateContentSize(),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = title,
