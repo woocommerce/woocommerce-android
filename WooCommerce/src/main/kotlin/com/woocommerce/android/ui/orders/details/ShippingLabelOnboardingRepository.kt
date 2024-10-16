@@ -46,12 +46,6 @@ class ShippingLabelOnboardingRepository @Inject constructor(
 
     @Suppress("ReturnCount")
     private fun getShippingLabelSupport(): ShippingLabelSupport {
-        orderDetailRepository.getWooServicesPluginInfo()
-            .takeIf {
-                val pluginVersion = it.version ?: "0.0.0"
-                it.isOperational && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
-            }?.let { return ShippingLabelSupport.WCS_SUPPORTED }
-
         orderDetailRepository.getWooShippingPluginInfo()
             .takeIf {
                 val pluginVersion = it.version ?: "0.0.0"
@@ -64,6 +58,12 @@ class ShippingLabelOnboardingRepository @Inject constructor(
                     ShippingLabelSupport.WCS_SUPPORTED
                 }
             }
+
+        orderDetailRepository.getWooServicesPluginInfo()
+            .takeIf {
+                val pluginVersion = it.version ?: "0.0.0"
+                it.isOperational && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
+            }?.let { return ShippingLabelSupport.WCS_SUPPORTED }
 
         return ShippingLabelSupport.NOT_SUPPORTED
     }
