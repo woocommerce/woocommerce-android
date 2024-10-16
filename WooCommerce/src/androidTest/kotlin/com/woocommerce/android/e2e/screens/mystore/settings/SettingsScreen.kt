@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.NestedScrollViewExtension
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.moremenu.MoreMenuScreen
+import org.junit.Assert
 
 class SettingsScreen : Screen {
     // Using HELP_BUTTON even if we don't need to interact with it because for some reason Espresso can't find
@@ -57,11 +58,38 @@ class SettingsScreen : Screen {
             Espresso.onView(ViewMatchers.withId(R.id.btn_option_logout)).perform(NestedScrollViewExtension())
         }
 
-        waitForElementToBeDisplayed(R.id.btn_option_logout)
-        clickOn(R.id.btn_option_logout)
+        // retry in case log out pop up doesn't work the first time
+        retryAction({
+            // click log out menu item
+            waitForElementToBeDisplayed(R.id.btn_option_logout)
+            clickOn(R.id.btn_option_logout)
 
-        // Confirm Log Out
-        waitForElementToBeDisplayed(android.R.id.button1) // sign out button is an Android system resources identifier
-        clickButtonInDialogWithTitle(R.string.signout)
+            // confirm log out action
+            // sign out button is an Android system resources identifier
+            waitForElementToBeDisplayed(android.R.id.button1)
+            clickOn(android.R.id.button1)
+        })
+
+        // login screen should be displayed after logging out
+        waitForElementToBeDisplayed((R.id.button_login_store))
+    }
+
+    private fun retryAction(action: () -> Unit, maxAttempts: Int = 3) {
+        var attempts = 0
+        var success = false
+        var lastError: AssertionError? = null
+        while (!success && attempts < maxAttempts) {
+            try {
+                action()
+                success = true
+            } catch (e: AssertionError) {
+                lastError = e // Capture the last AssertionError
+                Thread.sleep(1000) // Wait for 1 second before retrying
+                attempts++
+            }
+        }
+        if (!success) {
+            Assert.fail("Failed to perform action after $maxAttempts attempts with error $lastError")
+        }
     }
 }
