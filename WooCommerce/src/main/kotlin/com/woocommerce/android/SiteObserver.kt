@@ -1,5 +1,7 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import android.app.Application
 import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.tools.SelectedSite
@@ -36,6 +38,7 @@ class SiteObserver @Inject constructor(
     private val wearableConnectionRepository: WearableConnectionRepository,
     private val siteStore: SiteStore,
     private val appPrefs: AppPrefsWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     private val featureFlagRepository: WPComRemoteFeatureFlagRepository,
     private val application: Application,
     private val dispatcher: Dispatcher
@@ -105,7 +108,15 @@ class SiteObserver @Inject constructor(
 
         WooLog.d(WooLog.T.LOGIN, "Site ${site.url} is WPCom suspended: $isSiteSuspended")
         appPrefs.isSiteWPComSuspended = isSiteSuspended
+        if (isSiteSuspended) {
+            analyticsTracker.track(
+                stat = AnalyticsEvent.BLACK_FLAGGED_WEBSITE_DETECTED,
+                properties = mapOf("event" to "app_launch")
+            )
+        }
     }
+
+
 
     private suspend fun fetchRemoteFeatureFlags() {
         WooLog.d(UTILS, "Fetching remote feature flags")
