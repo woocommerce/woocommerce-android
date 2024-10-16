@@ -1,5 +1,7 @@
 package com.woocommerce.android
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
@@ -33,6 +35,7 @@ class SiteObserver @Inject constructor(
     private val wearableConnectionRepository: WearableConnectionRepository,
     private val siteStore: SiteStore,
     private val appPrefs: AppPrefsWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     private val dispatcher: Dispatcher
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
@@ -98,5 +101,11 @@ class SiteObserver @Inject constructor(
 
         WooLog.d(WooLog.T.LOGIN, "Site ${site.url} is WPCom suspended: $isSiteSuspended")
         appPrefs.isSiteWPComSuspended = isSiteSuspended
+        if (isSiteSuspended) {
+            analyticsTracker.track(
+                stat = AnalyticsEvent.BLACK_FLAGGED_WEBSITE_DETECTED,
+                properties = mapOf("event" to "app_launch")
+            )
+        }
     }
 }
