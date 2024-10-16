@@ -23,12 +23,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
@@ -47,7 +47,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 fun DashboardInboxCard(
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    viewModel: DashboardInboxViewModel = viewModelWithFactory { factory: DashboardInboxViewModel.Factory ->
+    viewModel: DashboardInboxViewModel = hiltViewModel { factory: DashboardInboxViewModel.Factory ->
         factory.create(parentViewModel)
     }
 ) {

@@ -4014,6 +4014,7 @@
     <string name="blaze_campaign_created_success_title">Ready to Go!</string>
     <string name="blaze_campaign_created_success_description">We\'re reviewing your campaign. It\'ll be live within 24 hours. Exciting times ahead for your sales!</string>
     <string name="blaze_campaign_created_success_done_button">Done</string>
+    <string name="blaze_campaign_created_success_feedback_request">How was the experience with Blaze</string>
     <string name="blaze_campaign_creation_loading">Creating your campaign</string>
     <string name="blaze_campaign_creation_error_title">Error creating campaign</string>
     <string name="blaze_campaign_creation_error_payment_hint">Error creating campaign</string>
@@ -4302,6 +4303,8 @@
     <string name="custom_fields_list_top_banner_title">View and edit Custom Fields</string>
     <string name="custom_fields_list_top_banner_message">When saving changes to custom fields, they will take effect immediately.</string>
     <string name="custom_fields_add_button">Add custom fields</string>
+    <string name="custom_fields_empty_view_message">Custom fields are optional metadata to display extra information or customize your store’s shopping experience.</string>
+    <string name="custom_fields_empty_view_title">No custom fields found</string>
     <string name="custom_fields_editor_key_label">Key</string>
     <string name="custom_fields_editor_value_label">Value</string>
     <string name="custom_fields_editor_key_error_duplicate">This key is already used for another custom field.\nThe app currently does not support creating duplicate keys. Please use wp-admin to duplicate a key if needed.</string>

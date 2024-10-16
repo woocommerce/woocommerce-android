@@ -322,7 +322,7 @@ class BlazeRepository @Inject constructor(
                     )
                 },
                 isEndlessCampaign = campaignDetails.budget.isEndlessCampaign,
-                objectiveId = campaignDetails.objectiveId
+                objectiveId = if (FeatureFlag.OBJECTIVE_SECTION.isEnabled()) campaignDetails.objectiveId else null
             )
         )
 

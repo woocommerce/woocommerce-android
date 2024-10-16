@@ -58,12 +58,12 @@ import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.autoMirror
+import com.woocommerce.android.ui.compose.component.FeedbackRequest
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.ai.AIProductModel
-import com.woocommerce.android.ui.products.ai.AiFeedbackForm
 import com.woocommerce.android.ui.products.ai.ProductPropertyCard
 import com.woocommerce.android.ui.products.ai.components.FullScreenImageViewer
 import com.woocommerce.android.ui.products.ai.components.ImageAction
@@ -283,8 +283,9 @@ private fun ProductPreviewContent(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            AiFeedbackForm(
-                onFeedbackReceived = onFeedbackReceived,
+            FeedbackRequest(
+                feedbackRequestText = R.string.ai_feedback_form_message,
+                onFeedbackReceived = onFeedbackReceived
             )
         }
 

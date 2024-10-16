@@ -605,7 +605,7 @@
             app:nullable="false" />
     </dialog>
     <action
-        android:id="@+id/action_open_Whatsnew_from_Main"
+        android:id="@+id/action_global_FeatureAnnouncementDialogFragmentOnMain"
         app:destination="@id/featureAnnouncementDialogFragmentOnMain"
         app:enterAnim="@anim/activity_fade_in"
         app:exitAnim="@null"
