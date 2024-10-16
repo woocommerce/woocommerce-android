@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,8 @@ import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialViewModel) {
+    BackHandler { viewModel.onNavigationButtonClicked() }
+
     val viewState = viewModel.viewState.observeAsState()
     ApplicationPasswordTutorialScreen(
         authorizationStarted = viewState.value?.authorizationStarted ?: false,

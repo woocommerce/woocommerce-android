@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.test'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.test)
+    alias(libs.plugins.kotlin.android)
 }
 
 repositories {
@@ -78,14 +78,14 @@ android {
 }
 
 dependencies {
-    implementation "androidx.lifecycle:lifecycle-process:$lifecycleVersion"
+    implementation(libs.androidx.lifecycle.process)
 
-    implementation "androidx.test.uiautomator:uiautomator:2.2.0"
-    implementation "junit:junit:$jUnitVersion"
-    implementation "androidx.test.ext:junit:$jUnitExtVersion"
-    implementation "androidx.test:runner:$androidxTestCoreVersion"
-    implementation "androidx.test:rules:$androidxTestCoreVersion"
-    implementation "androidx.test:core:$androidxTestCoreVersion"
+    implementation(libs.androidx.test.uiautomator)
+    implementation(libs.junit)
+    implementation(libs.androidx.test.ext.junit)
+    implementation(libs.androidx.test.main.runner)
+    implementation(libs.androidx.test.main.rules)
+    implementation(libs.androidx.test.main.core)
 }
 
 if (project.hasProperty("debugStoreFile")) {

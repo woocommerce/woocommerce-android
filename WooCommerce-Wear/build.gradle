@@ -1,12 +1,12 @@
 import io.sentry.android.gradle.extensions.InstrumentationFeature
 
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.parcelize'
-    id 'com.google.dagger.hilt.android'
-    id 'com.google.devtools.ksp'
-    id 'io.sentry.android.gradle'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.google.dagger.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.sentry)
 }
 
 repositories {
@@ -88,7 +88,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion composeCompilerVersion
+        kotlinCompilerExtensionVersion libs.versions.androidx.compose.compiler.get()
     }
     packaging {
         resources {
@@ -127,95 +127,95 @@ android {
 dependencies {
     // Project
     implementation project(":libs:commons")
-    implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
+    implementation("${gradle.ext.fluxCBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:$fluxCVersion") {
+    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
-    implementation("org.wordpress:utils:$wordPressUtilsVersion") {
+    implementation(libs.wordpress.utils) {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
-    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
-    implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
+    implementation(libs.automattic.tracks.android)
+    implementation(libs.automattic.tracks.crashlogging)
 
     // WearOS
-    implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
-    implementation 'androidx.wear.tiles:tiles'
-    implementation 'androidx.wear.tiles:tiles-material'
-    implementation "com.google.android.horologist:horologist-compose-tools:$wearHorologistVersion"
-    implementation "com.google.android.horologist:horologist-tiles:$wearHorologistVersion"
-    implementation "com.google.android.horologist:horologist-compose-layout:$wearHorologistVersion"
-    implementation 'androidx.wear.watchface:watchface-complications-data-source-ktx:1.2.1'
-    implementation "androidx.wear.compose:compose-material:$wearComposeVersion"
-    implementation "androidx.wear.compose:compose-foundation:$wearComposeVersion"
-    implementation 'androidx.wear:wear-tooling-preview:1.0.0'
+    implementation(libs.google.play.services.wearable)
+    implementation(libs.androidx.wear.tiles.main)
+    implementation(libs.androidx.wear.tiles.material)
+    implementation(libs.google.horologist.compose.tools)
+    implementation(libs.google.horologist.tiles)
+    implementation(libs.google.horologist.compose.layout)
+    implementation(libs.androidx.wear.watchface.complications.data.source.ktx)
+    implementation(libs.androidx.wear.compose.material)
+    implementation(libs.androidx.wear.compose.foundation)
+    implementation(libs.androidx.wear.tooling.preview)
 
     // Compose
-    implementation platform("androidx.compose:compose-bom:$composeBOMVersion")
-    implementation 'androidx.compose.ui:ui'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material:material'
-    implementation 'androidx.compose.animation:animation'
-    implementation 'androidx.compose.ui:ui-tooling'
-    implementation 'androidx.compose.runtime:runtime-livedata'
-    implementation "androidx.compose.material:material-icons-extended"
-    implementation 'androidx.compose.ui:ui-text-google-fonts'
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui.main)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material.main)
+    implementation(libs.androidx.compose.animation.main)
+    implementation(libs.androidx.compose.ui.tooling.main)
+    implementation(libs.androidx.compose.runtime.livedata)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.ui.text.google.fonts)
 
     // Android Support
-    implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
-    implementation 'androidx.core:core-splashscreen:1.0.1'
-    implementation "androidx.navigation:navigation-compose:2.7.7"
-    implementation 'androidx.activity:activity-compose'
-    implementation "androidx.preference:preference-ktx:1.2.1"
-    implementation "androidx.datastore:datastore-preferences:1.1.0"
-    implementation "androidx.datastore:datastore:1.1.0"
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.main)
+    implementation(libs.google.gson)
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.coroutines.play.services)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     // Dagger & Hilt
-    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
-    implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
-    implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
-    implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
-    implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
-    ksp "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
-    ksp "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
-    implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
-    ksp "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
+    implementation(libs.google.dagger.hilt.android.main)
+    implementation(libs.androidx.hilt.navigation.fragment)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.androidx.hilt.compiler)
+    ksp(libs.google.dagger.hilt.compiler)
+    implementation(libs.google.dagger.android.support)
+    ksp(libs.google.dagger.android.processor)
 
     // Testing
-    testImplementation "junit:junit:$jUnitVersion"
-    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
-    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
-    testImplementation "org.assertj:assertj-core:$assertjVersion"
-    testImplementation("androidx.arch.core:core-testing:2.1.0", {
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.androidx.arch.core.testing) {
         exclude group: 'com.android.support', module: 'support-compat'
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
-    })
+    }
 
     // Debug dependencies
-    debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
-    debugImplementation "com.facebook.soloader:soloader:0.10.4"
-    debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
+    debugImplementation(libs.facebook.flipper.main)
+    debugImplementation(libs.facebook.soloader)
+    debugImplementation(libs.facebook.flipper.network.plugin) {
         // Force Flipper to use the okhttp version defined in the fluxc module
         // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
         // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
         exclude group: 'com.squareup.okhttp3'
     }
-    lintChecks "com.android.security.lint:lint:$securityLintVersion"
+    lintChecks(libs.android.security.lint)
 }
 
 def checkGradlePropertiesFile() {
