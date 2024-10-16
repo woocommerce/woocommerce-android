@@ -7,6 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.Companion.SUPPORTED_WCS_COUNTRY
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.Companion.SUPPORTED_WCS_CURRENCY
+import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.ShippingLabelSupport
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -146,6 +147,20 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
         // Then
         assertThat(isShippingPluginReady).isTrue
+    }
+
+    @Test
+    fun `Given WC legacy shipping is ready and Shipping plugin is, then use Shipping plugin`() {
+        // Given
+        givenWCLegacyShippingPlugin(installed = true, active = true)
+        givenWCShippingPlugin(installed = true, active = true)
+
+        // When
+        val isShippingPluginReady = sut.shippingPluginSupport.isSupported()
+
+        // Then
+        assertThat(isShippingPluginReady).isTrue
+        assertThat(sut.shippingPluginSupport).isEqualTo(ShippingLabelSupport.WC_SHIPPING_SUPPORTED)
     }
 
     @Test
