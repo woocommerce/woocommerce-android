@@ -3,6 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 20.8
 -----
+- [*] [Payments] Fix learn more link for Pay in Person option in payments settings [https://github.com/woocommerce/woocommerce-android/pull/12786]
 
 
 20.7
