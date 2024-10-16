@@ -118,7 +118,7 @@ fun ObjectiveListItem(
         .clip(roundedShape)
         .clickable(
             role = Role.Button,
-            onClick = { onItemClick() },
+            onClick = onItemClick,
             onClickLabel = stringResource(id = R.string.blaze_campaign_objective_select_objective_label, title)
         )
         .border(
