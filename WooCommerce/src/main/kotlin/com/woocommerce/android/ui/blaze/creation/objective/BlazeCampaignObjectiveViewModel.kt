@@ -61,7 +61,7 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
         val isStoreSelectionButtonToggled: Boolean = false,
     ) {
         val isSaveButtonEnabled: Boolean
-            get() = selectedItemId != null
+            get() = !selectedItemId.isNullOrEmpty()
     }
 
     data class ObjectiveItem(
