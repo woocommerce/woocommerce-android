@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.prefs
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -29,6 +31,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     private val notificationChannelsHandler: NotificationChannelsHandler = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
+    private val appPrefs: AppPrefsWrapper = mock()
 
     private val view: MainSettingsContract.View = mock()
     private lateinit var presenter: MainSettingsPresenter
@@ -45,6 +48,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
             notificationChannelsHandler = notificationChannelsHandler,
             analyticsTracker = analyticsTracker,
             getWooVersion = getWooVersion,
+            appPrefs = appPrefs
         )
         presenter.takeView(view)
     }
@@ -88,4 +92,16 @@ class MainSettingsPresenterTest : BaseUnitTest() {
 
             verify(view).showNotificationsSettingsScreen()
         }
+
+    @Test
+    fun `given WPCom suspended website using app passwords, when settings shown, then hide jeptack installation`() = testBlocking {
+        setup {
+            whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+            whenever(appPrefs.isSiteWPComSuspended).thenReturn(true)
+        }
+
+        presenter.setupJetpackInstallOption()
+
+        verify(view).handleJetpackInstallOption(supportsJetpackInstallation = false)
+    }
 }
