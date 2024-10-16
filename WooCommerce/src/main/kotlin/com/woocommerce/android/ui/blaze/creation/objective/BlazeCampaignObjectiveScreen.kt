@@ -93,9 +93,14 @@ private fun ObjectiveScreen(
                             it.title
                         ),
                         isSelected = it.id == state.selectedItemId,
-                    ) {
-                        onObjectiveTapped(it)
-                    }
+                        onItemClick = { onObjectiveTapped(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = dimensionResource(id = R.dimen.major_100),
+                                vertical = dimensionResource(id = R.dimen.minor_50)
+                            )
+                    )
                 }
             }
         }
@@ -110,16 +115,12 @@ fun ObjectiveListItem(
     isSelected: Boolean,
     onClickLabel: String?,
     onItemClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
     val borderSize = if (isSelected) R.dimen.minor_25 else R.dimen.minor_10
     val borderColor = if (isSelected) R.color.woo_purple_60 else R.color.woo_gray_5
-    val modifier = Modifier
-        .fillMaxWidth()
-        .padding(
-            horizontal = dimensionResource(id = R.dimen.major_100),
-            vertical = dimensionResource(id = R.dimen.minor_50)
-        )
+    val updatedModifier = modifier
         .clip(roundedShape)
         .clickable(
             role = Role.Button,
@@ -134,9 +135,9 @@ fun ObjectiveListItem(
 
     Row(
         modifier = if (isSelected) {
-            modifier.then(Modifier.background(colorResource(id = R.color.blaze_campaign_objective_item_background)))
+            updatedModifier.background(colorResource(id = R.color.blaze_campaign_objective_item_background))
         } else {
-            modifier
+            updatedModifier
         }.padding(dimensionResource(id = R.dimen.major_100)),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
     ) {
