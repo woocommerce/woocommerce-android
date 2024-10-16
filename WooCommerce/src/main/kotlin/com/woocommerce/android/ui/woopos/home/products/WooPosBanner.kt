@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -56,6 +57,7 @@ fun WooPosBanner(
                 contentDescription = bannerContentDescription
             }
             .focusable()
+            .testTag("woo_pos_simple_products_banner")
     ) {
         WooPosCard(
             shape = RoundedCornerShape(8.dp),

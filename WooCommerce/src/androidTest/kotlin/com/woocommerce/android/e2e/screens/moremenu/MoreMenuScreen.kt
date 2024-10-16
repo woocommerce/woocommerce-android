@@ -10,6 +10,7 @@ import androidx.compose.ui.test.performScrollTo
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.mystore.settings.SettingsScreen
+import com.woocommerce.android.e2e.screens.pos.POSModeScreen
 import com.woocommerce.android.e2e.screens.reviews.ReviewsListScreen
 
 class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
@@ -20,6 +21,15 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
             .performScrollTo()
             .performClick()
         return ReviewsListScreen()
+    }
+
+    fun openPOSScreen(composeTestRule: ComposeTestRule): POSModeScreen {
+        composeTestRule.onNodeWithText(
+            getTranslatedString(R.string.more_menu_button_payments)
+        )
+            .performScrollTo()
+            .performClick()
+        return POSModeScreen()
     }
 
     fun openSettings(composeTestRule: ComposeTestRule): SettingsScreen {
