@@ -9,6 +9,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -20,15 +21,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignObjectiveViewModel @Inject constructor(
-    blazeRepository: BlazeRepository,
-    savedStateHandle: SavedStateHandle
+    private val blazeRepository: BlazeRepository,
+    savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignObjectiveFragmentArgs by savedStateHandle.navArgs()
 
     private val selectedId = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = navArgs.selectedObjectiveId,
-        clazz = String::class.java
+        clazz = String::class.java,
+        key = "selectedId"
+    )
+    private val storeObjectiveSwitchState = savedState.getStateFlow(
+        scope = this,
+        initialValue = blazeRepository.isStoreObjectiveEnabled(),
+        key = "storeObjectiveSwitchState"
     )
 
     private val items: Flow<List<ObjectiveItem>> =
@@ -38,8 +45,12 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
             }
         }
 
-    val viewState = combine(items, selectedId) { items, selectedId ->
-        ObjectiveViewState(items = items, selectedItemId = selectedId)
+    val viewState = combine(
+        items,
+        selectedId,
+        storeObjectiveSwitchState
+    ) { items, selectedId, storeObjectiveSwitchState ->
+        ObjectiveViewState(items, selectedId, storeObjectiveSwitchState)
     }.asLiveData()
 
     fun onItemToggled(item: ObjectiveItem) {
@@ -58,7 +69,7 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
     data class ObjectiveViewState(
         val items: List<ObjectiveItem>,
         val selectedItemId: String? = null,
-        val isStoreSelectionButtonToggled: Boolean = false,
+        val isStoreSelectionButtonToggled: Boolean = true,
     ) {
         val isSaveButtonEnabled: Boolean
             get() = !selectedItemId.isNullOrEmpty()
