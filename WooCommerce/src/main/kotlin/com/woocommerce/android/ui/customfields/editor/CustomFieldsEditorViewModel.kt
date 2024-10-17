@@ -176,7 +176,7 @@ class CustomFieldsEditorViewModel @Inject constructor(
         val keyErrorMessage: UiString? = null,
         val isCreatingNewItem: Boolean = false,
     ) {
-        val showDoneButton
+        val enableDoneButton
             get() = customField.key.isNotEmpty() && hasChanges && keyErrorMessage == null
     }
 

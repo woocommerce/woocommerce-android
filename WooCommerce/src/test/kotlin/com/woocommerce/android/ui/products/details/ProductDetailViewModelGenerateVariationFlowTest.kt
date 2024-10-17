@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.NetworkStatus
@@ -92,7 +93,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
 
         productRepository = mock {
-            onBlocking { fetchAndGetProduct(PRODUCT_REMOTE_ID) } doReturn product
+            onBlocking { fetchAndGetProductAggregate(PRODUCT_REMOTE_ID) } doReturn ProductAggregate(product)
         }
 
         variationRepository = mock {

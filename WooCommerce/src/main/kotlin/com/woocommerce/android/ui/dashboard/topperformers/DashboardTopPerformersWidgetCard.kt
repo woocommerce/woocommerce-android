@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
@@ -41,7 +42,6 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -68,7 +68,7 @@ import java.util.Locale
 fun DashboardTopPerformersWidgetCard(
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    topPerformersViewModel: DashboardTopPerformersViewModel = viewModelWithFactory(
+    topPerformersViewModel: DashboardTopPerformersViewModel = hiltViewModel(
         creationCallback = { factory: DashboardTopPerformersViewModel.Factory ->
             factory.create(parentViewModel)
         }

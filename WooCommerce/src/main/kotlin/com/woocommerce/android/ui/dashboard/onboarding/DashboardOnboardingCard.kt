@@ -30,6 +30,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
@@ -38,7 +39,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -66,7 +66,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 fun DashboardOnboardingCard(
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    onboardingViewModel: DashboardOnboardingViewModel = viewModelWithFactory(
+    onboardingViewModel: DashboardOnboardingViewModel = hiltViewModel(
         creationCallback = { factory: DashboardOnboardingViewModel.Factory ->
             factory.create(parentViewModel)
         }

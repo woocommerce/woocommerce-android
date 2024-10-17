@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCustomFields
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
@@ -225,6 +226,12 @@ class OrderNavigator @Inject constructor() {
                         productName = target.productName,
                         productDescription = target.productDescription
                     )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is StartWooShippingLabelCreationFlow -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToWooShippingLabelCreationFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
         }

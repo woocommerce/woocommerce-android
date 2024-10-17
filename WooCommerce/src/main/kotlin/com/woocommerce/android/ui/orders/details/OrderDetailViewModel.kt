@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabe
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -93,7 +94,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 @HiltViewModel
-@Suppress("LargeClass")
+@Suppress("LargeClass", "LongParameterList", "TooManyFunctions")
 class OrderDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val appPrefs: AppPrefs,
@@ -656,7 +657,14 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCreateShippingLabelButtonTapped() {
         tracker.trackShippinhLabelTapped()
-        triggerEvent(StartShippingLabelCreationFlow(order.id))
+        if (
+            FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
+            shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
+        ) {
+            triggerEvent(StartWooShippingLabelCreationFlow(order.id))
+        } else {
+            triggerEvent(StartShippingLabelCreationFlow(order.id))
+        }
     }
 
     fun onMarkOrderCompleteButtonTapped() {
@@ -770,7 +778,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchSLCreationEligibilityAsync() = async {
-        if (shippingLabelOnboardingRepository.isShippingPluginReady) {
+        if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
             orderDetailRepository.fetchSLCreationEligibility(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onPackageCreationEligibleFetched()
@@ -802,7 +810,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        if (shippingLabelOnboardingRepository.isShippingPluginReady) {
+        if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
@@ -874,7 +882,7 @@ class OrderDetailViewModel @Inject constructor(
 
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 
-        val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.isShippingPluginReady &&
+        val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
             orderDetailRepository.isOrderEligibleForSLCreation(order.id) &&
             !orderEligibleForInPersonPayments
 
