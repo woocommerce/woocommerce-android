@@ -1102,7 +1102,10 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     CUSTOM_FIELD_EDITOR_DONE_TAPPED,
     CUSTOM_FIELD_EDITOR_DELETE_TAPPED,
     PRODUCT_DETAIL_CUSTOM_FIELDS_TAPPED,
-    ORDER_VIEW_CUSTOM_FIELDS_TAPPED;
+    ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
+
+    // Black-flagged sites
+    BLACK_FLAGGED_WEBSITE_DETECTED;
 
     override val isPosEvent: Boolean = false
 }

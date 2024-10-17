@@ -565,6 +565,12 @@ class LoginActivity :
             showEmailLoginScreen(null)
         } else {
             appPrefsWrapper.isSiteWPComSuspended = result.isWPComSuspended
+            if (result.isWPComSuspended) {
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.BLACK_FLAGGED_WEBSITE_DETECTED,
+                    properties = mapOf("event" to "login")
+                )
+            }
             loginViaSiteCredentials(inputSiteAddress)
         }
     }
