@@ -38,6 +38,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var blazeCampaignSelectedObjective by AppPrefs::blazeCampaignSelectedObjective
 
+    var isSiteWPComSuspended by AppPrefs::isSiteWPComSuspended
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =

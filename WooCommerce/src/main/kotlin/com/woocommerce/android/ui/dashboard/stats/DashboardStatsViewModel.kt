@@ -240,7 +240,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
                         )
                     }
                     is LoadStatsResult.VisitorStatUnavailable -> {
-                        _visitorStatsState.value = VisitorStatsViewState.Unavailable
+                        _visitorStatsState.value = VisitorStatsViewState.Unavailable(
+                            showJetpackIcon = !appPrefsWrapper.isSiteWPComSuspended
+                        )
                         parentViewModel.hideRefreshingIndicator()
                         trackEventForStatsCard(
                             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
@@ -379,7 +381,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     sealed class VisitorStatsViewState {
         data object Error : VisitorStatsViewState()
         data object NotLoaded : VisitorStatsViewState()
-        data object Unavailable : VisitorStatsViewState()
+        data class Unavailable(val showJetpackIcon: Boolean) : VisitorStatsViewState()
 
         data class Content(
             val stats: Map<String, Int>,
