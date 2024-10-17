@@ -4,6 +4,9 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_OBJECTIVE_SAVED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -23,6 +26,7 @@ import javax.inject.Inject
 class BlazeCampaignObjectiveViewModel @Inject constructor(
     private val blazeRepository: BlazeRepository,
     savedStateHandle: SavedStateHandle,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignObjectiveFragmentArgs by savedStateHandle.navArgs()
 
@@ -74,6 +78,9 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
         }
         selectedId.value?.let {
             triggerEvent(ExitWithResult(ObjectiveResult(it)))
+            analyticsTrackerWrapper.track(
+                stat = BLAZE_CAMPAIGN_OBJECTIVE_SAVED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_OBJECTIVE to it)
             )
         }
     }
