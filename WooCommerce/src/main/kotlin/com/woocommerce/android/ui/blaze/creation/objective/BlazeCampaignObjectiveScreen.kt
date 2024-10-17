@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -34,7 +35,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveViewModel.ObjectiveItem
 import com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveViewModel.ObjectiveViewState
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.BottomSheetSwitchColors
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
@@ -45,7 +48,8 @@ fun BlazeCampaignObjectiveScreen(viewModel: BlazeCampaignObjectiveViewModel) {
             state = state,
             onBackPressed = viewModel::onBackPressed,
             onSaveTapped = viewModel::onSaveTapped,
-            onObjectiveTapped = viewModel::onItemToggled
+            onObjectiveTapped = viewModel::onItemToggled,
+            onStoreObjectiveSwitchChanged = viewModel::onStoreObjectiveSwitchChanged
         )
     }
 }
@@ -56,6 +60,7 @@ private fun ObjectiveScreen(
     onBackPressed: () -> Unit,
     onSaveTapped: () -> Unit,
     onObjectiveTapped: (ObjectiveItem) -> Unit,
+    onStoreObjectiveSwitchChanged: (Boolean) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -81,7 +86,9 @@ private fun ObjectiveScreen(
                 .fillMaxSize()
         ) {
             LazyColumn(
-                modifier = Modifier.padding(vertical = 4.dp)
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .weight(1f)
             ) {
                 items(state.items) {
                     ObjectiveListItem(
@@ -99,6 +106,16 @@ private fun ObjectiveScreen(
                     )
                 }
             }
+            Divider()
+            WCSwitch(
+                text = stringResource(id = R.string.blaze_campaign_objective_save_selection_switch_label),
+                checked = state.isStoreSelectionButtonToggled,
+                onCheckedChange = { onStoreObjectiveSwitchChanged(it) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = BottomSheetSwitchColors()
+            )
         }
     }
 }
@@ -216,5 +233,6 @@ fun PreviewObjectiveScreen() {
         onBackPressed = { },
         onSaveTapped = { },
         onObjectiveTapped = { },
+        onStoreObjectiveSwitchChanged = { }
     )
 }
