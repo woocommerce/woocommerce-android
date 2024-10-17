@@ -13,6 +13,7 @@ import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpda
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpdateEvent.ProductUpdateSucceeded
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUploadsCompleted
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
@@ -222,7 +223,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     fun `when update product succeeds, then send an event`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
         whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
-        whenever(productDetailRepository.updateProduct(any())).thenReturn(Pair(true, null))
+        whenever(productDetailRepository.updateProduct(any<Product>())).thenReturn(Pair(true, null))
 
         val eventsList = mutableListOf<Event>()
         val job = launch {
@@ -239,7 +240,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     fun `when update product fails, then retry three times`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
         whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
-        whenever(productDetailRepository.updateProduct(any())).thenReturn(Pair(false, null))
+        whenever(productDetailRepository.updateProduct(any<Product>())).thenReturn(Pair(false, null))
 
         worker.enqueueWork(Work.UpdateProduct(REMOTE_PRODUCT_ID, listOf(UPLOADED_MEDIA)))
 
@@ -252,7 +253,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     fun `when update product fails, then send an event`() = testBlocking {
         val product = ProductTestUtils.generateProduct(REMOTE_PRODUCT_ID)
         whenever(productDetailRepository.fetchAndGetProduct(REMOTE_PRODUCT_ID)).thenReturn(product)
-        whenever(productDetailRepository.updateProduct(any())).thenReturn(Pair(false, null))
+        whenever(productDetailRepository.updateProduct(any<Product>())).thenReturn(Pair(false, null))
 
         val eventsList = mutableListOf<Event>()
         val job = launch {

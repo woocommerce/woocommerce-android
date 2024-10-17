@@ -106,6 +106,15 @@
             app:destination="@id/productImagePickerFragment" />
     </fragment>
     <fragment
+        android:id="@+id/blazeCampaignObjectiveFragment"
+        android:name="com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveFragment"
+        android:label="BlazeCampaignObjectiveFragment">
+        <argument
+            android:name="selectedObjectiveId"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+    <fragment
         android:id="@+id/blazeCampaignBudgetFragment"
         android:name="com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment"
         android:label="BlazeCampaignBudgetFragment">
@@ -197,8 +206,4 @@
             android:name="productId"
             app:argType="long" />
     </fragment>
-    <fragment
-        android:id="@+id/blazeCampaignObjectiveFragment"
-        android:name="com.woocommerce.android.ui.blaze.creation.objective.BlazeCampaignObjectiveFragment"
-        android:label="BlazeCampaignObjectiveFragment" />
 </navigation>

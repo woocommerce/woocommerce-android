@@ -125,6 +125,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
+    fun onObjectiveUpdated(objectiveId: String) {
+        campaignDetails.update { it?.copy(objectiveId = objectiveId) }
+    }
+
     fun onBudgetAndDurationUpdated(updatedBudget: BlazeRepository.Budget) {
         campaignDetails.update { it?.copy(budget = updatedBudget) }
     }
@@ -178,7 +182,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         AnalyticsTracker.VALUE_EVERGREEN_CAMPAIGN
 
                     else -> AnalyticsTracker.VALUE_START_END_CAMPAIGN
-                }
+                },
+                AnalyticsTracker.KEY_BLAZE_OBJECTIVE to campaignDetails.value?.objectiveId,
             )
         )
         campaignDetails.value?.let {
@@ -202,7 +207,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                 isObjectiveMissing && FeatureFlag.OBJECTIVE_SECTION.isEnabled() -> buildMissingRequiredDataDialog(
                     message = R.string.blaze_campaign_preview_missing_objective_dialog_text,
                     positiveButtonText = R.string.blaze_campaign_preview_missing_objective_dialog_positive_button,
-                    positiveButtonOnClick = { triggerEvent(NavigateToObjectiveSelectionScreen) }
+                    positiveButtonOnClick = { triggerEvent(NavigateToObjectiveSelectionScreen(selectedId = null)) }
                 )
 
                 else -> triggerEvent(NavigateToPaymentSummary(it))
@@ -283,7 +288,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         return CampaignDetailItemUi(
             displayTitle = resourceProvider.getString(R.string.blaze_campaign_preview_details_objective),
             displayValue = selectedObjectiveDisplayValue,
-            onItemSelected = { triggerEvent(NavigateToObjectiveSelectionScreen) }
+            onItemSelected = { triggerEvent(NavigateToObjectiveSelectionScreen(campaignDetails.value?.objectiveId)) }
         )
     }
 
@@ -441,9 +446,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         val aiSuggestions: List<BlazeRepository.AiSuggestionForAd>
     ) : MultiLiveEvent.Event()
 
+    data class NavigateToObjectiveSelectionScreen(val selectedId: String? = null) : MultiLiveEvent.Event()
+
     data class NavigateToPaymentSummary(
         val campaignDetails: CampaignDetails
     ) : MultiLiveEvent.Event()
-
-    data object NavigateToObjectiveSelectionScreen : MultiLiveEvent.Event()
 }

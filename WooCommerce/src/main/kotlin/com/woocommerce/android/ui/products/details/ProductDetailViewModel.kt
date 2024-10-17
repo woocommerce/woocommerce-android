@@ -33,12 +33,14 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.ProductGlobalAttribute
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
@@ -187,8 +189,8 @@ class ProductDetailViewModel @Inject constructor(
         savedState = savedState,
         initialValue = ProductDetailViewState(areImagesAvailable = !selectedSite.get().isPrivate)
     ) { old, new ->
-        if (old?.productDraft != new.productDraft) {
-            new.productDraft?.let {
+        if (old?.productAggregateDraft != new.productAggregateDraft) {
+            new.productAggregateDraft?.let {
                 updateCards(it)
                 draftChanges.value = it
             }
@@ -200,9 +202,9 @@ class ProductDetailViewModel @Inject constructor(
      * The goal of this is to allow composition of reactive streams using the product draft changes,
      * we need a separate stream because [LiveDataDelegate] supports a single observer.
      */
-    private val draftChanges = MutableStateFlow<Product?>(null)
+    private val draftChanges = MutableStateFlow<ProductAggregate?>(null)
 
-    private val storedProduct = MutableStateFlow<Product?>(null)
+    private val storedProductAggregate = MutableStateFlow<ProductAggregate?>(null)
 
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -298,9 +300,9 @@ class ProductDetailViewModel @Inject constructor(
         ProductDetailBottomSheetBuilder(resources, variationRepository, customFieldsRepository)
     }
 
-    private val _hasChanges = storedProduct
-        .combine(draftChanges) { storedProduct, productDraft ->
-            storedProduct?.let { product -> productDraft?.isSameProduct(product) == false } ?: false
+    private val _hasChanges = storedProductAggregate
+        .combine(draftChanges) { storedProductAggregate, productAggregateDraft ->
+            storedProductAggregate?.let { product -> productAggregateDraft?.isSame(product) == false } ?: false
         }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val hasChanges = _hasChanges.asLiveData()
 
@@ -318,8 +320,8 @@ class ProductDetailViewModel @Inject constructor(
 
     val menuButtonsState = draftChanges
         .filterNotNull()
-        .combine(_hasChanges) { productDraft, hasChanges ->
-            Pair(productDraft, hasChanges)
+        .combine(_hasChanges) { draft, hasChanges ->
+            Pair(draft.product, hasChanges)
         }.map { (productDraft, hasChanges) ->
             val canBeSavedAsDraft = this.isAddNewProductFlow &&
                 !isProductStoredAtSite &&
@@ -374,7 +376,7 @@ class ProductDetailViewModel @Inject constructor(
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
      */
     val isProductUnderCreation: Boolean
-        get() = isAddNewProductFlow and isProductStoredAtSite.not()
+        get() = isAddNewProductFlow && isProductStoredAtSite.not()
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
@@ -442,29 +444,31 @@ class ProductDetailViewModel @Inject constructor(
     private fun startAddNewProduct() {
         val defaultProduct = createDefaultProductForAddFlow()
         viewState = viewState.copy(
-            productDraft = defaultProduct
+            productAggregateDraft = defaultProduct
         )
         updateProductState(defaultProduct)
         trackProductDetailLoaded()
     }
 
-    private fun createDefaultProductForAddFlow(): Product {
+    private fun createDefaultProductForAddFlow(): ProductAggregate {
         val preferredSavedType = appPrefsWrapper.getSelectedProductType()
         val defaultProductType = ProductType.fromString(preferredSavedType)
         val isProductVirtual = appPrefsWrapper.isSelectedProductVirtual()
-        return ProductHelper.getDefaultNewProduct(defaultProductType, isProductVirtual)
+        return ProductHelper.getDefaultProductAggregate(defaultProductType, isProductVirtual)
     }
 
     private fun initializeStoredProductAfterRestoration() {
         launch {
             if (isAddNewProductFlow && !isProductStoredAtSite) {
-                storedProduct.value = createDefaultProductForAddFlow()
+                storedProductAggregate.value = createDefaultProductForAddFlow()
             } else {
                 when (val mode = navArgs.mode) {
                     is ProductDetailFragment.Mode.ShowProduct -> {
-                        storedProduct.value = productRepository.getProductAsync(
+                        productRepository.getProductAggregate(
                             viewState.productDraft?.remoteId ?: mode.remoteProductId
-                        )
+                        )?.let {
+                            storedProductAggregate.value = it
+                        }
                     }
 
                     ProductDetailFragment.Mode.Loading -> {
@@ -681,7 +685,7 @@ class ProductDetailViewModel @Inject constructor(
                 when (variationRepository.bulkCreateVariations(remoteProductId, variationCandidates)) {
                     RequestResult.SUCCESS -> {
                         tracker.track(AnalyticsEvent.PRODUCT_VARIATION_GENERATION_SUCCESS)
-                        productRepository.fetchAndGetProduct(remoteProductId)
+                        productRepository.fetchAndGetProductAggregate(remoteProductId)
                             ?.also { updateProductState(productToUpdateFrom = it) }
                         triggerEvent(ProductExitEvent.ExitAttributesAdded)
                     }
@@ -704,22 +708,23 @@ class ProductDetailViewModel @Inject constructor(
             )
             variationRepository.createEmptyVariation(draft)
                 ?.let {
-                    productRepository.fetchAndGetProduct(draft.remoteId)
+                    productRepository.fetchAndGetProductAggregate(draft.remoteId)
                         ?.also { updateProductState(productToUpdateFrom = it) }
                 }
         }.also {
             attributeListViewState = attributeListViewState.copy(progressDialogState = ProgressDialogState.Hidden)
         }
 
-    fun hasCategoryChanges() = storedProduct.value?.hasCategoryChanges(viewState.productDraft) ?: false
+    fun hasCategoryChanges() = storedProductAggregate.value
+        ?.product?.hasCategoryChanges(viewState.productDraft) ?: false
 
-    fun hasTagChanges() = storedProduct.value?.hasTagChanges(viewState.productDraft) ?: false
+    fun hasTagChanges() = storedProductAggregate.value?.product?.hasTagChanges(viewState.productDraft) ?: false
 
     fun hasSettingsChanges(): Boolean {
-        return if (storedProduct.value?.hasSettingsChanges(viewState.productDraft) == true) {
+        return if (storedProductAggregate.value?.product?.hasSettingsChanges(viewState.productDraft) == true) {
             true
         } else {
-            storedProduct.value?.password != viewState.draftPassword
+            storedProductAggregate.value?.product?.password != viewState.draftPassword
         }
     }
 
@@ -847,7 +852,8 @@ class ProductDetailViewModel @Inject constructor(
         )
     }
 
-    fun hasExternalLinkChanges() = storedProduct.value?.hasExternalLinkChanges(viewState.productDraft) ?: false
+    fun hasExternalLinkChanges() = storedProductAggregate.value
+        ?.product?.hasExternalLinkChanges(viewState.productDraft) ?: false
 
     /**
      * Called when the back= button is clicked in a product sub detail screen
@@ -1011,11 +1017,11 @@ class ProductDetailViewModel @Inject constructor(
      * 3. is a Draft
      */
     fun saveAsDraftIfNewVariableProduct() = launch {
-        viewState.productDraft
+        viewState.productAggregateDraft
             ?.takeIf {
-                isProductStoredAtSite.not() and
-                    it.productType.isVariableProduct() and
-                    (it.status == DRAFT)
+                isProductStoredAtSite.not() &&
+                    it.product.productType.isVariableProduct() &&
+                    (it.product.status == DRAFT)
             }
             ?.takeIf { addProduct(it).first }
             ?.let {
@@ -1029,22 +1035,22 @@ class ProductDetailViewModel @Inject constructor(
             stat = AnalyticsEvent.PRODUCT_DETAIL_UPDATE_BUTTON_TAPPED,
             properties = mapOf(AnalyticsTracker.KEY_IS_AI_CONTENT to navArgs.isAIContent)
         )
-        viewState.productDraft?.let {
-            val product = if (isPublish) it.copy(status = ProductStatus.PUBLISH) else it
+        viewState.productAggregateDraft?.let {
+            val product = if (isPublish) it.copy(product = it.product.copy(status = ProductStatus.PUBLISH)) else it
             viewState = viewState.copy(isProgressDialogShown = true)
             launch { updateProduct(isPublish, product) }
         }
     }
 
     private fun startPublishProduct(productStatus: ProductStatus, exitWhenDone: Boolean = false) {
-        viewState.productDraft?.let {
-            val product = it.copy(status = productStatus)
-            trackPublishing(product)
+        viewState.productAggregateDraft?.let {
+            val productAggregate = it.copy(product = it.product.copy(status = productStatus))
+            trackPublishing(productAggregate.product)
 
             viewState = viewState.copy(isProgressDialogShown = true)
 
             launch {
-                val (isSuccess, newProductId) = addProduct(product)
+                val (isSuccess, newProductId) = addProduct(productAggregate)
                 viewState = viewState.copy(isProgressDialogShown = false)
                 val snackbarMessage = pickAddProductRequestSnackbarText(isSuccess, productStatus)
                 triggerEvent(ShowSnackbar(snackbarMessage))
@@ -1052,8 +1058,8 @@ class ProductDetailViewModel @Inject constructor(
                     if (isPublishingFirstProduct()) {
                         triggerEvent(
                             ProductNavigationTarget.ViewFirstProductCelebration(
-                                productName = product.name,
-                                permalink = product.permalink
+                                productName = productAggregate.product.name,
+                                permalink = productAggregate.product.permalink
                             )
                         )
                     }
@@ -1064,13 +1070,13 @@ class ProductDetailViewModel @Inject constructor(
                         )
                     }
                     tracker.track(AnalyticsEvent.ADD_PRODUCT_SUCCESS)
-                    if (product.remoteId != newProductId) {
+                    if (productAggregate.remoteId != newProductId) {
                         // Assign the current uploads to the new product id
                         mediaFileUploadHandler.assignUploadsToCreatedProduct(newProductId)
                     }
                     if (exitWhenDone) {
                         triggerEvent(ProductNavigationTarget.ExitProduct)
-                    } else if (product.remoteId != newProductId) {
+                    } else if (productAggregate.remoteId != newProductId) {
                         // Restart observing image uploads using the new product id
                         observeImageUploadEvents()
                     }
@@ -1135,10 +1141,10 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun trackWithProductId(event: AnalyticsEvent) {
-        storedProduct.value?.let {
+        storedProductAggregate.value?.let {
             tracker.track(
                 event,
-                mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.remoteId)
+                mapOf(AnalyticsTracker.KEY_PRODUCT_ID to it.product.remoteId)
             )
         }
     }
@@ -1175,7 +1181,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     fun onSettingsVisibilityButtonClicked() {
         val visibility = getProductVisibility()
-        val password = viewState.draftPassword ?: storedProduct.value?.password
+        val password = viewState.draftPassword ?: storedProductAggregate.value?.product?.password
         triggerEvent(
             ProductNavigationTarget.ViewProductVisibility(
                 selectedSite.connectionType == SiteConnectionType.ApplicationPasswords,
@@ -1222,13 +1228,11 @@ class ProductDetailViewModel @Inject constructor(
     ) {
         updateProductDraft(type = productType.value, isVirtual = isVirtual)
 
-        viewState.productDraft?.let { productDraft ->
-            if (productType == ProductType.SUBSCRIPTION && productDraft.subscription == null) {
+        viewState.productAggregateDraft?.let { productAggregateDraft ->
+            if (productType == ProductType.SUBSCRIPTION && productAggregateDraft.subscription == null) {
                 viewState = viewState.copy(
-                    productDraft = productDraft.copy(
-                        subscription = ProductHelper.getDefaultSubscriptionDetails().copy(
-                            price = productDraft.regularPrice
-                        )
+                    subscriptionDraft = ProductHelper.getDefaultSubscriptionDetails().copy(
+                        price = productAggregateDraft.product.regularPrice
                     )
                 )
             }
@@ -1331,12 +1335,12 @@ class ProductDetailViewModel @Inject constructor(
                 saleEndDateGmt = if (productHasSale(isSaleScheduled, product)) {
                     saleEndDate
                 } else {
-                    storedProduct.value?.saleEndDateGmt
+                    storedProductAggregate.value?.product?.saleEndDateGmt
                 },
                 saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
                     saleStartDate ?: product.saleStartDateGmt
                 } else {
-                    storedProduct.value?.saleStartDateGmt
+                    storedProductAggregate.value?.product?.saleStartDateGmt
                 },
                 downloads = downloads ?: product.downloads,
                 downloadLimit = downloadLimit ?: product.downloadLimit,
@@ -1353,17 +1357,16 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     fun updateProductSubscription(
-        price: BigDecimal? = viewState.productDraft?.subscription?.price,
+        price: BigDecimal? = viewState.productAggregateDraft?.subscription?.price,
         period: SubscriptionPeriod? = null,
         periodInterval: Int? = null,
-        signUpFee: BigDecimal? = viewState.productDraft?.subscription?.signUpFee,
+        signUpFee: BigDecimal? = viewState.productAggregateDraft?.subscription?.signUpFee,
         length: Int? = null,
         trialLength: Int? = null,
         trialPeriod: SubscriptionPeriod? = null,
         oneTimeShipping: Boolean? = null
     ) {
-        viewState.productDraft?.let { product ->
-            val subscription = product.subscription ?: return
+        viewState.productAggregateDraft?.subscription?.let { subscription ->
             // The length ranges depend on the subscription period (days,weeks,months,years) and interval. If these
             // change we need to reset the length to "Never expire". This replicates web behavior
             val updatedLength = subscription.resetSubscriptionLengthIfThePeriodOrIntervalChanged(
@@ -1381,7 +1384,7 @@ class ProductDetailViewModel @Inject constructor(
                 trialPeriod = trialPeriod ?: subscription.trialPeriod,
                 oneTimeShipping = oneTimeShipping ?: subscription.oneTimeShipping
             )
-            viewState = viewState.copy(productDraft = product.copy(subscription = updatedSubscription))
+            viewState = viewState.copy(subscriptionDraft = updatedSubscription)
         }
     }
 
@@ -1402,10 +1405,13 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
-    private fun updateCards(product: Product) {
+    private fun updateCards(productAggregate: ProductAggregate) {
         launch(dispatchers.io) {
             mutex.withLock {
-                val cards = cardBuilder.buildPropertyCards(product, storedProduct.value?.sku ?: "")
+                val cards = cardBuilder.buildPropertyCards(
+                    productAggregate = productAggregate,
+                    originalSku = storedProductAggregate.value?.product?.sku ?: ""
+                )
                 withContext(dispatchers.main) {
                     _productDetailCards.value = cards
                 }
@@ -1415,7 +1421,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun fetchBottomSheetList() {
-        viewState.productDraft?.let {
+        viewState.productAggregateDraft?.let {
             launch(dispatchers.computation) {
                 val detailList = productDetailBottomSheetBuilder.buildBottomSheetList(it)
                 withContext(dispatchers.main) {
@@ -1454,13 +1460,13 @@ class ProductDetailViewModel @Inject constructor(
 
         launch {
             // fetch product
-            val productInDb = productRepository.getProductAsync(remoteProductId)
-            if (productInDb != null) {
+            val productAggregateInDb = productRepository.getProductAggregate(remoteProductId)
+            if (productAggregateInDb != null) {
                 val shouldFetch = remoteProductId != getRemoteProductId()
-                updateProductState(productInDb)
+                updateProductState(productAggregateInDb)
 
                 val cachedVariationCount = productRepository.getCachedVariationCount(remoteProductId)
-                if (shouldFetch || cachedVariationCount != productInDb.numVariations) {
+                if (shouldFetch || cachedVariationCount != productAggregateInDb.product.numVariations) {
                     fetchProduct(remoteProductId)
                     fetchProductPassword(remoteProductId)
                 }
@@ -1477,7 +1483,7 @@ class ProductDetailViewModel @Inject constructor(
      */
     private fun trackProductDetailLoaded() {
         if (hasTrackedProductDetailLoaded.not()) {
-            storedProduct.value?.let { product ->
+            storedProductAggregate.value?.product?.let { product ->
                 launch {
                     val properties = mapOf(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
@@ -1531,8 +1537,8 @@ class ProductDetailViewModel @Inject constructor(
      * then the visibility is `PRIVATE`, otherwise it's `PUBLIC`.
      */
     fun getProductVisibility(): ProductVisibility {
-        val status = viewState.productDraft?.status ?: storedProduct.value?.status
-        val password = viewState.draftPassword ?: storedProduct.value?.password
+        val status = viewState.productDraft?.status ?: storedProductAggregate.value?.product?.status
+        val password = viewState.draftPassword ?: storedProductAggregate.value?.product?.password
         return when {
             password?.isNotEmpty() == true -> {
                 ProductVisibility.PASSWORD_PROTECTED
@@ -1555,11 +1561,11 @@ class ProductDetailViewModel @Inject constructor(
         val productPasswordApi = determineProductPasswordApi()
         val password = when (productPasswordApi) {
             ProductPasswordApi.WPCOM -> productRepository.fetchProductPassword(remoteProductId)
-            ProductPasswordApi.CORE -> storedProduct.value?.password
+            ProductPasswordApi.CORE -> storedProductAggregate.value?.product?.password
             ProductPasswordApi.UNSUPPORTED -> return
         }
 
-        storedProduct.update { it?.copy(password = password) }
+        storedProductAggregate.update { it?.copy(product = it.product.copy(password = password)) }
         viewState = viewState.copy(
             productDraft = viewState.productDraft?.copy(password = viewState.draftPassword ?: password)
         )
@@ -1567,7 +1573,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private suspend fun fetchProduct(remoteProductId: Long) {
         if (checkConnection()) {
-            val fetchedProduct = productRepository.fetchAndGetProduct(remoteProductId)
+            val fetchedProduct = productRepository.fetchAndGetProductAggregate(remoteProductId)
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
@@ -1853,7 +1859,8 @@ class ProductDetailViewModel @Inject constructor(
         triggerEvent(ProductNavigationTarget.RenameProductAttribute(attributeName))
     }
 
-    fun hasAttributeChanges() = storedProduct.value?.hasAttributeChanges(viewState.productDraft) ?: false
+    fun hasAttributeChanges() = storedProductAggregate.value
+        ?.product?.hasAttributeChanges(viewState.productDraft) ?: false
 
     /**
      * Used by the add attribute screen to fetch the list of store-wide product attributes
@@ -1947,20 +1954,22 @@ class ProductDetailViewModel @Inject constructor(
      * Updates the product to the backend only if network is connected.
      * Otherwise, an offline snackbar is displayed.
      */
-    private suspend fun updateProduct(isPublish: Boolean, product: Product) {
+    private suspend fun updateProduct(isPublish: Boolean, productAggregate: ProductAggregate) {
         if (!checkConnection()) {
             viewState = viewState.copy(isProgressDialogShown = false)
             return
         }
-        val result = productRepository.updateProduct(product.copy(password = viewState.draftPassword))
+        val result = productRepository.updateProduct(
+            productAggregate.copy(product = productAggregate.product.copy(password = viewState.draftPassword))
+        )
         if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
-            val isPasswordChanged = storedProduct.value?.password != viewState.draftPassword
+            val isPasswordChanged = storedProductAggregate.value?.product?.password != viewState.draftPassword
             if (isPasswordChanged && determineProductPasswordApi() == ProductPasswordApi.WPCOM) {
                 // Update the product password using WordPress.com API
                 val password = viewState.productDraft?.password
-                if (productRepository.updateProductPassword(product.remoteId, password)) {
-                    storedProduct.update { it?.copy(password = password) }
+                if (productRepository.updateProductPassword(productAggregate.remoteId, password)) {
+                    storedProductAggregate.update { it?.copy(product = it.product.copy(password = password)) }
                     triggerEvent(ShowSnackbar(successMsg))
                 } else {
                     triggerEvent(ShowSnackbar(R.string.product_detail_update_product_password_error))
@@ -1975,7 +1984,7 @@ class ProductDetailViewModel @Inject constructor(
                 productDraft = null
             )
             triggerEvent(ProductUpdated)
-            loadRemoteProduct(product.remoteId)
+            loadRemoteProduct(productAggregate.remoteId)
         } else {
             result.second?.let {
                 if (it.canDisplayMessage) {
@@ -1994,10 +2003,10 @@ class ProductDetailViewModel @Inject constructor(
      * Otherwise, an offline snackbar is displayed. Returns true only
      * if product successfully added
      */
-    private suspend fun addProduct(product: Product): Pair<Boolean, Long> {
+    private suspend fun addProduct(productAggregate: ProductAggregate): Pair<Boolean, Long> {
         if (!checkConnection()) return Pair(false, 0L)
 
-        val result = productRepository.addProduct(product)
+        val result = productRepository.addProduct(productAggregate)
         val (isSuccess, newProductRemoteId) = result
         if (isSuccess) {
             checkLinkedProductPromo()
@@ -2061,22 +2070,22 @@ class ProductDetailViewModel @Inject constructor(
         productRepository.getProductShippingClassByRemoteId(remoteShippingClassId)?.name
             ?: viewState.productDraft?.shippingClass ?: ""
 
-    private fun updateProductState(productToUpdateFrom: Product) {
-        val updatedDraft = viewState.productDraft?.let { currentDraft ->
-            if (storedProduct.value?.isSameProduct(currentDraft) == true) {
+    private fun updateProductState(productToUpdateFrom: ProductAggregate) {
+        val updatedDraft = viewState.productAggregateDraft?.let { currentDraft ->
+            if (storedProductAggregate.value?.isSame(currentDraft) == true) {
                 productToUpdateFrom
             } else {
-                productToUpdateFrom.mergeProduct(currentDraft)
+                productToUpdateFrom.merge(currentDraft)
             }
         } ?: productToUpdateFrom
 
-        loadProductTaxAndShippingClassDependencies(updatedDraft)
+        loadProductTaxAndShippingClassDependencies(updatedDraft.product)
 
         viewState = viewState.copy(
-            productDraft = updatedDraft,
+            productAggregateDraft = updatedDraft,
             auxiliaryState = ProductDetailViewState.AuxiliaryState.None
         )
-        storedProduct.value = productToUpdateFrom
+        storedProductAggregate.value = productToUpdateFrom
     }
 
     private fun loadProductTaxAndShippingClassDependencies(product: Product) {
@@ -2097,6 +2106,7 @@ class ProductDetailViewModel @Inject constructor(
         imageUploadsJob?.cancel()
         imageUploadsJob = launch {
             draftChanges
+                .map { it?.product }
                 .distinctUntilChanged { old, new -> old?.remoteId == new?.remoteId }
                 .map { getRemoteProductId() }
                 .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddNewProductFlow }
@@ -2504,7 +2514,7 @@ class ProductDetailViewModel @Inject constructor(
     fun onDuplicateProduct() {
         launch {
             tracker.track(AnalyticsEvent.PRODUCT_DETAIL_DUPLICATE_BUTTON_TAPPED)
-            viewState.productDraft?.let { product ->
+            viewState.productAggregateDraft?.let { product ->
 
                 triggerEvent(ShowDuplicateProductInProgress)
                 val result = duplicateProduct(product)
@@ -2578,7 +2588,7 @@ class ProductDetailViewModel @Inject constructor(
     }
 
     private fun hasSubscriptionExpirationChanges(): Boolean {
-        return storedProduct.value?.subscription?.length != viewState.productDraft?.subscription?.length
+        return storedProductAggregate.value?.subscription?.length != viewState.subscriptionDraft?.length
     }
 
     fun onProductCategorySearchQueryChanged(query: String) {
@@ -2685,18 +2695,18 @@ class ProductDetailViewModel @Inject constructor(
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
-     * [storedProduct.value] is the [Product] model that is fetched from the API and available in the local db.
+     * [storedProductAggregate.value] is the [Product] model that is fetched from the API and available in the local db.
      * This is read only and is not updated in any way. It is used in the product detail screen, to check
      * if we need to display the UPDATE menu button (which is only displayed if there are changes made to
      * any of the product fields).
      *
-     * When the user first enters the product detail screen, the [productDraft] and [storedProduct.value] are the same.
+     * When the user first enters the product detail screen, the [productDraft] and [storedProductAggregate.value] are the same.
      * When a change is made to the product in the UI, the [productDraft] model is updated with whatever change
      * has been made in the UI.
      */
     @Parcelize
     data class ProductDetailViewState(
-        val productDraft: Product? = null,
+        val productAggregateDraft: ProductAggregate? = null,
         val auxiliaryState: AuxiliaryState = AuxiliaryState.None,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
@@ -2706,8 +2716,22 @@ class ProductDetailViewModel @Inject constructor(
         val isVariationListEmpty: Boolean? = null,
         val areImagesAvailable: Boolean
     ) : Parcelable {
+        val productDraft
+            get() = productAggregateDraft?.product
+        val subscriptionDraft
+            get() = productAggregateDraft?.subscription
         val draftPassword
             get() = productDraft?.password
+
+        fun copy(productDraft: Product?) = copy(
+            productAggregateDraft = productDraft?.let {
+                productAggregateDraft?.copy(product = it) ?: ProductAggregate(product = it)
+            }
+        )
+
+        fun copy(subscriptionDraft: SubscriptionDetails) = copy(
+            productAggregateDraft = productAggregateDraft?.copy(subscription = subscriptionDraft)
+        )
 
         @Parcelize
         sealed class AuxiliaryState : Parcelable {
