@@ -61,9 +61,21 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onStoreObjectiveSwitchChanged(checked: Boolean) {
+        storeObjectiveSwitchState.update { checked }
+    }
+
     fun onSaveTapped() {
-        selectedId.value?.let { triggerEvent(ExitWithResult(ObjectiveResult(it))) }
-        // TODO analyticsTrackerWrapper.track(BLAZE_...)
+        viewState.value?.isStoreSelectionButtonToggled?.let {
+            blazeRepository.setStoreObjectiveEnabled(it)
+            if (it) {
+                blazeRepository.storeSelectedObjective(selectedId.value.orEmpty())
+            }
+        }
+        selectedId.value?.let {
+            triggerEvent(ExitWithResult(ObjectiveResult(it)))
+            )
+        }
     }
 
     data class ObjectiveViewState(
