@@ -379,10 +379,10 @@ class BlazeRepository @Inject constructor(
         }
     }
 
-    fun isStoreObjectiveEnabled() = appPrefsWrapper.blazeCampaignStoreObjectiveEnabled
+    fun isCampaignObjectiveSwitchChecked() = appPrefsWrapper.blazeCampaignObjectiveSwitchChecked
 
-    fun setStoreObjectiveEnabled(enabled: Boolean) {
-        appPrefsWrapper.blazeCampaignStoreObjectiveEnabled = enabled
+    fun setCampaignObjectiveSwitchChecked(enabled: Boolean) {
+        appPrefsWrapper.blazeCampaignObjectiveSwitchChecked = enabled
     }
 
     fun storeSelectedObjective(objectiveId: String) {

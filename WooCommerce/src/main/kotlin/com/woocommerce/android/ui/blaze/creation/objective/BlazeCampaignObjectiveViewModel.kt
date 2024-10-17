@@ -38,7 +38,7 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
     )
     private val storeObjectiveSwitchState = savedState.getStateFlow(
         scope = this,
-        initialValue = blazeRepository.isStoreObjectiveEnabled(),
+        initialValue = blazeRepository.isCampaignObjectiveSwitchChecked(),
         key = "storeObjectiveSwitchState"
     )
 
@@ -71,7 +71,7 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
 
     fun onSaveTapped() {
         viewState.value?.isStoreSelectionButtonToggled?.let {
-            blazeRepository.setStoreObjectiveEnabled(it)
+            blazeRepository.setCampaignObjectiveSwitchChecked(it)
             if (it) {
                 blazeRepository.storeSelectedObjective(selectedId.value.orEmpty())
             }

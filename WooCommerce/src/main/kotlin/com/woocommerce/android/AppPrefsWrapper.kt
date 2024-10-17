@@ -38,7 +38,7 @@ class AppPrefsWrapper @Inject constructor() {
 
     var blazeCampaignSelectedObjective by AppPrefs::blazeCampaignSelectedObjective
 
-    var blazeCampaignStoreObjectiveEnabled by AppPrefs::blazeCampaignStoreObjectiveEnabled
+    var blazeCampaignObjectiveSwitchChecked by AppPrefs::blazeCampaignObjectiveSwitchChecked
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
