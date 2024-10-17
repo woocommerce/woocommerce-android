@@ -4,11 +4,15 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_OBJECTIVE_SAVED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
+import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -20,15 +24,22 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BlazeCampaignObjectiveViewModel @Inject constructor(
-    blazeRepository: BlazeRepository,
-    savedStateHandle: SavedStateHandle
+    private val blazeRepository: BlazeRepository,
+    savedStateHandle: SavedStateHandle,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignObjectiveFragmentArgs by savedStateHandle.navArgs()
 
     private val selectedId = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = navArgs.selectedObjectiveId,
-        clazz = String::class.java
+        clazz = String::class.java,
+        key = "selectedId"
+    )
+    private val storeObjectiveSwitchState = savedState.getStateFlow(
+        scope = this,
+        initialValue = blazeRepository.isCampaignObjectiveSwitchChecked(),
+        key = "storeObjectiveSwitchState"
     )
 
     private val items: Flow<List<ObjectiveItem>> =
@@ -38,8 +49,12 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
             }
         }
 
-    val viewState = combine(items, selectedId) { items, selectedId ->
-        ObjectiveViewState(items = items, selectedItemId = selectedId)
+    val viewState = combine(
+        items,
+        selectedId,
+        storeObjectiveSwitchState
+    ) { items, selectedId, storeObjectiveSwitchState ->
+        ObjectiveViewState(items, selectedId, storeObjectiveSwitchState)
     }.asLiveData()
 
     fun onItemToggled(item: ObjectiveItem) {
@@ -50,15 +65,30 @@ class BlazeCampaignObjectiveViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onStoreObjectiveSwitchChanged(checked: Boolean) {
+        storeObjectiveSwitchState.update { checked }
+    }
+
     fun onSaveTapped() {
-        selectedId.value?.let { triggerEvent(ExitWithResult(ObjectiveResult(it))) }
-        // TODO analyticsTrackerWrapper.track(BLAZE_...)
+        viewState.value?.isStoreSelectionButtonToggled?.let {
+            blazeRepository.setCampaignObjectiveSwitchChecked(it)
+            if (it) {
+                blazeRepository.storeSelectedObjective(selectedId.value.orEmpty())
+            }
+        }
+        selectedId.value?.let {
+            triggerEvent(ExitWithResult(ObjectiveResult(it)))
+            analyticsTrackerWrapper.track(
+                stat = BLAZE_CAMPAIGN_OBJECTIVE_SAVED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_OBJECTIVE to it)
+            )
+        }
     }
 
     data class ObjectiveViewState(
         val items: List<ObjectiveItem>,
         val selectedItemId: String? = null,
-        val isStoreSelectionButtonToggled: Boolean = false,
+        val isStoreSelectionButtonToggled: Boolean = true,
     ) {
         val isSaveButtonEnabled: Boolean
             get() = !selectedItemId.isNullOrEmpty()

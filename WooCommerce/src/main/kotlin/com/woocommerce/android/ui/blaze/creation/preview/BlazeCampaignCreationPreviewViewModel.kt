@@ -182,7 +182,8 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         AnalyticsTracker.VALUE_EVERGREEN_CAMPAIGN
 
                     else -> AnalyticsTracker.VALUE_START_END_CAMPAIGN
-                }
+                },
+                AnalyticsTracker.KEY_BLAZE_OBJECTIVE to campaignDetails.value?.objectiveId,
             )
         )
         campaignDetails.value?.let {

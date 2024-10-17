@@ -379,6 +379,16 @@ class BlazeRepository @Inject constructor(
         }
     }
 
+    fun isCampaignObjectiveSwitchChecked() = appPrefsWrapper.blazeCampaignObjectiveSwitchChecked
+
+    fun setCampaignObjectiveSwitchChecked(enabled: Boolean) {
+        appPrefsWrapper.blazeCampaignObjectiveSwitchChecked = enabled
+    }
+
+    fun storeSelectedObjective(objectiveId: String) {
+        appPrefsWrapper.blazeCampaignSelectedObjective = objectiveId
+    }
+
     @Parcelize
     data class CampaignDetails(
         val productId: Long,
