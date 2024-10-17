@@ -127,7 +127,8 @@ object AppPrefs {
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
         AI_PRODUCT_CREATION_SURVEY_DISMISSED,
         CUSTOM_FIELDS_TOP_BANNER_DISMISSED,
-        BLAZE_CAMPAIGN_SELECTED_OBJECTIVE
+        BLAZE_CAMPAIGN_SELECTED_OBJECTIVE,
+        BLAZE_CAMPAIGN_STORE_OBJECTIVE_ENABLED
     }
 
     /**
@@ -276,6 +277,10 @@ object AppPrefs {
     var blazeCampaignSelectedObjective: String
         get() = getString(DeletablePrefKey.BLAZE_CAMPAIGN_SELECTED_OBJECTIVE, "")
         set(value) = setString(DeletablePrefKey.BLAZE_CAMPAIGN_SELECTED_OBJECTIVE, value)
+
+    var blazeCampaignStoreObjectiveEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.BLAZE_CAMPAIGN_STORE_OBJECTIVE_ENABLED, true)
+        set(value) = setBoolean(DeletablePrefKey.BLAZE_CAMPAIGN_STORE_OBJECTIVE_ENABLED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

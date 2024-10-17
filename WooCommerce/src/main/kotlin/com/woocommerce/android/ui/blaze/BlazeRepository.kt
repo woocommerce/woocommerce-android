@@ -379,6 +379,16 @@ class BlazeRepository @Inject constructor(
         }
     }
 
+    fun isStoreObjectiveEnabled() = appPrefsWrapper.blazeCampaignStoreObjectiveEnabled
+
+    fun setStoreObjectiveEnabled(enabled: Boolean) {
+        appPrefsWrapper.blazeCampaignStoreObjectiveEnabled = enabled
+    }
+
+    fun storeSelectedObjective(objectiveId: String) {
+        appPrefsWrapper.blazeCampaignSelectedObjective = objectiveId
+    }
+
     @Parcelize
     data class CampaignDetails(
         val productId: Long,
