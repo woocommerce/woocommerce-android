@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 20.8
 -----
-
+- [*] Added objective selection in the blaze campaign creation flow [https://github.com/woocommerce/woocommerce-android/pull/12781]
 
 20.7
 -----
