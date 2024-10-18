@@ -5,6 +5,7 @@
 -----
 - [*] [Payments] Fix learn more link for Pay in Person option in payments settings [https://github.com/woocommerce/woocommerce-android/pull/12786]
 - [*] Added objective selection in the blaze campaign creation flow [https://github.com/woocommerce/woocommerce-android/pull/12781]
+- [Internal] WordPress.com black-flagged websites can now be accessed from the app using site credentials [https://github.com/woocommerce/woocommerce-android/issues/12031]
 
 20.7
 -----
