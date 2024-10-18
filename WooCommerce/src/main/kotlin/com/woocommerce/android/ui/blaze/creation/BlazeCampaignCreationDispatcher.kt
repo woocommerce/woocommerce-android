@@ -147,9 +147,6 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
     }
 
     private fun BaseFragment.showProductSelector() {
-        val navGraph = findNavController().graph.findNode(R.id.nav_graph_blaze_campaign_creation) as NavGraph
-        navGraph.setStartDestination(R.id.nav_graph_product_selector)
-
         findNavController().navigateToBlazeGraph(
             startDestination = R.id.nav_graph_product_selector,
             bundle = ProductSelectorFragmentArgs(
@@ -166,7 +163,10 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         startDestination: Int,
         bundle: android.os.Bundle? = null,
     ) {
-        val navGraph = graph.findNode(R.id.nav_graph_blaze_campaign_creation) as NavGraph
+        // Retrieve the parent navgraph.
+        // currentDestination should never be null, but we're being cautious here by falling back to the main graph.
+        val parentGraph = currentDestination?.parent ?: graph
+        val navGraph = parentGraph.findNode(R.id.nav_graph_blaze_campaign_creation) as NavGraph
         navGraph.setStartDestination(startDestination)
 
         navigateSafely(

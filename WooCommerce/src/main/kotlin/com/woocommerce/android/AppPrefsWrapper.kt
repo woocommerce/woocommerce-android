@@ -38,6 +38,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var blazeCampaignSelectedObjective by AppPrefs::blazeCampaignSelectedObjective
 
+    var blazeCampaignObjectiveSwitchChecked by AppPrefs::blazeCampaignObjectiveSwitchChecked
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =

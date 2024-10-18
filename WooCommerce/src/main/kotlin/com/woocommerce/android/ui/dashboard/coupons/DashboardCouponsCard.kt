@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.navOptions
@@ -36,7 +37,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.coupons.CouponListFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -49,13 +49,13 @@ import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.Da
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import java.util.Date
+import java.util.*
 
 @Composable
 fun DashboardCouponsCard(
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    viewModel: DashboardCouponsViewModel = viewModelWithFactory { factory: DashboardCouponsViewModel.Factory ->
+    viewModel: DashboardCouponsViewModel = hiltViewModel { factory: DashboardCouponsViewModel.Factory ->
         factory.create(parentViewModel)
     }
 ) {

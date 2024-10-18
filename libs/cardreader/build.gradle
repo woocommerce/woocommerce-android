@@ -1,7 +1,7 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.parcelize'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -27,16 +27,16 @@ android {
 }
 
 dependencies {
-    implementation "com.stripe:stripeterminal-localmobile:$stripeTerminalVersion"
-    implementation "com.stripe:stripeterminal-core:$stripeTerminalVersion"
+    implementation(libs.stripe.terminal.localmobile)
+    implementation(libs.stripe.terminal.core)
 
     // Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
-    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
-    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
-    testImplementation "org.assertj:assertj-core:$assertjVersion"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
