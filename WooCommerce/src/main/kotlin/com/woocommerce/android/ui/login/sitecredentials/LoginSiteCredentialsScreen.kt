@@ -17,7 +17,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -36,7 +35,6 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.component.getText
-import com.woocommerce.android.ui.compose.component.web.WCWebView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -50,8 +48,7 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onResetPasswordClick = viewModel::onResetPasswordClick,
             onBackClick = viewModel::onBackClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
-            onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-            onWebAuthorizationUrlLoaded = viewModel::onWebAuthorizationUrlLoaded
+            onErrorDialogDismissed = viewModel::onErrorDialogDismissed
         )
     }
 }
@@ -66,7 +63,6 @@ fun LoginSiteCredentialsScreen(
     onBackClick: () -> Unit,
     onHelpButtonClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
-    onWebAuthorizationUrlLoaded: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -74,204 +70,128 @@ fun LoginSiteCredentialsScreen(
                 title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onBackClick,
                 onHelpButtonClick = onHelpButtonClick,
-                navigationIcon = if (viewState is LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState) {
-                    Icons.Filled.Clear
-                } else {
-                    Icons.AutoMirrored.Filled.ArrowBack
-                }
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         }
     ) { paddingValues ->
-        when (viewState) {
-            is LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState -> NativeLoginForm(
-                viewState = viewState,
-                onUsernameChanged = onUsernameChanged,
-                onPasswordChanged = onPasswordChanged,
-                onContinueClick = onContinueClick,
-                onResetPasswordClick = onResetPasswordClick,
-                onErrorDialogDismissed = onErrorDialogDismissed,
-                onHelpButtonClick = onHelpButtonClick,
-                modifier = Modifier.padding(paddingValues)
-            )
-
-            is LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState -> WebAuthorizationScreen(
-                viewState = viewState,
-                onPageFinished = onWebAuthorizationUrlLoaded,
-                onErrorDialogDismissed = {
-                    onErrorDialogDismissed()
-                    onBackClick()
-                },
-                modifier = Modifier.padding(paddingValues)
-            )
-        }
-    }
-}
-
-@Composable
-private fun NativeLoginForm(
-    viewState: LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState,
-    onUsernameChanged: (String) -> Unit,
-    onPasswordChanged: (String) -> Unit,
-    onContinueClick: () -> Unit,
-    onResetPasswordClick: () -> Unit,
-    onErrorDialogDismissed: () -> Unit,
-    onHelpButtonClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .background(MaterialTheme.colors.surface)
-            .fillMaxSize(),
-    ) {
         Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(dimensionResource(id = R.dimen.major_100)),
+                .padding(paddingValues)
+                .background(MaterialTheme.colors.surface)
+                .fillMaxSize(),
         ) {
-            Text(
-                text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl),
-                style = MaterialTheme.typography.body2
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            WCOutlinedTextField(
-                value = viewState.username,
-                onValueChange = onUsernameChanged,
-                label = stringResource(id = R.string.username),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-            )
-            WCPasswordField(
-                value = viewState.password,
-                onValueChange = onPasswordChanged,
-                label = stringResource(id = R.string.password),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = { onContinueClick() }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(dimensionResource(id = R.dimen.major_100)),
+            ) {
+                Text(
+                    text = stringResource(id = R.string.enter_credentials_for_site, viewState.siteUrl),
+                    style = MaterialTheme.typography.body2
                 )
-            )
-            WCTextButton(onClick = onResetPasswordClick) {
-                Text(text = stringResource(id = R.string.reset_your_password))
-            }
-        }
-
-        WCColoredButton(
-            onClick = onContinueClick,
-            enabled = viewState.isValid,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-        ) {
-            Text(
-                text = stringResource(id = R.string.continue_button)
-            )
-        }
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-    }
-
-    if (viewState.errorDialogMessage != null) {
-        AlertDialog(
-            text = {
-                Text(text = viewState.errorDialogMessage.getText())
-            },
-            onDismissRequest = onErrorDialogDismissed,
-            buttons = {
-                Column(
-                    horizontalAlignment = Alignment.End,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    WCTextButton(
-                        onClick = {
-                            onErrorDialogDismissed()
-                            onHelpButtonClick()
-                        }
-                    ) {
-                        Text(text = stringResource(id = R.string.login_site_address_more_help))
-                    }
-                    WCTextButton(
-                        onClick = onErrorDialogDismissed
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.cancel),
-                            textAlign = TextAlign.End
-                        )
-                    }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                WCOutlinedTextField(
+                    value = viewState.username,
+                    onValueChange = onUsernameChanged,
+                    label = stringResource(id = R.string.username),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                )
+                WCPasswordField(
+                    value = viewState.password,
+                    onValueChange = onPasswordChanged,
+                    label = stringResource(id = R.string.password),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = { onContinueClick() }
+                    )
+                )
+                WCTextButton(onClick = onResetPasswordClick) {
+                    Text(text = stringResource(id = R.string.reset_your_password))
                 }
             }
-        )
-    }
 
-    if (viewState.loadingMessage != null) {
-        ProgressDialog(title = "", subtitle = stringResource(id = viewState.loadingMessage))
-    }
-}
-
-@Composable
-private fun WebAuthorizationScreen(
-    viewState: LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState,
-    onPageFinished: (String) -> Unit,
-    onErrorDialogDismissed: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    when {
-        viewState.loadingMessage != null -> {
-            ProgressDialog(title = "", subtitle = stringResource(id = viewState.loadingMessage))
+            WCColoredButton(
+                onClick = onContinueClick,
+                enabled = viewState.isValid,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Text(
+                    text = stringResource(id = R.string.continue_button)
+                )
+            }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
 
-        viewState.errorDialogMessage != null -> {
+        if (viewState.errorDialogMessage != null) {
             AlertDialog(
                 text = {
                     Text(text = viewState.errorDialogMessage.getText())
                 },
                 onDismissRequest = onErrorDialogDismissed,
-                confirmButton = {
-                    WCTextButton(
-                        onClick = onErrorDialogDismissed
+                buttons = {
+                    Column(
+                        horizontalAlignment = Alignment.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                     ) {
-                        Text(text = stringResource(id = android.R.string.ok))
+                        WCTextButton(
+                            onClick = {
+                                onErrorDialogDismissed()
+                                onHelpButtonClick()
+                            }
+                        ) {
+                            Text(text = stringResource(id = R.string.login_site_address_more_help))
+                        }
+                        WCTextButton(
+                            onClick = onErrorDialogDismissed
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.cancel),
+                                textAlign = TextAlign.End
+                            )
+                        }
                     }
                 }
             )
         }
 
-        viewState.authorizationUrl != null -> {
-            WCWebView(
-                url = viewState.authorizationUrl,
-                userAgent = viewState.userAgent,
-                onPageFinished = onPageFinished,
-                modifier = modifier
-            )
+        if (viewState.loadingMessage != null) {
+            ProgressDialog(title = "", subtitle = stringResource(id = viewState.loadingMessage))
         }
     }
 }
 
 @Preview
 @Composable
-private fun NativeLoginFormPreview() {
+private fun LoginSiteCredentialsScreenPreview() {
     WooThemeWithBackground {
-        NativeLoginForm(
-            viewState = LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState(
+        LoginSiteCredentialsScreen(
+            viewState = LoginSiteCredentialsViewModel.ViewState(
                 siteUrl = "https://wordpress.com"
             ),
             onUsernameChanged = {},
             onPasswordChanged = {},
             onContinueClick = {},
             onResetPasswordClick = {},
-            onErrorDialogDismissed = {},
-            onHelpButtonClick = {}
+            onBackClick = {},
+            onHelpButtonClick = {},
+            onErrorDialogDismissed = {}
         )
     }
 }
 
 @Preview
 @Composable
-private fun NativeLoginFormWithErrorDialogPreview() {
+private fun LoginSiteCredentialsScreenWithErrorPreview() {
     WooThemeWithBackground {
-        NativeLoginForm(
-            viewState = LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState(
+        LoginSiteCredentialsScreen(
+            viewState = LoginSiteCredentialsViewModel.ViewState(
                 siteUrl = "https://wordpress.com",
                 errorDialogMessage = UiString.UiStringRes(R.string.login_site_credentials_fetching_site_failed)
             ),
@@ -279,8 +199,9 @@ private fun NativeLoginFormWithErrorDialogPreview() {
             onPasswordChanged = {},
             onContinueClick = {},
             onResetPasswordClick = {},
-            onErrorDialogDismissed = {},
-            onHelpButtonClick = {}
+            onBackClick = {},
+            onHelpButtonClick = {},
+            onErrorDialogDismissed = {}
         )
     }
 }

@@ -307,4 +307,17 @@ class DashboardViewModelTest : BaseUnitTest() {
         val newWidgetsCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard }
         assertThat(newWidgetsCard.isVisible).isFalse()
     }
+
+    @Test
+    fun `given site is WPCom suspended, when visitor stats placeholder, then hide Jetpack benefits banner`() = testBlocking {
+        setup {
+            whenever(selectedSite.observe())
+                .thenReturn(flowOf(SiteModel().apply { origin = SiteModel.ORIGIN_WPAPI }))
+            whenever(appPrefsWrapper.isSiteWPComSuspended).thenReturn(true)
+        }
+
+        val jetpackBenefitsBannerState = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+        assertThat(jetpackBenefitsBannerState).isNull()
+    }
 }

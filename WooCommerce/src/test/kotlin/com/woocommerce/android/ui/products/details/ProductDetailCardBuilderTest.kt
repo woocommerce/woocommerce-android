@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
@@ -83,7 +84,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 height = 0F
             )
 
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
         Assertions.assertThat(cards).isNotEmpty
 
         cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
@@ -110,7 +111,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             )
 
         var foundAttributesCard = false
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
         Assertions.assertThat(cards).isNotEmpty
 
         cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
@@ -134,7 +135,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             )
 
         var foundQuantityRulesCard = false
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
         Assertions.assertThat(cards).isNotEmpty
 
         cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
@@ -156,7 +157,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn false
 
         productStub = ProductTestUtils.generateProduct(productId = 1L)
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
 
         val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
         val customFieldsCard = properties.find {
@@ -171,7 +172,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn true
 
         productStub = ProductTestUtils.generateProduct(productId = 1L)
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
 
         val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
         val customFieldsCard = properties.find {
@@ -184,7 +185,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     @Test
     fun `when a new is not saved on the server, then hide the custom fields card`() = testBlocking {
         productStub = ProductTestUtils.generateProduct(productId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
 
         val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
         val customFieldsCard = properties.find {
