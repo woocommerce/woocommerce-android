@@ -1,0 +1,2 @@
+20.7:
+Dalam pembaruan ini, kami telah meningkatkan kemampuan pemindai barcode agar dapat membaca kode dengan lebih akurat dan menangani masalah terkait kupon yang tiba-tiba hilang ketika pesanan dibuat. Penjual kini dapat melihat dan mengedit kolom khusus untuk produk dan pesanan langsung di aplikasi. Kami juga telah menangani error saat login dan memperbaiki instruksi "Tap to Pay" agar lebih mudah dipahami. Nikmati peningkatan ini dan banyak keunggulan lain!

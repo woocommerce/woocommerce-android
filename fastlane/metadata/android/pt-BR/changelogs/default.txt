@@ -1,0 +1,2 @@
+20.7:
+Nesta atualização, aprimoramos a precisão da leitura de código de barras e resolvemos problemas com cupons desaparecendo do nada durante a criação de um pedido. Agora, os comerciantes podem ver e editar campos personalizados de produtos e pedidos diretamente no app. Também corrigimos erros de login e deixamos as instruções do "Tap to Pay" mais claras. Aproveite essas melhorias e muito mais!
