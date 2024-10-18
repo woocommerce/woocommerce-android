@@ -42,14 +42,14 @@ FROZEN_STRINGS_PATH = File.join(Dir.pwd, 'resources', 'values', 'strings.xml')
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
     name: 'Login Library',
-    import_key: 'wordPressLoginVersion',
+    import_key: 'wordpress-login',
     repository: 'wordpress-mobile/WordPress-Login-Flow-Android',
     strings_file_path: 'WordPressLoginFlow/src/main/res/values/strings.xml',
     exclusions: ['default_web_client_id']
   },
   {
     name: 'About Library',
-    import_key: 'aboutAutomatticVersion', # key used in build.gradle to reference the version
+    import_key: 'automattic-about', # key used in build.gradle to reference the version
     repository: 'Automattic/about-automattic-android',
     strings_file_path: 'library/src/main/res/values/strings.xml',
     exclusions: []
