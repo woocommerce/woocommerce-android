@@ -159,7 +159,13 @@ internal class ConnectionManager(
         connectedScope.launch {
             terminalListenerImpl.readerStatus.collect { connectionStatus ->
                 if (connectionStatus is CardReaderStatus.NotConnected) {
-                    bluetoothReaderListener.resetConnectionState()
+                    if (connectionStatus.errorMessage != null) {
+                        if (connectionStatus.errorMessage.contains("battery")) {
+                            //
+                        } else {
+                            bluetoothReaderListener.resetConnectionState()
+                        }
+                    }
                     connectedScope.cancel()
                 }
             }
