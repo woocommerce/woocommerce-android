@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
@@ -40,7 +41,6 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -56,7 +56,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 fun DashboardReviewsCard(
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    viewModel: DashboardReviewsViewModel = viewModelWithFactory { factory: DashboardReviewsViewModel.Factory ->
+    viewModel: DashboardReviewsViewModel = hiltViewModel { factory: DashboardReviewsViewModel.Factory ->
         factory.create(parentViewModel = parentViewModel)
     }
 ) {

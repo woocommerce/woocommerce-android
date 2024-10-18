@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -214,7 +215,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
+            whenever(productRepo.updateProduct(any<Product>())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_success_snackbar,
@@ -248,7 +249,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
+            whenever(productRepo.updateProduct(any<Product>())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_success_snackbar,
@@ -280,7 +281,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
             whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
             whenever(productRepo.getProduct(productId)).thenReturn(product)
-            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
+            whenever(productRepo.updateProduct(any<Product>())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     eq(R.string.scan_to_update_inventory_success_snackbar),

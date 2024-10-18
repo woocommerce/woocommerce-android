@@ -618,6 +618,7 @@ class AnalyticsTracker private constructor(
         const val KEY_BLAZE_IS_AI_CONTENT = "is_ai_suggested_ad_content"
         const val KEY_BLAZE_ERROR = "blaze_creation_error"
         const val KEY_BLAZE_CAMPAIGN_TYPE = "campaign_type"
+        const val KEY_BLAZE_OBJECTIVE = "objective"
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"

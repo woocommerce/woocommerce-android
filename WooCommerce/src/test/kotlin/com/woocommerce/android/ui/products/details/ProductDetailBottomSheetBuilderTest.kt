@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.details
 
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -39,7 +40,7 @@ class ProductDetailBottomSheetBuilderTest : BaseUnitTest() {
         whenever(customFieldsRepository.hasDisplayableCustomFields(any())).thenReturn(true)
 
         val product = ProductTestUtils.generateProduct(productId = 1L)
-        val result = sut.buildBottomSheetList(product)
+        val result = sut.buildBottomSheetList(ProductAggregate(product))
 
         assertThat(result).noneMatch {
             it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
@@ -51,7 +52,7 @@ class ProductDetailBottomSheetBuilderTest : BaseUnitTest() {
         whenever(customFieldsRepository.hasDisplayableCustomFields(any())).thenReturn(false)
 
         val product = ProductTestUtils.generateProduct(productId = 1L)
-        val result = sut.buildBottomSheetList(product)
+        val result = sut.buildBottomSheetList(ProductAggregate(product))
 
         val customFieldsItem = result.single {
             it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
@@ -62,7 +63,7 @@ class ProductDetailBottomSheetBuilderTest : BaseUnitTest() {
     @Test
     fun `when product is not saved in server, then hide the custom fields item`() = testBlocking {
         val product = ProductTestUtils.generateProduct(productId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
-        val result = sut.buildBottomSheetList(product)
+        val result = sut.buildBottomSheetList(ProductAggregate(product))
 
         assertThat(result).noneMatch {
             it.type == ProductDetailBottomSheetBuilder.ProductDetailBottomSheetType.CUSTOM_FIELDS
