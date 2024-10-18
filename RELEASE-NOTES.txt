@@ -8,6 +8,7 @@
 
 20.7
 -----
+- [Internal] Fetch remote FF on site change [https://github.com/woocommerce/woocommerce-android/pull/12751]
 - [**] Improve barcode scanner reading accuracy [https://github.com/woocommerce/woocommerce-android/pull/12673]
 - [Internal] AI product creation banner is removed [https://github.com/woocommerce/woocommerce-android/pull/12705]
 - [*] [Login] Fix an issue where the app doesn't show the correct error screen when application passwords are disabled [https://github.com/woocommerce/woocommerce-android/pull/12717]

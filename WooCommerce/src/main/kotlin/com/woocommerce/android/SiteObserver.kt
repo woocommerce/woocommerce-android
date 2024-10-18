@@ -1,7 +1,10 @@
 package com.woocommerce.android
 
+import android.app.Application
+import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.environment.EnvironmentRepository
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.dispatchAndAwait
@@ -31,6 +34,8 @@ class SiteObserver @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val environmentRepository: EnvironmentRepository,
     private val wearableConnectionRepository: WearableConnectionRepository,
+    private val featureFlagRepository: WPComRemoteFeatureFlagRepository,
+    private val application: Application,
     private val dispatcher: Dispatcher
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
@@ -46,6 +51,8 @@ class SiteObserver @Inject constructor(
                     launch { fetchOrderStatusOptions(site) }
 
                     launch { sendSiteDataToWearable(site) }
+
+                    launch { fetchRemoteFeatureFlags() }
                 }
             }
     }
@@ -76,5 +83,10 @@ class SiteObserver @Inject constructor(
     private fun sendSiteDataToWearable(site: SiteModel) {
         WooLog.d(WooLog.T.UTILS, "Sending site ${site.name} to connected Wearables")
         wearableConnectionRepository.sendSiteData(site)
+    }
+
+    private suspend fun fetchRemoteFeatureFlags() {
+        WooLog.d(UTILS, "Fetching remote feature flags")
+        featureFlagRepository.fetchAndCacheFeatureFlags(PackageUtils.getVersionName(application))
     }
 }
