@@ -1253,6 +1253,8 @@
     <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY Ground Package - Aerosols, spray disinfectants, spray paint, hair spray, propane, butane, cleaning products, etc. - Fragrances, nail polish, nail polish remover, solvents, hand sanitizer, rubbing alcohol, ethanol base products, etc. - Other limited quantity surface materials (cosmetics, cleaning products, paints, etc.)</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Small Quantity Provision Package (markings required)</string>
 
+    <string name="shipping_label_package_details_items_weight_price">%1$s  ·  %2$s</string>
+    <string name="shipping_label_package_details_items_expand_content_description">Collapse/expand items card</string>
     <!--
     Shipping label package creation labels
     -->
