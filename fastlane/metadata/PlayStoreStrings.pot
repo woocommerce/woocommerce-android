@@ -16,16 +16,16 @@ msgid "In this update, we’ve made a few small bug fixes and enhancements to en
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_208"
+msgid ""
+"20.8:\n"
+"We’ve improved your WooCommerce app experience with some key updates! The "Learn More" link for the Pay in Person option in payment settings is now fixed, and we've streamlined the Blaze campaign creation process by adding an objective selection feature. Update now to enjoy a smoother workflow!\n"
+msgstr ""
+
 msgctxt "release_note_207"
 msgid ""
 "20.7:\n"
 "In this update, we’ve improved the barcode scanner for more accurate readings and resolved issues with coupons unexpectedly disappearing during order creation. Merchants can now view and edit custom fields for products and orders directly in the app. We also fixed login errors and refined the "Tap to Pay" instructions for better clarity. Enjoy these enhancements and more!\n"
-msgstr ""
-
-msgctxt "release_note_206"
-msgid ""
-"20.6:\n"
-"We're excited to bring you new features in our WooCommerce app! Users can now set a password to protect products when signed in with site credentials, enhancing security for WooCommerce 8.1.0 and above. Also, promoting a Blaze product from the campaign detail will now trigger a smoother native flow. Enjoy the updates!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
