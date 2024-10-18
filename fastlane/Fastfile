@@ -740,7 +740,7 @@ platform :android do
         import_key: lib[:import_key],
         repository: lib[:repository],
         file_path: lib[:strings_file_path],
-        build_gradle_path: BUILD_GRADLE_PATH
+        build_gradle_path: VERSIONS_CATALOG_FILE
       )
 
       if download_path.nil?
