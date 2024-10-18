@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -54,7 +55,8 @@ fun WooPosProductInfoDialog(
                 .padding(40.dp.toAdaptivePadding())
                 .semantics(mergeDescendants = true) {
                     contentDescription = dialogContentDescription
-                },
+                }
+                .testTag("woo_pos_product_info_dialog"),
             contentAlignment = Alignment.Center
         ) {
             ConstraintLayout(

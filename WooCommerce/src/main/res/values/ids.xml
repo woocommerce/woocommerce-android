@@ -3,6 +3,7 @@
     <item type="id" name="stats_tab_layout" />
     <item type="id" name="more_menu_compose_view" />
     <item type="id" name="product_selector_compose_view" />
+    <item type="id" name="pos_mode_compose_view" />
     <item type="id" name="product_configuration_view" />
     <item type="id" name="analytics_hub_settings_view" />
 </resources>

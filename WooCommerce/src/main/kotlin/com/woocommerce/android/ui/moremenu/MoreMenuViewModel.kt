@@ -319,7 +319,8 @@ class MoreMenuViewModel @Inject constructor(
             mapOf(VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE to isPaymentBadgeVisible().toString())
         )
         moreMenuNewFeatureHandler.markPaymentsIconAsClicked()
-        triggerEvent(MoreMenuEvent.ViewPayments)
+//        triggerEvent(MoreMenuEvent.ViewPayments)
+        triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
     }
 
     private fun onPromoteProductsWithGoogle() {
