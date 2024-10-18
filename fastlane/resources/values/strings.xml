@@ -3917,6 +3917,14 @@
     <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Add</string>
     <string name="blaze_campaign_preview_missing_objective_dialog_text">Please select an objective for the Blaze campaign</string>
     <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Select objective</string>
+
+    <!--
+    Blaze campaign objective screen
+    -->
+    <string name="blaze_campaign_objective_select_objective_label">Select objective %s</string>
+    <string name="blaze_campaign_objective_good_for"><![CDATA[<b>Good for:</b> %s]]></string>
+    <string name="blaze_campaign_objective_save_selection_switch_label">Save my selection for future campaigns</string>
+
     <!--
     Blaze campaign budget screen
     -->
