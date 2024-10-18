@@ -1,0 +1,2 @@
+20.7:
+I den här uppdateringen har vi förbättrat streckkodsläsaren för mer exakta avläsningar och åtgärdat problemet med att rabattkoder oväntat kunde försvinna under beställningsskapandet. Handlare kan nu visa och redigera anpassade fält för produkter och beställningar direkt i appen. Vi har även åtgärdat ett antal inloggningsfel och förfinat instruktionerna för "Tryck för att betala" för ökad tydlighet. Ta del av dessa förbättringar och mycket mer.

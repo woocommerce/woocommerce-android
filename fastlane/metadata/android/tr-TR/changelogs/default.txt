@@ -1,0 +1,2 @@
+20.7:
+Bu güncellemede, barkod tarayıcısının daha doğru okuması için iyileştirdik ve sipariş oluşturma sırasında kuponların beklenmedik şekilde kaybolmasıyla ilgili sorunları çözdük. Satıcılar artık ürünler ve siparişler için özel alanları doğrudan uygulamada görüntüleyebilir ve düzenleyebilir. Ayrıca oturum açma hatalarını düzelttik ve daha iyi bir netlik için "Tap to Pay" talimatlarını iyileştirdik. Bu geliştirmelerin ve daha fazlasının keyfini çıkarın!

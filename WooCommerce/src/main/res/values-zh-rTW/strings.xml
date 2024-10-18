@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-01 09:54:05+0000
+Translation-Revision-Date: 2024-10-17 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">找不到自訂欄位</string>
+    <string name="custom_fields_empty_view_message">自訂欄位為可留空的中繼資料，可以顯示其他資訊或自訂商店的購物體驗。</string>
+    <string name="blaze_campaign_created_success_feedback_request">Blaze 帶給你怎樣的體驗呢</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">選取目標</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">請選取 Blaze 行銷活動目標</string>
+    <string name="blaze_campaign_preview_details_choose_objective">選擇行銷活動目標</string>
+    <string name="blaze_campaign_preview_details_objective">行銷活動目標</string>
+    <string name="more_menu_button_woo_pos_description">在實體店面接受付款</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. 顧客在你的手機背後感應其卡片。</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">文字</string>
     <string name="custom_fields_editor_toggle_accessibility_description">切換文字與 HTML 編輯器</string>
@@ -218,7 +227,6 @@ Language: zh_TW
     <string name="dashboard_product_stock_wcanalytics_inactive_title">無法載入商品庫存報告</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">過去 30 天沒有賣出任何商品</string>
     <string name="dashboard_product_stock_sales_last_30_days">過去 30 天賣出 %d 件商品</string>
-    <string name="more_menu_button_woo_pos_description">將應用程式充當收銀機</string>
     <string name="more_menu_button_woo_pos">銷售時點情報系統模式</string>
     <string name="product_stock_status_low_stock">庫存不足</string>
     <string name="order_detail_shipping_header">運送方式</string>
@@ -729,7 +737,6 @@ Language: zh_TW
     <string name="blaze_campaign_title">Blaze 行銷活動</string>
     <string name="card_reader_tap_to_pay_about_copyright">「感應支付符號」為 EMVCo, LLC 所擁有，並經其許可所使用的商標。</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. 在你看到「完成」核取記號後，你的商店將處理付款並完成交易。</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. 顧客手持卡片，以水平方向置於你手機的感應支付符號上方。</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. 向顧客展示你的手機。</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. 點選「收取款項」並選擇「輕觸付款」。</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. 建立訂單</string>

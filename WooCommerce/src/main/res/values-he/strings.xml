@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-01 14:54:03+0000
+Translation-Revision-Date: 2024-10-15 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">לא נמצאו שדות מותאמים</string>
+    <string name="custom_fields_empty_view_message">שדות מותאמים הם מטא-נתונים אופציונליים שיכולים להציג מידע נוסף או להתאים אישית את חוויית הקניות בחנות שלך.</string>
+    <string name="blaze_campaign_created_success_feedback_request">איך הייתה החוויה שלך עם Blaze</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">לבחור מטרה</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">יש לבחור מטרה לקמפיין של Blaze</string>
+    <string name="blaze_campaign_preview_details_choose_objective">יש לבחור את מטרת הקמפיין</string>
+    <string name="blaze_campaign_preview_details_objective">מטרת הקמפיין</string>
+    <string name="more_menu_button_woo_pos_description">לקבל תשלומים בחנות פיזית</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. הלקוח מצמיד את הכרטיס לגב הטלפון שלך.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">טקסט</string>
     <string name="custom_fields_editor_toggle_accessibility_description">להחליף בין עורכים של טקסט ו-HTML</string>
@@ -218,7 +227,6 @@ Language: he_IL
     <string name="dashboard_product_stock_wcanalytics_inactive_title">אין אפשרות לטעון את דוחות המלאי של המוצר</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">אין פריטים שנמכרו ב-30 הימים האחרונים</string>
     <string name="dashboard_product_stock_sales_last_30_days">%d פריטים נמכרו ב-30 הימים האחרונים</string>
-    <string name="more_menu_button_woo_pos_description">להשתמש באפליקציה כקופה רושמת</string>
     <string name="more_menu_button_woo_pos">מצב \'נקודת מכירה\'</string>
     <string name="product_stock_status_low_stock">מלאי מוגבל</string>
     <string name="order_detail_shipping_header">משלוח</string>
@@ -729,7 +737,6 @@ Language: he_IL
     <string name="blaze_campaign_title">קמפיין של Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">סמל \'ללא מגע\' הוא סימן מסחרי בבעלות EMVCo, LLC.‎ ובשימוש לפי הרשאתה.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. לאחר שיופיע הסימון \"בוצע\", החנות תעבד את התשלום והעסקה תושלם.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. הלקוח יחזיק את הכרטיס אופקית מעל החלק העליון של הטלפון מעל הסימן של \'ללא מגע\'.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. יש לתת ללקוח את הטלפון.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. יש להקיש על \"Collect Payment\" ולבחור באפשרות \"Tap To Pay\".</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. יש ליצור הזמנה</string>

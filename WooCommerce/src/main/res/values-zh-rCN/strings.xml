@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-01 09:54:04+0000
+Translation-Revision-Date: 2024-10-15 09:54:07+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">未找到自定义字段</string>
+    <string name="custom_fields_empty_view_message">自定义字段是可选的元数据，用于显示额外信息或自定义您商店的购物体验。</string>
+    <string name="blaze_campaign_created_success_feedback_request">使用 Blaze 的体验如何</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">选择目标</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">请为 Blaze 广告活动选择一个目标</string>
+    <string name="blaze_campaign_preview_details_choose_objective">选择广告活动目标</string>
+    <string name="blaze_campaign_preview_details_objective">广告活动目标</string>
+    <string name="more_menu_button_woo_pos_description">在实体店接受付款</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. 您的客户用其卡片轻触您的手机背面。</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">文本</string>
     <string name="custom_fields_editor_toggle_accessibility_description">在文本和 HTML 编辑器之间切换</string>
@@ -218,7 +227,6 @@ Language: zh_CN
     <string name="dashboard_product_stock_wcanalytics_inactive_title">无法加载产品库存报告</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">最近 30 天内未售出任何商品</string>
     <string name="dashboard_product_stock_sales_last_30_days">最近 30 天内售出 %d 件商品</string>
-    <string name="more_menu_button_woo_pos_description">将应用程序作为收银机使用</string>
     <string name="more_menu_button_woo_pos">销售点模式</string>
     <string name="product_stock_status_low_stock">库存不足</string>
     <string name="order_detail_shipping_header">配送</string>
@@ -729,7 +737,6 @@ Language: zh_CN
     <string name="blaze_campaign_title">Blaze 广告活动</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol（非接触式标志）是 EMVCo, LLC 的商标，经其许可方能使用。</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. 当您看到“完成”复选标记后，商店将处理付款，交易完成。</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. 客户将其银行卡平放在您手机顶部的非接触式标志上方。</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. 将您的手机展示给客户。</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. 轻点“收款”并选择“点按付款”。</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. 创建订单</string>
