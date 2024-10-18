@@ -13,7 +13,7 @@ MOBILE_APP = 'WooCommerce'
 WEAR_APP = 'WooCommerce-Wear'
 
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
-BUILD_GRADLE_PATH = File.join(PROJECT_ROOT_FOLDER, 'build.gradle')
+BUILD_GRADLE_PATH = File.join(PROJECT_ROOT_FOLDER, 'gradle/libs.versions.toml')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 PROTOTYPE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 # The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
