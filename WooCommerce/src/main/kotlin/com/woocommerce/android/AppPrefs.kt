@@ -128,7 +128,8 @@ object AppPrefs {
         AI_PRODUCT_CREATION_SURVEY_DISMISSED,
         CUSTOM_FIELDS_TOP_BANNER_DISMISSED,
         BLAZE_CAMPAIGN_SELECTED_OBJECTIVE,
-        BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED
+        BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED,
+        IS_SITE_WPCOM_SUSPENDED
     }
 
     /**
@@ -281,6 +282,10 @@ object AppPrefs {
     var blazeCampaignObjectiveSwitchChecked: Boolean
         get() = getBoolean(DeletablePrefKey.BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED, true)
         set(value) = setBoolean(DeletablePrefKey.BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED, value)
+
+    var isSiteWPComSuspended: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
