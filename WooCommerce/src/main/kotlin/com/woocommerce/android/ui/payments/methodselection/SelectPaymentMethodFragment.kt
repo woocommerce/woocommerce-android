@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -244,8 +245,11 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         // We should pop the back stack to show the [OrderDetailsFragment].
                         findNavController().popBackStack()
                     } else {
+                        if (isFragmentInBackStack(R.id.selectPaymentMethodFragment)) {
+                            findNavController().popBackStack()
+                        }
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderList().run {
-                            findNavController().navigateSafely(this)
+                            findNavController().navigateSafely(this, true)
                         }
                     }
                 }
@@ -302,6 +306,16 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     )
                 }
             }
+        }
+    }
+
+    private fun isFragmentInBackStack(destinationId: Int): Boolean {
+        return try {
+            findNavController().getBackStackEntry(destinationId)
+            true
+        } catch (e: IllegalArgumentException) {
+            WooLog.e(WooLog.T.POS, "Unable to find fragment", e)
+            false
         }
     }
 
