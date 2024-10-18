@@ -1,0 +1,2 @@
+20.7:
+Wir haben in diesem Update den Barcode-Scanner verbessert, um Barcodes besser lesen zu können. Zudem wurden Probleme mit Gutscheinen, die bei der Bestellaufgabe nicht mehr angezeigt wurden, behoben. Händler können nun individuelle Felder für Produkte und Bestellungen direkt in der App anzeigen und bearbeiten. Fehler bei der Anmeldung wurden behoben und die Anweisungen für „Tap to Pay“ wurden für ein besseres Verständnis präzisiert. Viel Spaß mit diesen Verbesserungen und vielem mehr!
