@@ -1,2 +1,0 @@
-20.7
-:En esta actualización, hemos mejorado el escáner de códigos de barras para obtener lecturas más precisas y hemos resuelto problemas con cupones que desaparecían inesperadamente durante la creación de pedidos. Ahora los vendedores pueden ver y editar campos personalizados de productos y pedidos directamente en la aplicación. También hemos corregido errores de acceso y mejorado las instrucciones de «Tap to Pay» para mayor claridad. Disfruta de estas mejoras y de muchas más.
