@@ -1,24 +1,22 @@
 package com.woocommerce.android.ui.payments.simplepayments
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
 import androidx.core.widget.doAfterTextChanged
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentOrderCreateEditCustomerNoteBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import org.wordpress.android.util.ActivityUtils
 import org.wordpress.android.util.DisplayUtils
 
 class SimplePaymentsCustomerNoteFragment :
-    BaseFragment(R.layout.fragment_order_create_edit_customer_note),
-    MenuProvider {
+    BaseFragment(R.layout.fragment_order_create_edit_customer_note) {
     private var _binding: FragmentOrderCreateEditCustomerNoteBinding? = null
     val binding
         get() = _binding!!
@@ -26,11 +24,14 @@ class SimplePaymentsCustomerNoteFragment :
     private val navArgs: SimplePaymentsCustomerNoteFragmentArgs by navArgs()
     private lateinit var doneMenuItem: MenuItem
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
 
         _binding = FragmentOrderCreateEditCustomerNoteBinding.bind(view)
+        setupToolbar()
         if (savedInstanceState == null) {
             binding.customerOrderNoteEditor.setText(navArgs.customerNote)
             if (binding.customerOrderNoteEditor.requestFocus() && !DisplayUtils.isLandscape(requireActivity())) {
@@ -49,6 +50,17 @@ class SimplePaymentsCustomerNoteFragment :
         }
     }
 
+    private fun setupToolbar() {
+        binding.toolbar.title = getString(R.string.orderdetail_customer_provided_note)
+        onCreateMenu(_binding)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
@@ -59,14 +71,13 @@ class SimplePaymentsCustomerNoteFragment :
         _binding = null
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
+    private fun onCreateMenu(binding: FragmentOrderCreateEditCustomerNoteBinding?) {
+        binding?.toolbar?.inflateMenu(R.menu.menu_done)
+        doneMenuItem = binding?.toolbar?.menu?.findItem(R.id.menu_done)!!
         doneMenuItem.isEnabled = hasChanges()
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 navigateBackWithResult(
@@ -78,8 +89,6 @@ class SimplePaymentsCustomerNoteFragment :
             else -> false
         }
     }
-
-    override fun getFragmentTitle() = getString(R.string.orderdetail_customer_provided_note)
 
     private fun hasChanges() =
         binding.customerOrderNoteEditor.text.toString() != navArgs.customerNote
