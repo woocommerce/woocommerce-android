@@ -1,2 +1,0 @@
-20.7:
-In deze update hebben we de barcodescanner verbeterd voor nauwkeurigere uitlezingen en problemen opgelost met coupons die onverwacht verdwenen bij het aanmaken van orders. Verkopers kunnen nu aangepaste velden voor producten en orders direct in de app bekijken en bewerken. We hebben ook fouten bij het inloggen verholpen en de instructies voor 'Tik om te betalen' duidelijker gemaakt. Veel plezier met deze verbeteringen en meer!

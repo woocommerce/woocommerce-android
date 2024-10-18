@@ -13,7 +13,7 @@ MOBILE_APP = 'WooCommerce'
 WEAR_APP = 'WooCommerce-Wear'
 
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
-BUILD_GRADLE_PATH = File.join(PROJECT_ROOT_FOLDER, 'build.gradle')
+VERSIONS_CATALOG_FILE = File.join(PROJECT_ROOT_FOLDER, 'gradle/libs.versions.toml')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 PROTOTYPE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
 # The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
@@ -42,14 +42,14 @@ FROZEN_STRINGS_PATH = File.join(Dir.pwd, 'resources', 'values', 'strings.xml')
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
     name: 'Login Library',
-    import_key: 'wordPressLoginVersion',
+    import_key: 'wordpress-login',
     repository: 'wordpress-mobile/WordPress-Login-Flow-Android',
     strings_file_path: 'WordPressLoginFlow/src/main/res/values/strings.xml',
     exclusions: ['default_web_client_id']
   },
   {
     name: 'About Library',
-    import_key: 'aboutAutomatticVersion', # key used in build.gradle to reference the version
+    import_key: 'automattic-about', # key used in libs.versions.toml file to reference the version
     repository: 'Automattic/about-automattic-android',
     strings_file_path: 'library/src/main/res/values/strings.xml',
     exclusions: []
@@ -740,7 +740,7 @@ platform :android do
         import_key: lib[:import_key],
         repository: lib[:repository],
         file_path: lib[:strings_file_path],
-        build_gradle_path: BUILD_GRADLE_PATH
+        build_gradle_path: VERSIONS_CATALOG_FILE
       )
 
       if download_path.nil?
