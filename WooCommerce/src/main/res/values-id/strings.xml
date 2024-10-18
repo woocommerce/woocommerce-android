@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-01 09:54:06+0000
+Translation-Revision-Date: 2024-10-15 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">Kolom khusus tidak ditemukan</string>
+    <string name="custom_fields_empty_view_message">Kolom khusus merupakan metadata opsional untuk menampilkan informasi tambahan atau menyesuaikan pengalaman berbelanja di toko Anda.</string>
+    <string name="blaze_campaign_created_success_feedback_request">Bagaimana kesan Anda menggunakan Blaze</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Pilih tujuan</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Pilih tujuan kampanye Blaze</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Pilih tujuan kampanye</string>
+    <string name="blaze_campaign_preview_details_objective">Tujuan kampanye</string>
+    <string name="more_menu_button_woo_pos_description">Terima pembayaran di toko fisik Anda</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Pelanggan menyentuhkan kartu di bagian belakang ponsel Anda.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">Teks</string>
     <string name="custom_fields_editor_toggle_accessibility_description">Beralih antara editor teks dan HTML</string>
@@ -218,7 +227,6 @@ Language: id
     <string name="dashboard_product_stock_wcanalytics_inactive_title">Tidak dapat memuat laporan stok produk</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">Tidak ada barang terjual dalam 30 hari</string>
     <string name="dashboard_product_stock_sales_last_30_days">%d barang terjual dalam 30 hari</string>
-    <string name="more_menu_button_woo_pos_description">Gunakan aplikasi sebagai mesin kasir</string>
     <string name="more_menu_button_woo_pos">Mode Titik Penjualan</string>
     <string name="product_stock_status_low_stock">Stok menipis</string>
     <string name="order_detail_shipping_header">PENGIRIMAN</string>
@@ -729,7 +737,6 @@ Language: id
     <string name="blaze_campaign_title">Kampanye Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol adalah merek dagang yang dimiliki oleh dan digunakan dengan izin EMVCo, LLC.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. Setelah tanda centang “Selesai” terlihat, toko Anda akan memproses pembayaran dan transaksi akan selesai.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. Pelanggan Anda memegang kartunya secara horizontal di atas iPhone Anda, di atas simbol nirsentuh.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Tunjukkan iPhone Anda kepada pelanggan.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Ketuk “Terima Pembayaran” dan pilih “Ketuk untuk Bayar”.</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">Ini cara kerjanya</string>
@@ -961,10 +968,8 @@ Language: id
     <string name="error_troubleshooting">Pemecahan Masalah</string>
     <string name="orderlist_parsing_error_title">Data Anda tidak dapat dimuat.</string>
     <string name="orderlist_parsing_error_message">Hal ini mungkin karena adanya konflik dengan plugin. Coba lagi nanti atau hubungi kami dan dengan senang hati kami akan membantu Anda!</string>
-    <string name="ai_product_description_dialog_title">Tambahkan deskripsi produk dengan AI</string>
     <string name="ai_product_description_note_dialog_confirmation">Saya mengerti</string>
     <string name="ai_product_description_note_dialog_message">Harap perhatikan bahwa deskripsi produk ini dibuat dengan alat berbasis teknologi AI. Harap periksa dan edit isinya agar sesuai dengan citra dan pesan yang ingin Anda sampaikan.</string>
-    <string name="ai_product_description_dialog_message">Tambahkan deskripsi secara cepat dengan AI. Coba fitur kami sekarang juga!</string>
     <string name="ai_product_description_feedback">Apakah deskripsi\nyang dibuat bermanfaat?</string>
     <string name="ai_product_description_regenerate_button">Buat Ulang</string>
     <string name="ai_product_description_hint">Soroti fitur unik dan audiens produk Anda dengan kata kunci untuk menghasilkan deskripsi yang pas dan khas.</string>

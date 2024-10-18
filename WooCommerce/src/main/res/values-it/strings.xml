@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-01 16:54:04+0000
+Translation-Revision-Date: 2024-10-17 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">Nessun campo personalizzato trovato</string>
+    <string name="custom_fields_empty_view_message">I campi personalizzati sono metadati opzionali che mostrano informazioni aggiuntive o ti consentono di personalizzare la tua esperienza di acquisto.</string>
+    <string name="blaze_campaign_created_success_feedback_request">Com\'è stata l\'esperienza con Blaze?</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Seleziona obiettivo</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Seleziona un obiettivo per la campagna Blaze</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Scegli l\'obiettivo della campagna</string>
+    <string name="blaze_campaign_preview_details_objective">Obiettivo della campagna</string>
+    <string name="more_menu_button_woo_pos_description">Accetta pagamenti nel tuo negozio fisico</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Il cliente tocca il retro del tuo telefono con la sua carta di pagamento.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">Testo</string>
     <string name="custom_fields_editor_toggle_accessibility_description">Alterna tra gli editor di testo e HTML</string>
@@ -218,7 +227,6 @@ Language: it
     <string name="dashboard_product_stock_wcanalytics_inactive_title">Impossibile caricare i report sulle disponibilità in magazzino dei prodotti</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">Nessun articolo venduto negli ultimi 30 giorni</string>
     <string name="dashboard_product_stock_sales_last_30_days">%d articoli venduti negli ultimi 30 giorni</string>
-    <string name="more_menu_button_woo_pos_description">Usa l\'app come registratore di cassa</string>
     <string name="more_menu_button_woo_pos">Modalità punto vendita</string>
     <string name="product_stock_status_low_stock">In esaurimento</string>
     <string name="order_detail_shipping_header">SPEDIZIONE</string>
@@ -729,7 +737,6 @@ Language: it
     <string name="blaze_campaign_title">Campagna Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Il simbolo del contactless è un marchio registrato di proprietà e utilizzato su concessione di EMVCo, LLC.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. Dopo aver visualizzato il segno di spunta \"Fatto\", il negozio elaborerà il pagamento e la transazione verrà completata.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. Il cliente posiziona la carta orizzontalmente sulla parte superiore del telefono, sopra il simbolo del contactless.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Sempre tenendo il tuo telefono in mano, rivolgilo verso il cliente.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tocca \"Ricevi pagamenti\" e scegli \"Tocca per pagare\".</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Crea un ordine</string>

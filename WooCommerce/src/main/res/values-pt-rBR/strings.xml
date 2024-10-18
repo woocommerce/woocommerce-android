@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-09-30 18:54:04+0000
+Translation-Revision-Date: 2024-10-17 09:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">Nenhum campo personalizado encontrado</string>
+    <string name="custom_fields_empty_view_message">Campos personalizados são metadados opcionais para exibir mais informações ou personalizar a experiência de compra na sua loja.</string>
+    <string name="blaze_campaign_created_success_feedback_request">Como foi sua experiência com o Blaze?</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Selecionar objetivo</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Selecione um objetivo para a campanha no Blaze</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Escolha o objetivo da campanha</string>
+    <string name="blaze_campaign_preview_details_objective">Objetivo da campanha</string>
+    <string name="more_menu_button_woo_pos_description">Aceite pagamentos na sua loja física</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. O cliente encosta o cartão na parte de trás do seu celular.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">Texto</string>
     <string name="custom_fields_editor_toggle_accessibility_description">Escolha entre os editores de HTML e texto</string>
@@ -218,7 +227,6 @@ Language: pt_BR
     <string name="dashboard_product_stock_wcanalytics_inactive_title">Não foi possível carregar os relatórios de estoque de produto</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">Não há itens vendidos nos últimos 30 dias</string>
     <string name="dashboard_product_stock_sales_last_30_days">%d itens vendidos nos últimos 30 dias</string>
-    <string name="more_menu_button_woo_pos_description">Use o aplicativo como caixa registradora</string>
     <string name="more_menu_button_woo_pos">Modo de ponto de venda</string>
     <string name="product_stock_status_low_stock">Estoque baixo</string>
     <string name="order_detail_shipping_header">ENVIO</string>
@@ -729,7 +737,6 @@ Language: pt_BR
     <string name="blaze_campaign_title">Campanha no Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">O símbolo de pagamento por aproximação é uma marca comercial de propriedade da EMVCo LLC e é usado mediante permissão.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. Depois da marca de verificação \"Concluído\" aparecer, sua loja receberá o pagamento e a transação estará concluída.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. O cliente deve segurar o cartão na horizontal na parte superior do seu celular, acima do símbolo de pagamento por aproximação.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Mostre seu celular para o cliente.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Toque em \"Receber pagamento\" e selecione \"Tap to Pay\".</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">Como funciona</string>

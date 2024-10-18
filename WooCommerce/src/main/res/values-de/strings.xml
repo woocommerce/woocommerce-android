@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-02 11:54:03+0000
+Translation-Revision-Date: 2024-10-15 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">Keine individuellen Felder gefunden</string>
+    <string name="custom_fields_empty_view_message">Individuelle Felder sind optionale Metadaten, die zusätzliche Informationen beinhalten oder das individuelle Einkaufserlebnis in deinem Shop optimieren können.</string>
+    <string name="blaze_campaign_created_success_feedback_request">Wir möchten mehr über dein Erlebnis mit Blaze erfahren</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Ziel auswählen</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Bitte wähle ein Ziel für die Blaze-Kampagne aus</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Kampagnenziel auswählen</string>
+    <string name="blaze_campaign_preview_details_objective">Kampagnenziel</string>
+    <string name="more_menu_button_woo_pos_description">Zahlungen in deinem physischen Shop ermöglichen</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Dein Kunde berührt die Rückseite deines Smartphones mit seiner Karte.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">Text</string>
     <string name="custom_fields_editor_toggle_accessibility_description">Umschalten zwischen Text- und HTML-Editor</string>
@@ -218,7 +227,6 @@ Language: de
     <string name="dashboard_product_stock_no_sales_last_30_days">Keine Artikel in den letzten 30 Tagen verkauft</string>
     <string name="dashboard_product_stock_wcanalytics_inactive_title">Bestandsberichte für Produkte konnten nicht geladen werden</string>
     <string name="dashboard_product_stock_sales_last_30_days">%d Artikel in den letzten 30 Tagen verkauft</string>
-    <string name="more_menu_button_woo_pos_description">Nutze die App als Kasse</string>
     <string name="more_menu_button_woo_pos">Modus „Verkaufsort“ (POS)</string>
     <string name="product_stock_status_low_stock">Niedriger Lagerbestand</string>
     <string name="order_detail_shipping_header">VERSAND</string>
@@ -495,10 +503,10 @@ Language: de
     <string name="blaze_campaign_budget_edit_duration_button">Bearbeiten</string>
     <string name="blaze_campaign_budget_reach_forecast">Geschätzte Anzahl erreichter Personen pro Tag</string>
     <string name="blaze_campaign_budget_days_duration">für %1$s Tage</string>
-    <string name="blaze_campaign_budget_impressions_info">Aufrufe geben die Häufigkeit an, mit der deine Werbung potenziellen Kunden angezeigt wird.\n\n\n        Auch wenn aufgrund von schwankendem Internet-Traffic und Nutzerverhalten keine genauen Zahlen garantiert werden können, versuchen wir, die tatsächlichen Aufrufe deiner Werbeanzeige so genau wie möglich mit deiner Zielzahl abzugleichen.\n\n\n        Denke daran, dass es bei Aufrufen um die Sichtbarkeit geht und nicht um vom Betrachter ausgeführte Aktionen.</string>
     <string name="blaze_campaign_budget_toolbar_title">Dein Budget festlegen</string>
     <string name="blaze_campaign_preview_target_default_value">Alle</string>
     <string name="blaze_campaign_preview_days_duration">%1$s Tage seit %2$s</string>
+    <string name="blaze_campaign_budget_impressions_info">Aufrufe geben die Häufigkeit an, mit der deine Werbung potenziellen Kunden angezeigt wird.\n\n\n        Auch wenn aufgrund von schwankendem Internet-Traffic und Nutzerverhalten keine genauen Zahlen garantiert werden können, versuchen wir, die tatsächlichen Aufrufe deiner Werbeanzeige so genau wie möglich mit deiner Zielzahl abzugleichen.\n\n\n        Denke daran, dass es bei Aufrufen um die Sichtbarkeit geht und nicht um vom Betrachter ausgeführte Aktionen.</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s täglich</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Startdatum</string>
     <string name="product_creation_survey_button_dont_show_again">Nicht erneut anzeigen</string>
@@ -729,7 +737,6 @@ Language: de
     <string name="blaze_campaign_title">Blaze-Kampagne</string>
     <string name="card_reader_tap_to_pay_about_copyright">Das Kontaktlos-Symbol ist eine Marke von EMVCo, LLC, die mit deren Genehmigung verwendet wird.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. Nachdem das Häkchen „Fertig“ angezeigt wurde, verarbeitet dein Shop die Zahlung und die Transaktion wird abgeschlossen.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. Dein Kunde hält seine Karte horizontal oben an dein Mobiltelefon, über das Kontaktlos-Symbol.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Zeige deinem Kunden dein Mobiltelefon.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tippe auf „Zahlung empfangen“ und wähle „Tap to Pay“.</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">So funktioniert es</string>
@@ -961,10 +968,8 @@ Language: de
     <string name="error_troubleshooting">Problembehandlung</string>
     <string name="orderlist_parsing_error_message">Dies könnte mit einem Konflikt mit einem Plugin zusammenhängen. Bitte versuche es später erneut oder kontaktiere uns – wir helfen dir gerne weiter!</string>
     <string name="orderlist_parsing_error_title">Deine Daten konnten nicht geladen werden.</string>
-    <string name="ai_product_description_dialog_title">Produktbeschreibung mit KI hinzufügen</string>
     <string name="ai_product_description_note_dialog_confirmation">Verstanden</string>
     <string name="ai_product_description_note_dialog_message">Beachte bitte, dass diese Produktbeschreibung mit unserem KI-gestützten Tool erstellt wurde. Überprüfe und bearbeite den Inhalt entsprechend, damit er deiner Marke und Botschaft entspricht.</string>
-    <string name="ai_product_description_dialog_message">Füge mit KI im Handumdrehen Beschreibungen hinzu. Probiere die Funktion noch heute aus!</string>
     <string name="ai_product_description_note_dialog_heading">Guter Start!</string>
     <string name="ai_product_description_feedback">Ist die generierte\nBeschreibung hilfreich?</string>
     <string name="ai_product_description_regenerate_button">Neu generieren</string>

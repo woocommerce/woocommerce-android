@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-03 09:54:04+0000
+Translation-Revision-Date: 2024-10-16 17:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">Geen aangepaste velden gevonden</string>
+    <string name="custom_fields_empty_view_message">Aangepaste velden zijn optionele metadata om extra informatie weer te geven of de winkelervaring voor je winkel aan te passen.</string>
+    <string name="blaze_campaign_created_success_feedback_request">Hoe was je ervaring met Blaze?</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Doel selecteren</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Selecteer een doel voor de Blaze-campagne</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Campagnedoel kiezen</string>
+    <string name="blaze_campaign_preview_details_objective">Campagnedoel</string>
+    <string name="more_menu_button_woo_pos_description">Accepteer betalingen in je fysieke winkel</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Je klant houdt hun kaart tegen de achterkant van je telefoon.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">Tekst</string>
     <string name="custom_fields_editor_toggle_accessibility_description">Schakel tussen tekst- en HTML-editors</string>
@@ -218,7 +227,6 @@ Language: nl
     <string name="dashboard_product_stock_wcanalytics_inactive_title">Kan voorraadrapporten niet laden</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">Geen artikelen verkocht in de afgelopen 30 dagen</string>
     <string name="dashboard_product_stock_sales_last_30_days">%d artikelen verkocht in de afgelopen 30 dagen</string>
-    <string name="more_menu_button_woo_pos_description">Gebruik de app als kassa</string>
     <string name="more_menu_button_woo_pos">Verkooppuntmodus</string>
     <string name="product_stock_status_low_stock">Lage voorraad</string>
     <string name="order_detail_shipping_header">verzending</string>
@@ -729,7 +737,6 @@ Language: nl
     <string name="blaze_campaign_title">Blaze-campagne</string>
     <string name="card_reader_tap_to_pay_about_copyright">Het pictogram voor contactloos betalen is een handelsmerk dat gebruikt wordt met toestemming van en dat eigendom is van EMVCo, LLC.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. Nadat je het vinkje ‘Gereed’ ziet, verwerkt de winkel de betaling en is de transactie voltooid.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. Je klant houdt hun kaart horizontaal tegen de bovenkant van je telefoon, over het pictogram voor contactloos betalen.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Bied je telefoon aan de klant aan.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tik op ‘Betalingen ontvangen’ en kies ‘Tap to Pay’.</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Maak een bestelling aan</string>

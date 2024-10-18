@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-01 16:54:04+0000
+Translation-Revision-Date: 2024-10-16 15:54:09+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">No se han encontrado campos personalizados</string>
+    <string name="custom_fields_empty_view_message">Los campos personalizados son metadatos opcionales para mostrar información adicional o personalizar la experiencia de compra de tu tienda.</string>
+    <string name="blaze_campaign_created_success_feedback_request">Cómo ha ido la experiencia con Blaze</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Elegir objetivo</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Elige un objetivo para la campaña de Blaze</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Elegir objetivo de la campaña</string>
+    <string name="blaze_campaign_preview_details_objective">Objetivo de la campaña</string>
+    <string name="more_menu_button_woo_pos_description">Acepta pagos en tu tienda física</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. El cliente toca su tarjeta en la parte posterior de tu teléfono.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">Texto</string>
     <string name="custom_fields_editor_toggle_accessibility_description">Cambiar entre editores de texto y HTML</string>
@@ -218,7 +227,6 @@ Language: es
     <string name="dashboard_product_stock_wcanalytics_inactive_title">No se han podido cargar los informes de existencias de productos</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">No hay elementos vendidos en los últimos 30 días</string>
     <string name="dashboard_product_stock_sales_last_30_days">%d elementos vendidos en los últimos 30 días</string>
-    <string name="more_menu_button_woo_pos_description">Utilizar la aplicación como caja registradora</string>
     <string name="more_menu_button_woo_pos">Modo de punto de venta</string>
     <string name="product_stock_status_low_stock">Pocas existencias</string>
     <string name="order_detail_shipping_header">ENVÍO</string>
@@ -729,7 +737,6 @@ Language: es
     <string name="blaze_campaign_title">Campaña de Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">El símbolo del pago sin contacto es una marca registrada propiedad de EMVCo, LLC y se utiliza con su autorización.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. Cuando aparezca la marca «Hecho», la tienda procesará el pago y la transacción se habrá completado.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. Tu cliente sostiene su tarjeta horizontalmente en la parte superior de tu teléfono, sobre el símbolo sin contacto.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Presenta tu teléfono al cliente.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Toca en «Cobrar pago» y elige «Tap to Pay».</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Crea un pedido</string>

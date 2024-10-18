@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-01 09:54:10+0000
+Translation-Revision-Date: 2024-10-17 09:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">لم يتم العثور على حقول مخصصة</string>
+    <string name="custom_fields_empty_view_message">الحقول المخصصة هي بيانات وصفية اختيارية لعرض معلومات إضافية أو تخصيص تجربة تسوق خاصة بمتجرك.</string>
+    <string name="blaze_campaign_created_success_feedback_request">كيف كانت التجربة مع Blaze</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">تحديد هدف</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">يرجى تحديد هدف لحملة Blaze</string>
+    <string name="blaze_campaign_preview_details_choose_objective">اختيار هدف الحملة</string>
+    <string name="blaze_campaign_preview_details_objective">هدف الحملة</string>
+    <string name="more_menu_button_woo_pos_description">قبول المدفوعات في متجرك المادي</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. يضع عميلك بطاقته على الجزء الخلفي من هاتفك.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">النص</string>
     <string name="custom_fields_editor_toggle_accessibility_description">التبديل بين النص ومحررات HTML</string>
@@ -218,7 +227,6 @@ Language: ar
     <string name="dashboard_product_stock_wcanalytics_inactive_title">يتعذر تحميل تقارير مخزون المنتجات</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">لم يتم بيع أي عناصر في آخر 30 يومًا</string>
     <string name="dashboard_product_stock_sales_last_30_days">تم بيع %d من العناصر في آخر 30 يومًا</string>
-    <string name="more_menu_button_woo_pos_description">استخدام التطبيق كسجل أعطال</string>
     <string name="more_menu_button_woo_pos">وضع نقطة البيع</string>
     <string name="product_stock_status_low_stock">مخزون منخفض</string>
     <string name="order_detail_shipping_header">الشحن</string>
@@ -729,7 +737,6 @@ Language: ar
     <string name="blaze_campaign_title">حملة Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol هو علامة تجارية تمتلكها EMVCo, LLC وتُستخدم بصلاحية منها.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. بعد رؤية علامة الاختيار \"تم\"، سيُعالج متجرك الدفع وستكتمل المعاملة.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. يحمل عميلك بطاقته بشكل أفقي في الجزء العلوي من هاتفك، فوق الرمز غير التلامسي.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. اعرض هاتفك أمام العميل.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. اضغط على \"تحصيل المدفوعات\"، واختر ميزة \"Tap to Pay\".</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. إنشاء طلب</string>

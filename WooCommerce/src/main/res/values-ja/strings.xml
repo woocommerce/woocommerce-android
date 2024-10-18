@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-01 09:54:05+0000
+Translation-Revision-Date: 2024-10-16 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">カスタムフィールドが見つかりません</string>
+    <string name="custom_fields_empty_view_message">カスタムフィールドはオプションのメタデータで、追加情報を表示したりストアのショッピング体験をカスタマイズしたりできます。</string>
+    <string name="blaze_campaign_created_success_feedback_request">Blaze の操作性はいかがでしたか</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">目的を選択</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Blaze キャンペーンの目的を選択してください</string>
+    <string name="blaze_campaign_preview_details_choose_objective">キャンペーンの目的を選択</string>
+    <string name="blaze_campaign_preview_details_objective">キャンペーンの目的</string>
+    <string name="more_menu_button_woo_pos_description">実店舗で支払いを受け取る</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. お客様があなたのスマートフォンの背面にカードをタップします。</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">テキスト</string>
     <string name="custom_fields_editor_toggle_accessibility_description">テキストエディターとHTMLエディターを切り替え</string>
@@ -218,7 +227,6 @@ Language: ja_JP
     <string name="dashboard_product_stock_wcanalytics_inactive_title">商品在庫レポートを読み込めません</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">過去30日に販売された商品がありません</string>
     <string name="dashboard_product_stock_sales_last_30_days">過去30日に%d個の商品が販売されました</string>
-    <string name="more_menu_button_woo_pos_description">キャッシュレジスターとしてアプリを使用</string>
     <string name="more_menu_button_woo_pos">販売時点管理モード</string>
     <string name="product_stock_status_low_stock">在庫少</string>
     <string name="order_detail_shipping_header">配送</string>
@@ -729,7 +737,6 @@ Language: ja_JP
     <string name="blaze_campaign_title">Blaze キャンペーン</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol は EMVCo, LLC が所有し、EMVCo, LLC の許可を得て使用している商標です。</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. 「完了」チェックマークが表示されると、ストアにより支払いが処理され、取引が完了します。</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. お客様がカードをあなたのスマートフォンの上部、コンタクトレス記号に水平にかざします。</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. お客様にスマートフォンを提示します。</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. 「支払いを受け取る」をタップし「Tap to Pay」を選択します。</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. 注文を作成する</string>
