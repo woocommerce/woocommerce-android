@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 20.8
+We’ve improved your WooCommerce app experience with some key updates! The "Learn More" link for the Pay in Person option in payment settings is now fixed, and we've streamlined the Blaze campaign creation process by adding an objective selection feature. Update now to enjoy a smoother workflow!
+
 ## 20.7
 In this update, we’ve improved the barcode scanner for more accurate readings and resolved issues with coupons unexpectedly disappearing during order creation. Merchants can now view and edit custom fields for products and orders directly in the app. We also fixed login errors and refined the "Tap to Pay" instructions for better clarity. Enjoy these enhancements and more!
 
