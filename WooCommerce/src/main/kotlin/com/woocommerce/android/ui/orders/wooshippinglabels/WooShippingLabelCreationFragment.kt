@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.compose.material.Surface
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.main.AppBarStatus
 
 class WooShippingLabelCreationFragment : BaseFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -25,5 +25,5 @@ class WooShippingLabelCreationFragment : BaseFragment() {
         }
     }
 
-    override fun getFragmentTitle() = getString(R.string.orderdetail_shipping_label_create_shipping_label)
+    override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 }
