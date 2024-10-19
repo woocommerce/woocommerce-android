@@ -58,6 +58,7 @@ fun ShippingProductsCard(
             shippableItems = shippableItems,
             isExpanded = isExpanded,
             modifier = Modifier
+                .clip(RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large)))
                 .clickable { onExpand(!isExpanded) }
                 .padding(
                     start = dimensionResource(R.dimen.major_100),
