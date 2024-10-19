@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -55,9 +54,9 @@ fun WooShippingLabelCreationScreen(
         HazmatCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 4.dp, end = 8.dp)
+                .padding(horizontal = dimensionResource(id = R.dimen.minor_50))
         )
-        PackageCard(modifier = Modifier.padding(16.dp))
+        PackageCard(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
@@ -101,7 +100,7 @@ private fun HazmatCard(
             stringResource(id = R.string.shipping_label_package_details_items_expand_content_description),
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .size(dimensionResource(R.dimen.image_minor_100))
+                .padding(end = dimensionResource(R.dimen.minor_50))
         )
     }
 }
