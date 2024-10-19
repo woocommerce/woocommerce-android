@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -166,7 +165,7 @@ private fun HazmatCard(
             stringResource(id = R.string.shipping_label_package_details_items_expand_content_description),
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .size(dimensionResource(R.dimen.image_minor_100))
+                .padding(end = dimensionResource(R.dimen.minor_50))
         )
     }
 }
