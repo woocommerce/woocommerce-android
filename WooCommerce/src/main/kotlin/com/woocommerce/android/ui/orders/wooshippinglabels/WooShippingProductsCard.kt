@@ -229,8 +229,11 @@ private fun ShippingProduct(
             imageUrl = imageUrl,
             quantity = quantity
         )
-        ShippingProductInfo(
-            summary = price,
+
+        Text(
+            text = price,
+            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colors.onSurface,
             modifier = Modifier.align(Alignment.BottomEnd)
         )
     }
@@ -299,11 +302,16 @@ private fun ShippingProductDetails(
             )
 
             if (description.isNotEmpty()) {
-                ShippingProductInfo(description)
+                ShippingProductInfo(
+                    summary = description,
+                    modifier = Modifier.padding(top = dimensionResource(R.dimen.minor_50))
+                )
             }
 
             if (weight.isNotEmpty()) {
-                ShippingProductInfo(summary = weight)
+                ShippingProductInfo(
+                    summary = weight,
+                    modifier = Modifier.padding(top = dimensionResource(R.dimen.minor_50)))
             }
         }
     }
@@ -329,7 +337,7 @@ private fun ShippingProductInfo(
 ) {
     Text(
         text = summary,
-        style = MaterialTheme.typography.caption,
+        style = MaterialTheme.typography.body2,
         color = colorResource(id = R.color.color_on_surface_medium),
         modifier = modifier
     )
