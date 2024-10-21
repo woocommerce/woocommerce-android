@@ -4,12 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.woocommerce.android.R
@@ -23,12 +18,7 @@ class WooShippingLabelCreationFragment : BaseFragment() {
             setContent {
                 WooThemeWithBackground {
                     Surface {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "This is the new shipping label flow")
-                        }
+                        WooShippingLabelCreationScreen()
                     }
                 }
             }
