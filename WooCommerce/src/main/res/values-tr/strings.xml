@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-02 09:54:04+0000
+Translation-Revision-Date: 2024-10-14 16:54:08+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="custom_fields_empty_view_title">Özel alan bulunamadı</string>
+    <string name="custom_fields_empty_view_message">Özel alanlar, ek bilgileri görüntülemek veya mağazanızın alışveriş deneyimini özelleştirmek için isteğe bağlı meta verilerdir.</string>
+    <string name="blaze_campaign_created_success_feedback_request">Blaze ile olan deneyiminiz nasıldı?</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">Hedef seç</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Lütfen Blaze kampanyası için bir hedef seçin</string>
+    <string name="blaze_campaign_preview_details_choose_objective">Kampanya hedefi seçin</string>
+    <string name="blaze_campaign_preview_details_objective">Kampanya hedefi</string>
+    <string name="more_menu_button_woo_pos_description">Ödemeleri fiziksel mağazanızda kabul edin</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. Müşteriniz kartını telefonunuzun arkasına dokundurur.</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
     <string name="custom_fields_editor_text_toggle">Metin</string>
     <string name="custom_fields_editor_toggle_accessibility_description">Metin ve HTML düzenleyicileri arasında geçiş yapın.</string>
@@ -218,7 +227,6 @@ Language: tr
     <string name="dashboard_product_stock_wcanalytics_inactive_title">Ürün stoğu raporları yüklenemiyor</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">Son 30 günde satılan ürün yok</string>
     <string name="dashboard_product_stock_sales_last_30_days">Son 30 günde %d ürün satıldı</string>
-    <string name="more_menu_button_woo_pos_description">Uygulamayı yazarkasa olarak kullanın</string>
     <string name="more_menu_button_woo_pos">Satış Noktası Modu</string>
     <string name="product_stock_status_low_stock">Düşük stok</string>
     <string name="order_detail_shipping_header">GÖNDERİM</string>
@@ -729,7 +737,6 @@ Language: tr
     <string name="blaze_campaign_title">Kampanyayı öne çıkarın</string>
     <string name="card_reader_tap_to_pay_about_copyright">Temassız Simgesi; EMVCo, LLC\'ye ait ve onun izni ile kullanılan bir ticari markadır.</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. “Tamamlandı” onay işaretini gördükten sonra mağazanız ödemeyi işleme alır ve işlem tamamlanır.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. Müşteriniz kartını telefonunuzun üzerinde temassız simgesinin üstünde yatay olarak tutar.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Telefonunuzu müşteriye gösterin.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. “Ödemeyi Al” seçeneğine dokunun ve ardından “Tap to Pay” seçeneğini belirleyin.</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Sipariş oluşturun</string>

@@ -266,7 +266,7 @@ class DashboardViewModel @Inject constructor(
     private fun jetpackBenefitsBannerState(
         connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
-        if (connectionType == SiteConnectionType.Jetpack) {
+        if (connectionType == SiteConnectionType.Jetpack || appPrefsWrapper.isSiteWPComSuspended) {
             return flowOf(null)
         }
 
