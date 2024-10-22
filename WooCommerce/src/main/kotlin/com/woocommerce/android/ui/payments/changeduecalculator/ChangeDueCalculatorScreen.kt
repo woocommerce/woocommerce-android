@@ -178,10 +178,10 @@ fun RecordTransactionDetailsNote(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onCheckedChange(!checked) },
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
+            modifier = Modifier.weight(1f),
             text = stringResource(R.string.cash_payments_record_transaction_details),
             style = MaterialTheme.typography.body1
         )
