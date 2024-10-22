@@ -505,4 +505,24 @@ class WooPosProductsDataSourceTest {
             )
         )
     }
+
+    @Test
+    fun `given non-simple product types feature enabled, when loadSimpleProducts called, then do not add filter to display only simple products`() = runTest {
+        // GIVEN
+        whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+        whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
+        whenever(isNonSimpleProductTypesEnabled.invoke()).thenReturn(true)
+        val sut = WooPosProductsDataSource(handler, isNonSimpleProductTypesEnabled)
+
+        // WHEN
+        sut.loadSimpleProducts(forceRefreshProducts = true).first()
+
+        // THEN
+        verify(handler).loadFromCacheAndFetch(
+            searchType = ProductListHandler.SearchType.DEFAULT,
+            filters = mapOf(
+                WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value
+            )
+        )
+    }
 }
