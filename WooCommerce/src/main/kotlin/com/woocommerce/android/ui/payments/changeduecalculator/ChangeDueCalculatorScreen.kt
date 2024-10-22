@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
@@ -178,10 +179,10 @@ fun RecordTransactionDetailsNote(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onCheckedChange(!checked) },
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
+            modifier = Modifier.weight(1f),
             text = stringResource(R.string.cash_payments_record_transaction_details),
             style = MaterialTheme.typography.body1
         )
@@ -217,6 +218,7 @@ fun MarkOrderAsCompleteButton(
 
 @Composable
 @PreviewLightDark
+@PreviewScreenSizes
 fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState(
@@ -240,6 +242,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
 
 @Composable
 @PreviewLightDark
+@PreviewScreenSizes
 fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState(
@@ -263,6 +266,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
 
 @Composable
 @PreviewLightDark
+@PreviewScreenSizes
 fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState(
