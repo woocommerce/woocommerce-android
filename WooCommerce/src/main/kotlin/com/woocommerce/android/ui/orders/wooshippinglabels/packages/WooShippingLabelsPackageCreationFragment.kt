@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages
+package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
 import android.os.Bundle
 import android.view.LayoutInflater

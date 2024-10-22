@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages
+package com.woocommerce.android.ui.orders.wooshippinglabels.packages
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -23,13 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageTab
-import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.CARRIER
-import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.CUSTOM
-import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.WooShippingLabelsPackageCreationViewModel.PageType.SAVED
-import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.forms.WooShippingCarrierPackageScreen
-import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.forms.WooShippingCustomPackageCreationScreen
-import com.woocommerce.android.ui.orders.shippinglabels.creationV2.packages.forms.WooShippingSavedPackageScreen
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelsPackageCreationViewModel.PageTab
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelsPackageCreationViewModel.PageType.CARRIER
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelsPackageCreationViewModel.PageType.CUSTOM
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelsPackageCreationViewModel.PageType.SAVED
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.forms.WooShippingCarrierPackageScreen
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.forms.WooShippingCustomPackageCreationScreen
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.forms.WooShippingSavedPackageScreen
 
 @Composable
 fun WooShippingLabelsPackageCreationScreen(
