@@ -4330,4 +4330,12 @@
     <string name="custom_fields_editor_toggle_accessibility_description">Toggle between text and HTML editors</string>
     <string name="custom_fields_editor_text_toggle">Text</string>
     <string name="custom_fields_editor_html_toggle">HTML</string>
+
+    <!--
+    New Shipping Label creation
+    -->
+
+    <string name="woo_shipping_labels_package_creation_tab_custom">Custom</string>
+    <string name="woo_shipping_labels_package_creation_tab_carrier">Carrier</string>
+    <string name="woo_shipping_labels_package_creation_tab_saved">Saved</string>
 </resources>
