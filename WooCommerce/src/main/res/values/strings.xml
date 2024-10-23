@@ -1260,6 +1260,8 @@
     <string name="shipping_label_select_package_button">Select a Package</string>
     <string name="shipping_label_select_package_title">Select a package to get shipping rates</string>
     <string name="shipping_label_select_package_description">Enter your package\'s dimensions or pick a carrier package option to see the available shipping rates.</string>
+    <string name="shipping_label_shipment_details_title">Shipment details</string>
+    <string name="shipping_label_shipment_details_order_details">Order details</string>
 
     <!--
     Shipping label package creation labels
