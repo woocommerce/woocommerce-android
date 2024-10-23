@@ -21,8 +21,7 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
                     mapOf(AnalyticsTracker.KEY_SOURCE to sourceProperty)
                 )
             }
-            ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorFlow.Undefined -> {}
+            else -> {}
         }
     }
 
@@ -33,8 +32,7 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
                     AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_SELECTED,
                 )
             }
-            ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorFlow.Undefined -> {}
+            else -> {}
         }
     }
 
@@ -45,8 +43,7 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
                     AnalyticsEvent.ORDER_CREATION_PRODUCT_SELECTOR_ITEM_UNSELECTED,
                 )
             }
-            ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorFlow.Undefined -> {}
+            else -> {}
         }
     }
 
@@ -67,8 +64,7 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
                     )
                 )
             }
-            ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorFlow.Undefined -> {}
+            else -> {}
         }
     }
 
