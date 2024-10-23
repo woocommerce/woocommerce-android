@@ -4,6 +4,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductListHandler
+import com.woocommerce.android.ui.woopos.featureflags.IsNonSimpleProductTypesEnabled
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +21,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WooPosProductsDataSource @Inject constructor(private val handler: ProductListHandler) {
+class WooPosProductsDataSource @Inject constructor(
+    private val handler: ProductListHandler,
+    private val isNonSimpleProductTypesEnabled: IsNonSimpleProductTypesEnabled,
+) {
     private var productCache: List<Product> = emptyList()
     private val cacheMutex = Mutex()
 
@@ -36,10 +40,15 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
 
         val result = handler.loadFromCacheAndFetch(
             searchType = ProductListHandler.SearchType.DEFAULT,
-            filters = mapOf(
-                WCProductStore.ProductFilterOption.TYPE to ProductType.SIMPLE.value,
-                WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value
-            )
+            filters =
+            if (isNonSimpleProductTypesEnabled()) {
+                mapOf(WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value)
+            } else {
+                mapOf(
+                    WCProductStore.ProductFilterOption.TYPE to ProductType.SIMPLE.value,
+                    WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value
+                )
+            }
         )
 
         if (result.isSuccess) {
