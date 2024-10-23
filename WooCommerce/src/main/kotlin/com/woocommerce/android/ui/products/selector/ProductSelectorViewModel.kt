@@ -787,7 +787,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     enum class ProductSelectorFlow {
-        OrderCreation, OrderEditing, CouponEdition, Undefined
+        OrderCreation, OrderEditing, CouponEdition, OrderList, Undefined
     }
 
     enum class SelectionMode {
