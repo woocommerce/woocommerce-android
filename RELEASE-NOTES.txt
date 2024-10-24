@@ -4,6 +4,7 @@
 21.0
 -----
 
+- [*] Fixed text formatting in the "Collect Payment has moved" rationale bottom sheet [https://github.com/woocommerce/woocommerce-android/pull/12815]
 
 20.9
 -----
