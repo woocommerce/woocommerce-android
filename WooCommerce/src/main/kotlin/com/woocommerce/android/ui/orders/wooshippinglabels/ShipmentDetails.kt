@@ -464,7 +464,11 @@ private fun ShipmentCostSection(
 @Composable
 private fun ShipmentCostSectionPreview() {
     WooThemeWithBackground {
-        ShipmentCostSection(subTotal = "$12.99", total = "$12.99")
+        ShipmentCostSection(
+            subTotal = "$12.99",
+            total = "$12.99",
+            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+        )
     }
 }
 
