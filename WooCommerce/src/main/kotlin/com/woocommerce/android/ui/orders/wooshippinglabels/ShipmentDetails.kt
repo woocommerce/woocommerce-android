@@ -8,11 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
@@ -83,24 +85,44 @@ fun ShipmentDetails(
             )
         }
     }
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(top = dimensionResource(R.dimen.major_200))
+    Column {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(top = dimensionResource(R.dimen.major_200))
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+
+        ) {
+            OrderDetailsSection(
+                shipFrom = getShipFrom(),
+                shipTo = getShipTo(),
+                totalItems = 5,
+                totalItemsCost = "$120.99",
+                shippingLines = getShippingLines(3)
+            )
+            Divider(modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)))
+            ShipmentCostSection(
+                subTotal = null,
+                total = "$120.99",
+                modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+            )
+        }
+        PurchasesSection()
+    }
+}
+
+@Composable
+private fun PurchasesSection(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(128.dp),
+        contentAlignment = Alignment.Center
     ) {
-        OrderDetailsSection(
-            shipFrom = getShipFrom(),
-            shipTo = getShipTo(),
-            totalItems = 5,
-            totalItemsCost = "$120.99",
-            shippingLines = getShippingLines(3)
-        )
-        Divider(modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)))
-        ShipmentCostSection(
-            subTotal = null,
-            total = "$120.99",
-            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
-        )
+        Text("This is the purchase section")
     }
 }
 
