@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -43,7 +44,7 @@ fun OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(dimensionResource(id = R.dimen.minor_100))
+                .padding(dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -94,6 +95,7 @@ fun OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
 }
 
 @LightDarkThemePreviews
+@PreviewScreenSizes
 @Composable
 fun PreviewOrderCreateEditSimplePaymentsMigrationBottomSheetScreen() {
     WooTheme {
