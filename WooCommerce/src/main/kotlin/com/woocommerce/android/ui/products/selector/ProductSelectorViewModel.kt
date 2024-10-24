@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchTyp
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderList
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.NORMAL
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.SIMPLE
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
@@ -144,14 +145,16 @@ class ProductSelectorViewModel @Inject constructor(
             filterState = filterState,
             searchState = searchState,
             selectionMode = navArgs.selectionMode,
+            productFlow = navArgs.productSelectorFlow,
             screenTitleOverride = navArgs.screenTitleOverride,
             ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
             selectionEnabled = enabled,
         )
     }.asLiveData()
 
+    private val selectionHandling: SelectionHandling = navArgs.selectionHandling
     val selectionMode: SelectionMode = navArgs.selectionMode
-    val selectionHandling: SelectionHandling = navArgs.selectionHandling
+    val shouldDisplayFilterButton: Boolean = navArgs.productSelectorFlow != OrderList
 
     init {
         if (navArgs.selectionMode == SelectionMode.SINGLE && (navArgs.selectedItems?.size ?: 0) > 1) {
@@ -667,11 +670,13 @@ class ProductSelectorViewModel @Inject constructor(
         val filterState: FilterState,
         val searchState: SearchState,
         val selectionMode: SelectionMode,
+        val productFlow: ProductSelectorFlow,
         val screenTitleOverride: String? = null,
         val ctaButtonTextOverride: String? = null,
-        val selectionEnabled: Boolean = true,
+        val selectionEnabled: Boolean = true
     ) {
         val isDoneButtonEnabled: Boolean = selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0
+        val shouldDisplayFilterButton = searchState.searchQuery.isEmpty() && productFlow != OrderList
     }
 
     @Parcelize
