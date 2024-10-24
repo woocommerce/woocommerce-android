@@ -64,6 +64,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Lis
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.Undefined
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionMode
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
@@ -366,7 +367,7 @@ private fun ProductList(
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
             }
-            if (state.searchState.searchQuery.isEmpty()) {
+            if (state.shouldDisplayFilterButton) {
                 WCTextButton(
                     onClick = onFilterButtonClick,
                     text = StringUtils.getQuantityString(
@@ -375,7 +376,8 @@ private fun ProductList(
                         zero = string.product_selector_filter_button_title_zero
                     ),
                     allCaps = false,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
                 )
             }
         }
@@ -599,7 +601,8 @@ fun PopularProductsListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = emptyList(),
-            selectionMode = SelectionMode.MULTIPLE
+            selectionMode = SelectionMode.MULTIPLE,
+            productFlow = Undefined
         ),
         onDoneButtonClick = {},
         onClearButtonClick = {},
@@ -669,7 +672,8 @@ fun RecentProductsListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = products,
-            selectionMode = SelectionMode.MULTIPLE
+            selectionMode = SelectionMode.MULTIPLE,
+            productFlow = Undefined
         ),
         onDoneButtonClick = {},
         onClearButtonClick = {},
@@ -747,7 +751,8 @@ fun ProductListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = products,
-            selectionMode = SelectionMode.MULTIPLE
+            selectionMode = SelectionMode.MULTIPLE,
+            productFlow = Undefined
         ),
         onDoneButtonClick = {},
         onClearButtonClick = {},
@@ -771,7 +776,8 @@ fun ProductListEmptyPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = emptyList(),
-            selectionMode = SelectionMode.MULTIPLE
+            selectionMode = SelectionMode.MULTIPLE,
+            productFlow = Undefined
         ),
         onClearFiltersButtonClick = {}
     )
