@@ -150,15 +150,8 @@ class ProductSelectorViewModel @Inject constructor(
         )
     }.asLiveData()
 
-    private fun mapProductsToUiModel(
-        it: Product,
-        selectedIds: List<SelectedItem>
-    ) = when (navArgs.selectionHandling) {
-        NORMAL -> it.toUiModel(selectedIds)
-        SIMPLE -> it.toSimpleUiModel(selectedIds)
-    }
-
-    val selectionMode = navArgs.selectionMode
+    val selectionMode: SelectionMode = navArgs.selectionMode
+    val selectionHandling: SelectionHandling = navArgs.selectionHandling
 
     init {
         if (navArgs.selectionMode == SelectionMode.SINGLE && (navArgs.selectedItems?.size ?: 0) > 1) {
@@ -171,6 +164,14 @@ class ProductSelectorViewModel @Inject constructor(
             loadRecentProducts()
             fetchProducts(searchType = searchState.value.searchType)
         }
+    }
+
+    private fun mapProductsToUiModel(
+        it: Product,
+        selectedIds: List<SelectedItem>
+    ) = when (selectionHandling) {
+        NORMAL -> it.toUiModel(selectedIds)
+        SIMPLE -> it.toSimpleUiModel(selectedIds)
     }
 
     private fun getPopularProductsToDisplay(
@@ -392,7 +393,7 @@ class ProductSelectorViewModel @Inject constructor(
             isVariable() && numVariations > 0
 
         if (item.hasVariations()) {
-            val variationSelectorScreenMode = when (navArgs.selectionMode) {
+            val variationSelectorScreenMode = when (selectionMode) {
                 SelectionMode.SINGLE, SelectionMode.MULTIPLE -> VariationSelectorViewModel.ScreenMode.FULLSCREEN
                 SelectionMode.LIVE -> VariationSelectorViewModel.ScreenMode.DIALOG
             }
@@ -402,7 +403,7 @@ class ProductSelectorViewModel @Inject constructor(
                     selectedVariationIds = item.selectedVariationIds,
                     productSelectorFlow = productSelectorFlow,
                     productSourceForTracking = productSource,
-                    selectionMode = navArgs.selectionMode,
+                    selectionMode = selectionMode,
                     screenMode = variationSelectorScreenMode
                 )
             )
@@ -419,7 +420,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun handleConfigurableItemTap(item: ListItem.ConfigurableListItem) {
-        if (selectedItems.value.containsItemWith(item.id) && navArgs.selectionMode == SelectionMode.MULTIPLE) {
+        if (selectedItems.value.containsItemWith(item.id) && selectionMode == SelectionMode.MULTIPLE) {
             tracker.trackItemUnselected(productSelectorFlow)
             selectedItemsSource.remove(item.id)
             _selectedItems.update { items -> items.filter { it.id != item.id } }
@@ -432,7 +433,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     private fun updateItemSelection(item: SelectedItem, productSource: ProductSourceForTracking) {
-        when (navArgs.selectionMode) {
+        when (selectionMode) {
             SelectionMode.SINGLE -> {
                 tracker.trackItemSelected(productSelectorFlow)
                 selectedItemsSource[item.id] = productSource
@@ -627,7 +628,7 @@ class ProductSelectorViewModel @Inject constructor(
         tracker.trackItemSelected(productSelectorFlow)
         _selectedItems.update { items ->
             val newItem = SelectedItem.ConfigurableProduct(productId, productConfiguration)
-            when (navArgs.selectionMode) {
+            when (selectionMode) {
                 SelectionMode.SINGLE -> listOf(newItem)
                 SelectionMode.MULTIPLE, SelectionMode.LIVE -> items + newItem
             }
