@@ -24,7 +24,7 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchTyp
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderList
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.ProductListFilter
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.NORMAL
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.SIMPLE
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
@@ -154,7 +154,7 @@ class ProductSelectorViewModel @Inject constructor(
 
     private val selectionHandling: SelectionHandling = navArgs.selectionHandling
     val selectionMode: SelectionMode = navArgs.selectionMode
-    val shouldDisplayFilterButton: Boolean = navArgs.productSelectorFlow != OrderList
+    val shouldDisplayFilterButton: Boolean = navArgs.productSelectorFlow != ProductListFilter
 
     init {
         if (navArgs.selectionMode == SelectionMode.SINGLE && (navArgs.selectedItems?.size ?: 0) > 1) {
@@ -676,7 +676,7 @@ class ProductSelectorViewModel @Inject constructor(
         val selectionEnabled: Boolean = true
     ) {
         val isDoneButtonEnabled: Boolean = selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0
-        val shouldDisplayFilterButton = searchState.searchQuery.isEmpty() && productFlow != OrderList
+        val shouldDisplayFilterButton = searchState.searchQuery.isEmpty() && productFlow != ProductListFilter
     }
 
     @Parcelize
@@ -793,7 +793,7 @@ class ProductSelectorViewModel @Inject constructor(
     }
 
     enum class ProductSelectorFlow {
-        OrderCreation, OrderEditing, CouponEdition, OrderList, Undefined
+        OrderCreation, OrderEditing, CouponEdition, ProductListFilter, Undefined
     }
 
     enum class SelectionMode {

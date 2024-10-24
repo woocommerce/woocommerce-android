@@ -28,7 +28,7 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOr
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.list.OrderListFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderList
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.ProductListFilter
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.SIMPLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionMode.SINGLE
@@ -176,7 +176,7 @@ class OrderFilterCategoriesFragment :
                         ctaButtonTextOverride = getString(R.string.done),
                         selectedItems = category.orderFilterOptions.firstOrNull { it.isSelected }
                             ?.let { arrayOf(SelectedItem.Product(it.key.toLong())) },
-                        productSelectorFlow = OrderList
+                        productSelectorFlow = ProductListFilter
                     )
             }
             else -> {
