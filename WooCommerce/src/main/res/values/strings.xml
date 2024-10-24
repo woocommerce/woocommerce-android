@@ -48,6 +48,7 @@
     <string name="untitled">Untitled</string>
     <string name="dialog_ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="no">No</string>
     <string name="cancel_anyway">Cancel anyway</string>
     <string name="keep_editing">Keep editing</string>
     <string name="keep_changes">Keep changes</string>
@@ -1252,6 +1253,13 @@
     <string name="shipping_label_hazmat_option_lighters">Lighters Package - Authorized Lighters</string>
     <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY Ground Package - Aerosols, spray disinfectants, spray paint, hair spray, propane, butane, cleaning products, etc. - Fragrances, nail polish, nail polish remover, solvents, hand sanitizer, rubbing alcohol, ethanol base products, etc. - Other limited quantity surface materials (cosmetics, cleaning products, paints, etc.)</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Small Quantity Provision Package (markings required)</string>
+
+    <string name="shipping_label_package_details_items_weight_price">%1$s&#160;&#160;·&#160;&#160;%2$s</string>
+    <string name="shipping_label_package_details_items_expand_content_description">Collapse/expand items card</string>
+    <string name="shipping_label_hazmat_title">Are you shipping dangerous goods or hazardous materials?</string>
+    <string name="shipping_label_select_package_button">Select a Package</string>
+    <string name="shipping_label_select_package_title">Select a package to get shipping rates</string>
+    <string name="shipping_label_select_package_description">Enter your package\'s dimensions or pick a carrier package option to see the available shipping rates.</string>
 
     <!--
     Shipping label package creation labels
