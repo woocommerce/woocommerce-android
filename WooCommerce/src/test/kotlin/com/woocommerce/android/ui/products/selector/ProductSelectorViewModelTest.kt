@@ -1479,6 +1479,28 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `shouldDisplayFilterButton is true when productFlow is Undefined`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        val viewState = sut.viewState.captureValues().last()
+        assertThat(viewState.shouldDisplayFilterButton).isTrue
+    }
+
+    @Test
+    fun `shouldDisplayFilterButton is false when productFlow is ProductListFilter`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.ProductListFilter,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        val viewState = sut.viewState.captureValues().last()
+        assertThat(viewState.shouldDisplayFilterButton).isFalse
+    }
+
     private fun generateProductListItem(
         id: Long,
     ) = ProductListItem(
