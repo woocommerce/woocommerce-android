@@ -156,7 +156,6 @@ class VariationSelectorViewModel @Inject constructor(
             CouponEdition -> {}
             OrderList -> {}
             Undefined -> {}
-
         }
     }
 
