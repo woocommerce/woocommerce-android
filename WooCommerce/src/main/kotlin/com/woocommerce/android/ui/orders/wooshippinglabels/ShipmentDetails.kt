@@ -299,3 +299,8 @@ private fun getShipTo() = Address(
 )
 
 fun Address.toShippingFromString() = this.getEnvelopeAddress().replace("\n", " ")
+
+data class ShippingLineSummary(
+    val title: String,
+    val amount: String
+)
