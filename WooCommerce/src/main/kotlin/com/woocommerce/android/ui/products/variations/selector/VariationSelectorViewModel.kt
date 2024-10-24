@@ -13,7 +13,12 @@ import com.woocommerce.android.ui.products.ProductStockStatus.Custom
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
 import com.woocommerce.android.ui.products.ProductStockStatus.NotAvailable
 import com.woocommerce.android.ui.products.selector.ProductSelectorTracker
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.CouponEdition
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderEditing
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderList
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.Undefined
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
@@ -64,7 +69,7 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private val navArgs: VariationSelectorFragmentArgs by savedState.navArgs()
-    private val productSelectorFlow = navArgs.productSelectorFlow
+    private val productSelectorFlow: ProductSelectorFlow = navArgs.productSelectorFlow
 
     private val loadingState = MutableStateFlow(IDLE)
     private val selectedVariationIds = savedState.getStateFlow(viewModelScope, navArgs.variationIds.toSet())
@@ -140,17 +145,17 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private fun trackClearSelectionButtonClicked() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ProductSelectorViewModel.ProductSelectorFlow.OrderEditing -> {
+        when (productSelectorFlow) {
+            OrderCreation,
+            OrderEditing -> {
                 tracker.trackClearSelectionButtonClicked(
                     productSelectorFlow,
                     ProductSelectorTracker.ProductSelectorSource.VariationSelector
                 )
             }
-            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.OrderList -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+            CouponEdition -> {}
+            OrderList -> {}
+            Undefined -> {}
 
         }
     }
@@ -166,26 +171,26 @@ class VariationSelectorViewModel @Inject constructor(
     }
 
     private fun trackVariationSelected() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ProductSelectorViewModel.ProductSelectorFlow.OrderEditing -> {
+        when (productSelectorFlow) {
+            OrderCreation,
+            OrderEditing -> {
                 tracker.trackItemSelected(productSelectorFlow)
             }
-            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.OrderList -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+            CouponEdition -> {}
+            OrderList -> {}
+            Undefined -> {}
         }
     }
 
     private fun trackVariationUnselected() {
-        when (navArgs.productSelectorFlow) {
-            ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
-            ProductSelectorViewModel.ProductSelectorFlow.OrderEditing -> {
+        when (productSelectorFlow) {
+            OrderCreation,
+            OrderEditing -> {
                 tracker.trackItemUnselected(productSelectorFlow)
             }
-            ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.OrderList -> {}
-            ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+            CouponEdition -> {}
+            OrderList -> {}
+            Undefined -> {}
         }
     }
 
