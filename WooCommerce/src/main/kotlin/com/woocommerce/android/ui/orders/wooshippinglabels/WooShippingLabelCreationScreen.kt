@@ -11,9 +11,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,30 +41,61 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.modifiers.dashedBorder
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WooShippingLabelCreationScreen(
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.verticalScroll(rememberScrollState())) {
-        val isExpanded = remember { mutableStateOf(false) }
-        ShippingProductsCard(
-            shippableItems = ShippableItems(
-                shippableItems = generateItems(6),
-                totalWeight = "8.5kg",
-                totalPrice = "$92.78"
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            isExpanded = isExpanded.value,
-            onExpand = { isExpanded.value = it }
-        )
-        HazmatCard(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.minor_50))
-        )
-        PackageCard(modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)))
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    BottomSheetScaffold(
+        sheetContent = {
+            ShipmentDetails(scaffoldState)
+        },
+        sheetPeekHeight = 64.dp,
+        scaffoldState = scaffoldState,
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(id = R.string.shipping_label_create_title)) },
+                navigationIcon = {
+                    IconButton({}) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = R.color.color_toolbar),
+                elevation = 0.dp,
+            )
+        },
+    ) { innerPadding ->
+        Surface(
+            modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            Column(modifier.verticalScroll(rememberScrollState())) {
+                val isExpanded = remember { mutableStateOf(false) }
+                ShippingProductsCard(
+                    shippableItems = ShippableItems(
+                        shippableItems = generateItems(6),
+                        totalWeight = "8.5kg",
+                        totalPrice = "$92.78"
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    isExpanded = isExpanded.value,
+                    onExpand = { isExpanded.value = it }
+                )
+                HazmatCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 4.dp, end = 8.dp)
+                )
+                PackageCard(modifier = Modifier.padding(16.dp))
+            }
+        }
     }
 }
 
