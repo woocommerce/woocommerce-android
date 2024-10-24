@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Pro
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.CouponEdition
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderEditing
-import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderList
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.ProductListFilter
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.Undefined
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.selector.SelectionState
@@ -154,7 +154,7 @@ class VariationSelectorViewModel @Inject constructor(
                 )
             }
             CouponEdition -> {}
-            OrderList -> {}
+            ProductListFilter -> {}
             Undefined -> {}
         }
     }
@@ -176,7 +176,7 @@ class VariationSelectorViewModel @Inject constructor(
                 tracker.trackItemSelected(productSelectorFlow)
             }
             CouponEdition -> {}
-            OrderList -> {}
+            ProductListFilter -> {}
             Undefined -> {}
         }
     }
@@ -188,7 +188,7 @@ class VariationSelectorViewModel @Inject constructor(
                 tracker.trackItemUnselected(productSelectorFlow)
             }
             CouponEdition -> {}
-            OrderList -> {}
+            ProductListFilter -> {}
             Undefined -> {}
         }
     }
