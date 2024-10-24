@@ -377,6 +377,31 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given the site address does not match the user account and there is no woo site, continue button is hidden`() =
+        testBlocking {
+            givenThatUserLoggedInFromEnteringSiteAddress(null)
+            whenever(repository.fetchSiteInfo(any())).thenReturn(
+                Result.success(
+                    ConnectSiteInfoPayload(
+                        url = SitePickerTestUtils.loginSiteAddress,
+                        isWordPress = true,
+                        isWPCom = false
+                    )
+                )
+            )
+            val nonWooSite = SiteModel().apply {
+                id = 1
+                siteId = 1
+                hasWooCommerce = false
+            }
+            val siteList = listOf(nonWooSite)
+            whenSitesAreFetched(sitesFromApi = siteList, sitesFromDb = siteList)
+            whenViewModelIsCreated()
+
+            assertThat(viewModel.sitePickerViewState.isPrimaryBtnVisible).isEqualTo(false)
+        }
+
+    @Test
     fun `given that the site address entered during login does not have Woo, no woo error screen is displayed`() =
         testBlocking {
             givenThatUserLoggedInFromEnteringSiteAddress(
