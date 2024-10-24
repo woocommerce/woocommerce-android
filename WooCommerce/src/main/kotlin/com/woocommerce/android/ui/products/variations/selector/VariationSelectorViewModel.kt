@@ -149,7 +149,9 @@ class VariationSelectorViewModel @Inject constructor(
                 )
             }
             ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.OrderList -> {}
             ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
+
         }
     }
 
@@ -170,6 +172,7 @@ class VariationSelectorViewModel @Inject constructor(
                 tracker.trackItemSelected(productSelectorFlow)
             }
             ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.OrderList -> {}
             ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
         }
     }
@@ -181,6 +184,7 @@ class VariationSelectorViewModel @Inject constructor(
                 tracker.trackItemUnselected(productSelectorFlow)
             }
             ProductSelectorViewModel.ProductSelectorFlow.CouponEdition -> {}
+            ProductSelectorViewModel.ProductSelectorFlow.OrderList -> {}
             ProductSelectorViewModel.ProductSelectorFlow.Undefined -> {}
         }
     }
