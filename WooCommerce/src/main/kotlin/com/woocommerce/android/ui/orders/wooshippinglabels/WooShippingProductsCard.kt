@@ -221,7 +221,9 @@ private fun ShippingProduct(
     modifier: Modifier = Modifier,
     imageUrl: String? = null
 ) {
-    RoundedCornerBoxWithBorder(modifier.padding(dimensionResource(R.dimen.major_100))) {
+    RoundedCornerBoxWithBorder(
+        innerModifier = modifier.padding(dimensionResource(R.dimen.major_100))
+    ) {
         ShippingProductDetails(
             title = title,
             description = description,
@@ -391,10 +393,11 @@ internal fun QuantityBadgePreview() {
 @Composable
 fun RoundedCornerBoxWithBorder(
     modifier: Modifier = Modifier,
+    innerModifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit = {},
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .background(
                 color = MaterialTheme.colors.surface,
                 shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
@@ -404,7 +407,7 @@ fun RoundedCornerBoxWithBorder(
                 color = colorResource(R.color.divider_color),
                 shape = RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))
             )
-            .then(modifier)
+            .then(innerModifier)
     ) {
         content()
     }
