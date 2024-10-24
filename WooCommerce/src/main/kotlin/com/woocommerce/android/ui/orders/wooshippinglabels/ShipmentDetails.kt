@@ -40,6 +40,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.StringUtils
@@ -95,6 +96,11 @@ fun ShipmentDetails(
             shippingLines = getShippingLines(3)
         )
         Divider(modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)))
+        ShipmentCostSection(
+            subTotal = null,
+            total = "$120.99",
+            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+        )
     }
 }
 
@@ -397,6 +403,71 @@ private fun TotalItem(
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.onSurface,
             modifier = Modifier.padding(end = dimensionResource(R.dimen.minor_100))
+        )
+    }
+}
+
+@Composable
+private fun ShipmentCostSection(
+    subTotal: String?,
+    total: String?,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        ShipmentDetailsSectionTitle(
+            title = stringResource(R.string.shipping_label_shipment_details_shipment_cost)
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.major_100)))
+        Row(modifier = Modifier.padding(top = dimensionResource(R.dimen.minor_100))) {
+            Text(
+                text = stringResource(R.string.subtotal),
+                style = MaterialTheme.typography.subtitle1,
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.weight(1f)
+            )
+            subTotal?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.subtitle1,
+                    color = MaterialTheme.colors.onSurface
+                )
+            } ?: SkeletonView(
+                width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+                height = dimensionResource(id = R.dimen.major_100)
+            )
+
+        }
+        Row(modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100))) {
+            Text(
+                text = stringResource(R.string.total),
+                style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.weight(1f)
+            )
+            total?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.subtitle1,
+                    color = MaterialTheme.colors.onSurface
+                )
+            } ?: SkeletonView(
+                width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+                height = dimensionResource(id = R.dimen.major_100)
+            )
+
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ShipmentCostSectionPreview() {
+    WooThemeWithBackground {
+        ShipmentCostSection(
+            subTotal = "$12.99",
+            total = "$12.99",
+            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
         )
     }
 }
