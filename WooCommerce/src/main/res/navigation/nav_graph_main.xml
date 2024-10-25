@@ -394,6 +394,7 @@
 
     <action
         android:id="@+id/action_global_productDetailFragment"
+        app:popUpTo="@id/products"
         app:destination="@id/nav_graph_products">
         <argument
             android:name="mode"
