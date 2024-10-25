@@ -1264,7 +1264,9 @@
     <string name="shipping_label_shipment_details_title">Shipment details</string>
     <string name="shipping_label_shipment_details_order_details">Order details</string>
     <string name="shipping_label_shipment_details_shipment_cost">Shipment cost</string>
-
+    <string name="shipping_label_shipment_details_mark_order_complete">Mark this order as complete and notify the customer</string>
+    <string name="shipping_label_shipment_details_purchase_label">Purchase Label · %1$s </string>
+    <string name="shipping_label_shipment_details_purchase_label_disabled">Purchase Label</string>
     <!--
     Shipping label package creation labels
     -->
