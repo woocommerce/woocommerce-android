@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragmentArgs
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
-import com.woocommerce.android.ui.woopos.cardreader.IppPaymentStateObserver
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -147,6 +146,15 @@ class WooPosTotalsViewModel @Inject constructor(
                             savedStateHandle = savedStateHandle
                         )
                         paymentController.onViewCreated()
+                        paymentState.asFlow().collect {
+                            if (it is ViewState.ExternalReaderPaymentSuccessfulState) {
+                                val state = uiState.value
+                                check(state is WooPosTotalsViewState.Totals)
+                                uiState.value =
+                                    WooPosTotalsViewState.PaymentSuccess(orderTotalText = state.orderTotalText)
+                                childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
+                            }
+                        }
                     }
                     is WooPosCardReaderPaymentStatus.FailureToPrepareForPayment,
                     is WooPosCardReaderPaymentStatus.Unknown -> Unit
