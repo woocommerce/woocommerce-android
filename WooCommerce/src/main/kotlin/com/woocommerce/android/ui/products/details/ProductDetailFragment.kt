@@ -465,7 +465,11 @@ class ProductDetailFragment :
 
     private fun openProductDetails(productRemoteId: Long) {
         hideProgressDialog()
-        (activity as? MainNavigationRouter)?.showProductDetail(productRemoteId, enableTrash = true)
+        (activity as? MainNavigationRouter)?.showProductDetail(
+            remoteProductId = productRemoteId,
+            enableTrash = true,
+            popUpToProducts = true
+        )
     }
 
     /**
