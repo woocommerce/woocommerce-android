@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-16 17:54:03+0000
+Translation-Revision-Date: 2024-10-22 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_objective_save_selection_switch_label">Sla mijn selectie op voor toekomstige campagnes</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;Goed voor:&lt;/b&gt; %s</string>
+    <string name="blaze_campaign_objective_select_objective_label">Doel selecteren %s</string>
     <string name="custom_fields_empty_view_title">Geen aangepaste velden gevonden</string>
     <string name="custom_fields_empty_view_message">Aangepaste velden zijn optionele metadata om extra informatie weer te geven of de winkelervaring voor je winkel aan te passen.</string>
     <string name="blaze_campaign_created_success_feedback_request">Hoe was je ervaring met Blaze?</string>

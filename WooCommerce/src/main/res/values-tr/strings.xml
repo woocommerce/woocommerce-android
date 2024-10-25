@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-14 16:54:08+0000
+Translation-Revision-Date: 2024-10-22 09:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_objective_save_selection_switch_label">Gelecekteki kampanyalar için seçimimi kaydet</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;Şunlar açısından iyi:&lt;/b&gt; %s</string>
+    <string name="blaze_campaign_objective_select_objective_label">Hedef seç %s</string>
     <string name="custom_fields_empty_view_title">Özel alan bulunamadı</string>
     <string name="custom_fields_empty_view_message">Özel alanlar, ek bilgileri görüntülemek veya mağazanızın alışveriş deneyimini özelleştirmek için isteğe bağlı meta verilerdir.</string>
     <string name="blaze_campaign_created_success_feedback_request">Blaze ile olan deneyiminiz nasıldı?</string>

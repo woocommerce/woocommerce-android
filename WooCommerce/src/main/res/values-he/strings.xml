@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-15 13:54:04+0000
+Translation-Revision-Date: 2024-10-23 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_objective_save_selection_switch_label">לשמור את הבחירה שלי עבור קמפיינים עתידיים</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;מומלץ עבור:&lt;/b&gt; %s</string>
+    <string name="blaze_campaign_objective_select_objective_label">לבחור מטרה %s</string>
     <string name="custom_fields_empty_view_title">לא נמצאו שדות מותאמים</string>
     <string name="custom_fields_empty_view_message">שדות מותאמים הם מטא-נתונים אופציונליים שיכולים להציג מידע נוסף או להתאים אישית את חוויית הקניות בחנות שלך.</string>
     <string name="blaze_campaign_created_success_feedback_request">איך הייתה החוויה שלך עם Blaze</string>

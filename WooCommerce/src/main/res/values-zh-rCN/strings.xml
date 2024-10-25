@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-15 09:54:07+0000
+Translation-Revision-Date: 2024-10-22 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_objective_save_selection_switch_label">保存我的选择，以备将来活动使用</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;适合：&lt;/b&gt;%s</string>
+    <string name="blaze_campaign_objective_select_objective_label">选择目标 %s</string>
     <string name="custom_fields_empty_view_title">未找到自定义字段</string>
     <string name="custom_fields_empty_view_message">自定义字段是可选的元数据，用于显示额外信息或自定义您商店的购物体验。</string>
     <string name="blaze_campaign_created_success_feedback_request">使用 Blaze 的体验如何</string>

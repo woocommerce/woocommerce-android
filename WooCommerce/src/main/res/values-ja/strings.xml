@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-16 09:54:03+0000
+Translation-Revision-Date: 2024-10-22 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_objective_save_selection_switch_label">今後のキャンペーンのために選択を保存</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;効果:&lt;/b&gt; %s</string>
+    <string name="blaze_campaign_objective_select_objective_label">目的 %s を選択</string>
     <string name="custom_fields_empty_view_title">カスタムフィールドが見つかりません</string>
     <string name="custom_fields_empty_view_message">カスタムフィールドはオプションのメタデータで、追加情報を表示したりストアのショッピング体験をカスタマイズしたりできます。</string>
     <string name="blaze_campaign_created_success_feedback_request">Blaze の操作性はいかがでしたか</string>

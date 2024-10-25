@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-17 09:54:04+0000
+Translation-Revision-Date: 2024-10-21 23:54:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_objective_save_selection_switch_label">حفظ التحديد الخاص بي للحملات المستقبلية</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;مناسب لـ:&lt;/b&gt; %s</string>
+    <string name="blaze_campaign_objective_select_objective_label">تحديد هدف %s</string>
     <string name="custom_fields_empty_view_title">لم يتم العثور على حقول مخصصة</string>
     <string name="custom_fields_empty_view_message">الحقول المخصصة هي بيانات وصفية اختيارية لعرض معلومات إضافية أو تخصيص تجربة تسوق خاصة بمتجرك.</string>
     <string name="blaze_campaign_created_success_feedback_request">كيف كانت التجربة مع Blaze</string>

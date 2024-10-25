@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-14 16:54:08+0000
+Translation-Revision-Date: 2024-10-22 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_objective_save_selection_switch_label">Enregistrer ma sélection pour de futures campagnes</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;Idéal pour :&lt;/b&gt; %s</string>
+    <string name="blaze_campaign_objective_select_objective_label">Sélectionner un objectif %s</string>
     <string name="custom_fields_empty_view_title">Aucun champ personnalisé trouvé</string>
     <string name="custom_fields_empty_view_message">Les champs personnalisés sont des métadonnées facultatives pour afficher des informations supplémentaires ou personnaliser l’expérience d’achat sur votre boutique.</string>
     <string name="blaze_campaign_created_success_feedback_request">Comment s’est passée votre expérience Blaze</string>

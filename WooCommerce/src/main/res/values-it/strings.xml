@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-10-17 09:54:04+0000
+Translation-Revision-Date: 2024-10-22 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="blaze_campaign_objective_save_selection_switch_label">Salva la mia selezione per le campagne future</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;Ottimo per:&lt;/b&gt; %s</string>
+    <string name="blaze_campaign_objective_select_objective_label">Seleziona obiettivo %s</string>
     <string name="custom_fields_empty_view_title">Nessun campo personalizzato trovato</string>
     <string name="custom_fields_empty_view_message">I campi personalizzati sono metadati opzionali che mostrano informazioni aggiuntive o ti consentono di personalizzare la tua esperienza di acquisto.</string>
     <string name="blaze_campaign_created_success_feedback_request">Com\'è stata l\'esperienza con Blaze?</string>
