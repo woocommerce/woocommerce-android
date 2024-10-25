@@ -1,2 +1,0 @@
-20.8:
-Kami telah menyempurnakan pengalaman aplikasi WooCommerce dengan beberapa pembaruan utama! Tautan "Baca Selengkapnya" untuk pilihan Pembayaran Langsung di pengaturan pembayaran telah diperbaiki. Kami juga mempermudah proses pembuatan kampanye Blaze dengan menambahkan fitur pilihan tujuan. Perbarui sekarang untuk rasakan alur kerja yang lebih baik!

@@ -1,2 +1,0 @@
-20.8:
-Wir haben an unserem WooCommerce-App-Erlebnis einige zentrale Änderungen vorgenommen! Der Link „Weitere Informationen“ bei der Option „Persönliche Zahlung“ in den Bezahlungseinstellungen funktioniert nun wie beabsichtigt. Zudem haben wir den Blaze-Kampagnenerstellungsprozess optimiert, indem wir eine Funktion zur Zielauswahl hinzugefügt haben. Führe jetzt ein Update durch und genieße einen nahtloseren Workflow!

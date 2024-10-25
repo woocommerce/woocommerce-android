@@ -1,2 +1,0 @@
-20.8:
-Vi har förbättrat din WooCommerce-appupplevelse med några viktiga uppdateringar. Länken "Läs mer" för alternativet Betala personligen i betalningsinställningarna är nu korrigerad, och vi har effektiviserat processen för skapande av Blaze-kampanjer genom att lägga till en objektiv urvalsfunktion. Uppdatera nu och ta del av ett smidigare arbetsflöde.

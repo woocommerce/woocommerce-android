@@ -1,2 +1,0 @@
-20.8:
-Melhoramos sua experiência no app do WooCommerce com algumas atualizações importantes. O link "Saiba mais" para a opção de pagamento presencial nas configurações de pagamento está agora corrigido. Além disso, simplificamos o processo de criação de campanhas do Blaze, adicionando uma funcionalidade de seleção de objetivo. Atualize agora e aproveite um fluxo de trabalho mais leve!

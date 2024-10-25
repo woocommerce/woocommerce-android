@@ -1,2 +1,0 @@
-20.8:
-We hebben je ervaring met de WooCommerce-app verbeterd via een aantal belangrijke updates! De link 'Meer informatie' voor de optie Fysiek betalen in de betaalinstellingen is nu gerepareerd en we hebben het aanmaakproces voor Blaze-campagnes gestroomlijnd door de functie doelselectie toe te voegen. Update nu voor een soepelere workflow!

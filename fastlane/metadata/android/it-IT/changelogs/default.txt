@@ -1,2 +1,0 @@
-20.8:
-Abbiamo migliorato l'esperienza nell'app WooCommerce grazie ad alcuni aggiornamenti fondamentali. Abbiamo corretto il link "Scopri di più" per l'opzione Paga di persona nelle impostazioni di pagamento e abbiamo semplificato il processo di creazione delle campagne Blaze attraverso l'aggiunta di una funzionalità di selezione degli obiettivi. Aggiorna ora per ottenere un flusso di lavoro senza intoppi.
