@@ -987,10 +987,16 @@ class MainActivity :
     }
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean, popUpToProducts: Boolean) {
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-            isTrashEnabled = enableTrash
-        )
+        val action = when (popUpToProducts) {
+            true -> NavGraphMainDirections.actionGlobalProductDetailFragmentPopUpToProducts(
+                mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
+                isTrashEnabled = enableTrash
+            )
+            else -> NavGraphMainDirections.actionGlobalProductDetailFragment(
+                mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
+                isTrashEnabled = enableTrash
+            )
+        }
         navController.navigateSafely(action)
     }
 
