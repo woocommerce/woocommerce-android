@@ -1,0 +1,2 @@
+20.8 :
+Nous avons amélioré votre expérience avec l’application WooCommerce avec certaines mises à jour clés ! Le lien « En savoir plus » pour l’option Payer en personne dans les réglages de paiement est désormais corrigé et nous avons rationalisé le processus de création d’une campagne Blaze en ajoutant une fonctionnalité de sélection d’objectif. Mettez à jour dès maintenant pour bénéficier d’un flux de travail plus fluide !

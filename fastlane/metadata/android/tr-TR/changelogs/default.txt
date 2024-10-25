@@ -1,0 +1,2 @@
+20.8:
+WooCommerce uygulama deneyiminizi bazı önemli güncellemelerle iyileştirdik! Ödeme ayarlarındaki Şahsen Ödeme seçeneğinin "Daha Fazla Bilgi Edinin" bağlantısı artık düzeltildi ve Blaze kampanya oluşturma sürecini hedef seçimi özelliği ekleyerek kolaylaştırdık. Daha sorunsuz bir iş akışının keyfini çıkarmak için hemen güncelleyin!

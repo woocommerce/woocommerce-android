@@ -1,0 +1,2 @@
+20.8:
+Hemos mejorado tu experiencia con la aplicación de WooCommerce con algunas actualizaciones clave. Se ha corregido el enlace «Más información» de la opción Pagos en persona en los ajustes de pago, y hemos agilizado el proceso de creación de campañas de Blaze añadiendo una función de selección de objetivos. Actualiza ahora para disfrutar de un flujo de trabajo más fluido.
