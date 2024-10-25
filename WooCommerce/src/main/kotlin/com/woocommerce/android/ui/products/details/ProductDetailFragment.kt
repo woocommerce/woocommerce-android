@@ -468,7 +468,7 @@ class ProductDetailFragment :
         (activity as? MainNavigationRouter)?.showProductDetail(
             remoteProductId = productRemoteId,
             enableTrash = true,
-            popUpToProducts = true
+            popUpToProductList = true
         )
     }
 

@@ -986,9 +986,9 @@ class MainActivity :
         restart()
     }
 
-    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean, popUpToProducts: Boolean) {
-        val action = when (popUpToProducts) {
-            true -> NavGraphMainDirections.actionGlobalProductDetailFragmentPopUpToProducts(
+    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean, popUpToProductList: Boolean) {
+        val action = when (popUpToProductList) {
+            true -> NavGraphMainDirections.actionGlobalProductDetailFragmentPopUpToProductList(
                 mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
                 isTrashEnabled = enableTrash
             )

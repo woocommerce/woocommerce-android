@@ -413,7 +413,7 @@
             app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </action>
     <action
-        android:id="@+id/action_global_productDetailFragment_popUpTo_products"
+        android:id="@+id/action_global_productDetailFragment_popUpTo_product_list"
         app:destination="@id/nav_graph_products"
         app:popUpTo="@id/products">
         <argument
