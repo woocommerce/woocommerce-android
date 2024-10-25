@@ -81,17 +81,14 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
-import com.woocommerce.android.viewmodel.navArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 private const val ARTIFICIAL_RETRY_DELAY = 500L
 private const val CANADA_FEE_FLAT_IN_CENTS = 15L
@@ -99,7 +96,6 @@ private const val KEY_TTP_PAYMENT_IN_PROGRESS = "ttp_payment_in_progress"
 
 @Suppress("LargeClass")
 class CardReaderPaymentController @Inject constructor(
-    private val savedState: SavedStateHandle,
     private val cardReaderManager: CardReaderManager,
     private val orderRepository: OrderDetailRepository,
     private val selectedSite: SelectedSite,
@@ -119,11 +115,13 @@ class CardReaderPaymentController @Inject constructor(
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider,
     private val paymentReceiptShare: PaymentReceiptShare,
-    private val scope: CoroutineScope
-): CoroutineScope {
-    override val coroutineContext: CoroutineContext = scope.coroutineContext
-    
-    private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
+) {
+
+    private lateinit var arguments: CardReaderPaymentDialogFragmentArgs
+    private lateinit var savedState: SavedStateHandle
+
+    private val _event: MutableLiveData<Event> = MultiLiveEvent()
+    val event: LiveData<Event> = _event
 
     private var isTTPPaymentInProgress: Boolean
         get() = savedState.get<Boolean>(KEY_TTP_PAYMENT_IN_PROGRESS) == true
@@ -131,7 +129,7 @@ class CardReaderPaymentController @Inject constructor(
             savedState[KEY_TTP_PAYMENT_IN_PROGRESS] = value
         }
 
-    private val orderId = arguments.paymentOrRefund.orderId
+    private val orderId by lazy<Long> { arguments.paymentOrRefund.orderId } // TODO: make safe
 
     private val refundAmount: BigDecimal
         get() = when (val param = arguments.paymentOrRefund) {
@@ -139,16 +137,9 @@ class CardReaderPaymentController @Inject constructor(
             else -> throw IllegalStateException("Accessing refund amount on $param flow")
         }
 
-    private val CardReaderFlowParam.PaymentOrRefund.isPOS: Boolean
-        get() = this is CardReaderFlowParam.PaymentOrRefund.Payment &&
-                this.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
-
     // The app shouldn't store the state as payment flow gets canceled when the vm dies
     private val viewState = MutableLiveData<ViewState>(LoadingDataState(::onCancelPaymentFlow))
     val viewStateData: LiveData<ViewState> = viewState
-
-    private val _event: MutableLiveData<Event> = MultiLiveEvent()
-    val event: LiveData<Event> = _event
 
     private var paymentFlowJob: Job? = null
     private var refundFlowJob: Job? = null
@@ -156,14 +147,27 @@ class CardReaderPaymentController @Inject constructor(
 
     private var refetchOrderJob: Job? = null
 
-    fun start() {
+    private val CardReaderFlowParam.PaymentOrRefund.isPOS: Boolean
+        get() = this is CardReaderFlowParam.PaymentOrRefund.Payment &&
+                this.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+
+    private lateinit var scope: CoroutineScope
+
+    fun start(
+        scope: CoroutineScope,
+        args: CardReaderPaymentDialogFragmentArgs,// TODO: switch to dedicated model class
+        savedStateHandle: SavedStateHandle,// TODO: make it independent of Android Framework; use an interface
+        ) {
+        this.scope = scope
+        this.savedState = savedStateHandle
+        this.arguments = args
         if (cardReaderManager.readerStatus.value is CardReaderStatus.Connected) {
             startFlowWhenReaderConnected()
         } else {
             exitWithSnackbar(R.string.card_reader_payment_reader_not_connected)
         }
 
-        launch {
+        scope.launch {
             listenToCardReaderBatteryChanges()
         }
     }
@@ -224,7 +228,7 @@ class CardReaderPaymentController @Inject constructor(
     }
 
     private fun initPaymentFlow(isRetry: Boolean) {
-        paymentFlowJob = launch {
+        paymentFlowJob = scope.launch {
             viewState.postValue((LoadingDataState(::onCancelPaymentFlow)))
             if (isRetry) {
                 delay(ARTIFICIAL_RETRY_DELAY)
@@ -258,7 +262,7 @@ class CardReaderPaymentController @Inject constructor(
     }
 
     private fun initRefundFlow(isRetry: Boolean) {
-        refundFlowJob = launch {
+        refundFlowJob = scope.launch {
             onRefundStatusChanged(InitializingInteracRefund, "")
             if (isRetry) {
                 delay(ARTIFICIAL_RETRY_DELAY)
@@ -290,13 +294,8 @@ class CardReaderPaymentController @Inject constructor(
         }
     }
 
-    private fun retry(
-        orderId: Long,
-        billingEmail: String,
-        paymentData: PaymentData,
-        amountLabel: String
-    ) {
-        paymentFlowJob = launch {
+    private fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) {
+        paymentFlowJob = scope.launch {
             viewState.postValue(LoadingDataState(::onCancelPaymentFlow))
             delay(ARTIFICIAL_RETRY_DELAY)
             cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
@@ -485,7 +484,7 @@ class CardReaderPaymentController @Inject constructor(
         paymentReceiptHelper.storeReceiptUrl(orderId, paymentStatus.receiptUrl)
         appPrefs.setCardReaderSuccessfulPaymentTime()
         if (arguments.paymentOrRefund.isPOS) {
-            launch {
+            scope.launch {
                 syncOrderStatus(orderId)
                 triggerEvent(Exit)
             }
@@ -502,7 +501,7 @@ class CardReaderPaymentController @Inject constructor(
 
     @VisibleForTesting
     fun reFetchOrder() {
-        refetchOrderJob = launch {
+        refetchOrderJob = scope.launch {
             fetchOrder() ?: triggerEvent(ShowSnackbar(R.string.card_reader_refetching_order_failed))
             if (viewState.value == ReFetchingOrderState) {
                 triggerEvent(Exit)
@@ -585,11 +584,7 @@ class CardReaderPaymentController @Inject constructor(
         viewState.postValue(buildFailedPaymentState(errorType, amountLabel, onRetryClicked))
     }
 
-    private fun buildFailedPaymentState(
-        errorType: PaymentFlowError,
-        amountLabel: String,
-        onRetryClicked: () -> Unit
-    ) =
+    private fun buildFailedPaymentState(errorType: PaymentFlowError, amountLabel: String, onRetryClicked: () -> Unit) =
         when (errorType) {
             is PaymentFlowError.ContactSupportError ->
                 cardReaderPaymentReaderTypeStateProvider.provideFailedPaymentState(
@@ -645,9 +640,8 @@ class CardReaderPaymentController @Inject constructor(
         }
 
     private fun showPaymentSuccessfulState() {
-        launch {
-            val order =
-                requireNotNull(orderRepository.getOrderById(orderId)) { "Order URL not available." }
+        scope.launch {
+            val order = requireNotNull(orderRepository.getOrderById(orderId)) { "Order URL not available." }
             val amountLabel = cardReaderPaymentOrderHelper.getAmountLabel(order)
             val onPrintReceiptClicked = {
                 onPrintReceiptClicked(amountLabel)
@@ -737,7 +731,7 @@ class CardReaderPaymentController @Inject constructor(
     }
 
     private fun onPrintReceiptClicked(amountWithCurrencyLabel: String) {
-        launch {
+        scope.launch {
             viewState.value = PrintingReceiptState(amountWithCurrencyLabel)
             tracker.trackPrintReceiptTapped()
             startPrintingFlow()
@@ -751,7 +745,7 @@ class CardReaderPaymentController @Inject constructor(
     }
 
     private fun startPrintingFlow() {
-        launch {
+        scope.launch {
             val receiptResult = paymentReceiptHelper.getReceiptUrl(orderId)
             if (receiptResult.isSuccess) {
                 triggerEvent(
@@ -770,30 +764,26 @@ class CardReaderPaymentController @Inject constructor(
     }
 
     private fun onSendReceiptClicked() {
-        launch {
+        scope.launch {
             tracker.trackEmailReceiptTapped()
             val stateBeforeLoading = viewState.value!!
             viewState.postValue(ViewState.SharingReceiptState)
             val receiptResult = paymentReceiptHelper.getReceiptUrl(orderId)
 
             if (receiptResult.isSuccess) {
-                when (val sharingResult =
-                    paymentReceiptShare(receiptResult.getOrThrow(), orderId)) {
+                when (val sharingResult = paymentReceiptShare(receiptResult.getOrThrow(), orderId)) {
                     is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
                         tracker.trackPaymentsReceiptSharingFailed(sharingResult)
                         triggerEvent(ShowSnackbar(R.string.card_reader_payment_receipt_can_not_be_stored))
                     }
-
                     is PaymentReceiptShare.ReceiptShareResult.Error.FileDownload -> {
                         tracker.trackPaymentsReceiptSharingFailed(sharingResult)
                         triggerEvent(ShowSnackbar(R.string.card_reader_payment_receipt_can_not_be_downloaded))
                     }
-
                     is PaymentReceiptShare.ReceiptShareResult.Error.Sharing -> {
                         tracker.trackPaymentsReceiptSharingFailed(sharingResult)
                         triggerEvent(ShowSnackbar(R.string.card_reader_payment_email_client_not_found))
                     }
-
                     PaymentReceiptShare.ReceiptShareResult.Success -> {
                         // no-op
                     }
@@ -812,7 +802,7 @@ class CardReaderPaymentController @Inject constructor(
     fun onPrintResult(result: PrintJobResult) {
         showPaymentSuccessfulState()
 
-        launch {
+        scope.launch {
             when (result) {
                 CANCELLED -> tracker.trackPrintReceiptCancelled()
                 FAILED -> tracker.trackPrintReceiptFailed()
@@ -826,7 +816,6 @@ class CardReaderPaymentController @Inject constructor(
         paymentDataForRetry?.let {
             cardReaderManager.cancelPayment(it)
         }
-        scope.cancel()
     }
 
     fun onBackPressed() {
@@ -878,7 +867,7 @@ class CardReaderPaymentController @Inject constructor(
             if (ReaderType.isBuiltInReaderType(readerStatus.cardReader.type) &&
                 (viewState.value is BuiltInReaderFailedPaymentState || viewState.value is FailedRefundState)
             ) {
-                launch { cardReaderManager.disconnectReader() }
+                scope.launch { cardReaderManager.disconnectReader() }
             }
         }
     }

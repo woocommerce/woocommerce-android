@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 sealed class WooPosCardReaderPaymentStatus : Parcelable {
-    data object Success : WooPosCardReaderPaymentStatus()
-    data object Failure : WooPosCardReaderPaymentStatus()
+    data object ReadyToCollectPayment : WooPosCardReaderPaymentStatus()
+    data object FailureToPrepareForPayment : WooPosCardReaderPaymentStatus()
     data object Unknown : WooPosCardReaderPaymentStatus()
 }

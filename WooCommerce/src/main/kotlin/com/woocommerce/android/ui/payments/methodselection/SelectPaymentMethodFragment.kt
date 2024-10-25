@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodVi
 import com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity.Companion.WOO_POS_PREPARE_FOR_CARD_PAYMENT_REQUEST_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -307,8 +308,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
     private fun ReturnResultToWooPos.asWooPosCardReaderPaymentResult() =
         when (this) {
-            is ReturnResultToWooPos.Success -> WooPosCardReaderPaymentStatus.Success
-            else -> WooPosCardReaderPaymentStatus.Failure
+            is ReturnResultToWooPos.ReadyToCollectPayment -> WooPosCardReaderPaymentStatus.ReadyToCollectPayment
+            else -> WooPosCardReaderPaymentStatus.FailureToPrepareForPayment
         }
 
     private fun setupResultHandlers() {
@@ -338,6 +339,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             entryId = R.id.selectPaymentMethodFragment
         ) { paid ->
             viewModel.handleIsOrderPaid(paid)
+        }
+        handleDialogNotice(
+            key = WOO_POS_PREPARE_FOR_CARD_PAYMENT_REQUEST_KEY,
+            entryId = R.id.selectPaymentMethodFragment
+        ) {
+            viewModel.onWooPosPrepareForCardPaymentRequestResult()
         }
     }
 

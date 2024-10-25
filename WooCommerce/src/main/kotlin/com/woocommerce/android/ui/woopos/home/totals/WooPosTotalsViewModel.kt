@@ -1,11 +1,19 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
 import android.os.Parcelable
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentController
+import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragmentArgs
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.ui.woopos.cardreader.IppPaymentStateObserver
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentStatus
@@ -38,7 +46,8 @@ class WooPosTotalsViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val networkStatus: WooPosNetworkStatus,
-    private val ippObserver: IppPaymentStateObserver,
+    private val paymentController: CardReaderPaymentController,
+    private val savedStateHandle: SavedStateHandle,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -62,7 +71,7 @@ class WooPosTotalsViewModel @Inject constructor(
         key = KEY_STATE,
     )
 
-    val paymentState: StateFlow<IppPaymentStateObserver.PaymentFlowState> = ippObserver.state
+    val paymentState: LiveData<ViewState> = paymentController.viewStateData
 
     init {
         listenUpEvents()
@@ -93,7 +102,7 @@ class WooPosTotalsViewModel @Inject constructor(
         } else {
             val orderId = dataState.value.orderId
             check(orderId != EMPTY_ORDER_ID)
-            cardReaderFacade.collectPayment(orderId)
+            cardReaderFacade.prepareForPaymentCollection(orderId)
         }
     }
 
@@ -121,13 +130,25 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             cardReaderFacade.paymentStatus.collect { status ->
                 when (status) {
-                    is WooPosCardReaderPaymentStatus.Success -> {
-                        val state = uiState.value
-                        check(state is WooPosTotalsViewState.Totals)
-                        uiState.value = WooPosTotalsViewState.PaymentSuccess(orderTotalText = state.orderTotalText)
-                        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
+//TODO: this should be moved further down to the payment result received from [CardReaderPaymentController]
+//                    is WooPosCardReaderPaymentStatus.Success -> {
+//                        val state = uiState.value
+//                        check(state is WooPosTotalsViewState.Totals)
+//                        uiState.value = WooPosTotalsViewState.PaymentSuccess(orderTotalText = state.orderTotalText)
+//                        childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
+//                    }
+                    is WooPosCardReaderPaymentStatus.ReadyToCollectPayment -> {
+                        paymentController.start(
+                            scope = viewModelScope,
+                            args = CardReaderPaymentDialogFragmentArgs(
+                                CardReaderFlowParam.PaymentOrRefund.Payment(orderId = dataState.value.orderId, WOO_POS),
+                                cardReaderType = CardReaderType.EXTERNAL
+                            ),
+                            savedStateHandle = savedStateHandle
+                        )
+                        paymentController.onViewCreated()
                     }
-                    is WooPosCardReaderPaymentStatus.Failure,
+                    is WooPosCardReaderPaymentStatus.FailureToPrepareForPayment,
                     is WooPosCardReaderPaymentStatus.Unknown -> Unit
                 }
             }

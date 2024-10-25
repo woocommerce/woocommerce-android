@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.payments.cardreader.payment.ViewState
 import com.woocommerce.android.ui.woopos.cardreader.IppPaymentStateObserver
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
@@ -54,7 +56,7 @@ import kotlinx.coroutines.delay
 fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
     val viewModel: WooPosTotalsViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
-    val paymentFlowState: IppPaymentStateObserver.PaymentFlowState = viewModel.paymentState.collectAsState().value
+    val paymentFlowState = viewModel.paymentState.observeAsState().value
     WooPosTotalsScreen(modifier, state, paymentFlowState, viewModel::onUIEvent)
 }
 
@@ -62,7 +64,7 @@ fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
 private fun WooPosTotalsScreen(
     modifier: Modifier = Modifier,
     state: WooPosTotalsViewState,
-    paymentFlowState: IppPaymentStateObserver.PaymentFlowState,
+    paymentFlowState: ViewState?,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Box(modifier = modifier) {
@@ -112,7 +114,7 @@ private fun StateChangeAnimated(
 @Composable
 private fun TotalsLoaded(
     state: WooPosTotalsViewState.Totals,
-    paymentFlowState: IppPaymentStateObserver.PaymentFlowState,
+    paymentFlowState: ViewState?,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     var isButtonVisible by remember { mutableStateOf(false) }
@@ -286,7 +288,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                 orderTotalText = "$462.00",
                 orderTaxText = "$42.00",
             ),
-            paymentFlowState = IppPaymentStateObserver.PaymentFlowState.Idle,
+            paymentFlowState = ViewState.LoadingDataState {},
             onUIEvent = {}
         )
     }
@@ -298,7 +300,7 @@ fun WooPosTotalsScreenLoadingPreview() {
     WooPosTheme {
         WooPosTotalsScreen(
             state = WooPosTotalsViewState.Loading,
-            paymentFlowState = IppPaymentStateObserver.PaymentFlowState.Idle,
+            paymentFlowState = ViewState.LoadingDataState {},
             onUIEvent = {}
         )
     }

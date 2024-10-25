@@ -119,7 +119,6 @@ class CardReaderPaymentViewModel
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider,
     private val paymentReceiptShare: PaymentReceiptShare,
-    private val controller: CardReaderPaymentController,
 ) : ScopedViewModel(savedState) {
     private val arguments: CardReaderPaymentDialogFragmentArgs by savedState.navArgs()
 
@@ -161,7 +160,6 @@ class CardReaderPaymentViewModel
         viewModelScope.launch {
             listenToCardReaderBatteryChanges()
         }
-        controller.start()
     }
 
     private fun startFlowWhenReaderConnected() {

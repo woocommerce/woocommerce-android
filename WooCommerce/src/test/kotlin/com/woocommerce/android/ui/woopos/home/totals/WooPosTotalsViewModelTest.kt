@@ -369,7 +369,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
 
         // THEN
-        verify(cardReaderFacade, times(1)).collectPayment(any())
+        verify(cardReaderFacade, times(1)).prepareForPaymentCollection(any())
     }
 
     @Test
@@ -621,7 +621,7 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked)
 
         // THEN
-        verify(cardReaderFacade, never()).collectPayment(any())
+        verify(cardReaderFacade, never()).prepareForPaymentCollection(any())
     }
 
     private fun createViewModel(

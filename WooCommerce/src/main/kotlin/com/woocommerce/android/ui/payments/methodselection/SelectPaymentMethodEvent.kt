@@ -42,8 +42,8 @@ data class NavigateToOrderDetails(
 ) : MultiLiveEvent.Event()
 
 sealed class ReturnResultToWooPos : MultiLiveEvent.Event() {
-    data object Success : ReturnResultToWooPos()
-    data object Failure : ReturnResultToWooPos()
+    data object ReadyToCollectPayment : ReturnResultToWooPos()
+    data object FailedToPrepareForPayment : ReturnResultToWooPos()
 }
 
 data class NavigateToTapToPaySummary(

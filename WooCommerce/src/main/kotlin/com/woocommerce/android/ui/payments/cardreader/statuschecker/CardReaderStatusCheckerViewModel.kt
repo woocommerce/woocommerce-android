@@ -52,7 +52,7 @@ class CardReaderStatusCheckerViewModel
                     arguments.cardReaderType
                 )
             )
-            is CardReaderFlowParam.PaymentOrRefund  -> {
+            is CardReaderFlowParam.PaymentOrRefund -> {
                 val cardReaderStatus = cardReaderManager.readerStatus.value
                 if (cardReaderStatus is Connected) {
                     if (cardReaderStatus.cardReader.toCardReaderType() != arguments.cardReaderType) {

@@ -39,7 +39,7 @@ class WooPosCardReaderFacade @Inject constructor(
                     WOO_POS_CARD_PAYMENT_RESULT_KEY
                 )
             } else {
-                WooPosCardReaderPaymentStatus.Failure
+                WooPosCardReaderPaymentStatus.FailureToPrepareForPayment
             }
             _paymentStatus.value = paymentResult!!
             _paymentStatus.value = WooPosCardReaderPaymentStatus.Unknown
@@ -58,7 +58,7 @@ class WooPosCardReaderFacade @Inject constructor(
         activity!!.startActivity(intent)
     }
 
-    fun collectPayment(orderId: Long) {
+    fun prepareForPaymentCollection(orderId: Long) {
         _paymentStatus.value = WooPosCardReaderPaymentStatus.Unknown
         val intent = WooPosCardReaderActivity.buildIntentForPayment(activity!!, orderId).apply {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
