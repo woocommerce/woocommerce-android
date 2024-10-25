@@ -49,7 +49,12 @@ fun WooShippingLabelCreationScreen(
     val scaffoldState = rememberBottomSheetScaffoldState()
     BottomSheetScaffold(
         sheetContent = {
-            ShipmentDetails(scaffoldState)
+            val markOrderComplete = remember { mutableStateOf(false) }
+            ShipmentDetails(
+                scaffoldState = scaffoldState,
+                markOrderComplete = markOrderComplete.value,
+                onMarkOrderCompleteChange = { markOrderComplete.value = it }
+            )
         },
         sheetPeekHeight = 64.dp,
         scaffoldState = scaffoldState,
