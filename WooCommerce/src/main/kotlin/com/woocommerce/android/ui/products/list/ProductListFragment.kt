@@ -579,13 +579,12 @@ class ProductListFragment :
         }
 
         trashProductUndoSnack = uiMessageResolver.getUndoSnack(
-            R.string.product_trash_undo_snackbar_message,
+            stringResId = R.string.product_trash_undo_snackbar_message,
             actionListener = actionListener
-        )
-            .also {
-                it.addCallback(callback)
-                it.show()
-            }
+        ).apply {
+            addCallback(callback)
+            show()
+        }
     }
 
     override fun scrollToTop() {
