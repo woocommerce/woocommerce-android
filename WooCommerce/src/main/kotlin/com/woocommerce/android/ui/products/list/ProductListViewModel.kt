@@ -591,7 +591,10 @@ class ProductListViewModel @Inject constructor(
     fun trashProduct(remoteProductId: Long) {
         if (checkConnection()) {
             launch {
-                if (!productRepository.trashProduct(remoteProductId)) {
+                val successfullyTrashed = productRepository.trashProduct(remoteProductId)
+                if (successfullyTrashed) {
+                    reloadProductsFromDb()
+                } else {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.product_trash_error))
                 }
             }
