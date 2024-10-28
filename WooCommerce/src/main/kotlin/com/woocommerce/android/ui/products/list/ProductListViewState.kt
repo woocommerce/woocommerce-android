@@ -11,6 +11,7 @@ data class ProductListViewState(
     val isLoadingMore: Boolean? = null,
     val canLoadMore: Boolean? = null,
     val isRefreshing: Boolean? = null,
+    val isTrashing: Boolean? = null,
     val query: String? = null,
     val isSkuSearch: Boolean = false,
     val filterCount: Int? = null,
