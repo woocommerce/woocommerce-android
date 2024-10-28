@@ -305,6 +305,21 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `trashProduct calls loadProducts and reloadProductsFromDb when trash succeeds`() = testBlocking {
+        val productId = 1L
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(productRepository.trashProduct(productId)).thenReturn(true)
+
+        createViewModel()
+
+        viewModel.trashProduct(productId)
+
+        verify(productRepository).trashProduct(productId)
+        verify(viewModel).loadProducts()
+        verify(viewModel).reloadProductsFromDb()
+    }
+
+    @Test
     fun `Test Filters button tap`() {
         createViewModel()
 
