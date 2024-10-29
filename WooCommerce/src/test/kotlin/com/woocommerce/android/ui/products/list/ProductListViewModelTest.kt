@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.internal.verification.AtLeast
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -305,7 +306,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `trashProduct calls loadProducts and reloadProductsFromDb when trash succeeds`() = testBlocking {
+    fun `trashProduct trigger products refresh`() = testBlocking {
         val productId = 1L
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(productRepository.trashProduct(productId)).thenReturn(true)
@@ -315,8 +316,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.trashProduct(productId)
 
         verify(productRepository).trashProduct(productId)
-        verify(viewModel).loadProducts()
-        verify(viewModel).reloadProductsFromDb()
+        verify(productRepository, times(2)).fetchProductList()
     }
 
     @Test
