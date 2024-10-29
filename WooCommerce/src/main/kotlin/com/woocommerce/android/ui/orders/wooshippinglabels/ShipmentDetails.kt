@@ -1,50 +1,50 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.AmbiguousLocation
-import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
-import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
@@ -88,7 +88,26 @@ fun ShipmentDetails(
             )
         }
     }
-    Column {
+    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        ShipmentDetailsLandscape(
+            markOrderComplete = markOrderComplete,
+            onMarkOrderCompleteChange = onMarkOrderCompleteChange
+        )
+    } else {
+        ShipmentDetailsPortrait(
+            markOrderComplete = markOrderComplete,
+            onMarkOrderCompleteChange = onMarkOrderCompleteChange
+        )
+    }
+}
+
+@Composable
+private fun ShipmentDetailsPortrait(
+    markOrderComplete: Boolean,
+    onMarkOrderCompleteChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
         Column(
             Modifier
                 .fillMaxWidth()
@@ -120,60 +139,46 @@ fun ShipmentDetails(
 }
 
 @Composable
-private fun PurchasesSection(
-    total: String?,
+private fun ShipmentDetailsLandscape(
     markOrderComplete: Boolean,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
-        Divider()
-        Row(
-            modifier = Modifier
-                .clickable { onMarkOrderCompleteChange(!markOrderComplete) }
+        Column(
+            Modifier
                 .fillMaxWidth()
-                .padding(dimensionResource(R.dimen.major_100)),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(id = R.string.shipping_label_shipment_details_mark_order_complete),
-                modifier.weight(1f)
-            )
-            WCSwitch(
-                checked = markOrderComplete,
-                onCheckedChange = onMarkOrderCompleteChange,
-                modifier = Modifier
-                    .padding(end = dimensionResource(R.dimen.minor_100))
-            )
-        }
-        val buttonText = total?.let {
-            stringResource(id = R.string.shipping_label_shipment_details_purchase_label, it)
-        } ?: stringResource(id = R.string.shipping_label_shipment_details_purchase_label_disabled)
-        WCColoredButton(
-            onClick = { },
-            enabled = total != null,
-            text = buttonText,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = dimensionResource(R.dimen.minor_100),
-                    bottom = dimensionResource(R.dimen.major_100),
-                    start = dimensionResource(R.dimen.major_100),
-                    end = dimensionResource(R.dimen.major_100)
-                )
-        )
-    }
-}
+                .padding(top = dimensionResource(R.dimen.major_200))
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
 
-@Preview
-@Composable
-private fun PurchasesSectionPreview() {
-    WooThemeWithBackground {
-        PurchasesSection(
-            total = null,
-            markOrderComplete = true,
-            onMarkOrderCompleteChange = {},
-            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+        ) {
+            AddressSectionLandscape(
+                shipFrom = getShipFrom(),
+                shipTo = getShipTo(),
+                modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100))
+            )
+            Row(modifier = Modifier.height(IntrinsicSize.Min).fillMaxWidth()) {
+                OrderDetailsSectionLandscape(
+                    totalItems = 5,
+                    totalItemsCost = "$120.99",
+                    shippingLines = getShippingLines(3),
+                    modifier = Modifier.weight(1f)
+                )
+                VerticalDivider(modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100)))
+                ShipmentCostSection(
+                    subTotal = "$100.00",
+                    total = "$120.99",
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.major_100))
+                        .weight(1f)
+                )
+            }
+        }
+        PurchasesSectionLandscape(
+            total = "$120.99",
+            markOrderComplete = markOrderComplete,
+            onMarkOrderCompleteChange = onMarkOrderCompleteChange
         )
     }
 }
@@ -229,142 +234,37 @@ private fun OrderDetailsSection(
 }
 
 @Composable
-@Suppress("DestructuringDeclarationWithTooManyEntries")
-private fun AddressSection(
-    shipFrom: Address,
-    shipTo: Address,
-    modifier: Modifier = Modifier
+private fun OrderDetailsSectionLandscape(
+    totalItems: Int,
+    totalItemsCost: String,
+    shippingLines: List<ShippingLineSummary>,
+    modifier: Modifier = Modifier,
 ) {
-    RoundedCornerBoxWithBorder(modifier.fillMaxWidth()) {
-        ConstraintLayout {
-            val (
-                shipFromLabel,
-                shipFromValue,
-                shipFromSelect,
-                shipToLabel,
-                shipToValue,
-                shipToEdit,
-                divider
-            ) = createRefs()
-
-            val barrier = createEndBarrier(shipFromLabel, shipToLabel)
-
-            Text(
-                text = stringResource(id = R.string.orderdetail_shipping_label_item_shipfrom),
-                modifier = Modifier
-                    .constrainAs(shipFromLabel) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-                    .padding(
-                        start = dimensionResource(R.dimen.major_100),
-                        top = dimensionResource(R.dimen.major_100),
-                        bottom = dimensionResource(R.dimen.major_100)
-                    )
-
+    Column(modifier.fillMaxWidth()) {
+        ShipmentDetailsSectionTitle(
+            title = stringResource(R.string.shipping_label_shipment_details_order_details),
+            modifier = Modifier.padding(
+                top = dimensionResource(R.dimen.major_100),
+                start = dimensionResource(R.dimen.major_100)
             )
-            Text(
-                text = shipFrom.toShippingFromString().uppercase(),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colors.primary,
-                modifier = Modifier
-                    .constrainAs(shipFromValue) {
-                        top.linkTo(shipFromLabel.top)
-                        start.linkTo(shipFromLabel.end)
-                        end.linkTo(shipFromSelect.start)
-                        width = androidx.constraintlayout.compose.Dimension.fillToConstraints
-                    }
-                    .padding(
-                        top = dimensionResource(R.dimen.major_100),
-                        bottom = dimensionResource(R.dimen.major_100),
-                        start = dimensionResource(R.dimen.major_100),
-                        end = dimensionResource(R.dimen.minor_100)
-                    )
-            )
-            IconButton(
-                onClick = { },
-                modifier = Modifier
-                    .constrainAs(shipFromSelect) {
-                        top.linkTo(shipFromLabel.top)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(shipFromLabel.bottom)
-                    }
-                    .padding(
-                        end = dimensionResource(R.dimen.minor_100)
-                    )
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.MoreHoriz,
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.primary
-                )
-            }
-            Divider(
-                modifier = Modifier.constrainAs(divider) {
-                    top.linkTo(shipFromLabel.bottom)
-                    start.linkTo(parent.start)
-                }
-            )
-            Text(
-                text = stringResource(id = R.string.orderdetail_shipping_label_item_shipto),
-                modifier = Modifier
-                    .constrainAs(shipToLabel) {
-                        top.linkTo(divider.bottom)
-                        start.linkTo(shipFromLabel.start)
-                    }
-                    .padding(
-                        start = dimensionResource(R.dimen.major_100),
-                        top = dimensionResource(R.dimen.major_100),
-                        bottom = dimensionResource(R.dimen.major_100)
-                    )
-            )
-            Text(
-                text = shipTo.toString(),
-                modifier = Modifier
-                    .constrainAs(shipToValue) {
-                        top.linkTo(shipToLabel.top)
-                        start.linkTo(barrier)
-                        end.linkTo(shipToEdit.start)
-                        width = androidx.constraintlayout.compose.Dimension.fillToConstraints
-                    }
-                    .padding(
-                        top = dimensionResource(R.dimen.major_100),
-                        bottom = dimensionResource(R.dimen.major_100),
-                        start = dimensionResource(R.dimen.major_100),
-                        end = dimensionResource(R.dimen.minor_100)
-                    )
-            )
-            IconButton(
-                onClick = { },
-                modifier = Modifier
-                    .constrainAs(shipToEdit) {
-                        top.linkTo(shipToLabel.top)
-                        end.linkTo(parent.end)
-                    }
-                    .padding(
-                        top = dimensionResource(R.dimen.major_100),
-                        end = dimensionResource(R.dimen.minor_100)
-                    )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_edit_pencil),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.primary,
-                )
-            }
-        }
+        )
+        TotalCard(
+            totalItems = totalItems,
+            totalItemsCost = totalItemsCost,
+            shippingLines = shippingLines,
+            modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+        )
     }
 }
 
-@Preview
+@Preview(widthDp = 750, heightDp = 400)
 @Composable
-private fun AddressSectionPreview() {
+fun ShipmentDetailsLandscapePreview() {
     WooThemeWithBackground {
-        Box(modifier = Modifier.padding(dimensionResource(R.dimen.major_100))) {
-            AddressSection(
-                shipFrom = getShipFrom(),
-                shipTo = getShipTo()
+        Surface {
+            ShipmentDetailsLandscape(
+                markOrderComplete = false,
+                onMarkOrderCompleteChange = {}
             )
         }
     }
@@ -544,34 +444,6 @@ private fun ShipmentCostSectionPreview() {
     }
 }
 
-private fun getShipFrom() = Address(
-    firstName = "first name",
-    lastName = "last name",
-    company = "Company",
-    phone = "",
-    address1 = "A huge address that should be truncated",
-    address2 = "",
-    city = "City",
-    postcode = "",
-    email = "email",
-    country = Location("US", "USA"),
-    state = AmbiguousLocation.Defined(Location("CA", "California", "USA"))
-)
-
-private fun getShipTo() = Address(
-    firstName = "first name",
-    lastName = "last name",
-    company = "Company",
-    phone = "",
-    address1 = "Another Address",
-    address2 = "",
-    city = "City",
-    postcode = "",
-    email = "email",
-    country = Location("US", "USA"),
-    state = AmbiguousLocation.Defined(Location("CA", "California", "USA"))
-)
-
 private fun getShippingLines(number: Int = 3) = List(number) { i ->
     ShippingLineSummary(
         title = "Shipping $i",
@@ -585,3 +457,16 @@ data class ShippingLineSummary(
     val title: String,
     val amount: String
 )
+
+@Composable
+fun VerticalDivider(
+    modifier: Modifier = Modifier,
+    thickness: Dp = 1.dp
+) {
+    Spacer(
+        modifier = modifier
+            .fillMaxHeight()
+            .width(thickness)
+            .background(MaterialTheme.colors.onSurface.copy(alpha = 0.12f))
+    )
+}
