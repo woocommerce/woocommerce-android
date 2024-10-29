@@ -562,6 +562,7 @@ class ProductListFragment :
 
         // reload the product list without this product
         productListViewModel.reloadProductsFromDb(excludeProductId = remoteProductId)
+        enableProductsRefresh(false)
 
         val actionListener = View.OnClickListener {
             trashProductCancelled = true
@@ -569,6 +570,7 @@ class ProductListFragment :
 
         val callback = object : Snackbar.Callback() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                enableProductsRefresh(true)
                 pendingTrashProductId = null
                 if (trashProductCancelled) {
                     productListViewModel.reloadProductsFromDb()
