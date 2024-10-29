@@ -343,11 +343,10 @@ class ProductListViewModel @Inject constructor(
         } else {
             // if a fetch is already active, wait for it to finish before we start another one
             waitForExistingLoad()
-            viewState = viewState.copy(isLoading = true)
 
             loadJob = launch {
                 val showSkeleton: Boolean
-                if (loadMore) {
+                if (loadMore || isTrashing) {
                     showSkeleton = false
                 } else {
                     // if this is the initial load, first get the products from the db and show them immediately
@@ -595,10 +594,12 @@ class ProductListViewModel @Inject constructor(
 
     fun trashProduct(remoteProductId: Long) {
         if (checkConnection()) {
-            launch {
+            loadJob = launch {
+                viewState = viewState.copy(isTrashing = true)
                 val successfullyTrashed = productRepository.trashProduct(remoteProductId)
                 if (successfullyTrashed) {
-                    loadProducts()
+                    fetchProductList(loadMore = false, scrollToTop = false)
+                    viewState = viewState.copy(isTrashing = false)
                 } else {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.product_trash_error))
                 }
