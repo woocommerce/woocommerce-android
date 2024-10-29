@@ -319,6 +319,24 @@ class ProductListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `trashProduct updates the viewState as expected`() = testBlocking {
+        val productId = 1L
+        val isTrashingEvents: MutableList<Boolean?> = mutableListOf()
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(productRepository.trashProduct(productId)).thenReturn(true)
+
+        createViewModel()
+
+        viewModel.viewStateLiveData.observeForever { old, new ->
+            if (old?.isTrashing == new.isTrashing) return@observeForever
+            isTrashingEvents.add(new.isTrashing)
+        }
+
+        viewModel.trashProduct(productId)
+        assertThat(isTrashingEvents).containsExactly(true, false)
+    }
+
+    @Test
     fun `Test Filters button tap`() {
         createViewModel()
 
