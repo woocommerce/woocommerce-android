@@ -3,7 +3,6 @@ package com.woocommerce.android
 import android.app.Application
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import com.woocommerce.android.SiteObserver
 import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.environment.EnvironmentRepository
@@ -13,6 +12,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -61,6 +62,12 @@ class SiteObserverTest : BaseUnitTest() {
             url = "https://example.com"
             origin = SiteModel.ORIGIN_WPAPI
         }
+        val packageName = "com.woocommerce.android"
+        val packageManager: PackageManager = mock()
+        val packageInfo = PackageInfo().apply { this.versionName = versionName }
+        whenever(application.packageName).thenReturn(packageName)
+        whenever(application.packageManager).thenReturn(packageManager)
+        whenever(packageManager.getPackageInfo(packageName, 0)).thenReturn(packageInfo)
         whenever(selectedSite.observe()).thenReturn(flowOf(site))
         whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(mock())
 
@@ -82,6 +89,12 @@ class SiteObserverTest : BaseUnitTest() {
                     url = "https://example.com"
                     origin = SiteModel.ORIGIN_WPAPI
                 }
+                val packageName = "com.woocommerce.android"
+                val packageManager: PackageManager = mock()
+                val packageInfo = PackageInfo().apply { this.versionName = versionName }
+                whenever(application.packageName).thenReturn(packageName)
+                whenever(application.packageManager).thenReturn(packageManager)
+                whenever(packageManager.getPackageInfo(packageName, 0)).thenReturn(packageInfo)
                 whenever(selectedSite.observe()).thenReturn(flowOf(site))
                 val connectSiteInfo = if (isSuspended) {
                     SiteStore.ConnectSiteInfoPayload(
@@ -111,6 +124,12 @@ class SiteObserverTest : BaseUnitTest() {
                 url = "https://example.com"
                 origin = SiteModel.ORIGIN_WPAPI
             }
+            val packageName = "com.woocommerce.android"
+            val packageManager: PackageManager = mock()
+            val packageInfo = PackageInfo().apply { this.versionName = versionName }
+            whenever(application.packageName).thenReturn(packageName)
+            whenever(application.packageManager).thenReturn(packageManager)
+            whenever(packageManager.getPackageInfo(packageName, 0)).thenReturn(packageInfo)
             whenever(selectedSite.observe()).thenReturn(flowOf(site))
             whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(
                 SiteStore.ConnectSiteInfoPayload(
@@ -129,27 +148,33 @@ class SiteObserverTest : BaseUnitTest() {
             job.cancel()
         }
 
-    @org.junit.Test
+    @Test
     fun `when observeAndUpdateSelectedSiteData is called, fetchRemoteFeatureFlags is called`() = runTest {
         // GIVEN
         val versionName = "1.0.0"
         val packageName = "com.woocommerce.android"
         val packageManager: PackageManager = mock()
         val packageInfo = PackageInfo().apply { this.versionName = versionName }
+        val site = SiteModel().apply {
+            url = "https://example.com"
+            origin = SiteModel.ORIGIN_WPAPI
+        }
 
         whenever(application.packageName).thenReturn(packageName)
         whenever(application.packageManager).thenReturn(packageManager)
         whenever(packageManager.getPackageInfo(packageName, 0)).thenReturn(packageInfo)
-
-        val siteModel = mock<SiteModel> {
-            on { id }.thenReturn(1)
-        }
+        whenever(siteStore.fetchConnectSiteInfoSync(site.url)).thenReturn(
+            SiteStore.ConnectSiteInfoPayload(
+                error = SiteStore.SiteError(type = SiteStore.SiteErrorType.INVALID_SITE),
+                url = site.url
+            )
+        )
 
         val wooResult: WooResult<String?> = mock()
         whenever(wooResult.isError).thenReturn(false)
 
-        whenever(environmentRepository.fetchOrGetStoreID(siteModel)).thenReturn(wooResult)
-        whenever(selectedSite.observe()).thenReturn(MutableStateFlow(siteModel))
+        whenever(environmentRepository.fetchOrGetStoreID(site)).thenReturn(wooResult)
+        whenever(selectedSite.observe()).thenReturn(MutableStateFlow(site))
 
         // WHEN
         val job = launch {
