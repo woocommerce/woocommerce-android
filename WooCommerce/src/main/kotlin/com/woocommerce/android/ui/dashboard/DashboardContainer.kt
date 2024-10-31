@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -20,6 +23,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -28,11 +33,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsCard
 import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsCard
@@ -49,70 +60,114 @@ import com.woocommerce.android.ui.main.MainActivityViewModel
 fun DashboardContainer(
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
-    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
+    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    windowSizeClass: WindowSizeClass
 ) {
     dashboardViewModel.dashboardWidgets.observeAsState().value?.let { widgets ->
-        WidgetList(
+        DashboardWidgets(
             widgetUiModels = widgets,
             mainActivityViewModel = mainActivityViewModel,
             dashboardViewModel = dashboardViewModel,
-            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colors.surface)
+                .padding(vertical = dimensionResource(id = R.dimen.major_100)),
+            numberOfColumns = if (windowSizeClass != WindowSizeClass.Compact) 2 else 1
         )
     }
 }
 
 @Composable
-private fun WidgetList(
+private fun DashboardWidgets(
     widgetUiModels: List<DashboardViewModel.DashboardWidgetUiModel>,
     mainActivityViewModel: MainActivityViewModel,
     dashboardViewModel: DashboardViewModel,
-    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
+    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    modifier: Modifier = Modifier,
+    numberOfColumns: Int = 1
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.surface)
-            .padding(vertical = dimensionResource(id = R.dimen.major_100))
-    ) {
-        val widgetModifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-        widgetUiModels.forEach {
-            AnimatedVisibility(it.isVisible) {
-                when (it) {
-                    is DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget -> {
-                        ConfigurableWidgetCard(
-                            widgetUiModel = it,
-                            mainActivityViewModel = mainActivityViewModel,
-                            dashboardViewModel = dashboardViewModel,
-                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                            modifier = widgetModifier
-                        )
-                    }
-
-                    is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget -> {
-                        ShareStoreCard(
-                            onShareClicked = it.onShareClicked,
-                            modifier = widgetModifier
-                        )
-                    }
-
-                    is DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget -> {
-                        FeedbackCard(
-                            widget = it,
-                            modifier = widgetModifier
-                        )
-                    }
-
-                    is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard -> {
-                        NewWidgetsCard(
-                            state = it,
-                            modifier = widgetModifier
-                        )
-                    }
+    val widgetModifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp)
+    if (numberOfColumns == 1) {
+        Column(
+            modifier = modifier,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            widgetUiModels.forEach {
+                AnimatedVisibility(it.isVisible) {
+                    DashboardWidgetCard(
+                        it,
+                        mainActivityViewModel,
+                        dashboardViewModel,
+                        blazeCampaignCreationDispatcher,
+                        widgetModifier
+                    )
                 }
             }
+        }
+    } else {
+        val nestedScrollInterop = rememberNestedScrollInteropConnection()
+        LazyVerticalStaggeredGrid(
+            modifier = modifier.nestedScroll(nestedScrollInterop),
+            columns = StaggeredGridCells.Adaptive(400.dp),
+            verticalItemSpacing = 16.dp,
+            horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            items(widgetUiModels) { widget ->
+                AnimatedVisibility(widget.isVisible) {
+                    DashboardWidgetCard(
+                        widget,
+                        mainActivityViewModel,
+                        dashboardViewModel,
+                        blazeCampaignCreationDispatcher,
+                        widgetModifier
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DashboardWidgetCard(
+    it: DashboardWidgetUiModel,
+    mainActivityViewModel: MainActivityViewModel,
+    dashboardViewModel: DashboardViewModel,
+    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    widgetModifier: Modifier
+) {
+    when (it) {
+        is ConfigurableWidget -> {
+            ConfigurableWidgetCard(
+                widgetUiModel = it,
+                mainActivityViewModel = mainActivityViewModel,
+                dashboardViewModel = dashboardViewModel,
+                blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                modifier = widgetModifier
+            )
+        }
+
+        is ShareStoreWidget -> {
+            ShareStoreCard(
+                onShareClicked = it.onShareClicked,
+                modifier = widgetModifier
+            )
+        }
+
+        is FeedbackWidget -> {
+            FeedbackCard(
+                widget = it,
+                modifier = widgetModifier
+            )
+        }
+
+        is NewWidgetsCard -> {
+            NewWidgetsCard(
+                state = it,
+                modifier = widgetModifier
+            )
         }
     }
 }
