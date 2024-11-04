@@ -52,6 +52,8 @@ class ProductItemView @JvmOverloads constructor(
         showProductStockStatusPrice(product, currencyFormatter, currencyCode)
     }
 
+    // Dummy change to trigger `view_changes_checker` Dangermattic rule. Do not merge.
+
     fun bind(
         orderCreationProduct: OrderCreationProduct,
         currencyFormatter: CurrencyFormatter,
