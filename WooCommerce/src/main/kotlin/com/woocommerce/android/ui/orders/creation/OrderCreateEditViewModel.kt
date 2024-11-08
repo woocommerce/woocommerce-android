@@ -10,7 +10,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -184,6 +183,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
+import org.wordpress.android.mediapicker.util.map
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -382,36 +382,8 @@ class OrderCreateEditViewModel @Inject constructor(
     private val giftCardWasEnabledAtLeastOnce: MutableStateFlow<Boolean> =
         savedState.getStateFlow(viewModelScope, false)
 
-    val shippingLineSection =
-        viewStateData.liveData.map { it.isIdle && it.isEditable }.combineWith(
-            _orderDraft.filter { it.shippingLines.isNotEmpty() }
-                .map { it.shippingLines.filter { line -> line.methodId != null } }.asLiveData(),
-            getShippingMethodsWithOtherValue().withIndex().asLiveData()
-        ) { isIdle, shippingLines, shippingMethods ->
-            if (isIdle == null || shippingLines == null || shippingMethods == null) return@combineWith null
-
-            val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
-
-            val shippingLineDetails = shippingLines.map { shippingLine ->
-                val method = shippingLine.methodId?.let {
-                    if (it == " ") {
-                        shippingMethodsMap[ShippingMethodsRepository.NA_ID]
-                    } else {
-                        shippingMethodsMap[it]
-                    }
-                }
-                ShippingLineDetails(
-                    id = shippingLine.itemId,
-                    name = shippingLine.methodTitle,
-                    shippingMethod = method,
-                    amount = shippingLine.total
-                )
-            }
-            ShippingLineSection(
-                shippingLines = shippingLineDetails,
-                isEnabled = isIdle
-            )
-        }
+    private val _shippingLineSection = MutableLiveData<ShippingLineSection>()
+    val shippingLineSection: LiveData<ShippingLineSection> = _shippingLineSection
 
     private val _couponLinesLiveData = MediatorLiveData(CouponSection(emptyList(), true))
     val couponLinesLiveData = _couponLinesLiveData.distinctUntilChanged()
@@ -430,6 +402,38 @@ class OrderCreateEditViewModel @Inject constructor(
             _couponLinesLiveData.value = _couponLinesLiveData.value
                 ?.copy(isEnabled = newViewState.isIdle && viewState.isEditable)
         }
+
+        viewStateData.liveData.map { it.isIdle && it.isEditable }
+            .combineWith(
+                _orderDraft.filter { it.shippingLines.isNotEmpty() }
+                    .map { it.shippingLines.filter { line -> line.methodId != null } }.asLiveData(),
+                getShippingMethodsWithOtherValue().withIndex().asLiveData()
+            ) { isIdle, shippingLines, shippingMethods ->
+                if (isIdle == null || shippingLines == null || shippingMethods == null) return@combineWith null
+
+                val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
+                val shippingLineDetails = shippingLines.map { shippingLine ->
+                    val method = shippingLine.methodId?.let {
+                        if (it == " ") {
+                            shippingMethodsMap[ShippingMethodsRepository.NA_ID]
+                        } else {
+                            shippingMethodsMap[it]
+                        }
+                    }
+
+                    ShippingLineDetails(
+                        id = shippingLine.itemId,
+                        name = shippingLine.methodTitle,
+                        shippingMethod = method,
+                        amount = shippingLine.total
+                    )
+                }
+
+                _shippingLineSection.value = ShippingLineSection(
+                    shippingLines = shippingLineDetails,
+                    isEnabled = isIdle
+                )
+            }
 
         when (mode) {
             is Mode.Creation -> {
