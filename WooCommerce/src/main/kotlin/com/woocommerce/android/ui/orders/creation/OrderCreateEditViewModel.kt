@@ -7,9 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -116,11 +116,10 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
-import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineSection
-import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.shipping.getMethodIdOrDefault
+import com.woocommerce.android.ui.orders.creation.shipping.toShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -172,10 +171,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
-import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
@@ -183,7 +180,6 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
-import org.wordpress.android.mediapicker.util.map
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
@@ -214,11 +210,11 @@ class OrderCreateEditViewModel @Inject constructor(
     private val totalsHelper: OrderCreateEditTotalsHelper,
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductBySKU: FetchProductBySKU,
+    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
-    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
 ) : ScopedViewModel(savedState) {
     companion object {
         val EMPTY_BIG_DECIMAL = -Double.MAX_VALUE.toBigDecimal()
@@ -382,8 +378,19 @@ class OrderCreateEditViewModel @Inject constructor(
     private val giftCardWasEnabledAtLeastOnce: MutableStateFlow<Boolean> =
         savedState.getStateFlow(viewModelScope, false)
 
-    private val _shippingLineSection = MutableLiveData<ShippingLineSection>()
-    val shippingLineSection: LiveData<ShippingLineSection> = _shippingLineSection
+    val shippingLineSection = viewStateData.liveData
+        .combineWith(
+            orderDraft.map { it.shippingLines },
+            getShippingMethodsWithOtherValue().asLiveData()
+        ) { viewState, shippingLines, shippingMethods ->
+            if (viewState == null || shippingLines == null || shippingMethods == null) return@combineWith null
+            shippingLines.toShippingLineDetails(shippingMethods)?.let { shippingLineDetails ->
+                ShippingLineSection(
+                    shippingLines = shippingLineDetails,
+                    isEnabled = viewState.isIdle && viewState.isEditable
+                )
+            }
+        }.distinctUntilChanged()
 
     private val _couponLinesLiveData = MediatorLiveData(CouponSection(emptyList(), true))
     val couponLinesLiveData = _couponLinesLiveData.distinctUntilChanged()
@@ -402,38 +409,6 @@ class OrderCreateEditViewModel @Inject constructor(
             _couponLinesLiveData.value = _couponLinesLiveData.value
                 ?.copy(isEnabled = newViewState.isIdle && viewState.isEditable)
         }
-
-        viewStateData.liveData.map { it.isIdle && it.isEditable }
-            .combineWith(
-                _orderDraft.filter { it.shippingLines.isNotEmpty() }
-                    .map { it.shippingLines.filter { line -> line.methodId != null } }.asLiveData(),
-                getShippingMethodsWithOtherValue().withIndex().asLiveData()
-            ) { isIdle, shippingLines, shippingMethods ->
-                if (isIdle == null || shippingLines == null || shippingMethods == null) return@combineWith null
-
-                val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
-                val shippingLineDetails = shippingLines.map { shippingLine ->
-                    val method = shippingLine.methodId?.let {
-                        if (it == " ") {
-                            shippingMethodsMap[ShippingMethodsRepository.NA_ID]
-                        } else {
-                            shippingMethodsMap[it]
-                        }
-                    }
-
-                    ShippingLineDetails(
-                        id = shippingLine.itemId,
-                        name = shippingLine.methodTitle,
-                        shippingMethod = method,
-                        amount = shippingLine.total
-                    )
-                }
-
-                _shippingLineSection.value = ShippingLineSection(
-                    shippingLines = shippingLineDetails,
-                    isEnabled = isIdle
-                )
-            }
 
         when (mode) {
             is Mode.Creation -> {
@@ -492,20 +467,18 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private var _isFirstShippingLineChange = true
+
     private fun shouldDisplayShippingFeedback() {
-        launch {
-            shippingLineSection
-                .asFlow()
-                .drop(1)
-                .take(1)
-                .takeIf { shouldDisplayShippingLinesFeedback() }
-                ?.collect {
-                    delay(DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK)
-                    viewState = viewState.copy(
-                        showShippingFeedback = true,
-                        isTotalsExpanded = false
-                    )
-                }
+        if (_isFirstShippingLineChange && shouldDisplayShippingLinesFeedback()) {
+            launch {
+                delay(DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK)
+                viewState = viewState.copy(
+                    showShippingFeedback = true,
+                    isTotalsExpanded = false
+                )
+                _isFirstShippingLineChange = false
+            }
         }
     }
 
@@ -1635,6 +1608,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
             draft.copy(shippingLines = shipping)
         }
+        shouldDisplayShippingFeedback()
     }
 
     fun onRemoveShipping(itemId: Long) {
@@ -1657,6 +1631,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             )
         }
+        shouldDisplayShippingFeedback()
     }
 
     fun onFeeEdited(feeValue: BigDecimal) {
