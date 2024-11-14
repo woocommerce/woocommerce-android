@@ -275,9 +275,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     onFailure = { error ->
                         analyticsTrackerWrapper.track(
                             stat = AnalyticsEvent.BLAZE_SUGGESTIONS_LOADING_FAILED,
-                            properties = mapOf(
-                                AnalyticsTracker.KEY_ERROR to error.message
-                            )
+                            errorContext = error.cause?.message,
+                            errorType = error.cause.toString(),
+                            errorDescription = error.message
                         )
                     }
                 ).also {
