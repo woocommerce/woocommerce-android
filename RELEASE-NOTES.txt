@@ -3,6 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 21.3
 -----
+- [Internal][POS] Fixed a visual glitch during payment flow [https://github.com/woocommerce/woocommerce-android/pull/12991]
 
 
 -----
