@@ -211,6 +211,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
 
                 is SkipScreenInPosAndNavigateToCardReaderPaymentFlow -> {
                     if (findNavController().currentDestination?.id == R.id.selectPaymentMethodFragment) {
+                        // as we open the dialog, even if it's pop-uped from the back stack, the UI was still visible
+                        binding.snackRoot.isVisible = false
                         findNavController().navigate(
                             SelectPaymentMethodFragmentDirections
                                 .actionWooPosSelectPaymentMethodFragmentToCardReaderPaymentFlow(
