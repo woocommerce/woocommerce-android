@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
+import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.di.SiteComponent
 import com.woocommerce.android.di.SiteCoroutineScope
 import com.woocommerce.android.di.SiteScope
@@ -27,7 +28,7 @@ object DashboardDataStoreModule {
         site: SiteModel
     ): DataStore<DashboardDataModel> = DataStoreFactory.create(
         produceFile = {
-            appContext.dataStoreFile("dashboard_configuration_${site.id}")
+            appContext.preferencesDataStoreFile("dashboard_configuration_${site.id}")
         },
         scope = CoroutineScope(siteCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = DashboardSerializer
