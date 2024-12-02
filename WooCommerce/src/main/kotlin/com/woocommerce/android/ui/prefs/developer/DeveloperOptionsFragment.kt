@@ -2,38 +2,32 @@ package com.woocommerce.android.ui.prefs.developer
 
 import android.os.Bundle
 import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
-import com.woocommerce.android.databinding.FragmentDeveloperOptionsBinding
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 
 @AndroidEntryPoint
-class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_options) {
+class DeveloperOptionsFragment : BaseFragment() {
     val viewModel: DeveloperOptionsViewModel by viewModels()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return composeView {
+            DeveloperOptionsScreen(viewModel)
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val binding = FragmentDeveloperOptionsBinding.bind(view)
-
-        initViews(binding)
-        observeViewState(binding)
         observeEvents()
-    }
-
-    private fun initViews(binding: FragmentDeveloperOptionsBinding) {
-        binding.developerOptionsRv.layoutManager = LinearLayoutManager(requireContext())
-        binding.developerOptionsRv.addItemDecoration(
-            DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
-        )
-        binding.developerOptionsRv.adapter = DeveloperOptionsAdapter()
     }
 
     private fun observeEvents() {
@@ -44,6 +38,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
                 }
+
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowUpdateOptionsDialog -> {
                     showUpdateOptionsDialog(
                         values = event.options,
@@ -74,12 +69,6 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
             .setSingleChoiceItems(textValues, selectedValue.ordinal) { _, which ->
                 currentlySelectedValue = values[which]
             }.show()
-    }
-
-    private fun observeViewState(binding: FragmentDeveloperOptionsBinding) {
-        viewModel.viewState.observe(viewLifecycleOwner) { state ->
-            (binding.developerOptionsRv.adapter as DeveloperOptionsAdapter).setItems(state.rows)
-        }
     }
 
     override fun getFragmentTitle() = resources.getString(R.string.dev_options)

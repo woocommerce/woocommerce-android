@@ -1,15 +1,15 @@
 package com.woocommerce.android.ui.prefs.developer
 
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.NonToggleableListItem
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -29,9 +29,9 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private val simulatedCardReaderFlow = isSimulatedReaderEnabled.map { simulated ->
         ToggleableListItem(
-            icon = drawable.img_card_reader_connecting,
-            label = UiStringRes(string.enable_card_reader),
-            key = UiStringRes(string.simulated_reader_key),
+            icon = R.drawable.img_card_reader,
+            label = UiStringRes(R.string.enable_card_reader),
+            key = UiStringRes(R.string.simulated_reader_key),
             isEnabled = true,
             isChecked = simulated,
             onToggled = ::onSimulatedReaderToggled
@@ -41,11 +41,12 @@ class DeveloperOptionsViewModel @Inject constructor(
     private val readerUpdateFrequencyFlow = isSimulatedReaderEnabled.map { simulatedReader ->
         if (!simulatedReader) return@map null
 
-        SpinnerListItem(
-            icon = drawable.img_card_reader_update_progress,
-            endIcon = drawable.ic_arrow_drop_down,
-            label = UiStringRes(string.update_simulated_reader),
-            key = UiStringRes(string.update_simulated_reader_key),
+        NonToggleableListItem(
+            icon = R.drawable.img_card_reader_update_progress,
+            iconTint = R.color.color_primary,
+            endIcon = R.drawable.ic_arrow_drop_down,
+            label = UiStringRes(R.string.update_simulated_reader),
+            key = UiStringRes(R.string.update_simulated_reader_key),
             isEnabled = true,
             onClick = ::onUpdateSimulatedReaderClicked,
         )
@@ -58,9 +59,9 @@ class DeveloperOptionsViewModel @Inject constructor(
         if (!simulatedReader) return@combine null
 
         ToggleableListItem(
-            icon = drawable.ic_credit_card_give,
-            label = UiStringRes(string.enable_interac_payment),
-            key = UiStringRes(string.enable_interac_key),
+            icon = R.drawable.ic_credit_card_give,
+            label = UiStringRes(R.string.enable_interac_payment),
+            key = UiStringRes(R.string.enable_interac_key),
             isEnabled = true,
             isChecked = useInterac,
             onToggled = developerOptionsRepository::changeEnableInteracPaymentState
@@ -71,7 +72,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         .observeSavedPrivacyBannerSettings()
         .map { isChecked ->
             ToggleableListItem(
-                icon = drawable.ic_more_screen_settings,
+                icon = R.drawable.ic_more_screen_settings,
                 label = UiString.UiStringText("Saved privacy settings on dialog?"),
                 key = UiString.UiStringText(""),
                 isEnabled = true,
@@ -96,7 +97,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         if (!isChecked) {
             disconnectAndClearSelectedCardReader()
             triggerEvent(
-                DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
+                DeveloperOptionsEvents.ShowToastString(R.string.simulated_reader_toast)
             )
         }
     }
@@ -133,12 +134,14 @@ class DeveloperOptionsViewModel @Inject constructor(
     ) {
         sealed class ListItem {
             abstract val label: UiString
-            abstract val icon: Int?
+            abstract val icon: Int
+            abstract val iconTint: Int?
             abstract var isEnabled: Boolean
             abstract var key: UiString
 
             data class ToggleableListItem(
                 @DrawableRes override val icon: Int,
+                @ColorRes override val iconTint: Int? = null,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
                 override var key: UiString,
@@ -148,29 +151,21 @@ class DeveloperOptionsViewModel @Inject constructor(
 
             data class NonToggleableListItem(
                 @DrawableRes override val icon: Int,
+                @ColorRes override val iconTint: Int? = null,
+                @DrawableRes val endIcon: Int? = null,
                 override val label: UiString,
                 override var isEnabled: Boolean = false,
                 override var key: UiString,
                 val onClick: () -> Unit
             ) : ListItem()
-
-            data class SpinnerListItem(
-                @DrawableRes override val icon: Int,
-                @DrawableRes val endIcon: Int,
-                override val label: UiString,
-                override var isEnabled: Boolean = false,
-                override var key: UiString,
-                val onClick: () -> Unit,
-
-                ) : ListItem()
         }
 
         enum class UpdateFrequencyUiModel(@StringRes val title: Int) {
-            ALWAYS(string.always_update_reader),
-            NEVER(string.never_update_reader),
-            LOW_BATTERY_ERROR(string.low_battery_error_update_reader),
-            LOW_BATTERY_SUCCEED_CONNECT(string.low_battery_succeed_connect_update_reader),
-            RANDOM(string.randomly_update_reader);
+            ALWAYS(R.string.always_update_reader),
+            NEVER(R.string.never_update_reader),
+            LOW_BATTERY_ERROR(R.string.low_battery_error_update_reader),
+            LOW_BATTERY_SUCCEED_CONNECT(R.string.low_battery_succeed_connect_update_reader),
+            RANDOM(R.string.randomly_update_reader);
 
             fun toDomainModel() = CardReaderManager.SimulatorUpdateFrequency.valueOf(name)
 
