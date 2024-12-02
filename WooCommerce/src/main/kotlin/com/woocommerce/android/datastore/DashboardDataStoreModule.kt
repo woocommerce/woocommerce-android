@@ -3,6 +3,7 @@ package com.woocommerce.android.datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStoreFile
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.di.SiteComponent
@@ -29,6 +30,9 @@ object DashboardDataStoreModule {
     ): DataStore<DashboardDataModel> = DataStoreFactory.create(
         produceFile = {
             appContext.preferencesDataStoreFile("dashboard_configuration_${site.id}")
+        },
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            DashboardDataModel.getDefaultInstance()
         },
         scope = CoroutineScope(siteCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = DashboardSerializer
