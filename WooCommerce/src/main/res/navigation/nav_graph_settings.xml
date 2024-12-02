@@ -168,7 +168,7 @@
         app:destination="@id/WPComWebViewFragment" />
     <fragment
         android:id="@+id/developerOptionsFragment"
-        android:name="com.woocommerce.android.ui.prefs.DeveloperOptionsFragment"
+        android:name="com.woocommerce.android.ui.prefs.developer.DeveloperOptionsFragment"
         android:label="DeveloperOptionsFragment" />
     <fragment
         android:id="@+id/accountSettingsFragment"

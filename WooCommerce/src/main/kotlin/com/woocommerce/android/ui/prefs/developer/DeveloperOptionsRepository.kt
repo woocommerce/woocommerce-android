@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.prefs
+package com.woocommerce.android.ui.prefs.developer
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
