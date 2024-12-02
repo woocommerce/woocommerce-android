@@ -5,7 +5,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStoreFile
-import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.di.SiteComponent
 import com.woocommerce.android.di.SiteCoroutineScope
 import com.woocommerce.android.di.SiteScope
