@@ -3,6 +3,7 @@ package com.woocommerce.android.datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
@@ -101,6 +102,9 @@ class DataStoreModule {
     ): DataStore<CustomDateRange> = DataStoreFactory.create(
         produceFile = {
             appContext.preferencesDataStoreFile("dashboard_coupons_custom_date_range_configuration")
+        },
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            CustomDateRange.getDefaultInstance()
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = CustomDateRangeSerializer
