@@ -119,7 +119,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         whenever(
             appPrefs.selectedUpdateReaderOption()
         ).thenReturn(
-            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.RANDOM.name
+            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel.RANDOM.name
         )
     }
 
