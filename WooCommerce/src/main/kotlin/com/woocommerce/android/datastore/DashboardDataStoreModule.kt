@@ -29,7 +29,7 @@ object DashboardDataStoreModule {
         site: SiteModel
     ): DataStore<DashboardDataModel> = DataStoreFactory.create(
         produceFile = {
-            appContext.preferencesDataStoreFile("dashboard_configuration_${site.id}")
+            appContext.dataStoreFile("dashboard_configuration_${site.id}")
         },
         corruptionHandler = ReplaceFileCorruptionHandler {
             DashboardDataModel.getDefaultInstance()
