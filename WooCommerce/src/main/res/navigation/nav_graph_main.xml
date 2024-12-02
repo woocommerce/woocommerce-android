@@ -308,6 +308,9 @@
             android:id="@+id/action_moreMenu_to_couponListFragment"
             app:destination="@id/nav_graph_coupons" />
         <action
+            android:id="@+id/action_moreMenu_to_couponListDetailFragment"
+            app:destination="@id/couponListDetailFragment" />
+        <action
             android:id="@+id/action_moreMenu_to_paymentFlow"
             app:destination="@id/nav_graph_payment_flow"
             app:enterAnim="@null">
@@ -873,4 +876,8 @@
     <action
         android:id="@+id/action_global_blazeCampaignDetailWebViewFragment"
         app:destination="@id/blazeCampaignDetailWebViewFragment" />
+    <fragment
+        android:id="@+id/couponListDetailFragment"
+        android:name="com.woocommerce.android.ui.coupons.CouponListDetailFragment"
+        android:label="CouponListDetailFragment" />
 </navigation>

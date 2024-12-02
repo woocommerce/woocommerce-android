@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewStoreEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.woopos.root.WooPosActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.FeatureFlag
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -185,9 +186,15 @@ class MoreMenuFragment : TopLevelFragment() {
     }
 
     private fun navigateToCoupons() {
-        findNavController().navigateSafely(
-            MoreMenuFragmentDirections.actionMoreMenuToCouponListFragment()
-        )
+        if (FeatureFlag.ADAPTIVE_LAYOUT_COUPONS.isEnabled()) {
+            findNavController().navigateSafely(
+                MoreMenuFragmentDirections.actionMoreMenuToCouponListDetailFragment()
+            )
+        } else {
+            findNavController().navigateSafely(
+                MoreMenuFragmentDirections.actionMoreMenuToCouponListFragment()
+            )
+        }
     }
 
     private fun navigateToCustomers() {
