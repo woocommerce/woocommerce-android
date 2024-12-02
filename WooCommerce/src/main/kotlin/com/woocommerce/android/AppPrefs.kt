@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
@@ -39,7 +40,7 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.AiTone
@@ -47,6 +48,9 @@ import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.commons.prefs.PreferenceUtils
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import java.util.Calendar
 import java.util.Date
 
@@ -260,7 +264,7 @@ object AppPrefs {
         set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
 
     var updateReaderOptionSelected: String
-        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
+        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateFrequencyUiModel.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
 
     var isEUShippingNoticeDismissed: Boolean
@@ -1275,6 +1279,22 @@ object AppPrefs {
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())
+
+    /**
+     * Observes changes to the preferences
+     */
+    fun observePrefs(): Flow<Unit> {
+        return callbackFlow {
+            val listener = OnSharedPreferenceChangeListener { _, _ ->
+                trySend(Unit)
+            }
+            getPreferences().registerOnSharedPreferenceChangeListener(listener)
+
+            awaitClose {
+                getPreferences().unregisterOnSharedPreferenceChangeListener(listener)
+            }
+        }
+    }
 
     /**
      * Methods used to store values in SharedPreferences that are not backed up

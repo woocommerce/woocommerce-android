@@ -52,13 +52,7 @@ class DeveloperOptionsAdapter : ListAdapter<ListItem, DeveloperOptionsViewHolder
     @Suppress("ReturnCount")
     object ListItemDiffCallback : DiffUtil.ItemCallback<ListItem>() {
         override fun areItemsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {
-            if (oldItem is ToggleableListItem && newItem is ToggleableListItem) {
-                return oldItem.label == newItem.label
-            }
-            if (oldItem is NonToggleableListItem && newItem is NonToggleableListItem) {
-                return oldItem.label == newItem.label
-            }
-            return false
+            return oldItem.label == newItem.label
         }
 
         override fun areContentsTheSame(oldItem: ListItem, newItem: ListItem): Boolean {

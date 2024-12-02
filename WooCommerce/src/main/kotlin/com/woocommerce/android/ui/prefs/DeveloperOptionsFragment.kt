@@ -10,7 +10,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentDeveloperOptionsBinding
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
 
@@ -56,9 +56,9 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
     }
 
     private fun showUpdateOptionsDialog(
-        values: List<UpdateOptions>,
-        mapper: (UpdateOptions) -> String,
-        selectedValue: UpdateOptions
+        values: List<UpdateFrequencyUiModel>,
+        mapper: (UpdateFrequencyUiModel) -> String,
+        selectedValue: UpdateFrequencyUiModel
     ) {
         var currentlySelectedValue = selectedValue
         val textValues = values.map(mapper).toTypedArray()

@@ -325,18 +325,7 @@ class AppPrefsWrapper @Inject constructor() {
     /**
      * Observes changes to the preferences
      */
-    fun observePrefs(): Flow<Unit> {
-        return callbackFlow {
-            val listener = OnSharedPreferenceChangeListener { _, _ ->
-                trySend(Unit)
-            }
-            AppPrefs.getPreferences().registerOnSharedPreferenceChangeListener(listener)
-
-            awaitClose {
-                AppPrefs.getPreferences().unregisterOnSharedPreferenceChangeListener(listener)
-            }
-        }
-    }
+    fun observePrefs(): Flow<Unit> = AppPrefs.observePrefs()
 
     fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
         AppPrefs.updateOnboardingCompletedStatus(siteId, completed)

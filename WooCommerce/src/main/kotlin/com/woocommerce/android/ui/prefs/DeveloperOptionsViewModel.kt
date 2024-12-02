@@ -2,66 +2,45 @@ package com.woocommerce.android.ui.prefs
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefsWrapper
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.SpinnerListItem
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.ListItem.ToggleableListItem
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DeveloperOptionsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val developerOptionsRepository: DeveloperOptionsRepository,
-    private val cardReaderManager: CardReaderManager,
-    private val appPrefsWrapper: AppPrefsWrapper,
+    private val developerOptionsRepository: DeveloperOptionsRepository
 ) : ScopedViewModel(savedState) {
+    private val isSimulatedReaderEnabled = developerOptionsRepository.observeSimulatedCardReaderEnabled()
 
-    private val savedPrivacySettingsOnDialogItem = ToggleableListItem(
-        icon = drawable.ic_more_screen_settings,
-        label = UiString.UiStringText("Saved privacy settings on dialog?"),
-        key = UiString.UiStringText(""),
-        isEnabled = true,
-        isChecked = appPrefsWrapper.savedPrivacyBannerSettings,
-        onToggled = { appPrefsWrapper.savedPrivacyBannerSettings = it }
-    )
-
-    private val _viewState = MutableLiveData(
-        DeveloperOptionsViewState(
-            rows = if (developerOptionsRepository.isSimulatedCardReaderEnabled()) {
-                getListItemsForSimulatedReader()
-            } else {
-                getListItemsForHardwareReader()
-            } + savedPrivacySettingsOnDialogItem,
-        )
-    )
-
-    val viewState: LiveData<DeveloperOptionsViewState> = _viewState
-
-    private fun getListItemsForHardwareReader(): List<ListItem> = mutableListOf<ListItem>(
+    private val simulatedCardReaderFlow = isSimulatedReaderEnabled.map { simulated ->
         ToggleableListItem(
             icon = drawable.img_card_reader_connecting,
             label = UiStringRes(string.enable_card_reader),
             key = UiStringRes(string.simulated_reader_key),
             isEnabled = true,
-            isChecked = developerOptionsRepository.isSimulatedCardReaderEnabled(),
+            isChecked = simulated,
             onToggled = ::onSimulatedReaderToggled
-        ),
-    )
+        )
+    }
 
-    private fun createReaderUpdateFrequencyItem() =
+    private val readerUpdateFrequencyFlow = isSimulatedReaderEnabled.map { simulatedReader ->
+        if (!simulatedReader) return@map null
+
         SpinnerListItem(
             icon = drawable.img_card_reader_update_progress,
             endIcon = drawable.ic_arrow_drop_down,
@@ -70,29 +49,56 @@ class DeveloperOptionsViewModel @Inject constructor(
             isEnabled = true,
             onClick = ::onUpdateSimulatedReaderClicked,
         )
+    }
 
-    private fun createEnableInteractItem() =
+    private val interacPaymentEnabledFlow = combine(
+        isSimulatedReaderEnabled,
+        developerOptionsRepository.observeInteracPaymentEnabled()
+    ) { simulatedReader, useInterac ->
+        if (!simulatedReader) return@combine null
+
         ToggleableListItem(
             icon = drawable.ic_credit_card_give,
             label = UiStringRes(string.enable_interac_payment),
             key = UiStringRes(string.enable_interac_key),
             isEnabled = true,
-            isChecked = developerOptionsRepository.isInteracPaymentEnabled(),
-            onToggled = ::onEnableInteracToggled
+            isChecked = useInterac,
+            onToggled = developerOptionsRepository::changeEnableInteracPaymentState
         )
+    }
+
+    private val savedPrivacySettingsOnDialogFlow = developerOptionsRepository
+        .observeSavedPrivacyBannerSettings()
+        .map { isChecked ->
+            ToggleableListItem(
+                icon = drawable.ic_more_screen_settings,
+                label = UiString.UiStringText("Saved privacy settings on dialog?"),
+                key = UiString.UiStringText(""),
+                isEnabled = true,
+                isChecked = isChecked,
+                onToggled = developerOptionsRepository::changeSavedPrivacyBannerSettings
+            )
+        }
+
+    val viewState = combine(
+        simulatedCardReaderFlow,
+        readerUpdateFrequencyFlow,
+        interacPaymentEnabledFlow,
+        savedPrivacySettingsOnDialogFlow
+    ) { items ->
+        DeveloperOptionsViewState(
+            rows = items.filterNotNull()
+        )
+    }.asLiveData()
 
     private fun onSimulatedReaderToggled(isChecked: Boolean) {
+        developerOptionsRepository.changeSimulatedReaderState(isChecked)
         if (!isChecked) {
-            viewState.value?.rows = getListItemsForHardwareReader()
             disconnectAndClearSelectedCardReader()
             triggerEvent(
                 DeveloperOptionsEvents.ShowToastString(string.simulated_reader_toast)
             )
-        } else {
-            viewState.value?.rows =
-                getListItemsForSimulatedReader()
         }
-        simulatedReaderStateChanged(isChecked)
     }
 
     private fun disconnectAndClearSelectedCardReader() {
@@ -101,79 +107,25 @@ class DeveloperOptionsViewModel @Inject constructor(
         }
     }
 
-    private fun simulatedReaderStateChanged(isChecked: Boolean) {
-        developerOptionsRepository.changeSimulatedReaderState(isChecked)
-        val currentViewState = viewState.value
-        (
-            currentViewState?.rows?.find {
-                it.key == UiStringRes(string.simulated_reader_key)
-            } as? ToggleableListItem
-            )?.let { originalListItem ->
-            val newState = originalListItem.copy(isChecked = isChecked)
-            _viewState.value = currentViewState.copy(
-                rows = currentViewState.rows.map {
-                    if (it.label == newState.label) {
-                        newState
-                    } else {
-                        it
-                    }
-                }
-            )
-        }
-    }
-
-    private fun onEnableInteracToggled(isChecked: Boolean) {
-        developerOptionsRepository.changeEnableInteracPaymentState(isChecked)
-
-        reinitializeSimulatedReaderIfNotInitialized()
-    }
-
-    private fun reinitializeSimulatedReaderIfNotInitialized() {
-        if (cardReaderManager.initialized) {
-            cardReaderManager.reinitializeSimulatedTerminal(
-                updateFrequency = mapUpdateOptions(developerOptionsRepository.getUpdateSimulatedReaderOption()),
-                useInterac = developerOptionsRepository.isInteracPaymentEnabled()
-            )
-        }
-    }
-
     private fun onUpdateSimulatedReaderClicked() {
         triggerEvent(
             DeveloperOptionsEvents.ShowUpdateOptionsDialog(
-                UpdateOptions.values().toList(),
-                developerOptionsRepository.getUpdateSimulatedReaderOption()
+                UpdateFrequencyUiModel.entries,
+                UpdateFrequencyUiModel.fromDomainModel(developerOptionsRepository.getUpdateSimulatedReaderOption())
             )
         )
     }
 
-    fun onUpdateReaderOptionChanged(selectedOption: UpdateOptions) {
-        developerOptionsRepository.updateSimulatedReaderOption(selectedOption)
-
-        reinitializeSimulatedReaderIfNotInitialized()
-    }
-
-    private fun mapUpdateOptions(updateFrequency: UpdateOptions): CardReaderManager.SimulatorUpdateFrequency {
-        return when (updateFrequency) {
-            UpdateOptions.ALWAYS -> CardReaderManager.SimulatorUpdateFrequency.ALWAYS
-            UpdateOptions.NEVER -> CardReaderManager.SimulatorUpdateFrequency.NEVER
-            UpdateOptions.LOW_BATTERY_ERROR -> CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_ERROR
-            UpdateOptions.LOW_BATTERY_SUCCEED_CONNECT -> {
-                CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT
-            }
-            UpdateOptions.RANDOM -> CardReaderManager.SimulatorUpdateFrequency.RANDOM
-        }
+    fun onUpdateReaderOptionChanged(selectedOption: UpdateFrequencyUiModel) {
+        developerOptionsRepository.updateSimulatedReaderOption(selectedOption.toDomainModel())
     }
 
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
         data class ShowToastString(val message: Int) : DeveloperOptionsEvents()
         data class ShowUpdateOptionsDialog(
-            val options: List<UpdateOptions>,
-            var selectedValue: UpdateOptions,
+            val options: List<UpdateFrequencyUiModel>,
+            var selectedValue: UpdateFrequencyUiModel,
         ) : DeveloperOptionsEvents()
-    }
-
-    private fun getListItemsForSimulatedReader(): List<ListItem> {
-        return getListItemsForHardwareReader() + createReaderUpdateFrequencyItem() + createEnableInteractItem()
     }
 
     data class DeveloperOptionsViewState(
@@ -210,15 +162,21 @@ class DeveloperOptionsViewModel @Inject constructor(
                 override var key: UiString,
                 val onClick: () -> Unit,
 
-            ) : ListItem()
+                ) : ListItem()
         }
 
-        enum class UpdateOptions(@StringRes val title: Int) {
+        enum class UpdateFrequencyUiModel(@StringRes val title: Int) {
             ALWAYS(string.always_update_reader),
             NEVER(string.never_update_reader),
             LOW_BATTERY_ERROR(string.low_battery_error_update_reader),
             LOW_BATTERY_SUCCEED_CONNECT(string.low_battery_succeed_connect_update_reader),
-            RANDOM(string.randomly_update_reader)
+            RANDOM(string.randomly_update_reader);
+
+            fun toDomainModel() = CardReaderManager.SimulatorUpdateFrequency.valueOf(name)
+
+            companion object {
+                fun fromDomainModel(model: CardReaderManager.SimulatorUpdateFrequency) = valueOf(model.name)
+            }
         }
     }
 }

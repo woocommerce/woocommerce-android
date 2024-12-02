@@ -243,7 +243,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
             cardReaderManager.initialize(
-                updateFrequency = mapUpdateOptions(appPrefs.selectedUpdateReaderOption()),
+                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                 useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
                 BuildConfig.DEBUG,
             )
@@ -251,10 +251,6 @@ class CardReaderConnectViewModel @Inject constructor(
         launch {
             startScanningIfNotStarted()
         }
-    }
-
-    private fun mapUpdateOptions(updateFrequency: String): CardReaderManager.SimulatorUpdateFrequency {
-        return CardReaderManager.SimulatorUpdateFrequency.valueOf(updateFrequency)
     }
 
     private suspend fun startScanningIfNotStarted() {
