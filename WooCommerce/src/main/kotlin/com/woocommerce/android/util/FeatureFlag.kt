@@ -18,7 +18,9 @@ enum class FeatureFlag {
     POS_NON_SIMPLE_PRODUCT_TYPES,
     POS_CASH_PAYMENTS,
     POS_RECEIPTS,
-    PRODUCT_GLOBAL_UNIQUE_IDENTIFIER_SUPPORT;
+    PRODUCT_GLOBAL_UNIQUE_IDENTIFIER_SUPPORT,
+    ADAPTIVE_LAYOUT_COUPONS
+    ;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -33,7 +35,8 @@ enum class FeatureFlag {
             POS_NON_SIMPLE_PRODUCT_TYPES,
             POS_CASH_PAYMENTS,
             POS_RECEIPTS,
-            PRODUCT_GLOBAL_UNIQUE_IDENTIFIER_SUPPORT -> PackageUtils.isDebugBuild()
+            PRODUCT_GLOBAL_UNIQUE_IDENTIFIER_SUPPORT,
+            ADAPTIVE_LAYOUT_COUPONS -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             CUSTOM_FIELDS,
