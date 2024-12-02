@@ -6,6 +6,7 @@
 - [*] "One time shipping" label in Product Subscriptions now matches its availability state correctly. [https://github.com/woocommerce/woocommerce-android/pull/13021]
 - [Internal] Refactored IPP Payment flow to allow customizing payment collection UI in POS [https://github.com/woocommerce/woocommerce-android/pull/13014]
 - [*] Blaze Campaign Intro screen now offers creating a new product if the site has no products yet [https://github.com/woocommerce/woocommerce-android/pull/13001]
+- [**] Add a possible fix for a crash where the Dashboard screen fails to load its stored data [https://github.com/woocommerce/woocommerce-android/pull/13045]
 
 -----
 21.2
