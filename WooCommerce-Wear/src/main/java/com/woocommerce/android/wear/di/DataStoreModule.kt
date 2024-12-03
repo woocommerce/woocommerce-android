@@ -2,8 +2,10 @@ package com.woocommerce.android.wear.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.wear.datastore.DataStoreQualifier
 import com.woocommerce.android.wear.datastore.DataStoreType.LOGIN
@@ -28,6 +30,7 @@ class DataStoreModule {
         @AppCoroutineScope appCoroutineScope: CoroutineScope
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = { appContext.preferencesDataStoreFile(LOGIN.typeName) },
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 
@@ -39,6 +42,7 @@ class DataStoreModule {
         @AppCoroutineScope appCoroutineScope: CoroutineScope
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = { appContext.preferencesDataStoreFile(STATS.typeName) },
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 
@@ -50,6 +54,7 @@ class DataStoreModule {
         @AppCoroutineScope appCoroutineScope: CoroutineScope
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = { appContext.preferencesDataStoreFile(ORDERS.typeName) },
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 }
