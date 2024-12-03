@@ -5,35 +5,35 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.woocommerce.android.apifaker.models.Endpoint
-import com.woocommerce.android.apifaker.models.EndpointType
-import com.woocommerce.android.apifaker.models.EndpointWithResponse
-import com.woocommerce.android.apifaker.models.FakeResponse
+import com.woocommerce.android.apifaker.models.Request
+import com.woocommerce.android.apifaker.models.ApiType
+import com.woocommerce.android.apifaker.models.MockedEndpoint
+import com.woocommerce.android.apifaker.models.Response
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 internal interface EndpointDao {
     @Transaction
-    @Query("Select * FROM Endpoint")
-    fun observeEndpoints(): Flow<List<EndpointWithResponse>>
+    @Query("Select * FROM Request")
+    fun observeEndpoints(): Flow<List<MockedEndpoint>>
 
     @Transaction
-    @Query("Select * FROM Endpoint WHERE type = :type AND :path LIKE path AND :body LIKE COALESCE(body, '%')")
-    fun queryEndpoint(type: EndpointType, path: String, body: String): EndpointWithResponse?
+    @Query("Select * FROM Request WHERE type = :type AND :path LIKE path AND :body LIKE COALESCE(body, '%')")
+    fun queryEndpoint(type: ApiType, path: String, body: String): MockedEndpoint?
 
     @Transaction
-    @Query("Select * FROM Endpoint WHERE id = :id")
-    suspend fun getEndpoint(id: Long): EndpointWithResponse?
+    @Query("Select * FROM Request WHERE id = :id")
+    suspend fun getEndpoint(id: Long): MockedEndpoint?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEndpoint(endpoint: Endpoint): Long
+    suspend fun insertRequest(request: Request): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertResponse(response: FakeResponse)
+    suspend fun insertResponse(response: Response)
 
     @Transaction
-    suspend fun insertEndpointWithResponse(endpoint: Endpoint, response: FakeResponse) {
-        val id = insertEndpoint(endpoint)
+    suspend fun insertEndpoint(request: Request, response: Response) {
+        val id = insertRequest(request)
         insertResponse(response.copy(endpointId = id))
     }
 }

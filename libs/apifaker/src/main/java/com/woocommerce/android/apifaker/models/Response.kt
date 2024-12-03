@@ -7,13 +7,13 @@ import androidx.room.PrimaryKey
 @Entity(
     foreignKeys = [
         ForeignKey(
-            entity = Endpoint::class,
+            entity = Request::class,
             parentColumns = ["id"],
             childColumns = ["endpointId"]
         )
     ]
 )
-internal data class FakeResponse(
+internal data class Response(
     @PrimaryKey val endpointId: Long = 0,
     val statusCode: Int,
     val body: String?,

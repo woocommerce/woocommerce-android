@@ -1,8 +1,8 @@
 package com.woocommerce.android.apifaker
 
 import com.woocommerce.android.apifaker.db.EndpointDao
-import com.woocommerce.android.apifaker.models.EndpointType
-import com.woocommerce.android.apifaker.models.FakeResponse
+import com.woocommerce.android.apifaker.models.ApiType
+import com.woocommerce.android.apifaker.models.Response
 import com.woocommerce.android.apifaker.util.JSONObjectProvider
 import okhttp3.Request
 import okio.Buffer
@@ -15,7 +15,7 @@ internal class EndpointProcessor @Inject constructor(
     private val endpointDao: EndpointDao,
     private val jsonObjectProvider: JSONObjectProvider
 ) {
-    fun fakeRequestIfNeeded(request: Request): FakeResponse? {
+    fun fakeRequestIfNeeded(request: Request): Response? {
         // TODO match against method and query parameters too
         val endpointData = when {
             request.url.host == WPCOM_HOST -> request.extractDataFromWPComEndpoint()
@@ -24,7 +24,7 @@ internal class EndpointProcessor @Inject constructor(
         }
 
         return with(endpointData) {
-            endpointDao.queryEndpoint(endpointType, path, body.orEmpty())
+            endpointDao.queryEndpoint(apiType, path, body.orEmpty())
         }?.response
     }
 
@@ -45,13 +45,13 @@ internal class EndpointProcessor @Inject constructor(
             }
 
             EndpointData(
-                endpointType = EndpointType.WPApi,
+                apiType = ApiType.WPApi,
                 path = path,
                 body = body
             )
         } else {
             EndpointData(
-                endpointType = EndpointType.WPCom,
+                apiType = ApiType.WPCom,
                 path = url.encodedPath.substringAfter("/rest"),
                 body = originalBody
             )
@@ -60,7 +60,7 @@ internal class EndpointProcessor @Inject constructor(
 
     private fun Request.extractDataFromWPApiEndpoint(): EndpointData {
         return EndpointData(
-            endpointType = EndpointType.WPApi,
+            apiType = ApiType.WPApi,
             path = url.encodedPath.substringAfter("/wp-json"),
             body = readBody()
         )
@@ -68,7 +68,7 @@ internal class EndpointProcessor @Inject constructor(
 
     private fun Request.extractDataFromCustomEndpoint(): EndpointData {
         return EndpointData(
-            endpointType = EndpointType.Custom(host = url.host),
+            apiType = ApiType.Custom(host = url.host),
             path = url.encodedPath,
             body = readBody()
         )
@@ -85,7 +85,7 @@ internal class EndpointProcessor @Inject constructor(
     }
 
     private data class EndpointData(
-        val endpointType: EndpointType,
+        val apiType: ApiType,
         val path: String,
         val body: String?
     )

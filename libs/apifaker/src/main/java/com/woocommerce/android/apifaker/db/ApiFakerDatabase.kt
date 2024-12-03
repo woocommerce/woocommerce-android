@@ -5,12 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.woocommerce.android.apifaker.models.Endpoint
-import com.woocommerce.android.apifaker.models.FakeResponse
+import com.woocommerce.android.apifaker.models.Request
+import com.woocommerce.android.apifaker.models.Response
 
 @Database(
     entities = [
-        Endpoint::class, FakeResponse::class
+        Request::class, Response::class
     ],
     version = 1
 )
