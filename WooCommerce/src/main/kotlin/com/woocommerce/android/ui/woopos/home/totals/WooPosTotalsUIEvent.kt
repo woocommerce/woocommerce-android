@@ -6,4 +6,5 @@ sealed class WooPosTotalsUIEvent {
     data object RetryOrderCreationClicked : WooPosTotalsUIEvent()
     data object OnStartReceiptFlowClicked : WooPosTotalsUIEvent()
     data object OnSendReceiptClicked : WooPosTotalsUIEvent()
+    data class OnEmailChanged(val email: String) : WooPosTotalsUIEvent()
 }

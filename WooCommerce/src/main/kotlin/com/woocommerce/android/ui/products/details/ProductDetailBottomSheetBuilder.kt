@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
 import com.woocommerce.android.ui.products.variations.VariationRepository
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
@@ -204,8 +203,7 @@ class ProductDetailBottomSheetBuilder(
     }
 
     private suspend fun Product.getCustomFields(): ProductDetailBottomSheetUiItem? {
-        if (!FeatureFlag.CUSTOM_FIELDS.isEnabled() ||
-            remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID ||
+        if (remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID ||
             customFieldsRepository.hasDisplayableCustomFields(remoteId)
         ) {
             return null

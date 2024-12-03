@@ -996,7 +996,6 @@
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
     <string name="orderdetail_custom_fields">Custom fields</string>
-    <string name="orderdetail_view_custom_fields">View custom fields</string>
     <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank-you note</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
@@ -2005,7 +2004,7 @@
     <string name="product_tax_status_taxable">Taxable</string>
     <string name="product_tax_status_shipping">Shipping</string>
     <string name="product_sku">SKU</string>
-    <string name="product_global_unique_id_hint">GTIN, UPC, EAN, ISBN</string>
+    <string name="product_global_unique_id">GTIN, UPC, EAN, ISBN</string>
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_global_unique_id_summary">Enter a barcode or any other identifier unique to this product. It can help you list this product on other channels or marketplaces.</string>
     <string name="product_stock_status">Stock status</string>

@@ -54,7 +54,7 @@
                     android:layout_marginStart="@dimen/major_100"
                     android:layout_marginTop="@dimen/major_75"
                     android:layout_marginEnd="@dimen/major_100"
-                    android:hint="@string/product_global_unique_id_hint"
+                    android:hint="@string/product_global_unique_id"
                     android:inputType="text"
                     android:paddingBottom="@dimen/major_75"
                     app:helperText="@string/product_global_unique_id_summary"

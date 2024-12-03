@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class WooPosIsReceiptSendingAvailable @Inject constructor(
+class WooPosTotalsPaymentReceiptIsSendingAvailable @Inject constructor(
     private val isReceiptsEnabled: WooPosIsReceiptsEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
 ) {

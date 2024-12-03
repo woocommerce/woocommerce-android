@@ -296,11 +296,13 @@ class VariationDetailCardBuilder(
                     StringUtils.formatCountDecimal(this.stockQuantity)
 
                 ),
-                Pair(resources.getString(R.string.product_sku), this.sku)
+                Pair(resources.getString(R.string.product_sku), this.sku),
+                Pair(resources.getString(R.string.product_global_unique_id), this.globalUniqueId)
             )
 
             this.sku.isNotEmpty() -> mapOf(
                 Pair(resources.getString(R.string.product_sku), this.sku),
+                Pair(resources.getString(R.string.product_global_unique_id), this.globalUniqueId),
                 Pair(
                     resources.getString(R.string.product_stock_status),
                     ProductStockStatus.stockStatusToDisplayString(resources, this.stockStatus)

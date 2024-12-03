@@ -170,7 +170,6 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         wcShippingBannerVisible = false,
         isRefreshing = false,
         isOrderDetailSkeletonShown = false,
-        isCustomFieldsButtonShown = true,
     )
 
     private val getOrderSubscriptions: GetOrderSubscriptions = mock()

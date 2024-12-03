@@ -90,7 +90,7 @@ private fun WooPosTotalsScreen(
             if (state is WooPosTotalsViewState.ReceiptSending) {
                 WooPosTotalsPaymentReceiptScreen(
                     state,
-                    onEmailAddressChanged = {},
+                    onEmailAddressChanged = { onUIEvent(WooPosTotalsUIEvent.OnEmailChanged(it)) },
                     onSendReceiptClicked = { onUIEvent(WooPosTotalsUIEvent.OnSendReceiptClicked) }
                 )
             }

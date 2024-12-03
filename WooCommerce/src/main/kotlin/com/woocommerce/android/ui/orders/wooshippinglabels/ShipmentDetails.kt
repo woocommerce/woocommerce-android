@@ -52,6 +52,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun ShipmentDetails(
     scaffoldState: BottomSheetScaffoldState,
+    shippableItems: ShippableItemsUI,
+    shippingLines: List<ShippingLineSummaryUI>,
     markOrderComplete: Boolean,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -98,18 +100,26 @@ fun ShipmentDetails(
         }
     }
     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        ShipmentDetailsLandscape(modifier = modifier)
+        ShipmentDetailsLandscape(
+            shippableItems = shippableItems,
+            shippingLines = shippingLines,
+            modifier = modifier
+        )
     } else {
         ShipmentDetailsPortrait(
-            modifier = modifier,
+            shippableItems = shippableItems,
+            shippingLines = shippingLines,
             markOrderComplete = markOrderComplete,
-            onMarkOrderCompleteChange = onMarkOrderCompleteChange
+            onMarkOrderCompleteChange = onMarkOrderCompleteChange,
+            modifier = modifier
         )
     }
 }
 
 @Composable
 private fun ShipmentDetailsPortrait(
+    shippableItems: ShippableItemsUI,
+    shippingLines: List<ShippingLineSummaryUI>,
     markOrderComplete: Boolean,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -126,9 +136,9 @@ private fun ShipmentDetailsPortrait(
             OrderDetailsSection(
                 shipFrom = getShipFrom(),
                 shipTo = getShipTo(),
-                totalItems = 5,
-                totalItemsCost = "$120.99",
-                shippingLines = getShippingLines(3)
+                totalItems = shippableItems.shippableItems.size,
+                totalItemsCost = shippableItems.formattedTotalPrice,
+                shippingLines = shippingLines
             )
             Divider(modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.major_100)))
             ShipmentCostSection(
@@ -147,6 +157,8 @@ private fun ShipmentDetailsPortrait(
 
 @Composable
 private fun ShipmentDetailsLandscape(
+    shippableItems: ShippableItemsUI,
+    shippingLines: List<ShippingLineSummaryUI>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
@@ -169,9 +181,9 @@ private fun ShipmentDetailsLandscape(
                     .fillMaxWidth()
             ) {
                 OrderDetailsSectionLandscape(
-                    totalItems = 5,
-                    totalItemsCost = "$120.99",
-                    shippingLines = getShippingLines(3),
+                    totalItems = shippableItems.shippableItems.size,
+                    totalItemsCost = shippableItems.formattedTotalPrice,
+                    shippingLines = shippingLines,
                     modifier = Modifier.weight(1f)
                 )
                 VerticalDivider(modifier = Modifier.padding(top = dimensionResource(R.dimen.major_100)))
@@ -214,7 +226,7 @@ private fun OrderDetailsSection(
     shipTo: Address,
     totalItems: Int,
     totalItemsCost: String,
-    shippingLines: List<ShippingLineSummary>,
+    shippingLines: List<ShippingLineSummaryUI>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier.fillMaxWidth()) {
@@ -241,7 +253,7 @@ private fun OrderDetailsSection(
 private fun OrderDetailsSectionLandscape(
     totalItems: Int,
     totalItemsCost: String,
-    shippingLines: List<ShippingLineSummary>,
+    shippingLines: List<ShippingLineSummaryUI>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier.fillMaxWidth()) {
@@ -266,7 +278,14 @@ private fun OrderDetailsSectionLandscape(
 fun ShipmentDetailsLandscapePreview() {
     WooThemeWithBackground {
         Surface {
-            ShipmentDetailsLandscape()
+            ShipmentDetailsLandscape(
+                shippableItems = ShippableItemsUI(
+                    shippableItems = generateItems(6),
+                    formattedTotalWeight = "8.5kg",
+                    formattedTotalPrice = "$92.78"
+                ),
+                shippingLines = getShippingLines()
+            )
         }
     }
 }
@@ -275,7 +294,7 @@ fun ShipmentDetailsLandscapePreview() {
 private fun TotalCard(
     totalItems: Int,
     totalItemsCost: String,
-    shippingLines: List<ShippingLineSummary>,
+    shippingLines: List<ShippingLineSummaryUI>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -314,7 +333,7 @@ private fun ItemsCostPreview() {
 
 @Composable
 private fun ShippingLines(
-    shippingLines: List<ShippingLineSummary>,
+    shippingLines: List<ShippingLineSummaryUI>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -445,8 +464,8 @@ private fun ShipmentCostSectionPreview() {
     }
 }
 
-private fun getShippingLines(number: Int = 3) = List(number) { i ->
-    ShippingLineSummary(
+fun getShippingLines(number: Int = 3) = List(number) { i ->
+    ShippingLineSummaryUI(
         title = "Shipping $i",
         amount = "$12.99"
     )
@@ -454,7 +473,7 @@ private fun getShippingLines(number: Int = 3) = List(number) { i ->
 
 fun Address.toShippingFromString() = this.getEnvelopeAddress().replace("\n", " ")
 
-data class ShippingLineSummary(
+data class ShippingLineSummaryUI(
     val title: String,
     val amount: String
 )

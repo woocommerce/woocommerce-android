@@ -12,7 +12,6 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     NEW_SHIPPING_SUPPORT,
     ENDLESS_CAMPAIGNS_SUPPORT,
-    CUSTOM_FIELDS,
     REVAMP_WOO_SHIPPING,
     OBJECTIVE_SECTION,
     POS_NON_SIMPLE_PRODUCT_TYPES,
@@ -36,7 +35,6 @@ enum class FeatureFlag {
             PRODUCT_GLOBAL_UNIQUE_IDENTIFIER_SUPPORT -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
-            CUSTOM_FIELDS,
             ENDLESS_CAMPAIGNS_SUPPORT,
             OBJECTIVE_SECTION -> true
         }

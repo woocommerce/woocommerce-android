@@ -261,10 +261,6 @@
                 app:nullable="false" />
         </action>
         <action
-            android:id="@+id/action_orderDetailFragment_to_customOrderFieldsFragment"
-            app:destination="@id/customOrderFieldsFragment" />
-
-        <action
             android:id="@+id/action_orderDetailFragment_to_orderCreationFragment"
             app:destination="@id/nav_graph_order_creations"
             app:enterAnim="@anim/activity_fade_in"
@@ -659,17 +655,6 @@
         <argument
             android:name="storedAddress"
             app:argType="com.woocommerce.android.model.Address" />
-    </fragment>
-    <fragment
-        android:id="@+id/customOrderFieldsFragment"
-        android:name="com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsFragment">
-        <argument
-            android:name="orderId"
-            app:argType="long" />
-        <argument
-            android:name="remoteNoteId"
-            android:defaultValue="0L"
-            app:argType="long" />
     </fragment>
     <action
         android:id="@+id/action_global_item_selector_dialog"

@@ -38,7 +38,9 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
             title = R.string.login_try_another_account,
             onClick = {
                 unifiedLoginTracker.trackClick(Click.TRY_ANOTHER_ACCOUNT)
-                loginListener.startOver()
+
+                // Return merchant to the WPCom account login screen
+                dismiss()
             }
         )
 

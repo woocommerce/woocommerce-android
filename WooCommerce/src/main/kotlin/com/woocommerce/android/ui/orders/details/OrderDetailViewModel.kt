@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details
 
-import android.content.Context
 import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
@@ -59,7 +58,6 @@ import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWit
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
-import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
@@ -87,9 +85,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
-import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -269,7 +265,6 @@ class OrderDetailViewModel @Inject constructor(
         loadOrderNotes()
         displayProductAndShippingDetails()
         displayCustomAmounts()
-        checkOrderMetaData()
     }
 
     private suspend fun fetchOrder(showSkeleton: Boolean) {
@@ -313,13 +308,6 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkOrderMetaData() {
-        viewState = viewState.copy(
-            isCustomFieldsButtonShown = FeatureFlag.CUSTOM_FIELDS.isEnabled() ||
-                orderDetailRepository.orderHasMetadata(navArgs.orderId)
-        )
-    }
-
     /**
      * User clicked the button to view custom fields
      */
@@ -328,19 +316,8 @@ class OrderDetailViewModel @Inject constructor(
         triggerEvent(OrderNavigationTarget.ViewCustomFields(navArgs.orderId))
     }
 
-    /**
-     * User tapped an actionable custom field
-     */
-    fun onCustomFieldClicked(context: Context, value: String) {
-        CustomOrderFieldsHelper.handleMetadataValue(context, value)
-    }
-
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
-    }
-
-    fun getOrderMetadata(): List<WCMetaData> = runBlocking {
-        orderDetailRepository.getOrderMetadata(navArgs.orderId)
     }
 
     fun onRefreshRequested() {

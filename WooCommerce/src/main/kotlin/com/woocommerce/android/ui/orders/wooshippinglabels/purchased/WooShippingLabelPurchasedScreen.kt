@@ -48,7 +48,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.HazmatCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
-import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItems
+import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemsUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingProductsCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.generateItems
 
@@ -103,10 +103,10 @@ internal fun WooShippingLabelPurchasedScreen(
 
         val isExpanded = remember { mutableStateOf(false) }
         ShippingProductsCard(
-            shippableItems = ShippableItems(
+            shippableItems = ShippableItemsUI(
                 shippableItems = generateItems(6),
-                totalWeight = "8.5kg",
-                totalPrice = "$92.78"
+                formattedTotalWeight = "8.5kg",
+                formattedTotalPrice = "$92.78"
             ),
             isExpanded = isExpanded.value,
             onExpand = { isExpanded.value = it },
