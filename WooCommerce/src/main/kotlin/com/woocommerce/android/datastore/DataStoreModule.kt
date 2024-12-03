@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_CONFIGURATION
 import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_UI_CACHE
@@ -36,6 +38,7 @@ class DataStoreModule {
         produceFile = {
             appContext.preferencesDataStoreFile("tracker")
         },
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 
@@ -49,6 +52,7 @@ class DataStoreModule {
         produceFile = {
             appContext.preferencesDataStoreFile("analytics")
         },
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 
@@ -62,6 +66,7 @@ class DataStoreModule {
         produceFile = {
             appContext.preferencesDataStoreFile("analytics_configuration")
         },
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 
@@ -74,6 +79,9 @@ class DataStoreModule {
     ): DataStore<CustomDateRange> = DataStoreFactory.create(
         produceFile = {
             appContext.preferencesDataStoreFile("custom_date_range_configuration")
+        },
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            CustomDateRange.getDefaultInstance()
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = CustomDateRangeSerializer
@@ -88,6 +96,9 @@ class DataStoreModule {
     ): DataStore<CustomDateRange> = DataStoreFactory.create(
         produceFile = {
             appContext.preferencesDataStoreFile("top_performers_custom_date_range_configuration")
+        },
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            CustomDateRange.getDefaultInstance()
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = CustomDateRangeSerializer
@@ -120,6 +131,7 @@ class DataStoreModule {
         produceFile = {
             appContext.preferencesDataStoreFile("update")
         },
+        corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
 }
