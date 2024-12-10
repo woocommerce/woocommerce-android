@@ -26,6 +26,8 @@ data class CustomColors(
     val paymentSuccessIcon: Color,
     val dialogSubtitleHighlightBackground: Color = Color(0x14747480),
     val homeBackground: Color,
+    val paymentProcessingAnimationBackground: Color = WooPosColors.WooPurple20,
+    val paymentProcessingText: Color = WooPosColors.White,
 )
 
 private object WooPosColors {

@@ -237,13 +237,12 @@ class WooPosTotalsViewModel @Inject constructor(
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
                 when (paymentState) {
                     is CardReaderPaymentState.CollectingPayment -> handleCollectingPaymentState()
-                    is CardReaderPaymentState.LoadingData ->
-                        handleReaderLoadingPaymentState()
+
+                    is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
 
                     is CardReaderPaymentState.ProcessingPayment,
-                    is CardReaderPaymentState.PaymentCapturing,
-                    CardReaderPaymentState.ReFetchingOrder -> {
-                        uiState.value = buildPaymentProcessingState()
+                    is CardReaderPaymentState.PaymentCapturing -> {
+                        uiState.value = buildPaymentProcessingState(paymentState)
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentProcessing)
                     }
 
@@ -259,6 +258,8 @@ class WooPosTotalsViewModel @Inject constructor(
                         uiState.value = buildPaymentFailedState(paymentState)
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.PaymentFailed)
                     }
+
+                    CardReaderPaymentState.ReFetchingOrder -> Unit
 
                     is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
                     is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
@@ -335,14 +336,18 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private fun buildPaymentProcessingState(): PaymentProcessing = PaymentProcessing(
-        title = resourceProvider.getString(
-            R.string.woopos_success_totals_payment_processing_title
-        ),
-        subtitle = resourceProvider.getString(
-            R.string.woopos_success_totals_payment_processing_subtitle
+    private fun buildPaymentProcessingState(paymentState: CardReaderPaymentOrRefundState): PaymentProcessing {
+        val subtitle = when (paymentState) {
+            is CardReaderPaymentState.ProcessingPayment -> R.string.woo_pos_payment_remove_card
+            else -> R.string.woopos_success_totals_payment_processing_subtitle
+        }
+        return PaymentProcessing(
+            title = resourceProvider.getString(
+                R.string.woopos_success_totals_payment_processing_title
+            ),
+            subtitle = resourceProvider.getString(subtitle)
         )
-    )
+    }
 
     private fun createOrderDraft(productIds: List<Long>) {
         viewModelScope.launch {

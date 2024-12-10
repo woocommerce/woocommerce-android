@@ -4308,6 +4308,7 @@
 
     <string name="woopos_success_totals_payment_processing_title">Processing payment</string>
     <string name="woopos_success_totals_payment_processing_subtitle">Please wait…</string>
+    <string name="woo_pos_payment_remove_card">Remove card</string>
     <string name="woopos_success_totals_payment_failed_title">Payment failed</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Try another payment method</string>
     <string name="woo_pos_payment_failed_try_again">Try payment again</string>
