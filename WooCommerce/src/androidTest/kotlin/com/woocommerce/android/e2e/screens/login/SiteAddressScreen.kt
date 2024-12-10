@@ -13,4 +13,11 @@ class SiteAddressScreen : Screen {
 
         return EmailAddressScreen()
     }
+
+    fun openLoginNotWpScreen(siteAddress: String): LoginNotWPScreen {
+        clickOn(org.wordpress.android.login.R.id.input)
+        typeTextInto(org.wordpress.android.login.R.id.input, siteAddress)
+        clickOn(R.id.bottom_button)
+        return LoginNotWPScreen()
+    }
 }
