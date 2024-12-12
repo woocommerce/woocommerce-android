@@ -43,7 +43,7 @@ class LoginUITest: TestBase() {
     @Test
     fun siteAddressWithWrongURL() {
         SiteAddressScreen()
-            .openLoginNotWpScreen(siteAddress = "sitewithnowp.com")
+            .openLoginNotWpScreen(siteAddress = "https://yahoo.com/")
             .assertErrorElements()
     }
 }
