@@ -4,7 +4,7 @@
     "urlPath": "/rest/v1.1/connect/site-info/",
     "queryParameters": {
       "url": {
-        "matches": ".*automatticwidgets.wpcomstaging.com.*"
+        "matches": ".*notawpsite.com.*"
       }
     }
   },
@@ -12,12 +12,12 @@
     "status": 200,
     "jsonBody": {
       "exists": true,
-      "isWordPress": true,
-      "hasJetpack": true,
-      "isJetpackActive": true,
-      "isJetpackConnected": true,
-      "isWordPressDotCom": true,
-      "urlAfterRedirects": "https:\/\/automatticwidgets.wpcomstaging.com",
+      "isWordPress": false,
+      "hasJetpack": false,
+      "isJetpackActive": false,
+      "isJetpackConnected": false,
+      "isWordPressDotCom": false,
+      "urlAfterRedirects": "",
       "jetpackVersion": false
     },
     "headers": {
