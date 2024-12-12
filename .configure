@@ -1,7 +1,7 @@
 {
   "project_name": "woocommerce-android",
-  "branch": "trunk",
-  "pinned_hash": "50ebed193db7cab11a2d299fdd478b7600055cbf",
+  "branch": "gradle/add-shared-read-only-dependency-cache",
+  "pinned_hash": "d05fe1f39c3b152324f5fbda36bf5ad18cea2824",
   "files_to_copy": [
     {
       "file": "android/WCAndroid/secrets.properties",
