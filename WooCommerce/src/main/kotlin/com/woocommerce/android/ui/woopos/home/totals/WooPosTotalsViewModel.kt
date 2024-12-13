@@ -200,6 +200,8 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
                 }
             }
+
+            WooPosTotalsUIEvent.OnCashPaymentClicked -> cancelPaymentAction()
         }
     }
 

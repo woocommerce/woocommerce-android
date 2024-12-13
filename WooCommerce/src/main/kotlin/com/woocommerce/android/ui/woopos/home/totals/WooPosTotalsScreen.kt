@@ -86,6 +86,7 @@ private fun WooPosTotalsScreen(
                 TotalsLoaded(
                     state = state,
                     onNavigationEvent = onNavigationEvent,
+                    onUIEvent = onUIEvent,
                 )
             }
         }
@@ -159,6 +160,7 @@ private fun StateChangeAnimated(
 private fun TotalsLoaded(
     state: WooPosTotalsViewState.Totals,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -214,6 +216,7 @@ private fun TotalsLoaded(
                                     orderId = cashPaymentAvailability.orderId
                                 )
                             )
+                            onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked)
                         },
                     )
                 }
