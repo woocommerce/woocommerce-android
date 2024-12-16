@@ -4,9 +4,6 @@
 agents:
   queue: "android"
 
-env:
-  GRADLE_DEPENDENCY_CACHE_PROJECT_PREFIX: "WOOCOMMERCE"
-
 steps:
   - label: "🛠 Prototype Build: Mobile App"
     command: |
