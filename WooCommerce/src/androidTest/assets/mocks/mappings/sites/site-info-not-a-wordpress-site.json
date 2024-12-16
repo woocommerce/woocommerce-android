@@ -4,7 +4,7 @@
     "urlPath": "/rest/v1.1/connect/site-info/",
     "queryParameters": {
       "url": {
-        "matches": ".*notawpsite.com.*"
+        "matches": ".*notawpsite\\.com.*"
       }
     }
   },
