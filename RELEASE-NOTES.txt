@@ -14,6 +14,8 @@
 - [Internal] Removes coupons feature announcement banner [https://github.com/woocommerce/woocommerce-android/pull/13077]
 - [Internal] Updated androidx-compose-bom to 2024.09.00 [https://github.com/woocommerce/woocommerce-android/pull/13060]
 - [**] Improved UX of card reader payment flow in Point of Sale, allowing faster payment collection [https://github.com/woocommerce/woocommerce-android/pull/12977]
+- [*] Fixed crash when trying to open barcode scanner on device without camera [https://github.com/woocommerce/woocommerce-android/pull/13172]
+- [Internal] Woo POS now accepts cash payments and there is a functionality of sending receipts [https://github.com/woocommerce/woocommerce-android/pull/13157]
 
 -----
 21.2

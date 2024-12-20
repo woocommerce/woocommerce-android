@@ -554,7 +554,12 @@ fun generateRates(carrier: WooShippingCarrier, number: Int): List<ShippingRateUI
             carrier = WooShippingCarrier.DHL,
             hasFreePickup = true,
             insurance = BigDecimal.TEN,
-            isTrackingEnabled = true
+            isTrackingEnabled = true,
+            deliveryDate = null,
+            isDeliveryDateGuaranteed = false,
+            isSelected = false,
+            listRate = BigDecimal.TEN,
+            retailRate = BigDecimal.TEN
         )
         val option = ShippingRateOptionUI(
             title = rate.serviceName,

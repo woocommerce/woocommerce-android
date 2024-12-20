@@ -41,7 +41,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewState
 @Composable
 fun WooPosPaginationErrorIndicator(
     modifier: Modifier = Modifier,
-    icon: Painter = painterResource(id = R.drawable.woo_pos_ic_error),
+    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error),
     message: String,
     description: String,
     primaryButton: Button,

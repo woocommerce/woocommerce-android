@@ -17,6 +17,11 @@ data class WooShippingRateModel(
     val isTrackingEnabled: Boolean,
     val hasFreePickup: Boolean,
     val insurance: BigDecimal?,
+    val deliveryDate: String?,
+    val isDeliveryDateGuaranteed: Boolean,
+    val isSelected: Boolean,
+    val listRate: BigDecimal,
+    val retailRate: BigDecimal,
     val option: Option,
     val carrier: WooShippingCarrier
 ) {

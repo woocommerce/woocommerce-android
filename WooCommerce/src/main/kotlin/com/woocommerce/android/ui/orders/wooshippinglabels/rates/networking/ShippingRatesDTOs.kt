@@ -21,7 +21,9 @@ data class DestinationAddressDTO(
     val country: String? = null,
     val phone: String? = null,
     val name: String? = null,
-    val address: String? = null
+    val address: String? = null,
+    val address2: String? = null,
+    val email: String? = null
 )
 
 data class OriginAddressDTO(
@@ -39,16 +41,16 @@ data class OriginAddressDTO(
 data class ShippingRateDTO(
     @SerializedName("rate_id") val rateId: String,
     @SerializedName("service_id") val serviceId: String,
-    @SerializedName("carrier_id") val carrierId: String,
+    @SerializedName("carrier_id") val carrierId: String?,
     val title: String,
     val rate: BigDecimal,
-    @SerializedName("retail_rate") val retailRate: BigDecimal,
-    @SerializedName("list_rate") val listRate: String? = null,
+    @SerializedName("retail_rate") val retailRate: BigDecimal? = null,
+    @SerializedName("list_rate") val listRate: BigDecimal? = null,
     @SerializedName("is_selected") val isSelected: Boolean,
     val tracking: Boolean = false,
     val insurance: String?,
     @SerializedName("free_pickup") val freePickup: Boolean,
-    @SerializedName("shipment_id") val shipmentId: String,
+    @SerializedName("shipment_id") val shipmentId: String?,
     @SerializedName("delivery_days") val deliveryDays: Int,
     @SerializedName("delivery_date_guaranteed") val deliveryDateGuaranteed: Boolean,
     @SerializedName("delivery_date") val deliveryDate: String?

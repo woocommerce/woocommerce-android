@@ -481,7 +481,7 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                     listOf(
                         Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
-                            icon = R.drawable.woopos_ic_exit_pos,
+                            icon = R.drawable.ic_woo_pos_exit,
                         ),
                         Menu.MenuItem(
                             title = R.string.woopos_get_support_title,

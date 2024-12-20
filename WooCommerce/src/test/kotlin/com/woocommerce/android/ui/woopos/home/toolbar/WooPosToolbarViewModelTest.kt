@@ -85,7 +85,7 @@ class WooPosToolbarViewModelTest {
                         ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
-                            icon = R.drawable.woopos_ic_exit_pos,
+                            icon = R.drawable.ic_woo_pos_exit,
                         ),
                     )
                 )
@@ -126,7 +126,7 @@ class WooPosToolbarViewModelTest {
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
             title = R.string.woopos_exit_confirmation_title,
-            icon = R.drawable.woopos_ic_exit_pos
+            icon = R.drawable.ic_woo_pos_exit
         )
 
         // WHEN

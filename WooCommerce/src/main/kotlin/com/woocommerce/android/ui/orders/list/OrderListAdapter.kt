@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -36,6 +37,7 @@ class OrderListAdapter(
 
     var activeOrderStatusMap: Map<String, WCOrderStatusModel> = emptyMap()
     var allOrderIds: List<Long> = listOf()
+    var tracker: SelectionTracker<Long>? = null
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -90,7 +92,11 @@ class OrderListAdapter(
                             "for position: $position"
                     )
                 }
-                holder.onBind((item as OrderListItemUI), allOrderIds)
+                holder.onBind(
+                    (item as OrderListItemUI),
+                    allOrderIds,
+                    isActivated = tracker?.isSelected(item.orderId) ?: false
+                )
             }
             is SectionHeaderViewHolder -> {
                 if (BuildConfig.DEBUG && item !is SectionHeader) {
@@ -152,9 +158,16 @@ class OrderListAdapter(
         private var isNotCompleted = true
         private var orderId = SwipeToComplete.SwipeAbleViewHolder.EMPTY_SWIPED_ID
         private val extras = HashMap<String, String>()
-        fun onBind(orderItemUI: OrderListItemUI, allOrderIds: List<Long>) {
+
+        // Note that `isActivated` here is not the same as `isSelected`.
+        // - `isActivated` : Flag used when an item is long pressed to support multiple selection in bulk updating.
+        // - `isSelected`  : Flag used for the tablet 2-panel mode to show the selected item in a different color.
+        fun onBind(orderItemUI: OrderListItemUI, allOrderIds: List<Long>, isActivated: Boolean = false) {
             // Grab the current context from the underlying view
             val ctx = this.itemView.context
+
+            // As suggested in https://developer.android.com/reference/androidx/recyclerview/selection/package-summary
+            viewBinding.root.isActivated = isActivated
 
             viewBinding.orderDate.text = orderItemUI.dateCreated
             viewBinding.orderNum.text = "#${orderItemUI.orderNumber}"
@@ -166,7 +179,7 @@ class OrderListAdapter(
             viewBinding.divider.visibility = if (orderItemUI.isLastItemInSection) View.GONE else View.VISIBLE
 
             when {
-                orderItemUI.isSelected -> {
+                orderItemUI.isSelected || isActivated -> {
                     viewBinding.orderItemLayout.setBackgroundColor(
                         viewBinding.root.context.getColor(R.color.color_item_selected)
                     )
@@ -175,7 +188,6 @@ class OrderListAdapter(
                     viewBinding.orderItemLayout.setBackgroundColor(Color.TRANSPARENT)
                 }
             }
-
             // clear existing tags and add new ones
             viewBinding.orderTags.removeAllViews()
             processTagView(orderItemUI.status, this)

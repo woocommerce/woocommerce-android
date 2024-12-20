@@ -279,7 +279,7 @@ fun ProductsEmptyList() {
         ) {
             Image(
                 modifier = Modifier.size(104.dp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.woo_pos_ic_empty_products),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_empty_products),
                 contentDescription = stringResource(id = R.string.woopos_products_empty_list_image_description),
             )
 

@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels
 
 import android.content.res.Configuration
+import android.os.Parcelable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +64,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageDa
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRateUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingRatesSection
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.ShippingSortOption
+import kotlinx.parcelize.Parcelize
 
 @Composable
 fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel) {
@@ -89,7 +92,8 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 customWeight = viewModel.customWeight,
                 onCustomWeightChange = viewModel::onCustomWeightChange,
                 markOrderComplete = viewState.markOrderComplete,
-                onMarkOrderCompleteChange = viewModel::onMarkOrderCompleteChange
+                onMarkOrderCompleteChange = viewModel::onMarkOrderCompleteChange,
+                purchaseState = viewState.purchaseState
             )
         }
 
@@ -119,6 +123,7 @@ fun WooShippingLabelCreationScreen(
     customWeight: String,
     markOrderComplete: Boolean,
     onMarkOrderCompleteChange: (Boolean) -> Unit,
+    purchaseState: WooShippingLabelCreationViewModel.PurchaseState,
     modifier: Modifier = Modifier
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -167,10 +172,25 @@ fun WooShippingLabelCreationScreen(
                     } else {
                         PurchaseButton(
                             total = shippingRatesState.selectedRate?.selectedOption?.formatedPrice,
-                            onPurchaseShippingLabel = { }
+                            onPurchaseShippingLabel = onPurchaseShippingLabel
                         )
                     }
                 }
+            }
+        }
+        if (purchaseState is WooShippingLabelCreationViewModel.PurchaseState.InProgress) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() },
+                        onClick = {}
+                    )
+                    .background(color = MaterialTheme.colors.surface.copy(alpha = 0.4f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
@@ -505,6 +525,7 @@ private fun PackageSelectionAvailableCard(
     }
 }
 
+@Parcelize
 data class ShippableItemUI(
     val itemId: Long,
     val productId: Long,
@@ -514,13 +535,14 @@ data class ShippableItemUI(
     val formattedPrice: String,
     val quantity: Float,
     val imageUrl: String? = null
-)
+) : Parcelable
 
+@Parcelize
 data class ShippableItemsUI(
     val shippableItems: List<ShippableItemUI>,
     val formattedTotalWeight: String,
     val formattedTotalPrice: String
-)
+) : Parcelable
 
 @Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES, device = Devices.PIXEL)
 @Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO, device = Devices.PIXEL)
@@ -552,7 +574,8 @@ private fun WooShippingLabelCreationScreenPreview() {
             onCustomWeightChange = {},
             onSelectedSippingRateChanged = {},
             markOrderComplete = true,
-            onMarkOrderCompleteChange = {}
+            onMarkOrderCompleteChange = {},
+            purchaseState = WooShippingLabelCreationViewModel.PurchaseState.NoStarted
         )
     }
 }

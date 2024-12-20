@@ -43,7 +43,7 @@ fun WooPosPaymentFailedScreen(
         Spacer(modifier = Modifier.height(96.dp.toAdaptivePadding()))
         Icon(
             modifier = Modifier.size(84.dp),
-            painter = painterResource(id = R.drawable.woo_pos_ic_error_x),
+            painter = painterResource(id = R.drawable.ic_woo_pos_error_x),
             contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
             tint = Color.Unspecified,
         )

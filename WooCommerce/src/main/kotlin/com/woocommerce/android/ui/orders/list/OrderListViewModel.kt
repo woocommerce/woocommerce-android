@@ -211,6 +211,8 @@ class OrderListViewModel @Inject constructor(
             )
         }.asLiveData()
 
+    fun isSelecting() = viewState.orderListState == ViewState.OrderListState.Selecting
+
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
         lifecycleRegistry.currentState = Lifecycle.State.STARTED
@@ -887,6 +889,28 @@ class OrderListViewModel @Inject constructor(
         )
     }
 
+    fun onSelectionChanged(count: Int) {
+        when {
+            count == 0 -> exitSelectionMode()
+            count > 0 && !isSelecting() -> enterSelectionMode(count)
+            count > 0 -> viewState = viewState.copy(selectionCount = count)
+        }
+    }
+
+    private fun enterSelectionMode(count: Int) {
+        viewState = viewState.copy(
+            orderListState = ViewState.OrderListState.Selecting,
+            selectionCount = count
+        )
+    }
+
+    private fun exitSelectionMode() {
+        viewState = viewState.copy(
+            orderListState = ViewState.OrderListState.Browsing,
+            selectionCount = null
+        )
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
@@ -931,10 +955,14 @@ class OrderListViewModel @Inject constructor(
         val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
         val isErrorFetchingDataBannerVisible: Boolean = false,
-        val shouldDisplayTroubleshootingBanner: Boolean = false
+        val shouldDisplayTroubleshootingBanner: Boolean = false,
+        val orderListState: OrderListState? = null,
+        val selectionCount: Int? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
+
+        enum class OrderListState { Selecting, Browsing }
     }
 
     enum class Mode {

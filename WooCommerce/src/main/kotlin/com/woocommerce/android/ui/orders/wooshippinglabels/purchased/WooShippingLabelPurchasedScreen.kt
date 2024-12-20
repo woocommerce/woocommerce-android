@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.HazmatCard
@@ -67,6 +68,8 @@ val Colors.successSurface: Color get() = if (isLight) lightGreen else darkGreen
 fun WooShippingLabelPurchasedScreen(viewModel: WooShippingLabelPurchasedViewModel) {
     val viewState = viewModel.viewState.observeAsState()
     WooShippingLabelPurchasedScreen(
+        isLoading = viewState.value?.isPrintingInProgress ?: false,
+        shippingData = viewState.value?.shippableItems,
         selectedLabelPaperSizeOption = viewState.value?.paperSizeOption ?: WooShippingLabelPaperSize.LEGAL,
         onLabelPaperSizeOptionSelected = { viewModel.onLabelPaperSizeOptionSelected(it) },
         onPrintShippingLabelClicked = { viewModel.onPrintShippingLabelClicked() },
@@ -79,6 +82,8 @@ fun WooShippingLabelPurchasedScreen(viewModel: WooShippingLabelPurchasedViewMode
 
 @Composable
 internal fun WooShippingLabelPurchasedScreen(
+    isLoading: Boolean,
+    shippingData: ShippableItemsUI?,
     selectedLabelPaperSizeOption: WooShippingLabelPaperSize,
     onLabelPaperSizeOptionSelected: (WooShippingLabelPaperSize) -> Unit,
     onPrintShippingLabelClicked: () -> Unit,
@@ -88,7 +93,11 @@ internal fun WooShippingLabelPurchasedScreen(
     onLearnMoreClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Text(
             text = stringResource(id = R.string.shipping_label_purchased_title),
             style = MaterialTheme.typography.subtitle1,
@@ -116,18 +125,20 @@ internal fun WooShippingLabelPurchasedScreen(
             modifier = Modifier.padding(top = 8.dp),
         )
 
-        val isExpanded = remember { mutableStateOf(false) }
-        ShippingProductsCard(
-            shippableItems = ShippableItemsUI(
-                shippableItems = generateItems(6),
-                formattedTotalWeight = "8.5kg",
-                formattedTotalPrice = "$92.78"
-            ),
-            isExpanded = isExpanded.value,
-            onExpand = { isExpanded.value = it },
-            iconColor = MaterialTheme.colors.onSurface,
-            modifier = Modifier.padding(top = 24.dp)
-        )
+        shippingData?.let { shippingData ->
+            val isExpanded = remember { mutableStateOf(false) }
+            ShippingProductsCard(
+                shippableItems = ShippableItemsUI(
+                    shippableItems = shippingData.shippableItems,
+                    formattedTotalWeight = shippingData.formattedTotalWeight,
+                    formattedTotalPrice = shippingData.formattedTotalPrice
+                ),
+                isExpanded = isExpanded.value,
+                onExpand = { isExpanded.value = it },
+                iconColor = MaterialTheme.colors.onSurface,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+        }
         Spacer(modifier = Modifier.padding(top = 16.dp))
         HazmatCard(
             modifier = Modifier
@@ -138,24 +149,11 @@ internal fun WooShippingLabelPurchasedScreen(
                 )
                 .clip(RoundedCornerShape(dimensionResource(R.dimen.corner_radius_large))),
         )
-    }
-}
 
-@Preview(showSystemUi = true, device = Devices.PIXEL_4)
-@Composable
-internal fun WooShippingLabelPurchasedScreenPreview() {
-    WooThemeWithBackground {
-        Surface {
-            val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.LEGAL) }
-            WooShippingLabelPurchasedScreen(
-                selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
-                onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
-                onPrintShippingLabelClicked = {},
-                modifier = Modifier.padding(16.dp),
-                onTrackShipmentClicked = {},
-                onSchedulePickUpClicked = {},
-                onRefundClicked = {},
-                onLearnMoreClicked = {}
+        if (isLoading) {
+            ProgressDialog(
+                title = stringResource(R.string.loading),
+                subtitle = stringResource(R.string.please_wait),
             )
         }
     }
@@ -326,6 +324,31 @@ private fun ShippingLabelLink(
                 contentDescription = null,
                 tint = MaterialTheme.colors.successColor,
                 modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+    }
+}
+
+@Preview(showSystemUi = true, device = Devices.PIXEL_4)
+@Composable
+internal fun WooShippingLabelPurchasedScreenPreview() {
+    WooThemeWithBackground {
+        Surface {
+            val selectedLabelPaperSizeOption = remember { mutableStateOf(WooShippingLabelPaperSize.LEGAL) }
+            WooShippingLabelPurchasedScreen(
+                isLoading = false,
+                shippingData = ShippableItemsUI(
+                    shippableItems = generateItems(6),
+                    formattedTotalWeight = "8.5kg",
+                    formattedTotalPrice = "$92.78"
+                ),
+                selectedLabelPaperSizeOption = selectedLabelPaperSizeOption.value,
+                onLabelPaperSizeOptionSelected = { selectedLabelPaperSizeOption.value = it },
+                onPrintShippingLabelClicked = {},
+                onTrackShipmentClicked = {},
+                onSchedulePickUpClicked = {},
+                onRefundClicked = {},
+                onLearnMoreClicked = {}
             )
         }
     }

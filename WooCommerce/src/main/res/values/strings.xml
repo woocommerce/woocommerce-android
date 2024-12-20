@@ -291,10 +291,7 @@
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
-    <string name="login_site_picker_enter_site_address">Enter a site address</string>
-    <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
-    <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
     <string name="login_jetpack_connection_verification_failed">Cannot verify your Jetpack connection. Please try again.</string>
     <string name="login_jetpack_verify_connection">Verifying Jetpack connection…</string>
@@ -305,8 +302,6 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
-    <string name="site_picker_create_new_store">Create a new store</string>
-    <string name="site_picker_connect_existing_store">Connect an existing store</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
     <string name="login_jetpack_installation_explanation">Please install the free Jetpack plugin to access your store on this app.</string>
     <string name="login_jetpack_connection_explanation">Please connect your store to Jetpack to access it on this app.</string>
@@ -366,6 +361,18 @@
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <string name="login_jetpack_connection_create_account">If you don\'t have an account, we\'ll use this email to create one.</string>
+
+    <!--
+        Site picker
+    -->
+    <string name="login_site_picker_enter_site_address">Enter a site address</string>
+    <string name="login_site_picker_add_a_store">Connect another store</string>
+    <string name="site_picker_create_new_store">Create a new store</string>
+    <string name="site_picker_connect_existing_store">Connect an existing store</string>
+    <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
+    <string name="site_picker_edit_store_list">Edit Stores</string>
+    <string name="site_picker_edit_store_list_title">Visible Stores</string>
+    <string name="site_picker_edit_store_list_footer">Unselected stores won\'t be shown in the app site\'s picker and won\'t receive push notifications for new orders</string>
 
     <!--
         My Store View
@@ -602,6 +609,9 @@
     <string name="orderlist_connectivity_tool_summary_suggestion">If your data still isn\'t loading, contact our support team for assistance.</string>
     <string name="orderlist_order_trashed">Order trashed</string>
     <string name="orderlist_order_trashed_error">Error trashing order</string>
+    <string name="orderlist_selection_count">%d orders selected</string>
+    <string name="orderlist_selection_count_single">%d order selected</string>
+    <string name="orderlist_selection_menu_update_status">Update status</string>
 
     <!--
          Simple Payments
@@ -1284,6 +1294,9 @@
     <string name="shipping_label_purchased_schedule_pick_up">Schedule pickup</string>
     <string name="shipping_label_purchased_request_refund">Request refund</string>
     <string name="shipping_label_total_shipment_weight">Total shipment weight (with package)</string>
+    <string name="shipping_label_purchased_pickup_error">We currently do not support Pick ups for this carrier</string>
+    <string name="shipping_label_purchased_tracking_error">We currently do not support Tracking for this carrier</string>
+    <string name="shipping_label_purchased_print_error">Something went wrong with this Shipping Label, try again later</string>
 
 
     <!--

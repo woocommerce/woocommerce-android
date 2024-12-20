@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_orderlist_update_status"
+        android:title="@string/orderlist_selection_menu_update_status"
+        app:showAsAction="never" />
+</menu>

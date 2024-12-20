@@ -14,9 +14,8 @@ enum class FeatureFlag {
     ENDLESS_CAMPAIGNS_SUPPORT,
     REVAMP_WOO_SHIPPING,
     OBJECTIVE_SECTION,
-    POS_CASH_PAYMENTS,
-    POS_RECEIPTS,
-    BULK_UPDATE_ORDERS_STATUS;
+    BULK_UPDATE_ORDERS_STATUS,
+    HIDE_SITES_FROM_SITE_PICKER;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -28,9 +27,8 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             REVAMP_WOO_SHIPPING,
-            POS_CASH_PAYMENTS,
-            POS_RECEIPTS,
-            BULK_UPDATE_ORDERS_STATUS -> PackageUtils.isDebugBuild()
+            BULK_UPDATE_ORDERS_STATUS,
+            HIDE_SITES_FROM_SITE_PICKER -> PackageUtils.isDebugBuild()
 
             NEW_SHIPPING_SUPPORT,
             ENDLESS_CAMPAIGNS_SUPPORT,

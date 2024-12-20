@@ -10,6 +10,8 @@ import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.core.view.ViewGroupCompat
@@ -21,6 +23,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.transition.TransitionManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -58,6 +62,8 @@ import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.DefaultOrderListItemLookup
+import com.woocommerce.android.ui.orders.OrderSelectionItemKeyProvider
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -65,8 +71,11 @@ import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.Barc
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
+import com.woocommerce.android.ui.products.MutableMultipleSelectionPredicate
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -82,7 +91,8 @@ class OrderListFragment :
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
-    SwipeToComplete.OnSwipeListener {
+    SwipeToComplete.OnSwipeListener,
+    ActionMode.Callback {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -108,6 +118,9 @@ class OrderListFragment :
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
 
+    private var tracker: SelectionTracker<Long>? = null
+    private var actionMode: ActionMode? = null
+    private val selectionPredicate = MutableMultipleSelectionPredicate<Long>()
     private val viewModel: OrderListViewModel by viewModels()
     private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
     private var snackBar: Snackbar? = null
@@ -239,6 +252,34 @@ class OrderListFragment :
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+
+        if (FeatureFlag.BULK_UPDATE_ORDERS_STATUS.isEnabled()) {
+            addSelectionTracker()
+        }
+    }
+
+    private fun addSelectionTracker() {
+        tracker = SelectionTracker.Builder(
+            "orderSelection", // a string to identify our selection in the context of this fragment
+            binding.orderListView.ordersList, // the RecyclerView where we will apply the tracker
+            OrderSelectionItemKeyProvider(binding.orderListView.ordersList), // the source of selection keys
+            DefaultOrderListItemLookup(
+                binding.orderListView.ordersList
+            ), // the source of information about recycler items
+            StorageStrategy.createLongStorage() // strategy for type-safe storage of the selection state
+        ).withSelectionPredicate(selectionPredicate)
+            .build()
+
+        (binding.orderListView.ordersList.adapter as? OrderListAdapter)?.tracker = tracker
+
+        tracker?.addObserver(
+            object : SelectionTracker.SelectionObserver<Long>() {
+                override fun onSelectionChanged() {
+                    val selectionCount = tracker?.selection?.size() ?: 0
+                    viewModel.onSelectionChanged(selectionCount)
+                }
+            }
+        )
     }
 
     private fun setupToolbar() {
@@ -647,9 +688,41 @@ class OrderListFragment :
             new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
                 displayTimeoutErrorCard(it)
             }
+            new.orderListState?.takeIfNotEqualTo(old?.orderListState) {
+                handleListState(it)
+            }
+            new.selectionCount?.takeIfNotEqualTo(old?.selectionCount) { count ->
+                actionMode?.title = StringUtils.getQuantityString(
+                    context = requireContext(),
+                    quantity = count,
+                    default = R.string.orderlist_selection_count,
+                    one = R.string.orderlist_selection_count_single
+                )
+            }
         }
         viewModel.lastUpdateOrdersList.observe(viewLifecycleOwner) { lastUpdate ->
             binding.orderFiltersCard.updateLastUpdate(lastUpdate)
+        }
+    }
+
+    private fun handleListState(orderListState: OrderListViewModel.ViewState.OrderListState) {
+        when (orderListState) {
+            OrderListViewModel.ViewState.OrderListState.Selecting -> {
+                actionMode = (requireActivity() as AppCompatActivity)
+                    .startSupportActionMode(this@OrderListFragment)
+                delayMultiSelection()
+            }
+
+            OrderListViewModel.ViewState.OrderListState.Browsing -> {
+                actionMode?.finish()
+            }
+        }
+    }
+
+    private fun delayMultiSelection() {
+        selectionPredicate.selectMultiple = false
+        binding.orderListView.ordersList.post {
+            selectionPredicate.selectMultiple = true
         }
     }
 
@@ -1045,5 +1118,28 @@ class OrderListFragment :
             origin = HelpOrigin.ORDERS_LIST,
             extraTags = ArrayList()
         ).let { activity?.startActivity(it) }
+    }
+
+    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+        mode.menuInflater.inflate(R.menu.menu_action_mode_orders_list, menu)
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode, menu: Menu) = false
+
+    override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_orderlist_update_status -> {
+                // todo: implement bulk update status
+                true
+            }
+
+            else -> false
+        }
+    }
+
+    override fun onDestroyActionMode(mode: ActionMode) {
+        tracker?.clearSelection()
+        actionMode = null
     }
 }

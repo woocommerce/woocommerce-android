@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -242,7 +243,8 @@ class SitePickerViewModel @Inject constructor(
             hasConnectedStores = sites.isNotEmpty(),
             isPrimaryBtnVisible = wooSites.isNotEmpty(),
             isNoStoresViewVisible = false,
-            currentSitePickerState = SitePickerState.StoreListState
+            currentSitePickerState = SitePickerState.StoreListState,
+            editStoreListEnabled = FeatureFlag.HIDE_SITES_FROM_SITE_PICKER.isEnabled() && wooSites.size > 1
         )
         loginSiteAddress?.let {
             processLoginSiteAddress(it)
@@ -666,7 +668,8 @@ class SitePickerViewModel @Inject constructor(
         val isSecondaryBtnVisible: Boolean = false,
         val isNoStoresBtnVisible: Boolean = false,
         val showCloseAccountMenuItem: Boolean = false,
-        val currentSitePickerState: SitePickerState = SitePickerState.StoreListState
+        val currentSitePickerState: SitePickerState = SitePickerState.StoreListState,
+        val editStoreListEnabled: Boolean = false
     ) : Parcelable
 
     @Parcelize

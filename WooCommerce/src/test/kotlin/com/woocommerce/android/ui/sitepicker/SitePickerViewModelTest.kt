@@ -182,9 +182,43 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
         assertThat(sitePickerData).isEqualTo(
-            SitePickerTestUtils.getDefaultSwitchStoreViewState(defaultSitePickerViewState, resourceProvider)
+            SitePickerTestUtils
+                .getDefaultSwitchStoreViewState(defaultSitePickerViewState, resourceProvider)
         )
     }
+
+    @Test
+    fun `given that user is switching stores, when woo sites greater than 1, then show edit sites button`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(false)
+            whenSitesAreFetched(sitesFromDb = defaultExpectedSiteList)
+            whenViewModelIsCreated()
+
+            var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
+            viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
+
+            assertThat(sitePickerData).isEqualTo(
+                SitePickerTestUtils
+                    .getDefaultSwitchStoreViewState(defaultSitePickerViewState, resourceProvider)
+            )
+        }
+
+    @Test
+    fun `given that user is switching stores, when woo sites less than 1, then show edit sites button`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(false)
+            whenSitesAreFetched(sitesFromDb = defaultExpectedSiteList.take(1))
+            whenViewModelIsCreated()
+
+            var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
+            viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
+
+            assertThat(sitePickerData).isEqualTo(
+                SitePickerTestUtils
+                    .getDefaultSwitchStoreViewState(defaultSitePickerViewState, resourceProvider)
+                    .copy(editStoreListEnabled = false)
+            )
+        }
 
     @Test
     fun `given that the view model is created, when stores fetch succeeds, then stores are displayed correctly`() =
