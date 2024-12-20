@@ -36,14 +36,16 @@ steps:
 
       - label: "detekt"
         command: |
-          echo "--- 🧹 Linting"
+          .buildkite/commands/restore-cache.sh
           ./gradlew detektAll
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/detekt/detekt.html"
 
       - label: "lint"
-        command: .buildkite/commands/lint.sh
+        command: |
+          .buildkite/commands/restore-cache.sh
+          .buildkite/commands/lint.sh
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/lint-results*.*"
@@ -61,12 +63,14 @@ steps:
 
       - label: "🛠 Prototype Build: Mobile App"
         command: |
+          .buildkite/commands/restore-cache.sh
           ".buildkite/commands/prototype-build.sh" "WooCommerce"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
       - label: "🛠 Prototype Build: Wear App"
         command: |
+          .buildkite/commands/restore-cache.sh
           ".buildkite/commands/prototype-build.sh" "WooCommerce-Wear"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
@@ -76,7 +80,9 @@ steps:
     steps:
 
       - label: "Unit tests"
-        command: .buildkite/commands/run-unit-tests.sh
+        command: |
+          .buildkite/commands/restore-cache.sh
+          .buildkite/commands/run-unit-tests.sh
         plugins:
           - $CI_TOOLKIT
           - $TEST_COLLECTOR :
@@ -86,7 +92,9 @@ steps:
           - "**/build/test-results/merged-test-results.xml"
 
       - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh
+        command: |
+          .buildkite/commands/restore-cache.sh
+          .buildkite/commands/run-instrumented-tests.sh
         plugins:
           - $CI_TOOLKIT
           - $TEST_COLLECTOR :
