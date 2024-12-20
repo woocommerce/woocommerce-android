@@ -7,6 +7,7 @@ agents:
 steps:
   - label: "🛠 Prototype Build: Mobile App"
     command: |
+      .buildkite/commands/restore-cache.sh
       ".buildkite/commands/prototype-build.sh" "WooCommerce"
     if: build.pull_request.id != null
     plugins: [$CI_TOOLKIT]
