@@ -740,7 +740,8 @@
             app:destination="@id/wooShippingLabelPackageCreationFragment" />
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelPurchasedFragment"
-            app:destination="@id/wooShippingLabelPurchasedFragment" />
+            app:destination="@id/wooShippingLabelPurchasedFragment"
+            app:popUpTo="@id/orderDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"

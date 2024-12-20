@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PurchasedShippingLabelData(
     val labelId: Long,
+    val orderId: Long,
     val carrierId: String,
     val totalWeight: String,
     val formattedTotalPrice: String,

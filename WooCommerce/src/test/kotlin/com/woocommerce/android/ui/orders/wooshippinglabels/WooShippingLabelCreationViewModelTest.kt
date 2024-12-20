@@ -118,6 +118,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     private val defaultPurchasedShippingLabelData = PurchasedShippingLabelData(
         labelId = 12L,
+        orderId = 1L,
         carrierId = WooShippingCarrier.UPS.name,
         totalWeight = "13.0",
         formattedTotalPrice = "$ 0",

@@ -367,7 +367,7 @@ class WooPosHomeViewModelTest {
         ).isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals)
 
         // WHEN
-        events.emit(ChildToParentEvent.RetryFailedPaymentClicked)
+        events.emit(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
 
         // THEN
         assertThat(

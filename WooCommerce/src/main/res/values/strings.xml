@@ -1286,8 +1286,12 @@
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Cheapest</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Fastest</string>
     <string name="shipping_label_shipping_service_title">Shipping service</string>
-    <string name="shipping_label_purchased_title">Your shipping label is ready to print</string>
-    <string name="shipping_label_purchased_message">From here you can print the shipping label again or change the paper size of the label.</string>
+    <string name="shipping_label_purchased_success_title">Your shipping label is ready to print</string>
+    <string name="shipping_label_purchased_success_message">From here you can print the shipping label again or change the paper size of the label.</string>
+    <string name="shipping_label_purchased_in_progress_title">Your shipping label is being processed</string>
+    <string name="shipping_label_purchased_in_progress_message">Once it\'s finished, you will be able to print the shipping label with a selected paper size</string>
+    <string name="shipping_label_purchased_failure_title">We couldn\'t process your shipping label</string>
+    <string name="shipping_label_purchased_failure_message">Please try again later</string>
     <string name="shipping_label_purchased_note">Note: Reusing a printed label is a violation of our terms of service and may result in criminal charges.</string>
     <string name="shipping_label_purchased_learn_how_to_print">Learn how to print from your mobile device</string>
     <string name="shipping_label_purchased_track_shipment">Track shipment</string>
@@ -1297,6 +1301,7 @@
     <string name="shipping_label_purchased_pickup_error">We currently do not support Pick ups for this carrier</string>
     <string name="shipping_label_purchased_tracking_error">We currently do not support Tracking for this carrier</string>
     <string name="shipping_label_purchased_print_error">Something went wrong with this Shipping Label, try again later</string>
+    <string name="shipping_label_purchased_purchase_failed_error">We can\'t confirm the Shipping Label purchase right now, try again later</string>
 
 
     <!--

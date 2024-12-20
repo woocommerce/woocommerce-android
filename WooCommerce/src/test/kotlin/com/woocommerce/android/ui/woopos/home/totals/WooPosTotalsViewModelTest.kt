@@ -982,7 +982,7 @@ class WooPosTotalsViewModelTest {
         vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
 
         // THEN
-        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.RetryFailedPaymentClicked)
+        verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
     }
 
     @Test

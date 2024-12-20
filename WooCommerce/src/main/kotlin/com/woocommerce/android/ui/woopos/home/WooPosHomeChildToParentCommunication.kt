@@ -29,7 +29,7 @@ sealed class ChildToParentEvent {
     data object PaymentCollecting : ChildToParentEvent()
     data object PaymentInProgress : ChildToParentEvent()
     data object PaymentFailed : ChildToParentEvent()
-    data object RetryFailedPaymentClicked : ChildToParentEvent()
+    data object ReturnedFromCardReaderPaymentToCheckout : ChildToParentEvent()
     data object GoBackToCheckoutAfterFailedPayment : ChildToParentEvent()
     data object OrderSuccessfullyPaid : ChildToParentEvent()
     data object ExitPosClicked : ChildToParentEvent()

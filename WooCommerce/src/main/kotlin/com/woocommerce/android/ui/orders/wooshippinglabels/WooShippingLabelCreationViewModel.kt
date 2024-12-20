@@ -374,6 +374,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     ?.labels
                     ?.firstOrNull()
                     ?.toPurchasedShippingLabelData(
+                        orderId = orderId,
                         totalWeight = packageWeight.value?.totalWeight.toString(),
                         dimensionUnit = storeOptions.value?.dimensionUnit.orEmpty(),
                         weightUnit = storeOptions.value?.weightUnit.orEmpty(),
@@ -418,12 +419,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     private fun ShippingLabelModel.toPurchasedShippingLabelData(
+        orderId: Long,
         totalWeight: String,
         dimensionUnit: String,
         weightUnit: String,
         shippableItems: List<ShippableItemModel>,
     ) = PurchasedShippingLabelData(
         labelId = labelId,
+        orderId = orderId,
         carrierId = carrierId,
         trackingNumber = tracking,
         totalWeight = totalWeight,

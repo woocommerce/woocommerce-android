@@ -110,7 +110,7 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentInProgress) {
             if (state is WooPosTotalsViewState.PaymentInProgress) {
-                WooPosPaymentInProgressScreen(state)
+                WooPosPaymentInProgressScreen(state, onUIEvent)
             }
         }
 

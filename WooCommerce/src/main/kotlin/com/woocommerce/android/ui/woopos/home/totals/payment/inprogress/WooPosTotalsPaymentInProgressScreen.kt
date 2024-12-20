@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.totals.payment.inprogress
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -31,13 +32,18 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import kotlinx.coroutines.delay
 
 @Composable
 fun WooPosPaymentInProgressScreen(
     state: WooPosTotalsViewState.PaymentInProgress,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
+    BackHandler {
+        onUIEvent(WooPosTotalsUIEvent.OnBackClicked)
+    }
     var enterAnimationStarted by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         delay(50)
@@ -98,6 +104,6 @@ fun WooPosPaymentInProgressScreenPreview() {
                 title = "Processing payment",
                 subtitle = "Please wait...",
             )
-        )
+        ) {}
     }
 }

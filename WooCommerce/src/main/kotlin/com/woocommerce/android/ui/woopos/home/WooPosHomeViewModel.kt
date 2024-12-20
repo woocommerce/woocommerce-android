@@ -134,7 +134,7 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.GoBackToCheckoutAfterFailedPayment,
-                    is ChildToParentEvent.RetryFailedPaymentClicked -> {
+                    is ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout -> {
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Checkout.CartWithTotals
                         )
