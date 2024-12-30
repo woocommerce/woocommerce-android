@@ -173,6 +173,10 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         }
     }
 
+    fun onPullToRefresh() {
+
+    }
+
     private fun updateCarrierPackagesSelection(
         carrierPackages: Map.Entry<Carrier, List<CarrierPackageGroup>>,
         packageData: PackageData,
@@ -217,6 +221,7 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         val pageTabs: List<PageTab> = emptyList(),
         val customPackageCreationData: CustomPackageCreationData = CustomPackageCreationData.EMPTY,
         val predefinedPackagesState: PredefinedPackagesState = PredefinedPackagesState.Waiting,
+        val isRefreshing: Boolean = false
     ) : Parcelable {
         val predefinedPackagesData
             get() = (predefinedPackagesState as? PredefinedPackagesState.Data)
