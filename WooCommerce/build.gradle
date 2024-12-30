@@ -262,6 +262,7 @@ dependencies {
     implementation(libs.google.material)
     implementation(libs.androidx.transition)
     implementation(libs.androidx.cardview)
+    implementation(libs.androidx.material3.android)
     implementation(libs.androidx.browser) {
         exclude group: 'com.google.guava', module: 'listenablefuture'
     }

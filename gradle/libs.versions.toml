@@ -93,6 +93,7 @@ wordpress-libaddressinput = '0.0.2'
 wordpress-mediapicker = '0.3.1'
 wordpress-utils = '3.15.0'
 zendesk = '5.0.8'
+material3-android = "1.3.1"
 
 [libraries]
 android-billingclient-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "android-billingclient" }
@@ -236,6 +237,7 @@ wordpress-aztec-main = { group = "org.wordpress", name = "aztec", version.ref = 
 wordpress-aztec-glide-loader = { group = "org.wordpress.aztec", name = "glide-loader", version.ref = "wordpress-aztec" }
 wordpress-utils = { group = "org.wordpress", name = "utils", version.ref = "wordpress-utils" }
 zendesk-support = { group = "com.zendesk", name = "support", version.ref = "zendesk" }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3-android" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
