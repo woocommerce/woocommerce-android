@@ -174,7 +174,17 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
     }
 
     fun onPullToRefresh() {
-
+        _viewState.update { it.copy(isRefreshing = true) }
+        launch {
+            fetchPredefinedPackages().let { response ->
+                _viewState.update { viewState ->
+                    viewState.copy(
+                        predefinedPackagesState = response,
+                        isRefreshing = false
+                    )
+                }
+            }
+        }
     }
 
     private fun updateCarrierPackagesSelection(
