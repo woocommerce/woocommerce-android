@@ -24,6 +24,8 @@ import androidx.compose.material.LeadingIconTab
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -51,8 +53,10 @@ fun WooShippingCarrierPackageScreen(viewModel: WooShippingLabelPackageCreationVi
     val viewState by viewModel.viewState.observeAsState()
     WooShippingCarrierPackageScreen(
         packageState = viewState?.predefinedPackagesState ?: PredefinedPackagesState.Waiting,
+        isRefreshing = viewState?.isRefreshing ?: false,
         isAddPackageEnabled = viewState?.predefinedPackagesData?.hasCarrierSelection ?: false,
         onPackageSelected = viewModel::onCarrierPackageSelected,
+        onPullToRefresh = viewModel::onPullToRefresh,
         onAddPackageClick = viewModel::onAddCarrierPackageClick
     )
 }
@@ -61,8 +65,10 @@ fun WooShippingCarrierPackageScreen(viewModel: WooShippingLabelPackageCreationVi
 fun WooShippingCarrierPackageScreen(
     modifier: Modifier = Modifier,
     packageState: PredefinedPackagesState,
-    onPackageSelected: (PackageData, Boolean) -> Unit,
+    isRefreshing: Boolean,
     isAddPackageEnabled: Boolean = false,
+    onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPullToRefresh: () -> Unit,
     onAddPackageClick: () -> Unit = {}
 ) {
     when (packageState) {
@@ -70,7 +76,9 @@ fun WooShippingCarrierPackageScreen(
             WooShippingCarrierPackageContent(
                 modifier = modifier,
                 carrierPackages = packageState.carrierPackages,
+                isRefreshing = isRefreshing,
                 onPackageSelected = onPackageSelected,
+                onPullToRefresh = onPullToRefresh,
                 isAddPackageEnabled = isAddPackageEnabled,
                 onAddPackageClick = onAddPackageClick
             )
@@ -103,42 +111,51 @@ fun WooShippingCarrierPackageScreen(
     }
 }
 
+
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun WooShippingCarrierPackageContent(
     modifier: Modifier = Modifier,
     carrierPackages: Map<Carrier, List<CarrierPackageGroup>>,
+    isRefreshing: Boolean,
     onPackageSelected: (PackageData, Boolean) -> Unit,
+    onPullToRefresh: () -> Unit,
     isAddPackageEnabled: Boolean = false,
     onAddPackageClick: () -> Unit = {}
 ) {
-    val pagerState = rememberPagerState { carrierPackages.keys.size }
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colors.surface)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = onPullToRefresh
     ) {
-        CarrierTabRow(
-            modifier = modifier,
-            pagerState = pagerState,
-            carriers = carrierPackages.keys.toList()
-        )
-        Divider(modifier = Modifier.fillMaxWidth())
-        PackageListPager(
+        val pagerState = rememberPagerState { carrierPackages.keys.size }
+        Column(
             modifier = modifier
-                .weight(1f),
-            pagerState = pagerState,
-            carrierPackages = carrierPackages,
-            onPackageSelected = onPackageSelected
-        )
-        Divider()
-        Button(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            enabled = isAddPackageEnabled,
-            onClick = onAddPackageClick
+                .fillMaxSize()
+                .background(MaterialTheme.colors.surface)
         ) {
-            Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
+            CarrierTabRow(
+                modifier = modifier,
+                pagerState = pagerState,
+                carriers = carrierPackages.keys.toList()
+            )
+            Divider(modifier = Modifier.fillMaxWidth())
+            PackageListPager(
+                modifier = modifier
+                    .weight(1f),
+                pagerState = pagerState,
+                carrierPackages = carrierPackages,
+                onPackageSelected = onPackageSelected
+            )
+            Divider()
+            Button(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                enabled = isAddPackageEnabled,
+                onClick = onAddPackageClick
+            ) {
+                Text(stringResource(id = R.string.woo_shipping_labels_package_creation_add_package))
+            }
         }
     }
 }
@@ -345,7 +362,9 @@ fun WooShippingCarrierPackageScreenPreview() {
                     )
                 )
             ),
-            onPackageSelected = { _, _ -> }
+            onPackageSelected = { _, _ -> },
+            isRefreshing = false,
+            onPullToRefresh = { }
         )
     }
 }
