@@ -30,12 +30,3 @@ class DefaultOrderItemDetailsLookup(
     override fun getPosition() = position
     override fun getSelectionKey() = orderId
 }
-
-class SelectableOrderItemDetailsLookup(
-    private val position: Int,
-    private val orderId: Long
-) : ItemDetailsLookup.ItemDetails<Long>() {
-    override fun getPosition() = position
-    override fun getSelectionKey() = orderId
-    override fun inSelectionHotspot(e: MotionEvent) = true
-}

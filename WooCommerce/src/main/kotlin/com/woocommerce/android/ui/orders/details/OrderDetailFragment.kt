@@ -9,7 +9,10 @@ import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
@@ -20,6 +23,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionManager
@@ -101,6 +105,7 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
@@ -352,6 +357,7 @@ class OrderDetailFragment :
                 viewModel.onNextOrderClicked()
                 true
             }
+
             else -> {
                 false
             }
@@ -434,23 +440,31 @@ class OrderDetailFragment :
             showOrderNotes(it)
         }
         viewModel.orderRefunds.observe(viewLifecycleOwner) {
-            showOrderRefunds(it, viewModel.order)
+            lifecycleScope.launch {
+                showOrderRefunds(it, viewModel.awaitOrder())
+            }
         }
         viewModel.productList.observe(viewLifecycleOwner) {
-            showOrderProducts(it, viewModel.order.currency)
+            lifecycleScope.launch {
+                showOrderProducts(it, viewModel.awaitOrder().currency)
+            }
         }
         showCustomAmounts(viewModel.feeLineList)
         viewModel.shipmentTrackings.observe(viewLifecycleOwner) {
             showShipmentTrackings(it)
         }
         viewModel.shippingLabels.observe(viewLifecycleOwner) {
-            showShippingLabels(it, viewModel.order.currency)
+            lifecycleScope.launch {
+                showShippingLabels(it, viewModel.awaitOrder().currency)
+            }
         }
         viewModel.subscriptions.observe(viewLifecycleOwner) {
             showSubscriptions(it)
         }
         viewModel.giftCards.observe(viewLifecycleOwner) {
-            showGiftCards(it, viewModel.order.currency)
+            lifecycleScope.launch {
+                showGiftCards(it, viewModel.awaitOrder().currency)
+            }
         }
         showShippingLines(viewModel.shippingLineList)
 
@@ -465,9 +479,11 @@ class OrderDetailFragment :
                         uiMessageResolver.showSnack(event.message)
                     }
                 }
+
                 is ShowUndoSnackbar -> {
                     displayUndoSnackbar(event.message, event.undoAction, event.dismissAction)
                 }
+
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
                 is OrderDetailViewModel.TrashOrder -> {
@@ -477,6 +493,7 @@ class OrderDetailFragment :
 
                     communicationViewModel.trashOrder(event.orderId)
                 }
+
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
@@ -488,6 +505,11 @@ class OrderDetailFragment :
         binding.orderDetailShippingLines.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
+                val orderCurrency = remember { mutableStateOf<String>("") }
+                LaunchedEffect(Unit) {
+                    orderCurrency.value = viewModel.awaitOrder().currency
+                }
+
                 shippingLineList.observeAsState().value?.let { shippingLines ->
                     WooThemeWithBackground {
                         ShippingLineSection(
@@ -495,7 +517,7 @@ class OrderDetailFragment :
                             formatCurrency = { amount ->
                                 currencyFormatter.formatCurrency(
                                     amount,
-                                    currencyCode = viewModel.order.currency
+                                    currencyCode = orderCurrency.value
                                 )
                             },
                             modifier = Modifier.padding(bottom = 1.dp)

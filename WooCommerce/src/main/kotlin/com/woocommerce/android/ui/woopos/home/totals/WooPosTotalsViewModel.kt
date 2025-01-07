@@ -21,9 +21,10 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToCashPayment
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NewTransactionClicked
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaid
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaidByCard
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.ToastMessageDisplayed
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
@@ -279,7 +280,9 @@ class WooPosTotalsViewModel @Inject constructor(
                         uiState.value = InitialState
                     }
 
-                    ParentToChildrenEvent.OrderSuccessfullyPaid -> showSuccessfulPaymentState()
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> showSuccessfulPaymentState(
+                        event.paymentMethod
+                    )
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> Unit
                 }
@@ -305,8 +308,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         wooPosItemsNavigator.sendNavigationEvent(
                             WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
                         )
-                        showSuccessfulPaymentState(paymentState)
-                        childrenToParentEventSender.sendToParent(OrderSuccessfullyPaid)
+                        childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
                     }
 
                     is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment -> {
@@ -430,25 +432,20 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private fun showSuccessfulPaymentState() {
+    private fun showSuccessfulPaymentState(paymentMethod: PaymentMethod) {
         viewModelScope.launch {
             val dataState = dataState.value
             checkNotNull(dataState.orderTotal)
+            val template = when (paymentMethod) {
+                PaymentMethod.CARD -> R.string.woopos_totals_success_payment_card
+                PaymentMethod.CASH -> R.string.woopos_totals_success_payment_cash
+            }
             val orderTotalText = resourceProvider.getString(
-                R.string.woopos_success_screen_total,
+                template,
                 priceFormat(dataState.orderTotal)
             )
             uiState.value = WooPosTotalsViewState.PaymentSuccess(
                 orderTotalText = orderTotalText
-            )
-        }
-    }
-
-    private fun showSuccessfulPaymentState(cardPaymentSuccess: CardReaderPaymentState.PaymentSuccessful) {
-        viewModelScope.launch {
-            val orderTotalText = cardPaymentSuccess.amountWithCurrencyLabel
-            uiState.value = WooPosTotalsViewState.PaymentSuccess(
-                orderTotalText = orderTotalText,
             )
         }
     }

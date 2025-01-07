@@ -294,6 +294,7 @@ private fun ShippingProductDetails(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .graphicsLayer {
+                        translationY = -quantityPadding.toPx()
                         translationX = quantityPadding.toPx()
                     }
             )

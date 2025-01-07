@@ -34,6 +34,12 @@ class WooShippingLabelPackageRepositoryTest : BaseUnitTest() {
     @Test
     fun `fetchAllStorePackages returns WooResult with result`() = testBlocking {
         val storePackagesDAO = StorePackagesDAO(
+            storeOptions = StoreOptionsDAO(
+                currencySymbol = "",
+                dimensionUnit = "",
+                weightUnit = "",
+                originCountry = ""
+            ),
             savedPackages = listOf(),
             carrierPackages = mapOf()
         )

@@ -1,2 +1,0 @@
-21.2:
-Smidiga uppdateringar är här. Smidigare Jetpack-aktivering när du skapar ett nytt konto. Säg farväl till buggar: problemen med orderuppdatering, leveransändringar och kvittohämtning är åtgärdade. Vi har bytt namn på Insättningar till Utbetalningar och förbättrat uppladdning av media för Jetpack-webbplatser. Uppdatera nu och få en bättre WooCommerce-upplevelse.

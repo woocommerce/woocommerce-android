@@ -102,6 +102,27 @@ class WooShippingNetworkingMapper @Inject constructor(
         )
     }
 
+    operator fun invoke(addressListDTO: Array<OriginAddressDTO>): List<OriginShippingAddress> {
+        return addressListDTO.map {
+            OriginShippingAddress(
+                id = it.id.orEmpty(),
+                address1 = it.address.orEmpty(),
+                address2 = it.address2.orEmpty(),
+                city = it.city.orEmpty(),
+                state = it.state.orEmpty(),
+                postcode = it.postcode.orEmpty(),
+                country = it.country.orEmpty(),
+                firstName = it.firstName.orEmpty(),
+                lastName = it.lastName.orEmpty(),
+                company = it.company.orEmpty(),
+                phone = it.phone.orEmpty(),
+                email = it.email.orEmpty(),
+                isDefault = it.defaultAddress,
+                isVerified = it.isVerified,
+            )
+        }
+    }
+
     fun toOriginAddressPurchaseDTO(address: OriginShippingAddress): OriginAddressPurchaseDTO {
         return OriginAddressPurchaseDTO(
             id = address.id,

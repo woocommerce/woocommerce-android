@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.StartPackageSelection
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.WooShippingLabelPackageCreationFragment.Companion.PACKAGE_SELECTION_RESULT
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -58,6 +59,7 @@ class WooShippingLabelCreationFragment : BaseFragment() {
                             purchaseData = event.purchaseData
                         ).let { findNavController().navigateSafely(it) }
                 }
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }
     }

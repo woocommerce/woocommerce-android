@@ -146,7 +146,7 @@ Language: zh_TW
     <string name="woopos_cart_item_content_description">購物車「%s」中的商品，價格為 %s</string>
     <string name="woopos_product_item_content_description">商品「%s」的價格為 %s</string>
     <string name="blaze_campaign_status_suspended">已暫停</string>
-    <string name="woopos_success_screen_total">已成功支付「%1$s」的款項</string>
+    <string name="woopos_totals_success_payment_cash">已成功支付「%1$s」的款項</string>
     <string name="woopos_new_order_button">新訂單</string>
     <string name="woopos_dialog_products_info_button_label">確定</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理建立訂單</string>
@@ -1209,7 +1209,6 @@ Language: zh_TW
     <string name="card_reader_type_selection_bluetooth_reader_description">讀卡機接受信用卡和簽帳金融卡的輕觸、晶片和刷卡付款。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">直接從手機安全地接受零接觸付款。</string>
     <string name="card_reader_tap_to_pay_description">使用手機接受信用卡\n付款。 立即試用。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">分享意見反應</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">無法登入，因為未核准建立應用程式密碼。</string>
     <string name="login_site_credentials_fetching_site">正在擷取網站…</string>
     <string name="login_site_credentials_fetching_site_failed">擷取你的網站時發生錯誤</string>

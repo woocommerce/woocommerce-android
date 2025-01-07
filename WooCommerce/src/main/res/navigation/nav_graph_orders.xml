@@ -319,6 +319,9 @@
         <argument
             android:name="orderStatusList"
             app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
+        <argument
+            android:name="positiveButtonLabel"
+            app:argType="integer" />
     </dialog>
     <fragment
         android:id="@+id/printShippingLabelInfoFragment"

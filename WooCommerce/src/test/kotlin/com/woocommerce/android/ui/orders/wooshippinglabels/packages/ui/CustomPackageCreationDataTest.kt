@@ -72,7 +72,7 @@ class CustomPackageCreationDataTest {
             saveAsTemplate = false
         )
 
-        val packageData = data.toPackageData()
+        val packageData = data.toPackageData("cm")
 
         assertThat(packageData.name).isEqualTo("")
         assertThat(packageData.dimensions).isEqualTo("10 x 10 x 10")
@@ -90,7 +90,7 @@ class CustomPackageCreationDataTest {
             saveAsTemplate = false
         )
 
-        val packageData = data.toPackageData()
+        val packageData = data.toPackageData("cm")
 
         assertThat(packageData.name).isEqualTo("")
         assertThat(packageData.dimensions).isEqualTo("10 x 10 x 10")

@@ -76,3 +76,21 @@ data class ShippingRatePurchaseResponseDTO(
     val deliveryDateGuaranteed: Boolean,
     val deliveryDate: String?
 )
+
+data class OriginAddressDTO(
+    val id: String? = null,
+    @SerializedName("address_1") val address: String? = null,
+    @SerializedName("address_2") val address2: String? = null,
+    val city: String? = null,
+    val company: String? = null,
+    val country: String? = null,
+    val name: String? = null,
+    val phone: String? = null,
+    val postcode: String? = null,
+    val state: String? = null,
+    val email: String? = null,
+    @SerializedName("first_name") val firstName: String? = null,
+    @SerializedName("last_name") val lastName: String? = null,
+    @SerializedName("is_verified") val isVerified: Boolean = false,
+    @SerializedName("default_address") val defaultAddress: Boolean = false,
+)

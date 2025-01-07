@@ -107,4 +107,15 @@ class WooShippingLabelRestClient @Inject constructor(
             clazz = PurchasedShippingLabelResponseDTO::class.java,
         ).toWooPayload()
     }
+
+    suspend fun fetchOriginAddresses(
+        site: SiteModel,
+    ): WooPayload<Array<OriginAddressDTO>> {
+        val url = "/wcshipping/v1/origin-addresses/"
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = Array<OriginAddressDTO>::class.java,
+        ).toWooPayload()
+    }
 }

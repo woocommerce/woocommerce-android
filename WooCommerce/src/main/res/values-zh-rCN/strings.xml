@@ -146,7 +146,7 @@ Language: zh_CN
     <string name="woopos_cart_item_content_description">购物车中的产品 %s，价格 %s</string>
     <string name="woopos_product_item_content_description">产品 %s，价格 %s</string>
     <string name="blaze_campaign_status_suspended">挂起</string>
-    <string name="woopos_success_screen_total">成功支付 %1$s</string>
+    <string name="woopos_totals_success_payment_cash">成功支付 %1$s</string>
     <string name="woopos_new_order_button">新订单</string>
     <string name="woopos_dialog_products_info_button_label">确定</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理中创建订单</string>
@@ -1209,7 +1209,6 @@ Language: zh_CN
     <string name="card_reader_type_selection_bluetooth_reader_description">读卡器接受借记卡和信用卡的触碰、芯片读取和刷卡支付。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">安全地接受直接通过您的手机进行非接触式支付。</string>
     <string name="card_reader_tap_to_pay_description">使用您的手机接受银行卡\n付款。 立即试用。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">分享反馈</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">无法登录，因为未批准应用程序创建密码。</string>
     <string name="login_site_credentials_fetching_site">正在获取站点…</string>
     <string name="login_site_credentials_fetching_site_failed">获取您的网站时出错</string>

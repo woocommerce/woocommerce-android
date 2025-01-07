@@ -122,6 +122,7 @@ fun WooShippingCarrierPackageContent(
             pagerState = pagerState,
             carriers = carrierPackages.keys.toList()
         )
+        Divider(modifier = Modifier.fillMaxWidth())
         PackageListPager(
             modifier = modifier
                 .weight(1f),
@@ -155,6 +156,7 @@ private fun CarrierTabRow(
         edgePadding = dimensionResource(R.dimen.major_100),
         backgroundColor = MaterialTheme.colors.surface,
         contentColor = MaterialTheme.colors.primary,
+        divider = {}
     ) {
         carriers.forEachIndexed { index, carrier ->
             val textColor = if (index == pagerState.currentPage) {

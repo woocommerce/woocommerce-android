@@ -26,7 +26,12 @@ sealed class ParentToChildrenEvent {
     data class CheckoutClicked(
         val itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ParentToChildrenEvent()
-    data object OrderSuccessfullyPaid : ParentToChildrenEvent()
+    data class OrderSuccessfullyPaid(val paymentMethod: PaymentMethod) : ParentToChildrenEvent() {
+        enum class PaymentMethod {
+            CARD,
+            CASH
+        }
+    }
 }
 
 interface WooPosParentToChildrenEventReceiver {

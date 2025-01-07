@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
+import com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -249,6 +250,9 @@ class SitePickerFragment :
         }
         handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
             viewModel.onJetpackConnected()
+        }
+        handleResult<Boolean>(WooSitesVisibilityFragment.WOO_SITES_VISIBILITY_UPDATED) {
+            viewModel.onWooSitesVisibilityUpdated()
         }
     }
 

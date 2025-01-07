@@ -146,7 +146,7 @@ Language: tr
     <string name="woopos_cart_item_content_description">Sepetteki ürün %s, Fiyatı %s</string>
     <string name="woopos_product_item_content_description">Ürün %s, Fiyatı %s</string>
     <string name="blaze_campaign_status_suspended">Askıya alındı</string>
-    <string name="woopos_success_screen_total">%1$s tutarındaki bir ödeme başarıyla alındı</string>
+    <string name="woopos_totals_success_payment_cash">%1$s tutarındaki bir ödeme başarıyla alındı</string>
     <string name="woopos_new_order_button">Yeni sipariş</string>
     <string name="woopos_dialog_products_info_button_label">Tamam</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Mağaza yönetiminde sipariş oluşturun</string>
@@ -1209,7 +1209,6 @@ Language: tr
     <string name="card_reader_type_selection_bluetooth_reader_description">Kart okuyucu, banka ve kredi kartlarıyla dokunarak, çiple ve kaydırarak yapılan ödemeleri kabul eder.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Temassız ödemeleri doğrudan telefonunuzdan güvenli bir şekilde alın.</string>
     <string name="card_reader_tap_to_pay_description">Kart\nödemeleri almak için telefonunuzu kullanın. Şimdi deneyin.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Görüşlerinizi Paylaşın</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Uygulama şifresi oluşturma onaylanmadığından oturum açılamıyor.</string>
     <string name="login_site_credentials_fetching_site">Site getiriliyor…</string>
     <string name="login_site_credentials_fetching_site_failed">Web siteniz getirilirken bir hata oluştu.</string>

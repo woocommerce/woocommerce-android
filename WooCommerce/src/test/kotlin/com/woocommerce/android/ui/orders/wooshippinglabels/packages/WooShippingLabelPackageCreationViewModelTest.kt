@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CustomPackageCreationData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -88,7 +89,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         sut.onAddCustomPackageClick(savePackageAsTemplate = false)
 
         verify(packageRepository, times(0)).createCustomPackage(any(), any())
-        assertThat(lastEvent).isEqualTo(PackageSelected(customPackageData.toPackageData()))
+        assertThat(lastEvent).isEqualTo(PackageSelected(customPackageData.toPackageData("cm")))
     }
 
     @Test
@@ -189,6 +190,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
         whenever(fetchPredefinedPackages()).thenReturn(
             PredefinedPackagesState.Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = emptyMap(),
                 savedPackages = listOf(package1, package2)
             )
@@ -240,6 +242,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
         whenever(fetchPredefinedPackages()).thenReturn(
             PredefinedPackagesState.Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = carrierPackages,
                 savedPackages = emptyList()
             )
@@ -322,6 +325,7 @@ class WooShippingLabelPackageCreationViewModelTest : BaseUnitTest() {
         )
         whenever(fetchPredefinedPackages()).thenReturn(
             PredefinedPackagesState.Data(
+                storeOptions = StoreOptionsForPackages.DEFAULT,
                 carrierPackages = carrierPackages,
                 savedPackages = emptyList()
             )

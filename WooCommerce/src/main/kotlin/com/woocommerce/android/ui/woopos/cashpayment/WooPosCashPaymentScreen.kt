@@ -143,7 +143,7 @@ private fun Collecting(
         Text(
             text = state.changeDueText,
             style = MaterialTheme.typography.body1,
-            color = WooPosTheme.colors.warning,
+            color = MaterialTheme.colors.secondary,
             fontWeight = FontWeight.Normal,
             modifier = Modifier
                 .constrainAs(changeDue) {

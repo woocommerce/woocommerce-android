@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -82,9 +83,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
@@ -121,20 +125,7 @@ class OrderDetailViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = orderDetailsTransactionLauncher
 
-    var order: Order
-        get() = requireNotNull(viewState.orderInfo?.order)
-        set(value) {
-            viewState = viewState.copy(
-                orderInfo = viewState.orderInfo?.copy(
-                    order = value,
-                    isPaymentCollectableWithCardReader = viewState.orderInfo?.isPaymentCollectableWithCardReader
-                        ?: false
-                ) ?: OrderDetailViewState.OrderInfo(
-                    value,
-                    isPaymentCollectableWithCardReader = false
-                )
-            )
-        }
+    private val _order = MutableStateFlow<Order?>(null)
 
     // Keep track of the deleted shipment tracking number in case
     // the request to server fails, we need to display an error message
@@ -242,13 +233,15 @@ class OrderDetailViewModel @Inject constructor(
                 )
             }
         }
+
+        updateViewStateOnOrderChange()
     }
 
     fun start() {
         if (navArgs.orderId != -1L) {
             launch {
                 orderDetailRepository.getOrderById(navArgs.orderId)?.let {
-                    order = it
+                    _order.value = it
                     displayOrderDetails()
                     fetchOrder(showSkeleton = false)
                 } ?: fetchOrder(showSkeleton = true)
@@ -327,11 +320,14 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun hasVirtualProductsOnly(): Boolean {
-        return if (order.items.isNotEmpty()) {
-            val remoteProductIds = order.getProductIds()
-            orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
-        } else {
-            false
+        return runBlocking {
+            val orderFetched = awaitOrder()
+            if (orderFetched.items.isNotEmpty()) {
+                val remoteProductIds = orderFetched.getProductIds()
+                orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
+            } else {
+                false
+            }
         }
     }
 
@@ -347,12 +343,14 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onIssueOrderRefundClicked() {
-        triggerEvent(IssueOrderRefund(remoteOrderId = order.id))
+        viewModelScope.launch {
+            triggerEvent(IssueOrderRefund(remoteOrderId = awaitOrder().id))
+        }
     }
 
     fun onEditClicked() {
         launch {
-            val isCurrencyMatch = isStoreCurrencyMatch(order.currency)
+            val isCurrencyMatch = isStoreCurrencyMatch(awaitOrder().currency)
             if (!isCurrencyMatch.isMatch) {
                 handleEditClickWhenCurrencyMismatch(isCurrencyMatch)
             } else {
@@ -362,25 +360,29 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun handleEditClick() {
-        tracker.trackEditButtonTapped(order.feesLines.size, order.shippingLines.size)
-        val firstGiftCard = giftCards.value?.firstOrNull()
-        triggerEvent(
-            EditOrder(
-                orderId = order.id,
-                giftCard = firstGiftCard?.code,
-                appliedDiscount = firstGiftCard?.used
+        launch {
+            tracker.trackEditButtonTapped(awaitOrder().feesLines.size, awaitOrder().shippingLines.size)
+            val firstGiftCard = giftCards.value?.firstOrNull()
+            triggerEvent(
+                EditOrder(
+                    orderId = awaitOrder().id,
+                    giftCard = firstGiftCard?.code,
+                    appliedDiscount = firstGiftCard?.used
+                )
             )
-        )
+        }
     }
 
     private fun handleEditClickWhenCurrencyMismatch(isCurrencyMatch: CurrencyMatchResult) {
-        tracker.trackOrderAndStoreCurrencyMismatchWhenEditButtonTapped()
-        triggerEvent(
-            ShowSnackbar(
-                message = string.order_detail_edit_store_currency_mismatch,
-                args = arrayOf(order.currency, isCurrencyMatch.storeCurrency.orEmpty())
+        launch {
+            tracker.trackOrderAndStoreCurrencyMismatchWhenEditButtonTapped()
+            triggerEvent(
+                ShowSnackbar(
+                    message = string.order_detail_edit_store_currency_mismatch,
+                    args = arrayOf(awaitOrder().currency, isCurrencyMatch.storeCurrency.orEmpty())
+                )
             )
-        )
+        }
     }
 
     fun orderNavigationIsEnabled() = navArgs.allOrderIds?.let {
@@ -429,7 +431,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onSeeReceiptClicked() {
         launch {
-            tracker.trackReceiptViewTapped(order.id, order.status)
+            tracker.trackReceiptViewTapped(awaitOrder().id, awaitOrder().status)
 
             viewState = viewState.copy(
                 orderInfo = viewState.orderInfo?.copy(
@@ -437,7 +439,7 @@ class OrderDetailViewModel @Inject constructor(
                 )
             )
 
-            val receiptResult = paymentReceiptHelper.getReceiptUrl(order.id)
+            val receiptResult = paymentReceiptHelper.getReceiptUrl(awaitOrder().id)
 
             viewState = viewState.copy(
                 orderInfo = viewState.orderInfo?.copy(
@@ -446,7 +448,13 @@ class OrderDetailViewModel @Inject constructor(
             )
 
             if (receiptResult.isSuccess) {
-                triggerEvent(PreviewReceipt(order.billingAddress.email, receiptResult.getOrThrow(), order.id))
+                triggerEvent(
+                    PreviewReceipt(
+                        awaitOrder().billingAddress.email,
+                        receiptResult.getOrThrow(),
+                        awaitOrder().id
+                    )
+                )
             } else {
                 paymentsFlowTracker.trackReceiptUrlFetchingFails(
                     errorDescription = receiptResult.exceptionOrNull()?.message ?: "Unknown error",
@@ -480,19 +488,27 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onViewRefundedProductsClicked() {
-        triggerEvent(ViewRefundedProducts(orderId = order.id))
+        launch {
+            triggerEvent(ViewRefundedProducts(orderId = awaitOrder().id))
+        }
     }
 
     fun onAddOrderNoteClicked() {
-        triggerEvent(AddOrderNote(orderId = order.id, orderNumber = order.number))
+        launch {
+            triggerEvent(AddOrderNote(orderId = awaitOrder().id, orderNumber = awaitOrder().number))
+        }
     }
 
     fun onRefundShippingLabelClick(shippingLabelId: Long) {
-        triggerEvent(RefundShippingLabel(remoteOrderId = order.id, shippingLabelId = shippingLabelId))
+        launch {
+            triggerEvent(RefundShippingLabel(remoteOrderId = awaitOrder().id, shippingLabelId = shippingLabelId))
+        }
     }
 
     fun onPrintShippingLabelClicked(shippingLabelId: Long) {
-        triggerEvent(PrintShippingLabel(remoteOrderId = order.id, shippingLabelId = shippingLabelId))
+        launch {
+            triggerEvent(PrintShippingLabel(remoteOrderId = awaitOrder().id, shippingLabelId = shippingLabelId))
+        }
     }
 
     fun onPrintCustomsFormClicked(shippingLabel: ShippingLabel) {
@@ -502,22 +518,32 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onAddShipmentTrackingClicked() {
-        triggerEvent(
-            AddOrderShipmentTracking(
-                orderId = order.id,
-                orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
-                isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
+        launch {
+            triggerEvent(
+                AddOrderShipmentTracking(
+                    orderId = awaitOrder().id,
+                    orderTrackingProvider = appPrefs.getSelectedShipmentTrackingProviderName(),
+                    isCustomProvider = appPrefs.getIsSelectedShipmentTrackingProviderCustom()
+                )
             )
-        )
+        }
     }
 
     fun onNewShipmentTrackingAdded(shipmentTracking: OrderShipmentTracking) {
-        tracker.trackAddOrderTrackingTapped(order.id, order.status, shipmentTracking.trackingProvider)
-        refreshShipmentTracking()
+        launch {
+            tracker.trackAddOrderTrackingTapped(
+                awaitOrder().id,
+                awaitOrder().status,
+                shipmentTracking.trackingProvider
+            )
+            refreshShipmentTracking()
+        }
     }
 
     fun refreshShipmentTracking() {
-        _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(order.id)
+        launch {
+            _shipmentTrackings.value = orderDetailRepository.getOrderShipmentTrackings(awaitOrder().id)
+        }
     }
 
     fun onShippingLabelRefunded() {
@@ -532,7 +558,7 @@ class OrderDetailViewModel @Inject constructor(
             // Refresh UI from the database, as new labels are cached by FluxC after the purchase,
             // if for any reason, the order wasn't found, refetch it
             orderDetailRepository.getOrderById(navArgs.orderId)?.let {
-                order = it
+                _order.value = it
                 displayOrderDetails()
             } ?: fetchOrder(true)
         }
@@ -543,7 +569,9 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onOrderStatusChanged(updateSource: OrderStatusUpdateSource) {
-        tracker.trackOrderStatusChanged(order.id, order.status.value, updateSource.newStatus)
+        launch {
+            tracker.trackOrderStatusChanged(awaitOrder().id, awaitOrder().status.value, updateSource.newStatus)
+        }
 
         val snackbarMessage = when (updateSource) {
             is OrderStatusUpdateSource.FullFillScreen -> string.order_fulfill_completed
@@ -570,31 +598,33 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
-            orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
-                order.id,
-                trackingNumber
-            )?.let { deletedShipmentTracking ->
-                deletedOrderShipmentTrackingSet.add(trackingNumber)
+            launch {
+                orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
+                    awaitOrder().id,
+                    trackingNumber
+                )?.let { deletedShipmentTracking ->
+                    deletedOrderShipmentTrackingSet.add(trackingNumber)
 
-                val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
-                shipmentTrackings.remove(deletedShipmentTracking)
-                _shipmentTrackings.value = shipmentTrackings
+                    val shipmentTrackings = _shipmentTrackings.value?.toMutableList() ?: mutableListOf()
+                    shipmentTrackings.remove(deletedShipmentTracking)
+                    _shipmentTrackings.value = shipmentTrackings
 
-                triggerEvent(
-                    ShowUndoSnackbar(
-                        message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
-                        undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
-                        dismissAction = object : Snackbar.Callback() {
-                            override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                                super.onDismissed(transientBottomBar, event)
-                                if (event != DISMISS_EVENT_ACTION) {
-                                    // delete the shipment only if user has not clicked on the undo snackbar
-                                    deleteOrderShipmentTracking(deletedShipmentTracking)
+                    triggerEvent(
+                        ShowUndoSnackbar(
+                            message = resourceProvider.getString(string.order_shipment_tracking_delete_snackbar_msg),
+                            undoAction = { onDeleteShipmentTrackingReverted(deletedShipmentTracking) },
+                            dismissAction = object : Snackbar.Callback() {
+                                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                    super.onDismissed(transientBottomBar, event)
+                                    if (event != DISMISS_EVENT_ACTION) {
+                                        // delete the shipment only if user has not clicked on the undo snackbar
+                                        deleteOrderShipmentTracking(deletedShipmentTracking)
+                                    }
                                 }
                             }
-                        }
+                        )
                     )
-                )
+                }
             }
         } else {
             triggerEvent(ShowSnackbar(string.offline_error))
@@ -628,7 +658,7 @@ class OrderDetailViewModel @Inject constructor(
     private fun updateOrderStatus(newStatus: String) {
         if (networkStatus.isConnected()) {
             launch {
-                orderDetailRepository.updateOrderStatus(order.id, newStatus)
+                orderDetailRepository.updateOrderStatus(awaitOrder().id, newStatus)
                     .collect { result ->
                         reloadOrderDetails()
                         when (result) {
@@ -658,19 +688,23 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCreateShippingLabelButtonTapped() {
         tracker.trackShippinhLabelTapped()
-        if (
-            FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
-            shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
-        ) {
-            triggerEvent(StartWooShippingLabelCreationFlow(order.id))
-        } else {
-            triggerEvent(StartShippingLabelCreationFlow(order.id))
+        launch {
+            if (
+                FeatureFlag.REVAMP_WOO_SHIPPING.isEnabled() &&
+                shippingLabelOnboardingRepository.shippingPluginSupport.isWooShippingSupported()
+            ) {
+                triggerEvent(StartWooShippingLabelCreationFlow(awaitOrder().id))
+            } else {
+                triggerEvent(StartShippingLabelCreationFlow(awaitOrder().id))
+            }
         }
     }
 
     fun onMarkOrderCompleteButtonTapped() {
         tracker.trackMarkOrderAsCompleteTapped()
-        triggerEvent(ViewOrderFulfillInfo(order.id))
+        launch {
+            triggerEvent(ViewOrderFulfillInfo(awaitOrder().id))
+        }
     }
 
     fun onViewOrderedAddonButtonTapped(orderItem: Order.Item) {
@@ -699,6 +733,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private suspend fun updateOrderState() {
+        val order = awaitOrder()
         val isPaymentCollectable = isPaymentCollectable(order)
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
         viewState = viewState.copy(
@@ -730,7 +765,7 @@ class OrderDetailViewModel @Inject constructor(
         val fetchedOrder = orderDetailRepository.fetchOrderById(navArgs.orderId)
         orderDetailsTransactionLauncher.onOrderFetched()
         if (fetchedOrder != null) {
-            order = fetchedOrder
+            _order.value = fetchedOrder
             fetchOrderProducts()
         } else {
             triggerEvent(ShowSnackbar(string.order_error_fetch_generic))
@@ -751,7 +786,7 @@ class OrderDetailViewModel @Inject constructor(
     private suspend fun loadOrderProducts(
         refunds: ListInfo<Refund>
     ): ListInfo<OrderProduct> {
-        val products = refunds.list.getNonRefundedProducts(order.items)
+        val products = refunds.list.getNonRefundedProducts(awaitOrder().items)
         checkAddonAvailability(products)
         val orderProducts = orderProductMapper.toOrderProducts(_productList.value ?: emptyList(), products)
         return ListInfo(isVisible = orderProducts.isNotEmpty(), list = orderProducts)
@@ -762,7 +797,7 @@ class OrderDetailViewModel @Inject constructor(
         val ids = orderProducts.map { orderProduct -> orderProduct.product.productId }
         val productTypes = orderDetailRepository.getUniqueProductTypes(ids)
         val hasAddons = orderProducts.any { orderProduct -> orderProduct.product.containsAddons }
-        tracker.trackProductsLoaded(order.id, productTypes, hasAddons)
+        tracker.trackProductsLoaded(awaitOrder().id, productTypes, hasAddons)
     }
 
     private suspend fun checkAddonAvailability(products: List<Order.Item>) {
@@ -771,9 +806,9 @@ class OrderDetailViewModel @Inject constructor(
 
     // the database might be missing certain products, so we need to fetch the ones we don't have
     private suspend fun fetchOrderProducts() {
-        val productIds = order.getProductIds()
+        val productIds = awaitOrder().getProductIds()
         val numLocalProducts = orderDetailRepository.getProductCountForOrder(productIds)
-        if (numLocalProducts != order.items.size) {
+        if (numLocalProducts != awaitOrder().items.size) {
             orderDetailRepository.fetchProductsByRemoteIds(productIds)
         }
     }
@@ -830,7 +865,7 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onSubscriptionsFetched()
     }
 
-    private suspend fun fetchGiftCardsAsync() = async {
+    private fun fetchGiftCardsAsync() = async {
         val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName]
         if (plugin != null && plugin.isOperational) {
             giftCardRepository.fetchGiftCardSummaryByOrderId(navArgs.orderId)
@@ -846,9 +881,9 @@ class OrderDetailViewModel @Inject constructor(
         orderDetailsTransactionLauncher.onGiftCardsFetched()
     }
 
-    private fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
+    private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabel> {
         orderDetailRepository.getOrderShippingLabels(navArgs.orderId)
-            .loadProducts(order.items)
+            .loadProducts(awaitOrder().items)
             .whenNotNullNorEmpty {
                 return ListInfo(list = it)
             }
@@ -877,14 +912,14 @@ class OrderDetailViewModel @Inject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
-        _shippingLineList.value = order.shippingLines
+        _shippingLineList.value = awaitOrder().shippingLines
 
         _orderAttributionInfo.value = orderDetailRepository.getOrderAttributionInfo(navArgs.orderId)
 
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 
         val isOrderEligibleForSLCreation = shippingLabelOnboardingRepository.shippingPluginSupport.isSupported() &&
-            orderDetailRepository.isOrderEligibleForSLCreation(order.id) &&
+            orderDetailRepository.isOrderEligibleForSLCreation(awaitOrder().id) &&
             !orderEligibleForInPersonPayments
 
         if (isOrderEligibleForSLCreation &&
@@ -893,7 +928,7 @@ class OrderDetailViewModel @Inject constructor(
         ) {
             // we check against the viewstate to avoid sending the event multiple times
             // if the eligibility was cached, and we had the same value after re-fetching it
-            tracker.trackOrderEligibleForShippingLabelCreation(order.status.value)
+            tracker.trackOrderEligibleForShippingLabelCreation(awaitOrder().status.value)
         }
 
         viewState = viewState.copy(
@@ -903,20 +938,41 @@ class OrderDetailViewModel @Inject constructor(
             isProductListVisible = orderProducts.isVisible,
             areShippingLabelsVisible = shippingLabels.isVisible,
             wcShippingBannerVisible = shippingLabelOnboardingRepository.shouldShowWcShippingBanner(
-                order,
+                awaitOrder(),
                 orderEligibleForInPersonPayments
             ),
             isAIThankYouNoteButtonShown = shouldShowThankYouNoteButton()
         )
     }
 
-    private fun shouldShowThankYouNoteButton() =
+    private suspend fun shouldShowThankYouNoteButton() =
         selectedSite.getIfExists()?.isWPComAtomic == true &&
-            order.status == Order.Status.Completed &&
+            awaitOrder().status == Order.Status.Completed &&
             productList.value?.isNotEmpty() == true
 
     private fun displayCustomAmounts() {
-        _feeLineList.value = order.feesLines
+        launch {
+            _feeLineList.value = awaitOrder().feesLines
+        }
+    }
+
+    private fun updateViewStateOnOrderChange() {
+        launch {
+            _order.collect { newOrder ->
+                newOrder?.let {
+                    viewState = viewState.copy(
+                        orderInfo = viewState.orderInfo?.copy(
+                            order = it,
+                            isPaymentCollectableWithCardReader = viewState.orderInfo?.isPaymentCollectableWithCardReader
+                                ?: false
+                        ) ?: OrderDetailViewState.OrderInfo(
+                            it,
+                            isPaymentCollectableWithCardReader = false
+                        )
+                    )
+                }
+            }
+        }
     }
 
     override fun onProductFetched(remoteProductId: Long) {
@@ -930,11 +986,18 @@ class OrderDetailViewModel @Inject constructor(
     private fun reloadOrderDetails() {
         launch {
             orderDetailRepository.getOrderById(navArgs.orderId)?.let {
-                order = it
+                _order.value = it
             } ?: WooLog.w(T.ORDERS, "Order ${navArgs.orderId} not found in the database.")
             displayOrderDetails()
         }
     }
+
+    suspend fun awaitOrder(): Order =
+        withTimeout(
+            TIME_TO_WAIT_ORDER_MS // time needed in order to crash in case of a deadlock
+        ) {
+            _order.filterNotNull().first()
+        }
 
     fun onWcShippingBannerDismissed() {
         shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()
@@ -954,7 +1017,7 @@ class OrderDetailViewModel @Inject constructor(
             product?.let {
                 triggerEvent(
                     OrderNavigationTarget.AIThankYouNote(
-                        customerName = order.billingAddress.firstName,
+                        customerName = awaitOrder().billingAddress.firstName,
                         productName = it.name,
                         productDescription = it.description
                     )
@@ -980,4 +1043,8 @@ class OrderDetailViewModel @Inject constructor(
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
     data class TrashOrder(val orderId: Long) : MultiLiveEvent.Event()
+
+    private companion object {
+        const val TIME_TO_WAIT_ORDER_MS = 3_000L
+    }
 }

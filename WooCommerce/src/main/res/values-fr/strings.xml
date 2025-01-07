@@ -146,7 +146,7 @@ Language: fr
     <string name="woopos_cart_item_content_description">Produit dans le panier %s, Prix %s</string>
     <string name="woopos_product_item_content_description">Produit %s, Prix %s</string>
     <string name="blaze_campaign_status_suspended">En suspens</string>
-    <string name="woopos_success_screen_total">Un paiement de %1$s a été effectué avec succès</string>
+    <string name="woopos_totals_success_payment_cash">Un paiement de %1$s a été effectué avec succès</string>
     <string name="woopos_new_order_button">Nouvelle commande</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Créer une commande dans la gestion de la boutique</string>
@@ -1209,7 +1209,6 @@ Language: fr
     <string name="card_reader_type_selection_bluetooth_reader_description">Le lecteur de cartes accepte les paiements par carte de débit et de crédit : en appuyant la carte contre le lecteur, en la faisant glisser ou en utilisant la puce.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Acceptez des paiements sans contact en toute sécurité directement sur votre téléphone.</string>
     <string name="card_reader_tap_to_pay_description">Utilisez votre téléphone pour accepter les paiements\npar carte. Essayez dès maintenant.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Donner votre avis</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Impossible de se connecter, car le mot de passe créé pour l’application n’est pas approuvé.</string>
     <string name="login_site_credentials_fetching_site">Récupération du site…</string>
     <string name="login_site_credentials_fetching_site_failed">Une erreur est survenue lors de la récupération de votre site Web</string>

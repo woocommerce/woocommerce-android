@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.textview.MaterialTextView
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.NavGraphPaymentFlowDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -22,13 +21,11 @@ import com.woocommerce.android.databinding.FragmentPaymentsHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySurveyScreen
 import com.woocommerce.android.ui.payments.taptopay.summary.TapToPaySummaryFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -142,12 +139,6 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                             TapToPaySummaryFragment.TestTapToPayFlow.BeforePayment
                         )
                     )
-                }
-                is NavigateToTapToPaySurveyScreen -> {
-                    NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.PAYMENTS_HUB_TAP_TO_PAY)
-                        .apply {
-                            findNavController().navigateSafely(this)
-                        }
                 }
                 is MultiLiveEvent.Event.ShowDialog -> {
                     event.showDialog()

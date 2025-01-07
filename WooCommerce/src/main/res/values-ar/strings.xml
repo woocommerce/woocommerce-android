@@ -146,7 +146,7 @@ Language: ar
     <string name="woopos_cart_item_content_description">المنتج في عربة التسوق %s، السعر %s</string>
     <string name="woopos_product_item_content_description">المنتج %s، السعر %s</string>
     <string name="blaze_campaign_status_suspended">معلَّق</string>
-    <string name="woopos_success_screen_total">تم سداد دفعة قدرها ⁦%1$s⁩ بنجاح</string>
+    <string name="woopos_totals_success_payment_cash">تم سداد دفعة قدرها ⁦%1$s⁩ بنجاح</string>
     <string name="woopos_new_order_button">طلب جديد</string>
     <string name="woopos_dialog_products_info_button_label">موافق</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ إنشاء طلب في إدارة المتجر</string>
@@ -1209,7 +1209,6 @@ Language: ar
     <string name="card_reader_type_selection_bluetooth_reader_description">يقبل قارئ البطاقات المدفوعات من خلال الضغط والرقائق والسحب باستخدام بطاقات الخصم والائتمان.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">اقبل مدفوعات لا حصر لها بأمان وبشكل مباشر من هاتفك.</string>
     <string name="card_reader_tap_to_pay_description">استخدم هاتفك لقبول الدفع\nبالبطاقة. جربها الآن.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">مشاركة ملاحظات</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">يتعذر تسجيل الدخول لأن إنشاء كلمة مرور التطبيق غير معتمد.</string>
     <string name="login_site_credentials_fetching_site">جارٍ إحضار الموقع…</string>
     <string name="login_site_credentials_fetching_site_failed">حدث خطأ في أثناء إحضار موقعك على الويب</string>

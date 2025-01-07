@@ -1,2 +1,0 @@
-21.2:
-Pembaruan praktis telah siap! Aktivasi Jetpack yang lebih mulus dengan pembuatan akun baru. Selamat tinggal bug: masalah penyegaran pesanan, penyuntingan pengiriman, dan pengambilan tanda terima telah teratasi. Kami mengganti nama Deposit menjadi Pembayaran dan menyempurnakan unggahan media untuk situs Jetpack. Perbarui sekarang untuk pengalaman WooCommerce yang lebih baik!

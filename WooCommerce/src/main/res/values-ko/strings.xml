@@ -146,7 +146,7 @@ Language: ko_KR
     <string name="woopos_cart_item_content_description">장바구니의 상품 %s, 가격 %s</string>
     <string name="woopos_product_item_content_description">상품 %s, 가격 %s</string>
     <string name="blaze_campaign_status_suspended">중지됨</string>
-    <string name="woopos_success_screen_total">%1$s 결제가 완료되었습니다.</string>
+    <string name="woopos_totals_success_payment_cash">%1$s 결제가 완료되었습니다.</string>
     <string name="woopos_new_order_button">새 주문</string>
     <string name="woopos_dialog_products_info_button_label">확인</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 스토어 관리에서 주문 생성</string>
@@ -1211,7 +1211,6 @@ Language: ko_KR
     <string name="login_site_credentials_web_authorization_connection_rejected">애플리케이션 비밀번호 생성이 승인되지 않아서 로그인할 수 없습니다.</string>
     <string name="login_site_credentials_fetching_site">사이트를 가져오는 중…</string>
     <string name="card_reader_tap_to_pay_description">스마트폰을 사용하여 카드 결제 수락\n결제 지금 사용해 보세요.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">피드백 공유</string>
     <string name="loading">로드 중입니다…</string>
     <string name="login_site_credentials_fetching_site_failed">웹사이트를 가져오는 동안 오류 발생</string>
     <string name="login_site_credentials_use_web_authorization">WP 관리자 페이지에서 다시 시도</string>

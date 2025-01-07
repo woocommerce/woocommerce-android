@@ -57,7 +57,15 @@ fun BarcodeScanner(
         }
     }
     val selector = remember {
-        CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+        val cameraProvider = cameraProviderFuture.get()
+        val hasBackCamera = cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)
+        val hasFrontCamera = cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)
+
+        when {
+            hasBackCamera -> CameraSelector.DEFAULT_BACK_CAMERA
+            hasFrontCamera -> CameraSelector.DEFAULT_FRONT_CAMERA
+            else -> error(IllegalStateException("No available camera"))
+        }
     }
 
     DisposableEffect(lifecycleOwner) {

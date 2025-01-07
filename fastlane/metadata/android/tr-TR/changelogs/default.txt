@@ -1,2 +1,0 @@
-21.2:
-Sorunsuz güncellemeler geldi! Yeni hesap oluşturulduğunda daha sorunsuz Jetpack etkinleştirmesi. Hatalarla vedalaşın: Sipariş yenileme, gönderi düzenleme ve fatura alma sorunları düzeltildi. Depozitoların adı Ödeme olarak değiştirildi ve Jetpack sitelerine ortam yükleme deneyimi iyileştirildi. Daha iyi bir WooCommerce deneyimi için şimdi güncelleyin!

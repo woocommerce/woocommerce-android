@@ -17,10 +17,6 @@ class OrderSelectionItemKeyProvider(private val recyclerView: RecyclerView) :
         }
     }
 
-    override fun getPosition(key: Long): Int {
-        return (recyclerView.adapter as? OrderListAdapter)?.currentList
-            ?.indexOfFirst { item ->
-                item is OrderListItemUIType.OrderListItemUI && item.orderId == key
-            } ?: RecyclerView.NO_POSITION
-    }
+    override fun getPosition(key: Long): Int =
+        (recyclerView.adapter as? OrderListAdapter)?.orderIdAndPosition[key] ?: RecyclerView.NO_POSITION
 }

@@ -34,11 +34,11 @@ class WooShippingLabelPurchasedViewModelTest : BaseUnitTest() {
         labelId = 4158L,
         orderId = 1234L,
         carrierId = "usps",
-        totalWeight = "1.5",
-        formattedTotalPrice = "10.00",
-        weightUnit = "kg",
         trackingNumber = "123456",
-        items = emptyList()
+        addresses = mock(),
+        rateSummary = mock(),
+        shippingLines = emptyList(),
+        items = mock()
     )
 
     private val navArgs = WooShippingLabelPurchasedFragmentArgs(

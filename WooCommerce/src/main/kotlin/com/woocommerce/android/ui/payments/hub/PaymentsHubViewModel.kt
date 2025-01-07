@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.map
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
@@ -17,10 +16,8 @@ import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
-import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.CashOnDeliverySettingsRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
@@ -74,8 +71,6 @@ class PaymentsHubViewModel @Inject constructor(
     private val paymentsFlowTracker: PaymentsFlowTracker,
     @Named("payment-menu") private val paymentMenuUtmProvider: UtmProvider,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
-    private val appPrefs: AppPrefs,
-    private val feedbackRepository: FeedbackRepository,
     private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
@@ -203,19 +198,19 @@ class PaymentsHubViewModel @Inject constructor(
         cashOnDeliveryItem,
         HeaderItem(
             label = UiStringRes(R.string.card_reader_card_readers_header),
-            index = 10,
+            index = 9,
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_shopping_cart,
             label = UiStringRes(R.string.card_reader_purchase_card_reader),
-            index = 11,
+            index = 10,
             onClick = ::onPurchaseCardReaderClicked
         ),
         NonToggleableListItem(
             icon = R.drawable.ic_manage_card_reader,
             label = UiStringRes(R.string.card_reader_manage_card_reader),
             isEnabled = isOnboardingComplete,
-            index = 12,
+            index = 11,
             onClick = ::onManageCardReaderClicked
         )
     ).apply {
@@ -250,16 +245,6 @@ class PaymentsHubViewModel @Inject constructor(
                     onClick = { onAboutTTPClicked(countryConfig as CardReaderConfigForSupportedCountry) },
                 )
             )
-            if (shouldShowTTPFeedbackRequest) {
-                add(
-                    NonToggleableListItem(
-                        icon = R.drawable.ic_feedback_banner_logo,
-                        label = UiStringRes(R.string.card_reader_tap_to_pay_share_feedback),
-                        index = 9,
-                        onClick = ::onTapToPayFeedbackClicked
-                    )
-                )
-            }
         }
     }
 
@@ -269,7 +254,7 @@ class PaymentsHubViewModel @Inject constructor(
                 NonToggleableListItem(
                     icon = R.drawable.ic_card_reader_manual,
                     label = UiStringRes(R.string.settings_card_reader_manuals),
-                    index = 13,
+                    index = 12,
                     onClick = { onCardReaderManualsClicked(countryConfig) }
                 )
             )
@@ -281,7 +266,7 @@ class PaymentsHubViewModel @Inject constructor(
             LearnMoreListItem(
                 icon = R.drawable.ic_info_outline_20dp,
                 label = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true),
-                index = 14,
+                index = 13,
                 onClick = ::onLearnMoreIppClicked
             )
         )
@@ -387,15 +372,6 @@ class PaymentsHubViewModel @Inject constructor(
     private fun onTapToPayClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_TAPPED)
         triggerEvent(PaymentsHubEvents.NavigateToTapToPaySummaryScreen)
-    }
-
-    private fun onTapToPayFeedbackClicked() {
-        trackEvent(AnalyticsEvent.PAYMENTS_HUB_TAP_TO_PAY_FEEDBACK_TAPPED)
-        feedbackRepository.saveFeatureFeedback(
-            FeatureFeedbackSettings.Feature.TAP_TO_PAY,
-            FeatureFeedbackSettings.FeedbackState.GIVEN
-        )
-        triggerEvent(PaymentsHubEvents.NavigateToTapToPaySurveyScreen)
     }
 
     private fun onAboutTTPClicked(countryConfig: CardReaderConfigForSupportedCountry) {
@@ -548,17 +524,6 @@ class PaymentsHubViewModel @Inject constructor(
             selfHostedSiteId = selectedSite.get().selfHostedSiteId,
         )
 
-    private val shouldShowTTPFeedbackRequest: Boolean
-        get() {
-            val featureFeedbackSetting = feedbackRepository.getFeatureFeedbackSetting(
-                FeatureFeedbackSettings.Feature.TAP_TO_PAY
-            )
-            return appPrefs.isTTPWasUsedAtLeastOnce() && (
-                featureFeedbackSetting.feedbackState == FeatureFeedbackSettings.FeedbackState.UNANSWERED ||
-                    !featureFeedbackSetting.isFeedbackGivenMoreThanDaysAgo(SHOW_FEEDBACK_AFTER_USAGE_DAYS)
-                )
-        }
-
     sealed class PaymentsHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : PaymentsHubEvents()
         data class NavigateToPurchaseCardReaderFlow(
@@ -568,7 +533,6 @@ class PaymentsHubViewModel @Inject constructor(
 
         data object NavigateToOrderCreationScreen : PaymentsHubEvents()
         data object NavigateToTapToPaySummaryScreen : PaymentsHubEvents()
-        data object NavigateToTapToPaySurveyScreen : PaymentsHubEvents()
         data class NavigateToCardReaderManualsScreen(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : PaymentsHubEvents()
@@ -601,7 +565,5 @@ class PaymentsHubViewModel @Inject constructor(
         const val UTM_CAMPAIGN = "payments_menu_item"
         const val UTM_SOURCE = "payments_menu"
         private const val SOURCE = "payments_menu"
-
-        private const val SHOW_FEEDBACK_AFTER_USAGE_DAYS = 30
     }
 }

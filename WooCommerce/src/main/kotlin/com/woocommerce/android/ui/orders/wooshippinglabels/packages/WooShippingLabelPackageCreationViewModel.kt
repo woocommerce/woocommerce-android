@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.Carrier
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CarrierPackageGroup
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.CustomPackageCreationData
 import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.PackageData
+import com.woocommerce.android.ui.orders.wooshippinglabels.packages.ui.StoreOptionsForPackages
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -38,6 +39,11 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         initialValue = ViewState(pageTabs)
     )
     val viewState = _viewState.asLiveData()
+
+    private val storeOptions: StoreOptionsForPackages
+        get() = _viewState.value.predefinedPackagesData
+            ?.storeOptions
+            ?: StoreOptionsForPackages.DEFAULT
 
     private val pageTabs
         get() = listOf(
@@ -106,12 +112,11 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     fun onAddCustomPackageClick(savePackageAsTemplate: Boolean) {
         val customPackage = _viewState.value.customPackageCreationData
-        selectedSite.getOrNull()
-            ?.takeIf { savePackageAsTemplate }
-            ?.let { customPackage.submitToStore(it) }
-
-        customPackage.toPackageData()
-            .let { triggerEvent(PackageSelected(it)) }
+        if (savePackageAsTemplate) {
+            handleCustomSelectionAsTemplate(customPackage)
+        } else {
+            triggerEvent(PackageSelected(customPackage.toPackageData(dimensionUnit = storeOptions.dimensionUnit)))
+        }
     }
 
     fun onPackageTypeSpinnerClick() {
@@ -188,22 +193,53 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
             ?.let { set(it, updatedPackage) }
     }
 
-    private fun CustomPackageCreationData.submitToStore(site: SiteModel) {
+    private fun handleCustomSelectionAsTemplate(
+        customPackage: CustomPackageCreationData
+    ) {
+        triggerEvent(ShowLoadingDialog(true))
         launch {
-            packageRepository.createCustomPackage(
-                site = site,
-                requestData = this@submitToStore.let {
-                    CustomPackageCreationRequestData(
-                        name = it.name,
-                        isLetter = it.type == PackageType.ENVELOPE,
-                        innerDimensions = it.dimensions,
-                        boxWeight = it.weight?.toDoubleOrNull() ?: 0.0,
-                        isUserDefined = true,
-                        maxWeight = 0.0
-                    )
-                }.let { listOf(it) }
+            selectedSite.getOrNull()
+                ?.let { sendCustomPackageToStore(it, customPackage) }
+                ?.fold(
+                    onSuccess = {
+                        triggerEvent(ShowLoadingDialog(false))
+                        triggerEvent(
+                            PackageSelected(customPackage.toPackageData(dimensionUnit = storeOptions.dimensionUnit))
+                        )
+                    },
+                    onFailure = {
+                        triggerEvent(ShowLoadingDialog(false))
+                        triggerEvent(ShowTemplateCreationErrorDialog)
+                    }
+                ) ?: triggerEvent(
+                PackageSelected(
+                    customPackage.toPackageData(dimensionUnit = storeOptions.dimensionUnit)
+                )
             )
         }
+    }
+
+    private suspend fun sendCustomPackageToStore(
+        site: SiteModel,
+        packageData: CustomPackageCreationData
+    ): Result<PackageData> {
+        val response = packageRepository.createCustomPackage(
+            site = site,
+            requestData = CustomPackageCreationRequestData(
+                name = packageData.name,
+                isLetter = packageData.type == PackageType.ENVELOPE,
+                innerDimensions = packageData.dimensions,
+                boxWeight = packageData.weight?.toDoubleOrNull() ?: 0.0,
+                isUserDefined = true,
+                maxWeight = 0.0
+            ).let { listOf(it) }
+        )
+
+        return response.takeIf { it.isError.not() }
+            ?.model?.firstOrNull()
+            ?.let { PackageData.fromPackageDAO(it) }
+            ?.let { Result.success(it) }
+            ?: Result.failure(Throwable("Failed to save package"))
     }
 
     @Parcelize
@@ -221,8 +257,9 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
         data object Error : PredefinedPackagesState()
         data object Waiting : PredefinedPackagesState()
         data class Data(
-            val savedPackages: List<PackageData> = emptyList(),
-            val carrierPackages: Map<Carrier, List<CarrierPackageGroup>> = emptyMap()
+            val storeOptions: StoreOptionsForPackages,
+            val savedPackages: List<PackageData>,
+            val carrierPackages: Map<Carrier, List<CarrierPackageGroup>>
         ) : PredefinedPackagesState() {
             val hasCarrierSelection: Boolean
                 get() = carrierPackages.values.flatten().find { group ->
@@ -253,4 +290,6 @@ class WooShippingLabelPackageCreationViewModel @Inject constructor(
 
     data class PackageSelected(val packageData: PackageData) : MultiLiveEvent.Event()
     data class ShowPackageTypeDialog(val currentSelection: PackageType) : MultiLiveEvent.Event()
+    data class ShowLoadingDialog(val show: Boolean) : MultiLiveEvent.Event()
+    object ShowTemplateCreationErrorDialog : MultiLiveEvent.Event()
 }

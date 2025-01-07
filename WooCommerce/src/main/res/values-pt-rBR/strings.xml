@@ -146,7 +146,7 @@ Language: pt_BR
     <string name="woopos_cart_item_content_description">Produto no carrinho %s. Preço: %s</string>
     <string name="woopos_product_item_content_description">Produto %s. Preço: %s</string>
     <string name="blaze_campaign_status_suspended">Suspensa</string>
-    <string name="woopos_success_screen_total">Um pagamento de %1$s foi feito com sucesso</string>
+    <string name="woopos_totals_success_payment_cash">Um pagamento de %1$s foi feito com sucesso</string>
     <string name="woopos_new_order_button">Novo pedido</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Criar um pedido no gerenciamento da loja</string>
@@ -1211,7 +1211,6 @@ Language: pt_BR
     <string name="login_site_credentials_web_authorization_connection_rejected">Não foi possível fazer login porque a criação da senha do aplicativo não foi aprovada.</string>
     <string name="login_site_credentials_fetching_site">Buscando site…</string>
     <string name="card_reader_tap_to_pay_description">Use seu celular para aceitar pagamentos\ncom cartão. Experimente agora.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Compartilhar feedback</string>
     <string name="loading">Carregando…</string>
     <string name="login_store_address">Fazer login</string>
     <string name="login_site_credentials_fetching_site_failed">Ocorreu um erro ao buscar seu site</string>

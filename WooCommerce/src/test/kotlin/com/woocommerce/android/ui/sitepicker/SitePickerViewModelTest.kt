@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
+import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -80,6 +81,9 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val accountRepository: AccountRepository = mock()
     private val unifiedLoginTracker: UnifiedLoginTracker = mock()
     private val experimentTracker: ExperimentTracker = mock()
+    private val getWooVisibleSites: GetWooVisibleSites = mock {
+        onBlocking { invoke() } doReturn defaultExpectedSiteList
+    }
 
     private lateinit var viewModel: SitePickerViewModel
     private lateinit var savedState: SavedStateHandle
@@ -96,6 +100,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
             userEligibilityFetcher = userEligibilityFetcher,
             unifiedLoginTracker = unifiedLoginTracker,
             experimentTracker = experimentTracker,
+            getWooVisibleSites = getWooVisibleSites
         )
     }
 
@@ -260,6 +265,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 if (index < 2) siteModel.apply { hasWooCommerce = false } else siteModel
             }
             whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSites))
+            whenever(getWooVisibleSites.invoke()).thenReturn(expectedSites.filter { it.hasWooCommerce })
             whenViewModelIsCreated()
 
             val items = viewModel.sites.captureValues().last().toMutableList()

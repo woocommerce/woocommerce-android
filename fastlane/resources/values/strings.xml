@@ -291,10 +291,7 @@
     <string name="user_role_access_error_link">Learn more about roles and permissions</string>
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
-    <string name="login_site_picker_enter_site_address">Enter a site address</string>
-    <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
-    <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
     <string name="login_jetpack_connection_verification_failed">Cannot verify your Jetpack connection. Please try again.</string>
     <string name="login_jetpack_verify_connection">Verifying Jetpack connection…</string>
@@ -305,8 +302,6 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
-    <string name="site_picker_create_new_store">Create a new store</string>
-    <string name="site_picker_connect_existing_store">Connect an existing store</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
     <string name="login_jetpack_installation_explanation">Please install the free Jetpack plugin to access your store on this app.</string>
     <string name="login_jetpack_connection_explanation">Please connect your store to Jetpack to access it on this app.</string>
@@ -366,6 +361,18 @@
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <string name="login_jetpack_connection_create_account">If you don\'t have an account, we\'ll use this email to create one.</string>
+
+    <!--
+        Site picker
+    -->
+    <string name="login_site_picker_enter_site_address">Enter a site address</string>
+    <string name="login_site_picker_add_a_store">Connect another store</string>
+    <string name="site_picker_create_new_store">Create a new store</string>
+    <string name="site_picker_connect_existing_store">Connect an existing store</string>
+    <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
+    <string name="site_picker_edit_store_list">Edit Stores</string>
+    <string name="site_picker_edit_store_list_title">Visible Stores</string>
+    <string name="site_picker_edit_store_list_footer">Unselected stores won\'t be shown in the app site\'s picker and won\'t receive push notifications for new orders</string>
 
     <!--
         My Store View
@@ -602,6 +609,9 @@
     <string name="orderlist_connectivity_tool_summary_suggestion">If your data still isn\'t loading, contact our support team for assistance.</string>
     <string name="orderlist_order_trashed">Order trashed</string>
     <string name="orderlist_order_trashed_error">Error trashing order</string>
+    <string name="orderlist_selection_count">%d orders selected</string>
+    <string name="orderlist_selection_count_single">%d order selected</string>
+    <string name="orderlist_selection_menu_update_status">Update status</string>
 
     <!--
          Simple Payments
@@ -996,7 +1006,6 @@
     <string name="orderdetail_shipping_label_create_shipping_label">Create shipping label</string>
     <string name="orderdetail_shipping_label_notice">Learn more about creating labels with your mobile device</string>
     <string name="orderdetail_custom_fields">Custom fields</string>
-    <string name="orderdetail_view_custom_fields">View custom fields</string>
     <string name="orderdetail_ai_create_thank_you_note_button">✨Create thank-you note</string>
     <string name="receipt_preview_print_menu_item">Print</string>
     <string name="receipt_preview_send_menu_item">Send</string>
@@ -1264,6 +1273,9 @@
     <string name="shipping_label_hazmat_title">Are you shipping dangerous goods or hazardous materials?</string>
     <string name="shipping_label_select_package_button">Select a Package</string>
     <string name="shipping_label_select_package_title">Select a package to get shipping rates</string>
+    <string name="shipping_label_package_default_name">Custom Package</string>
+    <string name="shipping_label_package_selected_title">Package</string>
+    <string name="shipping_label_package_selected_description">Change package selection</string>
     <string name="shipping_label_select_package_description">Enter your package\'s dimensions or pick a carrier package option to see the available shipping rates.</string>
     <string name="shipping_label_shipment_details_title">Shipment details</string>
     <string name="shipping_label_shipment_details_order_details">Order details</string>
@@ -1281,6 +1293,11 @@
     <string name="shipping_label_purchased_track_shipment">Track shipment</string>
     <string name="shipping_label_purchased_schedule_pick_up">Schedule pickup</string>
     <string name="shipping_label_purchased_request_refund">Request refund</string>
+    <string name="shipping_label_total_shipment_weight">Total shipment weight (with package)</string>
+    <string name="shipping_label_purchased_pickup_error">We currently do not support Pick ups for this carrier</string>
+    <string name="shipping_label_purchased_tracking_error">We currently do not support Tracking for this carrier</string>
+    <string name="shipping_label_purchased_print_error">Something went wrong with this Shipping Label, try again later</string>
+
 
     <!--
     Shipping label package creation labels
@@ -1335,6 +1352,8 @@
     <string name="shipping_label_shipping_carrier_shipping_method_banner_message">Your customer selected %1$s</string>
     <string name="shipping_label_rate_option_signature_required">Signature required (%s)</string>
     <string name="shipping_label_rate_option_adult_signature_required">Adult signature required (%s)</string>
+    <string name="shipping_label_rate_option_signature_required_name">Signature required</string>
+    <string name="shipping_label_rate_option_adult_signature_required_name">Adult signature required</string>
     <string name="shipping_label_rate_included_options">Includes %s</string>
     <string name="shipping_label_rate_included_options_usps_tracking">USPS tracking</string>
     <string name="shipping_label_rate_included_options_tracking">tracking</string>
@@ -2005,7 +2024,7 @@
     <string name="product_tax_status_taxable">Taxable</string>
     <string name="product_tax_status_shipping">Shipping</string>
     <string name="product_sku">SKU</string>
-    <string name="product_global_unique_id_hint">GTIN, UPC, EAN, ISBN</string>
+    <string name="product_global_unique_id">GTIN, UPC, EAN, ISBN</string>
     <string name="product_sku_summary">Helps to easily identify this product</string>
     <string name="product_global_unique_id_summary">Enter a barcode or any other identifier unique to this product. It can help you list this product on other channels or marketplaces.</string>
     <string name="product_stock_status">Stock status</string>
@@ -2114,6 +2133,7 @@
     <string name="product_inventory_quantity">Quantity</string>
     <string name="product_inventory_quantity_summary">How many items are in stock</string>
     <string name="product_inventory_update_sku_error">SKU already in use by another product</string>
+    <string name="product_inventory_update_global_unique_id_error">Please enter only numbers and hyphens</string>
     <string name="product_inventory_update_stock_quantity_error">Please enter a number</string>
     <string name="product_pricing_update_sale_price_error">Sale price must be less than regular price</string>
     <string name="product_pricing_scheduled_sale_price_error">You must set the sale price if a sale is scheduled</string>
@@ -2547,16 +2567,12 @@
     -->
     <string name="enable_card_reader">Enable Simulated Card Reader</string>
     <string name="update_simulated_reader">Update Simulated Card Reader</string>
-    <string name="simulated_reader_key">Simulated Reader Key</string>
-    <string name="update_simulated_reader_key">Update Simulated Reader Key</string>
     <string name="always_update_reader">Always</string>
     <string name="never_update_reader">Never</string>
     <string name="low_battery_error_update_reader" translatable="false">Low Battery Error</string>
     <string name="low_battery_succeed_connect_update_reader" translatable="false">Low Battery Succeed Connect</string>
     <string name="randomly_update_reader">Randomly</string>
     <string name="enable_interac_payment" translatable="false">Enable Interac Payment</string>
-    <string name="enable_interac_key" translatable="false">Enable Interac Key</string>
-
 
     <!--
         WCToggleSingleOptionView
@@ -2932,8 +2948,6 @@
     <string name="coupon_list_item_label_products_and_categories">%1$s and %2$s</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s excl. %2$s</string>
     <string name="coupon_list_empty_heading">No coupons found</string>
-    <string name="coupon_list_wip_title">View and edit coupons</string>
-    <string name="coupon_list_wip_message_enabled">We’ve been working on making it possible to view and edit coupons from your device!</string>
     <string name="coupon_list_view_coupon">View coupon summary</string>
     <string name="coupon_list_loading_failed">Fetching coupons failed</string>
     <string name="coupon_list_search_failed">Searching coupons failed</string>
@@ -4181,6 +4195,9 @@
     <string name="blaze_campaign_creation_new_intro_learn_item_3"><![CDATA[<b>Set your budget:</b> Decide on your spend and campaign length.]]></string>
     <string name="blaze_campaign_creation_new_intro_learn_item_4"><![CDATA[<b>Quick review:</b> Submit your ad for a fast moderator check.]]></string>
     <string name="blaze_campaign_creation_new_intro_learn_item_5"><![CDATA[<b>Go live:</b> Watch as your promotion begins and track its success.]]></string>
+    <string name="blaze_campaign_creation_no_product_modal_title">No products found</string>
+    <string name="blaze_campaign_creation_no_product_modal_body">You currently don\'t have a product available for promotion. Would you like to create a product now?</string>
+    <string name="blaze_campaign_creation_no_product_modal_cta">Create Product</string>
 
     <string name="order_configuration_product_selection">Select product %s</string>
     <string name="order_configuration_product_selection_control">Product selection</string>
@@ -4241,19 +4258,19 @@
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
-    <string name="woopos_banner_simple_products_only_title">Showing simple products only</string>
-    <string name="woopos_banner_simple_products_only_message">Only simple physical products are compatible with POS right now. Other product types, such as variable and virtual, will become available in future updates. </string>
+    <string name="woopos_banner_simple_products_only_title">Showing simple and variable products only</string>
+    <string name="woopos_banner_simple_products_only_message">Only simple physical and variable products are compatible with POS right now. Other product types, such as virtual, will become available in future updates. </string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Learn\u00A0more</string>
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
-    <string name="woopos_banner_simple_products_content_description">Simple products only banner</string>
+    <string name="woopos_banner_simple_products_content_description">Simple and variable products only banner</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Double tap to learn more</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Simple products only dialog</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Simple and variable products only dialog</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
 
     <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
-    <string name="woopos_dialog_products_info_primary_message">Only simple physical products can be used with POS right now.</string>
-    <string name="woopos_dialog_products_info_secondary_message">Other product types, such as variable and virtual, will be available in future updates.</string>
+    <string name="woopos_dialog_products_info_primary_message">Only simple physical and variable products can be used with POS right now.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Other product types, such as virtual, will be available in future updates.</string>
     <string name="woopos_dialog_products_info_tertiary_message">To take payment for a non-simple product, exit POS and create a new order from the orders tab.</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Create an order in store management</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
@@ -4277,10 +4294,13 @@
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woopos_payment_successful_checkmark_icon_content_description">Payment successful checkmark icon</string>
     <string name="woopos_new_order_button">New order</string>
+    <string name="woopos_receipt_button">Email receipt</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_collect_payment_label">Collect card payment</string>
+    <string name="woopos_receipt_sending_not_supported">Please update WooCommerce to version %s or later</string>
+    <string name="woopos_payment_take_cash_payment_label">Cash payment</string>
     <string name="woopos_products_empty_list">No products</string>
     <string name="woopos_reader_connect_now_button">Connect now</string>
     <string name="woopos_totals_main_error_label">Couldn\'t load totals</string>
@@ -4288,7 +4308,7 @@
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
     <string name="woopos_products_empty_list_image_description">No products</string>
     <string name="woopos_products_empty_list_title">No supported products found</string>
-    <string name="woopos_products_empty_list_message">POS currently only supports simple products – \ncreate one to get started.</string>
+    <string name="woopos_products_empty_list_message">POS currently only supports simple and variable products – \ncreate one to get started.</string>
     <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
     <string name="woopos_products_loading_error_title">Error loading products</string>
     <string name="woopos_products_loading_error_message">Give it another go?</string>
@@ -4296,6 +4316,23 @@
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
     <string name="woopos_success_screen_total">A payment of %1$s was successfully made</string>
+
+    <string name="woopos_success_totals_error_reader_not_connected_title">Reader not connected</string>
+    <string name="woopos_success_totals_error_reader_not_connected_subtitle">To process this payment, please connect your reader.</string>
+    <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">Connect to reader</string>
+    <string name="woopos_totals_reader_getting_ready">Getting ready</string>
+    <string name="woopos_totals_reader_checking_order">Checking order</string>
+    <string name="woopos_totals_reader_preparing_reader_for_payment">Preparing reader for payment</string>
+    <string name="woopos_totals_reader_ready_for_payment_title">Ready for payment</string>
+    <string name="woopos_totals_reader_ready_for_payment_subtitle">Tap, swipe or insert card</string>
+
+    <string name="woopos_success_totals_payment_processing_title">Processing payment</string>
+    <string name="woopos_success_totals_payment_processing_subtitle">Please wait…</string>
+    <string name="woopos_success_totals_payment_failed_title">Payment failed</string>
+    <string name="woo_pos_payment_failed_try_another_payment_method">Try another payment method</string>
+    <string name="woo_pos_payment_failed_try_again">Try payment again</string>
+    <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>
+    <string name="woo_pos_payment_remove_card">Remove card</string>
 
     <string name="woopos_floating_toolbar_overlay_menu_content_description">Dimmed background. Tap to close the menu.</string>
     <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Card reader connected</string>
@@ -4310,8 +4347,24 @@
 
     <string name="woopos_items_list_variable_product_variations">%1$d variations</string>
     <string name="woopos_variations_back_content_description">Back</string>
-    <string name="woopos_variations_screen_pagination_error">"Failed to load more items. Please try again."</string>
+    <string name="woopos_items_pagination_try_again_label">Try again</string>
+    <string name="woopos_items_pagination_error_title">"Failed to load more items"</string>
+    <string name="woopos_items_pagination_error_description">"An error occurred while loading products."</string>
+    <string name="woopos_items_pagination_error_content_description">"Failed to load more items. Double tap to try again."</string>
     <string name="woopos_variations_loading_error_title">Error loading variations</string>
+
+    <string name="woopos_cash_payment_title">Cash payment</string>
+    <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
+    <string name="woopos_cash_payment_total">Total: %s</string>
+    <string name="woopos_cash_payment_change_due">Change due %s</string>
+    <string name="woopos_cash_payment_error_message">Error trying to process payment. Try again.</string>
+    <string name="woopos_email_receipt_send_button">Send</string>
+
+    <string name="woopos_toolbar_icon_content_description">Back</string>
+
+    <string name="woopos_email_receipt_title">Email receipt</string>
+    <string name="woopos_email_receipt_email_label">Type email</string>
+    <string name="woopos_email_receipt_send_error">Error trying to send this email. Try again</string>
 
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4377,8 +4430,11 @@
     <string name="woo_shipping_labels_package_creation_length">Length</string>
     <string name="woo_shipping_labels_package_creation_width">Width</string>
     <string name="woo_shipping_labels_package_creation_height">Height</string>
+    <string name="woo_shipping_labels_package_creation_weight">Weight</string>
+    <string name="woo_shipping_labels_package_creation_package_name">Package Name</string>
     <string name="woo_shipping_labels_package_creation_save_package_option">Save this as a new package template</string>
     <string name="woo_shipping_labels_package_creation_add_package">Add Package</string>
+    <string name="woo_shipping_labels_package_creation_error">Failed to load the package data</string>
     <string name="woo_shipping_labels_package_creation_box_type">Box</string>
     <string name="woo_shipping_labels_package_creation_envelope_type">Envelope</string>
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>

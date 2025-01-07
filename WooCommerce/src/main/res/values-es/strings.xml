@@ -146,7 +146,7 @@ Language: es
     <string name="woopos_cart_item_content_description">Producto en el carrito %s, precio %s</string>
     <string name="woopos_product_item_content_description">Producto %s, precio %s</string>
     <string name="blaze_campaign_status_suspended">Suspendido</string>
-    <string name="woopos_success_screen_total">Se ha efectuado correctamente un pago de %1$s</string>
+    <string name="woopos_totals_success_payment_cash">Se ha efectuado correctamente un pago de %1$s</string>
     <string name="woopos_new_order_button">Nuevo pedido</string>
     <string name="woopos_dialog_products_info_button_label">Aceptar</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Crear un pedido en la gestión de la tienda</string>
@@ -1209,7 +1209,6 @@ Language: es
     <string name="card_reader_type_selection_bluetooth_reader_description">El lector de tarjetas acepta pagos con tarjetas de débito y crédito con toque, chip y banda magnética.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Acepta pagos sin contacto de forma segura directamente desde tu teléfono.</string>
     <string name="card_reader_tap_to_pay_description">Utiliza tu teléfono para aceptar pagos con\ntarjeta. Pruébalo ahora.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Compartir comentarios</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">No se puede acceder porque la creación de la contraseña de la aplicación no está aprobada.</string>
     <string name="login_site_credentials_fetching_site">Cargando sitio…</string>
     <string name="login_site_credentials_fetching_site_failed">Se ha producido un error al cargar tu sitio web</string>

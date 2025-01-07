@@ -146,7 +146,7 @@ Language: de
     <string name="woopos_cart_item_content_description">Produkt im Warenkorb %s, Preis %s</string>
     <string name="woopos_product_item_content_description">Produkt %s, Preis %s</string>
     <string name="blaze_campaign_status_suspended">Eingestellt</string>
-    <string name="woopos_success_screen_total">Eine Zahlung in Höhe von %1$s wurde erfolgreich abgebucht</string>
+    <string name="woopos_totals_success_payment_cash">Eine Zahlung in Höhe von %1$s wurde erfolgreich abgebucht</string>
     <string name="woopos_new_order_button">Neue Bestellung</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Eine Bestellung im Shop-Management erstellen</string>
@@ -1211,7 +1211,6 @@ Language: de
     <string name="login_site_credentials_web_authorization_connection_rejected">Die Anmeldung ist nicht möglich, weil die Erstellung von Anwendungspasswörtern nicht genehmigt wurde.</string>
     <string name="login_site_credentials_fetching_site">Website wird abgerufen …</string>
     <string name="card_reader_tap_to_pay_description">Nutze dein Mobiltelefon zum Akzeptieren von\nKartenzahlungen. Teste es jetzt.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Feedback teilen</string>
     <string name="loading">Lädt…</string>
     <string name="login_site_credentials_fetching_site_failed">Beim Abrufen der Website ist ein Fehler aufgetreten</string>
     <string name="login_site_credentials_use_web_authorization">Versuche es über die WP Admin-Seite erneut</string>

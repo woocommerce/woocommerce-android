@@ -81,7 +81,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -295,7 +294,8 @@ class CardReaderPaymentController(
                 storeName = selectedSite.get().name.ifEmpty { null },
                 siteUrl = selectedSite.get().url.ifEmpty { null },
                 countryCode = countryCode,
-                feeAmount = calculateFeeInCents(countryCode)
+                feeAmount = calculateFeeInCents(countryCode),
+                channel = determinePaymentChannel(paymentOrRefund)
             )
         ).collect { paymentStatus ->
             onPaymentStatusChanged(
@@ -320,6 +320,7 @@ class CardReaderPaymentController(
                 _paymentState.value =
                     CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
             }
+
             CollectingPayment -> {
                 _paymentState.value = paymentStateProvider.provideCollectingPaymentState(
                     cardReaderType,
@@ -425,6 +426,7 @@ class CardReaderPaymentController(
             InitializingInteracRefund -> {
                 _paymentState.value = CardReaderInteracRefundState.LoadingData(::onCancelPaymentFlow)
             }
+
             CollectingInteracRefund -> {
                 _paymentState.value = CardReaderInteracRefundState.CollectingInteracRefund(
                     amountWithCurrencyLabel = amountLabel,
@@ -435,6 +437,7 @@ class CardReaderPaymentController(
             ProcessingInteracRefund -> {
                 _paymentState.value = CardReaderInteracRefundState.ProcessingInteracRefund(amountLabel)
             }
+
             is InteracRefundSuccess -> {
                 _paymentState.value = CardReaderInteracRefundState.InteracRefundSuccessful(amountLabel)
                 triggerEvent(CardReaderPaymentEvent.InteracRefundSuccessful)
@@ -569,6 +572,7 @@ class CardReaderPaymentController(
             ),
             onCancel = ::onBackPressed
         )
+
         is PaymentFlowError.BuiltInReader.NfcDisabled -> paymentStateProvider.provideCancellableFailedPaymentState(
             cardReaderType = cardReaderType,
             errorType = errorType,
@@ -579,12 +583,14 @@ class CardReaderPaymentController(
                 onCallToActionTapped = { onEnableNfcClicked() }
             )
         )
+
         is PaymentFlowError.NonRetryableError -> paymentStateProvider.provideCancellableFailedPaymentState(
             cardReaderType = cardReaderType,
             errorType = errorType,
             amountWithCurrencyLabel = amountLabel,
             onCancel = ::onBackPressed,
         )
+
         is PaymentFlowError.PurchaseHardwareReaderError -> paymentStateProvider.provideCancellableFailedPaymentState(
             cardReaderType = cardReaderType,
             cta = CardReaderPaymentOrRefundState.CallToAction(
@@ -595,6 +601,7 @@ class CardReaderPaymentController(
             amountWithCurrencyLabel = amountLabel,
             onCancel = ::onBackPressed,
         )
+
         else -> paymentStateProvider.provideCancellableFailedPaymentState(
             cardReaderType = cardReaderType,
             errorType = errorType,
@@ -867,5 +874,21 @@ class CardReaderPaymentController(
             CANADA_FEE_FLAT_IN_CENTS
         } else {
             null
+        }
+
+    private fun determinePaymentChannel(flow: CardReaderFlowParam.PaymentOrRefund): PaymentInfo.PaymentChannel? =
+        when (flow) {
+            is CardReaderFlowParam.PaymentOrRefund.Payment -> {
+                when (flow.paymentType) {
+                    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS -> PaymentInfo.PaymentChannel.Pos
+                    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE,
+                    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER,
+                    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER_CREATION,
+                    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY ->
+                        PaymentInfo.PaymentChannel.StoreManager
+                }
+            }
+
+            is CardReaderFlowParam.PaymentOrRefund.Refund -> null
         }
 }
