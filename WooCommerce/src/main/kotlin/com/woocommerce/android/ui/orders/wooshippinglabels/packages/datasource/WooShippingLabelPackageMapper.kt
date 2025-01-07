@@ -13,8 +13,10 @@ import javax.inject.Inject
 class WooShippingLabelPackageMapper @Inject constructor() {
     operator fun invoke(response: PackageResponse): StorePackagesDAO {
         val savedPackagesResponse = response.packages?.saved?.custom ?: emptyList()
+        val storeOptionsResponse = response.storeOptions ?: PackageStoreOptionsDTO()
 
         return StorePackagesDAO(
+            storeOptions = mapStoreOptions(storeOptionsResponse),
             savedPackages = mapSavedPackages(savedPackagesResponse, response.storeOptions),
             carrierPackages = mapCarrierPackages(response.packages?.predefined, response.storeOptions)
         )
@@ -94,5 +96,12 @@ class WooShippingLabelPackageMapper @Inject constructor() {
                 groupName = title
             )
         } ?: emptyList()
+    )
+
+    private fun mapStoreOptions(optionsDTO: PackageStoreOptionsDTO) = StoreOptionsDAO(
+        currencySymbol = optionsDTO.currencySymbol.orEmpty(),
+        dimensionUnit = optionsDTO.dimensionUnit.orEmpty(),
+        weightUnit = optionsDTO.weightUnit.orEmpty(),
+        originCountry = optionsDTO.originCountry.orEmpty()
     )
 }

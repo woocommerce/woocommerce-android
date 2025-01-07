@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
@@ -79,7 +80,9 @@ class WooPosHomeViewModel @Inject constructor(
                 )
             }
 
-            WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid()
+            WooPosHomeUIEvent.OnPaymentCompletedViaCash -> onOrderSuccessfullyPaid(
+                PaymentMethod.CASH
+            )
             WooPosHomeUIEvent.ExitPosClicked -> {
                 viewModelScope.launch {
                     _navigationEvent.emit(NavigationEvent.ExitPos)
@@ -119,7 +122,9 @@ class WooPosHomeViewModel @Inject constructor(
                         )
                     }
 
-                    is ChildToParentEvent.OrderSuccessfullyPaid -> onOrderSuccessfullyPaid()
+                    is ChildToParentEvent.OrderSuccessfullyPaidByCard -> onOrderSuccessfullyPaid(
+                        PaymentMethod.CARD
+                    )
 
                     is ChildToParentEvent.PaymentCollecting -> {
                         _state.value = _state.value.copy(
@@ -134,7 +139,7 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.GoBackToCheckoutAfterFailedPayment,
-                    is ChildToParentEvent.RetryFailedPaymentClicked -> {
+                    is ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout -> {
                         _state.value = _state.value.copy(
                             screenPositionState = ScreenPositionState.Checkout.CartWithTotals
                         )
@@ -194,10 +199,10 @@ class WooPosHomeViewModel @Inject constructor(
         }
     }
 
-    private fun onOrderSuccessfullyPaid() {
+    private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals
         )
-        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
+        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid(paymentMethod))
     }
 }

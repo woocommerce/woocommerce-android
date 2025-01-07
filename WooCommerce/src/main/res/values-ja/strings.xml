@@ -146,7 +146,7 @@ Language: ja_JP
     <string name="woopos_cart_item_content_description">お買い物カゴ %s の商品、価格%s</string>
     <string name="woopos_product_item_content_description">商品 %s、価格%s</string>
     <string name="blaze_campaign_status_suspended">一時停止中</string>
-    <string name="woopos_success_screen_total">%1$sの支払いが正常に行われました</string>
+    <string name="woopos_totals_success_payment_cash">%1$sの支払いが正常に行われました</string>
     <string name="woopos_new_order_button">新しい注文</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ ストア管理で注文を作成</string>
@@ -1209,7 +1209,6 @@ Language: ja_JP
     <string name="card_reader_type_selection_bluetooth_reader_description">カードリーダーは、デビットカードとクレジットカードのタップ決済、チップ決済、スワイプ決済に対応しています。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">お使いのスマートフォンから非接触型決済を安全に直接受け付けることができます。</string>
     <string name="card_reader_tap_to_pay_description">スマートフォンを使用してカードによる支払いを\n受け付けることができます。 今すぐお試しください。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">フィードバックを共有</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">アプリケーションパスワードの作成が承認されていないため、ログインできません。</string>
     <string name="login_site_credentials_fetching_site">サイトを取得中…</string>
     <string name="login_site_credentials_fetching_site_failed">ウェブサイトの取得中にエラーが発生しました</string>

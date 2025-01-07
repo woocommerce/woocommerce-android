@@ -1,2 +1,0 @@
-21.2:
-Chegaram atualizações incríveis! A ativação do Jetpack ficou mais tranquila com a criação de conta nova. Diga adeus aos bugs: corrigimos problemas na atualização de pedidos, edições de envios e busca por recibos. Além disso, a opção Depósitos agora se chama Pagamentos, e melhoramos os uploads de mídia em sites do Jetpack. Atualize agora mesmo para ter uma experiência ainda melhor no WooCommerce!

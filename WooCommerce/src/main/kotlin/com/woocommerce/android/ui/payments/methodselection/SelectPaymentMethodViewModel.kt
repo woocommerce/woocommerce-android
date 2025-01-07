@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.methodselection
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARD_READER_TYPE_BUILT_IN
@@ -77,7 +76,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
-    private val appPrefs: AppPrefs = AppPrefs,
     private val paymentsUtils: PaymentUtils,
     private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
 ) : ScopedViewModel(savedState) {
@@ -309,7 +307,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     fun onTapToPayClicked() {
         launch {
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_BUILT_IN)
-            appPrefs.setTTPWasUsedAtLeastOnce()
             triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, BUILT_IN))
         }
     }

@@ -39,7 +39,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
     private fun setupTopAndBottomInsets() {
         window.navigationBarColor = ContextCompat.getColor(this, android.R.color.transparent)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        val rootView = findViewById<View>(R.id.root)
+        val rootView = findViewById<View>(R.id.snack_root)
         ViewCompat.setOnApplyWindowInsetsListener(rootView) { view, insets ->
             insets.toWindowInsets()?.let { windowInsets ->
                 val insetsCompat = WindowInsetsCompat.toWindowInsetsCompat(windowInsets, view)

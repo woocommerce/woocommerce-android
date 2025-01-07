@@ -146,7 +146,7 @@ Language: nl
     <string name="woopos_cart_item_content_description">Product in winkelwagen %s, prijs %s</string>
     <string name="woopos_product_item_content_description">Product %s, prijs %s</string>
     <string name="blaze_campaign_status_suspended">Opgeschort</string>
-    <string name="woopos_success_screen_total">Een betaling van %1$s is voldaan</string>
+    <string name="woopos_totals_success_payment_cash">Een betaling van %1$s is voldaan</string>
     <string name="woopos_new_order_button">Nieuwe bestelling</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Maak een bestelling aan in het winkelbeheer</string>
@@ -1209,7 +1209,6 @@ Language: nl
     <string name="card_reader_type_selection_bluetooth_reader_description">De kaartlezer accepteert tik-, chip- en veegbetalingen met debit-en creditcards.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Accepteert contactloze betalingen veilig en rechtstreeks vanaf je telefoon.</string>
     <string name="card_reader_tap_to_pay_description">Gebruik je telefoon om kaartbetalingen\nte accepteren Probeer het nu.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Deel feedback</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Inloggen mislukt omdat het maken van een applicatiewachtwoord niet goedgekeurd is.</string>
     <string name="login_site_credentials_fetching_site">Website ophalen…</string>
     <string name="login_site_credentials_fetching_site_failed">Er heeft zich een fout voorgedaan tijdens het ophalen van je website</string>

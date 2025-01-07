@@ -146,7 +146,7 @@ Language: id
     <string name="woopos_cart_item_content_description">Produk di keranjang %s, Harga %s</string>
     <string name="woopos_product_item_content_description">Produk %s, Harga %s</string>
     <string name="blaze_campaign_status_suspended">Ditangguhkan</string>
-    <string name="woopos_success_screen_total">Dana senilai %1$s berhasil dibayarkan</string>
+    <string name="woopos_totals_success_payment_cash">Dana senilai %1$s berhasil dibayarkan</string>
     <string name="woopos_new_order_button">Pesanan baru</string>
     <string name="woopos_dialog_products_info_button_label">Oke</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Buat pesanan di manajemen toko</string>
@@ -1209,7 +1209,6 @@ Language: id
     <string name="card_reader_type_selection_bluetooth_reader_description">Pembaca kartu menerima pembayaran dengan chip serta secara mengetuk dan menggesek menggunakan kartu debit atau kartu kredit.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Terima pembayaran nirsentuh dengan aman langsung dari ponsel Anda. </string>
     <string name="card_reader_tap_to_pay_description">Gunakan ponsel Anda untuk menerima pembayaran\nkartu. Coba sekarang.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Bagikan Feedback</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Tidak dapat login karena pembuatan kata sandi aplikasi tidak disetujui.</string>
     <string name="login_site_credentials_fetching_site">Mengambil situs…</string>
     <string name="login_site_credentials_fetching_site_failed">Terjadi error saat mengambil situs web Anda.</string>

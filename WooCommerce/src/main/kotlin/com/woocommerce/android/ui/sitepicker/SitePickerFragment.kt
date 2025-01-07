@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.WooNotFoundState
 import com.woocommerce.android.ui.sitepicker.sitediscovery.SitePickerSiteDiscoveryFragment
+import com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Logout
@@ -115,15 +116,24 @@ class SitePickerFragment :
                 true
             }
 
+            R.id.menu_edit_store_list -> {
+                findNavController().navigateSafely(
+                    SitePickerFragmentDirections.actionSitePickerFragmentToStoreVisibilityFragment()
+                )
+                true
+            }
+
             else -> false
         }
     }
 
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.menu_help).isVisible =
-            viewModel.sitePickerViewStateData.liveData.value?.isHelpBtnVisible ?: false
+            viewModel.sitePickerViewStateData.liveData.value?.isHelpBtnVisible == true
         menu.findItem(R.id.menu_close_account).isVisible =
-            viewModel.sitePickerViewStateData.liveData.value?.showCloseAccountMenuItem ?: false
+            viewModel.sitePickerViewStateData.liveData.value?.showCloseAccountMenuItem == true
+        menu.findItem(R.id.menu_edit_store_list).isVisible =
+            viewModel.sitePickerViewStateData.liveData.value?.editStoreListEnabled == true
     }
 
     override fun onDestroyView() {
@@ -197,6 +207,9 @@ class SitePickerFragment :
                     SimpleWPComState -> updateSimpleWPComView()
                 }
             }
+            new.editStoreListEnabled.takeIfNotEqualTo(old?.editStoreListEnabled) {
+                activity?.invalidateMenu()
+            }
         }
 
         viewModel.sites.observe(viewLifecycleOwner) {
@@ -237,6 +250,9 @@ class SitePickerFragment :
         }
         handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
             viewModel.onJetpackConnected()
+        }
+        handleResult<Boolean>(WooSitesVisibilityFragment.WOO_SITES_VISIBILITY_UPDATED) {
+            viewModel.onWooSitesVisibilityUpdated()
         }
     }
 

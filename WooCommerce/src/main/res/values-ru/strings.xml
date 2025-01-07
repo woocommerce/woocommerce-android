@@ -146,7 +146,7 @@ Language: ru
     <string name="woopos_cart_item_content_description">Товар в корзине %s, цена %s</string>
     <string name="woopos_product_item_content_description">Товар %s, цена %s</string>
     <string name="blaze_campaign_status_suspended">Приостановлено</string>
-    <string name="woopos_success_screen_total">Платёж в сумме %1$s выполнен успешно</string>
+    <string name="woopos_totals_success_payment_cash">Платёж в сумме %1$s выполнен успешно</string>
     <string name="woopos_new_order_button">Новый заказ</string>
     <string name="woopos_dialog_products_info_button_label">ОК</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Создать заказ в разделе «Управление магазином»</string>
@@ -1209,7 +1209,6 @@ Language: ru
     <string name="card_reader_type_selection_bluetooth_reader_description">Устройство чтения карт принимает платежи дебетовыми и кредитными картами. Их можно прикладывать, проводить или вставлять.</string>
     <string name="card_reader_type_selection_tap_to_pay_description">Принимайте бесконтактные платежи прямо в телефоне.</string>
     <string name="card_reader_tap_to_pay_description">Для получения платежей по карте используйте\nсвой телефон. Попробуйте прямо сейчас.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Отправить отзыв</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Не удалось войти, поскольку не разрешается создавать пароль приложения.</string>
     <string name="login_site_credentials_fetching_site">Получение сайта…</string>
     <string name="login_site_credentials_fetching_site_failed">Произошла ошибка при получении веб-сайта</string>

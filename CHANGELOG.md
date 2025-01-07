@@ -2,6 +2,9 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 
+## 21.3
+In this update, we've improved the WooCommerce app with several fixes and enhancements. The "One-time shipping" label now correctly matches its availability in Product Subscriptions, and issues with product conversion have been resolved. We've also streamlined the card reader payment flow for faster transactions, fixed a barcode scanner crash, and improved login error handling. Plus, if your site has no products, the Blaze Campaign screen now offers an easy way to create one.
+
 ## 21.2
 Seamless updates are here! Smoother Jetpack activation with new account creation. Say goodbye to bugs: order refresh, shipping edits, and receipt fetch issues are fixed. We've renamed Deposits to Payouts and improved media uploads for Jetpack sites. Update now for a better WooCommerce experience!
 

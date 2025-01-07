@@ -52,7 +52,12 @@ class GetShippingRatesTest : BaseUnitTest() {
                     rateId = "1",
                     shipmentId = "1",
                     serviceId = "1",
-                    serviceName = "Default"
+                    serviceName = "Default",
+                    isSelected = true,
+                    listRate = BigDecimal.TEN,
+                    retailRate = BigDecimal.TEN,
+                    deliveryDate = null,
+                    isDeliveryDateGuaranteed = false
                 )
             )
         )

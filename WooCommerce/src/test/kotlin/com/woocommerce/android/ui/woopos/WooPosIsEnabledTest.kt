@@ -24,7 +24,7 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     private val isScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
     private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
-        on { invoke() }.thenReturn("6.6.0")
+        on { invoke() }.thenReturn("9.6.0")
     }
 
     private lateinit var sut: WooPosIsEnabled
@@ -77,20 +77,20 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given woo version 6_5_0, when invoked, then return false`() = testBlocking {
-        whenever(getWooCoreVersion.invoke()).thenReturn("6.5.0")
+    fun `given woo version 9_5_0, when invoked, then return false`() = testBlocking {
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.5.0")
         assertFalse(sut())
     }
 
     @Test
-    fun `given woo version 6_6_0, when invoked, then return true`() = testBlocking {
-        whenever(getWooCoreVersion.invoke()).thenReturn("6.6.0")
+    fun `given woo version 9_6_0, when invoked, then return true`() = testBlocking {
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.6.0")
         assertTrue(sut())
     }
 
     @Test
-    fun `given woo version 6_6_0_1, when invoked, then return true`() = testBlocking {
-        whenever(getWooCoreVersion.invoke()).thenReturn("6.6.0.1")
+    fun `given woo version 9_6_0_1, when invoked, then return true`() = testBlocking {
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.6.0.1")
         assertTrue(sut())
     }
 

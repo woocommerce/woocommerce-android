@@ -15,10 +15,9 @@ import javax.inject.Singleton
 
 @Singleton
 class WooPosVariationsDataSource @Inject constructor(
-    private val handler: VariationListHandler
+    private val handler: VariationListHandler,
+    private val variationCache: VariationsLRUCache<Long, List<ProductVariation>>
 ) {
-    private val variationCache = VariationsLRUCache<Long, List<ProductVariation>>(maxSize = 50)
-
     private suspend fun getCachedVariations(productId: Long): List<ProductVariation> {
         return variationCache.get(productId) ?: emptyList()
     }
@@ -38,7 +37,7 @@ class WooPosVariationsDataSource @Inject constructor(
     fun fetchFirstPage(
         productId: Long,
         forceRefresh: Boolean = true
-    ): Flow<FetchResult<List<ProductVariation>>> = flow {
+    ): Flow<FetchResult> = flow {
         if (forceRefresh) {
             updateCache(productId, emptyList())
         }
@@ -50,7 +49,7 @@ class WooPosVariationsDataSource @Inject constructor(
 
         val result = handler.fetchVariations(productId, forceRefresh = true)
         if (result.isSuccess) {
-            val remoteVariations = handler.getVariationsFlow(productId).firstOrNull() ?: emptyList()
+            val remoteVariations = handler.getVariationsFlow(productId).firstOrNull()?.applyFilter() ?: emptyList()
             updateCache(productId, remoteVariations)
             emit(FetchResult.Remote(Result.success(remoteVariations)))
         } else {
@@ -67,7 +66,7 @@ class WooPosVariationsDataSource @Inject constructor(
     suspend fun loadMore(productId: Long): Result<List<ProductVariation>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore(productId)
         if (result.isSuccess) {
-            val fetchedVariations = handler.getVariationsFlow(productId).first()
+            val fetchedVariations = handler.getVariationsFlow(productId).first().applyFilter()
             Result.success(fetchedVariations)
         } else {
             result.logFailure()
@@ -84,7 +83,11 @@ private fun Result<Unit>.logFailure() {
     WooLog.e(WooLog.T.POS, "Loading variations failed - $errorMessage", error)
 }
 
-sealed class FetchResult<out T> {
-    data class Cached<out T>(val data: T) : FetchResult<T>()
-    data class Remote<out T>(val result: Result<T>) : FetchResult<T>()
+sealed class FetchResult {
+    data class Cached(val data: List<ProductVariation>) : FetchResult()
+    data class Remote(val result: Result<List<ProductVariation>>) : FetchResult()
+}
+
+private fun List<ProductVariation>.applyFilter(): List<ProductVariation> {
+    return filter { it.price != null && !it.isDownloadable }
 }

@@ -156,6 +156,14 @@
         <action
             android:id="@+id/action_orderListFragment_to_orderConnectivityToolFragment"
             app:destination="@id/orderConnectivityToolFragment" />
+        <action
+            android:id="@+id/action_orderListFragment_to_ordersListStatusSelectorDialog"
+            app:destination="@id/ordersListStatusSelectorDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -873,4 +881,18 @@
     <action
         android:id="@+id/action_global_blazeCampaignDetailWebViewFragment"
         app:destination="@id/blazeCampaignDetailWebViewFragment" />
+    <dialog
+        android:id="@+id/ordersListStatusSelectorDialog"
+        android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
+        <argument
+            android:name="currentStatus"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="orderStatusList"
+            app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
+        <argument
+            android:name="positiveButtonLabel"
+            app:argType="integer" />
+    </dialog>
 </navigation>

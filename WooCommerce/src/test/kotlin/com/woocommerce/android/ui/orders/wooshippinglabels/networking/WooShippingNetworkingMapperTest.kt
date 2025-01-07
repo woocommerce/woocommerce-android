@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippingLabelStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.StoreOptionsModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.datasource.WooShippingRatesDatasourceMapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.math.BigDecimal
@@ -10,7 +11,8 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooShippingNetworkingMapperTest : BaseUnitTest() {
-    val sut = WooShippingNetworkingMapper()
+    private val mapper = WooShippingRatesDatasourceMapper()
+    val sut = WooShippingNetworkingMapper(mapper)
 
     @Test
     fun `when all store option dto fields are null then return empty model`() {

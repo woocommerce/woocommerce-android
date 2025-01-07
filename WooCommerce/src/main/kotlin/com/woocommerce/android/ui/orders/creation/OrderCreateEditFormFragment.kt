@@ -1173,7 +1173,8 @@ class OrderCreateEditFormFragment :
                 OrderCreateEditFormFragmentDirections
                     .actionOrderCreationFragmentToOrderStatusSelectorDialog(
                         currentStatus = event.currentStatus,
-                        orderStatusList = event.orderStatusList
+                        orderStatusList = event.orderStatusList,
+                        positiveButtonLabel = R.string.apply
                     ).let { findNavController().navigateSafely(it) }
 
             is ShowSnackbar -> uiMessageResolver.showSnack(event.message)

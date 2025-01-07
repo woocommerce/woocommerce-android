@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.packages.datasource
 
 data class StorePackagesDAO(
+    val storeOptions: StoreOptionsDAO,
     val savedPackages: List<PackageDAO>,
     val carrierPackages: Map<CarrierType, CarrierDAO>
 )
@@ -23,6 +24,13 @@ data class CarrierDAO(
 data class CarrierPackageGroupDAO(
     val description: String,
     val packages: List<PackageDAO>
+)
+
+data class StoreOptionsDAO(
+    val currencySymbol: String,
+    val dimensionUnit: String,
+    val weightUnit: String,
+    val originCountry: String
 )
 
 enum class CarrierType {

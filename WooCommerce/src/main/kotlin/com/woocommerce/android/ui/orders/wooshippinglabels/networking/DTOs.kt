@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
 import com.google.gson.annotations.SerializedName
+import com.woocommerce.android.ui.orders.wooshippinglabels.rates.networking.DestinationAddressDTO
 import java.math.BigDecimal
 
 data class AccountSettingsDTO(
@@ -45,4 +46,51 @@ data class ShippingLabelDTO(
     @SerializedName("rate") val rate: BigDecimal? = null,
     @SerializedName("currency") val currency: String? = null,
     @SerializedName("expiry_date") val expiryDate: Long? = null,
+)
+
+data class PurchasedShippingLabelResponseDTO(
+    val success: Boolean,
+    val labels: List<ShippingLabelDTO>,
+    @SerializedName("selected_rates") val selectedRates: Map<String, ShippingRatePurchaseDTO>,
+    @SerializedName("selected_hazmat") val selectedHazmat: Map<String, HazmatDTO>,
+    @SerializedName("selected_origin") val selectedOrigin: Map<String, OriginAddressPurchaseDTO>,
+    @SerializedName("selected_destination") val selectedDestination: Map<String, DestinationAddressDTO>,
+)
+
+data class ShippingRatePurchaseDTO(val rate: ShippingRatePurchaseResponseDTO)
+
+data class ShippingRatePurchaseResponseDTO(
+    val rateId: String,
+    val serviceId: String,
+    val carrierId: String?,
+    val title: String,
+    val rate: BigDecimal,
+    val retailRate: BigDecimal? = null,
+    val listRate: BigDecimal? = null,
+    val isSelected: Boolean,
+    val tracking: Boolean = false,
+    val insurance: String?,
+    val freePickup: Boolean,
+    val shipmentId: String?,
+    val deliveryDays: Int,
+    val deliveryDateGuaranteed: Boolean,
+    val deliveryDate: String?
+)
+
+data class OriginAddressDTO(
+    val id: String? = null,
+    @SerializedName("address_1") val address: String? = null,
+    @SerializedName("address_2") val address2: String? = null,
+    val city: String? = null,
+    val company: String? = null,
+    val country: String? = null,
+    val name: String? = null,
+    val phone: String? = null,
+    val postcode: String? = null,
+    val state: String? = null,
+    val email: String? = null,
+    @SerializedName("first_name") val firstName: String? = null,
+    @SerializedName("last_name") val lastName: String? = null,
+    @SerializedName("is_verified") val isVerified: Boolean = false,
+    @SerializedName("default_address") val defaultAddress: Boolean = false,
 )

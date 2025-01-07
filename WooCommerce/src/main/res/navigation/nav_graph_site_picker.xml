@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_sitePickerFragment_to_closeAccountDialogFragment"
             app:destination="@id/closeAccountDialogFragment" />
+        <action
+            android:id="@+id/action_sitePickerFragment_to_storeVisibilityFragment"
+            app:destination="@id/storeVisibilityFragment" />
     </fragment>
     <fragment
         android:id="@+id/sitePickerSiteDiscoveryFragment"
@@ -63,4 +66,8 @@
         android:id="@+id/closeAccountDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.account.CloseAccountDialogFragment"
         android:label="CloseAccountDialogFragment" />
+    <fragment
+        android:id="@+id/storeVisibilityFragment"
+        android:name="com.woocommerce.android.ui.sitepicker.sitevisibility.WooSitesVisibilityFragment"
+        android:label="StoreVisibilityFragment" />
 </navigation>

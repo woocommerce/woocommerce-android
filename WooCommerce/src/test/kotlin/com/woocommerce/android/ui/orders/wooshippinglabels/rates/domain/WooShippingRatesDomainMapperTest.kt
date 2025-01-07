@@ -86,7 +86,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                         rateId = "1",
                         shipmentId = "1",
                         serviceId = "1",
-                        serviceName = "Default"
+                        serviceName = "Default",
+                        isSelected = true,
+                        listRate = BigDecimal.TEN,
+                        retailRate = BigDecimal.TEN,
+                        deliveryDate = null,
+                        isDeliveryDateGuaranteed = false
                     )
                 )
             )
@@ -117,7 +122,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                         rateId = "1",
                         shipmentId = "1",
                         serviceId = "1",
-                        serviceName = "Default"
+                        serviceName = "Default",
+                        isSelected = true,
+                        listRate = BigDecimal.TEN,
+                        retailRate = BigDecimal.TEN,
+                        deliveryDate = null,
+                        isDeliveryDateGuaranteed = false
                     )
                 )
             )
@@ -148,7 +158,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                         rateId = "1",
                         shipmentId = "1",
                         serviceId = "1",
-                        serviceName = "Default"
+                        serviceName = "Default",
+                        isSelected = true,
+                        listRate = BigDecimal.TEN,
+                        retailRate = BigDecimal.TEN,
+                        deliveryDate = null,
+                        isDeliveryDateGuaranteed = false
                     )
                 )
             )
@@ -179,7 +194,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                         rateId = "1",
                         shipmentId = "1",
                         serviceId = "1",
-                        serviceName = "Default"
+                        serviceName = "Default",
+                        isSelected = true,
+                        listRate = BigDecimal.TEN,
+                        retailRate = BigDecimal.TEN,
+                        deliveryDate = null,
+                        isDeliveryDateGuaranteed = false
                     )
                 )
             )
@@ -210,7 +230,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                         rateId = "1",
                         shipmentId = "1",
                         serviceId = "1",
-                        serviceName = "Default"
+                        serviceName = "Default",
+                        isSelected = true,
+                        listRate = BigDecimal.TEN,
+                        retailRate = BigDecimal.TEN,
+                        deliveryDate = null,
+                        isDeliveryDateGuaranteed = false
                     )
                 )
             )
@@ -241,7 +266,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                         rateId = "1",
                         shipmentId = "1",
                         serviceId = "1",
-                        serviceName = "Default"
+                        serviceName = "Default",
+                        isSelected = true,
+                        listRate = BigDecimal.TEN,
+                        retailRate = BigDecimal.TEN,
+                        deliveryDate = null,
+                        isDeliveryDateGuaranteed = false
                     )
                 )
             )
@@ -281,7 +311,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                 rateId = i.toString(),
                 shipmentId = i.toString(),
                 serviceId = i.toString(),
-                serviceName = "Default"
+                serviceName = "Default",
+                isSelected = true,
+                listRate = BigDecimal.TEN,
+                retailRate = BigDecimal.TEN,
+                deliveryDate = null,
+                isDeliveryDateGuaranteed = false
             )
 
             ratesMap[WooShippingRateModel.Option.SIGNATURE] = WooShippingRateModel(
@@ -298,7 +333,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                 rateId = i.toString(),
                 shipmentId = i.toString(),
                 serviceId = i.toString(),
-                serviceName = "Signature Required"
+                serviceName = "Signature Required",
+                isSelected = true,
+                listRate = BigDecimal.TEN,
+                retailRate = BigDecimal.TEN,
+                deliveryDate = null,
+                isDeliveryDateGuaranteed = false
             )
 
             ratesMap[WooShippingRateModel.Option.ADULT_SIGNATURE] = WooShippingRateModel(
@@ -315,7 +355,12 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
                 rateId = i.toString(),
                 shipmentId = i.toString(),
                 serviceId = i.toString(),
-                serviceName = "Adult Signature Required"
+                serviceName = "Adult Signature Required",
+                isSelected = true,
+                listRate = BigDecimal.TEN,
+                retailRate = BigDecimal.TEN,
+                deliveryDate = null,
+                isDeliveryDateGuaranteed = false
             )
             rates.add(WooShippingRateOptionsModel(ratesMap))
         }

@@ -45,6 +45,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
@@ -495,6 +496,86 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
 
             verify(cardReaderManager).collectPayment(captor.capture())
             assertThat(captor.firstValue.statementDescriptor.value).isEqualTo(expectedResult)
+        }
+
+    @Test
+    fun `given payment type WOO_POS, when start, then pos channel passed`() =
+        testBlocking {
+            val captor = argumentCaptor<PaymentInfo>()
+            createController(
+                cardReaderFlowParam = PaymentOrRefund.Payment(
+                    ORDER_ID,
+                    PaymentOrRefund.Payment.PaymentType.WOO_POS
+                )
+            )
+            controller.start()
+
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.channel).isEqualTo(PaymentInfo.PaymentChannel.Pos)
+        }
+
+    @Test
+    fun `given payment type ORDER, when start, then store manager channel passed`() =
+        testBlocking {
+            val captor = argumentCaptor<PaymentInfo>()
+            createController(
+                cardReaderFlowParam = PaymentOrRefund.Payment(
+                    ORDER_ID,
+                    ORDER
+                )
+            )
+            controller.start()
+
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.channel).isEqualTo(PaymentInfo.PaymentChannel.StoreManager)
+        }
+
+    @Test
+    fun `given payment type SIMPLE, when start, then store manager channel passed`() =
+        testBlocking {
+            val captor = argumentCaptor<PaymentInfo>()
+            createController(
+                cardReaderFlowParam = PaymentOrRefund.Payment(
+                    ORDER_ID,
+                    PaymentOrRefund.Payment.PaymentType.SIMPLE
+                )
+            )
+            controller.start()
+
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.channel).isEqualTo(PaymentInfo.PaymentChannel.StoreManager)
+        }
+
+    @Test
+    fun `given payment type ORDER_CREATION, when paymentCollect, then store manager channel passed`() =
+        testBlocking {
+            val captor = argumentCaptor<PaymentInfo>()
+            createController(
+                cardReaderFlowParam = PaymentOrRefund.Payment(
+                    ORDER_ID,
+                    PaymentOrRefund.Payment.PaymentType.ORDER_CREATION
+                )
+            )
+            controller.start()
+
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.channel).isEqualTo(PaymentInfo.PaymentChannel.StoreManager)
+        }
+
+    @Test
+    fun `given payment type TRY_TAP_TO_PAY, when paymentCollect, then store manager channel passed`() =
+        testBlocking {
+            val captor = argumentCaptor<PaymentInfo>()
+            createController(
+                cardReaderFlowParam = PaymentOrRefund.Payment(
+                    ORDER_ID,
+                    PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
+                )
+            )
+            controller.start()
+
+            verify(cardReaderManager).collectPayment(captor.capture())
+            assertThat(captor.firstValue.channel).isEqualTo(PaymentInfo.PaymentChannel.StoreManager)
         }
 
     @Test
@@ -3590,7 +3671,7 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
                 MutableStateFlow(CardReaderStatus.Connected(cardReader))
             )
             isTTPinProgress = true
-            createController(cardReaderType = BUILT_IN,)
+            createController(cardReaderType = BUILT_IN)
 
             controller.start()
 

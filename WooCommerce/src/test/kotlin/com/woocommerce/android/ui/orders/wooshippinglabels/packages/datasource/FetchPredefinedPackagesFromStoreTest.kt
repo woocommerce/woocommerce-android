@@ -96,6 +96,12 @@ class FetchPredefinedPackagesFromStoreTest : BaseUnitTest() {
     }
 
     private fun generatePackagesData() = StorePackagesDAO(
+        storeOptions = StoreOptionsDAO(
+            currencySymbol = "$",
+            dimensionUnit = "cm",
+            weightUnit = "kg",
+            originCountry = "US"
+        ),
         savedPackages = listOf(
             PackageDAO(
                 id = "1",

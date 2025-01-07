@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.ui.orders.list.OrderListViewModel
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.Companion.BULK_UPDATE_COUNT_LIMIT
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
@@ -994,6 +996,118 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Check that isFetchingFirstPage is reset to default value (false) on clearLiveDataSources
         assertFalse(isFetchingFirstPage!!)
+    }
+
+    @Test
+    fun `when selection count changes to greater than 0, then enter selection mode`() = testBlocking {
+        viewModel.onSelectionChanged(2)
+
+        assertThat(viewModel.isSelecting()).isTrue()
+        assertThat(viewModel.viewState.selectionCount).isEqualTo(2)
+        assertThat(viewModel.viewState.isAddOrderButtonVisible).isFalse()
+        assertThat(viewModel.viewState.orderListState).isEqualTo(OrderListViewModel.ViewState.OrderListState.Selecting)
+    }
+
+    @Test
+    fun `when selection count changes to 0, then exit selection mode`() = testBlocking {
+        // First enter selection mode
+        viewModel.onSelectionChanged(2)
+        assertThat(viewModel.isSelecting()).isTrue()
+
+        // Then exit
+        viewModel.onSelectionChanged(0)
+
+        assertThat(viewModel.isSelecting()).isFalse()
+        assertThat(viewModel.viewState.selectionCount).isNull()
+        assertThat(viewModel.viewState.isAddOrderButtonVisible).isTrue()
+        assertThat(viewModel.viewState.orderListState).isEqualTo(OrderListViewModel.ViewState.OrderListState.Browsing)
+    }
+
+    @Test
+    fun `when in selection mode and count changes but stays above 0, then update count only`() = testBlocking {
+        // Enter selection mode
+        viewModel.onSelectionChanged(2)
+        val initialState = viewModel.viewState.orderListState
+
+        // Change count
+        viewModel.onSelectionChanged(3)
+
+        assertThat(viewModel.viewState.selectionCount).isEqualTo(3)
+        assertThat(viewModel.viewState.orderListState).isEqualTo(initialState)
+        assertThat(viewModel.isSelecting()).isTrue()
+    }
+
+    @Test
+    fun `when bulk update clicked, then trigger dialog event with status options`() = testBlocking {
+        // Given
+        val statusOptions = listOf(
+            Order.OrderStatus(CoreOrderStatus.COMPLETED.value, "Completed"),
+            Order.OrderStatus(CoreOrderStatus.PROCESSING.value, "Processing")
+        )
+        whenever(orderDetailRepository.getOrderStatusOptions()).thenReturn(statusOptions)
+
+        // When
+        viewModel.onBulkUpdateStatusClicked()
+
+        // Then
+        assertThat(viewModel.event.value).isInstanceOf(OrderListEvent.ShowUpdateStatusDialog::class.java)
+    }
+
+    @Test
+    fun `given offline, when bulk update status requested, then show offline error and exit selection mode`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(false)
+
+        viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
+
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message).isEqualTo(R.string.offline_error)
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update fails, then show error message and exit selection`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any())).thenReturn(Result.failure(Exception()))
+
+        viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
+
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message).isEqualTo(R.string.error_generic)
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update completes successfully, then exit selection mode`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any())).thenReturn(Result.success(Unit))
+
+        // First enter selection mode
+        viewModel.onSelectionChanged(1)
+        assertThat(viewModel.isSelecting()).isTrue()
+
+        viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
+
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when selection count reaches limit, then show error message`() {
+        // when
+        viewModel.onSelectionChanged(BULK_UPDATE_COUNT_LIMIT)
+
+        // then
+        assertEquals(BULK_UPDATE_COUNT_LIMIT, viewModel.viewState.selectionCount)
+
+        viewModel.event.getOrAwaitValue().let { event ->
+            assertTrue(event is OrderListEvent.ShowSnackbarString)
+            assertEquals(
+                event.message,
+                resourceProvider.getString(
+                    R.string.orderlist_bulk_update_maximum_reached,
+                    BULK_UPDATE_COUNT_LIMIT
+                )
+            )
+        }
     }
 
     private companion object {

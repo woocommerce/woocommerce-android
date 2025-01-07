@@ -110,7 +110,7 @@ private fun WooPosTotalsScreen(
 
         StateChangeAnimated(visible = state is WooPosTotalsViewState.PaymentInProgress) {
             if (state is WooPosTotalsViewState.PaymentInProgress) {
-                WooPosPaymentInProgressScreen(state)
+                WooPosPaymentInProgressScreen(state, onUIEvent)
             }
         }
 
@@ -189,12 +189,10 @@ private fun TotalsLoaded(
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-                if (state.isCashPaymentAvailable) {
-                    WooPosOutlinedButton(
-                        text = stringResource(R.string.woopos_payment_take_cash_payment_label),
-                        onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
-                    )
-                }
+                WooPosOutlinedButton(
+                    text = stringResource(R.string.woopos_payment_take_cash_payment_label),
+                    onClick = { onUIEvent(WooPosTotalsUIEvent.OnCashPaymentClicked) },
+                )
                 Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
             }
         }
@@ -420,7 +418,6 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                     title = "Ready for payment",
                     subtitle = "Tap, swipe or insert card"
                 ),
-                isCashPaymentAvailable = false,
             ),
             onUIEvent = {},
         )
@@ -437,7 +434,6 @@ fun WooPosTotalsScreenPreviewReaderNotConnected(modifier: Modifier = Modifier) {
                 orderSubtotalText = "$420.00",
                 orderTotalText = "$462.00",
                 orderTaxText = "$42.00",
-                isCashPaymentAvailable = false,
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
                     title = "Reader not connected",
                     subtitle = "To process this payment, please connect your reader.",
@@ -459,7 +455,6 @@ fun WooPosTotalsScreenPreviewWithCashPaymentAvailable() {
                 orderSubtotalText = "$420.00",
                 orderTotalText = "$462.00",
                 orderTaxText = "$42.00",
-                isCashPaymentAvailable = true,
                 readerStatus = WooPosTotalsViewState.ReaderStatus.Disconnected(
                     title = "Reader not connected",
                     subtitle = "To process this payment, please connect your reader.",

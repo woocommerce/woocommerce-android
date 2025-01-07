@@ -191,9 +191,6 @@ object AppPrefs {
         // Was the IPP feedback survey banner dismissed forever
         IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER,
 
-        // Was the Tap To Pay used at least once
-        TTP_WAS_USED_AT_LEAST_ONCE,
-
         // Whether onboarding tasks have been completed or not for a given site
         STORE_ONBOARDING_TASKS_COMPLETED,
 
@@ -939,13 +936,6 @@ object AppPrefs {
 
     fun setIPPFeedbackBannerDismissedForever(dismissedForever: Boolean) {
         setBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER, dismissedForever)
-    }
-
-    fun isTTPWasUsedAtLeastOnce() =
-        getBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, false)
-
-    fun setTTPWasUsedAtLeastOnce() {
-        setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
     }
 
     fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {

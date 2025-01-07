@@ -46,7 +46,8 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderStatusSelectorDialog(
                         currentStatus = target.currentStatus,
-                        orderStatusList = target.orderStatusList
+                        orderStatusList = target.orderStatusList,
+                        positiveButtonLabel = R.string.apply
                     )
                 fragment.findNavController().navigateSafely(action)
             }

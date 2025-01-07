@@ -83,9 +83,7 @@ class WooPosVariationsViewModel @Inject constructor(
                                 val variations = result.result.getOrThrow()
                                 if (variations.isNotEmpty()) {
                                     WooPosVariationsViewState.Content(
-                                        items = variations.filter {
-                                            it.price != null && !it.isVirtual && !it.isDownloadable
-                                        }.map {
+                                        items = variations.map {
                                             WooPosItem.Variation(
                                                 id = it.remoteVariationId,
                                                 name = it.getName(getProductById(productId)),
@@ -118,7 +116,7 @@ class WooPosVariationsViewModel @Inject constructor(
             _viewState.value = WooPosVariationsViewState.Empty()
         } else {
             _viewState.value = WooPosVariationsViewState.Content(
-                items = variations.filter { it.price != null }.map {
+                items = variations.map {
                     WooPosItem.Variation(
                         id = it.remoteVariationId,
                         name = it.getName(getProductById(productId)),
@@ -156,7 +154,7 @@ class WooPosVariationsViewModel @Inject constructor(
             val result = variationsDataSource.loadMore(productId)
             _viewState.value = if (result.isSuccess) {
                 WooPosVariationsViewState.Content(
-                    items = result.getOrThrow().filter { it.price != null }.map {
+                    items = result.getOrThrow().map {
                         WooPosItem.Variation(
                             id = it.remoteVariationId,
                             name = it.getName(getProductById(productId)),

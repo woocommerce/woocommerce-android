@@ -28,7 +28,6 @@ data class FeatureFeedbackSettings(
         PRODUCT_ADDONS,
         SIMPLE_PAYMENTS_AND_ORDER_CREATION,
         ANALYTICS_HUB,
-        TAP_TO_PAY,
         ORDER_SHIPPING_LINES
     }
 

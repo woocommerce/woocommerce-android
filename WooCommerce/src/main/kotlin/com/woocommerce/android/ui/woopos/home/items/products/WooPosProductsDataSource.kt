@@ -38,7 +38,10 @@ class WooPosProductsDataSource @Inject constructor(
             forceRefresh = forceRefreshProducts,
             searchType = ProductListHandler.SearchType.DEFAULT,
             includeType = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
-            filters = mapOf(WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value)
+            filters = mapOf(
+                WCProductStore.ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
+                WCProductStore.ProductFilterOption.DOWNLOADABLE to WCProductStore.DownloadableOptions.FALSE.toString(),
+            )
         )
 
         if (result.isSuccess) {
@@ -80,14 +83,8 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     private fun List<Product>.applyPosProductFilter() = this.filter { product ->
-        isProductHasAPrice(product) &&
-            isProductNotVirtual(product) &&
-            isProductNotDownloadable(product)
+        isProductHasAPrice(product)
     }
-
-    private fun isProductNotDownloadable(product: Product) = !product.isDownloadable
-
-    private fun isProductNotVirtual(product: Product) = !product.isVirtual
 
     private fun isProductHasAPrice(product: Product) =
         (product.price != null)

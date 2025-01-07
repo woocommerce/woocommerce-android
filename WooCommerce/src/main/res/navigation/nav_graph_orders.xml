@@ -319,6 +319,9 @@
         <argument
             android:name="orderStatusList"
             app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
+        <argument
+            android:name="positiveButtonLabel"
+            app:argType="integer" />
     </dialog>
     <fragment
         android:id="@+id/printShippingLabelInfoFragment"
@@ -740,7 +743,8 @@
             app:destination="@id/wooShippingLabelPackageCreationFragment" />
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelPurchasedFragment"
-            app:destination="@id/wooShippingLabelPurchasedFragment" />
+            app:destination="@id/wooShippingLabelPurchasedFragment"
+            app:popUpTo="@id/orderDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -757,7 +761,11 @@
         android:name="com.woocommerce.android.ui.orders.wooshippinglabels.purchased.WooShippingLabelPurchasedFragment"
         android:label="WooShippingLabelPurchasedFragment">
         <argument
-            android:name="labelId"
-            app:argType="long" />
+            android:name="purchaseData"
+            app:argType="com.woocommerce.android.ui.orders.wooshippinglabels.purchased.PurchasedShippingLabelData" />
+
+        <action
+            android:id="@+id/action_wooShippingLabelPurchasedFragment_to_printShippingLabelInfoFragment"
+            app:destination="@id/printShippingLabelInfoFragment" />
     </fragment>
 </navigation>
