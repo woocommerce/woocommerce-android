@@ -166,6 +166,7 @@ fun WooPosPaginationErrorScreenPreview() {
         WooPosItemList(
             state = itemsState,
             listState = rememberLazyListState(),
+            testTagName = "products_list",
             onItemClicked = {},
             onEndOfProductsListReached = {}
         ) {

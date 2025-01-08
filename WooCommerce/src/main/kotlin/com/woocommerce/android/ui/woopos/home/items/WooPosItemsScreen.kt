@@ -171,6 +171,7 @@ private fun MainItemsList(
                         WooPosItemList(
                             itemsState,
                             listState,
+                            "products_list",
                             onItemClicked,
                             onEndOfItemListReached,
                         ) {

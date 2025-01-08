@@ -131,6 +131,7 @@ private fun WooPosVariationsScreens(
                     WooPosItemList(
                         state = itemsState,
                         listState = listState,
+                        testTagName = "variations_list",
                         onItemClicked = {
                             onItemClicked(
                                 (it as WooPosItem.Variation).productId,

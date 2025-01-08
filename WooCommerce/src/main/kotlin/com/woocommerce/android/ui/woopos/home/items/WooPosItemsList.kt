@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -56,11 +57,13 @@ import kotlinx.coroutines.flow.filter
 fun WooPosItemList(
     state: ContentViewState,
     listState: LazyListState,
+    testTagName: String,
     onItemClicked: (item: WooPosItem) -> Unit,
     onEndOfProductsListReached: () -> Unit,
     onErrorWhilePaginating: @Composable () -> Unit,
 ) {
     WooPosLazyColumn(
+        modifier = Modifier.testTag(testTagName),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(2.dp),
         state = listState,
