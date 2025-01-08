@@ -35,8 +35,7 @@ fladle {
     serviceAccountCredentials = rootProject.file(".configure-files/firebase.secrets.json")
 
     testTargets = [
-            "package com.woocommerce.android.e2e.tests.ui.pos",
-            "notPackage com.woocommerce.android.e2e.tests.screenshot"
+            "package com.woocommerce.android.e2e.tests.ui.pos"
     ]
     devices = [
             [ "model": "PixelC", "version": "30" ] // Tablet device
