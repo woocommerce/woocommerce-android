@@ -86,20 +86,14 @@ class CardReaderOnboardingErrorCtaClickHandler @Inject constructor(
         )
 
     private fun buildReactionToOpenWcPaySetup(): Reaction {
-        val siteModel = selectedSite.get()
         val url = selectedSite.get().adminUrlOrDefault.slashJoin(PAYMENTS_TAP_URL)
-        return if (siteModel.isWPCom || siteModel.isWPComAtomic) {
-            Reaction.OpenWpComWebView(url)
-        } else {
-            Reaction.OpenGenericWebView(url)
-        }
+        return Reaction.OpenBrowser(url)
     }
 
     sealed class Reaction {
-        object Refresh : Reaction()
+        data object Refresh : Reaction()
         data class ShowErrorAndRefresh(val message: String) : Reaction()
-        data class OpenWpComWebView(val url: String) : Reaction()
-        data class OpenGenericWebView(val url: String) : Reaction()
+        data class OpenBrowser(val url: String) : Reaction()
     }
 
     private val Reaction.errorMessage

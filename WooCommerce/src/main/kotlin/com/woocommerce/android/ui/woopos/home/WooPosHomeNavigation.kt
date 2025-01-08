@@ -1,18 +1,33 @@
 package com.woocommerce.android.ui.woopos.home
 
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.OvershootInterpolator
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
-private const val HOME_ROUTE = "home"
+const val HOME_ROUTE = "home"
+const val HOME_PAYMENT_COMPLETED_VIA_CASH_KEY = "home_payment_completed_via_cash_key"
 
 fun NavController.navigateToHomeScreen() {
-    navigate(HOME_ROUTE)
+    navigateOnce(HOME_ROUTE)
+}
+
+fun NavController.navigateToHomeScreenAfterSuccessfulCashPayment() {
+    previousBackStackEntry
+        ?.savedStateHandle
+        ?.set(HOME_PAYMENT_COMPLETED_VIA_CASH_KEY, true)
+
+    navigate(HOME_ROUTE) {
+        popUpTo(HOME_ROUTE) { inclusive = false }
+        launchSingleTop = true
+    }
 }
 
 fun NavGraphBuilder.homeScreen(
@@ -21,19 +36,44 @@ fun NavGraphBuilder.homeScreen(
     composable(
         route = HOME_ROUTE,
         enterTransition = {
-            slideInVertically(
-                initialOffsetY = { -it },
+            fadeIn(
                 animationSpec = tween(
-                    durationMillis = 800,
-                    easing = { time ->
-                        val accelerateDecelerate = AccelerateDecelerateInterpolator().getInterpolation(time)
-                        @Suppress("MagicNumber")
-                        OvershootInterpolator(1.5f).getInterpolation(accelerateDecelerate)
-                    }
+                    durationMillis = 300,
+                    delayMillis = 200,
+                    easing = FastOutSlowInEasing
                 )
             )
+        },
+        exitTransition = {
+            slideOutHorizontally(
+                targetOffsetX = { fullWidth -> -fullWidth },
+            )
+        },
+        popEnterTransition = {
+            if (targetState.IsHomePaymentCompletedViaCash) {
+                slideInHorizontally(
+                    initialOffsetX = { fullWidth -> fullWidth },
+                )
+            } else {
+                slideInHorizontally(
+                    initialOffsetX = { fullWidth -> -fullWidth },
+                )
+            }
+        },
+    ) { entry ->
+        val savedStateHandle = entry.savedStateHandle
+
+        val isPaymentCompletedViaCash = savedStateHandle.get<Boolean>(HOME_PAYMENT_COMPLETED_VIA_CASH_KEY) == true
+        if (isPaymentCompletedViaCash) {
+            savedStateHandle[HOME_PAYMENT_COMPLETED_VIA_CASH_KEY] = false
         }
-    ) {
-        WooPosHomeScreen(onNavigationEvent)
+
+        WooPosHomeScreen(
+            isPaymentCompletedViaCash = isPaymentCompletedViaCash,
+            onNavigationEvent = onNavigationEvent,
+        )
     }
 }
+
+val NavBackStackEntry.IsHomePaymentCompletedViaCash: Boolean
+    get() = savedStateHandle.get<Boolean>(HOME_PAYMENT_COMPLETED_VIA_CASH_KEY) == true

@@ -5,15 +5,14 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingBinding
 import com.woocommerce.android.databinding.FragmentCardReaderOnboardingCodDisabledBinding
@@ -53,6 +52,20 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingBinding.bind(view)
         setupToolbar(binding)
         initObservers(binding)
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (viewModel.isPos) {
+                        // If the user is in POS, we should navigate back skipping everything
+                        requireActivity().finish()
+                    } else {
+                        findNavController().popBackStack()
+                    }
+                }
+            }
+        )
     }
 
     private fun setupToolbar(binding: FragmentCardReaderOnboardingBinding) {
@@ -62,7 +75,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
             R.drawable.ic_back_24dp
         )
         binding.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
+            activity?.onBackPressedDispatcher?.onBackPressed()
         }
     }
 
@@ -74,12 +87,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingEvent.NavigateToSupport -> {
                     requireActivity().startHelpActivity(HelpOrigin.CARD_READER_ONBOARDING)
                 }
-                is CardReaderOnboardingEvent.NavigateToUrlInWPComWebView -> {
-                    findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
-                    )
-                }
-                is CardReaderOnboardingEvent.NavigateToUrlInGenericWebView -> {
+                is CardReaderOnboardingEvent.NavigateToUrlInBrowser -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
                 is CardReaderOnboardingEvent.ContinueToHub -> {
@@ -218,20 +226,20 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.selectWcPayButton.setOnClickListener {
             selectedPluginType = PluginType.WOOCOMMERCE_PAYMENTS
             binding.selectWcPayButton.strokeColor =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.woo_purple_60))
+                ColorStateList.valueOf(getColor(requireContext(), R.color.woo_purple_60))
             binding.icCheckmarkWcPay.visibility = View.VISIBLE
             binding.icCheckmarkStripe.visibility = View.GONE
             binding.selectStripeButton.strokeColor =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.select_payment_gateway_stroke))
+                ColorStateList.valueOf(getColor(requireContext(), R.color.select_payment_gateway_stroke))
         }
         binding.selectStripeButton.setOnClickListener {
             selectedPluginType = PluginType.STRIPE_EXTENSION_GATEWAY
             binding.selectStripeButton.strokeColor =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.woo_purple_60))
+                ColorStateList.valueOf(getColor(requireContext(), R.color.woo_purple_60))
             binding.icCheckmarkWcPay.visibility = View.GONE
             binding.icCheckmarkStripe.visibility = View.VISIBLE
             binding.selectWcPayButton.strokeColor =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.select_payment_gateway_stroke))
+                ColorStateList.valueOf(getColor(requireContext(), R.color.select_payment_gateway_stroke))
         }
         binding.confirmPaymentMethod.setOnClickListener {
             state.onConfirmPaymentMethodClicked.invoke(selectedPluginType)

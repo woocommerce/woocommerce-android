@@ -44,7 +44,7 @@ class PaymentReceiptShare @Inject constructor(
             selectedSite.get().name.orEmpty()
         )
         val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "application/*"
+            type = "text/plain"
             putExtra(Intent.EXTRA_STREAM, uri)
             putExtra(Intent.EXTRA_TEXT, text)
         }
@@ -61,11 +61,11 @@ class PaymentReceiptShare @Inject constructor(
     }
 
     sealed class ReceiptShareResult {
-        object Success : ReceiptShareResult()
+        data object Success : ReceiptShareResult()
         sealed class Error : ReceiptShareResult() {
             data class Sharing(val exception: Exception) : Error()
-            object FileCreation : Error()
-            object FileDownload : Error()
+            data object FileCreation : Error()
+            data object FileDownload : Error()
         }
     }
 }

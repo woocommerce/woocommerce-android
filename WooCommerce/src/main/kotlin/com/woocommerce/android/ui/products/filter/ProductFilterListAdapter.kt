@@ -4,13 +4,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FilterListItemBinding
 import com.woocommerce.android.ui.products.filter.ProductFilterListAdapter.ProductFilterViewHolder
 import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListItemUiModel
-import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
 
 class ProductFilterListAdapter(
-    private val clickListener: OnProductFilterClickListener
+    private val clickListener: OnProductFilterClickListener,
+    private val resourceProvider: (resourceId: Int) -> String
 ) : RecyclerView.Adapter<ProductFilterViewHolder>() {
     var filterList = listOf<FilterListItemUiModel>()
         set(value) {
@@ -39,7 +40,10 @@ class ProductFilterListAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductFilterViewHolder, position: Int) {
-        holder.bind(filterList[position])
+        holder.bind(
+            filterItem = filterList[position],
+            defaultFilterOption = resourceProvider(R.string.product_filter_default)
+        )
         holder.itemView.setOnClickListener {
             clickListener.onProductFilterClick(position)
         }
@@ -51,12 +55,9 @@ class ProductFilterListAdapter(
 
     class ProductFilterViewHolder(val viewBinding: FilterListItemBinding) :
         RecyclerView.ViewHolder(viewBinding.root) {
-        fun bind(filter: FilterListItemUiModel) {
-            viewBinding.filterItemName.text = filter.filterItemName
-            viewBinding.filterItemSelection.text =
-                filter.filterOptionListItems
-                    .filterIsInstance<FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel>()
-                    .first { it.isSelected }.filterOptionItemName
+        fun bind(filterItem: FilterListItemUiModel, defaultFilterOption: String) {
+            viewBinding.filterItemName.text = filterItem.filterItemName
+            viewBinding.filterItemSelection.text = filterItem.firstSelectedOption ?: defaultFilterOption
         }
     }
 

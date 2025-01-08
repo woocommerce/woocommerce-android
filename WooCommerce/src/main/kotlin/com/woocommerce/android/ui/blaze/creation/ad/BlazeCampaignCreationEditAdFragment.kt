@@ -7,13 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ShowMediaLibrary
+import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ShowProductImagePicker
+import com.woocommerce.android.ui.blaze.creation.ad.ProductImagePickerViewModel.ImageSelectedResult
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -43,15 +47,30 @@ class BlazeCampaignCreationEditAdFragment : BaseFragment(), MediaPickerResultHan
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        handleResults()
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source)
+                is ShowProductImagePicker -> navigateToProductImagePicker(event.productId)
                 is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(EDIT_AD_RESULT, event.data as EditAdResult)
                 }
             }
+        }
+    }
+
+    private fun navigateToProductImagePicker(productId: Long) {
+        findNavController().navigateSafely(
+            BlazeCampaignCreationEditAdFragmentDirections
+                .actionBlazeCampaignCreationEditAdFragmentToProductImagePickerFragment(productId)
+        )
+    }
+
+    private fun handleResults() {
+        handleResult<ImageSelectedResult>(ProductImagePickerFragment.ON_PRODUCT_IMAGE_SELECTED) {
+            viewModel.onWPMediaSelected(it.productImage)
         }
     }
 

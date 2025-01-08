@@ -101,6 +101,40 @@ object OrderTestUtils {
         return result
     }
 
+    fun generateItemsRefunds(
+        productQuantityPairs: List<Pair<Long, Int>>
+    ): List<Refund> {
+        val items = productQuantityPairs.map { pair ->
+            val (productId, quantity) = pair
+
+            Refund.Item(
+                productId = productId,
+                quantity = quantity,
+                id = 1L,
+                name = "A test",
+                variationId = 0,
+                subtotal = BigDecimal.valueOf(10.00),
+                total = BigDecimal.valueOf(10.00),
+                totalTax = BigDecimal.ZERO,
+                price = BigDecimal.valueOf(10.00),
+                orderItemId = 1L
+            )
+        }
+
+        return listOf(
+            Refund(
+                id = 1L,
+                amount = BigDecimal.TEN,
+                dateCreated = Date(),
+                reason = "Test",
+                automaticGatewayRefund = true,
+                items = items,
+                shippingLines = emptyList(),
+                feeLines = emptyList()
+            )
+        )
+    }
+
     fun generateRefunds(totalCount: Int = 5): List<Refund> {
         val result = ArrayList<Refund>()
         for (i in totalCount downTo 1) {

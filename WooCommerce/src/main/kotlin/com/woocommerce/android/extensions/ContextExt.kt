@@ -1,11 +1,13 @@
 package com.woocommerce.android.extensions
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.Point
 import android.os.Parcelable
 import android.view.WindowManager
@@ -105,3 +107,18 @@ val Context.physicalScreenHeightInPx: Int
             size.y
         }
     }
+
+/**
+ * Find the closest Activity in a given Context.
+ * Inspired by the implementation in Accompanist.
+ * https://github.com/google/accompanist/blob/3b40d2b53e117bc7ca78f0d35454af9bad25f0c5/permissions/src/main/java/com/google/accompanist/permissions/PermissionsUtil.kt#L131
+ */
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+
+    return null
+}

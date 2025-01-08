@@ -61,8 +61,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -100,7 +99,9 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     private val reader = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy1") }
     private val reader2 = mock<CardReader>().also { whenever(it.id).thenReturn("Dummy2") }
     private val locationRepository: CardReaderLocationRepository = mock()
-    private val developerOptionsRepository: DeveloperOptionsRepository = mock()
+    private val developerOptionsRepository: DeveloperOptionsRepository = mock {
+        on { getUpdateSimulatedReaderOption() } doReturn CardReaderManager.SimulatorUpdateFrequency.RANDOM
+    }
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
         on { getIfExists() }.thenReturn(siteModel)
@@ -116,11 +117,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() = testBlocking {
         viewModel = initVM()
-        whenever(
-            appPrefs.selectedUpdateReaderOption()
-        ).thenReturn(
-            DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions.RANDOM.name
-        )
     }
 
     @Test
@@ -1582,6 +1578,26 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `when back pressed, then should exit the flow`() = testBlocking {
+        init(scanState = SCANNING)
+
+        viewModel.onBackPressed()
+
+        assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
+    }
+
+    @Test
+    fun `given reader initialized, when back pressed, then should disconnect the reader`() = testBlocking {
+        whenever(cardReaderManager.initialized).thenReturn(true)
+
+        init(scanState = SCANNING)
+
+        viewModel.onBackPressed()
+
+        verify(cardReaderManager).disconnectReader()
+    }
 
     private fun initVM(
         cardReaderFlowParam: CardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),

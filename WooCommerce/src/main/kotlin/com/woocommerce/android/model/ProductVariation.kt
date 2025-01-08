@@ -28,6 +28,7 @@ open class ProductVariation(
     open val remoteProductId: Long,
     open val remoteVariationId: Long,
     open val sku: String,
+    open val globalUniqueId: String,
     open val image: Image?,
     open val price: BigDecimal?,
     open val regularPrice: BigDecimal?,
@@ -76,6 +77,7 @@ open class ProductVariation(
             remoteVariationId == variation.remoteVariationId &&
                 remoteProductId == variation.remoteProductId &&
                 sku == variation.sku &&
+                globalUniqueId == variation.globalUniqueId &&
                 image?.id == variation.image?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
@@ -136,6 +138,7 @@ open class ProductVariation(
             it.remoteProductId = remoteProductId
             it.remoteVariationId = remoteVariationId
             it.sku = sku
+            it.globalUniqueId = globalUniqueId
             it.image = imageToJson()
             it.regularPrice = if (regularPrice.isNotSet()) "" else regularPrice.toString()
             it.salePrice = if (salePrice.isNotSet()) "" else salePrice.toString()
@@ -189,6 +192,7 @@ open class ProductVariation(
         remoteProductId: Long = this.remoteProductId,
         remoteVariationId: Long = this.remoteVariationId,
         sku: String = this.sku,
+        globalUniqueId: String = this.globalUniqueId,
         image: Image? = this.image,
         price: BigDecimal? = this.price,
         regularPrice: BigDecimal? = this.regularPrice,
@@ -223,6 +227,7 @@ open class ProductVariation(
             remoteProductId = remoteProductId,
             remoteVariationId = remoteVariationId,
             sku = sku,
+            globalUniqueId = globalUniqueId,
             image = image,
             price = price,
             regularPrice = regularPrice,
@@ -281,6 +286,7 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         remoteProductId = this.remoteProductId,
         remoteVariationId = this.remoteVariationId,
         sku = this.sku,
+        globalUniqueId = this.globalUniqueId,
         image = this.getImageModel()?.let {
             Product.Image(
                 it.id,

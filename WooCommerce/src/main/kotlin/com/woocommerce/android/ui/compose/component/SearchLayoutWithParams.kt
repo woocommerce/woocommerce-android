@@ -59,7 +59,7 @@ fun SearchLayoutWithParams(
                 )
                 .onFocusChanged { isFocused.value = it.isFocused }
                 .focusRequester(focusRequester),
-            keyboardOptions = KeyboardOptions(autoCorrect = false),
+            keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
         )
         if (isFocused.value || state.areSearchTypesAlwaysVisible) {
             if (paramsFillWidth) {

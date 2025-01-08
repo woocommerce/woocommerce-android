@@ -8,6 +8,7 @@ import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsReq
 import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
 import com.woocommerce.android.wear.ui.stats.datasource.StoreStatsData.RevenueData
+import com.woocommerce.android.wear.ui.stats.datasource.StoreStatsData.StatRequest
 import com.woocommerce.commons.MessagePath
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_DATA_REQUESTED_FROM_PHONE
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_DATA_REQUESTED_FROM_STORE
@@ -28,8 +29,8 @@ class FetchStats @Inject constructor(
     private val connectionStatus: ConnectionStatus,
     private val analyticsTracker: AnalyticsTracker
 ) {
-    private val revenueStats = MutableStateFlow<RevenueData?>(null)
-    private val visitorStats = MutableStateFlow<Int?>(null)
+    private val revenueStats = MutableStateFlow<StatRequest<RevenueData>>(StatRequest.Waiting())
+    private val visitorStats = MutableStateFlow<StatRequest<Int>>(StatRequest.Waiting())
 
     suspend operator fun invoke(
         selectedSite: SiteModel
@@ -90,10 +91,10 @@ class FetchStats @Inject constructor(
                         orderCount = totals?.ordersCount ?: 0
                     )
 
-                    revenueStats.value = revenueData
+                    revenueStats.value = StatRequest.Finished(revenueData)
                 },
                 onFailure = {
-                    revenueStats.value = null
+                    revenueStats.value = StatRequest.Error()
                 }
             )
     }
@@ -102,10 +103,10 @@ class FetchStats @Inject constructor(
         statsRepository.fetchVisitorStats(selectedSite)
             .fold(
                 onSuccess = { visitors ->
-                    visitorStats.value = visitors ?: 0
+                    visitorStats.value = StatRequest.Finished(visitors ?: 0)
                 },
                 onFailure = {
-                    visitorStats.value = null
+                    visitorStats.value = StatRequest.Error()
                 }
             )
     }

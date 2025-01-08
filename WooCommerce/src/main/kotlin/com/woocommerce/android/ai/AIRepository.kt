@@ -77,7 +77,11 @@ class AIRepository @Inject constructor(
             feature = PRODUCT_CREATION_FEATURE,
             format = ResponseFormat.JSON,
             maxTokens = 4000 // Specify a higher limit for max_tokens to avoid truncated responses, see pe5sF9-2UY-p2
-        )
+        ).map {
+            // OpenAI sometimes returns the JSON response wrapped in a code block Markdown syntax, we remove it
+            // see: https://community.openai.com/t/why-do-some-responses-message-content-start-with-json/573289
+            it.removePrefix("```json").removeSuffix("```")
+        }
     }
 
     suspend fun generateOrderThankYouNote(

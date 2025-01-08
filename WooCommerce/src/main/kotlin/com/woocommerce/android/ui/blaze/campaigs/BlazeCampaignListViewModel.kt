@@ -7,13 +7,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.NumberExtensionsWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
-import com.woocommerce.android.ui.blaze.BlazeProductUi
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.CampaignStatusUi
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
+import com.woocommerce.android.ui.blaze.toUiState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -26,7 +28,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import javax.inject.Inject
 
@@ -36,10 +37,10 @@ class BlazeCampaignListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val selectedSite: SelectedSite,
-    private val blazeUrlsHelper: BlazeUrlsHelper,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val numberExtensionsWrapper: NumberExtensionsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
@@ -64,7 +65,12 @@ class BlazeCampaignListViewModel @Inject constructor(
         isCampaignCelebrationShown
     ) { campaigns, loadingMore, isBlazeCelebrationScreenShown ->
         BlazeCampaignListState(
-            campaigns = campaigns.map { mapToUiState(it) },
+            campaigns = campaigns.map {
+                ClickableCampaign(
+                    campaignUi = it.toUiState(currencyFormatter, numberExtensionsWrapper),
+                    onCampaignClicked = { onCampaignClicked(it.campaignId) }
+                )
+            },
             onAddNewCampaignClicked = { onAddNewCampaignClicked() },
             isLoading = loadingMore,
             isCampaignCelebrationShown = isBlazeCelebrationScreenShown
@@ -74,6 +80,11 @@ class BlazeCampaignListViewModel @Inject constructor(
     init {
         if (navArgs.isPostCampaignCreation) {
             showCampaignCelebrationIfNeeded()
+        }
+        if (navArgs.campaignId != null) {
+            triggerEvent(
+                ShowCampaignDetails(campaignId = navArgs.campaignId!!)
+            )
         }
         launch {
             loadCampaigns(offset = 0)
@@ -105,44 +116,14 @@ class BlazeCampaignListViewModel @Inject constructor(
     }
 
     private fun onCampaignClicked(campaignId: String) {
-        val url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId)
         analyticsTrackerWrapper.track(
             stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
             properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.CAMPAIGN_LIST.trackingName)
         )
         triggerEvent(
-            ShowCampaignDetails(
-                url = url,
-                urlToTriggerExit = blazeUrlsHelper.buildCampaignsListUrl()
-            )
+            ShowCampaignDetails(campaignId)
         )
     }
-
-    private fun mapToUiState(campaignEntity: BlazeCampaignEntity) =
-        ClickableCampaign(
-            campaignUi = BlazeCampaignUi(
-                product = BlazeProductUi(
-                    name = campaignEntity.title,
-                    imgUrl = campaignEntity.imageUrl.orEmpty(),
-                ),
-                status = CampaignStatusUi.fromString(campaignEntity.uiStatus),
-                stats = listOf(
-                    BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_impressions,
-                        value = campaignEntity.impressions.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_clicks,
-                        value = campaignEntity.clicks.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_budget,
-                        value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
-                    )
-                )
-            ),
-            onCampaignClicked = { onCampaignClicked(campaignEntity.campaignId) }
-        )
 
     private fun onAddNewCampaignClicked() {
         triggerEvent(LaunchBlazeCampaignCreation(BlazeFlowSource.CAMPAIGN_LIST))
@@ -152,6 +133,20 @@ class BlazeCampaignListViewModel @Inject constructor(
         if (!appPrefsWrapper.isBlazeCelebrationScreenShown) {
             isCampaignCelebrationShown.value = true
             appPrefsWrapper.isBlazeCelebrationScreenShown = true
+        }
+    }
+
+    fun onBlazeCampaignWebViewAction(action: BlazeCampaignDetailWebViewViewModel.BlazeAction) {
+        when (action) {
+            CampaignStopped -> launch { loadCampaigns(offset = 0) }
+            is PromoteProductAgain -> triggerEvent(
+                LaunchBlazeCampaignCreationForProduct(
+                    productId = action.productId,
+                    source = BlazeFlowSource.CAMPAIGN_LIST
+                )
+            )
+
+            None -> Unit // Do nothing
         }
     }
 
@@ -168,8 +163,10 @@ class BlazeCampaignListViewModel @Inject constructor(
     )
 
     data class LaunchBlazeCampaignCreation(val source: BlazeFlowSource) : Event()
-    data class ShowCampaignDetails(
-        val url: String,
-        val urlToTriggerExit: String
+    data class LaunchBlazeCampaignCreationForProduct(
+        val productId: Long?,
+        val source: BlazeFlowSource,
     ) : Event()
+
+    data class ShowCampaignDetails(val campaignId: String) : Event()
 }

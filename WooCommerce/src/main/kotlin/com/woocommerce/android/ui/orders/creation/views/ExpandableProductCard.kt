@@ -7,8 +7,8 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -108,7 +108,7 @@ fun ExpandableProductCard(
     val transitionState = remember {
         MutableTransitionState(isExpanded).apply { targetState = !isExpanded }
     }
-    val transition = updateTransition(transitionState, "expandableProductCard")
+    val transition = rememberTransition(transitionState, "expandableProductCard")
     val chevronRotation by transition.animateFloat(
         transitionSpec = { tween(durationMillis = ANIM_DURATION_MILLIS) },
         label = "chevronRotation"

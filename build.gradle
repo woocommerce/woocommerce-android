@@ -3,26 +3,62 @@ import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id 'io.gitlab.arturbosch.detekt'
-    id 'com.automattic.android.measure-builds'
-    id "com.autonomousapps.dependency-analysis"
-    id 'com.android.application' apply false
-    id 'org.jetbrains.kotlin.android' apply false
-    id 'com.google.dagger.hilt.android' apply false
-    id 'androidx.navigation.safeargs.kotlin' apply false
-    id 'com.google.gms.google-services' apply false
-    id 'com.google.devtools.ksp' apply false
+    alias(libs.plugins.detekt)
+    alias(libs.plugins.automattic.measure.builds)
+    alias(libs.plugins.dependency.analysis)
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.test) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose).apply(false)
+    alias(libs.plugins.kotlin.parcelize) apply false
+    alias(libs.plugins.google.dagger.hilt) apply false
+    alias(libs.plugins.androidx.navigation.safeargs) apply false
+    alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.ksp) apply false
+}
+
+ext {
+    secretProperties = loadPropertiesWithFallback(
+            logger,
+            file("${rootDir}/defaults.properties"),
+            file("${System.getProperty("user.home")}/.configure/woocommerce-android/secrets/secrets.properties")
+    )
+    userEnabledTracking = secretProperties.get('measureBuildsEnabled')?.toBoolean() ?: false
+
+    developerProperties = loadPropertiesWithFallback(
+            logger,
+            file("${rootDir}/developer.properties-example"),
+            file("${rootDir}/developer.properties")
+    )
 }
 
 measureBuilds {
-    enable = findProperty('tracksEnabled')?.toBoolean() ?: false
+    enable = userEnabledTracking
     automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
     attachGradleScanId = true
-    authToken = findProperty('appsMetricsToken')
+    authToken = secretProperties.get('appsMetricsToken')
+}
+
+static def loadPropertiesWithFallback(Logger logger, File fallbackFile, File primaryFile) {
+    if (primaryFile.exists()) {
+        return readPropertiesFromFile(primaryFile)
+    } else {
+        logger.warn("Primary properties file not found: ${primaryFile}. Using fallback: ${fallbackFile}.")
+        return readPropertiesFromFile(fallbackFile)
+    }
+}
+
+static def readPropertiesFromFile(File file) {
+    def properties = new Properties()
+    file.withInputStream { stream ->
+        properties.load(stream)
+    }
+    return properties
 }
 
 allprojects {
-    apply plugin: 'io.gitlab.arturbosch.detekt'
+    apply plugin: libs.plugins.detekt.get().pluginId
 
     repositories {
         google()
@@ -31,7 +67,7 @@ allprojects {
 
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_1_8
+            jvmTarget = libs.versions.java.get()
             allWarningsAsErrors = true
             freeCompilerArgs += [
                     "-opt-in=kotlin.RequiresOptIn",
@@ -47,7 +83,7 @@ subprojects {
     }
 }
 
-def detektAll = tasks.register("detektAll", Detekt) {
+tasks.register("detektAll", Detekt) {
     description = "Custom DETEKT build for all modules"
     parallel = true
     ignoreFailures = false
@@ -65,27 +101,12 @@ def detektAll = tasks.register("detektAll", Detekt) {
     }
 }
 
-def detektAutoCorrectPrompt = tasks.register("detektAutoCorrectPrompt") {
-    doLast {
-        def detektTask = detektAll.get()
-        if (detektTask.state.failure != null && !detektTask.autoCorrect) {
-            println ".-----------------------------------------------------------------------------------------------------------------------------------.\n" +
-                    "| 🛠  Did you know: you can ask Detekt to automatically resolve some of the issues by running `./gradlew detektAll --auto-correct` |\n" +
-                    "'-----------------------------------------------------------------------------------------------------------------------------------'"
-        }
-    }
-}
-
-detektAll.configure {
-    finalizedBy detektAutoCorrectPrompt
-}
-
 dependencies {
-    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$gradle.ext.detektVersion"
+    detektPlugins(libs.detekt.formatting)
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }
 
 /**
@@ -97,126 +118,6 @@ tasks.register("installGitHooks", Copy) {
     from new File(rootProject.rootDir, 'tools/team-props/git-hooks')
     into { new File(rootProject.rootDir, '.git/hooks') }
     fileMode 0777
-}
-
-ext {
-    fluxCVersion = '2.93.1'
-    glideVersion = '4.16.0'
-    coilVersion = '2.1.0'
-    constraintLayoutVersion = '1.2.0'
-    libaddressinputVersion = '0.0.2'
-    eventBusVersion = '3.3.1'
-    googlePlayCoreVersion = '1.10.3'
-    googlePlayWearableVersion = '18.1.0'
-    coroutinesVersion = '1.8.1'
-    lifecycleVersion = '2.7.0'
-    aztecVersion = 'v2.1.4'
-    flipperVersion = '0.176.1'
-    stateMachineVersion = '0.2.0'
-    coreKtxVersion = '1.13.1'
-    appCompatVersion = '1.4.2'
-    materialVersion = '1.12.0'
-    transitionVersion = '1.5.1'
-    hiltJetpackVersion = '1.1.0'
-    wordPressUtilsVersion = '3.5.0'
-    mediapickerVersion = '0.3.1'
-    wordPressLoginVersion = '1.18.0'
-    aboutAutomatticVersion = '0.0.6'
-    automatticTracksVersion = '5.0.0'
-    workManagerVersion = '2.7.1'
-    billingVersion = '5.0.0'
-    stripeTerminalVersion = '3.7.1'
-    mlkitBarcodeScanningVersion = '17.2.0'
-    mlkitTextRecognitionVersion = '16.0.0'
-    androidxCameraVersion = '1.2.3'
-    guavaVersion = '33.1.0-android'
-    protobufVersion = '3.25.3'
-    gravatarVersion = '0.2.0'
-    wearHorologistVersion = '0.6.10'
-
-    // Apache
-    commonsText = '1.10.0'
-    commonsIO = '2.11.0'
-    httpClientAndroidVersion = '4.3.5.1'
-
-    // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
-    composeBOMVersion = "2024.04.00"
-    composeCompilerVersion = "1.5.9"
-    composeAccompanistVersion = "0.32.0"
-    wearComposeVersion = "1.3.1"
-
-    // Testing
-    jUnitVersion = '4.13.2'
-    jUnitExtVersion = '1.1.5'
-    androidxTestCoreVersion = '1.4.0'
-    assertjVersion = '3.24.1'
-    espressoVersion = '3.4.0'
-    mockitoKotlinVersion = '4.0.0'
-    mockitoVersion = '4.6.1'
-}
-
-// Onboarding and dev env setup tasks
-task checkBundler(type: Exec) {
-    doFirst {
-        println "Check Bundler"
-    }
-
-    workingDir = './'
-    executable "sh"
-    args "-c", "if ! type 'bundle' > /dev/null; then gem install bundler; fi"
-
-    //store the output instead of printing to the console:
-    standardOutput = new ByteArrayOutputStream()
-
-    //extension method checkBundler.output() can be used to obtain the output:
-    ext.output = {
-        return standardOutput.toString()
-    }
-}
-
-task checkBundle(type: Exec, dependsOn: checkBundler) {
-    doFirst {
-        println "Check Bundle"
-    }
-
-    workingDir = './'
-    executable "sh"
-    args "-c", "bundle check --path=\${BUNDLE_PATH:-vendor/bundle} > /dev/null || bundle install --jobs=3 --retry=3 --path=\${BUNDLE_PATH:-vendor/bundle}"
-
-    //store the output instead of printing to the console:
-    standardOutput = new ByteArrayOutputStream()
-
-    //extension method checkBundle.output() can be used to obtain the output:
-    ext.output = {
-        return standardOutput.toString()
-    }
-}
-
-task applyCredentials(type: Exec, dependsOn: checkBundle) {
-    doFirst {
-        println "Apply credentials for this branch"
-    }
-
-    workingDir = './'
-    executable "sh"
-    args "-c", "FASTLANE_SKIP_UPDATE_CHECK=1 FASTLANE_ENV_PRINTER=1 bundle exec fastlane run configure_apply force:true"
-
-    //store the output instead of printing to the console:
-    standardOutput = new ByteArrayOutputStream()
-
-    //extension method checkBundle.output() can be used to obtain the output:
-    ext.output = {
-        return standardOutput.toString()
-    }
-}
-
-tasks.register("configureApply") {
-    group = 'Onboarding'
-    description = 'Install dependencies for debug and production builds'
-    dependsOn applyCredentials
-    doLast {
-        println("Done")
-    }
 }
 
 apply from: './config/gradle/jacoco.gradle'

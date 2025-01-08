@@ -146,6 +146,9 @@
         <argument
             android:name="isAccountPasswordless"
             app:argType="boolean" />
+        <argument
+            android:name="isNewWpComAccount"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationMagicLinkHandlerFragment"

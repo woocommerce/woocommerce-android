@@ -6,19 +6,29 @@ import javax.inject.Inject
 
 class VariationListHandler @Inject constructor(private val repository: VariationSelectorRepository) {
     companion object {
-        private const val PAGE_SIZE = 10
+        private const val PAGE_SIZE = 25
     }
 
     private val mutex = Mutex()
     private var offset = 0
-    private var canLoadMore = true
+    private var canLoadMore = false
 
     fun getVariationsFlow(productId: Long) = repository.observeVariations(productId)
+
+    suspend fun resetState() {
+        mutex.withLock {
+            offset = 0
+            canLoadMore = false
+        }
+    }
+
+    fun canLoadMore(numOfVariations: Int): Boolean {
+        return canLoadMore || (offset + PAGE_SIZE < numOfVariations)
+    }
 
     suspend fun fetchVariations(productId: Long, forceRefresh: Boolean = false): Result<Unit> = mutex.withLock {
         // Reset the offset
         offset = 0
-        canLoadMore = true
 
         if (forceRefresh) {
             loadVariations(productId)

@@ -26,6 +26,10 @@ class OrderDetailTracker @Inject constructor(
         )
     }
 
+    fun trackOrderAndStoreCurrencyMismatchWhenEditButtonTapped() {
+        trackerWrapper.track(AnalyticsEvent.ORDER_EDIT_BUTTON_TAPPED_WHILE_DISABLED_FOR_CURRENCY_CONFLICT)
+    }
+
     suspend fun trackReceiptViewTapped(orderId: Long, orderStatus: Order.Status) {
         paymentsFlowTracker.trackReceiptViewTapped(
             mapOf(

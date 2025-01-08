@@ -35,7 +35,7 @@ private fun createAppPendingIntent(context: Context): PendingIntent {
 }
 
 private fun createIcon(context: Context) = MonochromaticImage.Builder(
-    Icon.createWithResource(context, R.drawable.img_woo_bubble_white),
+    Icon.createWithResource(context, R.drawable.img_woo_bubble_monochrome),
 ).build()
 
 private fun String.toComplicationText() = PlainComplicationText.Builder(this).build()

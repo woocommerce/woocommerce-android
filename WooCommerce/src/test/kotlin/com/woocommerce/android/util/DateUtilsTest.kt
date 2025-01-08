@@ -152,9 +152,9 @@ class DateUtilsTest {
         assertNull(dateUtilsUnderTest.getShortHourString("Dec 30 2018"))
 
         // Test for invalid value handling
-        assertNull(dateUtilsUnderTest.getShortHourString("2019-12-31"))
+        assertNull(dateUtilsUnderTest.getShortHourString("invalid-format"))
 
-        assertNull(dateUtilsUnderTest.getShortHourString("-07-41"))
+        assertNull(dateUtilsUnderTest.getShortHourString("-/-07-41"))
 
         assertNull(dateUtilsUnderTest.getShortHourString(""))
 
@@ -497,9 +497,17 @@ class DateUtilsTest {
     }
 
     @Test
-    fun `getFriendlyDayHourString() with an invalid date format returns null and track the error`() {
+    fun `getFriendlyDayHourString() with a recoverable date format returns a valid format`() {
         // when the string date is invalid returns null
         val stringDate = "2023-12-27"
+        val result = dateUtilsUnderTest.getFriendlyDayHourString(stringDate)
+        assertThat(result).isNotNull()
+    }
+
+    @Test
+    fun `getFriendlyDayHourString() with an invalid date format returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "invalid-format"
         assertEquals(dateUtilsUnderTest.getFriendlyDayHourString(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(
@@ -599,9 +607,17 @@ class DateUtilsTest {
     }
 
     @Test
-    fun `getDayString() with an invalid date format returns null and track the error`() {
+    fun `getDayString() with a recoverable date format returns a valid format`() {
         // when the string date is invalid returns null
         val stringDate = "2023-12"
+        val result = dateUtilsUnderTest.getDayString(stringDate)
+        assertThat(result).isNotNull()
+    }
+
+    @Test
+    fun `getDayString() with an invalid date format returns null and track the error`() {
+        // when the string date is invalid returns null
+        val stringDate = "invalid-format"
         assertEquals(dateUtilsUnderTest.getDayString(stringDate), null)
         // and the exception is tracked
         verify(crashLogger).sendReport(

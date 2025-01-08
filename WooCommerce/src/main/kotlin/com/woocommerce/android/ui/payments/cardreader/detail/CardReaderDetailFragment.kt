@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.cardreader.detail
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -17,6 +18,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.setDrawableColor
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.CopyReadersNameToClipboard
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.CardReaderDetailEvent.NavigateToUrlInGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.NavigationTarget.CardReaderConnectScreen
@@ -41,14 +43,29 @@ private const val HIT_AREA_EXPANSION_DP = 16
 class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_detail) {
     val viewModel: CardReaderDetailViewModel by viewModels()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val binding = FragmentCardReaderDetailBinding.bind(view)
+        setupToolbar(binding)
 
         observeEvents(binding)
         observeViewState(binding)
         initResultHandlers()
+    }
+
+    private fun setupToolbar(binding: FragmentCardReaderDetailBinding) {
+        binding.toolbar.title = resources.getString(R.string.payments_hub_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun observeEvents(binding: FragmentCardReaderDetailBinding) {

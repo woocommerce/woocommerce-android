@@ -13,9 +13,9 @@ MOBILE_APP = 'WooCommerce'
 WEAR_APP = 'WooCommerce-Wear'
 
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
-BUILD_GRADLE_PATH = File.join(PROJECT_ROOT_FOLDER, 'build.gradle')
+VERSIONS_CATALOG_FILE = File.join(PROJECT_ROOT_FOLDER, 'gradle/libs.versions.toml')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
-PROTOTYPE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
+PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 # The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
 # add `PROJECT_ROOT_FOLDER` to the beginning of this path
 RES_DIR_PATH = File.join('WooCommerce', 'src', 'main', 'res')
@@ -35,6 +35,7 @@ METADATA_SOURCE_CHANGELOG_FILE_PATH = {
   WEAR_APP => File.join(METADATA_SOURCE_DIR_PATH[WEAR_APP], 'changelogs', 'default.txt')
 }.freeze
 DEV_RELEASE_NOTES_PATH = File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt')
+BUILDKITE_RELEASE_PIPELINE = 'release-builds.yml'
 RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
 RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
 PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'promo_screenshots')
@@ -42,14 +43,14 @@ FROZEN_STRINGS_PATH = File.join(Dir.pwd, 'resources', 'values', 'strings.xml')
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
     name: 'Login Library',
-    import_key: 'wordPressLoginVersion',
+    import_key: 'wordpress-login',
     repository: 'wordpress-mobile/WordPress-Login-Flow-Android',
     strings_file_path: 'WordPressLoginFlow/src/main/res/values/strings.xml',
     exclusions: ['default_web_client_id']
   },
   {
     name: 'About Library',
-    import_key: 'aboutAutomatticVersion', # key used in build.gradle to reference the version
+    import_key: 'automattic-about', # key used in libs.versions.toml file to reference the version
     repository: 'Automattic/about-automattic-android',
     strings_file_path: 'library/src/main/res/values/strings.xml',
     exclusions: []
@@ -208,7 +209,7 @@ platform :android do
                          + moved_prs.map { |pr_num| "[##{pr_num}](https://github.com/#{GITHUB_REPO}/pull/#{pr_num})" }.join(', ')
                      end
 
-    buildkite_annotate(style: moved_prs.empty? ? 'success' : 'warning', context: 'start-code-freeze-wcios', message: moved_prs_info) if is_ci
+    buildkite_annotate(style: moved_prs.empty? ? 'success' : 'warning', context: 'start-code-freeze', message: moved_prs_info) if is_ci
   end
 
   # This lane executes the last steps planned on code freeze, creating a new release branch from the current trunk
@@ -505,6 +506,52 @@ platform :android do
     end
   end
 
+  # This lane publishes a release on GitHub and creates a PR to backmerge the current release branch into the next release/ branch
+  #
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
+  #
+  # @example Running the lane
+  #          bundle exec fastlane publish_release skip_confirm:true include_wear_app:true
+  #
+  lane :publish_release do |skip_confirm: false, include_wear_app: false|
+    ensure_git_status_clean
+    ensure_git_branch_is_release_branch!
+
+    version_number = release_version_current
+
+    current_branch = "release/#{version_number}"
+    next_release_branch = "release/#{release_version_next}"
+
+    UI.important <<~PROMPT
+      Publish the #{version_number} release. This will:
+      - Publish the existing draft `#{version_number}` release on GitHub
+      - Which will also have GitHub create the associated git tag, pointing to the tip of the branch
+      - If the release branch for the next version `#{next_release_branch}` already exists, backmerge `#{current_branch}` into it
+      - If needed, backmerge `#{current_branch}` back into `#{DEFAULT_BRANCH}`
+      - Delete the `#{current_branch}` branch
+    PROMPT
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
+
+    UI.important "Publishing release #{version_number} on GitHub"
+
+    apps = [MOBILE_APP]
+    apps << WEAR_APP if include_wear_app
+    apps.each do |app|
+      publish_github_release(
+        repository: GITHUB_REPO,
+        name: app == WEAR_APP ? "#{version_number}w" : version_number
+      )
+    end
+
+    create_backmerge_pr
+
+    # At this point, an intermediate branch has been created by creating a backmerge PR to a hotfix or the next version release branch.
+    # This allows us to safely delete the `release/*` branch.
+    # Note that if a hotfix or new release branches haven't been created, the backmerge PR won't be created as well.
+    delete_remote_git_branch!(current_branch)
+  end
+
   lane :check_translation_progress_all do
     check_translation_progress_strings
     check_translation_progress_release_notes
@@ -652,10 +699,11 @@ platform :android do
       json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
-    create_gh_release(app: app, version: version, prerelease: true) if options[:create_release]
+    create_gh_release(app: app, version: version, beta_release: true) if options[:create_release]
   end
 
-  # This lane triggers a stable release build on CI.
+  # This lane triggers a stable release build on CI. If the lane is run locally, it will trigger a build on Buildkite CI.
+  # If the lane is run on CI, it will directly start the release pipeline jobs within the same build.
   #
   # @param [String] branch_to_build The git branch the CI build should run on. Defaults to the current branch at the time of calling the lane.
   # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
@@ -663,19 +711,29 @@ platform :android do
   # @example Running the lane
   #          bundle exec fastlane trigger_release_build branch_to_build:main include_wear_app:true
   #
-  lane :trigger_release_build do |branch_to_build: nil, include_wear_app: false|
-    branch = branch_to_build || git_branch
+  lane :trigger_release_build do |branch_to_build: git_branch, include_wear_app: false|
+    environment = {
+      INCLUDE_WEAR_APP: include_wear_app,
+      RELEASE_VERSION: release_version_current
+    }
 
-    build_url = buildkite_trigger_build(
-      buildkite_organization: 'automattic',
-      buildkite_pipeline: 'woocommerce-android',
-      branch: branch,
-      pipeline_file: 'release-builds.yml',
-      environment: { INCLUDE_WEAR_APP: include_wear_app }
-    )
+    # If we're running on CI, we can directly start the release pipeline jobs within the same build
+    if is_ci
+      buildkite_pipeline_upload(
+        pipeline_file: BUILDKITE_RELEASE_PIPELINE,
+        environment: environment
+      )
+    else
+      build_url = buildkite_trigger_build(
+        buildkite_organization: 'automattic',
+        buildkite_pipeline: 'woocommerce-android',
+        branch: branch_to_build,
+        pipeline_file: BUILDKITE_RELEASE_PIPELINE,
+        environment: environment
+      )
 
-    message = "This build triggered a release build on <code>#{branch}</code>:<br>- #{build_url}"
-    buildkite_annotate(style: 'info', context: 'trigger-release-build', message: message) if is_ci
+      UI.success("Release build triggered on #{branch_to_build}: #{build_url}")
+    end
   end
 
   #####################################################################################
@@ -694,7 +752,7 @@ platform :android do
         import_key: lib[:import_key],
         repository: lib[:repository],
         file_path: lib[:strings_file_path],
-        build_gradle_path: BUILD_GRADLE_PATH
+        build_gradle_path: VERSIONS_CATALOG_FILE
       )
 
       if download_path.nil?
@@ -848,7 +906,7 @@ platform :android do
       app_package_name: APP_PACKAGE_NAME,
       app_apk_path: 'WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk',
       tests_apk_path: 'WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk',
-      use_tests_in_classes: "#{APP_PACKAGE_NAME}.screenshots.ScreenshotTest",
+      use_tests_in_classes: "#{APP_PACKAGE_NAME}.e2e.tests.screenshot.ScreenshotTest",
       reinstall_app: false,
       # By default, don't clear previous because we differentiate between light
       # and dark mode
@@ -1059,17 +1117,16 @@ platform :android do
   # Private lanes
   #####################################################################################
 
-  # Creates a new GitHub Release for the given version. The name (and tag) of the release will be exactly as
-  # the `version` parameter, with a `w` appended in the case of a Wear OS app.
+  # Creates a new GitHub Release for the given version.
   #
-  # @param [String] app The Android app to create the release for (`MOBILE_APP` or `WEAR_APP`)
-  # @param [String] version The version of the app, as in the `versionName` property from `version.properties`.
-  # @param [Boolean] prerelease If true, the GitHub Release will have the prerelease flag
+  # The name (and tag) of the release will be exactly as the `version` parameter, with a `w` appended in the case of a Wear OS app.
   #
-  # @example Running the lane
-  #          bundle exec fastlane create_gh_release app:WEAR_APP version:1.0.0 prerelease:true
+  # @param app [String] The Android app to create the release for (`MOBILE_APP` or `WEAR_APP`)
+  # @param version [String] The version of the app, as in the `versionName` property from `version.properties`.
+  # @param beta_release [Boolean] If true, the GitHub Release will have the prerelease flag and be submitted immediately.
+  #                               If false, the GitHub Release will be created as Draft, without the prerelease flag.
   #
-  private_lane :create_gh_release do |app:, version:, prerelease: false|
+  private_lane :create_gh_release do |app:, version: version_name_current, beta_release: false|
     validate_app_param!(app)
 
     universal_apk_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(app, version))
@@ -1087,12 +1144,13 @@ platform :android do
     aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(app, version))
     release_assets = [universal_apk_path, aab_file_path].compact
 
-    create_release(
+    create_github_release(
       repository: GITHUB_REPO,
       # 'version' is used for the release name as well as the tag that's going to be created for the release
       version: app == WEAR_APP ? "#{version}w" : version,
       release_notes_file_path: METADATA_SOURCE_CHANGELOG_FILE_PATH[app],
-      prerelease: prerelease,
+      prerelease: beta_release, # Beta = Prerelease, Final = normal Release
+      is_draft: !beta_release, # Beta = publish immediately, Final = Draft (only publish manually after Google approval)
       release_assets: release_assets.join(',')
     )
   end
@@ -1288,8 +1346,11 @@ def create_backmerge_pr
   )
 rescue StandardError => e
   error_message = <<-MESSAGE
-    Error creating backmerge pull request: #{e.message}
-    - If this is not the first time you are running the release task, the backmerge PR for the version `#{version}` might have already been previously created.
+    Error creating backmerge pull request:
+
+    #{e.message}
+
+    If this is not the first time you are running the release task, the backmerge PR for the version `#{version}` might have already been previously created.
     Please close any previous backmerge PR for `#{version}`, delete the previous merge branch, then run the release task again.
   MESSAGE
 
@@ -1312,6 +1373,14 @@ def ensure_branch_does_not_exist!(branch_name)
   buildkite_annotate(style: 'error', context: 'error-checking-branch', message: error_message) if is_ci
 
   UI.user_error!(error_message)
+end
+
+# Delete a branch remotely, after having removed any GitHub branch protection
+#
+def delete_remote_git_branch!(branch_name)
+  remove_branch_protection(repository: GITHUB_REPO, branch: branch_name)
+
+  Git.open(Dir.pwd).push('origin', branch_name, delete: true)
 end
 
 def report_milestone_error(error_title:)

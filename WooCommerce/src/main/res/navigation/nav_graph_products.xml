@@ -4,6 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_products"
     app:startDestination="@+id/productDetailFragment">
+
+    <include app:graph="@navigation/nav_graph_add_product_category" />
+    <include app:graph="@navigation/nav_graph_product_settings" />
+    <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
+    <include app:graph="@navigation/nav_graph_custom_fields" />
+    <include app:graph="@navigation/nav_graph_image_gallery" />
+
     <fragment
         android:id="@+id/productDetailFragment"
         android:name="com.woocommerce.android.ui.products.details.ProductDetailFragment"
@@ -132,6 +139,17 @@
         <action
             android:id="@+id/action_productDetailFragment_to_AIProductCreationSurveyBottomSheet"
             app:destination="@id/AIProductCreationSurveyBottomSheet" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_customFields"
+            app:destination="@id/nav_graph_custom_fields" >
+            <argument
+                android:name="parentItemId"
+                app:argType="long" />
+            <argument
+                android:name="parentItemType"
+                app:argType="org.wordpress.android.fluxc.model.metadata.MetaDataParentItemType"
+                android:defaultValue="PRODUCT" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/variationListFragment"
@@ -533,10 +551,6 @@
             app:argType="long" />
     </fragment>
 
-    <include app:graph="@navigation/nav_graph_add_product_category" />
-    <include app:graph="@navigation/nav_graph_product_settings" />
-    <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
-
     <action
         android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
         app:destination="@id/nav_graph_product_settings" />
@@ -689,7 +703,6 @@
     <action
         android:id="@+id/action_global_addVariationAttributeTermsFragment"
         app:destination="@id/addAttributeTermsFragment" />
-    <include app:graph="@navigation/nav_graph_image_gallery" />
     <fragment
         android:id="@+id/productSubscriptionExpirationFragment"
         android:name="com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionExpirationFragment"

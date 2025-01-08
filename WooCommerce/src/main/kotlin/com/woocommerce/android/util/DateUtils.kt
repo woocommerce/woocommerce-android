@@ -47,6 +47,27 @@ class DateUtils @Inject constructor(
     private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     /**
+     * Given an ISO8601 date of volatile format,
+     * parses a possible Date String given it matches one of the most common formats.
+     *
+     * The formats included in this list are the ones we observed as error sources in the app.
+     *
+     * return null if the argument is not a known iso8601 date string.
+     */
+    fun findMatchingDatePattern(dateString: String) = listOf(
+        "yyyy-MM",
+        "yyyy-MM-dd",
+        "dd MMM yyyy",
+        "yyyy-MM-dd HH",
+        "yyyy-MM-dd'T'HH:mm:ss",
+        "yyyy-MM-dd'T'HH:mm:ss'Z'"
+    ).firstNotNullOfOrNull {
+        runCatching {
+            SimpleDateFormat(it, locale).parse(dateString)
+        }.getOrNull()
+    }
+
+    /**
      * Given an ISO8601 date of format YYYY-MM-DD, returns the number of days in the given month.
      *
      * return null if the argument is not a valid iso8601 date string.
@@ -253,8 +274,11 @@ class DateUtils @Inject constructor(
             val date = originalFormat.parse(iso8601Date)
             targetFormat.format(date!!).lowercase(locale).trimStart('0')
         } catch (e: Exception) {
-            "Date string argument is not of format yyyy-MM-dd H: $iso8601Date".reportAsError(e)
-            return null
+            findMatchingDatePattern(iso8601Date)
+                ?.formatToYYYYmmDD()
+                .also {
+                    if (it == null) "Date string argument is not of format yyyy-MM-dd H: $iso8601Date".reportAsError(e)
+                }
         }
     }
 
@@ -272,8 +296,11 @@ class DateUtils @Inject constructor(
             val date = originalFormat.parse(iso8601Date)
             targetFormat.format(date!!)
         } catch (e: Exception) {
-            "Date string argument is not of format yyyy-MM-dd: $iso8601Date".reportAsError(e)
-            return null
+            findMatchingDatePattern(iso8601Date)
+                ?.formatToYYYYmmDD()
+                .also {
+                    if (it == null) "Date string argument is not of format yyyy-MM-dd: $iso8601Date".reportAsError(e)
+                }
         }
     }
 
@@ -290,8 +317,11 @@ class DateUtils @Inject constructor(
             val date = originalFormat.parse(iso8601Date)
             date!!.formatToEEEEMMMddhha(locale)
         } catch (e: Exception) {
-            "Date string argument is not of format yyyy-MM-dd HH: $iso8601Date".reportAsError(e)
-            return null
+            findMatchingDatePattern(iso8601Date)
+                ?.formatToEEEEMMMddhha(locale)
+                .also {
+                    if (it == null) "Date string argument is not of format yyyy-MM-dd HH: $iso8601Date".reportAsError(e)
+                }
         }
     }
 
@@ -385,8 +415,11 @@ class DateUtils @Inject constructor(
             val date = dateFormat.parse(dateString) ?: Date()
             date.formatToYYYYmmDD()
         } catch (e: Exception) {
-            "Date string argument is not of format MMM dd, yyyy: $dateString".reportAsError(e)
-            return null
+            findMatchingDatePattern(dateString)
+                ?.formatToYYYYmmDD()
+                .also {
+                    if (it == null) "Date string argument is not of format MMM dd, yyyy: $dateString".reportAsError(e)
+                }
         }
     }
 
@@ -497,8 +530,8 @@ class DateUtils @Inject constructor(
             val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale)
             formatter.parse(isoStringDate)
         } catch (e: Exception) {
-            "Date string argument is not a valid format".reportAsError(e)
-            null
+            findMatchingDatePattern(isoStringDate)
+                .also { if (it == null) "Date string argument is not a valid format".reportAsError(e) }
         }
     }
 

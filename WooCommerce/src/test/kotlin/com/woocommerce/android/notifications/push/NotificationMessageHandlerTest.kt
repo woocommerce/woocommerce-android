@@ -15,6 +15,11 @@ import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLogWrapper
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -38,6 +43,7 @@ import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class NotificationMessageHandlerTest {
     private lateinit var notificationMessageHandler: NotificationMessageHandler
 
@@ -455,6 +461,31 @@ class NotificationMessageHandlerTest {
             summaryText = eq(summary),
             notification = eq(orderNotification)
         )
+    }
+
+    @Test
+    fun `remove notifications concurrently without throwing ConcurrentModificationException`() {
+        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
+        val notificationsCount = 100
+        repeat(notificationsCount) {
+            notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+        }
+
+        runTest {
+            repeat(50) {
+                launch(Dispatchers.Default) {
+                    notificationMessageHandler.removeNotificationByNotificationIdFromSystemsBar(0)
+                }
+            }
+
+            repeat(50) {
+                launch(Dispatchers.Default) {
+                    notificationMessageHandler.removeNotificationByNotificationIdFromSystemsBar(0)
+                }
+            }
+
+            advanceUntilIdle()
+        }
     }
 
     @Test

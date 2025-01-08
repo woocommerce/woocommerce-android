@@ -30,7 +30,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 @Composable
 fun WooPosErrorScreen(
     modifier: Modifier = Modifier,
-    icon: Painter = painterResource(id = R.drawable.woo_pos_ic_error),
+    icon: Painter = painterResource(id = R.drawable.ic_woo_pos_error),
     message: String,
     reason: String,
     primaryButton: Button? = null,

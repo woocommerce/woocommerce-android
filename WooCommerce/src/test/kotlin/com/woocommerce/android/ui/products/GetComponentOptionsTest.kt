@@ -75,11 +75,11 @@ class GetComponentOptionsTest : BaseUnitTest() {
             defaultOptionId = defaultId
         )
         whenever(getProductsByIds(component.queryIds)).doReturn(emptyList())
-        whenever(productRepository.fetchProductOrLoadFromCache(defaultId)).doReturn(sampleProduct)
+        whenever(productRepository.fetchAndGetProduct(defaultId)).doReturn(sampleProduct)
 
         val result = sut.invoke(component)
 
-        verify(productRepository).fetchProductOrLoadFromCache(defaultId)
+        verify(productRepository).fetchAndGetProduct(defaultId)
         assertThat(result.default).isEqualTo(defaultName)
     }
 

@@ -1,11 +1,11 @@
 {
   "project_name": "woocommerce-android",
   "branch": "trunk",
-  "pinned_hash": "126ffacbbfc7abf1f4bf14670d72418846f04673",
+  "pinned_hash": "50ebed193db7cab11a2d299fdd478b7600055cbf",
   "files_to_copy": [
     {
-      "file": "android/WCAndroid/gradle.properties",
-      "destination": "gradle.properties",
+      "file": "android/WCAndroid/secrets.properties",
+      "destination": "~/.configure/woocommerce-android/secrets/secrets.properties",
       "encrypt": true
     },
     {
@@ -17,11 +17,6 @@
       "file": "android/WCAndroid/sentry.properties",
       "destination": "sentry.properties",
       "encrypt": true
-    },
-    {
-      "file": "android/automattic.jks",
-      "destination": "WooCommerce/release.jks",
-      "encrypt": false
     },
     {
       "file": "android/debug.keystore",
@@ -44,7 +39,5 @@
       "encrypt": true
     }
   ],
-  "file_dependencies": [
-
-  ]
+  "file_dependencies": []
 }

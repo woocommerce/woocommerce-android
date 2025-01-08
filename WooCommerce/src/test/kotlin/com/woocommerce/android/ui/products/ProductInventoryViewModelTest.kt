@@ -35,6 +35,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     private val initialData = InventoryData(
         "SKU123",
+        globalUniqueId = "123-456",
         isStockManaged = false,
         isSoldIndividually = false,
         stockStatus = InStock,
@@ -44,6 +45,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     private val initialDataWithNonWholeDecimalQuantity = InventoryData(
         "SKU123",
+        globalUniqueId = "123-456",
         isStockManaged = true,
         isSoldIndividually = false,
         stockStatus = InStock,
@@ -53,6 +55,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
     private val expectedData = InventoryData(
         "SKU321",
+        globalUniqueId = "123-456",
         isStockManaged = true,
         isSoldIndividually = true,
         stockStatus = OutOfStock,
@@ -98,6 +101,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
             viewModel.onDataChanged(
                 expectedData.sku,
+                expectedData.globalUniqueId,
                 expectedData.backorderStatus,
                 expectedData.isSoldIndividually,
                 expectedData.isStockManaged,
@@ -131,6 +135,27 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `Test that an error is shown if the global unique id contains characters other than numbers and hyphens`() =
+        testBlocking {
+            val invalidGlobalUniqueId = "invalid"
+            val validGlobalUniqueId = "123-456"
+            var actual: ViewState? = null
+            viewModel.viewStateData.observeForever { _, new ->
+                actual = new
+            }
+
+            viewModel.onProductUniqueGlobalIdChanged(invalidGlobalUniqueId)
+
+            assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo(invalidGlobalUniqueId)
+            assertThat(actual?.globalUniqueIdErrorMessage)
+                .isEqualTo(string.product_inventory_update_global_unique_id_error)
+
+            viewModel.onProductUniqueGlobalIdChanged(validGlobalUniqueId)
+
+            assertThat(actual?.inventoryData?.globalUniqueId).isEqualTo(validGlobalUniqueId)
+            assertThat(actual?.globalUniqueIdErrorMessage).isEqualTo(0)
+        }
+
     fun `Test that a discard dialog isn't shown if no data changed`() =
         testBlocking {
             val events = mutableListOf<Event>()
@@ -156,6 +181,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
 
         viewModel.onDataChanged(
             expectedData.sku,
+            expectedData.globalUniqueId,
             expectedData.backorderStatus,
             expectedData.isSoldIndividually,
             expectedData.isStockManaged,
@@ -232,6 +258,18 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         verify(analyticsTracker).track(
             AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+        )
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was a change on the product global unique id`() {
+        // when
+        viewModel.onProductUniqueGlobalIdChanged("1234")
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_GLOBAL_UNIQUE_IDENTIFIER_FIELD_EDITED
         )
     }
 }

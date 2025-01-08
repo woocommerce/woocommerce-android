@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.moremenu.domain
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -19,7 +18,7 @@ class MoreMenuRepository @Inject constructor(
 
     suspend fun isInboxEnabled(): Boolean =
         withContext(Dispatchers.IO) {
-            if (!selectedSite.exists() || !FeatureFlag.INBOX.isEnabled()) return@withContext false
+            if (!selectedSite.exists()) return@withContext false
 
             val currentWooCoreVersion = getWooVersion() ?: return@withContext false
             currentWooCoreVersion.semverCompareTo(INBOX_MINIMUM_SUPPORTED_VERSION) >= 0

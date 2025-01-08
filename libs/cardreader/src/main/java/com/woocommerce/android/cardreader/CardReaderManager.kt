@@ -61,6 +61,8 @@ interface CardReaderManager {
     enum class SimulatorUpdateFrequency {
         NEVER,
         ALWAYS,
+        LOW_BATTERY_ERROR,
+        LOW_BATTERY_SUCCEED_CONNECT,
         RANDOM
     }
 }

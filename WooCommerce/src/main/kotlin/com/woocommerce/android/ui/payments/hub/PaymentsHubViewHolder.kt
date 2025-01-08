@@ -13,7 +13,7 @@ import com.woocommerce.android.databinding.CardReaderLearnMoreSectionBinding
 import com.woocommerce.android.databinding.PaymentsHubHeaderBinding
 import com.woocommerce.android.databinding.PaymentsHubListItemBinding
 import com.woocommerce.android.databinding.PaymentsHubToggelableItemBinding
-import com.woocommerce.android.ui.payments.hub.depositsummary.PaymentsHubDepositSummaryView
+import com.woocommerce.android.ui.payments.hub.payoutsummary.PaymentsHubPayoutSummaryView
 import com.woocommerce.android.util.UiHelpers
 
 private const val DISABLED_BUTTON_ALPHA = 0.5f
@@ -122,10 +122,10 @@ abstract class PaymentsHubViewHolder(val view: View) : RecyclerView.ViewHolder(v
         }
     }
 
-    class DepositSummaryViewHolder(private val composeView: ComposeView) : PaymentsHubViewHolder(composeView) {
+    class PayoutSummaryViewHolder(private val composeView: ComposeView) : PaymentsHubViewHolder(composeView) {
         override fun onBind(uiState: PaymentsHubViewState.ListItem) {
             composeView.setContent {
-                PaymentsHubDepositSummaryView()
+                PaymentsHubPayoutSummaryView()
             }
         }
     }

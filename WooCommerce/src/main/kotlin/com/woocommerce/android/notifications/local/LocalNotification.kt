@@ -16,9 +16,6 @@ sealed class LocalNotification(
     open val data: String? = null
     val id = type.hashCode()
 
-    val tag
-        get() = "$type:$siteId"
-
     fun getTitleString(resourceProvider: ResourceProvider) = resourceProvider.getString(title)
 
     fun getDescriptionString(resourceProvider: ResourceProvider) = resourceProvider.getString(description)
@@ -33,5 +30,14 @@ sealed class LocalNotification(
         type = LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER,
         delay = delay,
         delayUnit = TimeUnit.MILLISECONDS
+    )
+
+    data class BlazeAbandonedCampaignReminderNotification(override val siteId: Long) : LocalNotification(
+        siteId = siteId,
+        title = R.string.local_notification_blaze_abandoned_campaign_reminder_title,
+        description = R.string.local_notification_blaze_abandoned_campaign_reminder_description,
+        type = LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER,
+        delay = 1,
+        delayUnit = TimeUnit.DAYS
     )
 }

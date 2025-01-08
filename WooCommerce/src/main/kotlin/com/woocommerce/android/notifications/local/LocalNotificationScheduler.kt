@@ -8,6 +8,7 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -29,11 +30,11 @@ class LocalNotificationScheduler @Inject constructor(
     private val workManager = WorkManager.getInstance(appContext)
 
     fun scheduleNotification(notification: LocalNotification) {
-        cancelScheduledNotification(notification.tag)
+        cancelScheduledNotification(notification.type)
 
         workManager
             .beginUniqueWork(
-                LOCAL_NOTIFICATION_WORK_NAME + notification.tag,
+                LOCAL_NOTIFICATION_WORK_NAME + notification.type.value,
                 REPLACE,
                 buildPreconditionCheckWorkRequest(notification)
             )
@@ -47,6 +48,11 @@ class LocalNotificationScheduler @Inject constructor(
                 AnalyticsTracker.KEY_BLOG_ID to notification.siteId,
             )
         )
+        WooLog.d(
+            tag = WooLog.T.NOTIFICATIONS,
+            message = "Local notification scheduled: " +
+                "type=${notification.type}, delay=${notification.delay}${notification.delayUnit}"
+        )
     }
 
     private fun buildPreconditionCheckWorkRequest(notification: LocalNotification): OneTimeWorkRequest {
@@ -57,7 +63,7 @@ class LocalNotificationScheduler @Inject constructor(
         )
         return OneTimeWorkRequestBuilder<PreconditionCheckWorker>()
             .setInputData(conditionData)
-            .addTag(notification.tag)
+            .addTag(notification.type.value)
             .setInitialDelay(notification.delay, notification.delayUnit)
             .build()
     }
@@ -72,12 +78,16 @@ class LocalNotificationScheduler @Inject constructor(
             LOCAL_NOTIFICATION_SITE_ID to notification.siteId
         )
         return OneTimeWorkRequestBuilder<LocalNotificationWorker>()
-            .addTag(notification.tag)
+            .addTag(notification.type.value)
             .setInputData(notificationData)
             .build()
     }
 
-    private fun cancelScheduledNotification(tag: String) {
-        workManager.cancelAllWorkByTag(tag)
+    fun cancelScheduledNotification(type: LocalNotificationType) {
+        workManager.cancelAllWorkByTag(type.value)
+        WooLog.d(
+            tag = WooLog.T.NOTIFICATIONS,
+            message = "Local notification canceled: $type"
+        )
     }
 }

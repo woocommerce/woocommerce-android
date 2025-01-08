@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -46,7 +45,6 @@ data class DashboardWidget(
         INBOX(
             titleResource = R.string.inbox_screen_title,
             trackingIdentifier = "inbox",
-            isSupported = FeatureFlag.INBOX.isEnabled()
         ),
         REVIEWS(
             titleResource = R.string.my_store_widget_reviews_title,

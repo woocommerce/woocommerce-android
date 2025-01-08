@@ -1,7 +1,12 @@
 package com.woocommerce.android.extensions
 
 import org.apache.commons.text.StringEscapeUtils
+import java.text.DecimalFormat
 import java.util.Locale
+import kotlin.math.log10
+import kotlin.math.pow
+
+const val BYTES_IN_KILOBYTE = 1024.0
 
 /**
  * Checks if a given string is a Float
@@ -99,4 +104,28 @@ fun String.toCamelCase(delimiter: String = " "): String {
 
 fun String.capitalize(locale: Locale = Locale.getDefault()) = replaceFirstChar {
     if (it.isLowerCase()) it.titlecase(locale) else it.toString()
+}
+
+/**
+ * Converts a numeric string representing bytes into a human-readable file size string.
+ *
+ * Source: https://stackoverflow.com/a/5599842
+ *
+ * Examples:
+ * "1024".readableFileSize() -> "1 kB"
+ * "1500000".readableFileSize() -> "1.4 MB"
+ * "0".readableFileSize() -> "0"
+ * Invalid input returns "0"
+ *
+ * @return Formatted string with size and unit (e.g., "1.5 GB")
+ */
+fun String.readableFileSize(): String {
+    val size = this.toLongOrNull()
+    if (size == null || size <= 0) return "0"
+
+    val units = arrayOf("B", "kB", "MB", "GB", "TB", "PB", "EB")
+    val digitGroups = (log10(size.toDouble()) / log10(BYTES_IN_KILOBYTE)).toInt()
+
+    return DecimalFormat("#,##0.#")
+        .format(size / BYTES_IN_KILOBYTE.pow(digitGroups.toDouble())) + " " + units[digitGroups]
 }

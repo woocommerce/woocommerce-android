@@ -1,8 +1,12 @@
 package com.woocommerce.android.ui.products.details
 
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
+import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.addons.AddonRepository
@@ -17,8 +21,10 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyVararg
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
@@ -28,12 +34,23 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
     private val isBlazeEnabled: IsBlazeEnabled = mock {
         onBlocking { invoke() } doReturn false
     }
+    private val customFieldsRepository: CustomFieldsRepository = mock {
+        onBlocking { hasDisplayableCustomFields(any()) } doReturn false
+    }
+
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { it.getArgument<Any?>(0).toString() }
+    }
 
     @Before
     fun setUp() {
+        val viewModel: ProductDetailViewModel = mock {
+            on { getShippingClassByRemoteShippingClassId(any()) } doReturn ""
+        }
+
         val resources: ResourceProvider = mock {
-            on { getString(any()) } doReturn ""
-            on { getString(any(), anyVararg()) } doReturn ""
+            on { getString(any()) } doAnswer { it.arguments[0].toString() }
+            on { getString(any(), anyVararg()) } doAnswer { it.arguments[0].toString() + it.arguments[1].toString() }
         }
 
         val addonRepo: AddonRepository = mock {
@@ -45,7 +62,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
         }
 
         sut = ProductDetailCardBuilder(
-            viewModel = mock(),
+            viewModel = viewModel,
             selectedSite = selectedSite,
             resources = resources,
             currencyFormatter = mock(),
@@ -55,7 +72,8 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             appPrefsWrapper = mock(),
             isBlazeEnabled = isBlazeEnabled,
             isProductCurrentlyPromoted = mock(),
-            analyticsTrackerWrapper = mock()
+            analyticsTrackerWrapper = mock(),
+            customFieldsRepository = customFieldsRepository
         )
     }
 
@@ -71,7 +89,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 height = 0F
             )
 
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
         Assertions.assertThat(cards).isNotEmpty
 
         cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
@@ -98,7 +116,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             )
 
         var foundAttributesCard = false
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
         Assertions.assertThat(cards).isNotEmpty
 
         cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
@@ -122,7 +140,7 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             )
 
         var foundQuantityRulesCard = false
-        val cards = sut.buildPropertyCards(productStub, "")
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
         Assertions.assertThat(cards).isNotEmpty
 
         cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
@@ -137,5 +155,156 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             }
 
         Assert.assertTrue("Expected a Product card with Quantity Rules", foundQuantityRulesCard)
+    }
+
+    @Test
+    fun `given a product is saved on server, when a product has no displayable fields, then hide the custom fields card`() = testBlocking {
+        whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn false
+
+        productStub = ProductTestUtils.generateProduct(productId = 1L)
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
+
+        val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
+        val customFieldsCard = properties.find {
+            it is ProductProperty.ComplexProperty &&
+                it.title == R.string.product_custom_fields
+        }
+        Assertions.assertThat(customFieldsCard).isNull()
+    }
+
+    @Test
+    fun `given a product is saved on server, when a product has displayable fields, then show the custom fields card`() = testBlocking {
+        whenever(customFieldsRepository.hasDisplayableCustomFields(any())) doReturn true
+
+        productStub = ProductTestUtils.generateProduct(productId = 1L)
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
+
+        val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
+        val customFieldsCard = properties.find {
+            it is ProductProperty.ComplexProperty &&
+                it.title == R.string.product_custom_fields
+        }
+        Assertions.assertThat(customFieldsCard).isNotNull
+    }
+
+    @Test
+    fun `when a new is not saved on the server, then hide the custom fields card`() = testBlocking {
+        productStub = ProductTestUtils.generateProduct(productId = ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID)
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
+
+        val properties = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }.properties
+        val customFieldsCard = properties.find {
+            it is ProductProperty.ComplexProperty &&
+                it.title == R.string.product_custom_fields
+        }
+        Assertions.assertThat(customFieldsCard).isNull()
+    }
+
+    @Test
+    fun `given subscription product with one time shipping enabled, when building cards, then shipping includes one-time shipping`() = testBlocking {
+        productStub = ProductTestUtils.generateProduct()
+            .copy(
+                isVirtual = false,
+                type = ProductType.SUBSCRIPTION.value,
+                weight = 1.5f,
+                length = 10f,
+                width = 20f,
+                height = 30f,
+                shippingClassId = 123
+            )
+
+        val subscriptionDetails = ProductHelper.getDefaultSubscriptionDetails().copy(
+            oneTimeShipping = true
+        )
+
+        val cards = sut.buildPropertyCards(
+            ProductAggregate(
+                product = productStub,
+                subscription = subscriptionDetails
+            ),
+            ""
+        )
+
+        val shippingGroup = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }
+            .properties
+            .find {
+                it is ProductProperty.PropertyGroup &&
+                    it.title == R.string.product_shipping
+            } as ProductProperty.PropertyGroup
+
+        val propertyKeys = shippingGroup.properties.toList().map { it.first }
+        Assertions.assertThat(propertyKeys).hasSize(4) // Weight, Dimensions, Shipping class, One-time shipping
+        Assertions.assertThat(propertyKeys).contains(
+            resourceProvider.getString(R.string.subscription_one_time_shipping)
+        )
+    }
+
+    @Test
+    fun `given variable subscription product with one time shipping enabled, when building cards, then shipping includes one-time shipping`() = testBlocking {
+        productStub = ProductTestUtils.generateProduct()
+            .copy(
+                isVirtual = false,
+                type = ProductType.VARIABLE_SUBSCRIPTION.value,
+                weight = 1.5f,
+                length = 10f,
+                width = 20f,
+                height = 30f,
+                shippingClassId = 123
+            )
+
+        val subscriptionDetails = ProductHelper.getDefaultSubscriptionDetails().copy(
+            oneTimeShipping = true
+        )
+
+        val cards = sut.buildPropertyCards(
+            ProductAggregate(
+                product = productStub,
+                subscription = subscriptionDetails
+            ),
+            ""
+        )
+
+        val shippingGroup = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }
+            .properties
+            .find {
+                it is ProductProperty.PropertyGroup &&
+                    it.title == R.string.product_shipping
+            } as ProductProperty.PropertyGroup
+
+        val propertyKeys = shippingGroup.properties.toList().map { it.first }
+        Assertions.assertThat(propertyKeys).hasSize(4) // Weight, Dimensions, Shipping class, One-time shipping
+        Assertions.assertThat(propertyKeys).contains(
+            resourceProvider.getString(R.string.subscription_one_time_shipping)
+        )
+    }
+
+    @Test
+    fun `given simple non-virtual product, when building cards, then shipping excludes one-time shipping`() = testBlocking {
+        productStub = ProductTestUtils.generateProduct()
+            .copy(
+                isVirtual = false,
+                type = ProductType.SIMPLE.value,
+                weight = 1.5f,
+                length = 10f,
+                width = 20f,
+                height = 30f,
+                shippingClassId = 123
+            )
+
+        val cards = sut.buildPropertyCards(ProductAggregate(productStub), "")
+
+        val shippingGroup = cards.first { it.type == ProductPropertyCard.Type.SECONDARY }
+            .properties
+            .find {
+                it is ProductProperty.PropertyGroup &&
+                    it.title == R.string.product_shipping
+            } as ProductProperty.PropertyGroup
+
+        val propertyKeys = shippingGroup.properties.toList().map { it.first }
+
+        Assertions.assertThat(propertyKeys).hasSize(3) // Weight, Dimensions, Shipping class
+        Assertions.assertThat(propertyKeys).doesNotContain(
+            resourceProvider.getString(R.string.subscription_one_time_shipping)
+        )
     }
 }

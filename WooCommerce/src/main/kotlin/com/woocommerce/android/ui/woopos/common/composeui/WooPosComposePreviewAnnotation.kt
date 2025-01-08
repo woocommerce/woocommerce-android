@@ -3,7 +3,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui
 
 import android.content.res.Configuration
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 
 @Retention(AnnotationRetention.BINARY)
@@ -13,7 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 )
 @Preview(
     name = "Tablet Big",
-    device = Devices.TABLET,
+    device = "spec:width=1280dp,height=800dp,dpi=240",
     showSystemUi = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
 )

@@ -47,7 +47,6 @@ object AppUrls {
     const val CROWDSIGNAL_STORE_SETUP_SURVEY =
         "https://automattic.survey.fm/woo-mobile-%E2%80%93-store-setup-survey-2022"
 
-    const val CROWDSIGNAL_TAP_TO_PAY_SURVEY = "https://automattic.survey.fm/woo-app-%E2%80%93-first-ttp-survey"
     val CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY =
         if (BuildConfig.DEBUG) {
             "https://automattic.survey.fm/testing-debug-product-creation-with-ai-dec-2023"
@@ -60,9 +59,6 @@ object AppUrls {
     } else {
         "https://automattic.survey.fm/order-creation-shipping-lines-survey-production"
     }
-
-    // Will be used later when the feature is fully launched.
-    const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
 
     const val WOOCOMMERCE_USER_ROLES =
         "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
@@ -82,10 +78,7 @@ object AppUrls {
         "https://woocommerce.com/document/woopayments/in-person-payments/tap-to-pay-android/"
 
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
-        "https://woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/" +
-            "#add-cod-payment-method"
-    const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
-        "https://woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/#section-8"
+        "https://woocommerce.com/document/cash-on-delivery/"
 
     const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woocommerce.com/products/hardware/"
 
@@ -143,4 +136,7 @@ object AppUrls {
 
     const val GOOGLE_ADMIN_DASHBOARD =
         "admin.php?page=wc-admin&path=%2Fgoogle%2Fdashboard"
+
+    const val BLAZE_CAMPAIGN_CREATION_SURVEY_URL_I1 =
+        "https://wordpressdotcom.survey.fm/blaze-on-woo-mobile-survey-sept-2024-i1"
 }

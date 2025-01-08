@@ -176,7 +176,6 @@ class ProductNavigator @Inject constructor() {
                 val visibility = target.visibility.toString()
                 val action = ProductSettingsFragmentDirections
                     .actionProductSettingsFragmentToProductVisibilityFragment(
-                        target.isApplicationPasswordsLogin,
                         visibility,
                         target.password
                     )
@@ -461,6 +460,13 @@ class ProductNavigator @Inject constructor() {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToFirstProductCelebrationDialog(
                     productName = target.productName,
                     permalink = target.permalink
+                )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is ProductNavigationTarget.ViewCustomFields -> {
+                val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCustomFields(
+                    parentItemId = target.productId
                 )
                 fragment.findNavController().navigateSafely(action)
             }

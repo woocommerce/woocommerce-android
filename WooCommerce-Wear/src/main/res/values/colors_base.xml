@@ -3,7 +3,6 @@
     <!-- Woo Colors -->
     <color name="woo_purple_0">#F2EDFF</color>
     <color name="woo_purple_10">#F7EDF7</color>
-    <color name="woo_purple_15">#E5CFE8</color>
     <color name="woo_purple_20">#C792E0</color>
     <color name="woo_purple_30">#B17FD4</color>
     <color name="woo_purple_40">#AF7DD1</color>
@@ -110,7 +109,7 @@
     <color name="divider_color">@color/woo_black_90_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
-    <color name="splash_background">@color/woo_purple_60</color>
+    <color name="splash_background">@color/woo_black</color>
     <color name="color_toolbar">@color/woo_white</color>
     <color name="bottom_sheet_background">@color/color_surface</color>
 </resources>

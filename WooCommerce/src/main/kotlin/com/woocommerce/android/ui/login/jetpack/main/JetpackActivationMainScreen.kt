@@ -56,7 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.annotatedStringResLegacy
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -169,7 +169,7 @@ private fun ProgressState(
             R.string.login_jetpack_steps_screen_subtitle
         }
         Text(
-            text = annotatedStringRes(stringResId = subtitle, viewState.siteUrl),
+            text = annotatedStringResLegacy(stringResId = subtitle, viewState.siteUrl),
             style = MaterialTheme.typography.body1
         )
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))

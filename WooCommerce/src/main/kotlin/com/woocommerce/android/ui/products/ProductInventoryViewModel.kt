@@ -104,8 +104,19 @@ class ProductInventoryViewModel @Inject constructor(
         }
     }
 
+    fun onProductUniqueGlobalIdChanged(globalUniqueId: String) {
+        onDataChanged(globalUniqueId = globalUniqueId)
+
+        if (isOnlyNumbersAndHyphens(globalUniqueId)) {
+            clearGlobalUniqueIdError()
+        } else {
+            showGlobalUniqueIdError()
+        }
+    }
+
     fun onDataChanged(
         sku: String? = inventoryData.sku,
+        globalUniqueId: String? = inventoryData.globalUniqueId,
         backorderStatus: ProductBackorderStatus? = inventoryData.backorderStatus,
         isSoldIndividually: Boolean? = inventoryData.isSoldIndividually,
         isStockManaged: Boolean? = inventoryData.isStockManaged,
@@ -115,6 +126,7 @@ class ProductInventoryViewModel @Inject constructor(
         viewState = viewState.copy(
             inventoryData = InventoryData(
                 sku = sku,
+                globalUniqueId = globalUniqueId,
                 backorderStatus = backorderStatus,
                 isSoldIndividually = isSoldIndividually,
                 isStockManaged = isStockManaged,
@@ -129,10 +141,19 @@ class ProductInventoryViewModel @Inject constructor(
             AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_DONE_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)
         )
-        if (hasChanges && !hasSkuError()) {
+        if (hasChanges && !hasSkuError() && !hasGlobalUniqueIdError()) {
+            trackGlobalUniqueIdChangeIfNecessary()
             triggerEvent(ExitWithResult(inventoryData))
         } else {
             triggerEvent(Exit)
+        }
+    }
+
+    private fun trackGlobalUniqueIdChangeIfNecessary() {
+        if (inventoryData.globalUniqueId != originalInventoryData.globalUniqueId) {
+            analyticsTracker.track(
+                AnalyticsEvent.PRODUCT_INVENTORY_SETTINGS_GLOBAL_UNIQUE_IDENTIFIER_FIELD_EDITED
+            )
         }
     }
 
@@ -144,7 +165,25 @@ class ProductInventoryViewModel @Inject constructor(
         viewState = viewState.copy(skuErrorMessage = string.product_inventory_update_sku_error)
     }
 
+    private fun clearGlobalUniqueIdError() {
+        viewState = viewState.copy(globalUniqueIdErrorMessage = 0)
+    }
+
+    private fun showGlobalUniqueIdError() {
+        viewState = viewState.copy(globalUniqueIdErrorMessage = string.product_inventory_update_global_unique_id_error)
+    }
+
     private fun hasSkuError() = viewState.skuErrorMessage != 0 && viewState.skuErrorMessage != null
+
+    private fun hasGlobalUniqueIdError() = viewState.globalUniqueIdErrorMessage != 0 &&
+        viewState.globalUniqueIdErrorMessage != null
+
+    private fun isOnlyNumbersAndHyphens(input: String): Boolean {
+        // Define the regex pattern to match only numbers and hyphens
+        val pattern = "^[0-9-]+$"
+        // Check if the input string matches the pattern
+        return input.matches(pattern.toRegex())
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -155,6 +194,7 @@ class ProductInventoryViewModel @Inject constructor(
     data class ViewState(
         val inventoryData: InventoryData = InventoryData(),
         val skuErrorMessage: Int? = null,
+        val globalUniqueIdErrorMessage: Int? = null,
         val isIndividualSaleSwitchVisible: Boolean? = null,
         val isStockStatusVisible: Boolean? = null,
         val isStockManagementVisible: Boolean? = null,
@@ -164,6 +204,7 @@ class ProductInventoryViewModel @Inject constructor(
     @Parcelize
     data class InventoryData(
         val sku: String? = null,
+        val globalUniqueId: String? = null,
         val isStockManaged: Boolean? = null,
         val isSoldIndividually: Boolean? = null,
         val stockStatus: ProductStockStatus? = null,

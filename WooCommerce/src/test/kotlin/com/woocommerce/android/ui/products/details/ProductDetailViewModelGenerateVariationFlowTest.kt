@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.NetworkStatus
@@ -79,6 +80,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
 
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
+    private val determineProductPasswordApi: DetermineProductPasswordApi = mock()
 
     private var selectedSite: SelectedSite = mock {
         on { get() } doReturn SiteModel().apply { setIsPrivate(false) }
@@ -91,7 +93,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
         doReturn(true).whenever(networkStatus).isConnected()
 
         productRepository = mock {
-            onBlocking { fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID) } doReturn product
+            onBlocking { fetchAndGetProductAggregate(PRODUCT_REMOTE_ID) } doReturn ProductAggregate(product)
         }
 
         variationRepository = mock {
@@ -124,6 +126,8 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 isBlazeEnabled = mock(),
                 isProductCurrentlyPromoted = mock(),
                 isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
+                determineProductPasswordApi = determineProductPasswordApi,
+                customFieldsRepository = mock()
             )
         )
 

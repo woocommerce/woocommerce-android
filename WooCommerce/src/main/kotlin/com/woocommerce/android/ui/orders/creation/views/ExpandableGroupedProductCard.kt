@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -240,7 +240,7 @@ fun ExpandableChildrenProductCard(
     val transitionState = remember {
         MutableTransitionState(isExpanded).apply { targetState = !isExpanded }
     }
-    val transition = updateTransition(transitionState, "expandableChildProductCard")
+    val transition = rememberTransition(transitionState, "expandableChildProductCard")
     val chevronRotation by transition.animateFloat(
         transitionSpec = { tween(durationMillis = ANIM_DURATION_MILLIS) },
         label = "childChevronRotation"

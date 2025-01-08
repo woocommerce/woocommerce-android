@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.splash
 
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsDataSource.ProductsResult
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.ProductsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

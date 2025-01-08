@@ -1,0 +1,777 @@
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
+
+package com.woocommerce.android.ui.payments.hub.payoutsummary
+
+import android.content.res.Configuration
+import android.icu.text.MessageFormat
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
+import androidx.compose.material.TabRowDefaults
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.util.StringUtils
+import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Locale
+
+@Composable
+fun PaymentsHubPayoutSummaryView(
+    viewModel: PaymentsHubPayoutSummaryViewModel = viewModel()
+) {
+    viewModel.viewState.observeAsState().let {
+        WooThemeWithBackground {
+            when (val value = it.value) {
+                is PaymentsHubPayoutSummaryState.Success -> PaymentsHubPayoutSummaryView(
+                    value.overview,
+                    value.fromCache,
+                    value.onLearnMoreClicked,
+                    value.onExpandCollapseClicked,
+                    viewModel::onSummaryPayoutShown,
+                    value.onCurrencySelected,
+                )
+
+                null,
+                PaymentsHubPayoutSummaryState.Loading,
+                is PaymentsHubPayoutSummaryState.Error -> {
+                    // show nothing
+                }
+            }
+        }
+    }
+
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel
+            .openBrowserEvents
+            .collect { url ->
+                ChromeCustomTabUtils.launchUrl(
+                    context,
+                    url,
+                    ChromeCustomTabUtils.Height.Partial.ThreeQuarters,
+                )
+            }
+    }
+}
+
+@Composable
+fun PaymentsHubPayoutSummaryView(
+    overview: PaymentsHubPayoutSummaryState.Overview,
+    fromCache: Boolean,
+    onLearnMoreClicked: () -> Unit,
+    onExpandCollapseClicked: (Boolean) -> Unit,
+    onSummaryPayoutShown: () -> Unit,
+    onCurrencySelected: (String) -> Unit,
+    isPreview: Boolean = LocalInspectionMode.current,
+    selectedPage: Int = 0,
+) {
+    LaunchedEffect(key1 = overview) { onSummaryPayoutShown() }
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
+
+    val pageCount = overview.infoPerCurrency.size
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorResource(id = R.color.color_surface))
+    ) {
+        val pagerState = rememberPagerState(initialPage = selectedPage) { pageCount }
+        val isInitialLoad = remember { mutableStateOf(true) }
+
+        val currencies = overview.infoPerCurrency.keys.toList()
+        val selectedCurrency = currencies[pagerState.currentPage]
+
+        LaunchedEffect(pagerState.currentPage) {
+            if (isInitialLoad.value) {
+                isInitialLoad.value = false
+            } else {
+                onCurrencySelected(selectedCurrency)
+            }
+        }
+        val selectedCurrencyInfo = overview.infoPerCurrency[selectedCurrency] ?: return@Column
+
+        AnimatedVisibility(
+            visible = (isExpanded || isPreview) && pageCount > 1,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            CurrenciesTabs(
+                currencies = currencies.map { it.uppercase() }.toList(),
+                pagerState = pagerState
+            )
+        }
+
+        HorizontalPager(
+            state = pagerState
+        ) { pageIndex ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(id = R.color.color_surface))
+            ) {
+                FundsOverview(selectedCurrencyInfo, isExpanded, fromCache, pageIndex) {
+                    isExpanded = !isExpanded
+                    onExpandCollapseClicked(isExpanded)
+                }
+
+                AnimatedVisibility(
+                    visible = isExpanded || isPreview,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    PayoutsInfo(
+                        selectedCurrencyInfo,
+                        onLearnMoreClicked
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FundsOverview(
+    currencyInfo: PaymentsHubPayoutSummaryState.Info,
+    isExpanded: Boolean,
+    fromCache: Boolean,
+    pageIndex: Int,
+    onExpandCollapseClick: () -> Unit,
+) {
+    val chevronRotation by animateFloatAsState(
+        if (isExpanded) 180f else 0f,
+        label = "chevronRotation"
+    )
+    val topRowIS = remember { MutableInteractionSource() }
+    val topRowCoroutineScope = rememberCoroutineScope()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = topRowIS,
+                indication = null
+            ) {
+                val press = PressInteraction.Press(Offset.Zero)
+                topRowCoroutineScope.launch {
+                    topRowIS.emit(press)
+                    topRowIS.emit(PressInteraction.Release(press))
+                }
+                onExpandCollapseClick()
+            }
+            .padding(
+                start = dimensionResource(id = R.dimen.major_100),
+                end = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_100),
+                bottom = dimensionResource(id = R.dimen.major_100)
+            )
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                style = MaterialTheme.typography.body2,
+                text = stringResource(id = R.string.card_reader_hub_payout_summary_available_funds),
+                color = colorResource(id = R.color.color_on_surface)
+            )
+            FundsNumber(
+                currencyInfo.availableFundsFormatted,
+                currencyInfo.availableFundsAmount,
+                fromCache,
+                pageIndex
+            )
+        }
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                style = MaterialTheme.typography.body2,
+                text = stringResource(id = R.string.card_reader_hub_payout_summary_pending_funds),
+                color = colorResource(id = R.color.color_on_surface)
+            )
+
+            FundsNumber(
+                currencyInfo.pendingFundsFormatted,
+                currencyInfo.pendingFundsAmount,
+                fromCache,
+                pageIndex
+            )
+        }
+
+        Column(
+            modifier = Modifier.weight(.3f),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            IconButton(
+                onClick = { onExpandCollapseClick() },
+                interactionSource = topRowIS,
+            ) {
+                Icon(
+                    modifier = Modifier.rotate(chevronRotation),
+                    imageVector = Icons.Filled.KeyboardArrowDown,
+                    contentDescription =
+                    stringResource(R.string.card_reader_hub_payout_summary_collapse_expand_content_description),
+                    tint = MaterialTheme.colors.primary,
+                )
+            }
+        }
+    }
+
+    AnimatedVisibility(
+        visible = isExpanded,
+        enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut(),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        currencyInfo.fundsAvailableInDays?.let { fundsAvailableInDays ->
+            Text(
+                modifier = Modifier.padding(
+                    start = dimensionResource(id = R.dimen.major_100),
+                    end = dimensionResource(id = R.dimen.major_100),
+                    bottom = dimensionResource(id = R.dimen.major_100),
+                ),
+                style = MaterialTheme.typography.caption,
+                text = StringUtils.getQuantityString(
+                    context = LocalContext.current,
+                    quantity = fundsAvailableInDays,
+                    default = R.string.card_reader_hub_payout_summary_funds_available_after_plural,
+                    one = R.string.card_reader_hub_payout_summary_funds_available_after_one,
+                ),
+                color = colorResource(id = R.color.color_on_surface_medium),
+            )
+        }
+    }
+
+    val dividerPaddingAnimation by animateDpAsState(
+        targetValue = if (isExpanded) {
+            dimensionResource(id = R.dimen.major_100)
+        } else {
+            dimensionResource(id = R.dimen.minor_00)
+        },
+        label = "dividerPaddingAnimation"
+    )
+
+    Divider(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dividerPaddingAnimation)
+    )
+}
+
+@Composable
+private fun PayoutsInfo(
+    currencyInfo: PaymentsHubPayoutSummaryState.Info,
+    onLearnMoreClicked: () -> Unit
+) {
+    Column {
+        Column(
+            modifier = Modifier
+                .padding(all = dimensionResource(id = R.dimen.major_100))
+        ) {
+            LastPayout(currencyInfo)
+
+            Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_75)))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onLearnMoreClicked)
+                    .padding(vertical = dimensionResource(id = R.dimen.minor_50)),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    modifier = Modifier.size(15.dp),
+                    painter = painterResource(
+                        id = R.drawable.ic_info_outline_20dp
+                    ),
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.color_primary)
+                )
+                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+                Text(
+                    style = MaterialTheme.typography.caption,
+                    text = stringResource(id = R.string.card_reader_hub_payout_summary_learn_more),
+                    color = colorResource(id = R.color.color_primary),
+                )
+            }
+        }
+
+        Divider(modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun LastPayout(currencyInfo: PaymentsHubPayoutSummaryState.Info) {
+    currencyInfo.lastPayout?.let {
+        Text(
+            style = MaterialTheme.typography.body2,
+            text = stringResource(id = R.string.card_reader_hub_payout_funds_payout_title).uppercase(),
+            color = colorResource(id = R.color.color_on_surface_medium),
+        )
+
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+
+        Payout(payout = it)
+
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+
+        currencyInfo.fundsPayoutInterval?.let { interval ->
+            Text(
+                style = MaterialTheme.typography.caption,
+                text = interval.buildText(),
+                color = colorResource(id = R.color.color_on_surface_medium),
+            )
+        }
+
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_100)))
+
+        Divider(modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+private fun Payout(payout: PaymentsHubPayoutSummaryState.Payout) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_calendar_16),
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_on_surface)
+        )
+        Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.minor_100)))
+
+        Text(
+            modifier = Modifier.weight(1.2f),
+            style = MaterialTheme.typography.body1,
+            text = payout.date,
+        )
+
+        Box(modifier = Modifier.weight(1f)) {
+            when (payout.status) {
+                PaymentsHubPayoutSummaryState.Payout.Status.ESTIMATED ->
+                    PayoutStatus(
+                        text = R.string.card_reader_hub_payout_summary_status_estimated,
+                        backgroundColor = R.color.payout_summary_status_estimated_background,
+                        textColor = R.color.payout_summary_status_estimated_text
+                    )
+
+                PaymentsHubPayoutSummaryState.Payout.Status.PENDING ->
+                    PayoutStatus(
+                        text = R.string.card_reader_hub_payout_summary_status_pending,
+                        backgroundColor = R.color.payout_summary_status_pending_background,
+                        textColor = R.color.payout_summary_status_pending_text
+                    )
+
+                PaymentsHubPayoutSummaryState.Payout.Status.IN_TRANSIT ->
+                    PayoutStatus(
+                        text = R.string.card_reader_hub_payout_summary_status_in_transit,
+                        backgroundColor = R.color.payout_summary_status_in_transit_background,
+                        textColor = R.color.payout_summary_status_in_transit_text
+                    )
+
+                PaymentsHubPayoutSummaryState.Payout.Status.PAID ->
+                    PayoutStatus(
+                        text = R.string.card_reader_hub_payout_summary_status_paid,
+                        backgroundColor = R.color.payout_summary_status_paid_background,
+                        textColor = R.color.payout_summary_status_paid_text
+                    )
+
+                PaymentsHubPayoutSummaryState.Payout.Status.CANCELED ->
+                    PayoutStatus(
+                        text = R.string.card_reader_hub_payout_summary_status_canceled,
+                        backgroundColor = R.color.payout_summary_status_canceled_background,
+                        textColor = R.color.payout_summary_status_canceled_text
+                    )
+
+                PaymentsHubPayoutSummaryState.Payout.Status.FAILED ->
+                    PayoutStatus(
+                        text = R.string.card_reader_hub_payout_summary_status_failed,
+                        backgroundColor = R.color.payout_summary_status_failed_background,
+                        textColor = R.color.payout_summary_status_failed_text
+                    )
+
+                PaymentsHubPayoutSummaryState.Payout.Status.UNKNOWN -> PayoutStatus(
+                    text = R.string.card_reader_hub_payout_summary_status_unknown,
+                    backgroundColor = R.color.payout_summary_status_unknown_background,
+                    textColor = R.color.payout_summary_status_unknown_text
+                )
+            }
+        }
+
+        Box(
+            modifier = Modifier.weight(.8f),
+            contentAlignment = Alignment.CenterEnd,
+        ) {
+            Text(
+                style = MaterialTheme.typography.body1,
+                text = payout.amount,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CurrenciesTabs(
+    currencies: List<String>,
+    pagerState: PagerState,
+) {
+    val scope = rememberCoroutineScope()
+    TabRow(
+        modifier = Modifier.fillMaxWidth(),
+        selectedTabIndex = pagerState.currentPage,
+        backgroundColor = colorResource(id = R.color.color_surface),
+        indicator = { tabPositions ->
+            TabRowDefaults.Indicator(
+                modifier = Modifier
+                    .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                    .padding(horizontal = 16.dp),
+                height = 4.dp,
+                color = colorResource(id = R.color.color_primary)
+            )
+        }
+    ) {
+        currencies.forEachIndexed { index, title ->
+            Tab(
+                selected = pagerState.currentPage == index,
+                onClick = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                },
+                text = {
+                    val isSelected = pagerState.currentPage == index
+                    Text(
+                        style = MaterialTheme.typography.body1,
+                        text = title,
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                        color = if (isSelected) {
+                            colorResource(id = R.color.color_primary)
+                        } else {
+                            colorResource(id = R.color.color_on_surface_disabled)
+                        }
+                    )
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun PayoutStatus(
+    text: Int,
+    backgroundColor: Int,
+    textColor: Int
+) {
+    Box(
+        modifier = Modifier
+            .background(
+                color = colorResource(backgroundColor),
+                shape = RoundedCornerShape(4.dp)
+            )
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.minor_100),
+                vertical = dimensionResource(id = R.dimen.minor_50)
+            )
+    ) {
+        Text(
+            text = stringResource(id = text),
+            style = MaterialTheme.typography.caption,
+            color = colorResource(id = textColor),
+        )
+    }
+}
+
+@Composable
+private fun FundsNumber(
+    valueToDisplay: String,
+    valueAmount: Long,
+    fromCache: Boolean,
+    pageIndex: Int,
+) {
+    var animationPlayed by remember { mutableStateOf(false) }
+    if (pageIndex == 0) {
+        AnimatedContent(
+            targetState = valueToDisplay to valueAmount,
+            transitionSpec = {
+                if (animationPlayed) {
+                    EnterTransition.None togetherWith ExitTransition.None
+                } else if (targetState.second > initialState.second) {
+                    slideInVertically { -it } togetherWith slideOutVertically { it }
+                } else {
+                    slideInVertically { it } togetherWith slideOutVertically { -it }
+                }
+            },
+            label = "AnimatedFundsNumber"
+        ) { value ->
+            Text(
+                style = MaterialTheme.typography.h6,
+                fontWeight = FontWeight.Bold,
+                text = value.first,
+                color = colorResource(id = R.color.color_on_surface)
+            )
+            if (!fromCache && value.second == valueAmount) {
+                animationPlayed = true
+            }
+        }
+    } else {
+        Text(
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold,
+            text = valueToDisplay,
+            color = colorResource(id = R.color.color_on_surface)
+        )
+    }
+}
+
+@Composable
+private fun PaymentsHubPayoutSummaryState.Info.Interval.buildText() =
+    when (this) {
+        PaymentsHubPayoutSummaryState.Info.Interval.Daily -> stringResource(
+            id = R.string.card_reader_hub_payout_summary_available_payout_time_daily
+        )
+
+        is PaymentsHubPayoutSummaryState.Info.Interval.Weekly -> {
+            val dayOfWeek = DayOfWeek.valueOf(weekDay.uppercase(Locale.getDefault()))
+            stringResource(
+                id = R.string.card_reader_hub_payout_summary_available_payout_time_weekly,
+                dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+            )
+        }
+
+        is PaymentsHubPayoutSummaryState.Info.Interval.Monthly -> {
+            val formatter = MessageFormat("{0,ordinal}", Locale.getDefault())
+            stringResource(
+                id = R.string.card_reader_hub_payout_summary_available_payout_time_monthly,
+                formatter.format(arrayOf(day))
+            )
+        }
+    }
+
+private val previewState = sortedMapOf(
+    "USD" to PaymentsHubPayoutSummaryState.Info(
+        availableFundsFormatted = "100$",
+        pendingFundsFormatted = "200$",
+        availableFundsAmount = 10000,
+        pendingFundsAmount = 20000,
+        fundsAvailableInDays = 5,
+        fundsPayoutInterval = PaymentsHubPayoutSummaryState.Info.Interval.Daily,
+        lastPayout = PaymentsHubPayoutSummaryState.Payout(
+            amount = "100$",
+            status = PaymentsHubPayoutSummaryState.Payout.Status.FAILED,
+            date = "13 Oct 2023"
+        )
+    ),
+    "EUR" to PaymentsHubPayoutSummaryState.Info(
+        availableFundsFormatted = "100$",
+        pendingFundsFormatted = "200$",
+        availableFundsAmount = 10000,
+        pendingFundsAmount = 20000,
+        fundsAvailableInDays = 2,
+        fundsPayoutInterval = PaymentsHubPayoutSummaryState.Info.Interval.Weekly("Friday"),
+        lastPayout = PaymentsHubPayoutSummaryState.Payout(
+            amount = "100$",
+            status = PaymentsHubPayoutSummaryState.Payout.Status.PENDING,
+            date = "13 Oct 2023"
+        )
+    ),
+    "RUB" to PaymentsHubPayoutSummaryState.Info(
+        availableFundsFormatted = "100$",
+        pendingFundsFormatted = "200$",
+        availableFundsAmount = 10000,
+        pendingFundsAmount = 20000,
+        fundsAvailableInDays = 4,
+        fundsPayoutInterval = PaymentsHubPayoutSummaryState.Info.Interval.Weekly("Monday"),
+        lastPayout = PaymentsHubPayoutSummaryState.Payout(
+            amount = "100$",
+            status = PaymentsHubPayoutSummaryState.Payout.Status.CANCELED,
+            date = "13 Oct 2023"
+        )
+    ),
+    "GBP" to PaymentsHubPayoutSummaryState.Info(
+        availableFundsFormatted = "100$",
+        pendingFundsFormatted = "200$",
+        availableFundsAmount = 10000,
+        pendingFundsAmount = 20000,
+        fundsAvailableInDays = 3,
+        fundsPayoutInterval = PaymentsHubPayoutSummaryState.Info.Interval.Weekly("Tuesday"),
+        lastPayout = PaymentsHubPayoutSummaryState.Payout(
+            amount = "100$",
+            status = PaymentsHubPayoutSummaryState.Payout.Status.ESTIMATED,
+            date = "13 Oct 2023"
+        )
+    ),
+)
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubPayoutSummaryViewUsdPreview() {
+    WooThemeWithBackground {
+        PaymentsHubPayoutSummaryView(
+            PaymentsHubPayoutSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = previewState,
+            ),
+            fromCache = false,
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
+            onSummaryPayoutShown = {},
+            onCurrencySelected = {},
+            selectedPage = 0
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubPayoutSummaryViewEurPreview() {
+    WooThemeWithBackground {
+        PaymentsHubPayoutSummaryView(
+            PaymentsHubPayoutSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = previewState
+            ),
+            fromCache = false,
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
+            onSummaryPayoutShown = {},
+            onCurrencySelected = {},
+            selectedPage = 1
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubPayoutSummaryViewRubPreview() {
+    WooThemeWithBackground {
+        PaymentsHubPayoutSummaryView(
+            PaymentsHubPayoutSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = previewState
+            ),
+            fromCache = false,
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
+            onSummaryPayoutShown = {},
+            onCurrencySelected = {},
+            selectedPage = 2
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubPayoutSummaryViewGbpPreview() {
+    WooThemeWithBackground {
+        PaymentsHubPayoutSummaryView(
+            PaymentsHubPayoutSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = previewState
+            ),
+            fromCache = false,
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
+            onSummaryPayoutShown = {},
+            onCurrencySelected = {},
+            selectedPage = 3
+        )
+    }
+}
+
+@Preview(name = "Light mode")
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentsHubPayoutSummaryViewNoPayoutsPreview() {
+    WooThemeWithBackground {
+        PaymentsHubPayoutSummaryView(
+            PaymentsHubPayoutSummaryState.Overview(
+                defaultCurrency = "USD",
+                infoPerCurrency = sortedMapOf(
+                    "USD" to PaymentsHubPayoutSummaryState.Info(
+                        availableFundsFormatted = "100$",
+                        pendingFundsFormatted = "200$",
+                        availableFundsAmount = 10000,
+                        pendingFundsAmount = 20000,
+                        fundsAvailableInDays = 5,
+                        fundsPayoutInterval = PaymentsHubPayoutSummaryState.Info.Interval.Daily,
+                        lastPayout = null,
+                    )
+                )
+            ),
+            fromCache = false,
+            onLearnMoreClicked = {},
+            onExpandCollapseClicked = {},
+            onSummaryPayoutShown = {},
+            onCurrencySelected = {},
+            selectedPage = 0
+        )
+    }
+}

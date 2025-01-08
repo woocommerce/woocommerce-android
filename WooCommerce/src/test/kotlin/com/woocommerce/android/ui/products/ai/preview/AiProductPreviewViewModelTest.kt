@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AIProductModel
+import com.woocommerce.android.ui.products.ai.AiProductSaveResult
 import com.woocommerce.android.ui.products.ai.BuildProductPreviewProperties
 import com.woocommerce.android.ui.products.ai.SaveAiGeneratedProduct
 import com.woocommerce.android.ui.products.ai.components.ImageAction
@@ -20,9 +21,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.util.Date
@@ -42,16 +45,10 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
             Result.success(SAMPLE_PRODUCT)
         }
     }
-    private val uploadImage: UploadImage = mock {
-        onBlocking { invoke(any()) } doSuspendableAnswer {
-            delay(100)
-            Result.success(SAMPLE_UPLOADED_IMAGE)
-        }
-    }
     private val saveAiGeneratedProduct: SaveAiGeneratedProduct = mock {
         onBlocking { invoke(any(), anyOrNull()) } doSuspendableAnswer {
             delay(100)
-            Result.success(1L)
+            AiProductSaveResult.Success(1L)
         }
     }
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
@@ -73,7 +70,6 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
             savedStateHandle = args.toSavedStateHandle(),
             buildProductPreviewProperties = buildProductPreviewProperties,
             generateProductWithAI = generateProductWithAI,
-            uploadImage = uploadImage,
             analyticsTracker = analyticsTracker,
             saveAiGeneratedProduct = saveAiGeneratedProduct,
             resourceProvider = resourceProvider,
@@ -227,30 +223,6 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a local image, when the user taps on save, then upload the image`() = testBlocking {
-        setup(
-            args = AiProductPreviewFragmentArgs(
-                productFeatures = PRODUCT_FEATURES,
-                image = Image.LocalImage("path")
-            )
-        )
-
-        val viewState = viewModel.state.runAndCaptureValues {
-            advanceUntilIdle()
-            viewModel.onSaveProductAsDraft()
-            advanceUntilIdle()
-        }.last()
-
-        verify(uploadImage).invoke(Image.LocalImage("path"))
-        val successState = viewState as AiProductPreviewViewModel.State.Success
-        assertThat(successState.imageState).isEqualTo(
-            AiProductPreviewViewModel.ImageState(
-                image = Image.WPMediaLibraryImage(SAMPLE_UPLOADED_IMAGE)
-            )
-        )
-    }
-
-    @Test
     fun `given a local image, when the image upload fails, then show an error`() = testBlocking {
         setup(
             args = AiProductPreviewFragmentArgs(
@@ -258,7 +230,8 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
                 image = Image.LocalImage("path")
             )
         ) {
-            whenever(uploadImage.invoke(any())).thenReturn(Result.failure(Exception()))
+            whenever(saveAiGeneratedProduct.invoke(any(), any()))
+                .thenReturn(AiProductSaveResult.Failure.UploadImageFailure)
         }
 
         val viewState = viewModel.state.runAndCaptureValues {
@@ -273,6 +246,29 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
             assertThat(it.messageRes).isEqualTo(R.string.ai_product_creation_error_media_upload)
         }
     }
+
+    @Test
+    fun `given a local image uploaded successfully, when retrying after an error, then don't reupload the image`() =
+        testBlocking {
+            setup(
+                args = AiProductPreviewFragmentArgs(
+                    productFeatures = PRODUCT_FEATURES,
+                    image = Image.LocalImage("path")
+                )
+            ) {
+                whenever(saveAiGeneratedProduct.invoke(any(), anyOrNull()))
+                    .thenReturn(AiProductSaveResult.Failure.Generic(Image.WPMediaLibraryImage(SAMPLE_UPLOADED_IMAGE)))
+                    .thenReturn(AiProductSaveResult.Success(1L))
+            }
+
+            advanceUntilIdle()
+            viewModel.onSaveProductAsDraft()
+            advanceUntilIdle()
+            viewModel.onSaveProductAsDraft()
+
+            verify(saveAiGeneratedProduct, times(1)).invoke(any(), argThat { this is Image.LocalImage })
+            verify(saveAiGeneratedProduct, times(1)).invoke(any(), argThat { this is Image.WPMediaLibraryImage })
+        }
 
     @Test
     fun `when product is saved successfully, then navigate to the product details`() = testBlocking {
@@ -290,7 +286,12 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
     @Test
     fun `when product saving fails, then show an error`() = testBlocking {
         setup {
-            whenever(saveAiGeneratedProduct.invoke(any(), anyOrNull())).thenReturn(Result.failure(Exception()))
+            whenever(
+                saveAiGeneratedProduct.invoke(
+                    any(),
+                    anyOrNull()
+                )
+            ).thenReturn(AiProductSaveResult.Failure.Generic())
         }
 
         val viewState = viewModel.state.runAndCaptureValues {

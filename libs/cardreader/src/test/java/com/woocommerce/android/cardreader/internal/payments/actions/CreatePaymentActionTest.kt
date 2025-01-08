@@ -420,6 +420,45 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         assertThat(captor.firstValue["platform"]).isEqualTo("android")
     }
 
+    @Test
+    fun `given payment info with pos channel, when creating payment intent, then channel is set`() = testBlocking {
+        val captor = argumentCaptor<Map<String, String>>()
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+
+        action.createPaymentIntent(createPaymentInfo(channel = PaymentInfo.PaymentChannel.Pos)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.CHANNEL.key]).isEqualTo("mobile_pos")
+    }
+
+    @Test
+    fun `given payment info with store manager channel, when creating payment intent, then channel is set`() = testBlocking {
+        val captor = argumentCaptor<Map<String, String>>()
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+
+        action.createPaymentIntent(createPaymentInfo(channel = PaymentInfo.PaymentChannel.StoreManager)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.CHANNEL.key]).isEqualTo("mobile_store_management")
+    }
+
+    @Test
+    fun `given payment info with no channel, when creating payment intent, then channel is not set`() = testBlocking {
+        val captor = argumentCaptor<Map<String, String>>()
+        whenever(terminal.createPaymentIntent(any(), any())).thenAnswer {
+            (it.arguments[1] as PaymentIntentCallback).onSuccess(mock())
+        }
+
+        action.createPaymentIntent(createPaymentInfo(channel = null)).toList()
+        verify(intentParametersBuilder).setMetadata(captor.capture())
+
+        assertThat(captor.firstValue[MetaDataKeys.CHANNEL.key]).isNull()
+    }
+
     private fun createPaymentInfo(
         paymentDescription: String = "",
         orderId: Long = 1L,
@@ -434,6 +473,7 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
         countryCode: String? = "US",
         statementDescriptor: String? = null,
         feeAmount: Long? = null,
+        channel: PaymentInfo.PaymentChannel? = null,
     ): PaymentInfo =
         PaymentInfo(
             paymentDescription = paymentDescription,
@@ -449,5 +489,6 @@ internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
             countryCode = countryCode,
             statementDescriptor = StatementDescriptor(statementDescriptor),
             feeAmount = feeAmount,
+            channel = channel,
         )
 }

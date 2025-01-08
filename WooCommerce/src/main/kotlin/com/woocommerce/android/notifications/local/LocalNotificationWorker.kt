@@ -11,7 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.WooNotificationType.LOCAL_REMINDER
+import com.woocommerce.android.notifications.WooNotificationType.LocalReminder
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DATA
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_DESC
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_ID
@@ -49,7 +49,7 @@ class LocalNotificationWorker @AssistedInject constructor(
                 notificationTappedIntent = getIntent(notification),
             )
 
-            setNotificationShown(type, siteId)
+            setNotificationShown(type)
 
             AnalyticsTracker.track(
                 LOCAL_NOTIFICATION_DISPLAYED,
@@ -71,10 +71,15 @@ class LocalNotificationWorker @AssistedInject constructor(
         }
     }
 
-    private fun setNotificationShown(type: String, siteId: Long) {
+    private fun setNotificationShown(type: String) {
         when (LocalNotificationType.fromString(type)) {
             LocalNotificationType.BLAZE_NO_CAMPAIGN_REMINDER -> {
-                appsPrefsWrapper.setBlazeNoCampaignReminderShown(siteId)
+                appsPrefsWrapper.isBlazeNoCampaignReminderShown = true
+                appsPrefsWrapper.removeBlazeFirstTimeWithoutCampaign()
+            }
+
+            LocalNotificationType.BLAZE_ABANDONED_CAMPAIGN_REMINDER -> {
+                appsPrefsWrapper.isBlazeAbandonedCampaignReminderShown = true
             }
 
             else -> {}
@@ -98,7 +103,7 @@ class LocalNotificationWorker @AssistedInject constructor(
         icon = null,
         noteTitle = title,
         noteMessage = description,
-        noteType = LOCAL_REMINDER,
+        noteType = LocalReminder,
         channelType = OTHER,
         data = data
     )

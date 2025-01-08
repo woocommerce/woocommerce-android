@@ -4,7 +4,9 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.SubscriptionProductVariation
+import com.woocommerce.android.ui.customfields.CustomFieldsRepository
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
@@ -24,7 +26,8 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 
 class ProductDetailBottomSheetBuilder(
     private val resources: ResourceProvider,
-    private val variationRepository: VariationRepository
+    private val variationRepository: VariationRepository,
+    private val customFieldsRepository: CustomFieldsRepository
 ) {
     enum class ProductDetailBottomSheetType(
         @StringRes val titleResource: Int,
@@ -35,7 +38,8 @@ class ProductDetailBottomSheetBuilder(
         PRODUCT_TAGS(string.product_tags, string.bottom_sheet_tags_desc),
         SHORT_DESCRIPTION(string.product_short_description, string.bottom_sheet_short_description_desc),
         LINKED_PRODUCTS(string.product_detail_linked_products, string.bottom_sheet_linked_products_desc),
-        PRODUCT_DOWNLOADS(string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc)
+        PRODUCT_DOWNLOADS(string.product_downloadable_files, string.bottom_sheet_downloadable_files_desc),
+        CUSTOM_FIELDS(string.product_custom_fields, string.product_custom_fields_desc)
     }
 
     data class ProductDetailBottomSheetUiItem(
@@ -45,75 +49,84 @@ class ProductDetailBottomSheetBuilder(
     )
 
     @Suppress("LongMethod")
-    fun buildBottomSheetList(product: Product): List<ProductDetailBottomSheetUiItem> {
-        return when (product.productType) {
+    suspend fun buildBottomSheetList(productAggregate: ProductAggregate): List<ProductDetailBottomSheetUiItem> {
+        return when (productAggregate.product.productType) {
             SIMPLE, SUBSCRIPTION -> {
                 listOfNotNull(
-                    product.getShipping(),
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts(),
-                    product.getDownloadableFiles()
+                    productAggregate.getShipping(),
+                    productAggregate.product.getCategories(),
+                    productAggregate.product.getTags(),
+                    productAggregate.product.getShortDescription(),
+                    productAggregate.product.getLinkedProducts(),
+                    productAggregate.product.getDownloadableFiles(),
+                    productAggregate.product.getCustomFields()
                 )
             }
+
             EXTERNAL -> {
                 listOfNotNull(
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts()
+                    productAggregate.product.getCategories(),
+                    productAggregate.product.getTags(),
+                    productAggregate.product.getShortDescription(),
+                    productAggregate.product.getLinkedProducts(),
+                    productAggregate.product.getCustomFields()
                 )
             }
+
             GROUPED -> {
                 listOfNotNull(
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts()
+                    productAggregate.product.getCategories(),
+                    productAggregate.product.getTags(),
+                    productAggregate.product.getShortDescription(),
+                    productAggregate.product.getLinkedProducts(),
+                    productAggregate.product.getCustomFields()
                 )
             }
+
             VARIABLE, VARIABLE_SUBSCRIPTION -> {
                 listOfNotNull(
-                    product.getShipping(),
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription(),
-                    product.getLinkedProducts()
+                    productAggregate.getShipping(),
+                    productAggregate.product.getCategories(),
+                    productAggregate.product.getTags(),
+                    productAggregate.product.getShortDescription(),
+                    productAggregate.product.getLinkedProducts(),
+                    productAggregate.product.getCustomFields()
                 )
             }
+
             else -> {
                 listOfNotNull(
-                    product.getCategories(),
-                    product.getTags(),
-                    product.getShortDescription()
+                    productAggregate.product.getCategories(),
+                    productAggregate.product.getTags(),
+                    productAggregate.product.getShortDescription(),
+                    productAggregate.product.getCustomFields()
                 )
             }
         }
     }
 
-    private fun Product.getShipping(): ProductDetailBottomSheetUiItem? {
-        return if (!isVirtual && !hasShipping) {
+    private fun ProductAggregate.getShipping(): ProductDetailBottomSheetUiItem? {
+        return if (!product.isVirtual && !hasShipping) {
             ProductDetailBottomSheetUiItem(
                 ProductDetailBottomSheetType.PRODUCT_SHIPPING,
                 ViewProductShipping(
                     ShippingData(
-                        weight = weight,
-                        length = length,
-                        width = width,
-                        height = height,
-                        shippingClassSlug = shippingClass,
-                        shippingClassId = shippingClassId,
-                        subscriptionShippingData = if (productType == SUBSCRIPTION ||
-                            this.productType == VARIABLE_SUBSCRIPTION
+                        weight = product.weight,
+                        length = product.length,
+                        width = product.width,
+                        height = product.height,
+                        shippingClassSlug = product.shippingClass,
+                        shippingClassId = product.shippingClassId,
+                        subscriptionShippingData = if (product.productType == SUBSCRIPTION ||
+                            product.productType == VARIABLE_SUBSCRIPTION
                         ) {
                             ShippingData.SubscriptionShippingData(
                                 oneTimeShipping = subscription?.oneTimeShipping ?: false,
-                                canEnableOneTimeShipping = if (productType == SUBSCRIPTION) {
+                                canEnableOneTimeShipping = if (product.productType == SUBSCRIPTION) {
                                     subscription?.supportsOneTimeShipping ?: false
                                 } else {
                                     // For variable subscription products, we need to check against the variations
-                                    variationRepository.getProductVariationList(remoteId).all {
+                                    variationRepository.getProductVariationList(product.remoteId).all {
                                         (it as? SubscriptionProductVariation)?.subscriptionDetails
                                             ?.supportsOneTimeShipping ?: false
                                     }
@@ -186,6 +199,20 @@ class ProductDetailBottomSheetBuilder(
         return ProductDetailBottomSheetUiItem(
             ProductDetailBottomSheetType.PRODUCT_DOWNLOADS,
             AddProductDownloadableFile
+        )
+    }
+
+    private suspend fun Product.getCustomFields(): ProductDetailBottomSheetUiItem? {
+        if (remoteId == ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID ||
+            customFieldsRepository.hasDisplayableCustomFields(remoteId)
+        ) {
+            return null
+        }
+
+        return ProductDetailBottomSheetUiItem(
+            ProductDetailBottomSheetType.CUSTOM_FIELDS,
+            ProductNavigationTarget.ViewCustomFields(remoteId),
+            AnalyticsEvent.PRODUCT_DETAIL_CUSTOM_FIELDS_TAPPED
         )
     }
 }

@@ -54,7 +54,7 @@ class UpdateOrdersListByStoreIdTest : BaseUnitTest() {
         val expectedIds = defaultOrderResponse.map { it.orderId }
         verify(listStore).saveListFetched(defaultListDescriptor, expectedIds, false)
         verify(storeOrdersListLastUpdate).invoke(defaultListDescriptor.uniqueIdentifier.value)
-        assertTrue(result)
+        assertTrue(result.isSuccess)
     }
 
     @Test
@@ -74,7 +74,7 @@ class UpdateOrdersListByStoreIdTest : BaseUnitTest() {
         val expectedIds = defaultOrderResponse.map { it.orderId }
         verify(listStore, never()).saveListFetched(defaultListDescriptor, expectedIds, false)
         verify(storeOrdersListLastUpdate, never()).invoke(defaultListDescriptor.uniqueIdentifier.value)
-        assertFalse(result)
+        assertFalse(result.isSuccess)
     }
 
     @Test
@@ -90,7 +90,7 @@ class UpdateOrdersListByStoreIdTest : BaseUnitTest() {
         val expectedIds = defaultOrderResponse.map { it.orderId }
         verify(listStore, never()).saveListFetched(defaultListDescriptor, expectedIds, false)
         verify(storeOrdersListLastUpdate, never()).invoke(defaultListDescriptor.uniqueIdentifier.value)
-        assertFalse(result)
+        assertFalse(result.isSuccess)
     }
 
     @Test
@@ -106,6 +106,6 @@ class UpdateOrdersListByStoreIdTest : BaseUnitTest() {
         val expectedIds = defaultOrderResponse.map { it.orderId }
         verify(listStore, never()).saveListFetched(defaultListDescriptor, expectedIds, false)
         verify(storeOrdersListLastUpdate).invoke(defaultListDescriptor.uniqueIdentifier.value)
-        assertTrue(result)
+        assertTrue(result.isSuccess)
     }
 }

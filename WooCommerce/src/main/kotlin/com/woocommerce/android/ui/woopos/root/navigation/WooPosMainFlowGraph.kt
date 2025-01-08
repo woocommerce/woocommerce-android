@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.root.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
+import com.woocommerce.android.ui.woopos.cashpayment.cashPaymentScreen
+import com.woocommerce.android.ui.woopos.emailreceipt.emailReceiptScreen
 import com.woocommerce.android.ui.woopos.home.homeScreen
 import com.woocommerce.android.ui.woopos.splash.SPLASH_ROUTE
 import com.woocommerce.android.ui.woopos.splash.splashScreen
@@ -17,5 +19,7 @@ fun NavGraphBuilder.mainGraph(
     ) {
         splashScreen(onNavigationEvent = onNavigationEvent)
         homeScreen(onNavigationEvent = onNavigationEvent)
+        cashPaymentScreen(onNavigationEvent = onNavigationEvent)
+        emailReceiptScreen(onNavigationEvent = onNavigationEvent)
     }
 }

@@ -6,6 +6,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.android.gms.wearable.DataMap
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.woocommerce.android.wear.datastore.DataStoreQualifier
 import com.woocommerce.android.wear.datastore.DataStoreType
 import com.woocommerce.android.wear.extensions.formatToYYYYmmDDhhmmss
@@ -24,6 +28,7 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.FetchRevenueStatsPayload
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import java.lang.reflect.Type
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
@@ -36,6 +41,11 @@ class StatsRepository @Inject constructor(
     private val locale: Locale
 ) {
     private val gson by lazy { Gson() }
+    private val statsGson by lazy {
+        GsonBuilder()
+            .registerTypeAdapter(StoreStatsData::class.java, StoreStatsDataDeserializer())
+            .create()
+    }
 
     suspend fun fetchRevenueStats(
         selectedSite: SiteModel
@@ -117,10 +127,27 @@ class StatsRepository @Inject constructor(
         selectedSite: SiteModel
     ) = statsDataStore.data
         .mapNotNull { it[stringPreferencesKey(generateStatsKey(selectedSite.siteId))] }
-        .map { gson.fromJson(it, StoreStatsData::class.java) }
+        .map { statsGson.fromJson(it, StoreStatsData::class.java) }
 
     private fun generateStatsKey(siteId: Long): String {
         return "$STATS_KEY_PREFIX:$siteId"
+    }
+
+    class StoreStatsDataDeserializer : JsonDeserializer<StoreStatsData> {
+        override fun deserialize(
+            json: JsonElement?,
+            typeOfT: Type?,
+            context: JsonDeserializationContext?
+        ): StoreStatsData {
+            val revenueDataJson = json?.asJsonObject?.get("revenueData")?.asJsonObject
+            val revenueData = RevenueData(
+                totalRevenue = revenueDataJson?.get("totalRevenue")?.asString ?: "",
+                orderCount = revenueDataJson?.get("orderCount")?.asInt ?: 0
+            )
+            val visitorData = json?.asJsonObject?.get("visitorData")?.asInt ?: 0
+
+            return StoreStatsData(revenueData, visitorData)
+        }
     }
 
     companion object {

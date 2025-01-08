@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
@@ -39,7 +38,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.CampaignCreationState
-import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -123,7 +121,7 @@ private fun PaymentSummaryContent(
         )
 
         PaymentTotals(
-            budget = state.budgetFormatted,
+            displayBudget = state.displayBudget,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -146,30 +144,26 @@ private fun PaymentSummaryContent(
         )
 
         val termsOfServices = annotatedStringRes(
-            stringResId = R.string.blaze_campaign_payment_summary_terms_and_conditions
+            stringResId = R.string.blaze_campaign_payment_summary_terms_and_conditions,
+            onUrlClick = { url ->
+                when (url) {
+                    "termsOfService" ->
+                        ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
+
+                    "advertisingPolicy" ->
+                        ChromeCustomTabUtils.launchUrl(context, AppUrls.ADVERTISING_POLICY)
+
+                    "learnMore" ->
+                        ChromeCustomTabUtils.launchUrl(context, AppUrls.BLAZE_SUPPORT)
+                }
+            }
         )
-        ClickableText(
+
+        Text(
             text = termsOfServices,
-            style = MaterialTheme.typography.caption.copy(
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-            ),
-            onClick = { offset ->
-                termsOfServices.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = offset, end = offset)
-                    .firstOrNull()
-                    ?.let { annotation ->
-                        when (annotation.item) {
-                            "termsOfService" ->
-                                ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
-
-                            "advertisingPolicy" ->
-                                ChromeCustomTabUtils.launchUrl(context, AppUrls.ADVERTISING_POLICY)
-
-                            "learnMore" ->
-                                ChromeCustomTabUtils.launchUrl(context, AppUrls.BLAZE_SUPPORT)
-                        }
-                    }
-            },
+            style = MaterialTheme.typography.caption,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
             modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
     }
@@ -263,7 +257,7 @@ private fun CampaignCreationErrorUi(
 
 @Composable
 private fun PaymentTotals(
-    budget: String,
+    displayBudget: String,
     modifier: Modifier
 ) {
     Column(
@@ -285,7 +279,7 @@ private fun PaymentTotals(
             )
 
             Text(
-                text = budget,
+                text = displayBudget,
                 style = MaterialTheme.typography.body2
             )
         }
@@ -300,7 +294,7 @@ private fun PaymentTotals(
             )
 
             Text(
-                text = budget,
+                text = displayBudget,
                 style = MaterialTheme.typography.subtitle2
             )
         }
@@ -403,7 +397,7 @@ private fun BlazeCampaignPaymentSummaryScreenPreview() {
     WooThemeWithBackground {
         BlazeCampaignPaymentSummaryScreen(
             state = BlazeCampaignPaymentSummaryViewModel.ViewState(
-                budgetFormatted = "100 USD",
+                displayBudget = "100 USD",
                 paymentMethodsState = BlazeCampaignPaymentSummaryViewModel.PaymentMethodsState.Success(
                     BlazeRepository.PaymentMethodsData(
                         listOf(

@@ -21,7 +21,6 @@ import org.junit.After
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -71,11 +70,7 @@ class OrdersRealAPI : TestBase() {
 
     @After
     fun tearDown() {
-        OrderListScreen()
-            .leaveOrClearSearchMode()
-
-        WelcomeScreen
-            .logoutIfNeeded(composeTestRule)
+        WelcomeScreen.logoutIfNeeded(composeTestRule)
     }
 
     @Retry(numberOfTimes = 1)
@@ -122,9 +117,7 @@ class OrdersRealAPI : TestBase() {
             .assertOrdersCount(2)
     }
 
-    @Retry(numberOfTimes = 1)
     @Test
-    @Ignore
     fun e2eRealApiOrderDetails() {
         try {
             OrderListScreen()

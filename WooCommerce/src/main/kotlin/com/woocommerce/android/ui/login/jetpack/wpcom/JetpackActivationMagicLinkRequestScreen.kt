@@ -172,10 +172,17 @@ private fun MagicLinkSentContent(
                     style = MaterialTheme.typography.subtitle1,
                     textAlign = TextAlign.Center
                 )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_50)))
                 Text(
                     text = viewState.email,
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Text(
+                    text = stringResource(id = R.string.login_magic_links_email_sent_double_check_email),
+                    style = MaterialTheme.typography.body2,
                     textAlign = TextAlign.Center
                 )
             } else {
@@ -208,7 +215,8 @@ private fun MagicLinkRequestPreview() {
                 avatarUrl = "avatar",
                 isJetpackInstalled = false,
                 allowPasswordLogin = true,
-                isLoadingDialogShown = false
+                isLoadingDialogShown = false,
+                isNewWpComAccount = false
             )
         )
     }

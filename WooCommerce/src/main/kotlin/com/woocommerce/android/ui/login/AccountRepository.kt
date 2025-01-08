@@ -8,6 +8,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.LOGIN
 import com.woocommerce.android.util.dispatchAndAwait
@@ -32,7 +33,8 @@ class AccountRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val zendeskSettings: ZendeskSettings,
     private val prefs: AppPrefs,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
+    private val siteVisibilityDataStore: VisibleWooSitesDataStore
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -112,8 +114,11 @@ class AccountRepository @Inject constructor(
         AnalyticsTracker.clearAllData()
         zendeskSettings.clearIdentity()
 
-        // Wipe user-specific preferences
-        prefs.resetUserPreferences()
+        // Wipe user-specific preferences and prefs data store
+        appCoroutineScope.launch {
+            prefs.resetUserPreferences()
+            siteVisibilityDataStore.clearAll()
+        }
 
         selectedSite.reset()
 

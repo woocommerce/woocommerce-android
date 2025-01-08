@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.ui.products.ProductBackorderStatus.NotAvailable
 import com.woocommerce.android.ui.products.ProductStatus.DRAFT
 import com.woocommerce.android.ui.products.ProductStatus.PUBLISH
 import com.woocommerce.android.ui.products.ProductStockStatus.InStock
-import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
-import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
 import java.math.BigDecimal
 import java.util.Date
@@ -65,6 +64,7 @@ object ProductHelper {
             isStockManaged = false,
             stockQuantity = 0.0,
             sku = "",
+            globalUniqueId = "",
             slug = "",
             length = 0f,
             width = 0f,
@@ -93,12 +93,6 @@ object ProductHelper {
             variationIds = listOf(),
             downloads = listOf(),
             isPurchasable = false,
-            subscription =
-            if (productType == SUBSCRIPTION || productType == VARIABLE_SUBSCRIPTION) {
-                getDefaultSubscriptionDetails()
-            } else {
-                null
-            },
             isSampleProduct = false,
             parentId = 0,
             minAllowedQuantity = null,
@@ -106,7 +100,21 @@ object ProductHelper {
             bundleMinSize = null,
             bundleMaxSize = null,
             groupOfQuantity = null,
-            combineVariationQuantities = null
+            combineVariationQuantities = null,
+            password = null,
+        )
+    }
+
+    fun getDefaultProductAggregate(productType: ProductType, isVirtual: Boolean): ProductAggregate {
+        return ProductAggregate(
+            product = getDefaultNewProduct(productType, isVirtual),
+            subscription = if (productType == ProductType.SUBSCRIPTION ||
+                productType == ProductType.VARIABLE_SUBSCRIPTION
+            ) {
+                getDefaultSubscriptionDetails()
+            } else {
+                null
+            }
         )
     }
 

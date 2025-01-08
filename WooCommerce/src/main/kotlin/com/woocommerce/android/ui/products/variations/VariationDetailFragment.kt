@@ -211,6 +211,7 @@ class VariationDetailFragment :
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.onVariationChanged(
                 sku = it.sku,
+                globalUniqueId = it.globalUniqueId,
                 stockStatus = it.stockStatus,
                 stockQuantity = it.stockQuantity,
                 backorderStatus = it.backorderStatus,

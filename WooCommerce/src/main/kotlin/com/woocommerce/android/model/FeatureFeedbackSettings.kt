@@ -27,9 +27,7 @@ data class FeatureFeedbackSettings(
         SHIPPING_LABEL_M4,
         PRODUCT_ADDONS,
         SIMPLE_PAYMENTS_AND_ORDER_CREATION,
-        COUPONS,
         ANALYTICS_HUB,
-        TAP_TO_PAY,
         ORDER_SHIPPING_LINES
     }
 

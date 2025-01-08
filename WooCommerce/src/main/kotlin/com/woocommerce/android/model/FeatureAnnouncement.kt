@@ -16,7 +16,7 @@ data class FeatureAnnouncement(
     val features: List<FeatureAnnouncementItem>
 ) : Parcelable {
     companion object {
-        const val openEndedVersionBracketIndicator = "-1.0"
+        const val OPEN_ENDED_VERSION_BRACKET_INDICATOR = "-1.0"
     }
 
     // An announcement is valid and can be shown if:
@@ -38,10 +38,10 @@ data class FeatureAnnouncement(
                 val maxAppVersion = WhatsNewAppVersionUtils.versionNameToInt(maximumAppVersion)
 
                 when {
-                    minimumAppVersion == openEndedVersionBracketIndicator -> {
+                    minimumAppVersion == OPEN_ENDED_VERSION_BRACKET_INDICATOR -> {
                         integerRepresentationOfVersionName <= maxAppVersion
                     }
-                    maximumAppVersion == openEndedVersionBracketIndicator -> {
+                    maximumAppVersion == OPEN_ENDED_VERSION_BRACKET_INDICATOR -> {
                         integerRepresentationOfVersionName >= minAppVersion
                     }
                     else -> {

@@ -12,26 +12,37 @@ class UpdateOrdersListByStoreId @Inject constructor(
     private val ordersStore: WCOrderStore,
     private val storeOrdersListLastUpdate: StoreOrdersListLastUpdate
 ) {
-    suspend operator fun invoke(siteId: Long, deleteOldData: Boolean = false): Boolean {
-        val listDescriptor = getWCOrderListDescriptorWithFiltersBySiteId(siteId) ?: return false
+    suspend operator fun invoke(siteId: Long, deleteOldData: Boolean = false): Result<Unit> {
+        val listDescriptor = getWCOrderListDescriptorWithFiltersBySiteId(siteId)
+            ?: return Result.failure(
+                Exception("${UpdateOrdersListByStoreId::class.java.name} There is no list descriptor")
+            )
         val response = ordersStore.fetchOrdersListFirstPage(listDescriptor, deleteOldData)
         val orders = response.model
 
-        return if (response.isError || orders == null) {
-            false
-        } else {
-            orders
-                .map { it.orderId }
-                .let { remoteIds ->
-                    listStore.saveListFetched(
-                        listDescriptor = listDescriptor,
-                        remoteItemIds = remoteIds,
-                        canLoadMore = remoteIds.size == listDescriptor.config.networkPageSize
-                    )
-                }
+        return when {
+            response.isError -> Result.failure(
+                Exception("${UpdateOrdersListByStoreId::class.java.name} ${response.error.message}")
+            )
 
-            storeOrdersListLastUpdate(listDescriptor.uniqueIdentifier.value)
-            true
+            orders == null -> Result.failure(
+                Exception("${UpdateOrdersListByStoreId::class.java.name} There is no orders")
+            )
+
+            else -> {
+                orders
+                    .map { it.orderId }
+                    .let { remoteIds ->
+                        listStore.saveListFetched(
+                            listDescriptor = listDescriptor,
+                            remoteItemIds = remoteIds,
+                            canLoadMore = remoteIds.size == listDescriptor.config.networkPageSize
+                        )
+                    }
+
+                storeOrdersListLastUpdate(listDescriptor.uniqueIdentifier.value)
+                Result.success(Unit)
+            }
         }
     }
 }

@@ -20,22 +20,21 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalRippleConfiguration
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.ProvideTextStyle
+import androidx.compose.material.RippleConfiguration
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WCColoredButton(
     onClick: () -> Unit,
@@ -66,23 +66,9 @@ fun WCColoredButton(
     shape: Shape = MaterialTheme.shapes.small,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val contentColor by colors.contentColor(enabled = enabled)
-    val rippleTheme = remember(rippleColor, contentColor) {
-        object : RippleTheme {
-            @Composable
-            override fun defaultColor(): Color = RippleTheme.defaultRippleColor(
-                rippleColor,
-                MaterialTheme.colors.isLight
-            )
+    val rippleConfiguration = RippleConfiguration(color = rippleColor)
 
-            @Composable
-            override fun rippleAlpha(): RippleAlpha = RippleTheme.defaultRippleAlpha(
-                rippleColor,
-                MaterialTheme.colors.isLight
-            )
-        }
-    }
-    CompositionLocalProvider(LocalRippleTheme provides rippleTheme) {
+    CompositionLocalProvider(LocalRippleConfiguration provides rippleConfiguration) {
         Button(
             onClick = onClick,
             enabled = enabled,

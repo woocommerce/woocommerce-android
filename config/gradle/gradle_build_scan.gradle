@@ -1,4 +1,3 @@
-Boolean userEnabledTracking = (findProperty('tracksEnabled') ?: false).toBoolean()
 Boolean isBuildOnCI = (System.getenv('CI') ?: false).toBoolean()
 
 if (isBuildOnCI || userEnabledTracking) {

@@ -34,6 +34,10 @@ class OrderFiltersCard @JvmOverloads constructor(
         }
     }
 
+    fun isEnabled(value: Boolean) {
+        binding.btnOrderFilter.isEnabled = value
+    }
+
     private fun setFiltersTitle(@StringRes stringId: Int) {
         binding.filtersTitle.text = context.getString(stringId)
     }

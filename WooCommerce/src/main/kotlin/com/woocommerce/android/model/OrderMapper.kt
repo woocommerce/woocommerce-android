@@ -127,7 +127,8 @@ class OrderMapper @Inject constructor(
                         Item.Attribute(attribute.key.orEmpty(), attribute.value.orEmpty())
                     },
                     it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull(),
-                    configurationKey = it.configurationKey
+                    configurationKey = it.configurationKey,
+                    containsMetadata = it.metaData?.isNotEmpty() ?: false
                 )
             }
 

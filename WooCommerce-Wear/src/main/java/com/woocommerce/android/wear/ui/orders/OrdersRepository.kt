@@ -50,11 +50,11 @@ class OrdersRepository @Inject constructor(
         .takeUnless { it.isError }
         ?.model
         ?.map { it.toAppModel() }
-        ?: emptyList()
 
     suspend fun getStoredOrders(
         selectedSite: SiteModel
     ) = orderStore.getOrdersForSite(selectedSite)
+        .sortedByDescending { it.dateCreated }
 
     suspend fun getOrderFromId(
         selectedSite: SiteModel,

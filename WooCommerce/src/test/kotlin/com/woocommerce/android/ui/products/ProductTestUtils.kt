@@ -116,16 +116,21 @@ object ProductTestUtils {
 
     fun generateProductVariation(
         productId: Long = 1L,
-        variationId: Long = 1L
+        variationId: Long = 1L,
+        amount: String = "10.00",
+        isVirtual: Boolean = false,
+        isDownloadable: Boolean = false,
     ): ProductVariation {
         return WCProductVariationModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
             localSiteId = 1
             remoteProductId = productId
             remoteVariationId = variationId
-            price = "10.00"
+            price = amount
             image = ""
             attributes = ""
+            virtual = isVirtual
+            downloadable = isDownloadable
         }.toAppModel().also { it.priceWithCurrency = "$10.00" }
     }
 

@@ -493,18 +493,6 @@ class AppPrefsTest {
     }
 
     @Test
-    fun givenTTPWasUsedAtLeastOnceNeverInvokedThenIsTTPWasUsedAtLeastOnceReturnsFalse() {
-        assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isFalse
-    }
-
-    @Test
-    fun givenTTPWasUsedAtLeastOnceInvokedThenIsTTPWasUsedAtLeastOnceReturnsTrue() {
-        AppPrefs.setTTPWasUsedAtLeastOnce()
-
-        assertThat(AppPrefs.isTTPWasUsedAtLeastOnce()).isTrue
-    }
-
-    @Test
     fun givenIppWasNotUsedWhenGetCardReaderLastSuccessfulPaymentThenTimeReturnedZero() {
         assertThat(AppPrefs.getCardReaderLastSuccessfulPaymentTime()).isEqualTo(0L)
     }

@@ -506,12 +506,9 @@ private fun OrderCreateEditTotalsFullViewPreview() {
                     enabled = true,
                     onClick = {},
                 ),
-                TotalsSectionsState.Line.Button(
-                    text = stringResource(R.string.order_creation_coupon_button),
-                    value = "-$4.25",
-                    extraValue = "20 OFF",
-                    enabled = false,
-                    onClick = {},
+                TotalsSectionsState.Line.Simple(
+                    label = stringResource(R.string.order_creation_coupons_title),
+                    value = "-$4.25"
                 ),
                 TotalsSectionsState.Line.Button(
                     text = stringResource(R.string.order_gift_card),

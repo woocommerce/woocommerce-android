@@ -98,7 +98,8 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
                 .actionJetpackActivationWPComPasswordFragmentToJetpackActivationMagicLinkRequestFragment(
                     emailOrUsername = event.emailOrUsername,
                     jetpackStatus = event.jetpackStatus,
-                    isAccountPasswordless = false
+                    isAccountPasswordless = false,
+                    isNewWpComAccount = false
                 )
         )
     }

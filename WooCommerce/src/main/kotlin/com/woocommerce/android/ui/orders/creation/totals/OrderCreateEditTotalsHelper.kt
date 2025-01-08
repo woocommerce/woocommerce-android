@@ -22,7 +22,6 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         order: Order,
         mode: OrderCreateEditViewModel.Mode,
         viewState: ViewState,
-        onCouponsClicked: () -> Unit,
         onGiftClicked: () -> Unit,
         onTaxesLearnMore: () -> Unit,
         onMainButtonClicked: () -> Unit,
@@ -47,11 +46,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     order.toProductsSection(bigDecimalFormatter),
                     order.toCustomAmountSection(bigDecimalFormatter),
                     order.toShippingSection(bigDecimalFormatter),
-                    order.toCouponsSection(
-                        enabled = viewState.isCouponButtonEnabled && viewState.isIdle,
-                        bigDecimalFormatter,
-                        onClick = onCouponsClicked
-                    ),
+                    order.toCouponsSection(bigDecimalFormatter),
                     order.toGiftSection(
                         enabled = viewState.isAddGiftCardButtonEnabled && viewState.isIdle,
                         bigDecimalFormatter,
@@ -159,20 +154,15 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         }
 
     private fun Order.toCouponsSection(
-        enabled: Boolean,
-        bigDecimalFormatter: (BigDecimal) -> String,
-        onClick: () -> Unit
+        bigDecimalFormatter: (BigDecimal) -> String
     ): TotalsSectionsState.Line? =
         if (discountCodes.isNotNullOrEmpty()) {
-            TotalsSectionsState.Line.Button(
-                text = resourceProvider.getString(R.string.order_creation_coupon_button),
+            TotalsSectionsState.Line.Simple(
+                label = resourceProvider.getString(R.string.order_creation_coupon_button),
                 value = resourceProvider.getString(
                     R.string.order_creation_coupon_discount_value,
                     bigDecimalFormatter(discountTotal)
-                ),
-                extraValue = discountCodes,
-                enabled = enabled,
-                onClick = onClick,
+                )
             )
         } else {
             null

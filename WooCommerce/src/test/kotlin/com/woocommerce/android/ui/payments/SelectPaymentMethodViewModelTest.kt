@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments
 
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
@@ -113,7 +112,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     private val learnMoreUrlProvider: LearnMoreUrlProvider = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus = mock()
-    private val appPrefs: AppPrefs = mock()
     private val paymentsUtils: PaymentUtils = mock()
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
     private val logOrderCurrencyMismatchWithSiteSettings = mock<SelectPaymentMethodCurrencyMissMatchLog>()
@@ -586,19 +584,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
                 cardReaderType = "built_in",
                 timeElapsed = null,
             )
-        }
-
-    @Test
-    fun `when on tap too pay clicked, then app prefs stores ttp was used`() =
-        testBlocking {
-            // GIVEN
-            val viewModel = initViewModel(Payment(1L, SIMPLE))
-
-            // WHEN
-            viewModel.onTapToPayClicked()
-
-            // THEN
-            verify(appPrefs).setTTPWasUsedAtLeastOnce()
         }
 
     @Test
@@ -1226,7 +1211,6 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             paymentsFlowTracker,
             tapToPayAvailabilityStatus,
             cardReaderTrackingInfoKeeper,
-            appPrefs,
             paymentsUtils,
             logOrderCurrencyMismatchWithSiteSettings,
         )

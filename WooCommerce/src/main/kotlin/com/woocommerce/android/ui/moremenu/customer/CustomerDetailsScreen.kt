@@ -68,6 +68,7 @@ fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
             CustomerDetailsScreen(
                 state = currentState,
                 onRefresh = viewModel::refresh,
+                onEmailTapped = viewModel::onEmailTapped,
                 modifier = Modifier.padding(padding)
             )
         }
@@ -79,6 +80,7 @@ fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
 fun CustomerDetailsScreen(
     state: CustomerViewState,
     onRefresh: () -> Unit,
+    onEmailTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val pullRefreshState = rememberPullRefreshState(state.isRefreshingData, { onRefresh() })
@@ -86,7 +88,8 @@ fun CustomerDetailsScreen(
         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
             CustomerSection(
                 customer = state.customerWithAnalytics,
-                isLoadingAnalytics = state.isLoadingAnalytics
+                isLoadingAnalytics = state.isLoadingAnalytics,
+                onEmailTapped = onEmailTapped
             )
             OrdersSection(
                 customer = state.customerWithAnalytics,
@@ -118,12 +121,16 @@ fun CustomerDetailsScreen(
 @Composable
 fun CustomerSection(
     customer: CustomerWithAnalytics,
-    isLoadingAnalytics: Boolean
+    isLoadingAnalytics: Boolean,
+    onEmailTapped: () -> Unit,
 ) {
     SectionTitle(stringResource(id = R.string.customers_details_customer_section))
     SectionValue(title = customer.getFullName(), value = null)
     Divider()
-    SectionValue(title = customer.email) {
+    SectionValue(
+        title = customer.email,
+        action = onEmailTapped
+    ) {
         Icon(
             imageVector = Icons.Filled.Email,
             contentDescription = "",

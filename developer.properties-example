@@ -1,0 +1,5 @@
+# The type of in app update FLEXIBLE = 0; IMMEDIATE = 1
+wc.in_app_update_type = 0
+wc.iap_testing_sandbox_url=
+wc.jitm_testing_json_file_name=
+enable_leak_canary=true

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.util
 
+import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher
@@ -11,6 +12,8 @@ import org.junit.runner.Description
 
 @ExperimentalCoroutinesApi
 class WooPosCoroutineTestRule(val testDispatcher: TestDispatcher = UnconfinedTestDispatcher()) : TestWatcher() {
+    val testDispatchers = CoroutineDispatchers(testDispatcher, testDispatcher, testDispatcher)
+
     override fun starting(description: Description?) {
         super.starting(description)
         Dispatchers.setMain(testDispatcher)

@@ -73,9 +73,6 @@
             android:id="@+id/action_dashboard_to_aboutYourStoreFragment"
             app:destination="@id/aboutYourStoreFragment" />
         <action
-            android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
-            app:destination="@id/AIProductDescriptionDialogFragment" />
-        <action
             android:id="@+id/action_dashboard_to_nameYourStoreDialogFragment"
             app:destination="@id/nameYourStoreDialogFragment" />
         <action
@@ -159,6 +156,14 @@
         <action
             android:id="@+id/action_orderListFragment_to_orderConnectivityToolFragment"
             app:destination="@id/orderConnectivityToolFragment" />
+        <action
+            android:id="@+id/action_orderListFragment_to_ordersListStatusSelectorDialog"
+            app:destination="@id/ordersListStatusSelectorDialog"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
+
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -312,7 +317,7 @@
             app:destination="@id/nav_graph_coupons" />
         <action
             android:id="@+id/action_moreMenu_to_paymentFlow"
-            app:destination="@id/paymentFlow"
+            app:destination="@id/nav_graph_payment_flow"
             app:enterAnim="@null">
             <argument
                 android:name="cardReaderFlowParam"
@@ -398,6 +403,27 @@
     <action
         android:id="@+id/action_global_productDetailFragment"
         app:destination="@id/nav_graph_products">
+        <argument
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
+        <argument
+            android:name="isTrashEnabled"
+            android:defaultValue="false"
+            app:argType="boolean" />
+        <argument
+            android:name="images"
+            android:defaultValue="@null"
+            app:argType="string[]"
+            app:nullable="true" />
+        <argument
+            android:name="source"
+            android:defaultValue="PRODUCT_TAB"
+            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
+    </action>
+    <action
+        android:id="@+id/action_global_productDetailFragment_popUpTo_product_list"
+        app:destination="@id/nav_graph_products"
+        app:popUpTo="@id/products">
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
@@ -608,7 +634,7 @@
             app:nullable="false" />
     </dialog>
     <action
-        android:id="@+id/action_open_Whatsnew_from_Main"
+        android:id="@+id/action_global_FeatureAnnouncementDialogFragmentOnMain"
         app:destination="@id/featureAnnouncementDialogFragmentOnMain"
         app:enterAnim="@anim/activity_fade_in"
         app:exitAnim="@null"
@@ -749,10 +775,6 @@
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
     <dialog
-        android:id="@+id/AIProductDescriptionDialogFragment"
-        android:name="com.woocommerce.android.ui.dashboard.AIProductDescriptionDialogFragment"
-        android:label="AIProductDescriptionDialogFragment" />
-    <dialog
         android:id="@+id/createTestOrderDialogFragment"
         android:name="com.woocommerce.android.ui.orders.list.CreateTestOrderDialogFragment"
         android:label="CreateTestOrderDialogFragment">
@@ -811,6 +833,11 @@
             android:name="isPostCampaignCreation"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="campaignId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/orderConnectivityToolFragment"
@@ -843,4 +870,29 @@
         android:id="@+id/googleAdsCampaignSuccessBottomSheetFragment"
         android:name="com.woocommerce.android.ui.google.ads.success.GoogleAdsCampaignSuccessBottomSheetFragment"
         android:label="GoogleAdsCampaignSuccessBottomSheetFragment" />
+    <fragment
+        android:id="@+id/blazeCampaignDetailWebViewFragment"
+        android:name="com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment"
+        android:label="BlazeCampaignDetailWebViewFragment">
+        <argument
+            android:name="campaignId"
+            app:argType="string" />
+    </fragment>
+    <action
+        android:id="@+id/action_global_blazeCampaignDetailWebViewFragment"
+        app:destination="@id/blazeCampaignDetailWebViewFragment" />
+    <dialog
+        android:id="@+id/ordersListStatusSelectorDialog"
+        android:name="com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog">
+        <argument
+            android:name="currentStatus"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="orderStatusList"
+            app:argType="com.woocommerce.android.model.Order$OrderStatus[]" />
+        <argument
+            android:name="positiveButtonLabel"
+            app:argType="integer" />
+    </dialog>
 </navigation>

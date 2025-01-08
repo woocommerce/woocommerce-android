@@ -81,6 +81,7 @@ class ReviewDetailFragment :
         return inflater.inflate(R.layout.fragment_review_detail, container, false)
     }
 
+    @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

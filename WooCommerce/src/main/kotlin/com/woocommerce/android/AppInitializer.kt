@@ -20,7 +20,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.background.BackgroundUpdatesDisabled
 import com.woocommerce.android.background.UpdateDataOnBackgroundWorker
-import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
@@ -128,16 +127,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var siteObserver: SiteObserver
 
-    @Inject
-    lateinit var blazeCampaignsObserver: BlazeCampaignsObserver
+    @Inject lateinit var blazeCampaignsObserver: BlazeCampaignsObserver
 
     @Inject lateinit var wooLog: WooLogWrapper
 
     @Inject lateinit var registerDevice: RegisterDevice
 
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
-
-    @Inject lateinit var featureFlagRepository: WPComRemoteFeatureFlagRepository
 
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
@@ -150,7 +146,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
 
-    @Inject @AppCoroutineScope
+    @Inject
+    @AppCoroutineScope
     lateinit var appCoroutineScope: CoroutineScope
 
     @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
@@ -237,9 +234,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
         appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
-        appCoroutineScope.launch {
-            featureFlagRepository.fetchFeatureFlags(PackageUtils.getVersionName(application.applicationContext))
-        }
 
         monitorApplicationPasswordsStatus()
 

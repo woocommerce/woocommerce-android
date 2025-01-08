@@ -15,7 +15,7 @@ data class PaymentsHubViewState(
         abstract val index: Int
         abstract var isEnabled: Boolean
 
-        data class DepositSummaryListItem(override val index: Int = 0) : ListItem() {
+        data class PayoutSummaryListItem(override val index: Int = 0) : ListItem() {
             override val label: UiString? = null
             override val icon: Int? = null
             override val onClick: (() -> Unit)? = null

@@ -35,10 +35,10 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenWPComWebView
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.PopBackStackForWooPOS
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ReturnToWooPos
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ShowCardReaderTutorial
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ShowToast
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.ShowToastString
@@ -59,9 +59,6 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -69,7 +66,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.prefs.DeveloperOptionsRepository
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -243,7 +240,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun onReadyToStartScanning() {
         if (!cardReaderManager.initialized) {
             cardReaderManager.initialize(
-                updateFrequency = mapUpdateOptions(appPrefs.selectedUpdateReaderOption()),
+                updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                 useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
                 BuildConfig.DEBUG,
             )
@@ -251,10 +248,6 @@ class CardReaderConnectViewModel @Inject constructor(
         launch {
             startScanningIfNotStarted()
         }
-    }
-
-    private fun mapUpdateOptions(updateFrequency: String): CardReaderManager.SimulatorUpdateFrequency {
-        return CardReaderManager.SimulatorUpdateFrequency.valueOf(updateFrequency)
     }
 
     private suspend fun startScanningIfNotStarted() {
@@ -522,26 +515,26 @@ class CardReaderConnectViewModel @Inject constructor(
         exitFlow(connected = true)
     }
 
+    fun onBackPressed() {
+        onCancelClicked()
+    }
+
     private fun exitFlow(connected: Boolean) {
-        if (!connected) {
-            when (val param = arguments.cardReaderFlowParam) {
-                is CardReadersHub, is Refund -> triggerEvent(ExitWithResult(false))
-                is Payment -> {
-                    if (param.paymentType == Payment.PaymentType.WOO_POS) {
-                        returnToWooPos()
-                    } else {
-                        triggerEvent(ExitWithResult(false))
-                    }
-                }
-                CardReaderFlowParam.WooPosConnection -> returnToWooPos()
-            }
-        } else {
-            triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam, arguments.cardReaderType))
+        val param = arguments.cardReaderFlowParam
+        when {
+            param is CardReaderFlowParam.WooPosConnection -> returnToWooPos()
+            !connected -> triggerEvent(ExitWithResult(false))
+            else -> triggerEvent(
+                ShowCardReaderTutorial(
+                    arguments.cardReaderFlowParam,
+                    arguments.cardReaderType
+                )
+            )
         }
     }
 
     private fun returnToWooPos() {
-        triggerEvent(PopBackStackForWooPOS)
+        triggerEvent(ReturnToWooPos)
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {

@@ -20,6 +20,8 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ListItem.ProductListItem
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.OrderListFilter
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.Undefined
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorRepository
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.util.CurrencyFormatter
@@ -106,7 +108,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     fun `given variable product, when view model created, should generate correct item subtitle`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
-            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            productSelectorFlow = Undefined,
         ).toSavedStateHandle()
 
         whenever(currencyFormatter.formatCurrency(VARIABLE_PRODUCT.price!!, "USD"))
@@ -128,7 +130,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     fun `given variable subscription product, when view model created, should generate correct item subtitle`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
-            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            productSelectorFlow = Undefined,
         ).toSavedStateHandle()
 
         whenever(currencyFormatter.formatCurrency(VARIABLE_SUBSCRIPTION_PRODUCT.price!!, "USD"))
@@ -150,7 +152,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     fun `given non-variable product, when view model created, should generate correct item subtitle`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
-            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            productSelectorFlow = Undefined,
         ).toSavedStateHandle()
 
         whenever(currencyFormatter.formatCurrency(VALID_PRODUCT.price!!, "USD")).thenReturn("$${VALID_PRODUCT.price}")
@@ -171,7 +173,7 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
     fun `given no restrictions, when view model created, should show all products`() {
         val navArgs = ProductSelectorFragmentArgs(
             selectedItems = emptyArray(),
-            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined,
+            productSelectorFlow = Undefined,
         ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
@@ -1477,6 +1479,28 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
         assertThat(state.products).allMatch {
             it is ProductListItem && it.numVariations == 0
         }
+    }
+
+    @Test
+    fun `shouldDisplayFilterButton is true when productFlow is Undefined`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            productSelectorFlow = Undefined,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        val viewState = sut.viewState.captureValues().last()
+        assertThat(viewState.shouldDisplayFilterButton).isTrue
+    }
+
+    @Test
+    fun `shouldDisplayFilterButton is false when productFlow is OrderListFilter`() = testBlocking {
+        val navArgs = ProductSelectorFragmentArgs(
+            productSelectorFlow = OrderListFilter,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+        val viewState = sut.viewState.captureValues().last()
+        assertThat(viewState.shouldDisplayFilterButton).isFalse
     }
 
     private fun generateProductListItem(

@@ -212,7 +212,7 @@ class ProductImagesFragment :
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_IMAGES_DIALOG_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
                 ShowImageSourceDialog -> showImageSourceDialog()
-                is ShowImageDetail -> showImageDetail(event.image, event.isOpenedDirectly)
+                is ShowImageDetail -> showImageDetail(event.image)
                 ShowStorageChooser -> mediaPickerHelper.showMediaPicker(DEVICE, allowMultiSelect = true)
                 ShowCamera -> mediaPickerHelper.showMediaPicker(CAMERA)
                 ShowWPMediaPicker -> mediaPickerHelper.showMediaPicker(WP_MEDIA_LIBRARY, allowMultiSelect = true)
@@ -264,7 +264,7 @@ class ProductImagesFragment :
         viewModel.onGalleryImageMoved(from, to)
     }
 
-    private fun showImageDetail(image: Product.Image, skipThrottling: Boolean) {
+    private fun showImageDetail(image: Product.Image) {
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
             isDeletingAllowed = viewModel.isImageDeletingAllowed,
             mediaId = image.id,
@@ -274,7 +274,7 @@ class ProductImagesFragment :
             showChooser = false,
             images = viewModel.images.toTypedArray()
         )
-        findNavController().navigateSafely(action, skipThrottling)
+        findNavController().navigateSafely(action)
     }
 
     private fun showImageSourceDialog() {

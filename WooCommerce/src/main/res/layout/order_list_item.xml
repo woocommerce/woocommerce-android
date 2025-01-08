@@ -13,12 +13,33 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/orderImageSelected"
+            android:layout_width="@dimen/major_250"
+            android:layout_height="@dimen/major_250"
+            android:layout_marginStart="@dimen/major_75"
+            android:layout_marginEnd="@dimen/major_75"
+            android:importantForAccessibility="no"
+            android:src="@drawable/product_selected_overlay"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/start_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="orderImageSelected"/>
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderDate"
             style="@style/Woo.ListItem.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/start_barrier"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="May 11, 1967 11:30"/>
 
@@ -28,21 +49,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_50"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/start_barrier"
             app:layout_constraintTop_toBottomOf="@+id/orderDate"
             tools:text="#51"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderName"
             style="@style/Woo.ListItem.Title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/minor_100"
             android:layout_marginTop="@dimen/minor_50"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintEnd_toStartOf="@+id/orderTotal"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/orderNum"
+            app:layout_constraintEnd_toStartOf="@+id/orderTotal"
             app:layout_constraintTop_toBottomOf="@+id/orderDate"
             tools:text="John Doe"/>
 
@@ -52,6 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_50"
+            android:layout_marginEnd="@dimen/major_100"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/orderDate"
             tools:text="$100"/>
@@ -59,20 +80,21 @@
         <com.woocommerce.android.widgets.FlowLayout
             android:id="@+id/orderTags"
             style="@style/Woo.FlowLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@+id/divider"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/orderName"/>
+            app:layout_constraintStart_toEndOf="@id/start_barrier"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orderName" />
 
         <View
             style="@style/Woo.Divider"
             android:id="@+id/divider"
             android:layout_width="0dp"
+            android:layout_marginStart="@dimen/major_100"
             app:layout_constraintTop_toBottomOf="@+id/orderTags"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/orderNum"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

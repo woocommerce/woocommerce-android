@@ -7,8 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -98,6 +99,8 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
+import com.woocommerce.android.ui.orders.creation.coupon.CouponLineDetails
+import com.woocommerce.android.ui.orders.creation.coupon.CouponSection
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
@@ -113,10 +116,10 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
-import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
-import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineSection
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.shipping.getMethodIdOrDefault
+import com.woocommerce.android.ui.orders.creation.shipping.toShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -138,7 +141,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.list.ProductListRepository
+import com.woocommerce.android.ui.products.inventory.FetchProductByIdentifier
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
@@ -168,16 +171,13 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
-import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
@@ -195,8 +195,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreationProductMapper: OrderCreationProductMapper,
     private val createOrderItem: CreateOrderItem,
     private val tracker: AnalyticsTrackerWrapper,
-    private val productRepository: ProductListRepository,
-    private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
@@ -211,6 +209,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val currencySymbolFinder: CurrencySymbolFinder,
     private val totalsHelper: OrderCreateEditTotalsHelper,
     private val feedbackRepository: FeedbackRepository,
+    private val fetchProductByIdentifier: FetchProductByIdentifier,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -297,7 +296,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 ),
                 mode = mode,
                 viewState = viewState!!,
-                onCouponsClicked = { onCouponButtonClicked() },
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
@@ -380,34 +378,37 @@ class OrderCreateEditViewModel @Inject constructor(
     private val giftCardWasEnabledAtLeastOnce: MutableStateFlow<Boolean> =
         savedState.getStateFlow(viewModelScope, false)
 
-    val shippingLineList =
-        combine(
-            _orderDraft.filter { it.shippingLines.isNotEmpty() }
-                .map { it.shippingLines.filter { line -> line.methodId != null } },
-            getShippingMethodsWithOtherValue().withIndex()
-        ) { shippingLines, shippingMethods ->
-            val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
-
-            shippingLines.map { shippingLine ->
-                val method = shippingLine.methodId?.let {
-                    if (it == " ") {
-                        shippingMethodsMap[ShippingMethodsRepository.NA_ID]
-                    } else {
-                        shippingMethodsMap[it]
-                    }
-                }
-                ShippingLineDetails(
-                    id = shippingLine.itemId,
-                    name = shippingLine.methodTitle,
-                    shippingMethod = method,
-                    amount = shippingLine.total
+    val shippingLineSection = viewStateData.liveData
+        .combineWith(
+            orderDraft.map { it.shippingLines },
+            getShippingMethodsWithOtherValue().asLiveData()
+        ) { viewState, shippingLines, shippingMethods ->
+            if (viewState == null || shippingLines == null || shippingMethods == null) return@combineWith null
+            shippingLines.toShippingLineDetails(shippingMethods)?.let { shippingLineDetails ->
+                ShippingLineSection(
+                    shippingLines = shippingLineDetails,
+                    isEnabled = viewState.isIdle && viewState.isEditable
                 )
             }
-        }.asLiveData()
+        }.distinctUntilChanged()
+
+    private val _couponLinesLiveData = MediatorLiveData(CouponSection(emptyList(), true))
+    val couponLinesLiveData = _couponLinesLiveData.distinctUntilChanged()
 
     init {
         monitorPluginAvailabilityChanges()
         shouldDisplayShippingFeedback()
+
+        _couponLinesLiveData.addSource(orderDraft) { newOrderDraft ->
+            _couponLinesLiveData.value =
+                _couponLinesLiveData.value
+                    ?.copy(couponLines = newOrderDraft.couponLines.map { CouponLineDetails(it.code) })
+        }
+
+        _couponLinesLiveData.addSource(viewStateData.liveData) { newViewState ->
+            _couponLinesLiveData.value = _couponLinesLiveData.value
+                ?.copy(isEnabled = newViewState.isIdle && viewState.isEditable)
+        }
 
         when (mode) {
             is Mode.Creation -> {
@@ -429,7 +430,6 @@ class OrderCreateEditViewModel @Inject constructor(
                         ScanningSource.ORDER_LIST
                     )
                 }
-                handleCouponEditResult()
                 launch {
                     updateAutoTaxRateSettingState()
                     updateTaxRateSelectorButtonState()
@@ -459,7 +459,6 @@ class OrderCreateEditViewModel @Inject constructor(
                         updateCouponAndDiscountButtonsState(order)
                         updateAddShippingButtonVisibility(order)
                         updateAddGiftCardButtonVisibility(order)
-                        handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
                         _pendingSelectedItems.value = _orderDraft.value.selectedItems()
                     }
@@ -468,20 +467,20 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private var _isFirstShippingLineChange = true
+
     private fun shouldDisplayShippingFeedback() {
         launch {
-            shippingLineList
-                .asFlow()
-                .drop(1)
-                .take(1)
-                .takeIf { shouldDisplayShippingLinesFeedback() }
-                ?.collect {
+            if (_isFirstShippingLineChange && shouldDisplayShippingLinesFeedback()) {
+                launch {
                     delay(DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK)
                     viewState = viewState.copy(
                         showShippingFeedback = true,
                         isTotalsExpanded = false
                     )
+                    _isFirstShippingLineChange = false
                 }
+            }
         }
     }
 
@@ -557,16 +556,10 @@ class OrderCreateEditViewModel @Inject constructor(
             ShippingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_shipping_address)
         }
 
-    private fun handleCouponEditResult() {
-        args.couponEditResult?.let {
-            handleCouponEditResult()
-        }
-    }
-
     private fun handleCouponEditResult(couponEditResult: OrderCreateCouponDetailsViewModel.CouponEditResult) {
         when (couponEditResult) {
             is OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon -> {
-                onCouponRemoved(couponEditResult.couponCode)
+                removeCoupon(couponEditResult.couponCode)
             }
         }
     }
@@ -741,6 +734,8 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource? = null,
         addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
     ) {
+        viewState = viewState.copy(isUpdatingOrderDraft = true)
+
         val hasBundleConfiguration = selectedItems.any { item ->
             (item as? SelectedItem.ConfigurableProduct)
                 ?.configuration?.configurationType == ConfigurationType.BUNDLE
@@ -828,6 +823,9 @@ class OrderCreateEditViewModel @Inject constructor(
                         }
                     }
                 }
+
+                viewState = viewState.copy(isUpdatingOrderDraft = false)
+
                 _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
             }
         }
@@ -892,7 +890,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
-                viewState = viewState.copy(isUpdatingOrderDraft = true)
                 fetchProductBySKU(
                     BarcodeOptions(
                         sku = status.code,
@@ -919,48 +916,50 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.orEmpty()
         viewModelScope.launch {
-            productRepository.searchProductList(
-                searchQuery = barcodeOptions.sku,
-                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
-            )?.let { products ->
-                handleFetchProductBySKUSuccess(products, selectedItems, source, barcodeOptions)
-            } ?: run {
+            viewState = viewState.copy(isUpdatingOrderDraft = true)
+            val result = fetchProductByIdentifier(barcodeOptions.sku, barcodeOptions.barcodeFormat)
+            if (result.isSuccess) {
+                val product = result.getOrNull()
+                if (product != null) {
+                    handleFetchProductBySKUSuccess(
+                        product,
+                        selectedItems,
+                        source,
+                        barcodeOptions
+                    )
+                } else {
+                    handleFetchProductBySKUEmpty(barcodeOptions, source)
+                }
+            } else {
                 handleFetchProductBySKUFailure(
                     source,
                     barcodeOptions,
                     "Product search via SKU API call failed"
                 )
             }
+            viewState = viewState.copy(isUpdatingOrderDraft = false)
         }
     }
 
     private fun handleFetchProductBySKUSuccess(
-        products: List<com.woocommerce.android.model.Product>,
+        product: com.woocommerce.android.model.Product,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
         barcodeOptions: BarcodeOptions
     ) {
         viewState = viewState.copy(isUpdatingOrderDraft = false)
-        products.firstOrNull()?.let { product ->
-            addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
-        } ?: run {
-            handleFetchProductBySKUEmpty(barcodeOptions, source)
-        }
+        addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
     }
 
     private fun handleFetchProductBySKUEmpty(
         barcodeOptions: BarcodeOptions,
         source: ScanningSource
     ) {
-        if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
-            fetchProductBySKURemovingCheckDigit(barcodeOptions)
-        } else {
-            handleFetchProductBySKUFailure(
-                source,
-                barcodeOptions,
-                "Empty data response (no product found for the SKU)"
-            )
-        }
+        handleFetchProductBySKUFailure(
+            source,
+            barcodeOptions,
+            "Empty data response (no product found for the SKU)"
+        )
     }
 
     private fun handleFetchProductBySKUFailure(
@@ -977,30 +976,6 @@ class OrderCreateEditViewModel @Inject constructor(
             resourceProvider.getString(string.order_creation_barcode_scanning_unable_to_add_product, barcodeOptions.sku)
         )
     }
-
-    private fun fetchProductBySKURemovingCheckDigit(barcodeOptions: BarcodeOptions) {
-        viewState = viewState.copy(isUpdatingOrderDraft = true)
-        fetchProductBySKU(
-            barcodeOptions.copy(
-                sku = checkDigitRemoverFactory.getCheckDigitRemoverFor(
-                    barcodeOptions.barcodeFormat
-                ).getSKUWithoutCheckDigit(barcodeOptions.sku),
-                shouldHandleCheckDigitOnFailure = false
-            )
-        )
-    }
-
-    private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
-        (isBarcodeFormatUPC(barcodeOptions) || isBarcodeFormatEAN(barcodeOptions)) &&
-            barcodeOptions.shouldHandleCheckDigitOnFailure
-
-    private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
-        barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCA ||
-            barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCE
-
-    private fun isBarcodeFormatEAN(barcodeOptions: BarcodeOptions) =
-        barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
-            barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
     @Suppress("LongMethod", "ReturnCount")
     private fun addScannedProduct(
@@ -1281,7 +1256,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _selectedGiftCard.update { selectedGiftCard }
     }
 
-    fun onAddOrEditShipping(itemId: Long? = null) {
+    fun onAddOrEditShippingClicked(itemId: Long? = null) {
         tracker.track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
         val shippingLine = itemId?.let { id -> currentDraft.shippingLines.firstOrNull { it.itemId == id } }
         triggerEvent(EditShipping(shippingLine))
@@ -1634,6 +1609,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
             draft.copy(shippingLines = shipping)
         }
+        shouldDisplayShippingFeedback()
     }
 
     fun onRemoveShipping(itemId: Long) {
@@ -1656,6 +1632,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             )
         }
+        shouldDisplayShippingFeedback()
     }
 
     fun onFeeEdited(feeValue: BigDecimal) {
@@ -1821,7 +1798,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCouponAdded(couponCode: String) {
+    fun addCoupon(couponCode: String) {
         if (_orderDraft.value.couponLines.any { it.code == couponCode }) return
         _orderDraft.update { draft ->
             val couponLines = draft.couponLines
@@ -1831,7 +1808,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun onCouponRemoved(couponCode: String) {
+    fun removeCoupon(couponCode: String) {
         trackCouponRemoved()
         _orderDraft.update { draft ->
             val updatedCouponLines = draft.couponLines.filter { it.code != couponCode }

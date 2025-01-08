@@ -67,6 +67,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     private fun setupToolbar(binding: FragmentPrintShippingLabelBinding) {
         binding.toolbar.title = getString(viewModel.screenTitle)
         binding.toolbar.setNavigationOnClickListener {
+            @Suppress("DEPRECATION")
             when {
                 requireContext().windowSizeClass != WindowSizeClass.Compact && onRequestAllowBackPress() -> {
                     findNavController().navigateUp()

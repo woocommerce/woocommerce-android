@@ -59,6 +59,10 @@ class CustomerDetailsViewModel @Inject constructor(
     fun onNavigateBack() {
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
+
+    fun onEmailTapped() {
+        triggerEvent(SendEmailEvent(viewState.value?.customerWithAnalytics?.email ?: ""))
+    }
 }
 
 @Parcelize
@@ -67,3 +71,5 @@ data class CustomerViewState(
     val isLoadingAnalytics: Boolean,
     val isRefreshingData: Boolean
 ) : Parcelable
+
+data class SendEmailEvent(val emailAddress: String) : MultiLiveEvent.Event()

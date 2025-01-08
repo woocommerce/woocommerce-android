@@ -38,17 +38,22 @@ class OrderStatusSelectorDialog : DialogFragment() {
 
         val selectedIndex = getCurrentOrderStatusIndex()
 
-        return MaterialAlertDialogBuilder(requireActivity())
+        val dialog = MaterialAlertDialogBuilder(requireActivity())
             .setTitle(resources.getString(R.string.orderstatus_select_status))
             .setCancelable(true)
-            .setSingleChoiceItems(orderStatusList.map { it.label }.toTypedArray(), selectedIndex) { _, which ->
+            .setSingleChoiceItems(orderStatusList.map { it.label }.toTypedArray(), selectedIndex) { dialog, which ->
                 selectedOrderStatus = orderStatusList[which].statusKey
+
+                // Casting to `AlertDialog` as `MaterialAlertDialogBuilder` creates it.
+                (dialog as? androidx.appcompat.app.AlertDialog)?.getButton(Dialog.BUTTON_POSITIVE)?.isEnabled =
+                    selectedOrderStatus.isNotEmpty()
+
                 AnalyticsTracker.track(
                     AnalyticsEvent.FILTER_ORDERS_BY_STATUS_DIALOG_OPTION_SELECTED,
                     mapOf("status" to selectedOrderStatus)
                 )
             }
-            .setPositiveButton(R.string.apply) { _, _ ->
+            .setPositiveButton(navArgs.positiveButtonLabel) { _, _ ->
                 val newSelectedIndex = getCurrentOrderStatusIndex()
                 if (newSelectedIndex != selectedIndex) {
                     AnalyticsTracker.track(
@@ -68,6 +73,12 @@ class OrderStatusSelectorDialog : DialogFragment() {
                 dialog.dismiss()
             }
             .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = selectedOrderStatus.isNotEmpty()
+        }
+
+        return dialog
     }
 
     override fun onResume() {

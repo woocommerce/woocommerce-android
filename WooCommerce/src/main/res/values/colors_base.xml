@@ -43,7 +43,6 @@
     <color name="color_default_image_background">@color/woo_gray_900</color>
 
     <color name="color_back_arrow">@color/color_on_surface</color>
-    <color name="color_text_link">@color/woo_pink_50</color>
 
     <!--
         Color resource used to indicate selected state of an item
@@ -121,7 +120,7 @@
     <color name="tag_bg_on_hold">@color/woo_orange_5</color>
     <color name="tag_bg_completed">@color/woo_blue_5</color>
     <color name="tag_bg_other">@color/woo_gray_5</color>
-    <color name="tag_bg_main">@color/woo_purple_15</color>
+    <color name="tag_bg_main">@color/woo_purple_10</color>
     <color name="tag_text_main">@color/color_primary</color>
     <color name="tag_task_label">@color/woo_gray_6</color>
     <color name="tag_task_label_text">@color/woo_black_90_alpha_060</color>
@@ -195,7 +194,6 @@
     <!--
         Jetpack plugin installation dialog
     -->
-    <color name="jetpack_button_color">@color/color_secondary</color>
     <color name="jetpack_install_progressbar">@color/jetpack_green_40</color>
 
     <color name="reader_update_progress_color">@color/woo_purple_50</color>
@@ -301,23 +299,24 @@
     <color name="blaze_campaign_status_suspended_text">@color/white</color>
     <color name="blaze_campaign_bottom_sheet_highlight_background">@color/woo_gray_6</color>
     <color name="blaze_campaign_preview_header_background">@color/woo_gray_0</color>
-    <color name="blaze_campaign_preview_shop_now_button">@color/woo_gray_0</color>
+    <color name="blaze_campaign_objective_item_background">@color/woo_purple_0</color>
+    <color name="blaze_ad_cta_background">@color/blaze_blue</color>
 
     <!--
-    Deposit summary
+    Payout summary (formerly known as Deposit summary)
     -->
-    <color name="deposit_summary_status_estimated_background">@color/woo_gray_5</color>
-    <color name="deposit_summary_status_estimated_text">@color/woo_gray_80</color>
-    <color name="deposit_summary_status_pending_background">@color/woo_yellow_10</color>
-    <color name="deposit_summary_status_pending_text">@color/woo_yellow_70</color>
-    <color name="deposit_summary_status_in_transit_background">@color/woo_orange_5</color>
-    <color name="deposit_summary_status_in_transit_text">@color/woo_orange_70</color>
-    <color name="deposit_summary_status_paid_background">@color/woo_green_0</color>
-    <color name="deposit_summary_status_paid_text">@color/woo_green_50</color>
-    <color name="deposit_summary_status_canceled_background">@color/woo_purple_15</color>
-    <color name="deposit_summary_status_canceled_text">@color/woo_purple_80</color>
-    <color name="deposit_summary_status_failed_background">@color/woo_red_5</color>
-    <color name="deposit_summary_status_failed_text">@color/woo_red_70</color>
-    <color name="deposit_summary_status_unknown_background">@color/woo_gray_6</color>
-    <color name="deposit_summary_status_unknown_text">@color/woo_gray_80</color>
+    <color name="payout_summary_status_estimated_background">@color/woo_gray_5</color>
+    <color name="payout_summary_status_estimated_text">@color/woo_gray_80</color>
+    <color name="payout_summary_status_pending_background">@color/woo_yellow_10</color>
+    <color name="payout_summary_status_pending_text">@color/woo_yellow_70</color>
+    <color name="payout_summary_status_in_transit_background">@color/woo_orange_5</color>
+    <color name="payout_summary_status_in_transit_text">@color/woo_orange_70</color>
+    <color name="payout_summary_status_paid_background">@color/woo_green_0</color>
+    <color name="payout_summary_status_paid_text">@color/woo_green_50</color>
+    <color name="payout_summary_status_canceled_background">@color/woo_purple_10</color>
+    <color name="payout_summary_status_canceled_text">@color/woo_purple_80</color>
+    <color name="payout_summary_status_failed_background">@color/woo_red_5</color>
+    <color name="payout_summary_status_failed_text">@color/woo_red_70</color>
+    <color name="payout_summary_status_unknown_background">@color/woo_gray_6</color>
+    <color name="payout_summary_status_unknown_text">@color/woo_gray_80</color>
 </resources>

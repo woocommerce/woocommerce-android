@@ -47,5 +47,5 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
 
     data class OpenGenericWebView(val url: String) : CardReaderConnectEvent()
 
-    data object PopBackStackForWooPOS : CardReaderConnectEvent()
+    data object ReturnToWooPos : MultiLiveEvent.Event()
 }

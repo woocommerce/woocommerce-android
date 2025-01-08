@@ -10,8 +10,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInGenericWebView
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInWPComWebView
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInBrowser
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -88,6 +87,16 @@ class CardReaderOnboardingViewModel @Inject constructor(
     private val viewState = MutableLiveData<CardReaderOnboardingViewState>()
     val viewStateData: LiveData<CardReaderOnboardingViewState> = viewState
 
+    private var lastShownOnboardingState: CardReaderOnboardingState? = null
+
+    val isPos: Boolean
+        get() {
+            val cardReaderFlowParam = arguments.cardReaderOnboardingParam.cardReaderFlowParam
+            return cardReaderFlowParam is CardReaderFlowParam.WooPosConnection ||
+                cardReaderFlowParam is CardReaderFlowParam.PaymentOrRefund.Payment &&
+                cardReaderFlowParam.paymentType == CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
+        }
+
     init {
         when (val onboardingParam = arguments.cardReaderOnboardingParam) {
             is Check -> refreshState(onboardingParam.pluginType)
@@ -116,13 +125,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     triggerEvent(Event.ShowUiStringSnackbar(UiString.UiStringText(reaction.message)))
                     refreshState()
                 }
-                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenWpComWebView -> {
-                    triggerEvent(NavigateToUrlInWPComWebView(reaction.url))
-                    viewState.value = prevState!!
-                }
 
-                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenGenericWebView -> {
-                    triggerEvent(NavigateToUrlInGenericWebView(reaction.url))
+                is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenBrowser -> {
+                    triggerEvent(NavigateToUrlInBrowser(reaction.url))
                     viewState.value = prevState!!
                 }
             }
@@ -145,6 +150,11 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     @Suppress("LongMethod", "ComplexMethod")
     private fun showOnboardingState(state: CardReaderOnboardingState) {
+        lastShownOnboardingState = state
+        if (isPos) {
+            paymentsFlowTracker.trackOnboardingShownInPosFlow(state)
+        }
+
         when (state) {
             is OnboardingCompleted -> {
                 continueFlow()
@@ -421,7 +431,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun onLearnMoreClicked() {
         paymentsFlowTracker.trackOnboardingLearnMoreTapped()
-        triggerEvent(NavigateToUrlInGenericWebView(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
+        triggerEvent(NavigateToUrlInBrowser(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
     }
 
     private fun onSkipPendingRequirementsClicked() {
@@ -439,7 +449,21 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 )
             }
             is CardReaderFlowParam.WooPosConnection -> {
-                error("Unsupported flow param: $params")
+                triggerEvent(
+                    CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType))
+                )
+            }
+        }
+    }
+
+    override fun onCleared() {
+        clearViewModel()
+    }
+
+    fun clearViewModel() {
+        if (isPos) {
+            lastShownOnboardingState?.let {
+                paymentsFlowTracker.trackOnboardingDismissedInPosFlow(it)
             }
         }
     }

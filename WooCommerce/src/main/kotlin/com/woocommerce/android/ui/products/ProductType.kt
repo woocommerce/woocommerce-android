@@ -20,6 +20,9 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
     fun isVariableProduct() = this == VARIABLE || this == VARIABLE_SUBSCRIPTION
 
     companion object {
+        val FILTERABLE_VALUES =
+            setOf(SIMPLE, GROUPED, EXTERNAL, VARIABLE, SUBSCRIPTION, VARIABLE_SUBSCRIPTION, BUNDLE, COMPOSITE)
+
         fun fromString(type: String): ProductType {
             return when (type.lowercase(Locale.US)) {
                 "grouped" -> GROUPED

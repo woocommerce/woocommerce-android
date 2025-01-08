@@ -3,7 +3,7 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>ArgumentListWrapping:CardReaderOnboardingChecker.kt$CardReaderOnboardingChecker$("Developer error:`preferredPlugin` should be WCPay")</ID>
-    <ID>ArgumentListWrapping:PaymentsHubDepositSummaryStateMapper.kt$PaymentsHubDepositSummaryStateMapper$(it)</ID>
+    <ID>ArgumentListWrapping:PaymentsHubPayoutSummaryStateMapper.kt$PaymentsHubPayoutSummaryStateMapper$(it)</ID>
     <ID>ClassNaming:ProductDetailViewModel_AddFlowTest.kt$ProductDetailViewModel_AddFlowTest : BaseUnitTest</ID>
     <ID>CommentWrapping:IssueRefundViewModel.kt$IssueRefundViewModel$/* Fees lines that haven't been refunded */</ID>
     <ID>CommentWrapping:IssueRefundViewModel.kt$IssueRefundViewModel$/* Shipping lines that haven't been refunded */</ID>
@@ -147,7 +147,7 @@
     <ID>MatchingDeclarationName:NavController.kt$CallThrottler</ID>
     <ID>MaximumLineLength:CardReaderOnboardingChecker.kt$CardReaderOnboardingChecker$ </ID>
     <ID>MaximumLineLength:MainSettingsModule.kt$MainSettingsModule$ </ID>
-    <ID>MaximumLineLength:PaymentsHubDepositSummaryStateMapper.kt$PaymentsHubDepositSummaryStateMapper$ </ID>
+    <ID>MaximumLineLength:PaymentsHubPayoutSummaryStateMapper.kt$PaymentsHubPayoutSummaryStateMapper$ </ID>
     <ID>MaximumLineLength:ProductSelectorViewModel.kt$ProductSelectorViewModel$ </ID>
     <ID>MayBeConst:TestBase.kt$TestBase.Companion$val wireMockPort = 8080</ID>
     <ID>MemberNameEqualsClassName:CurrencyFormatter.kt$CurrencyFormatter.Companion$// Formats the value to two decimal places private val currencyFormatter: DecimalFormat by lazy { DecimalFormat("0.00") }</ID>

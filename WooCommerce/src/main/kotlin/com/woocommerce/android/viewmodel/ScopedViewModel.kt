@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.io.Closeable
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -23,9 +22,7 @@ import kotlin.coroutines.CoroutineContext
  */
 abstract class ScopedViewModel(
     protected val savedState: SavedStateHandle,
-    closeable: Closeable? = null,
-) : ViewModel(closeable), CoroutineScope {
-
+) : ViewModel(), CoroutineScope {
     protected open val _event: MutableLiveData<Event> = MultiLiveEvent()
     open val event: LiveData<Event> = _event
 

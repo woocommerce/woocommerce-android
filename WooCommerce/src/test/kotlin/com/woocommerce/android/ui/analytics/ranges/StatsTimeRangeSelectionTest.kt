@@ -33,7 +33,7 @@ internal class StatsTimeRangeSelectionTest {
 
     @Before
     fun setUp() {
-        testLocale = Locale.UK
+        testLocale = Locale.getDefault()
         testTimeZone = TimeZone.getDefault()
         testCalendar = Calendar.getInstance(testLocale)
         testCalendar.timeZone = testTimeZone

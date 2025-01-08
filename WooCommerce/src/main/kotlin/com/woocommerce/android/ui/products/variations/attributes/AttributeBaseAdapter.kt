@@ -7,7 +7,7 @@ import com.woocommerce.android.databinding.AttributeItemBinding
 import com.woocommerce.android.model.ProductAttribute
 
 abstract class AttributeBaseAdapter<T : AttributeBaseAdapter.AttributeBaseViewHolder>(
-    private inline val onItemClick: (attributeId: Long, attributeName: String) -> Unit
+    private val onItemClick: (attributeId: Long, attributeName: String) -> Unit
 ) : RecyclerView.Adapter<T>() {
     private var attributeList = listOf<ProductAttribute>()
 

@@ -10,10 +10,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_SHIPMENT_TRACKING_
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewShipmentTrackingProviders
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -76,6 +79,18 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
         )
     }
 
+    fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
+        when (status) {
+            is CodeScannerStatus.Failure, CodeScannerStatus.NotFound -> {
+                triggerEvent(ShowTrackingNumberScanFailed(R.string.order_shipment_tracking_barcode_scanning_failed))
+            }
+
+            is CodeScannerStatus.Success -> {
+                triggerEvent(SetScannedTrackingNumberEvent(status.code))
+            }
+        }
+    }
+
     fun onTrackingLinkEntered(trackingLink: String) {
         addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(trackingLink = trackingLink)
     }
@@ -91,6 +106,11 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
                 selectedProvider = addOrderShipmentTrackingViewState.carrier.name
             )
         )
+    }
+
+    fun onScanTrackingNumberClicked() {
+        addOrderShipmentTrackingViewState = addOrderShipmentTrackingViewState.copy(trackingNumberError = null)
+        triggerEvent(OpenTrackingBarcodeScanning)
     }
 
     fun onAddButtonTapped() {
@@ -192,4 +212,6 @@ class AddOrderShipmentTrackingViewModel @Inject constructor(
     ) : Parcelable
 
     data class SaveTrackingPrefsEvent(val carrier: Carrier) : MultiLiveEvent.Event()
+    data class SetScannedTrackingNumberEvent(val trackingNumber: String) : MultiLiveEvent.Event()
+    data class ShowTrackingNumberScanFailed(val errorMessage: Int) : Event()
 }

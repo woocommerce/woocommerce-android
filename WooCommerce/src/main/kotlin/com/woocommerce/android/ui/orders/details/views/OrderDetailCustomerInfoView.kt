@@ -240,11 +240,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             )
 
             binding.customerInfoCustomerNoteSection.setOnClickListener {
-                val action =
-                    OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
-                        order.id
-                    )
-                findNavController().navigateSafely(action)
+                navigateToCustomerNote(order)
             }
         }
     }
@@ -290,13 +286,26 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
     }
 
+    private fun navigateToCustomerNote(order: Order) {
+        if (!isAttachedToWindow) return
+
+        val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToEditCustomerOrderNoteFragment(
+            order.id
+        )
+        findNavController().navigateSafely(action)
+    }
+
     private fun navigateToShippingAddressEditingView(address: Address) {
+        if (!isAttachedToWindow) return
+
         OrderDetailFragmentDirections
             .actionOrderDetailFragmentToShippingAddressEditingFragment(storedAddress = address)
             .let { findNavController().navigateSafely(it) }
     }
 
     private fun navigateToBillingAddressEditingView(address: Address) {
+        if (!isAttachedToWindow) return
+
         OrderDetailFragmentDirections
             .actionOrderDetailFragmentToBillingAddressEditingFragment(storedAddress = address)
             .let { findNavController().navigateSafely(it) }

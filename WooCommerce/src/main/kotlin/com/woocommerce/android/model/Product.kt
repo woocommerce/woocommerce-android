@@ -56,6 +56,7 @@ data class Product(
     val isStockManaged: Boolean,
     val stockQuantity: Double,
     val sku: String,
+    val globalUniqueId: String,
     val shippingClass: String,
     val shippingClassId: Long,
     val isDownloadable: Boolean,
@@ -83,7 +84,6 @@ data class Product(
     override val width: Float,
     override val height: Float,
     override val weight: Float,
-    val subscription: SubscriptionDetails?,
     val isSampleProduct: Boolean,
     val specialStockStatus: ProductStockStatus? = null,
     val isConfigurable: Boolean = false,
@@ -92,7 +92,8 @@ data class Product(
     val bundleMinSize: Float?,
     val bundleMaxSize: Float?,
     val groupOfQuantity: Int?,
-    val combineVariationQuantities: Boolean?
+    val combineVariationQuantities: Boolean?,
+    val password: String?
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -116,6 +117,7 @@ data class Product(
             isSoldIndividually == product.isSoldIndividually &&
             reviewsAllowed == product.reviewsAllowed &&
             sku == product.sku &&
+            globalUniqueId == product.globalUniqueId &&
             slug == product.slug &&
             type == product.type &&
             name.fastStripHtml() == product.name.fastStripHtml() &&
@@ -152,12 +154,12 @@ data class Product(
             downloadExpiry == product.downloadExpiry &&
             isDownloadable == product.isDownloadable &&
             attributes == product.attributes &&
-            subscription == product.subscription &&
             specialStockStatus == product.specialStockStatus &&
             minAllowedQuantity == product.minAllowedQuantity &&
             maxAllowedQuantity == product.maxAllowedQuantity &&
             groupOfQuantity == product.groupOfQuantity &&
-            combineVariationQuantities == product.combineVariationQuantities
+            combineVariationQuantities == product.combineVariationQuantities &&
+            password == product.password
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -167,8 +169,7 @@ data class Product(
         get() {
             return weight > 0 ||
                 length > 0 || width > 0 || height > 0 ||
-                shippingClass.isNotEmpty() ||
-                subscription?.oneTimeShipping == true
+                shippingClass.isNotEmpty()
         }
     val productType get() = ProductType.fromString(type)
     val variationEnabledAttributes
@@ -293,6 +294,7 @@ data class Product(
                 shortDescription = updatedProduct.shortDescription,
                 name = updatedProduct.name,
                 sku = updatedProduct.sku,
+                globalUniqueId = updatedProduct.globalUniqueId,
                 slug = updatedProduct.slug,
                 status = updatedProduct.status,
                 catalogVisibility = updatedProduct.catalogVisibility,
@@ -332,7 +334,6 @@ data class Product(
                 downloads = updatedProduct.downloads,
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
-                subscription = updatedProduct.subscription,
                 specialStockStatus = specialStockStatus,
                 minAllowedQuantity = updatedProduct.minAllowedQuantity,
                 maxAllowedQuantity = updatedProduct.maxAllowedQuantity,
@@ -417,6 +418,7 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.shortDescription = shortDescription
         it.name = name
         it.sku = sku
+        it.globalUniqueId = globalUniqueId
         it.slug = slug
         it.status = status.toString()
         it.catalogVisibility = catalogVisibility.toString()
@@ -479,20 +481,11 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.maxAllowedQuantity = maxAllowedQuantity ?: -1
         it.groupOfQuantity = groupOfQuantity ?: -1
         it.combineVariationQuantities = combineVariationQuantities ?: false
-        // Subscription details are currently the only editable metadata fields from the app.
-        it.metadata = subscription?.toMetadataJson().toString()
+        it.password = password
     }
 }
 
 fun WCProductModel.toAppModel(): Product {
-    val productType = ProductType.fromString(type)
-    val subscription = if (
-        productType == ProductType.SUBSCRIPTION || productType == ProductType.VARIABLE_SUBSCRIPTION
-    ) {
-        SubscriptionDetailsMapper.toAppModel(this.metadata)
-    } else {
-        null
-    }
     return Product(
         remoteId = this.remoteProductId,
         parentId = this.parentId,
@@ -524,6 +517,7 @@ fun WCProductModel.toAppModel(): Product {
         isStockManaged = this.manageStock,
         stockQuantity = this.stockQuantity,
         sku = this.sku,
+        globalUniqueId = this.globalUniqueId,
         slug = this.slug,
         length = this.length.toFloatOrNull() ?: 0f,
         width = this.width.toFloatOrNull() ?: 0f,
@@ -577,7 +571,6 @@ fun WCProductModel.toAppModel(): Product {
         upsellProductIds = this.getUpsellProductIdList(),
         variationIds = this.getVariationIdList(),
         isPurchasable = this.purchasable,
-        subscription = subscription,
         isSampleProduct = isSampleProduct,
         specialStockStatus = if (this.specialStockStatus.isNotNullOrEmpty()) {
             ProductStockStatus.fromString(this.specialStockStatus)
@@ -590,7 +583,8 @@ fun WCProductModel.toAppModel(): Product {
         bundleMinSize = this.bundleMinSize,
         bundleMaxSize = this.bundleMaxSize,
         groupOfQuantity = this.groupOfQuantity(),
-        combineVariationQuantities = this.combineVariationQuantities
+        combineVariationQuantities = this.combineVariationQuantities,
+        password = this.password
     )
 }
 

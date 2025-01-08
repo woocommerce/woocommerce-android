@@ -20,6 +20,7 @@ class SubscriptionProductVariation(
     override val remoteProductId: Long,
     override val remoteVariationId: Long,
     override val sku: String,
+    override val globalUniqueId: String,
     override val image: Product.Image?,
     override val price: BigDecimal?,
     override val regularPrice: BigDecimal?,
@@ -53,6 +54,7 @@ class SubscriptionProductVariation(
     remoteProductId = remoteProductId,
     remoteVariationId = remoteVariationId,
     sku = sku,
+    globalUniqueId = globalUniqueId,
     image = image,
     price = price,
     regularPrice = regularPrice,
@@ -89,6 +91,7 @@ class SubscriptionProductVariation(
             remoteProductId = model.remoteProductId,
             remoteVariationId = model.remoteVariationId,
             sku = model.sku,
+            globalUniqueId = model.globalUniqueId,
             image = model.getImageModel()?.let {
                 Product.Image(
                     it.id,
@@ -137,6 +140,7 @@ class SubscriptionProductVariation(
                 remoteVariationId == variation.remoteVariationId &&
                 remoteProductId == variation.remoteProductId &&
                 sku == variation.sku &&
+                globalUniqueId == variation.globalUniqueId &&
                 image?.id == variation.image?.id &&
                 regularPrice isEquivalentTo variation.regularPrice &&
                 salePrice isEquivalentTo variation.salePrice &&
@@ -172,6 +176,7 @@ class SubscriptionProductVariation(
         result = 31 * result + remoteProductId.hashCode()
         result = 31 * result + remoteVariationId.hashCode()
         result = 31 * result + sku.hashCode()
+        result = 31 * result + globalUniqueId.hashCode()
         result = 31 * result + (image?.hashCode() ?: 0)
         result = 31 * result + (price?.hashCode() ?: 0)
         result = 31 * result + (regularPrice?.hashCode() ?: 0)
@@ -208,6 +213,7 @@ class SubscriptionProductVariation(
         remoteProductId: Long,
         remoteVariationId: Long,
         sku: String,
+        globalUniqueId: String,
         image: Product.Image?,
         price: BigDecimal?,
         regularPrice: BigDecimal?,
@@ -242,6 +248,7 @@ class SubscriptionProductVariation(
             remoteProductId = remoteProductId,
             remoteVariationId = remoteVariationId,
             sku = sku,
+            globalUniqueId = globalUniqueId,
             image = image,
             price = price,
             regularPrice = regularPrice,
@@ -280,6 +287,7 @@ class SubscriptionProductVariation(
         remoteProductId: Long = this.remoteProductId,
         remoteVariationId: Long = this.remoteVariationId,
         sku: String = this.sku,
+        globalUniqueId: String = this.globalUniqueId,
         image: Image? = this.image,
         price: BigDecimal? = this.price,
         regularPrice: BigDecimal? = this.regularPrice,
@@ -315,6 +323,7 @@ class SubscriptionProductVariation(
             remoteProductId = remoteProductId,
             remoteVariationId = remoteVariationId,
             sku = sku,
+            globalUniqueId = globalUniqueId,
             image = image,
             price = price,
             regularPrice = regularPrice,

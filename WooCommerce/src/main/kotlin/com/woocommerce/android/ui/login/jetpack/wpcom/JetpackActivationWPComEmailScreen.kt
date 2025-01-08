@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
@@ -47,7 +46,6 @@ fun JetpackActivationWPComEmailScreen(viewModel: JetpackActivationWPComEmailView
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun JetpackActivationWPComEmailScreen(
     viewState: JetpackActivationWPComEmailViewModel.ViewState,
@@ -114,6 +112,11 @@ fun JetpackActivationWPComEmailScreen(
                             onContinueClick()
                         }
                     )
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Text(
+                    style = MaterialTheme.typography.body2,
+                    text = stringResource(id = R.string.login_jetpack_connection_create_account)
                 )
             }
 

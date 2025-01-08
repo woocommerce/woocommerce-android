@@ -28,6 +28,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentDashboardBinding
 import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.showDateRangePicker
@@ -39,6 +40,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewFragment
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
+import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
@@ -46,7 +52,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Fe
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
@@ -167,11 +172,6 @@ class DashboardFragment :
 
                 is ShareStore -> ActivityUtils.shareStoreUrl(requireActivity(), event.storeUrl)
 
-                is ShowAIProductDescriptionDialog ->
-                    findNavController().navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
-                    )
-
                 is OpenEditWidgets -> {
                     findNavController().navigateSafely(
                         DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
@@ -218,6 +218,19 @@ class DashboardFragment :
     private fun setupResultHandlers() {
         handleNotice(GoogleAdsWebViewFragment.WEBVIEW_RESULT) {
             navigateToGoogleAdsCreationSuccess()
+        }
+        handleResult<BlazeAction>(BlazeCampaignDetailWebViewFragment.BLAZE_WEBVIEW_RESULT) {
+            when (it) {
+                None,
+                CampaignStopped -> Unit // We don't need to handle actions here
+                is PromoteProductAgain ->
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        blazeCampaignCreationDispatcher.startCampaignCreation(
+                            BlazeFlowSource.MY_STORE_SECTION,
+                            it.productId
+                        )
+                    }
+            }
         }
     }
 

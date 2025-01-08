@@ -33,6 +33,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     companion object {
         private const val TAGLINE_MAX_LENGTH = 32
         private const val DESCRIPTION_MAX_LENGTH = 140
+        private const val CTA_TEST_MAX_LENGTH = 26
     }
 
     private val navArgs: BlazeCampaignCreationEditAdFragmentArgs by savedStateHandle.navArgs()
@@ -49,7 +50,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
 
     private fun loadSuggestions() {
         viewModelScope.launch {
-            val passedDetails = AiSuggestionForAd(navArgs.tagline, navArgs.description)
+            val passedDetails = AiSuggestionForAd(navArgs.tagline, navArgs.description, navArgs.ctaText)
             val suggestions = navArgs.aiSuggestionsForAd.toList()
             _viewState.update {
                 it.copy(
@@ -83,7 +84,8 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
                 EditAdResult(
                     tagline = _viewState.value.tagLine,
                     description = _viewState.value.description,
-                    campaignImage = _viewState.value.adImage
+                    campaignImage = _viewState.value.adImage,
+                    ctaText = _viewState.value.ctaText
                 )
             )
         )
@@ -107,11 +109,23 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onTagLineChanged(tagLine: String) {
-        updateSuggestion(AiSuggestionForAd(tagLine.take(TAGLINE_MAX_LENGTH), _viewState.value.description))
+        updateSuggestion(
+            AiSuggestionForAd(
+                tagLine.take(TAGLINE_MAX_LENGTH),
+                _viewState.value.description,
+                _viewState.value.ctaText
+            )
+        )
     }
 
     fun onDescriptionChanged(description: String) {
-        updateSuggestion(AiSuggestionForAd(_viewState.value.tagLine, description.take(DESCRIPTION_MAX_LENGTH)))
+        updateSuggestion(
+            AiSuggestionForAd(
+                _viewState.value.tagLine,
+                description.take(DESCRIPTION_MAX_LENGTH),
+                _viewState.value.ctaText
+            )
+        )
     }
 
     fun onLocalImageSelected(uri: String) {
@@ -170,7 +184,23 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         }
     }
 
+    fun onProductImagesRequested() {
+        triggerEvent(ShowProductImagePicker(navArgs.productId))
+        setMediaPickerDialogVisibility(false)
+    }
+
+    fun onCtaTextChanged(ctaText: String) {
+        updateSuggestion(
+            AiSuggestionForAd(
+                _viewState.value.tagLine,
+                _viewState.value.description,
+                ctaText.take(CTA_TEST_MAX_LENGTH)
+            )
+        )
+    }
+
     data class ShowMediaLibrary(val source: MediaPickerSetup.DataSource) : Event()
+    data class ShowProductImagePicker(val productId: Long) : Event()
 
     @Parcelize
     data class ViewState(
@@ -183,10 +213,14 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
             get() = suggestions.getOrNull(suggestionIndex)?.tagLine ?: ""
         val description: String
             get() = suggestions.getOrNull(suggestionIndex)?.description ?: ""
+        val ctaText: String
+            get() = suggestions.getOrNull(suggestionIndex)?.ctaText ?: ""
         val taglineCharactersRemaining: Int
             get() = TAGLINE_MAX_LENGTH - (suggestions.getOrNull(suggestionIndex)?.tagLine?.length ?: 0)
         val descriptionCharactersRemaining: Int
             get() = DESCRIPTION_MAX_LENGTH - (suggestions.getOrNull(suggestionIndex)?.description?.length ?: 0)
+        val ctaTextCharactersRemaining: Int
+            get() = CTA_TEST_MAX_LENGTH - (suggestions.getOrNull(suggestionIndex)?.ctaText?.length ?: 0)
         val isPreviousSuggestionButtonEnabled: Boolean
             get() = suggestionIndex > 0
         val isNextSuggestionButtonEnabled: Boolean
@@ -197,6 +231,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     data class EditAdResult(
         val tagline: String,
         val description: String,
-        val campaignImage: BlazeRepository.BlazeCampaignImage
+        val campaignImage: BlazeRepository.BlazeCampaignImage,
+        val ctaText: String
     ) : Parcelable
 }

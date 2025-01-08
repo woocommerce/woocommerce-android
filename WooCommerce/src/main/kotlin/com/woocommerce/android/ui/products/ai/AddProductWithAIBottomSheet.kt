@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -44,7 +44,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.theme.WooTheme
@@ -132,18 +131,16 @@ private fun AddProductWithAIContent(
 
             Spacer(Modifier.height(dimensionResource(id = R.dimen.minor_100)))
 
-            val learnMoreText = annotatedStringRes(stringResId = R.string.product_creation_ai_entry_sheet_learn_more)
-            ClickableText(
+            val learnMoreText = annotatedStringRes(
+                stringResId = R.string.product_creation_ai_entry_sheet_learn_more,
+                onUrlClick = { onLearnMoreClick() }
+            )
+            Text(
                 text = learnMoreText,
-                style = MaterialTheme.typography.caption.copy(
-                    color = colorResource(id = R.color.color_on_surface_medium)
-                ),
+                style = MaterialTheme.typography.caption,
+                color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                 modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_325))
-            ) {
-                learnMoreText.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-                    .firstOrNull()
-                    ?.let { onLearnMoreClick() }
-            }
+            )
 
             Divider(Modifier.padding(dimensionResource(id = R.dimen.major_100)))
 

@@ -11,12 +11,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
@@ -24,7 +25,6 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.rememberNavController
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
@@ -43,7 +43,7 @@ fun DashboardStatsCard(
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    viewModel: DashboardStatsViewModel = viewModelWithFactory(
+    viewModel: DashboardStatsViewModel = hiltViewModel(
         creationCallback = { factory: DashboardStatsViewModel.Factory ->
             factory.create(parentViewModel)
         }
@@ -98,7 +98,7 @@ fun DashboardStatsCard(
                     currencyFormatter = viewModel.currencyFormatter,
                     usageTracksEventEmitter = viewModel.usageTracksEventEmitter,
                     onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
-                    onTabSelected = viewModel::onTabSelected,
+                    onTabSelected = viewModel::onRangeChanged,
                     onChartDateSelected = viewModel::onChartDateSelected
                 )
             }

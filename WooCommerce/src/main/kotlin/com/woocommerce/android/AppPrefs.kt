@@ -6,9 +6,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.BLAZE_CAMPAIGN_CREATED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_IS_PLUGIN_EXPLICITLY_SELECTED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_ONBOARDING_COMPLETED_STATUS_V2
@@ -28,7 +30,6 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.UPDATE_SIMULATED_READER
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.WC_STORE_ID
 import com.woocommerce.android.AppPrefs.DeletableSitePrefKey.AUTO_TAX_RATE_ID
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
-import com.woocommerce.android.AppPrefs.UndeletablePrefKey.BLAZE_NO_CAMPAIGN_REMINDER_SHOWN
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
@@ -39,7 +40,7 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
+import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateFrequencyUiModel
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.AiTone
@@ -47,6 +48,9 @@ import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.commons.prefs.PreferenceUtils
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import java.util.Calendar
 import java.util.Date
 
@@ -113,17 +117,23 @@ object AppPrefs {
         NOTIFICATIONS_PERMISSION_BAR,
         IS_EU_SHIPPING_NOTICE_DISMISSED,
         HAS_SAVED_PRIVACY_SETTINGS,
-        WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
         IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
         NUMBER_OF_TIMES_AI_DESCRIPTION_TOOLTIP_SHOWN,
         STORE_CREATION_PROFILER_ANSWERS,
         AI_CONTENT_GENERATION_TONE,
-        AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
+        BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN,
+        BLAZE_CAMPAIGN_CREATED,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
+        BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+        BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
         WC_STORE_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
         AI_PRODUCT_CREATION_SURVEY_DISMISSED,
+        CUSTOM_FIELDS_TOP_BANNER_DISMISSED,
+        BLAZE_CAMPAIGN_SELECTED_OBJECTIVE,
+        BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED,
+        IS_SITE_WPCOM_SUSPENDED
     }
 
     /**
@@ -181,9 +191,6 @@ object AppPrefs {
         // Was the IPP feedback survey banner dismissed forever
         IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER,
 
-        // Was the Tap To Pay used at least once
-        TTP_WAS_USED_AT_LEAST_ONCE,
-
         // Whether onboarding tasks have been completed or not for a given site
         STORE_ONBOARDING_TASKS_COMPLETED,
 
@@ -201,9 +208,6 @@ object AppPrefs {
         USER_CLICKED_ON_PAYMENTS_MORE_SCREEN,
 
         APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE,
-
-        // Was the Blaze campaign reminder shown at least once
-        BLAZE_NO_CAMPAIGN_REMINDER_SHOWN
     }
 
     fun init(context: Context) {
@@ -257,7 +261,7 @@ object AppPrefs {
         set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
 
     var updateReaderOptionSelected: String
-        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
+        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateFrequencyUiModel.RANDOM.toString())
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
 
     var isEUShippingNoticeDismissed: Boolean
@@ -267,6 +271,22 @@ object AppPrefs {
     var chaChingSoundIssueDialogDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
+
+    var isCustomFieldsTopBannerDismissed: Boolean
+        get() = getBoolean(DeletablePrefKey.CUSTOM_FIELDS_TOP_BANNER_DISMISSED, false)
+        set(value) = setBoolean(DeletablePrefKey.CUSTOM_FIELDS_TOP_BANNER_DISMISSED, value)
+
+    var blazeCampaignSelectedObjective: String
+        get() = getString(DeletablePrefKey.BLAZE_CAMPAIGN_SELECTED_OBJECTIVE, "")
+        set(value) = setString(DeletablePrefKey.BLAZE_CAMPAIGN_SELECTED_OBJECTIVE, value)
+
+    var blazeCampaignObjectiveSwitchChecked: Boolean
+        get() = getBoolean(DeletablePrefKey.BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED, true)
+        set(value) = setBoolean(DeletablePrefKey.BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED, value)
+
+    var isSiteWPComSuspended: Boolean
+        get() = getBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, false)
+        set(value) = setBoolean(DeletablePrefKey.IS_SITE_WPCOM_SUSPENDED, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
@@ -918,13 +938,6 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.IPP_FEEDBACK_SURVEY_BANNER_DISMISSED_FOREVER, dismissedForever)
     }
 
-    fun isTTPWasUsedAtLeastOnce() =
-        getBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, false)
-
-    fun setTTPWasUsedAtLeastOnce() {
-        setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
-    }
-
     fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
         setBoolean(
             key = getStoreOnboardingKeyFor(siteId),
@@ -970,16 +983,6 @@ object AppPrefs {
             value = value
         )
 
-    var wasAIProductDescriptionPromoDialogShown: Boolean
-        get() = getBoolean(
-            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
-            default = false
-        )
-        set(value) = setBoolean(
-            key = DeletablePrefKey.WAS_AI_DESCRIPTION_PROMO_DIALOG_SHOWN,
-            value = value
-        )
-
     var isAIProductDescriptionTooltipDismissed: Boolean
         get() = getBoolean(
             key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
@@ -1007,16 +1010,6 @@ object AppPrefs {
             value = value.slug
         )
 
-    var aiProductCreationIsFirstAttempt: Boolean
-        get() = getBoolean(
-            key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
-            default = true
-        )
-        set(value) = setBoolean(
-            key = DeletablePrefKey.AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
-            value = value
-        )
-
     var isBlazeCelebrationScreenShown: Boolean
         get() = getBoolean(
             key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
@@ -1027,15 +1020,45 @@ object AppPrefs {
             value = value
         )
 
-    fun setBlazeNoCampaignReminderShown(siteId: Long) {
+    var isBlazeNoCampaignReminderShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_NO_CAMPAIGN_REMINDER_SHOWN,
+            value = value
+        )
+
+    var isBlazeAbandonedCampaignReminderShown: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.BLAZE_ABANDONED_CAMPAIGN_REMINDER_SHOWN,
+            value = value
+        )
+
+    var blazeFirstTimeWithoutCampaign: Long
+        get() = getLong(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN, 0L)
+        set(value) = setLong(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN, value)
+
+    fun removeBlazeFirstTimeWithoutCampaign() {
+        remove(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN)
+    }
+
+    fun existsBlazeFirstTimeWithoutCampaign() = exists(DeletablePrefKey.BLAZE_FIRST_TIME_WITHOUT_CAMPAIGN)
+
+    fun setBlazeCampaignCreated() {
         setBoolean(
-            key = PrefKeyString("${BLAZE_NO_CAMPAIGN_REMINDER_SHOWN}:$siteId"),
+            key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED"),
             value = true
         )
     }
 
-    fun getBlazeNoCampaignReminderShown(siteId: Long) = getBoolean(
-        key = PrefKeyString("$BLAZE_NO_CAMPAIGN_REMINDER_SHOWN:$siteId"),
+    fun getBlazeCampaignCreated() = getBoolean(
+        key = PrefKeyString("$BLAZE_CAMPAIGN_CREATED"),
         default = false
     )
 
@@ -1246,6 +1269,22 @@ object AppPrefs {
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())
+
+    /**
+     * Observes changes to the preferences
+     */
+    fun observePrefs(): Flow<Unit> {
+        return callbackFlow {
+            val listener = OnSharedPreferenceChangeListener { _, _ ->
+                trySend(Unit)
+            }
+            getPreferences().registerOnSharedPreferenceChangeListener(listener)
+
+            awaitClose {
+                getPreferences().unregisterOnSharedPreferenceChangeListener(listener)
+            }
+        }
+    }
 
     /**
      * Methods used to store values in SharedPreferences that are not backed up

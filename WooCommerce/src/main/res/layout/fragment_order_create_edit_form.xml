@@ -90,19 +90,26 @@
                 app:header="@string/custom_amounts"
                 app:keepAddButtons="true" />
 
+            <include
+                android:id="@+id/additional_info_collection_section"
+                layout="@layout/order_creation_additional_info_collection_section" />
+
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/shipping_lines"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/shipping" />
 
-            <include
-                android:id="@+id/additional_info_collection_section"
-                layout="@layout/order_creation_additional_info_collection_section" />
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/coupon_lines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/coupons" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/tax_rate_selector_section"
                 style="@style/Woo.Card"
+                android:layout_marginTop="@dimen/minor_100"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"

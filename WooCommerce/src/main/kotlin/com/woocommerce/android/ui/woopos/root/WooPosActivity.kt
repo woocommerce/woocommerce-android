@@ -1,16 +1,14 @@
 package com.woocommerce.android.ui.woopos.root
 
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.TypedValue
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
@@ -18,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
+import com.woocommerce.android.ui.woopos.util.ext.isGestureNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -74,18 +73,4 @@ private fun Modifier.gesturesOrButtonsNavigationPadding(): Modifier {
     } else {
         this.navigationBarsPadding()
     }
-}
-
-// That seems to be different on different devices, but 24dp is a common upper value
-private const val GESTURE_NAVIGATION_BAR_HEIGHT_DP = 24
-private fun WindowInsetsCompat.isGestureNavigation(context: Context): Boolean {
-    val bottomInset = getInsets(WindowInsetsCompat.Type.navigationBars()).bottom
-
-    val gestureNavigationBarHeightPx = TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        GESTURE_NAVIGATION_BAR_HEIGHT_DP.toFloat(),
-        context.resources.displayMetrics
-    ).toInt()
-
-    return bottomInset in 1..gestureNavigationBarHeightPx
 }

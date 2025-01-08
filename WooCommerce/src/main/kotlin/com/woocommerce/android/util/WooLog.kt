@@ -42,7 +42,8 @@ object WooLog {
         THEMES,
         BLAZE,
         GOOGLE_ADS,
-        POS
+        POS,
+        CUSTOM_FIELDS
     }
 
     // Breaking convention to be consistent with org.wordpress.android.util.AppLog

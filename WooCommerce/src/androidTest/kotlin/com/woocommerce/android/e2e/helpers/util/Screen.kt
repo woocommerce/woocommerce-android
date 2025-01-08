@@ -70,9 +70,6 @@ open class Screen {
     private fun initializeAppPrefs() {
         AppPrefs.init(getInstrumentation().targetContext.applicationContext)
 
-        // hide the promo dialog because it breaks the tests
-        AppPrefs.wasAIProductDescriptionPromoDialogShown = true
-
         // also hide AI description tooltip to make test more simple
         AppPrefs.isAIProductDescriptionTooltipDismissed = true
 

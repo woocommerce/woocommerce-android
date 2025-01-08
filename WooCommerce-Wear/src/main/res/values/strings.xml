@@ -6,7 +6,7 @@
     <!-- Login Screen -->
     <string name="login_screen_loading_text">Connecting</string>
     <string name="login_screen_error_title">Log in</string>
-    <string name="login_screen_error_caption">Log in to Woo on your phone and hold your Watch nearby</string>
+    <string name="login_screen_error_caption">Log in to Woo on your phone and hold it nearby</string>
     <string name="login_screen_action_button">It\'s not working</string>
 
     <!-- Stats Screen -->
@@ -32,4 +32,13 @@
     <!-- Complications -->
     <string name="shortcut_complication_label">App Shortcut</string>
     <string name="shortcut_complication_preview_description">App Shortcut</string>
+    <string name="order_totals_complication_label">Order Totals</string>
+    <string name="order_totals_complication_preview_value">$42k</string>
+    <string name="order_totals_complication_preview_description">Display your store today\'s order totals</string>
+    <string name="order_count_complication_label">Order Count</string>
+    <string name="order_count_complication_preview_value">7</string>
+    <string name="order_count_complication_preview_description">Display your store today\'s order count</string>
+    <string name="visitors_count_complication_label">Visitors Count</string>
+    <string name="visitors_count_complication_preview_value">42</string>
+    <string name="visitors_count_complication_preview_description">Display your store today\'s visitors count</string>
 </resources>

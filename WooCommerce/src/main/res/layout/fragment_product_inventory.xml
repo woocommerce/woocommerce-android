@@ -46,6 +46,22 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <!-- Product Global Unique Id -->
+                <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                    android:id="@+id/product_global_unique_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/major_100"
+                    android:layout_marginTop="@dimen/major_75"
+                    android:layout_marginEnd="@dimen/major_100"
+                    android:hint="@string/product_global_unique_id"
+                    android:inputType="text"
+                    android:paddingBottom="@dimen/major_75"
+                    app:helperText="@string/product_global_unique_id_summary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/product_sku" />
+
                 <!-- Managing Product Stock -->
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/manageStock_switch"
@@ -56,7 +72,7 @@
                     android:text="@string/product_manage_stock"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/product_sku" />
+                    app:layout_constraintTop_toBottomOf="@+id/product_global_unique_id" />
 
                 <!-- Product Stock Status -->
                 <com.woocommerce.android.widgets.WCMaterialOutlinedSpinnerView

@@ -23,6 +23,7 @@ class GridItemDecoration(
 }
 
 class HorizontalItemDecoration(private val spacing: Int) : ItemDecoration() {
+    @Deprecated("Deprecated in Java")
     override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
         outRect.left = spacing
         outRect.right = spacing

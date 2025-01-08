@@ -204,7 +204,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        sut.onCouponAdded("new_code")
+        sut.addCoupon("new_code")
 
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
@@ -222,7 +222,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
             latestOrderDraft = it
         }
 
-        sut.onCouponAdded("new_code")
+        sut.addCoupon("new_code")
         latestOrderDraft!!.couponLines.filter { it.code == "new_code" }.apply {
             assertTrue(isNotEmpty())
             assertEquals(1, size)
@@ -245,8 +245,8 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             latestOrderDraft = it
         }
-        sut.onCouponAdded("new_code")
-        sut.onCouponAdded("new_code2")
+        sut.addCoupon("new_code")
+        sut.addCoupon("new_code2")
 
         // when
         sut.onCouponEditResult(OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon("new_code"))
@@ -284,7 +284,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         sut.orderDraft.observeForever {
             orderDraft = it
         }
-        sut.onCouponAdded("new_code")
+        sut.addCoupon("new_code")
 
         // when
         sut.onCouponButtonClicked()
@@ -539,6 +539,47 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
     }
 
     @Test
+    fun `given order is editable, when screen loaded, then listed coupons are enabled`() = testBlocking {
+        val order = defaultOrderValue.copy(
+            isEditable = true,
+            datePaid = null,
+            couponLines = listOf(Order.CouponLine("Dummy coupon 1"))
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+
+        createSut()
+        sut.couponLinesLiveData.observeForever {
+        }
+
+        assertThat(sut.couponLinesLiveData.value!!.isEnabled).isTrue()
+    }
+
+    @Test
+    fun `given order is not editable, when screen loaded, then listed coupons are disabled`() = testBlocking {
+        val order = defaultOrderValue.copy(
+            isEditable = false,
+            couponLines = listOf(Order.CouponLine("Dummy coupon 1"))
+        )
+        orderDetailRepository.stub {
+            onBlocking { getOrderById(defaultOrderValue.id) }.doReturn(order)
+        }
+        createUpdateOrderUseCase = mock {
+            onBlocking { invoke(any(), any()) } doReturn flowOf(Succeeded(order))
+        }
+
+        createSut()
+        sut.couponLinesLiveData.observeForever {
+        }
+
+        assertThat(sut.couponLinesLiveData.value!!.isEnabled).isFalse()
+    }
+
+    @Test
     fun `given editable order and order paid, then set tax rate button should be disabled`() {
         testBlocking {
             initMocksForAnalyticsWithOrder(defaultOrderValue)
@@ -625,7 +666,7 @@ class EditFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() 
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponAdded("code ")
+        sut.addCoupon("code ")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,

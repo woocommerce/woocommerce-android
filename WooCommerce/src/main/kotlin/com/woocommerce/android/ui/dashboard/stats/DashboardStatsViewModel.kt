@@ -123,7 +123,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         trackLocalTimezoneDifferenceFromStore()
     }
 
-    fun onTabSelected(selectionType: SelectionType) {
+    fun onRangeChanged(selectionType: SelectionType) {
         parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
         usageTracksEventEmitter.interacted()
         if (selectionType != SelectionType.CUSTOM) {
@@ -134,7 +134,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
             } else {
                 appPrefsWrapper.setActiveStatsTab(SelectionType.CUSTOM.name)
                 analyticsTrackerWrapper.track(
-                    AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
+                    AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
                 )
             }
         }
@@ -151,7 +151,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         viewModelScope.launch {
             customDateRangeDataStore.updateDateRange(range)
             if (dateRangeState.value?.rangeSelection?.selectionType != SelectionType.CUSTOM) {
-                onTabSelected(SelectionType.CUSTOM)
+                onRangeChanged(SelectionType.CUSTOM)
             }
         }
     }
@@ -240,7 +240,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
                         )
                     }
                     is LoadStatsResult.VisitorStatUnavailable -> {
-                        _visitorStatsState.value = VisitorStatsViewState.Unavailable
+                        _visitorStatsState.value = VisitorStatsViewState.Unavailable(
+                            showJetpackIcon = !appPrefsWrapper.isSiteWPComSuspended
+                        )
                         parentViewModel.hideRefreshingIndicator()
                         trackEventForStatsCard(
                             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_DATA_LOADING_FAILED,
@@ -379,7 +381,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     sealed class VisitorStatsViewState {
         data object Error : VisitorStatsViewState()
         data object NotLoaded : VisitorStatsViewState()
-        data object Unavailable : VisitorStatsViewState()
+        data class Unavailable(val showJetpackIcon: Boolean) : VisitorStatsViewState()
 
         data class Content(
             val stats: Map<String, Int>,

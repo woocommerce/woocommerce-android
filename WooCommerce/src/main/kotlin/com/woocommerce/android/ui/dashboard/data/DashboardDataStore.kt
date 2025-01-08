@@ -58,7 +58,8 @@ class DashboardDataStore @Inject constructor(
             this == DashboardWidget.Type.STATS ||
                 this == DashboardWidget.Type.POPULAR_PRODUCTS ||
                 this == DashboardWidget.Type.ONBOARDING ||
-                this == DashboardWidget.Type.BLAZE
+                this == DashboardWidget.Type.BLAZE ||
+                this == DashboardWidget.Type.GOOGLE_ADS
 
         return DashboardWidget.Type.supportedWidgets.map {
             DashboardWidgetDataModel.newBuilder()

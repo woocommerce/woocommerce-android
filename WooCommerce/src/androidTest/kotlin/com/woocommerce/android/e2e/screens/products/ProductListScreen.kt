@@ -1,7 +1,9 @@
 package com.woocommerce.android.e2e.screens.products
 
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
@@ -16,8 +18,7 @@ import org.hamcrest.Matchers
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.instanceOf
 
-class ProductListScreen : Screen {
-    constructor() : super(R.id.productsRecycler)
+class ProductListScreen : Screen(R.id.productsRecycler) {
 
     fun scrollToProduct(productTitle: String): ProductListScreen {
         scrollToListItem(productTitle, R.id.productsRecycler)
@@ -32,6 +33,12 @@ class ProductListScreen : Screen {
 
     fun tapOnCreateProduct(): ProductListScreen {
         clickOn(R.id.addProductButton)
+        return this
+    }
+
+    fun tapOnAddManually(composeTestRule: ComposeTestRule): ProductListScreen {
+        val buttonText = getTranslatedString(R.string.product_creation_ai_entry_sheet_manual_option_title)
+        composeTestRule.onNodeWithText(buttonText).performClick()
         return this
     }
 
@@ -114,8 +121,8 @@ class ProductListScreen : Screen {
     }
 
     fun leaveSearchMode(): ProductListScreen {
-        var isProductDetailsErrorDisplayed = Screen.isElementDisplayed(R.id.productDetailsErrorImage)
-        var isSearchTextBarDisplayed = Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)
+        val isProductDetailsErrorDisplayed = Screen.isElementDisplayed(R.id.productDetailsErrorImage)
+        val isSearchTextBarDisplayed = Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)
 
         if (isProductDetailsErrorDisplayed && isSearchTextBarDisplayed) {
             clearSearchBar(androidx.appcompat.R.id.search_src_text)

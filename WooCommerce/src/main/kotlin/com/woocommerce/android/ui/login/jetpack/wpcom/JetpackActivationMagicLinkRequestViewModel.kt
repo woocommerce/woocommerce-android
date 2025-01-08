@@ -46,7 +46,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             allowPasswordLogin = !navArgs.isAccountPasswordless,
-            isLoadingDialogShown = false
+            isLoadingDialogShown = false,
+            isNewWpComAccount = navArgs.isNewWpComAccount
         )
     )
     val viewState = _viewState.asLiveData()
@@ -72,7 +73,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             JETPACK_SETUP_LOGIN_FLOW,
             mapOf(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
-                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_DISMISS,
+                AnalyticsTracker.KEY_IS_SIGN_UP to navArgs.isNewWpComAccount
             )
         )
     }
@@ -82,7 +84,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             JETPACK_SETUP_LOGIN_FLOW,
             mapOf(
                 AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
-                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT,
+                AnalyticsTracker.KEY_IS_SIGN_UP to navArgs.isNewWpComAccount
             )
         )
 
@@ -91,7 +94,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
             isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             allowPasswordLogin = !navArgs.isAccountPasswordless,
-            isLoadingDialogShown = true
+            isLoadingDialogShown = true,
+            isNewWpComAccount = navArgs.isNewWpComAccount
         )
         val source = when {
             !navArgs.jetpackStatus.isJetpackInstalled -> MagicLinkSource.JetpackInstallation
@@ -101,7 +105,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         wpComLoginRepository.requestMagicLink(
             emailOrUsername = navArgs.emailOrUsername,
             flow = MagicLinkFlow.SiteCredentialsToWPCom,
-            source = source
+            source = source,
+            isSignup = navArgs.isNewWpComAccount
         ).fold(
             onSuccess = {
                 _viewState.value = ViewState.MagicLinkSentState(
@@ -118,7 +123,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
                     JETPACK_SETUP_LOGIN_FLOW,
                     mapOf(
                         AnalyticsTracker.KEY_STEP to AnalyticsTracker.VALUE_JETPACK_SETUP_STEP_MAGIC_LINK,
-                        AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT
+                        AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_SUBMIT,
+                        AnalyticsTracker.KEY_IS_SIGN_UP to navArgs.isNewWpComAccount
                     )
                 )
             }
@@ -145,7 +151,8 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
             val avatarUrl: String,
             override val isJetpackInstalled: Boolean,
             override val allowPasswordLogin: Boolean,
-            val isLoadingDialogShown: Boolean
+            val isLoadingDialogShown: Boolean,
+            val isNewWpComAccount: Boolean
         ) : ViewState
 
         @Parcelize

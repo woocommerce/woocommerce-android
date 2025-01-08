@@ -15,8 +15,7 @@ import org.hamcrest.Matchers
 
 class OrderListScreen : Screen(R.id.ordersList) {
     fun selectOrder(index: Int): SingleOrderScreen {
-        val correctedIndex = index + 1 // account for the header
-        selectItemAtIndexInRecyclerView(correctedIndex, R.id.ordersList, R.id.linearLayout)
+        selectItemAtIndexInRecyclerView(index, R.id.ordersList, R.id.linearLayout)
         return SingleOrderScreen()
     }
 

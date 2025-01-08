@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.annotatedStringResLegacy
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -95,7 +95,7 @@ fun JetpackActivationSiteCredentialsScreen(
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 Text(
-                    text = annotatedStringRes(
+                    text = annotatedStringResLegacy(
                         stringResId = if (viewState.isJetpackInstalled) {
                             R.string.login_jetpack_connection_enter_site_credentials
                         } else {

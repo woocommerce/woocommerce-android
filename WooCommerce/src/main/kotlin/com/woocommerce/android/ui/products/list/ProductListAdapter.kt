@@ -15,7 +15,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 typealias OnProductClickListener = (remoteProductId: Long, sharedView: View?) -> Unit
 
 class ProductListAdapter(
-    private inline val clickListener: OnProductClickListener? = null,
+    private val clickListener: OnProductClickListener? = null,
     private val loadMoreListener: OnLoadMoreListener,
     private val currencyFormatter: CurrencyFormatter,
     private val isProductHighlighted: (Long) -> Boolean,

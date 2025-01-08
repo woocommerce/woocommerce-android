@@ -122,7 +122,7 @@ class AnalyticsUpdateDataStore @Inject constructor(
                     true
                 }
             }
-            .map { lastUpdateValues -> lastUpdateValues.min() }
+            .map { lastUpdateValues -> lastUpdateValues.minOrNull() }
     }
 
     private fun observeLastUpdate(timestampKey: String): Flow<Long?> {

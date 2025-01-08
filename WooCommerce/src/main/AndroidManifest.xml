@@ -23,6 +23,10 @@
     <queries>
         <package android:name="com.whatsapp" />
         <package android:name="org.telegram.messenger" />
+
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
     </queries>
 
     <application

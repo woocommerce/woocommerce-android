@@ -260,6 +260,7 @@ class ProductDetailFragment :
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.updateProductDraft(
                 sku = it.sku,
+                globalUniqueId = it.globalUniqueId,
                 soldIndividually = it.isSoldIndividually,
                 stockStatus = it.stockStatus,
                 stockQuantity = it.stockQuantity,
@@ -465,7 +466,11 @@ class ProductDetailFragment :
 
     private fun openProductDetails(productRemoteId: Long) {
         hideProgressDialog()
-        (activity as? MainNavigationRouter)?.showProductDetail(productRemoteId, enableTrash = true)
+        (activity as? MainNavigationRouter)?.showProductDetail(
+            remoteProductId = productRemoteId,
+            enableTrash = true,
+            popUpToProductList = true
+        )
     }
 
     /**

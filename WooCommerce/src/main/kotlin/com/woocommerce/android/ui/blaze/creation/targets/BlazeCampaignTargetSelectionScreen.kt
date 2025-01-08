@@ -145,7 +145,7 @@ private fun TargetSelectionScreen(
                             onSearchActiveStateChanged(state.isFocused)
                         }
                         .focusRequester(focusRequester), // Request focus
-                    keyboardOptions = KeyboardOptions(autoCorrect = false),
+                    keyboardOptions = KeyboardOptions(autoCorrectEnabled = false),
                 )
             }
 
