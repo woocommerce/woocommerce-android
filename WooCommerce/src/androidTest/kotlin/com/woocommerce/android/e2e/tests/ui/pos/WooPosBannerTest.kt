@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package com.woocommerce.android
+package com.woocommerce.android.e2e.tests.ui.pos
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
@@ -15,6 +15,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.rules.RetryTestRule
@@ -71,7 +73,7 @@ class WooPosBannerTest : TestBase() {
     fun testWooPosSimpleProductsOnlyBannerIsDisplayedOnProductsScreen() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
-                composeTestRule.onNodeWithTag("product_list")
+                composeTestRule.onNodeWithTag("products_list")
                     .assertExists()
                     .assertIsDisplayed()
                 true
@@ -90,7 +92,7 @@ class WooPosBannerTest : TestBase() {
     fun testWooPosSimpleProductsOnlyBannerTitleAndMessageIsDisplayedOnBanner() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
-                composeTestRule.onNodeWithTag("product_list")
+                composeTestRule.onNodeWithTag("products_list")
                     .assertExists()
                     .assertIsDisplayed()
                 true
@@ -115,7 +117,7 @@ class WooPosBannerTest : TestBase() {
     fun testWooPosSimpleProductsOnlyBannerOpensProductInfoDialogWhenClickedOnLearnMore() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
-                composeTestRule.onNodeWithTag("product_list")
+                composeTestRule.onNodeWithTag("products_list")
                     .assertExists()
                     .assertIsDisplayed()
                 true
@@ -139,7 +141,7 @@ class WooPosBannerTest : TestBase() {
     fun testWooPosSimpleProductsOnlyBannerIsDismissedWhenClosed() = runTest {
         composeTestRule.waitUntil(5000) {
             try {
-                composeTestRule.onNodeWithTag("product_list")
+                composeTestRule.onNodeWithTag("products_list")
                     .assertExists()
                     .assertIsDisplayed()
                 true
