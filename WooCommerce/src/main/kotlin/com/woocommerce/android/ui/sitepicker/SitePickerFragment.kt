@@ -19,6 +19,7 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.databinding.FragmentSitePickerBinding
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
@@ -76,6 +77,9 @@ class SitePickerFragment :
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
+    @Inject
+    lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+
     private var skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
 
@@ -117,6 +121,7 @@ class SitePickerFragment :
             }
 
             R.id.menu_edit_store_list -> {
+                analyticsTrackerWrapper.track(stat = AnalyticsEvent.SITE_PICKER_EDIT_BUTTON_TAPPED)
                 findNavController().navigateSafely(
                     SitePickerFragmentDirections.actionSitePickerFragmentToStoreVisibilityFragment()
                 )

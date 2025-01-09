@@ -284,8 +284,8 @@ class IssueRefundViewModel @Inject constructor(
             )
         }
 
-        val items = order.items.map {
-            val maxQuantity = maxQuantities[it.itemId] ?: 0f
+        val items = order.items.mapNotNull {
+            val maxQuantity = maxQuantities[it.itemId] ?: return@mapNotNull null
             val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity.toInt())
             ProductRefundListItem(
                 orderItem = it,

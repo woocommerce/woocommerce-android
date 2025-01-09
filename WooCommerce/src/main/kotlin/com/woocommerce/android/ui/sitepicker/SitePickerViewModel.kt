@@ -226,12 +226,17 @@ class SitePickerViewModel @Inject constructor(
         val selectedSiteId = selectedSiteId.value ?: wooSites.getOrNull(0)?.id
         _sites.value = buildSitesList(wooSites, selectedSiteId, nonWooSites)
 
+        val isEditListEnabled = FeatureFlag.HIDE_SITES_FROM_SITE_PICKER.isEnabled() && wooSites.size > 1
+        if (isEditListEnabled && sitePickerViewState.editStoreListEnabled.not()) {
+            analyticsTrackerWrapper.track(stat = AnalyticsEvent.SITE_PICKER_EDIT_BUTTON_SHOWN)
+        }
+
         sitePickerViewState = sitePickerViewState.copy(
             hasConnectedStores = sites.isNotEmpty(),
             isPrimaryBtnVisible = wooSites.isNotEmpty(),
             isNoStoresViewVisible = false,
             currentSitePickerState = SitePickerState.StoreListState,
-            editStoreListEnabled = FeatureFlag.HIDE_SITES_FROM_SITE_PICKER.isEnabled() && wooSites.size > 1
+            editStoreListEnabled = isEditListEnabled
         )
         loginSiteAddress?.let {
             processLoginSiteAddress(it)

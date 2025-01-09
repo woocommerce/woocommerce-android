@@ -7,8 +7,12 @@
 - [*] Fixed overlap issue in Settings > WooCommerce Version  [https://github.com/woocommerce/woocommerce-android/pull/13183]
 - [*] Removed Tap To Pay usage survey [https://github.com/woocommerce/woocommerce-android/pull/13207]
 - [**] Fixed a crash when a shop manager was trying to install or activate plugin in the POS onboarding [https://github.com/woocommerce/woocommerce-android/pull/13203]
+- [***] Orders: Merchants can now bulk update the status of their orders [https://github.com/woocommerce/woocommerce-android/pull/13245]
 - [*] Fixed a crash on the order details [https://github.com/woocommerce/woocommerce-android/pull/13191]
 - [**] Introduced fallback logic for the barcode scanner to use the front-facing camera when a back-facing camera is unavailable [https://github.com/woocommerce/woocommerce-android/pull/13230]
+- [*] It possible to quickly open plugins page from the plugins list in the up to update an outdated plugin [https://github.com/woocommerce/woocommerce-android/pull/13246]
+- [**] Fixed a bug when refunded items were displayed on the refund screen [https://github.com/woocommerce/woocommerce-android/pull/13212]
+- [**] Enable hiding and disabling push notification for sites from site picker [https://github.com/woocommerce/woocommerce-android/issues/13107]
 
 21.3
 -----

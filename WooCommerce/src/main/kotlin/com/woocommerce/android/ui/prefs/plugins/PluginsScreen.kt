@@ -8,6 +8,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,16 +17,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -44,12 +48,12 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Inactive
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Unknown
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpToDate
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpdateAvailable
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin.PluginStatus.Inactive
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin.PluginStatus.Unknown
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin.PluginStatus.UpToDate
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewState.Loaded.Plugin.PluginStatus.UpdateAvailable
 
 @Composable
 fun PluginsScreen(viewModel: PluginsViewModel) {
@@ -69,34 +73,50 @@ fun PluginsScreen(viewModel: PluginsViewModel) {
                 .padding(paddingValues)
         ) {
             viewModel.viewState.observeAsState().value?.let { state ->
-                PluginsScreen(state, viewModel::onRetryClicked)
+                PluginsScreen(
+                    state = state,
+                    onRetryTapped = viewModel::onRetryClicked,
+                    onPluginClicked = viewModel::onPluginClicked,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun PluginsScreen(state: ViewState, onRetryTapped: () -> Unit) {
+private fun PluginsScreen(
+    state: PluginsViewState,
+    onRetryTapped: () -> Unit,
+    onPluginClicked: (Plugin) -> Unit,
+) {
     Crossfade(targetState = state, label = "") {
         when (it) {
-            is ViewState.Loading -> {
+            is PluginsViewState.Loading -> {
                 ShimmerPluginsList()
             }
-            is ViewState.Error -> {
+
+            is PluginsViewState.Error -> {
                 Error(onRetryTapped)
             }
-            is ViewState.Loaded -> {
-                Plugins(it.plugins)
+
+            is PluginsViewState.Loaded -> {
+                Plugins(
+                    it.plugins,
+                    onPluginClicked,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun Plugins(plugins: List<Plugin>) {
+private fun Plugins(
+    plugins: List<Plugin>,
+    onPluginClicked: (Plugin) -> Unit
+) {
     LazyColumn {
         items(plugins) { plugin ->
-            PluginItem(plugin)
+            PluginItem(plugin, onPluginClicked)
 
             if (plugins.last() != plugin) {
                 Divider()
@@ -106,10 +126,14 @@ private fun Plugins(plugins: List<Plugin>) {
 }
 
 @Composable
-private fun PluginItem(plugin: Plugin) {
+private fun PluginItem(
+    plugin: Plugin,
+    onPluginClicked: (Plugin) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = { onPluginClicked(plugin) })
             .padding(dimensionResource(R.dimen.major_100))
     ) {
         Column(
@@ -133,12 +157,41 @@ private fun PluginItem(plugin: Plugin) {
                 )
             }
 
-            if (plugin.status !is Unknown) {
-                Text(
+            when (plugin.status) {
+                is Inactive -> Text(
                     text = plugin.status.title,
                     color = colorResource(id = plugin.status.color),
                     fontWeight = FontWeight.Bold
                 )
+
+                is UpToDate -> Text(
+                    text = plugin.status.title,
+                    color = colorResource(id = plugin.status.color),
+                    fontWeight = FontWeight.Bold
+                )
+
+                is UpdateAvailable -> {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = plugin.status.title,
+                            tint = colorResource(id = plugin.status.color),
+                            modifier = Modifier
+                                .size(24.dp)
+                        )
+
+                        Text(
+                            text = plugin.status.title,
+                            color = colorResource(id = plugin.status.color),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                Unknown -> {}
             }
         }
     }
@@ -252,33 +305,47 @@ private fun Error(onRetryTapped: () -> Unit) {
 @LightDarkThemePreviews
 @Composable
 private fun PreviewPlugins() {
-    PluginsScreen(
-        ViewState.Loaded(
-            plugins = listOf(
-                Plugin("Plugin 1", "Automattic", "1.0", UpToDate("Up-to-date")),
-                Plugin("Plugin 2", null, "2.0", UpdateAvailable("Update available (4.9)")),
-                Plugin("Plugin 3", "Gutenberg", "3.0", Inactive("Inactive")),
-                Plugin("Plugin 5", "Blabla", "5.0", Unknown)
-            )
-        ),
-        onRetryTapped = {}
-    )
+    WooThemeWithBackground {
+        PluginsScreen(
+            PluginsViewState.Loaded(
+                plugins = listOf(
+                    Plugin("Plugin 1", "Automattic", "1.0", UpToDate("Up-to-date", R.color.color_info)),
+                    Plugin(
+                        "Plugin 2",
+                        "Something",
+                        "2.0",
+                        UpdateAvailable("Update available (4.9)", R.color.color_primary)
+                    ),
+                    Plugin("Plugin 3", "Gutenberg", "3.0", Inactive("Inactive", R.color.color_on_surface_disabled)),
+                    Plugin("Plugin 5", "Blabla", "5.0", Unknown)
+                )
+            ),
+            onRetryTapped = {},
+            onPluginClicked = {},
+        )
+    }
 }
 
 @LightDarkThemePreviews
 @Composable
 private fun PreviewError() {
-    PluginsScreen(
-        ViewState.Error,
-        onRetryTapped = {}
-    )
+    WooThemeWithBackground {
+        PluginsScreen(
+            PluginsViewState.Error,
+            onRetryTapped = {},
+            onPluginClicked = {},
+        )
+    }
 }
 
 @LightDarkThemePreviews
 @Composable
 private fun PreviewLoading() {
-    PluginsScreen(
-        ViewState.Loading,
-        onRetryTapped = {}
-    )
+    WooThemeWithBackground {
+        PluginsScreen(
+            PluginsViewState.Loading,
+            onRetryTapped = {},
+            onPluginClicked = {},
+        )
+    }
 }

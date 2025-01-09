@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
+import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
+    private val wooPosItemsNavigator: WooPosItemsNavigator,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
@@ -200,6 +202,11 @@ class WooPosHomeViewModel @Inject constructor(
     }
 
     private fun onOrderSuccessfullyPaid(paymentMethod: PaymentMethod) {
+        viewModelScope.launch {
+            wooPosItemsNavigator.sendNavigationEvent(
+                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
+            )
+        }
         _state.value = _state.value.copy(
             screenPositionState = ScreenPositionState.Checkout.FullScreenTotals
         )

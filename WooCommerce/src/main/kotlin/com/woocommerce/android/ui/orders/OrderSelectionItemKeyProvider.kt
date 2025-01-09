@@ -18,5 +18,5 @@ class OrderSelectionItemKeyProvider(private val recyclerView: RecyclerView) :
     }
 
     override fun getPosition(key: Long): Int =
-        (recyclerView.adapter as? OrderListAdapter)?.orderIdAndPosition[key] ?: RecyclerView.NO_POSITION
+        (recyclerView.adapter as? OrderListAdapter)?.orderIdAndPosition?.get(key) ?: RecyclerView.NO_POSITION
 }

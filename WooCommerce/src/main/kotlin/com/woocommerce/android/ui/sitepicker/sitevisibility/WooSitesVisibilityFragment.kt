@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,6 +41,7 @@ class WooSitesVisibilityFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
                 is ExitWithResult<*> -> navigateBackWithResult(WOO_SITES_VISIBILITY_UPDATED, event.data)
+                is ShowDialog -> event.showDialog()
             }
         }
     }

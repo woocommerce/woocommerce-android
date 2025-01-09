@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentFailed
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.PaymentInProgress
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -62,7 +61,6 @@ class WooPosTotalsViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val networkStatus: WooPosNetworkStatus,
-    private val wooPosItemsNavigator: WooPosItemsNavigator,
     private val isReceiptSendingSupported: WooPosEmailReceiptIsSendingSupported,
     private val cardReaderPaymentControllerFactory: CardReaderPaymentControllerFactory,
     private val uiStringParser: UiStringParser,
@@ -305,9 +303,6 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
-                        wooPosItemsNavigator.sendNavigationEvent(
-                            WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
-                        )
                         childrenToParentEventSender.sendToParent(OrderSuccessfullyPaidByCard)
                     }
 

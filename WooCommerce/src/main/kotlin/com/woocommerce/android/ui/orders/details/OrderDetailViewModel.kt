@@ -88,7 +88,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
@@ -992,12 +991,7 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
-    suspend fun awaitOrder(): Order =
-        withTimeout(
-            TIME_TO_WAIT_ORDER_MS // time needed in order to crash in case of a deadlock
-        ) {
-            _order.filterNotNull().first()
-        }
+    suspend fun awaitOrder(): Order = _order.filterNotNull().first()
 
     fun onWcShippingBannerDismissed() {
         shippingLabelOnboardingRepository.markWcShippingBannerAsDismissed()

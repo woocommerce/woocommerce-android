@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
-import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -80,8 +79,6 @@ class WooPosTotalsViewModelTest {
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val networkStatus: WooPosNetworkStatus = mock()
-
-    private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val resourceProvider: ResourceProvider = mock()
@@ -1251,7 +1248,6 @@ class WooPosTotalsViewModelTest {
         analyticsTracker = analyticsTracker,
         networkStatus = networkStatus,
         cardReaderPaymentControllerFactory = cardReaderPaymentControllerFactory,
-        wooPosItemsNavigator = wooPosItemsNavigator,
         isReceiptSendingSupported = isReceiptSendingSupported,
         uiStringParser = uiStringParser,
         savedState = savedState,

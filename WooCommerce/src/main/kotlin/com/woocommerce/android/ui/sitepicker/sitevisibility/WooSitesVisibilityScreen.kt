@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -74,13 +76,21 @@ fun WooSitesVisibilityScreen(
             },
             backgroundColor = colorResource(id = R.color.color_toolbar),
             actions = {
-                TextButton(
-                    onClick = onSaveTapped,
-                    enabled = state.isSaveButtonEnabled
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.save).uppercase()
+                if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(width = 56.dp, height = 16.dp)
+                            .padding(horizontal = 16.dp)
                     )
+                } else {
+                    TextButton(
+                        onClick = onSaveTapped,
+                        enabled = state.isSaveButtonEnabled
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.save).uppercase()
+                        )
+                    }
                 }
             },
             elevation = 0.dp
@@ -228,6 +238,7 @@ fun StoreVisibilityScreenPreview() {
 
             ),
             isSaveButtonEnabled = true,
+            isLoading = false,
             currentSite = WooStoreUi(
                 siteName = "Current Store",
                 siteUrl = "https://myselectedSite.com",

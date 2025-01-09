@@ -377,6 +377,7 @@
     <string name="site_picker_edit_store_current_site_header">Current Store</string>
     <string name="site_picker_edit_store_current_site_footer">Please switch to another store if you want to hide this one</string>
     <string name="site_picker_edit_store_list_header">Other Stores</string>
+    <string name="site_picker_edit_store_list_error_title">There was an error when updating notification settings. Please try again</string>
 
     <!--
         My Store View

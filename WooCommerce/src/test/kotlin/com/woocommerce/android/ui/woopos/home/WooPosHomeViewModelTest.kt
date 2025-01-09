@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccessfullyPaid.PaymentMethod
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.home.items.navigation.WooPosItemsNavigator
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,6 +31,7 @@ class WooPosHomeViewModelTest {
 
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
+    private val wooPosItemsNavigator: WooPosItemsNavigator = mock()
 
     @Test
     fun `given state checkout, when SystemBackClicked passed, then BackFromCheckoutToCartClicked event should be sent`() =
@@ -398,9 +400,44 @@ class WooPosHomeViewModelTest {
             .isEqualTo(WooPosHomeState.ScreenPositionState.Checkout.FullScreenTotals)
     }
 
+    @Test
+    fun `given OrderSuccessfullyPaid by card, then redirect back to items screen`() =
+        runTest {
+            // GIVEN
+            whenever(childrenToParentEventReceiver.events).thenReturn(
+                flowOf(ChildToParentEvent.OrderSuccessfullyPaidByCard)
+            )
+
+            // WHEN
+            createViewModel()
+
+            // THEN
+            verify(wooPosItemsNavigator).sendNavigationEvent(
+                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
+            )
+        }
+
+    @Test
+    fun `given OrderSuccessfullyPaid by cash, then redirect back to items screen`() =
+        runTest {
+            // GIVEN
+            val events = MutableSharedFlow<ChildToParentEvent>()
+            whenever(childrenToParentEventReceiver.events).thenReturn(events)
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosHomeUIEvent.OnPaymentCompletedViaCash)
+
+            // THEN
+            verify(wooPosItemsNavigator).sendNavigationEvent(
+                WooPosItemsNavigator.WooPosItemsScreenNavigationEvent.NavigateBackToItemListScreen
+            )
+        }
+
     private fun createViewModel() = WooPosHomeViewModel(
         childrenToParentEventReceiver,
         parentToChildrenEventSender,
+        wooPosItemsNavigator,
         SavedStateHandle()
     )
 }
