@@ -9,7 +9,6 @@ Language: ar
     <string name="woopos_variations_loading_error_title">خطأ في تحميل الأشكال</string>
     <string name="woopos_variations_screen_pagination_error">\"فشل تحميل مزيد من العناصر. يرجى المحاولة مرة أخرى\".</string>
     <string name="woopos_variations_back_content_description">رجوع</string>
-    <string name="woopos_items_list_variable_product_variations">⁦%1$d⁩ من الأشكال</string>
     <string name="woopos_variation_item_content_description">الشكل %s، الشعر %s</string>
     <string name="woopos_variable_product_item_content_description">المنتج المتغير %s، السعر %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">يتعذر أن يكون الوصف فارغًا</string>

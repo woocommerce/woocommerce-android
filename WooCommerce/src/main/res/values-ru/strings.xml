@@ -9,7 +9,6 @@ Language: ru
     <string name="woopos_variations_loading_error_title">Ошибка при загрузке вариантов</string>
     <string name="woopos_variations_screen_pagination_error">«Не удалось загрузить другие товары. Повторите попытку».</string>
     <string name="woopos_variations_back_content_description">Назад</string>
-    <string name="woopos_items_list_variable_product_variations">Вариантов: %1$d</string>
     <string name="woopos_variation_item_content_description">Вариант %s, цена %s</string>
     <string name="woopos_variable_product_item_content_description">Товар с вариантами %s, цена %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">Описание не может быть пустым</string>

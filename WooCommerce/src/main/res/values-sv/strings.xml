@@ -9,7 +9,6 @@ Language: sv_SE
     <string name="woopos_variations_loading_error_title">Ett fel uppstod när variationer hämtades</string>
     <string name="woopos_variations_screen_pagination_error">\"Det gick inte att ladda fler objekt. Försök igen.\"</string>
     <string name="woopos_variations_back_content_description">Tillbaka</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d variationer</string>
     <string name="woopos_variation_item_content_description">Variation %s, Pris %s</string>
     <string name="woopos_variable_product_item_content_description">Variabel produkt%s, Pris %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">Beskrivning kan inte vara tom</string>

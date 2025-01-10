@@ -9,7 +9,6 @@ Language: ja_JP
     <string name="woopos_variations_loading_error_title">バリエーションの読み込み中にエラーが発生しました</string>
     <string name="woopos_variations_screen_pagination_error">「その他のアイテムの読み込みに失敗しました。 もう一度実行してください」</string>
     <string name="woopos_variations_back_content_description">戻る</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d個のバリエーション</string>
     <string name="woopos_variation_item_content_description">バリエーション %s、価格 %s</string>
     <string name="woopos_variable_product_item_content_description">バリエーションのある商品 %s、価格 %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">説明を空にすることはできません</string>

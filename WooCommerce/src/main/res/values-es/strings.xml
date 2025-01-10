@@ -9,7 +9,6 @@ Language: es
     <string name="woopos_variations_loading_error_title">Error al cargar variaciones</string>
     <string name="woopos_variations_screen_pagination_error">\"No se han podido cargar más elementos. Inténtalo de nuevo\".</string>
     <string name="woopos_variations_back_content_description">Volver</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d variaciones</string>
     <string name="woopos_variation_item_content_description">Variación: %s; Precio: %s</string>
     <string name="woopos_variable_product_item_content_description">Producto variable: %s; Precio: %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">La descripción no puede estar vacía.</string>

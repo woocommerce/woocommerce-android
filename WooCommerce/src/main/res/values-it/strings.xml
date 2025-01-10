@@ -9,7 +9,6 @@ Language: it
     <string name="woopos_variations_loading_error_title">Errore nel caricamento delle varianti</string>
     <string name="woopos_variations_screen_pagination_error">\"Impossibile caricare altri articoli. Riprova\".</string>
     <string name="woopos_variations_back_content_description">Indietro</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d varianti</string>
     <string name="woopos_variation_item_content_description">Variante %s, prezzo %s</string>
     <string name="woopos_variable_product_item_content_description">Prodotto variabile %s, prezzo %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">La descrizione non può essere vuota</string>

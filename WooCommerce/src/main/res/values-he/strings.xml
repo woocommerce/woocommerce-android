@@ -9,7 +9,6 @@ Language: he_IL
     <string name="woopos_variations_loading_error_title">שגיאה בטעינת הסוגים</string>
     <string name="woopos_variations_screen_pagination_error">\"הטעינה של פריטים נוספים נכשלה. יש לנסות שוב.\"</string>
     <string name="woopos_variations_back_content_description">חזרה</string>
-    <string name="woopos_items_list_variable_product_variations">⁦%1$d⁩ סוגים</string>
     <string name="woopos_variation_item_content_description">סוג %s, מחיר %s</string>
     <string name="woopos_variable_product_item_content_description">מוצר עם סוגים %s, מחיר %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">התיאור לא יכול להיות ריק</string>

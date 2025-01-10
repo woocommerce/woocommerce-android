@@ -4345,7 +4345,6 @@
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Popup menu with options. Swipe to navigate through items.</string>
     <string name="woopos_no_internet_message">It looks like you\'re not connected to the internet. Ensure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
 
-    <string name="woopos_items_list_variable_product_variations">%1$d variations</string>
     <string name="woopos_variations_back_content_description">Back</string>
     <string name="woopos_items_pagination_try_again_label">Try again</string>
     <string name="woopos_items_pagination_error_title">"Failed to load more items"</string>

@@ -9,7 +9,6 @@ Language: fr
     <string name="woopos_variations_loading_error_title">Erreur lors du chargement des variantes</string>
     <string name="woopos_variations_screen_pagination_error">« Échec du chargement d’éléments supplémentaires. Veuillez réessayer. »</string>
     <string name="woopos_variations_back_content_description">Retour</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d variantes</string>
     <string name="woopos_variation_item_content_description">Variante %s, prix %s</string>
     <string name="woopos_variable_product_item_content_description">Produit variable %s, prix %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">La description ne peut pas être vide</string>

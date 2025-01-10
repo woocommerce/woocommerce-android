@@ -9,7 +9,6 @@ Language: zh_CN
     <string name="woopos_variations_loading_error_title">加载变体时出错</string>
     <string name="woopos_variations_screen_pagination_error">“无法加载更多项目。 请重试。”</string>
     <string name="woopos_variations_back_content_description">返回</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d 个变体</string>
     <string name="woopos_variation_item_content_description">变体 %s，价格 %s</string>
     <string name="woopos_variable_product_item_content_description">可变产品 %s，价格 %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">描述不能为空</string>

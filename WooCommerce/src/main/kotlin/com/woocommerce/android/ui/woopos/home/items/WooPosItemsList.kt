@@ -211,7 +211,7 @@ private fun ProductInfo(item: WooPosItem) {
         Spacer(modifier = Modifier.height(8.dp))
         when (item) {
             is SimpleProduct -> SimpleProductDetails(item = item)
-            is VariableProduct -> VariableProductDetails(item = item)
+            is VariableProduct -> VariableProductDetails()
             is Variation -> VariationProductDetails(item = item)
         }
     }
@@ -249,9 +249,9 @@ private fun SimpleProductDetails(item: SimpleProduct) {
 }
 
 @Composable
-private fun VariableProductDetails(item: VariableProduct) {
+private fun VariableProductDetails() {
     Text(
-        text = "${item.numOfVariations} Variations",
+        text = stringResource(id = R.string.woopos_variations_options_available_text),
         style = MaterialTheme.typography.h6,
         fontWeight = FontWeight.Normal
     )

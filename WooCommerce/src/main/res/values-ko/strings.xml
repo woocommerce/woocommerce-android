@@ -9,7 +9,6 @@ Language: ko_KR
     <string name="woopos_variations_loading_error_title">상품 옵션 로드 오류</string>
     <string name="woopos_variations_screen_pagination_error">\"아이템을 더 로드하지 못했습니다. 다시 시도하세요”</string>
     <string name="woopos_variations_back_content_description">뒤로</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d개 변형</string>
     <string name="woopos_variation_item_content_description">상품 옵션 %s, 가격 %s</string>
     <string name="woopos_variable_product_item_content_description">변형 상품 %s, 가격 %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">설명은 비워 둘 수 없음</string>

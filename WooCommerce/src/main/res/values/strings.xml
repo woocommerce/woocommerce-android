@@ -1309,6 +1309,8 @@
     <string name="shipping_label_purchased_tracking_error">We currently do not support Tracking for this carrier</string>
     <string name="shipping_label_purchased_print_error">Something went wrong with this Shipping Label, try again later</string>
     <string name="shipping_label_purchased_purchase_failed_error">We can\'t confirm the Shipping Label purchase right now, try again later</string>
+    <string name="shipping_label_select_origin_default_address">%s (default)</string>
+    <string name="shipping_label_select_origin_address">Address</string>
 
 
     <!--
@@ -4357,13 +4359,13 @@
     <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">Popup menu with options. Swipe to navigate through items.</string>
     <string name="woopos_no_internet_message">It looks like you\'re not connected to the internet. Ensure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
 
-    <string name="woopos_items_list_variable_product_variations">%1$d variations</string>
     <string name="woopos_variations_back_content_description">Back</string>
     <string name="woopos_items_pagination_try_again_label">Try again</string>
     <string name="woopos_items_pagination_error_title">"Failed to load more items"</string>
     <string name="woopos_items_pagination_error_description">"An error occurred while loading products."</string>
     <string name="woopos_items_pagination_error_content_description">"Failed to load more items. Double tap to try again."</string>
     <string name="woopos_variations_loading_error_title">Error loading variations</string>
+    <string name="woopos_variations_options_available_text">Options available</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>

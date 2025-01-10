@@ -9,7 +9,6 @@ Language: id
     <string name="woopos_variations_loading_error_title">Error saat memuat variasi</string>
     <string name="woopos_variations_screen_pagination_error">\"Gagal memuat item lain. Harap coba lagi.\"</string>
     <string name="woopos_variations_back_content_description">Kembali</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d variasi</string>
     <string name="woopos_variation_item_content_description">Variasi %s, Harga %s</string>
     <string name="woopos_variable_product_item_content_description">Produk Variabel %s, Harga %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">Deskripsi tidak boleh kosong</string>

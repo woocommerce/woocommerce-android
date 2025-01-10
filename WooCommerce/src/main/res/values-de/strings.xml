@@ -9,7 +9,6 @@ Language: de
     <string name="woopos_variations_loading_error_title">Beim Laden der Varianten ist ein Fehler aufgetreten</string>
     <string name="woopos_variations_screen_pagination_error">„Es ist ein Fehler beim Laden weiterer Artikel aufgetreten. Bitte versuche es erneut.“</string>
     <string name="woopos_variations_back_content_description">Zurück</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d Varianten</string>
     <string name="woopos_variation_item_content_description">Variante: %s, Preis: %s</string>
     <string name="woopos_variable_product_item_content_description">Variables Produkt: %s, Preis: %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">Beschreibung darf nicht leer sein</string>

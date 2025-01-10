@@ -9,7 +9,6 @@ Language: zh_TW
     <string name="woopos_variations_loading_error_title">載入款式時發生錯誤</string>
     <string name="woopos_variations_screen_pagination_error">「無法載入更多項目， 請再試一次。」</string>
     <string name="woopos_variations_back_content_description">返回</string>
-    <string name="woopos_items_list_variable_product_variations">%1$d 種款式</string>
     <string name="woopos_variation_item_content_description">款式 %s，價格 %s</string>
     <string name="woopos_variable_product_item_content_description">多款式商品 %s，價格 %s</string>
     <string name="blaze_campaign_edit_ad_change_description_empty_error">說明不得空白</string>
