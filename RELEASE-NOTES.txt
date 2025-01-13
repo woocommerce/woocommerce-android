@@ -1,10 +1,15 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+21.5
+-----
+- [*] Puerto Rico is now available in the list of countries that are supported by in-person payments [https://github.com/woocommerce/woocommerce-android/pull/13200]
+
 21.4
 -----
 - [*] Fix Dashboard card menu sizing to fit bigger font sizes and longer text. [https://github.com/woocommerce/woocommerce-android/pull/13184]
 - [*] Fixed overlap issue in Settings > WooCommerce Version  [https://github.com/woocommerce/woocommerce-android/pull/13183]
+- [**] Fixed a crash when a shop manager was trying to install or activate plugin in the POS onboarding [https://github.com/woocommerce/woocommerce-android/pull/13203]
 - [*] Removed Tap To Pay usage survey [https://github.com/woocommerce/woocommerce-android/pull/13207]
 - [**] Fixed a crash when a shop manager was trying to install or activate plugin in the POS onboarding [https://github.com/woocommerce/woocommerce-android/pull/13203]
 - [***] Orders: Merchants can now bulk update the status of their orders [https://github.com/woocommerce/woocommerce-android/pull/13245]
@@ -29,6 +34,7 @@
 - [**] Improved UX of card reader payment flow in Point of Sale, allowing faster payment collection [https://github.com/woocommerce/woocommerce-android/pull/12977]
 - [*] Fixed crash when trying to open barcode scanner on device without camera [https://github.com/woocommerce/woocommerce-android/pull/13172]
 - [Internal] Woo POS now accepts cash payments and there is a functionality of sending receipts [https://github.com/woocommerce/woocommerce-android/pull/13157]
+- [**] Fixed a bug that caused the app to not show the list of refunded products in the order details screen [https://github.com/woocommerce/woocommerce-android/pull/13261]
 
 -----
 21.2

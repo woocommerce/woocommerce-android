@@ -17,6 +17,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
@@ -146,7 +147,13 @@ class WooPosVariationsDataSourceTest {
 
         sut.fetchFirstPage(productId, forceRefresh = true).first()
 
-        whenever(handler.fetchVariations(productId, forceRefresh = true))
+        whenever(
+            handler.fetchVariations(
+                productId,
+                forceRefresh = true,
+                mapOf(WCProductStore.VariationFilterOption.STATUS to "publish")
+            )
+        )
             .thenReturn(Result.failure(exception))
 
         // WHEN
@@ -196,7 +203,9 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.canLoadMore(5)).thenReturn(true)
         whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
         val exception = Exception("Load more failed")
-        whenever(handler.loadMore(productId)).thenReturn(Result.failure(exception))
+        whenever(
+            handler.loadMore(productId, mapOf(WCProductStore.VariationFilterOption.STATUS to "publish")),
+        ).thenReturn(Result.failure(exception))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache)
 
@@ -223,7 +232,11 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(emptyList()))
         val exception = Exception("Remote load failed")
         whenever(
-            handler.fetchVariations(productId, forceRefresh = true)
+            handler.fetchVariations(
+                productId,
+                forceRefresh = true,
+                mapOf(WCProductStore.VariationFilterOption.STATUS to "publish")
+            )
         ).thenReturn(Result.failure(exception))
         whenever(variationsCache.get(productId)).thenReturn(emptyList())
 

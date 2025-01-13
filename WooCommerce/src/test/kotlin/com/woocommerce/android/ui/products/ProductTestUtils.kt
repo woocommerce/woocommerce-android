@@ -120,6 +120,7 @@ object ProductTestUtils {
         amount: String = "10.00",
         isVirtual: Boolean = false,
         isDownloadable: Boolean = false,
+        isPurchasable: Boolean = true,
     ): ProductVariation {
         return WCProductVariationModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
@@ -131,6 +132,7 @@ object ProductTestUtils {
             attributes = ""
             virtual = isVirtual
             downloadable = isDownloadable
+            purchasable = isPurchasable
         }.toAppModel().also { it.priceWithCurrency = "$10.00" }
     }
 

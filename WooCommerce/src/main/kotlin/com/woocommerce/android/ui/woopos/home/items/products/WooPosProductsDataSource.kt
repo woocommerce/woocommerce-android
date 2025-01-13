@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductType.VARIABLE
 import com.woocommerce.android.ui.products.selector.ProductListHandler
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -83,7 +84,7 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     private fun List<Product>.applyPosProductFilter() = this.filter { product ->
-        isProductHasAPrice(product)
+        isProductHasAPrice(product) || product.productType == VARIABLE
     }
 
     private fun isProductHasAPrice(product: Product) =

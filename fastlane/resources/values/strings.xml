@@ -365,6 +365,7 @@
     <!--
         Site picker
     -->
+    <string name="site_picker_select_store_list_header_with_hidden_sites">Select store to connect (%d hidden)</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
     <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_picker_create_new_store">Create a new store</string>
@@ -372,7 +373,11 @@
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="site_picker_edit_store_list">Edit Stores</string>
     <string name="site_picker_edit_store_list_title">Visible Stores</string>
-    <string name="site_picker_edit_store_list_footer">Unselected stores won\'t be shown in the app site\'s picker and won\'t receive push notifications for new orders</string>
+    <string name="site_picker_edit_store_list_footer">Unselected stores won\'t be shown in the app site\'s picker and won\'t receive push notifications for new orders or product reviews</string>
+    <string name="site_picker_edit_store_current_site_header">Current Store</string>
+    <string name="site_picker_edit_store_current_site_footer">Please switch to another store if you want to hide this one</string>
+    <string name="site_picker_edit_store_list_header">Other Stores</string>
+    <string name="site_picker_edit_store_list_error_title">There was an error when updating notification settings. Please try again</string>
 
     <!--
         My Store View
@@ -612,6 +617,8 @@
     <string name="orderlist_selection_count">%d orders selected</string>
     <string name="orderlist_selection_count_single">%d order selected</string>
     <string name="orderlist_selection_menu_update_status">Update status</string>
+    <string name="orderlist_bulk_update_status_updated">Status updated!</string>
+    <string name="orderlist_bulk_update_maximum_reached">Maximum selection count (%d) is reached.</string>
 
     <!--
          Simple Payments
@@ -1286,8 +1293,12 @@
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Cheapest</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Fastest</string>
     <string name="shipping_label_shipping_service_title">Shipping service</string>
-    <string name="shipping_label_purchased_title">Your shipping label is ready to print</string>
-    <string name="shipping_label_purchased_message">From here you can print the shipping label again or change the paper size of the label.</string>
+    <string name="shipping_label_purchased_success_title">Your shipping label is ready to print</string>
+    <string name="shipping_label_purchased_success_message">From here you can print the shipping label again or change the paper size of the label.</string>
+    <string name="shipping_label_purchased_in_progress_title">Your shipping label is being processed</string>
+    <string name="shipping_label_purchased_in_progress_message">Once it\'s finished, you will be able to print the shipping label with a selected paper size</string>
+    <string name="shipping_label_purchased_failure_title">We couldn\'t process your shipping label</string>
+    <string name="shipping_label_purchased_failure_message">Please try again later</string>
     <string name="shipping_label_purchased_note">Note: Reusing a printed label is a violation of our terms of service and may result in criminal charges.</string>
     <string name="shipping_label_purchased_learn_how_to_print">Learn how to print from your mobile device</string>
     <string name="shipping_label_purchased_track_shipment">Track shipment</string>
@@ -1297,6 +1308,9 @@
     <string name="shipping_label_purchased_pickup_error">We currently do not support Pick ups for this carrier</string>
     <string name="shipping_label_purchased_tracking_error">We currently do not support Tracking for this carrier</string>
     <string name="shipping_label_purchased_print_error">Something went wrong with this Shipping Label, try again later</string>
+    <string name="shipping_label_purchased_purchase_failed_error">We can\'t confirm the Shipping Label purchase right now, try again later</string>
+    <string name="shipping_label_select_origin_default_address">%s (default)</string>
+    <string name="shipping_label_select_origin_address">Address</string>
 
 
     <!--
@@ -1557,7 +1571,6 @@
     <string name="card_reader_tap_to_pay_header">TAP TO PAY</string>
     <string name="card_reader_about_tap_to_pay">About Tap to Pay</string>
     <string name="card_reader_tap_to_pay_description">Use your phone to accept card\npayments. Try it now.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Share Feedback</string>
     <string name="card_reader_tap_to_pay_not_available_error_check_requirements_button">Check Requirements</string>
     <string name="card_reader_tap_to_pay_not_available_error_title">Tap to Pay is not available</string>
     <string name="card_reader_tap_to_pay_not_available_error_nfc">To use Tap To Pay on Android, your device needs an NFC chip. To accept in-person payments, please purchase a Bluetooth card reader.</string>
@@ -4258,20 +4271,20 @@
     <string name="woopos_cart_title">Cart</string>
     <string name="woopos_clear_cart_button">Clear</string>
 
-    <string name="woopos_banner_simple_products_only_title">Showing simple and variable products only</string>
-    <string name="woopos_banner_simple_products_only_message">Only simple physical and variable products are compatible with POS right now. Other product types, such as virtual, will become available in future updates. </string>
+    <string name="woopos_banner_simple_products_only_title">Showing simple, variable and virtual products only</string>
+    <string name="woopos_banner_simple_products_only_message">Only simple physical, variable and virtual products are compatible with POS right now. Other product types will become available in future updates. </string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Learn\u00A0more</string>
     <string name="woopos_banner_simple_products_close_content_description">Close</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
-    <string name="woopos_banner_simple_products_content_description">Simple and variable products only banner</string>
+    <string name="woopos_banner_simple_products_content_description">Simple, variable and virtual products only banner</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Double tap to learn more</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Simple and variable products only dialog</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Simple, variable and virtual products only dialog</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Double tap to dismiss the dialog</string>
 
     <string name="woopos_dialog_products_info_heading">Why can\'t I see my products?</string>
-    <string name="woopos_dialog_products_info_primary_message">Only simple physical and variable products can be used with POS right now.</string>
-    <string name="woopos_dialog_products_info_secondary_message">Other product types, such as virtual, will be available in future updates.</string>
-    <string name="woopos_dialog_products_info_tertiary_message">To take payment for a non-simple product, exit POS and create a new order from the orders tab.</string>
+    <string name="woopos_dialog_products_info_primary_message">Only simple physical, variable and virtual products can be used with POS right now.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Other product types will be available in future updates.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">To take payment for other products, exit POS and create a new order from the orders tab.</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Create an order in store management</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_background_content_description">Dimmed background. Tap to dismiss the dialog.</string>
@@ -4315,7 +4328,8 @@
     <string name="woopos_error_icon_content_description">Error indication icon</string>
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
-    <string name="woopos_success_screen_total">A payment of %1$s was successfully made</string>
+    <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made</string>
+    <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made</string>
 
     <string name="woopos_success_totals_error_reader_not_connected_title">Reader not connected</string>
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">To process this payment, please connect your reader.</string>
@@ -4351,6 +4365,7 @@
     <string name="woopos_items_pagination_error_description">"An error occurred while loading products."</string>
     <string name="woopos_items_pagination_error_content_description">"Failed to load more items. Double tap to try again."</string>
     <string name="woopos_variations_loading_error_title">Error loading variations</string>
+    <string name="woopos_variations_options_available_text">Options available</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
@@ -4436,5 +4451,9 @@
     <string name="woo_shipping_labels_package_creation_error">Failed to load the package data</string>
     <string name="woo_shipping_labels_package_creation_box_type">Box</string>
     <string name="woo_shipping_labels_package_creation_envelope_type">Envelope</string>
+    <string name="woo_shipping_labels_package_creation_error_title">We couldn\'t save the package as template</string>
+    <string name="woo_shipping_labels_package_creation_error_message">Do you want to proceed without saving it?</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">Proceed</string>
+    <string name="woo_shipping_labels_package_creation_error_cancel">Cancel</string>
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
 </resources>

@@ -1,13 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-11-26 09:54:04+0000
+Translation-Revision-Date: 2024-12-27 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error">Gagal memuat data paket</string>
+    <string name="woo_shipping_labels_package_creation_package_name">Nama Paket</string>
+    <string name="woo_shipping_labels_package_creation_weight">Berat</string>
+    <string name="woopos_email_receipt_send_error">Terjadi error saat mencoba mengirim email ini. Coba lagi</string>
+    <string name="woopos_email_receipt_email_label">Ketik email </string>
+    <string name="woopos_email_receipt_title">Email tanda terima</string>
+    <string name="woopos_toolbar_icon_content_description">Kembali</string>
+    <string name="woopos_email_receipt_send_button">Kirim</string>
+    <string name="woopos_cash_payment_error_message">Terjadi error saat memproses pembayaran. Coba lagi.</string>
+    <string name="woopos_cash_payment_change_due">Kembalian terutang %s</string>
+    <string name="woopos_cash_payment_total">Total: %s</string>
+    <string name="woopos_complete_cash_order_button">Pembayaran ditandai sebagai selesai</string>
+    <string name="woopos_cash_payment_title">Pembayaran tunai</string>
+    <string name="woopos_items_pagination_error_content_description">\"Gagal memuat item lain. Ketuk dua kali untuk mencoba lagi.\"</string>
+    <string name="woopos_items_pagination_error_description">\"Terjadi error saat memuat produk.\"</string>
+    <string name="woopos_items_pagination_error_title">\"Gagal memuat item lain\"</string>
+    <string name="woopos_items_pagination_try_again_label">Coba lagi</string>
+    <string name="woo_pos_payment_remove_card">Ambil kartu</string>
+    <string name="woo_pos_payment_failed_go_back_to_checkout">Kembali ke checkout</string>
+    <string name="woo_pos_payment_failed_try_again">Coba lagi pembayaran</string>
+    <string name="woo_pos_payment_failed_try_another_payment_method">Coba metode pembayaran lainnya</string>
+    <string name="woopos_success_totals_payment_failed_title">Pembayaran gagal</string>
+    <string name="woopos_success_totals_payment_processing_subtitle">Harap tunggu …</string>
+    <string name="woopos_success_totals_payment_processing_title">Memproses pembayaran</string>
+    <string name="woopos_totals_reader_ready_for_payment_subtitle">Tempel, gesek, atau masukkan kartu</string>
+    <string name="woopos_totals_reader_ready_for_payment_title">Siap untuk pembayaran</string>
+    <string name="woopos_totals_reader_preparing_reader_for_payment">Menyiapkan perangkat pembaca kartu untuk pembayaran</string>
+    <string name="woopos_totals_reader_checking_order">Memeriksa pesanan</string>
+    <string name="woopos_totals_reader_getting_ready">Menyiapkan</string>
+    <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">Hubungkan ke perangkat pembaca kartu</string>
+    <string name="woopos_success_totals_error_reader_not_connected_subtitle">Untuk memproses pembayaran ini, hubungkan ke perangkat pembaca kartu.</string>
+    <string name="woopos_success_totals_error_reader_not_connected_title">Perangkat pembaca kartu tidak terhubung</string>
+    <string name="woopos_payment_take_cash_payment_label">Pembayaran tunai</string>
+    <string name="woopos_receipt_sending_not_supported">Perbarui WooCommerce ke versi %s atau yang lebih baru</string>
+    <string name="woopos_receipt_button">Email tanda terima</string>
+    <string name="blaze_campaign_creation_no_product_modal_cta">Buat Produk</string>
+    <string name="blaze_campaign_creation_no_product_modal_body">Saat ini tidak ada produk yang tersedia untuk promosi. Anda ingin membuat produk sekarang?</string>
+    <string name="blaze_campaign_creation_no_product_modal_title">Produk tidak ditemukan</string>
+    <string name="product_inventory_update_global_unique_id_error">Masukkan angka dan tanda hubung saja</string>
+    <string name="shipping_label_rate_option_adult_signature_required_name">Tanda tangan orang dewasa wajib diisi</string>
+    <string name="shipping_label_rate_option_signature_required_name">Tanda tangan wajib diisi</string>
+    <string name="shipping_label_purchased_print_error">Terjadi kesalahan pada Label Pengiriman ini, coba lagi nanti</string>
+    <string name="shipping_label_purchased_tracking_error">Saat ini Pelacakan untuk operator ini belum didukung </string>
+    <string name="shipping_label_purchased_pickup_error">Saat ini Pengambilan untuk operator ini belum didukung </string>
+    <string name="shipping_label_total_shipment_weight">Total berat pengiriman (dengan paket)</string>
+    <string name="shipping_label_package_selected_description">Ubah pilihan paket</string>
+    <string name="shipping_label_package_selected_title">Paket</string>
+    <string name="shipping_label_package_default_name">Paket Khusus</string>
+    <string name="orderlist_selection_menu_update_status">Perbarui status</string>
+    <string name="orderlist_selection_count_single">%d pesanan terpilih</string>
+    <string name="orderlist_selection_count">%d semua pesanan terpilih</string>
+    <string name="site_picker_edit_store_list_footer">Toko yang tidak dipilih tidak akan muncul di pemilih situs dan tidak akan mendapat pemberitahuan pesanan baru</string>
+    <string name="site_picker_edit_store_list_title">Toko yang Dapat Dilihat</string>
+    <string name="site_picker_edit_store_list">Sunting Toko</string>
     <string name="woopos_variations_loading_error_title">Error saat memuat variasi</string>
-    <string name="woopos_variations_screen_pagination_error">\"Gagal memuat item lain. Harap coba lagi.\"</string>
     <string name="woopos_variations_back_content_description">Kembali</string>
     <string name="woopos_variation_item_content_description">Variasi %s, Harga %s</string>
     <string name="woopos_variable_product_item_content_description">Produk Variabel %s, Harga %s</string>
@@ -17,7 +70,7 @@ Language: id
     <string name="login_magic_links_email_sent_double_check_email">Pastikan email Anda sudah benar dan periksa kembali folder spam Anda.</string>
     <string name="username_not_registered_wpcom">Kami tidak dapat menemukan akun WordPress.com yang terhubung dengan nama pengguna ini. Anda dapat memasukkan email untuk membuat akun baru.</string>
     <string name="product_global_unique_id_summary">Masukkan kode batang atau pengenal lainnya yang bersifat unik untuk produk ini. Pengenal semacam ini dapat membantu Anda mencantumkan produk ini di saluran atau marketplace lain.</string>
-    <string name="product_global_unique_id_hint">GTIN, UPC, EAN, atau ISBN</string>
+    <string name="product_global_unique_id">GTIN, UPC, EAN, ISBN</string>
     <string name="card_reader_hub_payout_funds_payout_title">PEMBAYARAN TERAKHIR</string>
     <string name="shipping_label_shipment_details_mark_order_complete">Setelah membeli label, tandai pesanan ini selesai dan kirim pemberitahuan ke pelanggan.</string>
     <string name="login_jetpack_connection_create_account">Jika Anda belum mempunyai akun, kami akan menggunakan email ini untuk membuat akun.</string>
@@ -92,8 +145,8 @@ Language: id
     <string name="order_shipment_tracking_barcode_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
     <string name="custom_fields_editor_value_label">Nilai</string>
     <string name="custom_fields_editor_key_label">Kunci</string>
-    <string name="woopos_dialog_products_info_secondary_message">Jenis produk lain, seperti variabel dan virtual, akan tersedia dalam pembaruan mendatang.</string>
-    <string name="woopos_dialog_products_info_primary_message">Saat ini, hanya produk fisik sederhana yang dapat menggunakan POS.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Jenis produk lain, seperti virtual, akan tersedia dalam pembaruan mendatang.</string>
+    <string name="woopos_dialog_products_info_primary_message">Saat ini, hanya produk fisik dan variabel sederhana yang dapat menggunakan POS.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">Batal</string>
     <string name="blaze_campaign_budget_duration_current_duration">Durasi</string>
     <string name="blaze_campaign_budget_duration_endless_description">Kampanye akan terus berjalan sampai Anda menghentikannya.</string>
@@ -134,9 +187,9 @@ Language: id
     <string name="woopos_exit_dialog_confirmation_close_content_description">Tutup</string>
     <string name="woopos_dialog_products_info_background_content_description">Latar belakang diredupkan. Ketuk untuk menutup dialog.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Ketuk dua kali untuk menutup dialog</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Dialog khusus produk sederhana</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Dialog khusus produk sederhana dan variabel</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Ketuk dua kali untuk melihat selengkapnya</string>
-    <string name="woopos_banner_simple_products_content_description">Banner khusus produk sederhana</string>
+    <string name="woopos_banner_simple_products_content_description">Banner khusus produk sederhana dan variabel</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Promosikan produk Anda dengan Iklan Blaze dan dongkrak penjualan sekarang.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Tingkatkan penjualan Anda</string>
     <string name="more_menu_button_payments_description">Terima pembayaran di mana saja</string>
@@ -154,8 +207,8 @@ Language: id
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
     <string name="woopos_banner_simple_products_close_content_description">Tutup</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Pelajari\u00A0selengkapnya</string>
-    <string name="woopos_banner_simple_products_only_message">Saat ini, hanya produk fisik sederhana yang kompatibel dengan POS. Jenis produk lain, seperti variabel dan virtual, akan tersedia dalam pembaruan mendatang. </string>
-    <string name="woopos_banner_simple_products_only_title">Menunjukkan produk sederhana saja</string>
+    <string name="woopos_banner_simple_products_only_message">Saat ini, hanya produk fisik dan variabel sederhana yang kompatibel dengan POS. Jenis produk lain, seperti virtual, akan tersedia dalam pembaruan mendatang. </string>
+    <string name="woopos_banner_simple_products_only_title">Menunjukkan produk sederhana dan variabel saja</string>
     <string name="support_request_site_address">Alamat Situs</string>
     <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Tambahkan kampanye berbayar</string>
@@ -170,7 +223,7 @@ Language: id
     <string name="woopos_products_loading_error_message">Ingin mencoba sekali lagi?</string>
     <string name="woopos_products_loading_error_title">Terjadi error saat memuat produk</string>
     <string name="woopos_products_empty_list_message_two">POS saat ini hanya mendukung produk sederhana</string>
-    <string name="woopos_products_empty_list_message">POS saat ini hanya mendukung produk sederhana – \nbuat untuk memulai.</string>
+    <string name="woopos_products_empty_list_message">POS saat ini hanya mendukung produk sederhana dan variabel – \nbuat untuk memulai.</string>
     <string name="woopos_products_empty_list_title">Produk yang didukung tidak ditemukan</string>
     <string name="woopos_products_empty_list_image_description">Tidak ada produk</string>
     <string name="woopos_get_support_title">Dapatkan Dukungan</string>
@@ -1457,7 +1510,6 @@ Language: id
     <string name="randomly_update_reader">Secara acak</string>
     <string name="never_update_reader">Tidak pernah</string>
     <string name="always_update_reader">Selalu</string>
-    <string name="update_simulated_reader_key">Perbarui Kunci Pembaca Simulasi</string>
     <string name="update_simulated_reader">Perbarui Pembaca Kartu Simulasi</string>
     <string name="login_jetpack_connect">Sambungkan ke Jetpack</string>
     <string name="login_jetpack_installation_screen_title">Hubungkan Toko</string>
@@ -1465,7 +1517,6 @@ Language: id
     <string name="analytics_visitors_subtitle">Pengunjung</string>
     <string name="or_use_password_below_qr_code_scan_option">Atau, login dengan kata sandi</string>
     <string name="simulated_reader_toast">Pembaca Kartu Simulasi telah dinonaktifkan</string>
-    <string name="simulated_reader_key">Kunci Pembaca Simulasi</string>
     <string name="variations_bulk_update_stock_quantity_success">Jumlah stok diperbarui</string>
     <string name="variations_bulk_update_current_stock_quantity_mixed">Jumlah stok saat ini adalah gabungan</string>
     <string name="variations_bulk_update_current_stock_quantity">Jumlah stok saat ini adalah %d</string>
@@ -1594,7 +1645,6 @@ Language: id
     <string name="card_reader_upsell_card_reader_banner_title">Terima pembayaran dengan mudah</string>
     <string name="card_reader_upsell_card_reader_banner_new">Baru</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Tutup</string>
-    <string name="orderdetail_view_custom_fields">Lihat kolom khusus</string>
     <string name="orderdetail_custom_fields">Kolom khusus</string>
     <string name="order_sync_failed">Tidak dapat menyimpan perubahan</string>
     <string name="existing_order_cash_dlg_message">Pesanan akan ditandai sebagai dibayar jika Anda telah menerima pembayaran tanpa melalui WooCommerce</string>
@@ -1822,8 +1872,6 @@ Language: id
     <string name="coupon_details_minimum_spend">Belanja minimum%s</string>
     <string name="coupon_details_heading">Ringkasan Kupon</string>
     <string name="coupon_list_view_coupon">Lihat ringkasan kupon</string>
-    <string name="coupon_list_wip_message_enabled">Kini Anda dapat melihat dan mengedit kupon dengan perangkat Anda!</string>
-    <string name="coupon_list_wip_title">Lihat dan edit kupon</string>
     <string name="coupon_list_empty_heading">Tidak ada kupon ditemukan</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s excl. %2$s</string>
     <string name="coupon_list_item_label_products_and_categories">%1$s dan %2$s</string>

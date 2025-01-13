@@ -1,13 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-11-26 09:54:04+0000
+Translation-Revision-Date: 2024-12-27 09:54:08+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error">Paketdaten konnten nicht geladen werden</string>
+    <string name="woo_shipping_labels_package_creation_package_name">Paketname</string>
+    <string name="woo_shipping_labels_package_creation_weight">Gewicht</string>
+    <string name="woopos_email_receipt_send_error">Fehler beim Senden dieser E-Mail. Erneut versuchen</string>
+    <string name="woopos_email_receipt_email_label">E-Mail-Adresse eingeben</string>
+    <string name="woopos_email_receipt_title">Beleg per E-Mail senden</string>
+    <string name="woopos_toolbar_icon_content_description">Zurück</string>
+    <string name="woopos_email_receipt_send_button">Senden</string>
+    <string name="woopos_cash_payment_error_message">Fehler beim Verarbeiten der Zahlung. Versuche es erneut.</string>
+    <string name="woopos_cash_payment_change_due">Fälliges Wechselgeld %s</string>
+    <string name="woopos_cash_payment_total">Gesamt: %s</string>
+    <string name="woopos_complete_cash_order_button">Zahlung als abgeschlossen kennzeichnen</string>
+    <string name="woopos_cash_payment_title">Barzahlung</string>
+    <string name="woopos_items_pagination_error_content_description">„Beim Laden weiterer Artikel ist ein Fehler aufgetreten. Tippe zweimal, um es erneut zu versuchen.“</string>
+    <string name="woopos_items_pagination_error_description">„Beim Laden der Produkte ist ein Fehler aufgetreten.“</string>
+    <string name="woopos_items_pagination_error_title">„Beim Laden weiterer Artikel ist ein Fehler aufgetreten“</string>
+    <string name="woopos_items_pagination_try_again_label">Erneut versuchen</string>
+    <string name="woo_pos_payment_remove_card">Karte entfernen</string>
+    <string name="woo_pos_payment_failed_go_back_to_checkout">Zurück zum Bezahlen</string>
+    <string name="woo_pos_payment_failed_try_again">Zahlung erneut versuchen</string>
+    <string name="woo_pos_payment_failed_try_another_payment_method">Andere Zahlungsmethode verwenden</string>
+    <string name="woopos_success_totals_payment_failed_title">Zahlung fehlgeschlagen</string>
+    <string name="woopos_success_totals_payment_processing_subtitle">Bitte warten …</string>
+    <string name="woopos_success_totals_payment_processing_title">Zahlung wird verarbeitet</string>
+    <string name="woopos_totals_reader_ready_for_payment_subtitle">Karte durchziehen, auflegen oder einstecken</string>
+    <string name="woopos_totals_reader_ready_for_payment_title">Bereit für Zahlung</string>
+    <string name="woopos_totals_reader_preparing_reader_for_payment">Leser wird für Zahlung vorbereitet</string>
+    <string name="woopos_totals_reader_checking_order">Bestellung wird überprüft</string>
+    <string name="woopos_totals_reader_getting_ready">Vorbereitung läuft</string>
+    <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">Mit Leser verbinden</string>
+    <string name="woopos_success_totals_error_reader_not_connected_subtitle">Verbinde deinen Leser, um diese Zahlung verarbeiten zu können.</string>
+    <string name="woopos_success_totals_error_reader_not_connected_title">Leser nicht verbunden</string>
+    <string name="woopos_payment_take_cash_payment_label">Barzahlung</string>
+    <string name="woopos_receipt_sending_not_supported">Bitte aktualisiere WooCommerce auf Version %s oder höher</string>
+    <string name="woopos_receipt_button">Beleg per E-Mail senden</string>
+    <string name="blaze_campaign_creation_no_product_modal_cta">Produkt erstellen</string>
+    <string name="blaze_campaign_creation_no_product_modal_body">Derzeit ist kein Produkt für eine Werbeaktion verfügbar. Möchtest du jetzt ein Produkt erstellen?</string>
+    <string name="blaze_campaign_creation_no_product_modal_title">Keine Produkte gefunden</string>
+    <string name="product_inventory_update_global_unique_id_error">Bitte gib nur Zahlen und Bindestriche ein.</string>
+    <string name="shipping_label_rate_option_adult_signature_required_name">Unterschrift eines Erwachsenen erforderlich</string>
+    <string name="shipping_label_rate_option_signature_required_name">Unterschrift erforderlich</string>
+    <string name="shipping_label_purchased_print_error">Bei diesem Versandetikett ist ein Fehler aufgetreten. Versuche es später erneut.</string>
+    <string name="shipping_label_purchased_tracking_error">Derzeit wird für diesen Versanddienstleister keine Sendungsverfolgung unterstützt.</string>
+    <string name="shipping_label_purchased_pickup_error">Derzeit wird für diesen Versanddienstleister keine Abholung unterstützt.</string>
+    <string name="shipping_label_total_shipment_weight">Gesamtgewicht der Sendung (mit Verpackung)</string>
+    <string name="shipping_label_package_selected_description">Paketauswahl ändern</string>
+    <string name="shipping_label_package_selected_title">Paket</string>
+    <string name="shipping_label_package_default_name">Individuelles Paket</string>
+    <string name="orderlist_selection_menu_update_status">Status aktualisieren</string>
+    <string name="orderlist_selection_count_single">%d Bestellung ausgewählt</string>
+    <string name="orderlist_selection_count">%d Bestellungen ausgewählt</string>
+    <string name="site_picker_edit_store_list_footer">Nicht ausgewählte Shops werden in der Auswahl der App-Website nicht angezeigt. Bei neuen Bestellungen in diesen Shops gehen keine Push-Benachrichtigungen ein.</string>
+    <string name="site_picker_edit_store_list_title">Sichtbare Shops</string>
+    <string name="site_picker_edit_store_list">Shops bearbeiten</string>
     <string name="woopos_variations_loading_error_title">Beim Laden der Varianten ist ein Fehler aufgetreten</string>
-    <string name="woopos_variations_screen_pagination_error">„Es ist ein Fehler beim Laden weiterer Artikel aufgetreten. Bitte versuche es erneut.“</string>
     <string name="woopos_variations_back_content_description">Zurück</string>
     <string name="woopos_variation_item_content_description">Variante: %s, Preis: %s</string>
     <string name="woopos_variable_product_item_content_description">Variables Produkt: %s, Preis: %s</string>
@@ -17,7 +70,7 @@ Language: de
     <string name="login_magic_links_email_sent_double_check_email">Stelle sicher, dass deine E-Mail-Adresse korrekt ist, und überprüfe deinen Spam-Ordner.</string>
     <string name="username_not_registered_wpcom">Wir können kein WordPress.com-Konto finden, das mit diesem Benutzernamen verknüpft ist. Gib eine E-Mail-Adresse ein, um ein neues Konto zu erstellen.</string>
     <string name="product_global_unique_id_summary">Gib einen Barcode oder einen anderen eindeutigen Identifikator für dieses Produkt ein. So kannst du dieses Produkt auch über andere Kanäle oder Marktplätze anbieten.</string>
-    <string name="product_global_unique_id_hint">GTIN, UPC, EAN, ISBN</string>
+    <string name="product_global_unique_id">GTIN, UPC, EAN, ISBN</string>
     <string name="card_reader_hub_payout_funds_payout_title">LETZTE AUSZAHLUNG</string>
     <string name="shipping_label_shipment_details_mark_order_complete">Markiere diese Bestellung nach dem Kauf des Etiketts als abgeschlossen und benachrichtige den Kunden.</string>
     <string name="login_jetpack_connection_create_account">Wenn du noch kein Konto hast, benutzen wir diese E-Mail-Adresse, um ein neues zu erstellen.</string>
@@ -92,12 +145,12 @@ Language: de
     <string name="woopos_no_internet_message">Du bist anscheinend nicht mit dem Internet verbunden. Stelle sicher, dass dein WLAN eingeschaltet ist. Falls du mobile Daten verwendest, solltest du prüfen, ob sie in deinen Geräteeinstellungen aktiviert sind.</string>
     <string name="custom_fields_editor_value_label">Wert</string>
     <string name="custom_fields_editor_key_label">Schlüssel</string>
-    <string name="woopos_dialog_products_info_secondary_message">Weitere Produkttypen, wie variable und virtuelle, werden in künftigen Updates bereitgestellt.</string>
-    <string name="woopos_dialog_products_info_primary_message">Derzeit können nur einfache physische Produkte mit POS verwendet werden.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Weitere Produkttypen, beispielsweise virtuelle, werden in künftigen Updates bereitgestellt.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">Abbrechen</string>
     <string name="blaze_campaign_budget_duration_current_duration">Dauer</string>
     <string name="blaze_campaign_budget_duration_endless_description">Die Kampagne läuft, bis du sie beendest.</string>
     <string name="blaze_campaign_budget_duration_endless_switch_label">Dauer angeben</string>
+    <string name="woopos_dialog_products_info_primary_message">Derzeit können nur einfache physische und variable Produkte mit POS verwendet werden.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">bis zum %1$s</string>
     <string name="blaze_campaign_budget_scheduled_section_title">Zeitplan</string>
     <string name="blaze_campaign_budget_daily_spend_label">Ausgaben für einen Tag</string>
@@ -134,11 +187,11 @@ Language: de
     <string name="woopos_exit_dialog_confirmation_close_content_description">Schließen</string>
     <string name="woopos_dialog_products_info_background_content_description">Abgedunkelter Hintergrund. Zum Schließen des Dialogs tippen.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Zum Schließen des Dialogs zweimal tippen</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Dialog für einfache Produkte</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Zweimal tippen, um weitere Informationen zu erhalten</string>
-    <string name="woopos_banner_simple_products_content_description">Banner für einfache Produkte</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Bewerbe deine Produkte mit Blaze-Werbung und steigere jetzt deinen Umsatz.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Erhöhe deinen Umsatz</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Dialog nur für einfache und variable Produkte</string>
+    <string name="woopos_banner_simple_products_content_description">Banner nur für einfache und variable Produkte</string>
     <string name="more_menu_button_payments_description">Erhalte Zahlungen auch unterwegs</string>
     <string name="card_reader_payment_failed_incorrect_pin">Es wurde eine falsche PIN eingegeben. Versuche es erneut oder verwende eine andere Zahlungsmethode</string>
     <string name="woopos_menu_toolbar_content_description">Menü</string>
@@ -152,10 +205,10 @@ Language: de
     <string name="woopos_dialog_products_info_heading">Warum werden mir meine Produkte nicht angezeigt?</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
     <string name="woopos_banner_simple_products_close_content_description">Schließen</string>
-    <string name="woopos_banner_simple_products_only_message">Derzeit sind nur einfache physische Produkte mit POS kompatibel. Weitere Produkttypen, wie variable und virtuelle, werden in künftigen Updates bereitgestellt. </string>
-    <string name="woopos_banner_simple_products_only_title">Es werden nur einfache Produkte angezeigt</string>
     <string name="woopos_dialog_products_info_tertiary_message">Um die Zahlung für ein nicht einfaches Produkt entgegenzunehmen, beende POS und erstelle eine neue Bestellung über den Tab „Bestellungen“.</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Mehr\u00A0erfahren</string>
+    <string name="woopos_banner_simple_products_only_message">Derzeit sind nur einfache physische und variable Produkte mit POS kompatibel. Weitere Produkttypen, beispielsweise virtuelle, werden in künftigen Updates bereitgestellt. </string>
+    <string name="woopos_banner_simple_products_only_title">Es werden nur einfache und variable Produkte angezeigt</string>
     <string name="support_request_site_address">Website-Adresse</string>
     <string name="analytics_google_ads_cta_web_view_title">Google für WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Gebührenpflichtige Kampagne hinzufügen</string>
@@ -169,8 +222,8 @@ Language: de
     <string name="woopos_products_loading_error_title">Fehler beim Laden der Produkte</string>
     <string name="woopos_products_empty_list_message_two">POS unterstützt derzeit nur einfache Produkte</string>
     <string name="woopos_error_icon_content_description">Icon für Fehleranzeige</string>
-    <string name="woopos_products_empty_list_message">POS unterstützt derzeit nur einfache Produkte – \nerstelle eins, um anzufangen.</string>
     <string name="woopos_products_loading_error_retry_button">Erneut versuchen</string>
+    <string name="woopos_products_empty_list_message">POS unterstützt derzeit nur einfache und variable Produkte. \nErstelle ein Produkt, um anzufangen.</string>
     <string name="woopos_products_empty_list_image_description">Keine Produkte</string>
     <string name="woopos_products_empty_list_title">Keine unterstützten Produkte gefunden</string>
     <string name="ai_product_creation_photo_removed">Foto entfernt</string>
@@ -550,10 +603,10 @@ Language: de
     <string name="blaze_campaign_edit_ad_change_image_button">Bild ändern</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Übernehmen</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s Tage</string>
-    <string name="blaze_campaign_budget_impressions_info">Aufrufe geben die Häufigkeit an, mit der deine Werbung potenziellen Kunden angezeigt wird.\n\n\n        Auch wenn aufgrund von schwankendem Internet-Traffic und Nutzerverhalten keine genauen Zahlen garantiert werden können, versuchen wir, die tatsächlichen Aufrufe deiner Werbeanzeige so genau wie möglich mit deiner Zielzahl abzugleichen.\n\n\n        Denke daran, dass es bei Aufrufen um die Sichtbarkeit geht und nicht um vom Betrachter ausgeführte Aktionen.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Fertig</string>
     <string name="blaze_campaign_budget_impressions_title">Aufrufe</string>
     <string name="blaze_campaign_budget_update_button">Update</string>
+    <string name="blaze_campaign_budget_impressions_info">Aufrufe geben die Häufigkeit an, mit der deine Werbung potenziellen Kunden angezeigt wird.\n\n\n        Auch wenn aufgrund von schwankendem Internet-Traffic und Nutzerverhalten keine genauen Zahlen garantiert werden können, versuchen wir, die tatsächlichen Aufrufe deiner Werbeanzeige so genau wie möglich mit deiner Zielzahl abzugleichen.\n\n\n        Denke daran, dass es bei Aufrufen um die Sichtbarkeit geht und nicht um vom Betrachter ausgeführte Aktionen.</string>
     <string name="blaze_campaign_budget_edit_duration_button">Bearbeiten</string>
     <string name="blaze_campaign_budget_reach_forecast">Geschätzte Anzahl erreichter Personen pro Tag</string>
     <string name="blaze_campaign_budget_days_duration">für %1$s Tage</string>
@@ -1457,7 +1510,6 @@ Language: de
     <string name="always_update_reader">Immer</string>
     <string name="randomly_update_reader">Zufällig</string>
     <string name="never_update_reader">Nie</string>
-    <string name="update_simulated_reader_key">Schlüssel des simulierten Lesegeräts aktualisieren</string>
     <string name="update_simulated_reader">Simuliertes Kartenlesegerät aktivieren</string>
     <string name="login_jetpack_connect">Jetpack verbinden</string>
     <string name="login_jetpack_installation_screen_title">Shop verbinden</string>
@@ -1469,7 +1521,6 @@ Language: de
     <string name="variations_bulk_update_current_stock_quantity">Aktuelle Lagerbestandsmenge: %d</string>
     <string name="variations_bulk_update_stock_quantity_dialog_title">Lagerbestandsmenge wird aktualisiert</string>
     <string name="variations_bulk_update_stock_quantity_info">Die Lagerbestandsmenge wird für %d Varianten aktualisiert</string>
-    <string name="simulated_reader_key">Schlüssel des simulierten Lesegeräts</string>
     <string name="variations_bulk_update_dialog_inventory_section_title">Lagerbestand</string>
     <string name="variations_bulk_update_current_stock_quantity_mixed">Die aktuelle Lagerbestandsmenge ist eine gemischte Zahl</string>
     <string name="product_search_hint_active_filters">Herausgefilterte Produkte suchen</string>
@@ -1591,7 +1642,6 @@ Language: de
     <string name="card_reader_upsell_card_reader_banner_title">Zahlungen problemlos empfangen</string>
     <string name="card_reader_upsell_card_reader_banner_new">NEU</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Schließen</string>
-    <string name="orderdetail_view_custom_fields">Eigene Felder anzeigen</string>
     <string name="orderdetail_custom_fields">Eigene Felder</string>
     <string name="order_sync_failed">Änderungen konnten nicht gespeichert werden</string>
     <string name="existing_order_cash_dlg_message">Dadurch wird diese Bestellung als bezahlt markiert, wenn du eine Zahlung außerhalb von WooCommerce erhalten hast</string>
@@ -1816,7 +1866,6 @@ Language: de
     <string name="simple_payments_share_payment_link">Zahlungslink teilen</string>
     <string name="amount">Betrag</string>
     <string name="coupon_list_view_coupon">Gutscheinübersicht anzeigen</string>
-    <string name="coupon_list_wip_title">Gutscheine anzeigen und bearbeiten</string>
     <string name="coupon_list_empty_heading">Keine Gutscheine gefunden</string>
     <string name="coupon_list_item_label_everything">alles</string>
     <string name="coupon_list_item_label_expired">Abgelaufen</string>
@@ -1841,7 +1890,6 @@ Language: de
     <string name="coupon_details_minimum_spend">Mindestbestellwert: %s</string>
     <string name="coupon_details_heading">Gutscheinübersicht</string>
     <string name="coupon_details_maximum_spend">Maximalbestellwert: %s</string>
-    <string name="coupon_list_wip_message_enabled">Wir haben daran gearbeitet, das Anzeigen und Bearbeiten von Gutscheinen von deinem Gerät aus zu ermöglichen!</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s außer %2$s</string>
     <string name="coupon_list_item_label_products_and_categories">%1$s und %2$s</string>
     <string name="orderlist_simple_payments_wip_message_enabled">Wir haben daran gearbeitet, das Erstellen von Bestellungen auf deinem Gerät zu ermöglichen! Du kannst diese Funktion durch Tippen auf den „+“-Button ausprobieren</string>

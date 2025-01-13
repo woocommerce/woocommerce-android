@@ -28,9 +28,16 @@ class VariationSelectorRepository @Inject constructor(
     suspend fun fetchVariations(
         productId: Long,
         offset: Int,
-        pageSize: Int
+        pageSize: Int,
+        filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null
     ): Result<Boolean> {
-        return productStore.fetchProductVariations(selectedSite.get(), productId, offset, pageSize)
+        return productStore.fetchProductVariations(
+            selectedSite.get(),
+            productId,
+            offset,
+            pageSize,
+            filterOptions = filterOptions,
+        )
             .let { result ->
                 if (result.isError) {
                     WooLog.w(

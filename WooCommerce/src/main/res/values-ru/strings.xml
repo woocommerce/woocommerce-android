@@ -1,13 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-11-26 22:54:03+0000
+Translation-Revision-Date: 2024-12-30 10:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error">Не удалось загрузить данные об упаковке</string>
+    <string name="woo_shipping_labels_package_creation_package_name">Название упаковки</string>
+    <string name="woo_shipping_labels_package_creation_weight">Вес</string>
+    <string name="woopos_email_receipt_send_error">Ошибка при отправке сообщения по эл. почте. Повторите попытку</string>
+    <string name="woopos_email_receipt_email_label">Введите адрес эл. почты</string>
+    <string name="woopos_email_receipt_title">Отправить чек по эл. почте</string>
+    <string name="woopos_toolbar_icon_content_description">Назад</string>
+    <string name="woopos_email_receipt_send_button">Отправить</string>
+    <string name="woopos_cash_payment_error_message">Ошибка при попытке обработать платёж. Попробуйте ещё раз.</string>
+    <string name="woopos_cash_payment_change_due">Сумма сдачи %s</string>
+    <string name="woopos_cash_payment_total">Всего: %s</string>
+    <string name="woopos_complete_cash_order_button">Отметить платёж как выполненный</string>
+    <string name="woopos_cash_payment_title">Оплата наличными</string>
+    <string name="woopos_items_pagination_error_content_description">«Не удалось загрузить другие товары. Нажмите дважды, чтобы повторить попытку».</string>
+    <string name="woopos_items_pagination_error_description">«При загрузке товаров произошла ошибка».</string>
+    <string name="woopos_items_pagination_error_title">«Не удалось загрузить другие товары».</string>
+    <string name="woopos_items_pagination_try_again_label">Повторите попытку</string>
+    <string name="woo_pos_payment_remove_card">Удалить карту</string>
+    <string name="woo_pos_payment_failed_go_back_to_checkout">Назад к оформлению заказа</string>
+    <string name="woo_pos_payment_failed_try_again">Повторить платёж</string>
+    <string name="woo_pos_payment_failed_try_another_payment_method">Попробуйте другой способ оплаты</string>
+    <string name="woopos_success_totals_payment_failed_title">Платёж не выполнен</string>
+    <string name="woopos_success_totals_payment_processing_subtitle">Подождите…</string>
+    <string name="woopos_success_totals_payment_processing_title">Обработка платежа</string>
+    <string name="woopos_totals_reader_ready_for_payment_subtitle">Проведите пальцем, приложите или вставьте карту</string>
+    <string name="woopos_totals_reader_ready_for_payment_title">Готово к оплате</string>
+    <string name="woopos_totals_reader_preparing_reader_for_payment">Подготовка платёжного терминала к оплате</string>
+    <string name="woopos_totals_reader_checking_order">Проверка заказа</string>
+    <string name="woopos_totals_reader_getting_ready">Подготовка</string>
+    <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">Подключиться к платёжному терминалу</string>
+    <string name="woopos_success_totals_error_reader_not_connected_subtitle">Для обработки этого платежа подключите платёжный терминал.</string>
+    <string name="woopos_success_totals_error_reader_not_connected_title">Платёжный терминал не подключён</string>
+    <string name="woopos_payment_take_cash_payment_label">Оплата наличными</string>
+    <string name="woopos_receipt_sending_not_supported">Обновите WooCommerce до версии %s или более поздней</string>
+    <string name="woopos_receipt_button">Отправить чек по эл. почте</string>
+    <string name="blaze_campaign_creation_no_product_modal_cta">Создать товар</string>
+    <string name="blaze_campaign_creation_no_product_modal_body">В данный момент у вас нет товаров, доступных для продвижения. Хотите создать товар?</string>
+    <string name="blaze_campaign_creation_no_product_modal_title">Товары не найдены</string>
+    <string name="product_inventory_update_global_unique_id_error">Вводите только цифры и дефисы</string>
+    <string name="shipping_label_rate_option_adult_signature_required_name">Требуется подпись совершеннолетнего лица</string>
+    <string name="shipping_label_rate_option_signature_required_name">Требуется подпись</string>
+    <string name="shipping_label_purchased_print_error">Что-то не так с транспортной этикеткой, повторите попытку позднее</string>
+    <string name="shipping_label_purchased_tracking_error">Отслеживание этого перевозчика в данный момент не поддерживается</string>
+    <string name="shipping_label_purchased_pickup_error">Услуга самовывоза у этого перевозчика в данный момент не поддерживается</string>
+    <string name="shipping_label_total_shipment_weight">Вес брутто посылки (в упаковке)</string>
+    <string name="shipping_label_package_selected_description">Изменить выбор упаковки</string>
+    <string name="shipping_label_package_selected_title">Упаковка</string>
+    <string name="shipping_label_package_default_name">Индивидуальная упаковка</string>
+    <string name="orderlist_selection_menu_update_status">Обновить статус</string>
+    <string name="orderlist_selection_count_single">Выбрано заказов: %d</string>
+    <string name="orderlist_selection_count">Выбрано заказов: %d</string>
+    <string name="site_picker_edit_store_list_footer">Невыбранные магазины не будут отображаться в средстве подбора на сайте приложения и не станут получать push-уведомления о новых заказах.</string>
+    <string name="site_picker_edit_store_list_title">Видимые магазины</string>
+    <string name="site_picker_edit_store_list">Редактировать магазины</string>
     <string name="woopos_variations_loading_error_title">Ошибка при загрузке вариантов</string>
-    <string name="woopos_variations_screen_pagination_error">«Не удалось загрузить другие товары. Повторите попытку».</string>
     <string name="woopos_variations_back_content_description">Назад</string>
     <string name="woopos_variation_item_content_description">Вариант %s, цена %s</string>
     <string name="woopos_variable_product_item_content_description">Товар с вариантами %s, цена %s</string>
@@ -17,7 +70,7 @@ Language: ru
     <string name="login_magic_links_email_sent_double_check_email">Проверьте, правильно ли указан ваш адрес эл. почты, и ещё раз загляните в папку «Спам».</string>
     <string name="username_not_registered_wpcom">Не удалось найти учётную запись WordPress.com, связанную с этим именем пользователя. Введите адрес эл. почты, чтобы создать новую учётную запись.</string>
     <string name="product_global_unique_id_summary">Введите штрихкод или любой другой уникальный идентификатор товара. Это поможет вам выставлять товар на продажу в других сетях или на маркетплейсах.</string>
-    <string name="product_global_unique_id_hint">GTIN, UPC, EAN, ISBN</string>
+    <string name="product_global_unique_id">GTIN, UPC, EAN, ISBN</string>
     <string name="card_reader_hub_payout_funds_payout_title">ПОСЛЕДНИЙ ПЛАТЁЖ</string>
     <string name="shipping_label_shipment_details_mark_order_complete">После приобретения этикетки отметить заказ как выполненный и уведомить заказчика.</string>
     <string name="login_jetpack_connection_create_account">Если у вас нет учётной записи, создайте её с этим адресом эл. почты.</string>
@@ -92,8 +145,8 @@ Language: ru
     <string name="order_shipment_tracking_barcode_scanning_failed">Сбой сканирования. Повторите попытку позже</string>
     <string name="custom_fields_editor_value_label">Значение</string>
     <string name="custom_fields_editor_key_label">Ключ</string>
-    <string name="woopos_dialog_products_info_secondary_message">Другие типы товаров, в частности виртуальные и вариативные товары, станут доступны в ближайших обновлениях.</string>
-    <string name="woopos_dialog_products_info_primary_message">В данный момент в режиме POS поддерживаются только простые материальные товары.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Другие типы товаров, такие как виртуальные товары, станут доступны в ближайших обновлениях.</string>
+    <string name="woopos_dialog_products_info_primary_message">В данный момент в режиме POS поддерживаются только простые материальные товары и товары с вариантами.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">Отмена</string>
     <string name="blaze_campaign_budget_duration_current_duration">Продолжительность</string>
     <string name="blaze_campaign_budget_duration_endless_description">Кампания будет идти до тех пор, пока вы её не остановите.</string>
@@ -134,9 +187,9 @@ Language: ru
     <string name="woopos_exit_dialog_confirmation_close_content_description">Закрыть</string>
     <string name="woopos_dialog_products_info_background_content_description">Затемнённый фон. Коснитесь, чтобы закрыть диалог.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Дважды коснитесь, чтобы закрыть диалог.</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Диалог «Только простые товары»</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Диалог «Только простые товары и товары с вариантами»</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Коснитесь, чтобы узнать подробнее.</string>
-    <string name="woopos_banner_simple_products_content_description">Баннер «Только простые товары»</string>
+    <string name="woopos_banner_simple_products_content_description">Баннер «Только простые товары и товары с вариантами»</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Продвигайте товары при помощи Blaze Ads и повышайте продажи.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Повышайте продажи</string>
     <string name="more_menu_button_payments_description">Принимайте платежи на ходу</string>
@@ -154,8 +207,8 @@ Language: ru
     <string name="woopos_banner_simple_products_info_content_description">Информация</string>
     <string name="woopos_banner_simple_products_close_content_description">Закрыть</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Подробнее</string>
-    <string name="woopos_banner_simple_products_only_message">В данный момент POS поддерживает только простые материальные товары. Другие типы товаров, в частности виртуальные и вариативные товары, станут доступны в ближайших обновлениях. </string>
-    <string name="woopos_banner_simple_products_only_title">Только простые товары</string>
+    <string name="woopos_banner_simple_products_only_message">В данный момент POS поддерживает только простые материальные товары и товары с вариантами. Другие типы товаров, такие как виртуальные товары, станут доступны в ближайших обновлениях. </string>
+    <string name="woopos_banner_simple_products_only_title">Показаны только простые товары и товары с вариантами</string>
     <string name="support_request_site_address">Адрес сайта</string>
     <string name="analytics_google_ads_cta_web_view_title">Google для WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Добавить платную кампанию</string>
@@ -170,7 +223,7 @@ Language: ru
     <string name="woopos_products_loading_error_message">Хотите повторить попытку?</string>
     <string name="woopos_products_loading_error_title">Ошибка при загрузке товаров</string>
     <string name="woopos_products_empty_list_message_two">В данный момент POS поддерживает только простые товары</string>
-    <string name="woopos_products_empty_list_message">В данный момент POS поддерживает только простые товары — \nсначала создайте такой товар.</string>
+    <string name="woopos_products_empty_list_message">В данный момент POS поддерживает только простые товары и товары с вариантами — \nсначала создайте такой товар.</string>
     <string name="woopos_products_empty_list_title">Нет поддерживаемых товаров</string>
     <string name="woopos_products_empty_list_image_description">Товаров нет</string>
     <string name="woopos_get_support_title">Поддержка</string>
@@ -1457,7 +1510,6 @@ Language: ru
     <string name="randomly_update_reader">Случайно</string>
     <string name="never_update_reader">Никогда</string>
     <string name="always_update_reader">Всегда</string>
-    <string name="update_simulated_reader_key">Обновить смоделированный ключ устройства чтения</string>
     <string name="update_simulated_reader">Обновить смоделированное устройство чтения карт</string>
     <string name="login_jetpack_connect">Подключить Jetpack</string>
     <string name="login_jetpack_installation_screen_title">Подключение магазина</string>
@@ -1465,7 +1517,6 @@ Language: ru
     <string name="analytics_visitors_subtitle">Посетители</string>
     <string name="or_use_password_below_qr_code_scan_option">Или войти с помощью пароля</string>
     <string name="simulated_reader_toast">Симуляция устройства чтения карт отключена</string>
-    <string name="simulated_reader_key">Смоделированный ключ устройства чтения</string>
     <string name="variations_bulk_update_stock_quantity_success">Количество товаров в наличии обновлено</string>
     <string name="variations_bulk_update_current_stock_quantity_mixed">Текущее количество товаров в наличии смешано</string>
     <string name="variations_bulk_update_current_stock_quantity">Текущее количество товаров в наличии: %d</string>
@@ -1594,7 +1645,6 @@ Language: ru
     <string name="card_reader_upsell_card_reader_banner_title">Принимайте платежи легко</string>
     <string name="card_reader_upsell_card_reader_banner_new">НОВИНКА</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">Закрыть</string>
-    <string name="orderdetail_view_custom_fields">Просмотр произвольных полей</string>
     <string name="orderdetail_custom_fields">Произвольные поля</string>
     <string name="order_sync_failed">Не удалось сохранить изменения</string>
     <string name="existing_order_cash_dlg_message">Заказ будет отмечен как оплаченный, если вы получили платеж не через WooCommerce</string>
@@ -1822,8 +1872,6 @@ Language: ru
     <string name="coupon_details_minimum_spend">Минимальный расход %s</string>
     <string name="coupon_details_heading">Сводка по купонам</string>
     <string name="coupon_list_view_coupon">Смотреть сводку по купонам</string>
-    <string name="coupon_list_wip_message_enabled">Мы разработали функцию, которая позволяет просматривать и редактировать купоны на вашем устройстве.</string>
-    <string name="coupon_list_wip_title">Просмотр и редактирование купонов</string>
     <string name="coupon_list_empty_heading">Купоны не найдены</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s без учёта %2$s</string>
     <string name="coupon_list_item_label_products_and_categories">%1$s и %2$s</string>

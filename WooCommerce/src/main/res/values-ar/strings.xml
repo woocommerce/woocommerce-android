@@ -1,13 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-11-28 14:54:04+0000
+Translation-Revision-Date: 2024-12-26 15:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error">فشل تحميل بيانات الطرد</string>
+    <string name="woo_shipping_labels_package_creation_package_name">اسم الطرد</string>
+    <string name="woo_shipping_labels_package_creation_weight">الوزن</string>
+    <string name="woopos_email_receipt_send_error">خطأ في أثناء إرسال هذه الرسالة عبر البريد الإلكتروني. المحاولة مجددًا</string>
+    <string name="woopos_email_receipt_email_label">كتابة رسالة عبر البريد الإلكتروني</string>
+    <string name="woopos_email_receipt_title">إرسال إيصال في رسالة عبر البريد الإلكتروني</string>
+    <string name="woopos_toolbar_icon_content_description">رجوع</string>
+    <string name="woopos_email_receipt_send_button">إرسال</string>
+    <string name="woopos_cash_payment_error_message">خطأ في أثناء محاولة معالجة المدفوعات. حاول مرة أخرى.</string>
+    <string name="woopos_cash_payment_change_due">التغيير المستحق %s</string>
+    <string name="woopos_cash_payment_total">الإجمالي: %s</string>
+    <string name="woopos_complete_cash_order_button">وسم المدفوعات بأنها مكتملة</string>
+    <string name="woopos_cash_payment_title">المدفوعات النقدية</string>
+    <string name="woopos_items_pagination_error_content_description">\"فشل تحميل مزيد من العناصر. انقر نقرًا مزدوجًا للمحاولة مجددًا\".</string>
+    <string name="woopos_items_pagination_error_description">\"حدث خطأ في أثناء تحميل المنتجات\".</string>
+    <string name="woopos_items_pagination_error_title">\"فشل تحميل مزيد من العناصر\"</string>
+    <string name="woopos_items_pagination_try_again_label">المحاولة مجددًا</string>
+    <string name="woo_pos_payment_remove_card">إزالة البطاقة</string>
+    <string name="woo_pos_payment_failed_go_back_to_checkout">الرجوع إلى إجراءات السداد</string>
+    <string name="woo_pos_payment_failed_try_again">محاولة الدفع مجددًا</string>
+    <string name="woo_pos_payment_failed_try_another_payment_method">تجربة طريقة دفع أخرى</string>
+    <string name="woopos_success_totals_payment_failed_title">فشل الدفع</string>
+    <string name="woopos_success_totals_payment_processing_subtitle">يُرجى الانتظار…</string>
+    <string name="woopos_success_totals_payment_processing_title">معالجة الدفع</string>
+    <string name="woopos_totals_reader_ready_for_payment_subtitle">النقر على البطاقة أو تمريرها أو إدراجها</string>
+    <string name="woopos_totals_reader_ready_for_payment_title">مستعد للدفع</string>
+    <string name="woopos_totals_reader_preparing_reader_for_payment">تحضير القارئ للدفع</string>
+    <string name="woopos_totals_reader_checking_order">التحقق من الطلب</string>
+    <string name="woopos_totals_reader_getting_ready">الاستعداد</string>
+    <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">الاتصال بالقارئ</string>
+    <string name="woopos_success_totals_error_reader_not_connected_subtitle">لمعالجة هذا الدفع، يرجى الاتصال بالقارئ الخاص بك.</string>
+    <string name="woopos_success_totals_error_reader_not_connected_title">لم يتم الاتصال بالقارئ</string>
+    <string name="woopos_payment_take_cash_payment_label">المدفوعات النقدية</string>
+    <string name="woopos_receipt_sending_not_supported">يرجى تحديث WooCommerce إلى الإصدار %s أو إصدار لاحق</string>
+    <string name="woopos_receipt_button">إرسال إيصال في رسالة عبر البريد الإلكتروني</string>
+    <string name="blaze_campaign_creation_no_product_modal_cta">إنشاء المنتج</string>
+    <string name="blaze_campaign_creation_no_product_modal_body">لا يتاح أمامك منتج لغرض الترويج حاليًا. هل تود إنشاء منتج الآن؟</string>
+    <string name="blaze_campaign_creation_no_product_modal_title">لم يتم العثور على منتجات</string>
+    <string name="product_inventory_update_global_unique_id_error">يرجى إدخال أرقام وشرطات فقط</string>
+    <string name="shipping_label_rate_option_adult_signature_required_name">يلزم توقيع شخص بالغ</string>
+    <string name="shipping_label_rate_option_signature_required_name">يلزم التوقيع</string>
+    <string name="shipping_label_purchased_print_error">حدث خطأ في ملصق الشحن، حاول مجددًا في وقت لاحق</string>
+    <string name="shipping_label_purchased_tracking_error">لا ندعم ميزة \"التعقب\" حاليًا في شركة النقل هذه</string>
+    <string name="shipping_label_purchased_pickup_error">لا ندعم ميزة \"التسلم\" حاليًا في شركة النقل هذه</string>
+    <string name="shipping_label_total_shipment_weight">إجمالي وزن الشحنة (مع الطرد)</string>
+    <string name="shipping_label_package_selected_description">تغيير تحديد الطرد</string>
+    <string name="shipping_label_package_selected_title">الطرد</string>
+    <string name="shipping_label_package_default_name">طرد مخصص</string>
+    <string name="orderlist_selection_menu_update_status">تحديث الحالة</string>
+    <string name="orderlist_selection_count_single">لم يتم تحديد %d من الطلبات</string>
+    <string name="orderlist_selection_count">لم يتم تحديد %d من الطلبات</string>
+    <string name="site_picker_edit_store_list_footer">لن تظهر المتاجر غير المحددة في منتقي موقع التطبيق ولن تستقبل تنبيهات دفع للطلبات الجديدة</string>
+    <string name="site_picker_edit_store_list_title">متاجر مرئية</string>
+    <string name="site_picker_edit_store_list">تحرير المتاجر</string>
     <string name="woopos_variations_loading_error_title">خطأ في تحميل الأشكال</string>
-    <string name="woopos_variations_screen_pagination_error">\"فشل تحميل مزيد من العناصر. يرجى المحاولة مرة أخرى\".</string>
     <string name="woopos_variations_back_content_description">رجوع</string>
     <string name="woopos_variation_item_content_description">الشكل %s، الشعر %s</string>
     <string name="woopos_variable_product_item_content_description">المنتج المتغير %s، السعر %s</string>
@@ -17,7 +70,7 @@ Language: ar
     <string name="login_magic_links_email_sent_double_check_email">تأكد من أن بريدك الإلكتروني صحيح وتحقق مجددًا من مجلد البريد المزعج.</string>
     <string name="username_not_registered_wpcom">لا يمكننا العثور على حساب ووردبريس.كوم متصلاً باسم المستخدم هذا. يمكنك إدخال بريد إلكتروني لإنشاء حساب جديد.</string>
     <string name="product_global_unique_id_summary">أدخل كود المرور أو أي معرِّف آخر فريد لهذا المنتج. قد يساعدك ذلك على إدراج هذا المنتج على القنوات الأخرى أو الأسواق.</string>
-    <string name="product_global_unique_id_hint">GTIN، وUPC، وEAN، وISBN</string>
+    <string name="product_global_unique_id">GTIN، وUPC، وEAN، وISBN</string>
     <string name="card_reader_hub_payout_funds_payout_title">آخر المدفوعات</string>
     <string name="shipping_label_shipment_details_mark_order_complete">بعد شراء ملصق، ضع علامة على هذا الطلب على أنه مكتمل وأخطر العميل بذلك.</string>
     <string name="login_jetpack_connection_create_account">إذا لم يكن لديك حساب، فإننا سنستخدم هذا البريد الإلكتروني لإنشاء واحد.</string>
@@ -92,8 +145,8 @@ Language: ar
     <string name="order_shipment_tracking_barcode_scanning_failed">فشل الفحص. يرجى المحاولة مجددًا في وقت لاحق</string>
     <string name="custom_fields_editor_value_label">القيمة</string>
     <string name="custom_fields_editor_key_label">المفتاح</string>
-    <string name="woopos_dialog_products_info_secondary_message">أما أنواع المنتجات الأخرى، مثل: المنتجات المتغيرة والظاهرية، ستتوفر في التحديثات المستقبلية.</string>
-    <string name="woopos_dialog_products_info_primary_message">لا يمكن استخدام إلا المنتجات المادية البسيطة التي تتضمن نقطة بيع الآن.</string>
+    <string name="woopos_dialog_products_info_secondary_message">أما أنواع المنتجات الأخرى، مثل: المنتجات الظاهرية، فستتوفر في التحديثات المستقبلية.</string>
+    <string name="woopos_dialog_products_info_primary_message">لا يمكن استخدام سوى المنتجات المادية والمتغيرة البسيطة التي تتضمن نقطة بيع الآن.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">إلغاء</string>
     <string name="blaze_campaign_budget_duration_current_duration">المدة</string>
     <string name="blaze_campaign_budget_duration_endless_description">سيتم تشغيل الحملة حتى تُوقفها.</string>
@@ -134,9 +187,9 @@ Language: ar
     <string name="woopos_exit_dialog_confirmation_close_content_description">إغلاق</string>
     <string name="woopos_dialog_products_info_background_content_description">خلفية خافتة. انقر لتجاهل مربع الحوار.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">انقر نقرًا مزدوجًا لتجاهل مربع الحوار</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">مربع حوار المنتجات البسيطة فقط</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">مربع حوار المنتجات البسيطة والمتغيرة فقط</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">النقر نقرًا مزدوجًا للتعرف على المزيد</string>
-    <string name="woopos_banner_simple_products_content_description">شعار المنتجات البسيطة فقط</string>
+    <string name="woopos_banner_simple_products_content_description">شعار المنتجات البسيطة والمتغيرة فقط</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">روِّج لمنتجاتك من خلال Blaze Ads وارفع مبيعاتك الآن.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">تعزيز مبيعاتك</string>
     <string name="more_menu_button_payments_description">تلقي المدفوعات في أثناء التنقل</string>
@@ -154,8 +207,8 @@ Language: ar
     <string name="woopos_banner_simple_products_info_content_description">معلومات</string>
     <string name="woopos_banner_simple_products_close_content_description">إغلاق</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">معرفة المزيد</string>
-    <string name="woopos_banner_simple_products_only_message">تكون المنتجات المادية البسيطة فقط متوافقة مع نقطة بيع الآن. أما أنواع المنتجات الأخرى، مثل: المنتجات المتغيرة والظاهرية، ستصبح متوفرة في التحديثات المستقبلية. </string>
-    <string name="woopos_banner_simple_products_only_title">إظهار المنتجات البسيطة فقط</string>
+    <string name="woopos_banner_simple_products_only_message">تكون المنتجات المادية والمتغيرة البسيطة فقط متوافقة مع نقطة بيع الآن. أما أنواع المنتجات الأخرى، مثل: المنتجات الظاهرية، فستصبح متوفرة في التحديثات المستقبلية. </string>
+    <string name="woopos_banner_simple_products_only_title">إظهار المنتجات البسيطة والمتغيرة فقط</string>
     <string name="support_request_site_address">عنوان الموقع</string>
     <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
     <string name="analytics_google_ads_cta_action">إضافة حملة مدفوعة</string>
@@ -170,7 +223,7 @@ Language: ar
     <string name="woopos_products_loading_error_message">هل تريد محاولة أخرى؟</string>
     <string name="woopos_products_loading_error_title">خطأ في أثناء تحميل المنتجات</string>
     <string name="woopos_products_empty_list_message_two">لا يدعم POS حاليًا سوى المنتجات البسيطة</string>
-    <string name="woopos_products_empty_list_message">لا يدعم POS حاليًا سوى المنتجات البسيطة - \nأنشئ واحدًا هنا للبدء.</string>
+    <string name="woopos_products_empty_list_message">لا تدعم نقطة البيع حاليًا سوى المنتجات البسيطة والمتغيرة - \nأنشئ واحدة للبدء.</string>
     <string name="woopos_products_empty_list_title">لم يتم العثور على منتجات مدعومة</string>
     <string name="woopos_products_empty_list_image_description">لا توجد منتجات</string>
     <string name="woopos_get_support_title">الحصول على الدعم</string>
@@ -1457,7 +1510,6 @@ Language: ar
     <string name="randomly_update_reader">بشكل عشوائي</string>
     <string name="never_update_reader">أبدًا</string>
     <string name="always_update_reader">دائمًا</string>
-    <string name="update_simulated_reader_key">تحديث مفتاح القارئ المحاكي</string>
     <string name="update_simulated_reader">تحديث قارئ البطاقة المحاكي</string>
     <string name="login_jetpack_connect">الاتصال بـ Jetpack</string>
     <string name="login_jetpack_installation_screen_title">ربط المتجر</string>
@@ -1465,7 +1517,6 @@ Language: ar
     <string name="analytics_visitors_subtitle">الزائرون</string>
     <string name="or_use_password_below_qr_code_scan_option">أو تسجيل الدخول باستخدام كلمة المرور</string>
     <string name="simulated_reader_toast">تم تعطيل قارئ البطاقات المحاكي</string>
-    <string name="simulated_reader_key">مفتاح القارئ المحاكي</string>
     <string name="variations_bulk_update_stock_quantity_success">كمية المخزون التي تم تحديثها</string>
     <string name="variations_bulk_update_current_stock_quantity_mixed">كمية المخزون الحالية مختلطة</string>
     <string name="variations_bulk_update_current_stock_quantity">كمية المخزون الحالية هي %d</string>
@@ -1594,7 +1645,6 @@ Language: ar
     <string name="card_reader_upsell_card_reader_banner_title">قبول المدفوعات بسهولة</string>
     <string name="card_reader_upsell_card_reader_banner_new">جديد</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">تجاهُل</string>
-    <string name="orderdetail_view_custom_fields">عرض حقول مخصصة</string>
     <string name="orderdetail_custom_fields">حقول مخصصة</string>
     <string name="order_sync_failed">يتعذر حفظ التغييرات</string>
     <string name="existing_order_cash_dlg_message">سيقوم هذا بوضع علامة على هذا الطلب بأنه مدفوع إذا تلقيت عملية الدفع خارج WooCommerce</string>
@@ -1822,8 +1872,6 @@ Language: ar
     <string name="coupon_details_minimum_spend">الحد الأدنى للإنفاق لـ %s</string>
     <string name="coupon_details_heading">ملخص القسيمة</string>
     <string name="coupon_list_view_coupon">عرض ملخص القسيمة</string>
-    <string name="coupon_list_wip_message_enabled">لقد كنا نعمل على إتاحة عرض القسائم وتحريرها من جهازك!</string>
-    <string name="coupon_list_wip_title">عرض القسائم وتحريرها</string>
     <string name="coupon_list_empty_heading">لم يتم العثور على قسائم</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s من دون %2$s</string>
     <string name="coupon_list_item_label_products_and_categories">%1$s و%2$s</string>

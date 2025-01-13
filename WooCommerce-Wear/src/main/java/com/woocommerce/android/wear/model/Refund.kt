@@ -55,7 +55,7 @@ fun WCRefundModel.WCRefundItem.toAppModel(): Refund.Item {
         -totalTax, // WCRefundItem.totalTax is NEGATIVE
         sku ?: "",
         price ?: BigDecimal.ZERO,
-        metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1
+        metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1
     )
 }
 

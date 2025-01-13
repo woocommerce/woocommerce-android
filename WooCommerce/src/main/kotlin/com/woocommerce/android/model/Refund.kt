@@ -5,7 +5,9 @@ import com.woocommerce.android.ui.products.ProductHelper
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel.*
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundFeeLine
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundItem
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel.WCRefundShippingLine
 import java.math.BigDecimal
 import java.math.RoundingMode.HALF_UP
 import java.util.Date
@@ -94,13 +96,13 @@ fun WCRefundItem.toAppModel(): Refund.Item {
         -totalTax, // WCRefundItem.totalTax is NEGATIVE
         sku ?: "",
         price ?: BigDecimal.ZERO,
-        metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1
+        metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1
     )
 }
 
 fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
     return Refund.ShippingLine(
-        itemId = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
+        itemId = metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1,
         methodId = methodId ?: "",
         methodTitle = methodTitle ?: "",
         totalTax = -totalTax, // WCRefundShippineLine.totalTax is NEGATIVE
@@ -110,7 +112,7 @@ fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
 
 fun WCRefundFeeLine.toAppModel(): Refund.FeeLine {
     return Refund.FeeLine(
-        id = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
+        id = metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1,
         name = name,
         totalTax = -totalTax, // WCRefundFeeLine.totalTax is NEGATIVE
         total = (total), // WCRefundFeeLine.total is NEGATIVE

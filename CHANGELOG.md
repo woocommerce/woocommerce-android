@@ -1,6 +1,8 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 21.4
+This update brings several improvements to the WooCommerce mobile app. Dashboard menus now adapt better to larger fonts, and we've resolved layout issues in Settings. You'll also experience fewer crashes, with fixes for order details, plugin activation, and refunds. Merchants can now bulk update order statuses, barcode scanning is more reliable, and accessing plugin updates is quicker than ever. Additionally, sites can now be hidden from the site picker.
 
 ## 21.3
 In this update, we've improved the WooCommerce app with several fixes and enhancements. The "One-time shipping" label now correctly matches its availability in Product Subscriptions, and issues with product conversion have been resolved. We've also streamlined the card reader payment flow for faster transactions, fixed a barcode scanner crash, and improved login error handling. Plus, if your site has no products, the Blaze Campaign screen now offers an easy way to create one.

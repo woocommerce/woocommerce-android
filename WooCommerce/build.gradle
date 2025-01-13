@@ -319,7 +319,6 @@ dependencies {
 
     implementation project(":libs:commons")
     implementation project(":libs:cardreader")
-    debugImplementation project(":libs:iap")
 
     implementation(libs.facebook.shimmer)
     implementation(libs.photoview)

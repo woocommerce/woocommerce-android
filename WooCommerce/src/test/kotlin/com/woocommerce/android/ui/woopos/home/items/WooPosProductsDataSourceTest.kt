@@ -16,6 +16,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
@@ -368,5 +369,42 @@ class WooPosProductsDataSourceTest {
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
 
             assertFalse(cachedResult.products.any { it.remoteId == 1L })
+        }
+
+    @Test
+    fun `given remote products, when loadSimpleProducts called, then do not filter out variable products even if price is null `() =
+        runTest {
+            // GIVEN
+            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
+            whenever(handler.productsFlow).thenReturn(
+                flowOf(
+                    listOf(
+                        ProductTestUtils.generateProduct(
+                            productId = 1,
+                            productName = "Product 1",
+                            amount = "",
+                            productType = "variable",
+                        ),
+                        ProductTestUtils.generateProduct(
+                            productId = 2,
+                            productName = "Product 2",
+                            amount = "20.0",
+                            productType = "simple",
+                            isVirtual = false,
+                            isDownloadable = false
+                        ).copy(firstImageUrl = "https://test.com")
+                    )
+                )
+            )
+            whenever(handler.loadFromCacheAndFetch(any(), any(), any(), any(), any())).thenReturn(Result.success(Unit))
+            val sut = WooPosProductsDataSource(handler)
+
+            // WHEN
+            val flow = sut.loadSimpleProducts(forceRefreshProducts = false).toList()
+
+            // THEN
+            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+
+            assertEquals(2, remoteResult.productsResult.getOrNull()?.size)
         }
 }

@@ -4321,7 +4321,7 @@
     <string name="woopos_cart_empty_content_description">Cart is empty</string>
     <string name="woopos_products_empty_list_image_description">No products</string>
     <string name="woopos_products_empty_list_title">No supported products found</string>
-    <string name="woopos_products_empty_list_message">POS currently only supports simple and variable products – \ncreate one to get started.</string>
+    <string name="woopos_products_empty_list_message">POS currently only supports simple, variable, and virtual products – \ncreate one to get started.</string>
     <string name="woopos_products_empty_list_message_two">POS currently only supports simple products</string>
     <string name="woopos_products_loading_error_title">Error loading products</string>
     <string name="woopos_products_loading_error_message">Give it another go?</string>
@@ -4330,6 +4330,10 @@
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
     <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made</string>
     <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made</string>
+
+    <string name="woopos_variations_empty_list_title">No supported variations found</string>
+    <string name="woopos_variations_empty_list_message">POS currently only supports simple, variable, and virtual products – \ncreate one to get started.</string>
+    <string name="woopos_variations_empty_list_image_description">No variations</string>
 
     <string name="woopos_success_totals_error_reader_not_connected_title">Reader not connected</string>
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">To process this payment, please connect your reader.</string>
