@@ -25,7 +25,7 @@ echo "--- 🧹 Download Detekt Dependencies [Run Detekt]"
 echo ""
 
 echo "--- 🧪 Download Unit Test Dependencies [Assemble Unit Tests]"
-./gradlew assembleJalapenoDebugUnitTest lib:cardreader:assembleDebugUnitTest lib:iap:assembleDebugUnitTest
+./gradlew assembleJalapenoDebugUnitTest lib:cardreader:assembleDebugUnitTest
 echo ""
 
 echo "--- 🧪 Download Android Test Dependencies [Assemble Android Tests]"
