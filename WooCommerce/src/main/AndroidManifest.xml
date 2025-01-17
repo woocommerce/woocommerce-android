@@ -110,7 +110,8 @@
         <activity
             android:name=".ui.login.MagicLinkInterceptActivity"
             android:exported="true"
-            android:theme="@style/LoginTheme">
+            android:theme="@style/LoginTheme"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -124,53 +125,67 @@
         </activity>
         <activity
             android:name=".ui.prefs.AppSettingsActivity"
-            android:theme="@style/Theme.Woo.DayNight" />
+            android:theme="@style/Theme.Woo.DayNight"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.prefs.UnifiedAboutScreenActivity"
-            android:theme="@style/Theme.Woo.UnifiedAbout" />
+            android:theme="@style/Theme.Woo.UnifiedAbout"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".support.WooLogViewerActivity"
             android:label="@string/logviewer_activity_title"
-            android:theme="@style/Theme.Woo.DayNight" />
+            android:theme="@style/Theme.Woo.DayNight"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".support.SSRActivity"
             android:label="@string/support_system_status_report"
-            android:theme="@style/Theme.Woo.DayNight" />
+            android:theme="@style/Theme.Woo.DayNight"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".support.requests.SupportRequestFormActivity"
             android:label="@string/support_request"
-            android:theme="@style/Theme.Woo.DayNight" />
+            android:theme="@style/Theme.Woo.DayNight"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".support.help.HelpActivity"
             android:label="@string/support_help"
-            android:theme="@style/Theme.Woo.DayNight" />
+            android:theme="@style/Theme.Woo.DayNight"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="zendesk.support.guide.HelpCenterActivity"
-            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+            android:theme="@style/Theme.Woo.DayNight.Zendesk"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="zendesk.support.guide.ViewArticleActivity"
-            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+            android:theme="@style/Theme.Woo.DayNight.Zendesk"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="zendesk.support.request.RequestActivity"
-            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+            android:theme="@style/Theme.Woo.DayNight.Zendesk"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="zendesk.support.requestlist.RequestListActivity"
-            android:theme="@style/Theme.Woo.DayNight.Zendesk" />
+            android:theme="@style/Theme.Woo.DayNight.Zendesk"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="org.wordpress.android.mediapicker.ui.MediaPickerActivity"
-            android:theme="@style/Theme.Woo.DayNight" />
+            android:theme="@style/Theme.Woo.DayNight"
+            android:windowSoftInputMode="adjustResize" />
         <!--        Make sure portrait screen orientation is not required for the installation of the app -->
         <activity
             android:name="com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity"
             android:screenOrientation="unspecified"
+            android:windowSoftInputMode="adjustResize"
             tools:replace="android:screenOrientation" />
         <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
+            android:exported="false"
             android:theme="@style/Theme.WooPos"
-            android:exported="false" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity"
-            android:theme="@style/Theme.WooPos.Transparent" />
+            android:theme="@style/Theme.WooPos.Transparent"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Stats today app widget -->
         <meta-data

@@ -181,6 +181,8 @@ class MainActivity :
 
     @Inject lateinit var animatorHelper: MainAnimatorHelper
 
+    @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
+
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var unfilledOrderCount: Int = 0
@@ -302,7 +304,10 @@ class MainActivity :
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding.appBarLayout)
+
         toolbar = binding.toolbar.toolbar
+
         setSupportActionBar(toolbar)
         toolbar.navigationIcon = null
 
