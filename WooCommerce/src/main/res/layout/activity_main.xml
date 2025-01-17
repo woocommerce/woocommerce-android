@@ -29,6 +29,10 @@
                 android:layout_height="@dimen/expanded_toolbar_height"
                 app:titleEnabled="true">
 
+                <include
+                    android:id="@+id/toolbar"
+                    layout="@layout/view_toolbar" />
+
                 <TextView
                     android:id="@+id/toolbar_subtitle"
                     style="@style/Woo.TextView.Subtitle1.ToolbarSubtitle"
@@ -39,10 +43,6 @@
                     android:visibility="gone"
                     tools:text="Subtitle shop name"
                     tools:visibility="visible" />
-
-                <include
-                    android:id="@+id/toolbar"
-                    layout="@layout/view_toolbar" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
             <View
