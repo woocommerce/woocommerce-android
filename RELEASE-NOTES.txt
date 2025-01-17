@@ -6,6 +6,7 @@
 - [**] Enhanced WebView to dynamically scale receipt content, ensuring optimal fit across all device screen sizes. [https://github.com/woocommerce/woocommerce-android/pull/13266]
 - [*] Fixes missing text in Blaze Campaigns card on larger display and font sizes [https://github.com/woocommerce/woocommerce-android/pull/13300]
 - [*] Puerto Rico is now available in the list of countries that are supported by in-person payments [https://github.com/woocommerce/woocommerce-android/pull/13200]
+- [Internal] [*] XMLRPC is not needed now for Jetpack Connection during an Account Mismatch flow [https://github.com/woocommerce/woocommerce-android/pull/13308]
 - [*] Removed the outdated feedback survey for shipping labels [https://github.com/woocommerce/woocommerce-android/pull/13319]
 
 21.4
