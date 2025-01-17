@@ -41,12 +41,16 @@ measureBuilds {
 }
 
 static def loadPropertiesWithFallback(Logger logger, File fallbackFile, File primaryFile) {
+    def defaultProperties = readPropertiesFromFile(fallbackFile)
+    def primaryProperties
     if (primaryFile.exists()) {
-        return readPropertiesFromFile(primaryFile)
+        primaryProperties = readPropertiesFromFile(primaryFile)
     } else {
         logger.warn("Primary properties file not found: ${primaryFile}. Using fallback: ${fallbackFile}.")
-        return readPropertiesFromFile(fallbackFile)
+        primaryProperties = new Properties()
     }
+
+    return defaultProperties + primaryProperties
 }
 
 static def readPropertiesFromFile(File file) {
@@ -60,11 +64,6 @@ static def readPropertiesFromFile(File file) {
 allprojects {
     apply plugin: libs.plugins.detekt.get().pluginId
 
-    repositories {
-        google()
-        mavenCentral()
-    }
-
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = libs.versions.java.get()
@@ -74,12 +73,6 @@ allprojects {
                     "-Xjvm-default=all-compatibility",
             ]
         }
-    }
-}
-
-subprojects {
-    configurations {
-        compile.exclude group: 'org.jetbrains', module: 'annotations-java5'
     }
 }
 

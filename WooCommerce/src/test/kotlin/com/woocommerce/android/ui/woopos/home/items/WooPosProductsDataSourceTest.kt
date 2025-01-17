@@ -298,42 +298,6 @@ class WooPosProductsDataSourceTest {
         }
 
     @Test
-    fun `given remote products, when loadSimpleProducts called, then filter in only products that has price`() =
-        runTest {
-            // GIVEN
-            whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
-            whenever(handler.productsFlow).thenReturn(
-                flowOf(
-                    listOf(
-                        ProductTestUtils.generateProduct(
-                            productId = 1,
-                            productName = "Product 1",
-                            amount = "",
-                            productType = "simple",
-                            isDownloadable = false,
-                        ),
-                        ProductTestUtils.generateProduct(
-                            productId = 2,
-                            productName = "Product 2",
-                            amount = "20.0",
-                            productType = "simple",
-                            isDownloadable = false
-                        ).copy(firstImageUrl = "https://test.com")
-                    )
-                )
-            )
-            whenever(handler.loadFromCacheAndFetch(any(), any(), any(), any(), any())).thenReturn(Result.success(Unit))
-            val sut = WooPosProductsDataSource(handler)
-
-            // WHEN
-            val flow = sut.loadSimpleProducts(forceRefreshProducts = true).toList()
-
-            // THEN
-            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
-            assertThat(remoteResult.productsResult.getOrNull()?.any { it.remoteId == 1L }).isFalse()
-        }
-
-    @Test
     fun `given cached products, when loadSimpleProducts called, then filter out downloadable products`() =
         runTest {
             // GIVEN

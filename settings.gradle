@@ -20,6 +20,55 @@ plugins {
     id 'com.gradle.enterprise' version '3.17.2'
 }
 
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        google()
+        maven {
+            url 'https://a8c-libs.s3.amazonaws.com/android'
+            content {
+                includeGroup "org.wordpress"
+                includeGroup "org.wordpress.fluxc"
+                includeGroup "org.wordpress.fluxc.plugins"
+                includeGroup "org.wordpress.wellsql"
+                includeGroup "org.wordpress.mediapicker"
+                includeGroup "com.automattic"
+                includeGroup "com.automattic.tracks"
+                includeGroup "com.gravatar"
+                includeGroup "org.wordpress.aztec"
+            }
+        }
+        maven {
+            url 'https://zendesk.jfrog.io/zendesk/repo'
+            content {
+                includeGroup "com.zendesk"
+                includeGroup "com.zendesk.belvedere2"
+            }
+        }
+        maven {
+            url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
+            content {
+                includeVersion "com.android.volley", "volley", "1.1.1"
+                includeVersion "com.google.android", "flexbox", "2.0.1"
+                includeVersion "com.jraska", "falcon", "2.1.1"
+                includeVersion "org.wordpress", "wellsql", "1.6.0"
+                includeVersion "org.wordpress", "wellsql-core", "1.6.0"
+            }
+        }
+        maven {
+            url "https://jitpack.io"
+            content {
+                includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
+                includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
+                includeModule("com.github.chrisbanes", "PhotoView")
+                includeModule("com.github.PhilJay", "MPAndroidChart")
+            }
+        }
+    }
+}
+
+
 rootProject.name = 'WCAndroid'
 
 include ':libs:commons'

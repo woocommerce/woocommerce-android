@@ -304,6 +304,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         }
     }
 
+    fun onEditOriginAddress(address: OriginShippingAddress) {
+        triggerEvent(StartOriginAddressEdit(address))
+    }
+
     fun onShippingToAddressChange(address: Address) {
         shippingAddresses.value?.let {
             shippingAddresses.value = it.copy(shipTo = address)
@@ -452,16 +456,19 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                 uiState.update { it.copy(isAddressSelectionExpanded = false) }
                 false
             }
+
             state.isShipmentDetailsExpanded -> {
                 uiState.update { it.copy(isShipmentDetailsExpanded = false) }
                 false
             }
+
             else -> true
         }
     }
 
     data object StartPackageSelection : Event()
     data class LabelPurchased(val purchaseData: PurchasedShippingLabelData) : Event()
+    data class StartOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
 
     sealed class WooShippingViewState {
         data object Error : WooShippingViewState()

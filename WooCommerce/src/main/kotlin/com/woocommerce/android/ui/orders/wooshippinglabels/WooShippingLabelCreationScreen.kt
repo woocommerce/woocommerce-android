@@ -94,6 +94,7 @@ fun WooShippingLabelCreationScreen(viewModel: WooShippingLabelCreationViewModel)
                 shippingRatesState = viewState.shippingRates,
                 packageSelectionState = viewState.packageSelection,
                 onShippingFromAddressChange = viewModel::onShippingFromAddressChange,
+                onEditOriginAddress = viewModel::onEditOriginAddress,
                 onSelectedRateSortOrderChanged = viewModel::onSelectedRateSortOrderChanged,
                 onRefreshShippingRates = viewModel::onRefreshShippingRates,
                 onSelectedSippingRateChanged = viewModel::onSelectedSippingRateChanged,
@@ -124,6 +125,7 @@ fun WooShippingLabelCreationScreen(
     packageSelectionState: PackageSelectionState,
     shippingAddresses: WooShippingAddresses,
     onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onSelectPackageClick: () -> Unit,
     onPurchaseShippingLabel: () -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
@@ -185,6 +187,7 @@ fun WooShippingLabelCreationScreen(
             shippingRatesState = shippingRatesState,
             packageSelectionState = packageSelectionState,
             onShippingFromAddressChange = onShippingFromAddressChange,
+            onEditOriginAddress = onEditOriginAddress,
             onSelectedRateSortOrderChanged = onSelectedRateSortOrderChanged,
             onRefreshShippingRates = onRefreshShippingRates,
             customWeight = customWeight,
@@ -253,6 +256,7 @@ private fun LabelCreationScreenWithBottomSheet(
     packageSelectionState: PackageSelectionState,
     onSelectPackageClick: () -> Unit,
     shippingAddresses: WooShippingAddresses,
+    onEditOriginAddress: (OriginShippingAddress) -> Unit,
     onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
     onSelectedRateSortOrderChanged: (ShippingSortOption) -> Unit,
     onRefreshShippingRates: () -> Unit,
@@ -281,6 +285,7 @@ private fun LabelCreationScreenWithBottomSheet(
                 onShippingFromAddressChange = onShippingFromAddressChange,
                 modalBottomSheetState = shipFromSelectionBottomSheetState,
                 modifier = Modifier.padding(bottom = paddingBottom),
+                onEditOriginAddress = onEditOriginAddress
             ) {
                 ShipmentDetails(
                     shippableItems = shippableItems,
@@ -638,6 +643,7 @@ private fun WooShippingLabelCreationScreenPreview() {
             onSelectedSippingRateChanged = {},
             onMarkOrderCompleteChange = {},
             onNavigateBack = {},
+            onEditOriginAddress = {},
             purchaseState = WooShippingLabelCreationViewModel.PurchaseState.NoStarted,
             uiState = WooShippingLabelCreationViewModel.UIControlsState(
                 markOrderComplete = false,

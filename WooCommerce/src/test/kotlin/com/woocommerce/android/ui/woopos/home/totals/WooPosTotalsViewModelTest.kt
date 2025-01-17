@@ -52,6 +52,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -66,6 +67,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 import kotlin.test.Test
+import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
 class WooPosTotalsViewModelTest {
@@ -241,10 +243,12 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsViewState.Totals
-        assertThat(state.orderTotalText).isEqualTo("$5.00")
-        assertThat(state.orderTaxText).isEqualTo("$2.00")
-        assertThat(state.orderSubtotalText).isEqualTo("$3.00")
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        assert(state.totals is WooPosTotalsViewState.Totals.Visible)
+        state.totals as WooPosTotalsViewState.Totals.Visible
+        assertThat(state.totals.orderTotalText).isEqualTo("$5.00")
+        assertThat(state.totals.orderTaxText).isEqualTo("$2.00")
+        assertThat(state.totals.orderSubtotalText).isEqualTo("$3.00")
         verify(totalsRepository).createOrderWithProducts(itemClickedData)
     }
 
@@ -303,10 +307,11 @@ class WooPosTotalsViewModelTest {
             )
 
             // THEN
-            val totals = viewModel.state.value as WooPosTotalsViewState.Totals
-            assertThat(totals.orderTotalText).isEqualTo("5.00$")
-            assertThat(totals.orderTaxText).isEqualTo("2.00$")
-            assertThat(totals.orderSubtotalText).isEqualTo("3.00$")
+            val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+            state.totals as WooPosTotalsViewState.Totals.Visible
+            assertThat(state.totals.orderTotalText).isEqualTo("5.00$")
+            assertThat(state.totals.orderTaxText).isEqualTo("2.00$")
+            assertThat(state.totals.orderSubtotalText).isEqualTo("3.00$")
         }
 
     @Test
@@ -440,10 +445,11 @@ class WooPosTotalsViewModelTest {
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
 
         // Ensure the view model state transitions to the success state with correct totals
-        val state = viewModel.state.value as WooPosTotalsViewState.Totals
-        assertThat(state.orderTotalText).isEqualTo("$5.00")
-        assertThat(state.orderTaxText).isEqualTo("$2.00")
-        assertThat(state.orderSubtotalText).isEqualTo("$3.00")
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        state.totals as WooPosTotalsViewState.Totals.Visible
+        assertThat(state.totals.orderTotalText).isEqualTo("$5.00")
+        assertThat(state.totals.orderTaxText).isEqualTo("$2.00")
+        assertThat(state.totals.orderSubtotalText).isEqualTo("$3.00")
     }
 
     @Test
@@ -502,10 +508,11 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsViewState.Totals
-        assertThat(state.orderSubtotalText).isEqualTo("3.00$")
-        assertThat(state.orderTaxText).isEqualTo("2.00$")
-        assertThat(state.orderTotalText).isEqualTo("5.00$")
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
+        state.totals as WooPosTotalsViewState.Totals.Visible
+        assertThat(state.totals.orderSubtotalText).isEqualTo("3.00$")
+        assertThat(state.totals.orderTaxText).isEqualTo("2.00$")
+        assertThat(state.totals.orderTotalText).isEqualTo("5.00$")
         verify(totalsRepository).createOrderWithProducts(itemClickedData)
     }
 
@@ -578,7 +585,7 @@ class WooPosTotalsViewModelTest {
         )
 
         // THEN
-        val state = viewModel.state.value as WooPosTotalsViewState.Totals
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
         assertThat(state.readerStatus).isInstanceOf(WooPosTotalsViewState.ReaderStatus.Preparing::class.java)
     }
 
@@ -651,8 +658,8 @@ class WooPosTotalsViewModelTest {
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
 
         // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Totals::class.java)
-        val state = viewModel.state.value as WooPosTotalsViewState.Totals
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
         assertThat(state.readerStatus).isNotNull()
         with(state.readerStatus as WooPosTotalsViewState.ReaderStatus.Disconnected) {
             assertThat(title).isEqualTo("Reader not connected")
@@ -667,8 +674,8 @@ class WooPosTotalsViewModelTest {
         val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
 
         // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Totals::class.java)
-        val state = viewModel.state.value as WooPosTotalsViewState.Totals
+        assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
+        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
         assertThat(state.readerStatus).isInstanceOf(WooPosTotalsViewState.ReaderStatus.Preparing::class.java)
     }
 
@@ -682,7 +689,7 @@ class WooPosTotalsViewModelTest {
 
             // WHEN
             val viewModel = createViewModelAndSetupForSuccessfulOrderCreation()
-            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Totals::class.java)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Checkout::class.java)
             viewModel.onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked)
 
             // THEN
@@ -756,6 +763,7 @@ class WooPosTotalsViewModelTest {
 
             // WHEN
             paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            advanceUntilIdle()
 
             // THEN
             assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentInProgress::class.java)
@@ -791,7 +799,7 @@ class WooPosTotalsViewModelTest {
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
 
             // THEN
-            val totalState = vm.state.value as WooPosTotalsViewState.Totals
+            val totalState = vm.state.value as WooPosTotalsViewState.Checkout
             assertThat(totalState.readerStatus).isInstanceOf(
                 WooPosTotalsViewState.ReaderStatus.ReadyForPayment::class.java
             )
@@ -826,6 +834,7 @@ class WooPosTotalsViewModelTest {
             // WHEN
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
             paymentState.value = CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing("")
+            advanceUntilIdle()
 
             // THEN
             val processingState = vm.state.value as WooPosTotalsViewState.PaymentInProgress
@@ -855,6 +864,7 @@ class WooPosTotalsViewModelTest {
             // WHEN
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
             paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            advanceUntilIdle()
 
             // THEN
             val processingState = vm.state.value as WooPosTotalsViewState.PaymentInProgress
@@ -896,6 +906,7 @@ class WooPosTotalsViewModelTest {
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
                 errorType = PaymentFlowError.NoNetwork, failedPaymentRetryAction
             )
+            advanceUntilIdle()
             assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
             assertTrue(
                 (paymentState.value as CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment).onRetry != null
@@ -937,6 +948,7 @@ class WooPosTotalsViewModelTest {
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
                 errorType = PaymentFlowError.NoNetwork, onRetry = null, onCancel = {}, amountWithCurrencyLabel = ""
             )
+            advanceUntilIdle()
             assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
             assertTrue(
                 (paymentState.value as CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment).onRetry == null
@@ -980,6 +992,8 @@ class WooPosTotalsViewModelTest {
         paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
             errorType = PaymentFlowError.NoNetwork, onRetry = null, onCancel = {}, amountWithCurrencyLabel = ""
         )
+        advanceUntilIdle()
+
         assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
         assertTrue(
             (paymentState.value as CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment).onRetry == null
@@ -987,6 +1001,7 @@ class WooPosTotalsViewModelTest {
 
         // WHEN
         vm.onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked)
+        advanceUntilIdle()
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ReturnedFromCardReaderPaymentToCheckout)
@@ -1018,6 +1033,7 @@ class WooPosTotalsViewModelTest {
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
                 errorType = PaymentFlowError.NoNetwork, {}
             )
+            advanceUntilIdle()
             assertThat(vm.state.value).isInstanceOf(WooPosTotalsViewState.PaymentFailed::class.java)
 
             // WHEN
@@ -1123,6 +1139,122 @@ class WooPosTotalsViewModelTest {
             assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
             val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
             assertThat(successState.orderTotalText).isEqualTo("Paid 5.00$ in Cash")
+        }
+
+    @Test
+    fun `given checkout started and order contains only free products, when vm created, then totals state correctly calculated`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_reader_getting_ready))
+                .thenReturn("Getting ready")
+            whenever(resourceProvider.getString(R.string.woopos_totals_reader_checking_order))
+                .thenReturn("Checking order")
+            whenever(resourceProvider.getString(R.string.woopos_no_internet_message))
+                .thenReturn("No internet")
+            val itemClickedData = listOf(
+                WooPosItemsViewModel.ItemClickedData.SimpleProduct(id = 1L)
+            )
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(parentToChildrenEventFlow)
+            }
+            val order = Order.getEmptyOrder(
+                dateCreated = Date(),
+                dateModified = Date()
+            ).copy(
+                totalTax = BigDecimal("0.00"),
+                items = listOf(
+                    Order.Item.EMPTY.copy(
+                        subtotal = BigDecimal("0.00"),
+                    ),
+                    Order.Item.EMPTY.copy(
+                        subtotal = BigDecimal("0.00"),
+                    ),
+                    Order.Item.EMPTY.copy(
+                        subtotal = BigDecimal("0.00"),
+                    )
+                ),
+                total = BigDecimal("0.00"),
+                productsTotal = BigDecimal("0.00"),
+            )
+            val totalsRepository: WooPosTotalsRepository = mock {
+                onBlocking { createOrderWithProducts(itemClickedData) }.thenReturn(
+                    Result.success(order)
+                )
+            }
+            val priceFormat: WooPosFormatPrice = mock {
+                onBlocking { invoke(BigDecimal("0.00")) }.thenReturn("0.00$")
+            }
+
+            // WHEN
+            val viewModel = createViewModel(
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+                totalsRepository = totalsRepository,
+                priceFormat = priceFormat,
+            )
+
+            // THEN
+            val checkout = viewModel.state.value as WooPosTotalsViewState.Checkout
+            assertTrue(checkout.isFreeOrder)
+        }
+
+    @Test
+    fun `given checkout started and order contains non-free products, when vm created, then totals state correctly calculated`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_reader_getting_ready))
+                .thenReturn("Getting ready")
+            whenever(resourceProvider.getString(R.string.woopos_totals_reader_checking_order))
+                .thenReturn("Checking order")
+            whenever(resourceProvider.getString(R.string.woopos_no_internet_message))
+                .thenReturn("No internet")
+            val itemClickedData = listOf(
+                WooPosItemsViewModel.ItemClickedData.SimpleProduct(id = 1L)
+            )
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(parentToChildrenEventFlow)
+            }
+            val order = Order.getEmptyOrder(
+                dateCreated = Date(),
+                dateModified = Date()
+            ).copy(
+                totalTax = BigDecimal("2.00"),
+                items = listOf(
+                    Order.Item.EMPTY.copy(
+                        subtotal = BigDecimal("1.00"),
+                    ),
+                    Order.Item.EMPTY.copy(
+                        subtotal = BigDecimal("1.00"),
+                    ),
+                    Order.Item.EMPTY.copy(
+                        subtotal = BigDecimal("1.00"),
+                    )
+                ),
+                total = BigDecimal("5.00"),
+                productsTotal = BigDecimal("3.00"),
+            )
+            val totalsRepository: WooPosTotalsRepository = mock {
+                onBlocking { createOrderWithProducts(itemClickedData) }.thenReturn(
+                    Result.success(order)
+                )
+            }
+            val priceFormat: WooPosFormatPrice = mock {
+                onBlocking { invoke(BigDecimal("2.00")) }.thenReturn("2.00$")
+                onBlocking { invoke(BigDecimal("3.00")) }.thenReturn("3.00$")
+                onBlocking { invoke(BigDecimal("5.00")) }.thenReturn("5.00$")
+            }
+
+            // WHEN
+            val viewModel = createViewModel(
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+                totalsRepository = totalsRepository,
+                priceFormat = priceFormat,
+            )
+
+            // THEN
+            val checkout = viewModel.state.value as WooPosTotalsViewState.Checkout
+            assertFalse(checkout.isFreeOrder)
         }
 
     private fun createNonEmptyOrder() = Order.getEmptyOrder(

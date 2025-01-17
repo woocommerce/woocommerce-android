@@ -1,5 +1,7 @@
 #!/bin/bash -u
 
+.buildkite/commands/restore-cache.sh
+
 echo "--- 🧹 Linting"
 ./gradlew :WooCommerce:lintJalapenoDebug
 app_lint_exit_code=$?

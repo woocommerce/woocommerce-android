@@ -29,9 +29,6 @@ data class OrderDetailViewState(
             false
         }
 
-    val isCreateShippingLabelBannerVisible: Boolean
-        get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true
-
     @Parcelize
     data class OrderInfo(
         val order: Order? = null,

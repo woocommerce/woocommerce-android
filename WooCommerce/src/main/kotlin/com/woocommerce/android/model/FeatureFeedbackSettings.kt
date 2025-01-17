@@ -24,7 +24,6 @@ data class FeatureFeedbackSettings(
     }
 
     enum class Feature {
-        SHIPPING_LABEL_M4,
         PRODUCT_ADDONS,
         SIMPLE_PAYMENTS_AND_ORDER_CREATION,
         ANALYTICS_HUB,

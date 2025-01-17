@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
 import com.woocommerce.android.ui.woopos.cashpayment.cashPaymentScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.emailReceiptScreen
+import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
 import com.woocommerce.android.ui.woopos.home.homeScreen
 import com.woocommerce.android.ui.woopos.splash.SPLASH_ROUTE
 import com.woocommerce.android.ui.woopos.splash.splashScreen
@@ -11,14 +12,15 @@ import com.woocommerce.android.ui.woopos.splash.splashScreen
 const val MAIN_GRAPH_ROUTE = "main-graph"
 
 fun NavGraphBuilder.mainGraph(
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    homeViewModel: WooPosHomeViewModel,
 ) {
     navigation(
         startDestination = SPLASH_ROUTE,
         route = MAIN_GRAPH_ROUTE,
     ) {
         splashScreen(onNavigationEvent = onNavigationEvent)
-        homeScreen(onNavigationEvent = onNavigationEvent)
+        homeScreen(homeViewModel = homeViewModel)
         cashPaymentScreen(onNavigationEvent = onNavigationEvent)
         emailReceiptScreen(onNavigationEvent = onNavigationEvent)
     }

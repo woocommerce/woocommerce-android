@@ -8,4 +8,5 @@ sealed class WooPosNavigationEvent {
     data class OpenEmailReceipt(val orderId: Long) : WooPosNavigationEvent()
     data object GoBack : WooPosNavigationEvent()
     data object OpenHomeFromCashPaymentAfterSuccessfulPayment : WooPosNavigationEvent()
+    data object ReturnHomeFromCashPayment : WooPosNavigationEvent()
 }

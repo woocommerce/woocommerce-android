@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R.string
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Content
 import com.woocommerce.android.ui.payments.receipt.preview.ReceiptPreviewViewModel.ReceiptPreviewViewState.Loading
@@ -12,11 +13,14 @@ import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.CANCELLED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.FAILED
 import com.woocommerce.android.util.PrintHtmlHelper.PrintJobResult.STARTED
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.net.URI
+import java.net.URISyntaxException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +29,7 @@ class ReceiptPreviewViewModel
     savedState: SavedStateHandle,
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val paymentReceiptShare: PaymentReceiptShare,
+    private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     private val args: ReceiptPreviewFragmentArgs by savedState.navArgs()
 
@@ -37,6 +42,24 @@ class ReceiptPreviewViewModel
 
     fun onReceiptLoaded() {
         viewState.value = Content
+    }
+
+    fun isReceiptDomainTrustable(receiptUrl: String): Boolean {
+        return selectedSite.getIfExists()?.let { site ->
+            getDomainName(site.url) == getDomainName(receiptUrl)
+        } ?: false
+    }
+
+    private fun getDomainName(url: String): String? {
+        return try {
+            val uri = URI(url)
+            uri.host?.let {
+                if (it.startsWith("www.")) it.substring(WWW_PREFIX_LENGTH) else it
+            }
+        } catch (e: URISyntaxException) {
+            WooLog.e(WooLog.T.ORDERS, "Error parsing domain name from receipt url: $url")
+            return null
+        }
     }
 
     fun onPrintClicked() {
@@ -89,5 +112,9 @@ class ReceiptPreviewViewModel
     ) {
         object Loading : ReceiptPreviewViewState(isProgressVisible = true)
         object Content : ReceiptPreviewViewState(isContentVisible = true)
+    }
+
+    companion object {
+        private const val WWW_PREFIX_LENGTH = 4
     }
 }

@@ -60,6 +60,13 @@ class WooShippingLabelCreationFragment : BaseFragment(), BackPressListener {
                             purchaseData = event.purchaseData
                         ).let { findNavController().navigateSafely(it) }
                 }
+
+                is WooShippingLabelCreationViewModel.StartOriginAddressEdit ->
+                    WooShippingLabelCreationFragmentDirections
+                        .actionWooShippingLabelCreationFragmentToWooShippingEditOriginAddressFragment(
+                            originAddress = event.originAddress
+                        ).let { findNavController().navigateSafely(it) }
+
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
             }
         }

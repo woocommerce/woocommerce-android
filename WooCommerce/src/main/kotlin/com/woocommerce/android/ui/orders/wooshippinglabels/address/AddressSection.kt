@@ -348,6 +348,7 @@ fun AddressSelection(
     shipFrom: OriginShippingAddress,
     originAddresses: List<OriginShippingAddress>,
     onShippingFromAddressChange: (OriginShippingAddress) -> Unit,
+    onEditOriginAddress: (OriginShippingAddress) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit = {}
 ) {
@@ -374,6 +375,7 @@ fun AddressSelection(
                     AddressSelectionItem(
                         address = option,
                         isSelected = isSelected,
+                        onEdit = onEditOriginAddress,
                         onClick = {
                             onShippingFromAddressChange(option)
                         },
@@ -400,6 +402,7 @@ fun AddressSelectionItem(
     address: OriginShippingAddress,
     isSelected: Boolean,
     onClick: () -> Unit,
+    onEdit: (OriginShippingAddress) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val borderColor = if (isSelected) {
@@ -438,7 +441,7 @@ fun AddressSelectionItem(
                 )
             }
             IconButton(
-                onClick = { }
+                onClick = { onEdit(address) }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_edit_pencil),
