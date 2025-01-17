@@ -13,20 +13,26 @@ class ApplicationEdgeToEdgeEnabler @Inject constructor() : Application.ActivityL
     }
 
     override fun onActivityStarted(activity: Activity) {
+        // no-op
     }
 
     override fun onActivityResumed(activity: Activity) {
+        // no-op
     }
 
     override fun onActivityPaused(activity: Activity) {
+        // no-op
     }
 
     override fun onActivityStopped(activity: Activity) {
+        // no-op
     }
 
     override fun onActivitySaveInstanceState(activity: Activity, bundle: Bundle) {
+        // no-op
     }
 
     override fun onActivityDestroyed(activity: Activity) {
+        // no-op
     }
 }
