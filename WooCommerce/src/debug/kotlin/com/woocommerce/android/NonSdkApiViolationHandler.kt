@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi
 import kotlin.system.exitProcess
 
 @RequiresApi(Build.VERSION_CODES.P)
+@Suppress("MagicNumber")
 class NonSdkApiViolationHandler : OnVmViolationListener {
     override fun onVmViolation(v: Violation) {
         if (v !is NonSdkApiUsedViolation) return
