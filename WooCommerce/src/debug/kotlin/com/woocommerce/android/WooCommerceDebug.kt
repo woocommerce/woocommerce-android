@@ -64,6 +64,7 @@ class WooCommerceDebug : WooCommerce() {
                 .apply {
                     if (SystemVersionUtils.isAtLeastP()) {
                         detectNonSdkApiUsage()
+                        penaltyListener(mainExecutor, NonSdkApiViolationHandler())
                     }
                 }
                 .build()

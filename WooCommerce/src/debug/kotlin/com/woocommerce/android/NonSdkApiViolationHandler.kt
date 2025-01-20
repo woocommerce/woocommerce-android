@@ -1,0 +1,19 @@
+package com.woocommerce.android
+
+import android.os.Build
+import android.os.Process
+import android.os.StrictMode.OnVmViolationListener
+import android.os.strictmode.NonSdkApiUsedViolation
+import android.os.strictmode.Violation
+import androidx.annotation.RequiresApi
+import kotlin.system.exitProcess
+
+@RequiresApi(Build.VERSION_CODES.P)
+class NonSdkApiViolationHandler : OnVmViolationListener {
+    override fun onVmViolation(v: Violation) {
+        if (v !is NonSdkApiUsedViolation) return
+        System.err.println("Non-SDK API violation detected: ${v.message}")
+        Process.killProcess(Process.myPid())
+        exitProcess(10)
+    }
+}
