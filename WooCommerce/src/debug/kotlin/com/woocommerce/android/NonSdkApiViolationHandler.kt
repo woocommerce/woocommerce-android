@@ -5,6 +5,7 @@ import android.os.Process
 import android.os.StrictMode.OnVmViolationListener
 import android.os.strictmode.NonSdkApiUsedViolation
 import android.os.strictmode.Violation
+import android.util.Log
 import androidx.annotation.RequiresApi
 import kotlin.system.exitProcess
 
@@ -13,7 +14,10 @@ import kotlin.system.exitProcess
 class NonSdkApiViolationHandler : OnVmViolationListener {
     override fun onVmViolation(v: Violation) {
         if (v !is NonSdkApiUsedViolation) return
-        System.err.println("Non-SDK API violation detected: ${v.message}")
+        Log.e(
+            NonSdkApiViolationHandler::class.simpleName,
+            "Non-SDK API violation detected: ${v.message}\n${v.stackTraceToString()}"
+        )
         Process.killProcess(Process.myPid())
         exitProcess(10)
     }
