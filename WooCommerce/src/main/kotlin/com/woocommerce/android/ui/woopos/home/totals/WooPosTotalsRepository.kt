@@ -12,6 +12,9 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.customer.WCCustomerModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCCustomerStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.util.Date
 import javax.inject.Inject
@@ -24,6 +27,7 @@ class WooPosTotalsRepository @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
+    private val wcCustomerStore: WCCustomerStore,
 ) {
     private var orderCreationJob: Deferred<Result<Order>>? = null
 
@@ -37,12 +41,76 @@ class WooPosTotalsRepository @Inject constructor(
         return withContext(IO) {
             validateProductIds(itemClickedDataList)
             orderCreationJob = async {
+                val customerId = runCustomerAttachmentTesting()
                 val order = createOrder(itemClickedDataList)
-                orderCreateEditRepository.createOrUpdateOrder(order)
+                orderCreateEditRepository.createOrUpdateOrder(
+                    order.copy(
+                        customer = Order.Customer.EMPTY.copy(customerId = customerId)
+                    )
+                )
             }
             orderCreationJob!!.await()
         }
     }
+
+    private suspend fun runCustomerAttachmentTesting(): Long {
+        val resultCreation = createCustomer()
+
+        val resultSearch = wcCustomerStore.fetchCustomers(
+            site = selectedSite.get(),
+            searchQuery = "gmail.com"
+        )
+
+        println("CUSTOMER_TESTING; fetching result: $resultSearch")
+
+        val remoteCustomerId = resultCreation.model!!.remoteCustomerId
+        val resultSingleById = wcCustomerStore.fetchSingleCustomer(
+            site = selectedSite.get(),
+            remoteCustomerId = remoteCustomerId
+        )
+
+        println("CUSTOMER_TESTING; fetching single by id: $remoteCustomerId result: $resultSingleById")
+
+        val updateResult = wcCustomerStore.updateCustomer(
+            site = selectedSite.get(),
+            customer = resultCreation.model!!.apply {
+                firstName = "UpdateName"
+                lastName = "UpdateLastName"
+                email = "${getRandomString()}@gmail.com"
+                billingPhone = "+3422222222"
+                billingEmail = "some_billing_email_1@gmail.com"
+            }
+        )
+
+        println("CUSTOMER_TESTING; update result: $updateResult")
+
+        val deleteResult = wcCustomerStore.deleteCustomer(
+            site = selectedSite.get(),
+            customer = resultCreation.model!!
+        )
+
+        println("CUSTOMER_TESTING; delete result: $deleteResult")
+
+        return createCustomer().model!!.remoteCustomerId
+    }
+
+    private suspend fun createCustomer(): WooResult<WCCustomerModel> {
+        val resultCreation = wcCustomerStore.createCustomer(
+            site = selectedSite.get(),
+            customer = WCCustomerModel().apply {
+                firstName = "Andrei"
+                lastName = "Kidinov"
+                email = "${getRandomString()}@gmail.com"
+                billingPhone = "34698994730"
+                billingEmail = "some_billing_email@gmail.com"
+            }
+        )
+
+        println("CUSTOMER_TESTING; creation result: $resultCreation")
+        return resultCreation
+    }
+
+    private fun getRandomString(): String = CharArray(10) { ('A'..'Z').random() }.concatToString()
 
     private fun validateProductIds(itemClickedDataList: List<WooPosItemsViewModel.ItemClickedData>) {
         itemClickedDataList.map { it.id }.forEach { productId ->
