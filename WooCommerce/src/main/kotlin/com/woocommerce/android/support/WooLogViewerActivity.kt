@@ -35,7 +35,7 @@ class WooLogViewerActivity : AppCompatActivity() {
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name) + " " + title)
         try {
             startActivity(Intent.createChooser(intent, getString(R.string.share)))
-        } catch (ex: android.content.ActivityNotFoundException) {
+        } catch (_: android.content.ActivityNotFoundException) {
             ToastUtils.showToast(this, R.string.logviewer_share_error)
         }
     }
