@@ -24,8 +24,6 @@ ext {
             file("${rootDir}/defaults.properties"),
             file("${System.getProperty("user.home")}/.configure/woocommerce-android/secrets/secrets.properties")
     )
-    userEnabledTracking = secretProperties.get('measureBuildsEnabled')?.toBoolean() ?: false
-
     developerProperties = loadPropertiesWithFallback(
             logger,
             file("${rootDir}/developer.properties-example"),
@@ -34,9 +32,9 @@ ext {
 }
 
 measureBuilds {
-    enable = userEnabledTracking
+    enable = secretProperties.get('measureBuildsEnabled')?.toBoolean() ?: false
     automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
-    attachGradleScanId = true
+    attachGradleScanId = false
     authToken = secretProperties.get('appsMetricsToken')
 }
 
@@ -114,4 +112,3 @@ tasks.register("installGitHooks", Copy) {
 }
 
 apply from: './config/gradle/jacoco.gradle'
-apply from: './config/gradle/gradle_build_scan.gradle'

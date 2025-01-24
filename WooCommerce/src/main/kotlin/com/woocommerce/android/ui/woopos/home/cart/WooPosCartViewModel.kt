@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.CHECKOUT
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EDITABLE
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartStatus.EMPTY
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.variations.getNameForPOS
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -264,6 +265,7 @@ class WooPosCartViewModel @Inject constructor(
                 itemNumber = itemNumber
             ),
             name = name,
+            description = null,
             price = formatPrice(price),
             imageUrl = firstImageUrl,
             isAppearanceAnimationPlayed = false,
@@ -280,7 +282,8 @@ class WooPosCartViewModel @Inject constructor(
                 variationId = remoteVariationId,
                 itemNumber = itemNumber
             ),
-            name = getName(product),
+            name = product.name,
+            description = getNameForPOS(product, resourceProvider),
             price = formatPrice(price),
             imageUrl = image?.source,
             isAppearanceAnimationPlayed = false,

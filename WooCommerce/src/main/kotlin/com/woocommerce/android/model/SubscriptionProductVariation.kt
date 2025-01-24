@@ -94,10 +94,11 @@ class SubscriptionProductVariation(
             globalUniqueId = model.globalUniqueId,
             image = model.getImageModel()?.let {
                 Product.Image(
-                    it.id,
-                    it.name,
-                    it.src,
-                    DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date()
+                    id = it.id,
+                    name = it.name,
+                    source = it.src,
+                    dateCreated = DateTimeUtils.dateFromIso8601(model.dateCreated) ?: Date(),
+                    isCoverImage = false
                 )
             },
             price = model.price.toBigDecimalOrNull(),

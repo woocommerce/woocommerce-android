@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
@@ -29,6 +30,7 @@ import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersC
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
+import com.woocommerce.android.ui.orders.list.BulkUpdateOrderResult
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
 import com.woocommerce.android.ui.orders.list.ObserveOrdersListLastUpdate
 import com.woocommerce.android.ui.orders.list.OrderListFragmentArgs
@@ -1012,7 +1014,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when selection count changes to 0, then exit selection mode`() = testBlocking {
         // First enter selection mode
         viewModel.onSelectionChanged(2)
-        assertThat(viewModel.isSelecting()).isTrue()
 
         // Then exit
         viewModel.onSelectionChanged(0)
@@ -1057,6 +1058,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given offline, when bulk update status requested, then show offline error and exit selection mode`() = testBlocking {
         whenever(networkStatus.isConnected()).thenReturn(false)
 
+        // First enter selection mode
+        viewModel.onSelectionChanged(2)
         viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
 
         assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
@@ -1067,7 +1070,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `when bulk update fails, then show error message and exit selection`() = testBlocking {
         whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any())).thenReturn(Result.failure(Exception()))
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.Error(Exception()))
+
+        // First enter selection mode
+        viewModel.onSelectionChanged(1)
 
         viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
 
@@ -1077,17 +1084,88 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when bulk update completes successfully, then exit selection mode`() = testBlocking {
+    fun `when bulk update results in no orders updated, then show message and exit selection mode`() = testBlocking {
         whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any())).thenReturn(Result.success(Unit))
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.NoOrdersUpdated)
 
-        // First enter selection mode
         viewModel.onSelectionChanged(1)
-        assertThat(viewModel.isSelecting()).isTrue()
 
         viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
 
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message)
+            .isEqualTo(R.string.orderlist_bulk_update_result_no_orders_updated)
         assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update fails for all orders, then show message and exit selection mode`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.AllFailed)
+
+        // First enter selection mode
+        viewModel.onSelectionChanged(1)
+
+        viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
+
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message)
+            .isEqualTo(R.string.orderlist_bulk_update_result_all_failed)
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update fully succeeds, then refresh and exit selection mode`() = testBlocking {
+        // Given
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.AllSuccess)
+        val pagedListData = MutableLiveData<PagedList<OrderListItemUIType>>(mock())
+        whenever(pagedListWrapper.data).thenReturn(pagedListData)
+
+        // First load order to initialize orderPagedListWrapper, then enter selection mode
+        viewModel.loadOrders()
+        viewModel.onSelectionChanged(2)
+
+        // When
+        viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
+        // Sending a different instance of PagedList to trigger the Snackbar
+        pagedListData.value = mock()
+
+        // Then
+        assertThat(viewModel.isSelecting()).isFalse()
+        val expectedEvent = OrderListEvent.ShowSnackbarString(
+            resourceProvider.getString(R.string.orderlist_bulk_update_status_updated)
+        )
+        assertThat(viewModel.event.value).isEqualTo(expectedEvent)
+
+        // Invoked once during loadOrders() and once during onBulkOrderStatusChanged()
+        verify(viewModel.ordersPagedListWrapper, times(2))?.fetchFirstPage()
+    }
+
+    @Test
+    fun `when bulk update partially succeeds, then refresh and exit selection mode`() = testBlocking {
+        // Given
+        val successCount = 3
+        val failureCount = 2
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.PartialSuccess(successCount, failureCount))
+
+        // First load order to initialize orderPagedListWrapper, then enter selection mode
+        viewModel.loadOrders()
+        viewModel.onSelectionChanged(5)
+
+        // When
+        viewModel.onBulkOrderStatusChanged(listOf(1L, 2L, 3L, 4L, 5L), Order.Status.Completed)
+
+        // Then
+        assertThat(viewModel.isSelecting()).isFalse()
+
+        // Invoked once during loadOrders() and once during onBulkOrderStatusChanged()
+        verify(viewModel.ordersPagedListWrapper, times(2))?.fetchFirstPage()
     }
 
     @Test

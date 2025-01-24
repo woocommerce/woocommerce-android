@@ -44,6 +44,13 @@ class MediaFileUploadHandler @Inject constructor(
     private val uploadsStatus = MutableStateFlow(emptyList<ProductImageUploadData>())
     private val externalObservers = mutableListOf<Long>()
 
+    val activeUploadProductIds: Flow<Set<Long>> = uploadsStatus
+        .map { list ->
+            list.filter { it.uploadStatus == UploadStatus.InProgress }
+                .map { it.remoteProductId }
+                .toSet()
+        }
+
     init {
         worker.events
             .onEach { event ->

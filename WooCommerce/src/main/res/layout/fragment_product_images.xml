@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/product_images_drag_and_drop_description" />
+                android:text="@string/product_images_drag_and_drop_to_reorder" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textWarning"

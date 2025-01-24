@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentE
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
-import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentStateProvider
@@ -104,7 +103,7 @@ class WooPosTotalsViewModelTest {
     private val cardReaderConfigProvider: CardReaderCountryConfigProvider = mock()
     private val paymentReceiptShare: PaymentReceiptShare = mock()
     private val uiStringParser: UiStringParser = mock()
-    private val paymentControllerFactory = CardReaderPaymentControllerFactory(
+    private val paymentControllerFactory = WooPosCardReaderPaymentControllerFactory(
         cardReaderManager = cardReaderManager,
         orderRepository = orderRepository,
         selectedSite = selectedSite,
@@ -569,7 +568,7 @@ class WooPosTotalsViewModelTest {
         whenever(uiStringParser.asString(any())).thenReturn("Unfortunately, this payment has been declined.")
 
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-        val factory: CardReaderPaymentControllerFactory = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -704,7 +703,7 @@ class WooPosTotalsViewModelTest {
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
 
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-        val factory: CardReaderPaymentControllerFactory = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
 
@@ -722,7 +721,7 @@ class WooPosTotalsViewModelTest {
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
 
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-        val factory: CardReaderPaymentControllerFactory = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
 
@@ -752,7 +751,7 @@ class WooPosTotalsViewModelTest {
             val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
             whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
             val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-            val factory: CardReaderPaymentControllerFactory = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -787,7 +786,7 @@ class WooPosTotalsViewModelTest {
             val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
             whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
             val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-            val factory: CardReaderPaymentControllerFactory = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -823,7 +822,7 @@ class WooPosTotalsViewModelTest {
             val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
             whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
             val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-            val factory: CardReaderPaymentControllerFactory = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -853,7 +852,7 @@ class WooPosTotalsViewModelTest {
             val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
             whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
             val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-            val factory: CardReaderPaymentControllerFactory = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -893,7 +892,7 @@ class WooPosTotalsViewModelTest {
             val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
             whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
             val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-            val factory: CardReaderPaymentControllerFactory = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -936,7 +935,7 @@ class WooPosTotalsViewModelTest {
             val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
             whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
             val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-            val factory: CardReaderPaymentControllerFactory = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -980,7 +979,7 @@ class WooPosTotalsViewModelTest {
         val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-        val factory: CardReaderPaymentControllerFactory = mock()
+        val factory: WooPosCardReaderPaymentControllerFactory = mock()
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -1021,7 +1020,7 @@ class WooPosTotalsViewModelTest {
             val readerStatus = MutableStateFlow<CardReaderStatus>(CardReaderStatus.Connected(mock()))
             whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
             val mockCardReaderPaymentController: CardReaderPaymentController = mock()
-            val factory: CardReaderPaymentControllerFactory = mock()
+            val factory: WooPosCardReaderPaymentControllerFactory = mock()
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
@@ -1279,7 +1278,7 @@ class WooPosTotalsViewModelTest {
 
     @Suppress("LongMethod")
     private suspend fun createViewModelAndSetupForSuccessfulOrderCreation(
-        controllerFactory: CardReaderPaymentControllerFactory = paymentControllerFactory,
+        controllerFactory: WooPosCardReaderPaymentControllerFactory = paymentControllerFactory,
         itemClickedData: List<WooPosItemsViewModel.ItemClickedData> = listOf(
             WooPosItemsViewModel.ItemClickedData.SimpleProduct(
                 id = 1L
@@ -1367,7 +1366,7 @@ class WooPosTotalsViewModelTest {
         totalsRepository: WooPosTotalsRepository = mock(),
         priceFormat: WooPosFormatPrice = mock(),
         savedState: SavedStateHandle = SavedStateHandle(),
-        cardReaderPaymentControllerFactory: CardReaderPaymentControllerFactory = paymentControllerFactory,
+        cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = paymentControllerFactory,
     ) = WooPosTotalsViewModel(
         resourceProvider = resourceProvider,
         parentToChildrenEventReceiver = parentToChildrenEventReceiver,

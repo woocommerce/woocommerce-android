@@ -64,7 +64,7 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
             viewModel.fetchAccountInfo()
         }
 
-        findViewById<TextView>(R.id.login_enter_password).visibility = View.GONE
+        findViewById<TextView>(R.id.login_magic_link_fallback_button).visibility = View.GONE
 
         initializeViewModel()
     }

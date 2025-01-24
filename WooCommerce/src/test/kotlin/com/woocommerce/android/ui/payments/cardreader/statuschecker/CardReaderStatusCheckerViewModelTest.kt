@@ -511,13 +511,14 @@ class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
         cardReaderType: CardReaderType = CardReaderType.EXTERNAL
     ) =
         CardReaderStatusCheckerViewModel(
-            CardReaderStatusCheckerDialogFragmentArgs(
-                param,
-                cardReaderType
+            savedState = CardReaderStatusCheckerDialogFragmentArgs(
+                cardReaderFlowParam = param,
+                cardReaderType = cardReaderType
             ).toSavedStateHandle(),
-            cardReaderManager,
-            cardReaderChecker,
-            paymentsFlowTracker,
-            appPrefsWrapper,
+            storeManagementModePaymentsFlowTracker = paymentsFlowTracker,
+            pointOfSaleModePaymentsFlowTracker = paymentsFlowTracker,
+            cardReaderManager = cardReaderManager,
+            cardReaderChecker = cardReaderChecker,
+            appPrefsWrapper = appPrefsWrapper,
         )
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.payments.PaymentData
+import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
@@ -42,8 +43,8 @@ class CardReaderPaymentViewModel @Inject constructor(
     appPrefs: AppPrefs = AppPrefs,
     paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     interacRefundableChecker: CardReaderInteracRefundableChecker,
-    tracker: PaymentsFlowTracker,
-    trackCancelledFlow: CardReaderTrackCanceledFlowAction,
+    @StoreManagementMode tracker: PaymentsFlowTracker,
+    @StoreManagementMode trackCancelledFlow: CardReaderTrackCanceledFlowAction,
     currencyFormatter: CurrencyFormatter,
     errorMapper: CardReaderPaymentErrorMapper,
     interacRefundErrorMapper: CardReaderInteracRefundErrorMapper,

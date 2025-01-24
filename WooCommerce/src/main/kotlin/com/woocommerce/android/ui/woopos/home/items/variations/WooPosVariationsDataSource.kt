@@ -52,7 +52,8 @@ class WooPosVariationsDataSource @Inject constructor(
             productId,
             forceRefresh = true,
             filterOptions = mapOf(
-                WCProductStore.VariationFilterOption.STATUS to "publish"
+                WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH,
+                WCProductStore.VariationFilterOption.DOWNLOADABLE to VARIATION_DOWNLOADABLE_FALSE
             )
         )
         if (result.isSuccess) {
@@ -74,7 +75,8 @@ class WooPosVariationsDataSource @Inject constructor(
         val result = handler.loadMore(
             productId,
             filterOptions = mapOf(
-                WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH
+                WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH,
+                WCProductStore.VariationFilterOption.DOWNLOADABLE to VARIATION_DOWNLOADABLE_FALSE
             )
         )
         if (result.isSuccess) {
@@ -90,6 +92,7 @@ class WooPosVariationsDataSource @Inject constructor(
 
     companion object {
         private const val VARIATION_STATUS_PUBLISH = "publish"
+        private const val VARIATION_DOWNLOADABLE_FALSE = "false"
     }
 }
 
@@ -105,5 +108,6 @@ sealed class FetchResult {
 }
 
 private fun List<ProductVariation>.applyFilter(): List<ProductVariation> {
-    return filter { !it.isDownloadable }
+    return filter { !it.isDownloadable } // Keeping this filter for now, but it should be removed in the future after
+    // WC 9.7.0 is released. https://a8c.slack.com/archives/C070SJRA8DP/p1736795937571479
 }

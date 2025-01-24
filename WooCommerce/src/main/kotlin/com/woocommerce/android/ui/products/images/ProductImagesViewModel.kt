@@ -148,7 +148,10 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun onValidateButtonClicked() {
-        viewState = viewState.copy(productImagesState = Browsing)
+        viewState = viewState.copy(
+            images = images.updateProductCoverImageToFirstItem(),
+            productImagesState = Browsing
+        )
     }
 
     fun onNavigateBackButtonClicked() {
@@ -159,6 +162,7 @@ class ProductImagesViewModel @Inject constructor(
                     images = productImagesState.initialState
                 )
             }
+
             Browsing -> {
                 val hasChange = !images.areSameImagesAs(originalImages)
                 analyticsTracker.track(
@@ -229,7 +233,11 @@ class ProductImagesViewModel @Inject constructor(
     fun onGalleryImageDragStarted() {
         when (viewState.productImagesState) {
             is Dragging -> { /* no-op*/ }
-            Browsing -> viewState = viewState.copy(productImagesState = Dragging(images))
+
+            Browsing -> viewState = viewState.copy(
+                images = images.uncheckProductCoverImage(),
+                productImagesState = Dragging(images)
+            )
         }
     }
 
@@ -248,6 +256,11 @@ class ProductImagesViewModel @Inject constructor(
             viewState = viewState.copy(images = reorderedImages)
         }
     }
+
+    private fun List<Product.Image>.updateProductCoverImageToFirstItem() =
+        this.mapIndexed { index, image -> image.copy(isCoverImage = index == 0) }
+
+    private fun List<Product.Image>.uncheckProductCoverImage() = this.map { it.copy(isCoverImage = false) }
 
     @Parcelize
     data class ViewState(

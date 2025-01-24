@@ -1605,17 +1605,18 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     ): CardReaderConnectViewModel {
         val savedState = CardReaderConnectDialogFragmentArgs(cardReaderFlowParam, cardReaderType).toSavedStateHandle()
         return CardReaderConnectViewModel(
-            savedState,
-            coroutinesTestRule.testDispatchers,
-            tracker,
-            appPrefs,
-            developerOptionsRepository,
-            locationRepository,
-            selectedSite,
-            cardReaderManager,
-            cardReaderTrackingInfoKeeper,
-            cardReaderOnboardingChecker,
-            learnMoreUrlProvider,
+            savedState = savedState,
+            storeManagementPaymentsFlowTracker = tracker,
+            pointOfSalePaymentsFlowTracker = tracker,
+            dispatchers = coroutinesTestRule.testDispatchers,
+            appPrefs = appPrefs,
+            developerOptionsRepository = developerOptionsRepository,
+            locationRepository = locationRepository,
+            selectedSite = selectedSite,
+            cardReaderManager = cardReaderManager,
+            cardReaderTrackingInfoKeeper = cardReaderTrackingInfoKeeper,
+            cardReaderOnboardingChecker = cardReaderOnboardingChecker,
+            learnMoreUrlProvider = learnMoreUrlProvider,
         )
     }
 

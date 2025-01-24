@@ -170,7 +170,8 @@ class WooPosCartViewModelTest {
                     price = "10.0$",
                     imageUrl = product.firstImageUrl,
                     isAppearanceAnimationPlayed = false,
-                    productType = ProductType.Simple
+                    productType = ProductType.Simple,
+                    description = null,
                 )
             )
         )
@@ -321,7 +322,8 @@ class WooPosCartViewModelTest {
                         price = "10.0$",
                         imageUrl = product1.firstImageUrl,
                         isAppearanceAnimationPlayed = false,
-                        productType = ProductType.Simple
+                        productType = ProductType.Simple,
+                        description = null,
                     )
                 )
             )
@@ -422,7 +424,8 @@ class WooPosCartViewModelTest {
                     price = "10.0$",
                     imageUrl = product.firstImageUrl,
                     isAppearanceAnimationPlayed = false,
-                    productType = ProductType.Simple
+                    productType = ProductType.Simple,
+                    description = null,
                 )
             )
         )

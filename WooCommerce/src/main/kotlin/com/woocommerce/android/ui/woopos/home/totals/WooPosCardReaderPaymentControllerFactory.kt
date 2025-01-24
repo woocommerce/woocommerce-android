@@ -1,7 +1,8 @@
-package com.woocommerce.android.ui.payments.cardreader.payment.controller
+package com.woocommerce.android.ui.woopos.home.totals
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.di.PointOfSaleMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
@@ -14,6 +15,9 @@ import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderInteracR
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentErrorMapper
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentOrderHelper
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentStateProvider
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderTrackCanceledFlowAction
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptShare
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
@@ -24,15 +28,15 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.reflect.KMutableProperty0
 
-class CardReaderPaymentControllerFactory @Inject constructor(
+class WooPosCardReaderPaymentControllerFactory @Inject constructor(
     private val cardReaderManager: CardReaderManager,
     private val orderRepository: OrderDetailRepository,
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs = AppPrefs,
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker,
     private val interacRefundableChecker: CardReaderInteracRefundableChecker,
-    private val tracker: PaymentsFlowTracker,
-    private val trackCancelledFlow: CardReaderTrackCanceledFlowAction,
+    @PointOfSaleMode private val tracker: PaymentsFlowTracker,
+    @PointOfSaleMode private val trackCancelledFlow: CardReaderTrackCanceledFlowAction,
     private val currencyFormatter: CurrencyFormatter,
     private val errorMapper: CardReaderPaymentErrorMapper,
     private val interacRefundErrorMapper: CardReaderInteracRefundErrorMapper,

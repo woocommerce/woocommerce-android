@@ -163,7 +163,7 @@
     <string name="receipt_fetching_error">Sorry, we couldn\'t load a receipt for this order</string>
     <string name="store_name_default">Store name</string>
     <string name="sorted_by">Sorted by 1%s</string>
-
+    <string name="add">Add %s</string>
     <!--
         Date/Time Labels
     -->
@@ -619,6 +619,9 @@
     <string name="orderlist_selection_menu_update_status">Update status</string>
     <string name="orderlist_bulk_update_status_updated">Status updated!</string>
     <string name="orderlist_bulk_update_maximum_reached">Maximum selection count (%d) is reached.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">No orders updated. Please try again.</string>
+    <string name="orderlist_bulk_update_result_all_failed">Failed to update orders. Please try again.</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d order(s) updated, and %d order(s) failed to update. Please try again.</string>
 
     <!--
          Simple Payments
@@ -2397,6 +2400,7 @@
     <string name="product_add_photo">Add photo</string>
     <string name="product_replace_photo">Replace photo</string>
     <string name="product_remove_photo">Remove photo</string>
+    <string name="product_cover_photo_tag">Cover</string>
     <string name="product_image_add">Add a product image</string>
     <string name="product_image_error_removing">Error removing product image</string>
     <string name="product_image_service_error_uploading">Error uploading product image</string>
@@ -2416,7 +2420,7 @@
     <string name="media_picker_dialog_title">Select Media Source</string>
     <string name="wpmedia_picker_title">WordPress media library</string>
     <string name="product_images_image_limit_warning">Only one photo can be displayed per product variation</string>
-    <string name="product_images_drag_and_drop_description">Drag and drop to re-order photos</string>
+    <string name="product_images_drag_and_drop_to_reorder">Drag and drop to re-order photos. The first photo will be set as the cover.</string>
     <string name="product_images_validate_drag_and_drop">Validate</string>
     <string name="product_image_service_error_media_null">Media could not be found</string>
     <string name="product_image_service_error_uploading_single">%d file couldn\'t be uploaded</string>
@@ -2652,7 +2656,7 @@
     <string name="enter_username_instead">Log in with your username.</string>
     <string name="enter_verification_code">Almost there! Please enter the verification code for WordPress.com from your authenticator app.</string>
     <string name="enter_verification_code_sms">We sent a text message to the phone number ending in %s. Please enter the verification code in the SMS.</string>
-
+    <string name="login_use_wpcom_username_instead">Use username and password instead</string>
 
     <string name="requesting_otp">Requesting a verification code via SMS.</string>
     <string name="requesting_sms_otp_success">SMS requested, please check your messages for the code.</string>
@@ -4332,6 +4336,7 @@
     <string name="woopos_variations_empty_list_title">No supported variations found</string>
     <string name="woopos_variations_empty_list_message">POS currently only supports simple, variable, and virtual products – \ncreate one to get started.</string>
     <string name="woopos_variations_empty_list_image_description">No variations</string>
+    <string name="woopos_variations_any_variation">Any %s</string>
 
     <string name="woopos_success_totals_error_reader_not_connected_title">Reader not connected</string>
     <string name="woopos_success_totals_error_reader_not_connected_subtitle">To process this payment, please connect your reader.</string>
@@ -4457,4 +4462,15 @@
     <string name="woo_shipping_labels_package_creation_error_proceed">Proceed</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">Cancel</string>
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
+
+    <string name="woo_shipping_edit_origin_address_title">Edit Origin</string>
+    <string name="woo_shipping_label_name">Name</string>
+    <string name="woo_shipping_label_company">Company</string>
+    <string name="woo_shipping_label_country">Country</string>
+    <string name="woo_shipping_label_address">Address</string>
+    <string name="woo_shipping_label_city">City</string>
+    <string name="woo_shipping_label_state">State</string>
+    <string name="woo_shipping_label_post_code">Postal Code</string>
+    <string name="woo_shipping_label_email">Email</string>
+    <string name="woo_shipping_label_phone">Phone</string>
 </resources>

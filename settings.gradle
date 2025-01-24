@@ -17,8 +17,10 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.gradle.enterprise' version '3.17.2'
+    id 'com.gradle.develocity' version '3.19'
 }
+
+gradle.ext.isCi = System.getenv('CI')?.toBoolean() ?: false
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
@@ -94,4 +96,5 @@ gradle.ext {
 
 apply from: './config/gradle/include_builds.gradle'
 apply from: './config/gradle/gradle_build_cache.gradle'
+apply from: './config/gradle/gradle_build_scan.gradle'
 include ':WooCommerce-Wear'

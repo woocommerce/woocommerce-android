@@ -11,7 +11,6 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
-import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
@@ -65,7 +64,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val networkStatus: WooPosNetworkStatus,
     private val isReceiptSendingSupported: WooPosEmailReceiptIsSendingSupported,
-    private val cardReaderPaymentControllerFactory: CardReaderPaymentControllerFactory,
+    private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
     private val uiStringParser: UiStringParser,
     savedState: SavedStateHandle,
 ) : ViewModel() {

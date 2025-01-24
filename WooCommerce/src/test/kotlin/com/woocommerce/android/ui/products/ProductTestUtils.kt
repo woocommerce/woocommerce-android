@@ -28,6 +28,16 @@ object ProductTestUtils {
         imageUrl: String? = null,
         isStockManaged: Boolean = false,
         productCombinesVariationQuantities: Boolean = false,
+        productAttributes: String = """[
+                                {
+                                    "id": 1,
+                                    "name":"Color",
+                                    "position":0",
+                                    "visible":"true",
+                                    "variation":"true",
+                                    "options": ["Blue","Green","Red"]
+                                }
+                            ]"""
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
@@ -57,16 +67,7 @@ object ProductTestUtils {
             width = "2"
             height = "3"
             variations = variationIds
-            attributes = """[
-                                {
-                                    "id": 1,
-                                    "name":"Color",
-                                    "position":0",
-                                    "visible":"true",
-                                    "variation":"true",
-                                    "options": ["Blue","Green","Red"]
-                                }
-                            ]"""
+            attributes = productAttributes
             categories = ""
             ratingCount = 4
             groupedProductIds = "[10,11]"
@@ -121,6 +122,7 @@ object ProductTestUtils {
         isVirtual: Boolean = false,
         isDownloadable: Boolean = false,
         isPurchasable: Boolean = true,
+        productAttributes: String = "",
     ): ProductVariation {
         return WCProductVariationModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
@@ -129,7 +131,7 @@ object ProductTestUtils {
             remoteVariationId = variationId
             price = amount
             image = ""
-            attributes = ""
+            attributes = productAttributes
             virtual = isVirtual
             downloadable = isDownloadable
             purchasable = isPurchasable
@@ -172,7 +174,8 @@ object ProductTestUtils {
             id = imageId,
             name = "Image $imageId",
             source = "Image $imageId source",
-            dateCreated = Date.from(Instant.EPOCH)
+            dateCreated = Date.from(Instant.EPOCH),
+            isCoverImage = false
         )
 
     fun generateProductImagesList() =

@@ -151,7 +151,10 @@ class WooPosVariationsDataSourceTest {
             handler.fetchVariations(
                 productId,
                 forceRefresh = true,
-                mapOf(WCProductStore.VariationFilterOption.STATUS to "publish")
+                mapOf(
+                    WCProductStore.VariationFilterOption.STATUS to "publish",
+                    WCProductStore.VariationFilterOption.DOWNLOADABLE to "false"
+                )
             )
         )
             .thenReturn(Result.failure(exception))
@@ -204,7 +207,13 @@ class WooPosVariationsDataSourceTest {
         whenever(handler.getVariationsFlow(productId)).thenReturn(flowOf(sampleProducts))
         val exception = Exception("Load more failed")
         whenever(
-            handler.loadMore(productId, mapOf(WCProductStore.VariationFilterOption.STATUS to "publish")),
+            handler.loadMore(
+                productId,
+                mapOf(
+                    WCProductStore.VariationFilterOption.STATUS to "publish",
+                    WCProductStore.VariationFilterOption.DOWNLOADABLE to "false"
+                )
+            ),
         ).thenReturn(Result.failure(exception))
         whenever(variationsCache.get(productId)).thenReturn(sampleProducts)
         val sut = WooPosVariationsDataSource(handler, variationsCache)
@@ -235,7 +244,10 @@ class WooPosVariationsDataSourceTest {
             handler.fetchVariations(
                 productId,
                 forceRefresh = true,
-                mapOf(WCProductStore.VariationFilterOption.STATUS to "publish")
+                mapOf(
+                    WCProductStore.VariationFilterOption.STATUS to "publish",
+                    WCProductStore.VariationFilterOption.DOWNLOADABLE to "false"
+                )
             )
         ).thenReturn(Result.failure(exception))
         whenever(variationsCache.get(productId)).thenReturn(emptyList())
