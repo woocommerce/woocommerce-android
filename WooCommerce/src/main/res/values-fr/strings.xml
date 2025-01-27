@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-27 15:54:04+0000
+Translation-Revision-Date: 2025-01-15 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error_cancel">Annuler</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">Continuer</string>
+    <string name="woo_shipping_labels_package_creation_error_message">Voulez-vous poursuivre sans l’enregistrer ?</string>
+    <string name="woo_shipping_labels_package_creation_error_title">Nous n’avons pas pu enregistrer le colis comme modèle</string>
+    <string name="woopos_variations_options_available_text">Options disponibles</string>
+    <string name="woopos_totals_success_payment_card">Un paiement de %1$s par carte a été effectué avec succès</string>
+    <string name="woopos_totals_success_payment_cash">Un paiement de %1$s en espèces a été effectué avec succès</string>
+    <string name="shipping_label_select_origin_address">Adresse</string>
+    <string name="shipping_label_select_origin_default_address">%s (par défaut)</string>
+    <string name="shipping_label_purchased_purchase_failed_error">Nous ne sommes pas en mesure de confirmer l’achat de l’étiquette d’expédition pour l’instant, merci de réessayer plus tard</string>
+    <string name="shipping_label_purchased_failure_message">Veuillez réessayer plus tard</string>
+    <string name="shipping_label_purchased_failure_title">Nous n’avons pas pu traiter votre étiquette d’expédition</string>
+    <string name="shipping_label_purchased_in_progress_message">Une fois terminé, vous pourrez imprimer l’étiquette d’expédition aux dimensions sélectionnées</string>
+    <string name="shipping_label_purchased_in_progress_title">Votre étiquette d’expédition est en cours de traitement</string>
+    <string name="orderlist_bulk_update_maximum_reached">Le nombre maximal de sélections (%d) est atteint.</string>
+    <string name="orderlist_bulk_update_status_updated">État mis à jour !</string>
+    <string name="site_picker_edit_store_list_error_title">Une erreur est survenue lors de la mise à jour des réglages de notification. Veuillez réessayer</string>
+    <string name="site_picker_edit_store_list_header">Autres boutiques</string>
+    <string name="site_picker_edit_store_current_site_footer">Veuillez sélectionner une autre boutique si vous souhaitez masquer celle-ci</string>
+    <string name="site_picker_edit_store_current_site_header">Boutique actuelle</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">Sélectionner la boutique à connecter (%d masquée(s))</string>
     <string name="woo_shipping_labels_package_creation_error">Impossible de charger les données du colis</string>
     <string name="woo_shipping_labels_package_creation_package_name">Nom du colis</string>
     <string name="woo_shipping_labels_package_creation_weight">Poids</string>
@@ -57,7 +78,7 @@ Language: fr
     <string name="orderlist_selection_menu_update_status">Mettre à jour l’état</string>
     <string name="orderlist_selection_count_single">%d commande sélectionnée</string>
     <string name="orderlist_selection_count">%d commandes sélectionnées</string>
-    <string name="site_picker_edit_store_list_footer">Les boutiques non sélectionnées n’apparaîtront pas dans le sélecteur de site de l’application et ne recevront pas de notifications push pour de nouvelles commandes</string>
+    <string name="site_picker_edit_store_list_footer">Les boutiques non sélectionnées n’apparaîtront pas dans le sélecteur de site de l’application et ne recevront pas de notifications push pour de nouvelles commandes ou des avis sur les produits</string>
     <string name="site_picker_edit_store_list_title">Boutiques visibles</string>
     <string name="site_picker_edit_store_list">Modifier les boutiques</string>
     <string name="woopos_variations_loading_error_title">Erreur lors du chargement des variantes</string>
@@ -90,8 +111,8 @@ Language: fr
     <string name="shipping_label_purchased_track_shipment">Suivre l’expédition</string>
     <string name="shipping_label_purchased_learn_how_to_print">Découvrir comment imprimer à partir de votre appareil mobile</string>
     <string name="shipping_label_purchased_note">Remarque : la réutilisation d’une étiquette imprimée constitue une violation de nos conditions d’utilisation susceptible d’entraîner des poursuites judiciaires.</string>
-    <string name="shipping_label_purchased_message">Vous pouvez réimprimer l’étiquette d’expédition ou modifier la dimension de l’étiquette ici.</string>
-    <string name="shipping_label_purchased_title">Votre étiquette d’expédition est prête pour l’impression</string>
+    <string name="shipping_label_purchased_success_message">Vous pouvez réimprimer l’étiquette d’expédition ou modifier la dimension de l’étiquette ici.</string>
+    <string name="shipping_label_purchased_success_title">Votre étiquette d’expédition est prête pour l’impression</string>
     <string name="order_detail_edit_store_currency_mismatch">Toutes nos excuses, vous pouvez modifier cette commande sur le Web uniquement car elle est en %1$s et votre site est en %2$s</string>
     <string name="shipping_label_shipping_service_title">Service d’expédition</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Le plus rapide</string>
@@ -145,8 +166,8 @@ Language: fr
     <string name="order_shipment_tracking_barcode_scanning_failed">Échec du scan. Veuillez réessayer plus tard</string>
     <string name="custom_fields_editor_value_label">Valeur</string>
     <string name="custom_fields_editor_key_label">Clé</string>
-    <string name="woopos_dialog_products_info_secondary_message">D’autres types de produits, tels que les produits virtuels, seront disponibles dans les prochaines mises à jour.</string>
-    <string name="woopos_dialog_products_info_primary_message">Seuls les produits physiques simples et variables peuvent être utilisés actuellement avec le PDV.</string>
+    <string name="woopos_dialog_products_info_secondary_message">D’autres types de produits seront disponibles dans les prochaines mises à jour.</string>
+    <string name="woopos_dialog_products_info_primary_message">Seuls les produits physiques simples, variables et virtuels peuvent être utilisés actuellement avec le PDV.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">Annuler</string>
     <string name="blaze_campaign_budget_duration_current_duration">Durée</string>
     <string name="blaze_campaign_budget_duration_endless_description">La campagne durera jusqu’à ce que vous y mettiez un terme.</string>
@@ -187,9 +208,9 @@ Language: fr
     <string name="woopos_exit_dialog_confirmation_close_content_description">Fermer</string>
     <string name="woopos_dialog_products_info_background_content_description">Arrière-plan peu éclairé. Appuyez pour ignorer la fenêtre de dialogue.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Appuyez deux fois pour ignorer la fenêtre de dialogue</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Fenêtre de dialogue Produits simples et variables uniquement</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Fenêtre de dialogue Produits simples, variables et virtuels uniquement</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Appuyer deux fois pour lire la suite</string>
-    <string name="woopos_banner_simple_products_content_description">Bannière Produits simples et variables uniquement</string>
+    <string name="woopos_banner_simple_products_content_description">Bannière Produits simples, variables et virtuels uniquement</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Faites la promotion de vos produits avec les publicités Blaze et augmentez vos ventes dès maintenant.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Dynamiser vos ventes</string>
     <string name="more_menu_button_payments_description">Accepter les paiements en mode nomade</string>
@@ -198,17 +219,16 @@ Language: fr
     <string name="woopos_cart_item_content_description">Produit dans le panier %s, Prix %s</string>
     <string name="woopos_product_item_content_description">Produit %s, Prix %s</string>
     <string name="blaze_campaign_status_suspended">En suspens</string>
-    <string name="woopos_totals_success_payment_cash">Un paiement de %1$s a été effectué avec succès</string>
     <string name="woopos_new_order_button">Nouvelle commande</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Créer une commande dans la gestion de la boutique</string>
-    <string name="woopos_dialog_products_info_tertiary_message">Pour accepter un paiement pour un produit non simple, quittez le PDV et créez une nouvelle commande depuis l’onglet Commandes.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Pour accepter un paiement pour d’autres produits, quittez le PDV et créez une nouvelle commande depuis l’onglet Commandes.</string>
     <string name="woopos_dialog_products_info_heading">Pourquoi ne puis-je pas voir mes produits ?</string>
     <string name="woopos_banner_simple_products_info_content_description">Informations</string>
     <string name="woopos_banner_simple_products_close_content_description">Fermer</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">En savoir plus</string>
-    <string name="woopos_banner_simple_products_only_message">Seuls les produits physiques simples et variables sont compatibles avec le PDV actuellement. D’autres types de produits, tels que les produits virtuels et variables, deviendront disponibles dans les mises à jour à venir. </string>
-    <string name="woopos_banner_simple_products_only_title">Affichage des produits simples et variables uniquement</string>
+    <string name="woopos_banner_simple_products_only_message">Seuls les produits physiques simples, variables et virtuels sont compatibles avec le PDV actuellement. D’autres types de produits deviendront disponibles dans les prochaines mises à jour. </string>
+    <string name="woopos_banner_simple_products_only_title">Affichage des produits simples, variables et virtuels uniquement</string>
     <string name="support_request_site_address">Adresse du site</string>
     <string name="analytics_google_ads_cta_web_view_title">Google pour WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Ajouter une campagne payante</string>

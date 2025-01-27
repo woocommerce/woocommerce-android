@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-27 11:54:04+0000
+Translation-Revision-Date: 2025-01-14 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error_cancel">取消</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">继续</string>
+    <string name="woo_shipping_labels_package_creation_error_message">是否要在不保存的情况下继续？</string>
+    <string name="woo_shipping_labels_package_creation_error_title">我们无法将此包裹保存为模板</string>
+    <string name="woopos_variations_options_available_text">可用选项</string>
+    <string name="woopos_totals_success_payment_card">已成功完成 %1$s 的银行卡付款</string>
+    <string name="woopos_totals_success_payment_cash">已成功完成 %1$s 的现金付款</string>
+    <string name="shipping_label_select_origin_address">地址</string>
+    <string name="shipping_label_select_origin_default_address">%s（默认）</string>
+    <string name="shipping_label_purchased_purchase_failed_error">我们现在无法确认运输标签的购买，请稍后再试</string>
+    <string name="shipping_label_purchased_failure_message">请稍后再试</string>
+    <string name="shipping_label_purchased_failure_title">我们无法处理您的运输标签</string>
+    <string name="shipping_label_purchased_in_progress_message">完成后，您就可以使用选定的纸张尺寸打印运输标签</string>
+    <string name="shipping_label_purchased_in_progress_title">您的运输标签正在处理中</string>
+    <string name="orderlist_bulk_update_maximum_reached">已达到最大选择次数 (%d)。</string>
+    <string name="orderlist_bulk_update_status_updated">状态已更新！</string>
+    <string name="site_picker_edit_store_list_error_title">更新通知设置时出错。 请重试</string>
+    <string name="site_picker_edit_store_list_header">其他商店</string>
+    <string name="site_picker_edit_store_current_site_footer">如果您想隐藏此商店，请先切换到另一家商店</string>
+    <string name="site_picker_edit_store_current_site_header">当前商店</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">选择要关联的商店（%d 个已隐藏）</string>
     <string name="woo_shipping_labels_package_creation_error">包裹数据加载失败</string>
     <string name="woo_shipping_labels_package_creation_package_name">包裹名称</string>
     <string name="woo_shipping_labels_package_creation_weight">重量</string>
@@ -57,7 +78,7 @@ Language: zh_CN
     <string name="orderlist_selection_menu_update_status">更新状态</string>
     <string name="orderlist_selection_count_single">已选择 %d 个订单</string>
     <string name="orderlist_selection_count">已选择 %d 个订单</string>
-    <string name="site_picker_edit_store_list_footer">未选择的商店不会显示在应用程序站点的选择器中，也不会收到新订单的推送通知</string>
+    <string name="site_picker_edit_store_list_footer">未选择的商店不会显示在应用程序站点的选择器中，也不会收到新订单或产品评价的推送通知</string>
     <string name="site_picker_edit_store_list_title">可见商店</string>
     <string name="site_picker_edit_store_list">编辑商店</string>
     <string name="woopos_variations_loading_error_title">加载变体时出错</string>
@@ -90,8 +111,8 @@ Language: zh_CN
     <string name="shipping_label_purchased_track_shipment">跟踪货物</string>
     <string name="shipping_label_purchased_learn_how_to_print">了解如何从您的移动设备打印</string>
     <string name="shipping_label_purchased_note">注意：重复使用打印的标签违反了我们的服务条款，并可能导致刑事指控。</string>
-    <string name="shipping_label_purchased_message">在此处，您可以再次打印运输标签或更改标签的纸张尺寸。</string>
-    <string name="shipping_label_purchased_title">您的运输标签已可供打印</string>
+    <string name="shipping_label_purchased_success_message">在此处，您可以再次打印运输标签或更改标签的纸张尺寸。</string>
+    <string name="shipping_label_purchased_success_title">您的运输标签已可供打印</string>
     <string name="order_detail_edit_store_currency_mismatch">很抱歉，您只能在网页上编辑此订单，因为它使用的是 %1$s，而您站点的货币是 %2$s</string>
     <string name="shipping_label_shipping_service_title">运输服务</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">速度最快</string>
@@ -145,8 +166,8 @@ Language: zh_CN
     <string name="order_shipment_tracking_barcode_scanning_failed">扫描失败。 请稍后再试</string>
     <string name="custom_fields_editor_value_label">字段值</string>
     <string name="custom_fields_editor_key_label">密钥</string>
-    <string name="woopos_dialog_products_info_secondary_message">其他产品类型（如虚拟产品）将在今后的更新中得到支持。</string>
-    <string name="woopos_dialog_products_info_primary_message">POS 目前仅可用于简单实体产品和可变产品。</string>
+    <string name="woopos_dialog_products_info_secondary_message">其他产品类型将在今后的更新中得到支持。</string>
+    <string name="woopos_dialog_products_info_primary_message">POS 目前仅可用于简单实体产品、可变产品和虚拟产品。</string>
     <string name="blaze_campaign_budget_duration_cancel_button">取消</string>
     <string name="blaze_campaign_budget_duration_current_duration">时长</string>
     <string name="blaze_campaign_budget_duration_endless_description">活动将持续进行，直到您手动将其停止。</string>
@@ -187,9 +208,9 @@ Language: zh_CN
     <string name="woopos_exit_dialog_confirmation_close_content_description">关闭</string>
     <string name="woopos_dialog_products_info_background_content_description">背景变暗。 轻点即可关闭对话框。</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">轻点两下即可关闭对话框</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">“仅限简单产品和可变产品”对话框</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">“仅限简单产品、可变产品和虚拟产品”对话框</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">轻点两下即可了解更多信息</string>
-    <string name="woopos_banner_simple_products_content_description">“仅限简单产品和可变产品”横幅</string>
+    <string name="woopos_banner_simple_products_content_description">“仅限简单产品、可变产品和虚拟产品”横幅</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">立即使用 Blaze Ads 推广您的产品并提高销售额。</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">提高您的销售额</string>
     <string name="more_menu_button_payments_description">随时随地接受付款</string>
@@ -198,17 +219,16 @@ Language: zh_CN
     <string name="woopos_cart_item_content_description">购物车中的产品 %s，价格 %s</string>
     <string name="woopos_product_item_content_description">产品 %s，价格 %s</string>
     <string name="blaze_campaign_status_suspended">挂起</string>
-    <string name="woopos_totals_success_payment_cash">成功支付 %1$s</string>
     <string name="woopos_new_order_button">新订单</string>
     <string name="woopos_dialog_products_info_button_label">确定</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理中创建订单</string>
-    <string name="woopos_dialog_products_info_tertiary_message">要接受非简单产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
+    <string name="woopos_dialog_products_info_tertiary_message">要接受其他产品的付款，请退出 POS，然后在订单选项卡中创建新订单。</string>
     <string name="woopos_dialog_products_info_heading">为何看不到我的产品？</string>
     <string name="woopos_banner_simple_products_info_content_description">信息</string>
     <string name="woopos_banner_simple_products_close_content_description">关闭</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">了解更多</string>
-    <string name="woopos_banner_simple_products_only_message">POS 目前仅兼容简单实体产品和可变产品。 其他产品类型（如虚拟产品）将在今后的更新中得到支持。 </string>
-    <string name="woopos_banner_simple_products_only_title">仅显示简单产品和可变产品</string>
+    <string name="woopos_banner_simple_products_only_message">POS 目前仅兼容简单实体产品、可变产品和虚拟产品。 其他产品类型将在今后的更新中得到支持。 </string>
+    <string name="woopos_banner_simple_products_only_title">仅显示简单产品、可变产品和虚拟产品</string>
     <string name="support_request_site_address">站点地址</string>
     <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
     <string name="analytics_google_ads_cta_action">添加付费广告活动</string>

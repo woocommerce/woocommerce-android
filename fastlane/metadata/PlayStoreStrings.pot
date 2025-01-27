@@ -16,18 +16,16 @@ msgid "In this update, we’ve made a few small bug fixes and enhancements to en
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_215"
+msgid ""
+"21.5:\n"
+"Get ready for a smoother experience! We’ve optimized receipt scaling, added Puerto Rico for in-person payments, and improved Blaze Campaigns display. Enjoy faster product gallery loading, better bulk order updates, and real-time image upload indicators. Plus, WooPayments onboarding is now easier than ever!\n"
+msgstr ""
+
 msgctxt "release_note_214"
 msgid ""
 "21.4:\n"
 "This update brings several improvements to the WooCommerce mobile app. Dashboard menus now adapt better to larger fonts, and we've resolved layout issues in Settings. You'll also experience fewer crashes, with fixes for order details, plugin activation, and refunds. Merchants can now bulk update order statuses, barcode scanning is more reliable, and accessing plugin updates is quicker than ever. Additionally, sites can now be hidden from the site picker.\n"
-msgstr ""
-
-msgctxt "release_note_213"
-msgid ""
-"21.3:\n"
-"In this update, we've improved the WooCommerce app with several fixes and enhancements. The "One-time shipping" label now correctly matches its availability in Product Subscriptions, and issues with product conversion have been resolved. We've also streamlined the card reader payment flow for faster transactions, fixed a barcode scanner crash, and improved login error handling. Plus, if your site has no products, the Blaze Campaign screen now offers an easy way to create one.\n"
-"\n"
-"-----\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

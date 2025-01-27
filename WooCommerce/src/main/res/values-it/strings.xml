@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-26 17:54:04+0000
+Translation-Revision-Date: 2025-01-14 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error_cancel">Annulla</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">Procedi</string>
+    <string name="woo_shipping_labels_package_creation_error_message">Vuoi procedere senza salvare?</string>
+    <string name="woo_shipping_labels_package_creation_error_title">Non è stato possibile salvare il pacchetto come template</string>
+    <string name="woopos_variations_options_available_text">Opzioni disponibili</string>
+    <string name="woopos_totals_success_payment_card">Un pagamento con carta di %1$s è stato effettuato correttamente</string>
+    <string name="woopos_totals_success_payment_cash">Un pagamento in contanti di %1$s è stato effettuato correttamente</string>
+    <string name="shipping_label_select_origin_address">Indirizzo</string>
+    <string name="shipping_label_select_origin_default_address">%s (predefinito)</string>
+    <string name="shipping_label_purchased_purchase_failed_error">Impossibile confermare ora l\'acquisto dell\'Etichetta di spedizione, riprova più tardi</string>
+    <string name="shipping_label_purchased_failure_message">Riprova più tardi</string>
+    <string name="shipping_label_purchased_failure_title">Impossibile elaborare l\'etichetta di spedizione</string>
+    <string name="shipping_label_purchased_in_progress_message">Una volta completata, potrai stampare l\'etichetta di spedizione con il formato di carta selezionato</string>
+    <string name="shipping_label_purchased_in_progress_title">Elaborazione dell\'etichetta di spedizione in corso</string>
+    <string name="orderlist_bulk_update_maximum_reached">Numero massimo di selezioni (%d) raggiunto.</string>
+    <string name="orderlist_bulk_update_status_updated">Stato aggiornato!</string>
+    <string name="site_picker_edit_store_list_error_title">Si è verificato un errore durante l\'aggiornamento delle impostazioni di notifica. Riprova</string>
+    <string name="site_picker_edit_store_list_header">Altri negozi</string>
+    <string name="site_picker_edit_store_current_site_footer">Passa a un altro negozio se desideri nascondere quello attuale</string>
+    <string name="site_picker_edit_store_current_site_header">Negozio attuale</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">Seleziona il negozio da collegare (%d nascosto)</string>
     <string name="woo_shipping_labels_package_creation_error">Impossibile caricare i dati del pacchetto</string>
     <string name="woo_shipping_labels_package_creation_package_name">Nome del pacchetto</string>
     <string name="woo_shipping_labels_package_creation_weight">Peso</string>
@@ -57,7 +78,7 @@ Language: it
     <string name="orderlist_selection_menu_update_status">Aggiorna stato</string>
     <string name="orderlist_selection_count_single">%d ordine selezionato.</string>
     <string name="orderlist_selection_count">%d ordini selezionati.</string>
-    <string name="site_picker_edit_store_list_footer">I negozi non selezionati non verranno mostrati nella selezione di siti dell\'app e non riceveranno notifiche push per i nuovi ordini</string>
+    <string name="site_picker_edit_store_list_footer">I negozi non selezionati non verranno mostrati nella selezione di siti dell\'app e non riceveranno notifiche push per nuovi ordini o recensioni dei prodotti</string>
     <string name="site_picker_edit_store_list_title">Negozi visibili</string>
     <string name="site_picker_edit_store_list">Modifica negozi</string>
     <string name="woopos_variations_loading_error_title">Errore nel caricamento delle varianti</string>
@@ -90,8 +111,8 @@ Language: it
     <string name="shipping_label_purchased_track_shipment">Traccia spedizione</string>
     <string name="shipping_label_purchased_learn_how_to_print">Scopri come stampare dal tuo dispositivo mobile</string>
     <string name="shipping_label_purchased_note">Nota: il riutilizzo di un\'etichetta stampata viola i nostri termini di servizio e può comportare una denuncia penale.</string>
-    <string name="shipping_label_purchased_message">Da qui puoi stampare di nuovo l\'etichetta di spedizione o cambiare il formato carta per l\'etichetta.</string>
-    <string name="shipping_label_purchased_title">La tua etichetta di spedizione è pronta per la stampa</string>
+    <string name="shipping_label_purchased_success_message">Da qui puoi stampare di nuovo l\'etichetta di spedizione o cambiare il formato della carta per l\'etichetta.</string>
+    <string name="shipping_label_purchased_success_title">La tua etichetta di spedizione è pronta per la stampa</string>
     <string name="order_detail_edit_store_currency_mismatch">Spiacenti, puoi modificare questo ordine solo sul web, in quanto utilizza %1$s, mentre la valuta del tuo sito è %2$s</string>
     <string name="shipping_label_shipping_service_title">Servizio di spedizione</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Più veloce</string>
@@ -145,8 +166,8 @@ Language: it
     <string name="order_shipment_tracking_barcode_scanning_failed">Scansione non riuscita. Riprova più tardi</string>
     <string name="custom_fields_editor_value_label">Valore</string>
     <string name="custom_fields_editor_key_label">Chiave</string>
-    <string name="woopos_dialog_products_info_secondary_message">Altri tipi di prodotti, come quelli virtuali, saranno disponibili in seguito a futuri aggiornamenti.</string>
-    <string name="woopos_dialog_products_info_primary_message">Al momento solo i prodotti fisici e variabili semplici possono essere utilizzati con POS.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Altri tipi di prodotti saranno disponibili in seguito a futuri aggiornamenti.</string>
+    <string name="woopos_dialog_products_info_primary_message">Al momento solo prodotti fisici semplici, variabili e virtuali possono essere utilizzati con POS.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">Annulla</string>
     <string name="blaze_campaign_budget_duration_current_duration">Durata</string>
     <string name="blaze_campaign_budget_duration_endless_description">La campagna proseguirà finché non la interromperai.</string>
@@ -187,9 +208,9 @@ Language: it
     <string name="woopos_exit_dialog_confirmation_close_content_description">Chiudi</string>
     <string name="woopos_dialog_products_info_background_content_description">Sfondo oscurato. Tocca per ignorare il dialogo.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Doppio tocco per ignorare il dialogo</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Dialogo solo prodotti semplici e variabili</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Finestra di dialogo solo prodotti semplici, variabili e virtuali</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Tocca due volte per scoprire di più</string>
-    <string name="woopos_banner_simple_products_content_description">Banner solo prodotti semplici e variabili</string>
+    <string name="woopos_banner_simple_products_content_description">Banner solo prodotti semplici, variabili e virtuali</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Promuovi i tuoi prodotti con Blaze Ads e aumenta subito le tue vendite.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Aumenta le tue vendite</string>
     <string name="more_menu_button_payments_description">Ricevi pagamenti ovunque ti trovi</string>
@@ -198,17 +219,16 @@ Language: it
     <string name="woopos_cart_item_content_description">Prodotto nel carrello %s, Prezzo %s</string>
     <string name="woopos_product_item_content_description">Prodotto %s, Prezzo %s</string>
     <string name="blaze_campaign_status_suspended">Sospeso</string>
-    <string name="woopos_totals_success_payment_cash">Un pagamento di %1$s è stato effettuato correttamente</string>
     <string name="woopos_new_order_button">Nuovo ordine</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Crea un ordine nella gestione del negozio</string>
-    <string name="woopos_dialog_products_info_tertiary_message">Per ricevere il pagamento di un prodotto non semplice, esci da POS e crea un nuovo ordire dalla scheda degli ordini.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Per ricevere il pagamento per altri prodotti, esci da POS e crea un nuovo ordire dalla scheda degli ordini.</string>
     <string name="woopos_dialog_products_info_heading">Perché non riesco a visualizzare i miei prodotti?</string>
     <string name="woopos_banner_simple_products_info_content_description">Informazioni</string>
     <string name="woopos_banner_simple_products_close_content_description">Chiudi</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Scopri di più</string>
-    <string name="woopos_banner_simple_products_only_message">Al momento solo i prodotti fisici e variabili semplici sono compatibili con POS. Altri tipi di prodotti, come quelli variabili e quelli virtuali, saranno disponibili in seguito a futuri aggiornamenti. </string>
-    <string name="woopos_banner_simple_products_only_title">Visualizzazione dei soli prodotti semplici e variabili</string>
+    <string name="woopos_banner_simple_products_only_message">Al momento solo prodotti fisici semplici, variabili e virtuali sono compatibili con POS. Altri tipi di prodotti saranno disponibili in seguito a futuri aggiornamenti. </string>
+    <string name="woopos_banner_simple_products_only_title">Visualizzazione dei soli prodotti semplici, variabili e virtuali</string>
     <string name="support_request_site_address">Indirizzo del sito</string>
     <string name="analytics_google_ads_cta_web_view_title">Google per WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Aggiungi campagna a pagamento</string>

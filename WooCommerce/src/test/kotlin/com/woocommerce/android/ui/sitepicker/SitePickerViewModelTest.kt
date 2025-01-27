@@ -174,7 +174,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
         var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
-        assertThat(sitePickerData).isEqualTo(SitePickerTestUtils.getDefaultLoginViewState(defaultSitePickerViewState))
+        assertThat(sitePickerData).isEqualTo(
+            SitePickerTestUtils.getDefaultLoginViewState(defaultSitePickerViewState)
+                .copy(editStoreListEnabled = false)
+        )
     }
 
     @Test
@@ -223,6 +226,19 @@ class SitePickerViewModelTest : BaseUnitTest() {
                     .getDefaultSwitchStoreViewState(defaultSitePickerViewState, resourceProvider)
                     .copy(editStoreListEnabled = false)
             )
+        }
+
+    @Test
+    fun `given that user signing in, when site picker is shown, then show edit sites button`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched(sitesFromDb = defaultExpectedSiteList)
+            whenViewModelIsCreated()
+
+            var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
+            viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
+
+            assertThat(sitePickerData?.editStoreListEnabled).isFalse()
         }
 
     @Test

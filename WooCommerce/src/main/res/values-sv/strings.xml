@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-30 10:54:04+0000
+Translation-Revision-Date: 2025-01-15 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error_message">Vill du fortsätta utan att spara det?</string>
+    <string name="woo_shipping_labels_package_creation_error_title">Vi kunde inte spara paketet som mall</string>
+    <string name="woopos_variations_options_available_text">Alternativ tillgängliga</string>
+    <string name="woo_shipping_labels_package_creation_error_cancel">Avbryt</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">Fortsätt</string>
+    <string name="woopos_totals_success_payment_card">En kortbetalning på %1$s har genomförts</string>
+    <string name="woopos_totals_success_payment_cash">En kontantbetalning på %1$s har genomförts</string>
+    <string name="shipping_label_select_origin_address">Adress</string>
+    <string name="shipping_label_select_origin_default_address">%s (standard)</string>
+    <string name="shipping_label_purchased_failure_message">Försök igen senare</string>
+    <string name="shipping_label_purchased_purchase_failed_error">Vi kan inte bekräfta köpet av fraktetiketten just nu, försök igen senare</string>
+    <string name="shipping_label_purchased_failure_title">Vi kunde inte behandla din fraktetikett</string>
+    <string name="shipping_label_purchased_in_progress_message">När det är klart kommer du att kunna skriva ut fraktetiketten i vald storlek.</string>
+    <string name="shipping_label_purchased_in_progress_title">Din fraktetikett behandlas</string>
+    <string name="site_picker_edit_store_list_header">Andra butiker</string>
+    <string name="orderlist_bulk_update_status_updated">Status uppdaterad!</string>
+    <string name="site_picker_edit_store_current_site_footer">Byt till en annan butik om du vill dölja denna</string>
+    <string name="orderlist_bulk_update_maximum_reached">Det maximala urvalsantalet (%d) har uppnåtts.</string>
+    <string name="site_picker_edit_store_list_error_title">Ett fel uppstod vid uppdateringen av aviseringsinställningarna. Försök igen</string>
+    <string name="site_picker_edit_store_current_site_header">Nuvarande butik</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">Välj butik att ansluta (%d dold)</string>
     <string name="woo_shipping_labels_package_creation_package_name">Paketnamn</string>
     <string name="woo_shipping_labels_package_creation_weight">Vikt</string>
     <string name="woopos_toolbar_icon_content_description">Tillbaka</string>
@@ -57,7 +78,7 @@ Language: sv_SE
     <string name="shipping_label_package_default_name">Anpassat paket</string>
     <string name="orderlist_selection_count_single">%d beställning vald</string>
     <string name="orderlist_selection_count">%d beställningar valda</string>
-    <string name="site_picker_edit_store_list_footer">Butiker som inte har valts visas inte i appens webbplatsurval, och får inga pushnotiser om nya ordrar</string>
+    <string name="site_picker_edit_store_list_footer">Butiker som inte har valts visas inte i appens webbplatsurval och får inga pushnotiser om nya beställningar eller produktrecensioner</string>
     <string name="site_picker_edit_store_list_title">Synliga butiker</string>
     <string name="site_picker_edit_store_list">Redigera butiker</string>
     <string name="blaze_campaign_edit_ad_change_tagline_empty_error">Slogan kan inte vara tom</string>
@@ -90,9 +111,9 @@ Language: sv_SE
     <string name="woo_shipping_labels_package_creation_tab_carrier">Fraktbolag</string>
     <string name="woo_shipping_labels_package_creation_tab_custom">Anpassat</string>
     <string name="shipping_label_purchased_note">Obs: Återanvändning av en utskriven fraktetikett är ett brott mot våra användarvillkor och kan leda till åtal.</string>
-    <string name="shipping_label_purchased_message">Härifrån kan du skriva ut fraktetiketten igen eller ändra storlek på fraktetiketten.</string>
-    <string name="shipping_label_purchased_title">Din fraktetikett är klar att skrivas ut.</string>
     <string name="order_detail_edit_store_currency_mismatch">Du kan bara redigera den här beställningen på webben, eftersom den använder %1$s och din webbplats valuta är %2$s</string>
+    <string name="shipping_label_purchased_success_title">Din fraktetikett är redo att skrivas ut</string>
+    <string name="shipping_label_purchased_success_message">Härifrån kan du skriva ut fraktetiketten igen eller ändra storlek på etiketten.</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Snabbast</string>
     <string name="shipping_label_shipping_rates_sort_option_cheapest">Billigast</string>
     <string name="shipping_label_shipping_service_title">Frakttjänst</string>
@@ -145,12 +166,12 @@ Language: sv_SE
     <string name="woopos_no_internet_message">Det verkar som att du inte är ansluten till internet. Kontrollera att ditt Wi-Fi är på. Se till att mobildata är aktiverat i dina enhetsinställningar om du använder detta.</string>
     <string name="custom_fields_editor_value_label">Värde</string>
     <string name="custom_fields_editor_key_label">Nyckel</string>
-    <string name="woopos_dialog_products_info_secondary_message">Andra produkttyper, till exempel virtuella, kommer att bli tillgängliga i framtida uppdateringar.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Andra produkttyper kommer vara tillgängliga i framtida uppdateringar.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">Avbryt</string>
     <string name="blaze_campaign_budget_duration_current_duration">Varaktighet</string>
     <string name="blaze_campaign_budget_duration_endless_description">Kampanj kommer köras tills du stoppar den.</string>
     <string name="blaze_campaign_budget_duration_endless_switch_label">Specificera varaktigheten</string>
-    <string name="woopos_dialog_products_info_primary_message">Endast enkla fysiska och variabla produkter kan användas med POS just nu.</string>
+    <string name="woopos_dialog_products_info_primary_message">Endast enkla fysiska, variabla och virtuella produkter kan användas med POS just nu.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">till %1$s</string>
     <string name="blaze_campaign_budget_scheduled_section_title">Schema</string>
     <string name="blaze_campaign_budget_daily_spend_label">Dagligt belopp</string>
@@ -190,25 +211,24 @@ Language: sv_SE
     <string name="woopos_dialog_products_info_background_content_description">Nedtonad bakgrund. Tryck för att avfärda dialogrutan.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Dubbeltryck för att avfärda dialogrutan</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Marknadsför dina produkter med Blaze-annonser och öka din försäljning nu.</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Dialogruta endast för enkla och variabla produkter</string>
-    <string name="woopos_banner_simple_products_content_description">Banner endast för enkla och variabla produkter</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Dialogruta endast för enkla, variabla och virtuella produkter</string>
+    <string name="woopos_banner_simple_products_content_description">Banner endast för enkla, variabla och virtuella produkter</string>
     <string name="more_menu_button_payments_description">Ta emot betalningar i farten</string>
     <string name="card_reader_payment_failed_incorrect_pin">En felaktig PIN-kod har angetts. Försök igen eller använd en annan betalningsmetod</string>
     <string name="woopos_menu_toolbar_content_description">Meny</string>
     <string name="woopos_cart_item_content_description">Produkt i varukorg %s, pris %s</string>
     <string name="woopos_product_item_content_description">Produkt %s, pris %s</string>
     <string name="blaze_campaign_status_suspended">Avstängd</string>
-    <string name="woopos_totals_success_payment_cash">En betalning för %1$s återbetalades utan problem.</string>
     <string name="woopos_new_order_button">Ny beställning</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Skapa en beställning i butikshantering</string>
     <string name="woopos_dialog_products_info_heading">Varför kan jag inte se mina produkter?</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
     <string name="woopos_banner_simple_products_close_content_description">Stäng</string>
-    <string name="woopos_dialog_products_info_tertiary_message">För att ta betalt för en icke-enkel produkt, lämna POS och skapa en ny beställning från fliken Beställningar.</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Läs mer</string>
-    <string name="woopos_banner_simple_products_only_title">Visar endast enkla och variabla produkter</string>
-    <string name="woopos_banner_simple_products_only_message">Endast enkla fysiska och variabla produkter är kompatibla med POS just nu. Andra produkttyper, till exempel virtuella, kommer att bli tillgängliga i framtida uppdateringar. </string>
+    <string name="woopos_dialog_products_info_tertiary_message">För att ta betalt för andra produkter, avsluta POS och skapa en ny beställning från fliken ”Beställningar”.</string>
+    <string name="woopos_banner_simple_products_only_title">Visar endast enkla, variabla och virtuella produkter</string>
+    <string name="woopos_banner_simple_products_only_message">Endast enkla fysiska, variabla och virtuella produkter är kompatibla med POS just nu. Andra produkttyper kommer att bli tillgängliga i framtida uppdateringar. </string>
     <string name="support_request_site_address">Webbplatsadress</string>
     <string name="analytics_google_ads_cta_action">Lägg till betald kampanj</string>
     <string name="analytics_google_ads_cta_web_view_title">Google för WooCommerce</string>
@@ -1262,7 +1282,6 @@ Language: sv_SE
     <string name="card_reader_type_selection_tap_to_pay_description">Ta emot säkra kontaktlösa betalningsmetoder direkt från din telefon.</string>
     <string name="login_site_credentials_fetching_site">Hämtar webbplats …</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Det går inte att logga in eftersom lösenordsskapandet i appen inte godkänts.</string>
-    <string name="card_reader_tap_to_pay_share_feedback">Dela feedback</string>
     <string name="card_reader_tap_to_pay_description">Använd din telefon för att ta emot kort\nbetalningar Prova nu.</string>
     <string name="login_store_address">Logga in</string>
     <string name="login_site_credentials_fetching_site_failed">Ett fel inträffade när webbsidan skulle hämtas</string>

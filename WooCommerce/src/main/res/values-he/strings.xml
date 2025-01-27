@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-26 11:54:31+0000
+Translation-Revision-Date: 2025-01-15 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woo_shipping_labels_package_creation_error_cancel">ביטול</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">המשך</string>
+    <string name="woo_shipping_labels_package_creation_error_message">האם ברצונך להמשיך בלי לשמור את התוכן?</string>
+    <string name="woo_shipping_labels_package_creation_error_title">לא הצלחנו לשמור את החבילה כתבנית עמוד</string>
+    <string name="woopos_variations_options_available_text">אפשרויות זמינות</string>
+    <string name="woopos_totals_success_payment_card">תשלום בכרטיס בסכום של ⁦%1$s⁩ חויב בהצלחה</string>
+    <string name="woopos_totals_success_payment_cash">תשלום במזומן בסכום של ⁦%1$s⁩ חויב בהצלחה</string>
+    <string name="shipping_label_select_origin_address">כתובת</string>
+    <string name="shipping_label_select_origin_default_address">%s (ברירת מחדל)</string>
+    <string name="shipping_label_purchased_purchase_failed_error">לא הצלחנו לאשר את הרכישה של \'תווית משלוח\' כעת, יש לנסות שוב מאוחר יותר</string>
+    <string name="shipping_label_purchased_failure_message">יש לנסות שוב מאוחר יותר</string>
+    <string name="shipping_label_purchased_failure_title">לא הצלחנו לעבד את תווית המשלוח שלך</string>
+    <string name="shipping_label_purchased_in_progress_message">עם השלמת התהליך, תהיה לך אפשרות להדפיס את תווית המשלוח בגודל הדף שנבחר</string>
+    <string name="shipping_label_purchased_in_progress_title">אנחנו מעבדים את תווית המשלוח שלך כעת</string>
+    <string name="orderlist_bulk_update_maximum_reached">הגעת למגבלה של המספר המותר של פריטים הנבחרים (%d).</string>
+    <string name="orderlist_bulk_update_status_updated">הסטטוס עודכן!</string>
+    <string name="site_picker_edit_store_list_error_title">אירעה שגיאה בעת עדכון ההגדרות של ההודעות. יש לנסות שוב</string>
+    <string name="site_picker_edit_store_list_header">חנויות אחרות</string>
+    <string name="site_picker_edit_store_current_site_footer">יש להחליף לחנות אחרת אם ברצונך להסתיר את החנות הנוכחית</string>
+    <string name="site_picker_edit_store_current_site_header">החנות הנוכחית</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">יש לבחור חנות שאליה ברצונך להתחבר (%d מוסתרות)</string>
     <string name="woo_shipping_labels_package_creation_error">נכשלה הטעינה של נתוני החבילה</string>
     <string name="woo_shipping_labels_package_creation_package_name">שם החבילה</string>
     <string name="woo_shipping_labels_package_creation_weight">משקל</string>
@@ -57,7 +78,7 @@ Language: he_IL
     <string name="orderlist_selection_menu_update_status">לעדכן סטטוס</string>
     <string name="orderlist_selection_count_single">נבחרה הזמנה %d</string>
     <string name="orderlist_selection_count">נבחרו %d הזמנות</string>
-    <string name="site_picker_edit_store_list_footer">חנויות שלא נבחרו לא יוצגו בבורר האתרים של האפליקציה ולא יקבלו הודעות בדחיפה כשנרשמות הזמנות חדשות</string>
+    <string name="site_picker_edit_store_list_footer">חנויות שלא נבחרו לא יוצגו בבוחר האתרים של האפליקציה ולא יקבלו הודעות בדחיפה כשנרשמות הזמנות חדשות או ביקורות על מוצרים</string>
     <string name="site_picker_edit_store_list_title">חנויות זמינות לצפייה</string>
     <string name="site_picker_edit_store_list">לערוך את החנויות</string>
     <string name="woopos_variations_loading_error_title">שגיאה בטעינת הסוגים</string>
@@ -90,8 +111,8 @@ Language: he_IL
     <string name="shipping_label_purchased_track_shipment">מעקב אחר משלוח</string>
     <string name="shipping_label_purchased_learn_how_to_print">ללמוד כיצד להדפיס באמצעות המכשיר הנייד שלך</string>
     <string name="shipping_label_purchased_note">הערה: שימוש חוזר בתווית שהודפסה הוא הפרה של תנאי השימוש שלנו ועשוי להוביל לכתב אישום.</string>
-    <string name="shipping_label_purchased_message">מכאן אפשר להדפיס את תווית המשלוח שוב או לשנות את גודל הנייר של התווית.</string>
-    <string name="shipping_label_purchased_title">תווית המשלוח שלך מוכנה להדפסה</string>
+    <string name="shipping_label_purchased_success_message">מכאן אפשר להדפיס את תווית המשלוח שוב או לשנות את גודל הדף של התווית.</string>
+    <string name="shipping_label_purchased_success_title">תווית המשלוח שלך מוכנה להדפסה</string>
     <string name="order_detail_edit_store_currency_mismatch">מצטערים, אפשר לערוך את ההזמנה הזאת רק באתר האינטרנט, מאחר שהיא משתמשת במטבע ⁦%1$s⁩ והאתר שלך מוגדר למטבע ⁦%2$s⁩</string>
     <string name="shipping_label_shipping_service_title">שירות משלוחים</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">המהיר ביותר</string>
@@ -145,8 +166,8 @@ Language: he_IL
     <string name="order_shipment_tracking_barcode_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
     <string name="custom_fields_editor_value_label">ערך</string>
     <string name="custom_fields_editor_key_label">מפתח</string>
-    <string name="woopos_dialog_products_info_secondary_message">סוגי מוצרים אחרים, כמו מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד.</string>
-    <string name="woopos_dialog_products_info_primary_message">נכון לעכשיו, ניתן להשתמש ב-POS רק עבור מוצרים פיזיים פשוטים ומוצרים עם סוגים.</string>
+    <string name="woopos_dialog_products_info_secondary_message">סוגי מוצרים אחרים יהיו זמינים בעדכונים בעתיד.</string>
+    <string name="woopos_dialog_products_info_primary_message">נכון לעכשיו, ניתן להשתמש ב-POS רק עבור מוצרים פשוטים, מוצרים עם סוגים ומוצרים וירטואליים.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">ביטול</string>
     <string name="blaze_campaign_budget_duration_current_duration">משך זמן</string>
     <string name="blaze_campaign_budget_duration_endless_description">הקמפיין יהיה פעיל עד שיושבת על ידיך.</string>
@@ -187,9 +208,9 @@ Language: he_IL
     <string name="woopos_exit_dialog_confirmation_close_content_description">לסגור</string>
     <string name="woopos_dialog_products_info_background_content_description">רקע מעומעם. יש להקיש כדי לצאת מתיבת הדו-שיח.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">יש להקיש הקשה כפולה כדי לצאת מתיבת הדו-שיח</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">תיבת דו-שיח של מוצרים פשוטים ומוצרים עם סוגים</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">תיבת דו-שיח של מוצרים פשוטים, מוצרים עם סוגים ומוצרים וירטואליים</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">יש להקיש הקשה כפולה למידע נוסף</string>
-    <string name="woopos_banner_simple_products_content_description">באנר של מוצרים פשוטים ומוצרים עם סוגים</string>
+    <string name="woopos_banner_simple_products_content_description">באנר של מוצרים פשוטים, מוצרים עם סוגים ומוצרים וירטואליים</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">לקדם מוצרים עם פרסומות של Blaze כדי להגדיל את המכירות שלך עכשיו.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">לשפר את המכירות</string>
     <string name="more_menu_button_payments_description">לגבות תשלומים מכל מקום</string>
@@ -198,17 +219,16 @@ Language: he_IL
     <string name="woopos_cart_item_content_description">מוצר בעגלת הקניות %s, מחיר %s</string>
     <string name="woopos_product_item_content_description">מוצר %s, מחיר %s</string>
     <string name="blaze_campaign_status_suspended">מושהה</string>
-    <string name="woopos_totals_success_payment_cash">תשלום של ⁦%1$s⁩ חויב בהצלחה</string>
     <string name="woopos_new_order_button">הזמנה חדשה</string>
     <string name="woopos_dialog_products_info_button_label">אישור</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ ליצור הזמנה בניהול החנות</string>
-    <string name="woopos_dialog_products_info_tertiary_message">כדי לגבות תשלום במוצר שאינו מוצר פשוט, יש לצאת מ-POS וליצור הזמנה חדשה מלשונית ההזמנות.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">כדי לגבות תשלום במוצרים אחרים, יש לצאת מ-POS וליצור הזמנה חדשה מלשונית ההזמנות.</string>
     <string name="woopos_dialog_products_info_heading">למה המוצרים שלי לא מופיעים?</string>
     <string name="woopos_banner_simple_products_info_content_description">מידע</string>
     <string name="woopos_banner_simple_products_close_content_description">לסגור</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">למידע\u00A0נוסף</string>
-    <string name="woopos_banner_simple_products_only_message">רק מוצרים פיזיים פשוטים ומוצרים עם סוגים תואמים ל-POS כרגע. סוגי מוצרים אחרים, כמו מוצרים וירטואליים, יהיו זמינים בעדכונים בעתיד. </string>
-    <string name="woopos_banner_simple_products_only_title">מציג רק מוצרים פשוטים ומוצרים עם סוגים</string>
+    <string name="woopos_banner_simple_products_only_message">נכון לעכשיו, השירות של POS תואם רק למוצרים פשוטים, למוצרים עם סוגים ולמוצרים וירטואליים. סוגי מוצרים אחרים יהיו זמינים בעדכונים בעתיד. </string>
+    <string name="woopos_banner_simple_products_only_title">מציג מוצרים פשוטים, מוצרים עם סוגים ומוצרים וירטואליים בלבד</string>
     <string name="support_request_site_address">כתובת האתר</string>
     <string name="analytics_google_ads_cta_web_view_title">Google ל-WooCommerce</string>
     <string name="analytics_google_ads_cta_action">להוסיף קמפיין בתשלום</string>
