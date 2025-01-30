@@ -21,72 +21,29 @@ steps:
   - wait
 
   ########################################
-  - group: "🕵️ Linters"
-    steps:
-
-      - label: "☢️ Danger - PR Check"
-        command: danger
-        key: danger
-        if: "build.pull_request.id != null"
-        retry:
-          manual:
-            permit_on_passed: true
-        agents:
-          queue: "linter"
-
-      - label: "detekt"
-        command: ./gradlew detektAll
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/detekt/detekt.html"
-
-      - label: "lint"
-        command: .buildkite/commands/lint.sh
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/lint-results*.*"
-
-      - label: "Dependency Tree Diff"
-        command: comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/diff/*"
-
-  ########################################
   - group: "🛠 Prototype Builds"
     steps:
 
-      - label: "🛠 Prototype Build: Mobile App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
+      - label: ":android: No CC Build"
+        command: |
+          echo "--- :rubygems: Setting up Gems"
+          install_gems
 
-      - label: "🛠 Prototype Build: Wear App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
+          echo "--- :closed_lock_with_key: Installing Secrets"
+          bundle exec fastlane run configure_apply
 
-  ########################################
-  - group: "🔬 Tests"
-    steps:
+          echo "--- :android: Building without configuration cache"
+          ./gradlew assembleWasabiDebug --no-configuration-cache --no-build-cache
+        plugins: [ $CI_TOOLKIT ]
 
-      - label: "Unit tests"
-        command: .buildkite/commands/run-unit-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
-        artifact_paths:
-          - "**/build/test-results/merged-test-results.xml"
+      - label: ":android: CC Build"
+        command: |
+          echo "--- :rubygems: Setting up Gems"
+          install_gems
 
-      - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
-        artifact_paths:
-          - "**/build/instrumented-tests/**/*"
+          echo "--- :closed_lock_with_key: Installing Secrets"
+          bundle exec fastlane run configure_apply
+
+          echo "--- :android: Building without configuration cache"
+          ./gradlew assembleWasabiDebug --no-build-cache
+        plugins: [ $CI_TOOLKIT ]
