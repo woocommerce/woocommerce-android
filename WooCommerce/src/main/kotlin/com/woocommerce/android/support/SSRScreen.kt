@@ -67,14 +67,18 @@ fun SSRScreen(
                         IconButton(onClick = onCopyButtonClick, enabled = !isLoading) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_copy_white_24dp),
-                                contentDescription = stringResource(id = R.string.support_system_status_report_copy_label),
+                                contentDescription = stringResource(
+                                    id = R.string.support_system_status_report_copy_label
+                                ),
                                 tint = colorResource(id = R.color.color_icon_menu),
                             )
                         }
                         IconButton(onClick = onShareButtonClick, enabled = !isLoading) {
                             Icon(
                                 imageVector = Icons.Filled.Share,
-                                contentDescription = stringResource(id = R.string.support_system_status_report_share_label),
+                                contentDescription = stringResource(
+                                    id = R.string.support_system_status_report_share_label
+                                ),
                                 tint = colorResource(id = R.color.color_icon_menu)
                             )
                         }
