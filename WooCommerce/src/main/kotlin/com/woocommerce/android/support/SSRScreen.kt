@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -55,39 +54,35 @@ fun SSRScreen(
 ) {
     Scaffold(
         topBar = {
-            Box(
+            Toolbar(
+                title = stringResource(id = R.string.support_system_status_report),
+                onNavigationButtonClick = onBackPressed,
+                actions = {
+                    IconButton(onClick = onCopyButtonClick, enabled = !isLoading) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_copy_white_24dp),
+                            contentDescription = stringResource(
+                                id = R.string.support_system_status_report_copy_label
+                            ),
+                            tint = colorResource(id = R.color.color_icon_menu),
+                        )
+                    }
+                    IconButton(onClick = onShareButtonClick, enabled = !isLoading) {
+                        Icon(
+                            imageVector = Icons.Filled.Share,
+                            contentDescription = stringResource(
+                                id = R.string.support_system_status_report_share_label
+                            ),
+                            tint = colorResource(id = R.color.color_icon_menu)
+                        )
+                    }
+                },
                 modifier = Modifier
-                    .fillMaxWidth()
                     .background(color = colorResource(id = R.color.color_toolbar))
-            ) {
-                Toolbar(
-                    title = stringResource(id = R.string.support_system_status_report),
-                    onNavigationButtonClick = onBackPressed,
-                    actions = {
-                        IconButton(onClick = onCopyButtonClick, enabled = !isLoading) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_copy_white_24dp),
-                                contentDescription = stringResource(
-                                    id = R.string.support_system_status_report_copy_label
-                                ),
-                                tint = colorResource(id = R.color.color_icon_menu),
-                            )
-                        }
-                        IconButton(onClick = onShareButtonClick, enabled = !isLoading) {
-                            Icon(
-                                imageVector = Icons.Filled.Share,
-                                contentDescription = stringResource(
-                                    id = R.string.support_system_status_report_share_label
-                                ),
-                                tint = colorResource(id = R.color.color_icon_menu)
-                            )
-                        }
-                    },
-                    modifier = Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                )
-            }
-        }
+                    .windowInsetsPadding(WindowInsets.statusBars)
+            )
+        },
+        modifier = Modifier.fillMaxSize()
     ) { padding ->
         val scrollState = rememberScrollState()
 
