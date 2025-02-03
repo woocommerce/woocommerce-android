@@ -76,9 +76,9 @@ fun SelectorListItem(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100))
     ) {
         val selectionDrawable = when (selectionState) {
-            SELECTED -> drawable.ic_rounded_chcekbox_checked
-            UNSELECTED -> drawable.ic_rounded_chcekbox_unchecked
-            PARTIALLY_SELECTED -> drawable.ic_rounded_chcekbox_partially_checked
+            SELECTED -> drawable.ic_rounded_checkbox_checked
+            UNSELECTED -> drawable.ic_rounded_checkbox_unchecked
+            PARTIALLY_SELECTED -> drawable.ic_rounded_checkbox_partially_checked
         }
         Crossfade(
             targetState = selectionDrawable,

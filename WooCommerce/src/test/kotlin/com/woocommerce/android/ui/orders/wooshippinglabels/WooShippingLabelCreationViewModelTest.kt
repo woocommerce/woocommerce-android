@@ -6,12 +6,14 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.LabelPurchased
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.ObserveOriginAddresses
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -203,6 +205,10 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle =
         WooShippingLabelCreationFragmentArgs(orderId = orderId).toSavedStateHandle()
 
+    private val shouldRequireCustomsForm: ShouldRequireCustomsForm = mock {
+        on { invoke(any()) } doReturn true
+    }
+
     private val observeOriginAddresses: ObserveOriginAddresses = mock()
     private val getShippingRates: GetShippingRates = mock()
     private val purchaseShippingLabel: PurchaseShippingLabel = mock()
@@ -219,6 +225,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             getShippingRates = getShippingRates,
             purchaseShippingLabel = purchaseShippingLabel,
             observeStoreOptions = observeStoreOptions,
+            shouldRequireCustoms = shouldRequireCustomsForm,
             savedState = savedState
         )
     }
@@ -561,6 +568,58 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `CustomState is NotRequired when shouldRequireCustomsForm returns false`() = testBlocking {
+        var currentViewState: WooShippingViewState? = null
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        sut.viewState.asLiveData().observeForever {
+            currentViewState = it
+        }
+
+        assertThat(currentViewState).isInstanceOf(DataState::class.java)
+        val dataState = currentViewState as DataState
+
+        assertThat(dataState.customsState).isEqualTo(CustomsState.NotRequired)
+    }
+
+    @Test
+    fun `CustomState is Unavailable when shouldRequireCustomsForm returns true`() = testBlocking {
+        var currentViewState: WooShippingViewState? = null
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        sut.viewState.asLiveData().observeForever {
+            currentViewState = it
+        }
+
+        assertThat(currentViewState).isInstanceOf(DataState::class.java)
+        val dataState = currentViewState as DataState
+
+        assertThat(dataState.customsState).isEqualTo(CustomsState.NotRequired)
+    }
+
+    @Test
     fun `when onPurchaseShippingLabel succeed then return the label data`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
             shippingLines = defaultShippingLines
@@ -738,15 +797,15 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onSelectAddressExpandedChange(true)
 
         // Close address selection
-        var shouldNavigateBack = sut.onNavigateBack()
+        var shouldNavigateBack = sut.allowBackNavigation()
         assertThat(shouldNavigateBack).isFalse()
 
         // Close shipment details
-        shouldNavigateBack = sut.onNavigateBack()
+        shouldNavigateBack = sut.allowBackNavigation()
         assertThat(shouldNavigateBack).isFalse()
 
         // Navigate back
-        shouldNavigateBack = sut.onNavigateBack()
+        shouldNavigateBack = sut.allowBackNavigation()
         assertThat(shouldNavigateBack).isTrue()
     }
 
@@ -764,11 +823,11 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         sut.onShipmentDetailsExpandedChange(true)
 
         // Close shipment details
-        var shouldNavigateBack = sut.onNavigateBack()
+        var shouldNavigateBack = sut.allowBackNavigation()
         assertThat(shouldNavigateBack).isFalse()
 
         // Navigate back
-        shouldNavigateBack = sut.onNavigateBack()
+        shouldNavigateBack = sut.allowBackNavigation()
         assertThat(shouldNavigateBack).isTrue()
     }
 
@@ -785,7 +844,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // Navigate back
-        val shouldNavigateBack = sut.onNavigateBack()
+        val shouldNavigateBack = sut.allowBackNavigation()
         assertThat(shouldNavigateBack).isTrue()
     }
 }

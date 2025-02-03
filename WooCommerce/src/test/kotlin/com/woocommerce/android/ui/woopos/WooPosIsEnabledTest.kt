@@ -77,6 +77,27 @@ class WooPosIsEnabledTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given uk country and pounds, when invoked, then return true`() = testBlocking {
+        val result = buildSiteSettings(countryCode = "GB", currencyCode = "GBP")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given uk country and usd, when invoked, then return false`() = testBlocking {
+        val result = buildSiteSettings(countryCode = "GB", currencyCode = "USD")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given us country and pounds, when invoked, then return false`() = testBlocking {
+        val result = buildSiteSettings(countryCode = "US", currencyCode = "GBP")
+        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(result)
+        assertFalse(sut())
+    }
+
+    @Test
     fun `given woo version 9_5_0, when invoked, then return false`() = testBlocking {
         whenever(getWooCoreVersion.invoke()).thenReturn("9.5.0")
         assertFalse(sut())

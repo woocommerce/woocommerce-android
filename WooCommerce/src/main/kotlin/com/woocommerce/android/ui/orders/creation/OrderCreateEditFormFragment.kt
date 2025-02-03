@@ -37,16 +37,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationAdditionalInfoCollectionSectionBinding
-import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
@@ -119,7 +118,6 @@ class OrderCreateEditFormFragment :
     BackPressListener {
     private companion object {
         private const val TABLET_PANES_WIDTH_RATIO = 0.5F
-        private const val XL_TABLET_PANES_WIDTH_RATIO = 0.6F
     }
     private val viewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()
@@ -171,8 +169,8 @@ class OrderCreateEditFormFragment :
             viewModel.addCoupon(it)
         }
         handleTaxRateSelectionResult()
-        viewModel.onDeviceConfigurationChanged(requireContext().windowSizeClass)
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) syncSelectedItems()
+        viewModel.onDeviceConfigurationChanged(requireContext().isTwoPanesShouldBeUsed)
+        if (requireContext().isTwoPanesShouldBeUsed) syncSelectedItems()
     }
 
     private fun syncSelectedItems() {
@@ -229,13 +227,12 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.adjustUIForScreenSize() {
-        productSelectorNavContainer.isVisible = requireContext().windowSizeClass != WindowSizeClass.Compact
-        when (requireContext().windowSizeClass) {
-            WindowSizeClass.Compact -> twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
-            WindowSizeClass.Medium -> twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
-            WindowSizeClass.ExpandedAndBigger -> twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
+        productSelectorNavContainer.isVisible = requireContext().isTwoPanesShouldBeUsed
+        when (requireContext().isTwoPanesShouldBeUsed) {
+            false -> twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
+            true -> twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
         }
-        setupToolbars(requireContext().windowSizeClass != WindowSizeClass.Compact)
+        setupToolbars(requireContext().isTwoPanesShouldBeUsed)
     }
 
     private fun FragmentOrderCreateEditFormBinding.setupToolbars(isTablet: Boolean) {
@@ -605,7 +602,7 @@ class OrderCreateEditFormFragment :
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
         binding.productsSection.content = null
-        if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
+        if (!requireContext().isTwoPanesShouldBeUsed) {
             binding.productsSection.setProductSectionButtons(
                 addProductsButton = AddButton(
                     text = getString(R.string.order_creation_add_products),
@@ -631,7 +628,7 @@ class OrderCreateEditFormFragment :
     private fun productAddedCustomAmountUnset(binding: FragmentOrderCreateEditFormBinding) {
         val isEditable = viewModel.viewStateData.liveData.value?.isEditable == true
         if (isEditable) {
-            if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
+            if (!requireContext().isTwoPanesShouldBeUsed) {
                 binding.productsSection.showAddProductsHeaderActions()
             } else {
                 binding.productsSection.hideAddProductsHeaderActions()
@@ -662,7 +659,7 @@ class OrderCreateEditFormFragment :
         binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.showHeader()
         if (viewModel.viewStateData.liveData.value?.isEditable == true) {
-            if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
+            if (!requireContext().isTwoPanesShouldBeUsed) {
                 binding.productsSection.showAddProductsHeaderActions()
             } else {
                 binding.productsSection.hideAddProductsHeaderActions()
@@ -684,7 +681,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.renderDefaultProductsSectionButtons() {
-        if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
+        if (!requireContext().isTwoPanesShouldBeUsed) {
             productsSection.setProductSectionButtons(
                 addProductsButton = AddButton(
                     text = getString(R.string.order_creation_add_products),
@@ -1223,7 +1220,7 @@ class OrderCreateEditFormFragment :
             }
 
             is OnSelectedProductsSyncRequested -> {
-                if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+                if (requireContext().isTwoPanesShouldBeUsed) {
                     sharedViewModel.selectedItems.value.let { viewModel.onProductsSelected(it) }
                 }
             }
@@ -1310,7 +1307,7 @@ class OrderCreateEditFormFragment :
             isEachAddButtonEnabled = true
             content.customAmountAdapter?.isLocked = false
         }
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+        if (requireContext().isTwoPanesShouldBeUsed) {
             sharedViewModel.onProductSelectionStateChanged(true)
         }
     }
@@ -1340,7 +1337,7 @@ class OrderCreateEditFormFragment :
             isEachAddButtonEnabled = false
             content.customAmountAdapter?.isLocked = true
         }
-        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+        if (requireContext().isTwoPanesShouldBeUsed) {
             sharedViewModel.onProductSelectionStateChanged(false)
         }
     }

@@ -136,7 +136,7 @@ private fun LoginLoadingScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.img_woo_bubble_white_background),
+            painter = painterResource(id = R.drawable.img_woo),
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )

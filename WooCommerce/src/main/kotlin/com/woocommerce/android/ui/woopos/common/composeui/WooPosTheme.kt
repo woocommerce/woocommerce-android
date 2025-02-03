@@ -25,7 +25,7 @@ data class CustomColors(
     val paymentSuccessText: Color,
     val paymentSuccessIcon: Color,
     val paymentProcessingText: Color,
-    val dialogSubtitleHighlightBackground: Color = Color(0x14747480),
+    val dialogSubtitleHighlightBackground: Color = WooPosColors.lightQuaternaryBackground,
     val homeBackground: Color,
 )
 
@@ -33,7 +33,6 @@ private object WooPosColors {
     // Woo POS specific colors:
 
     // Adding missing colors from the old code to match exactly
-    val primary = Color(0xFF9C70D3)
     val oldGrayLight = Color(0xFFF2EBFF)
     val oldGrayMedium = Color(0xFF8D8D8D)
 
@@ -59,29 +58,19 @@ private object WooPosColors {
     val lightCustomColorsBorder = Color(0xFFC6C6C8)
     val lightQuaternaryBackground = Color(0x14747480)
 
-    // Woo colors from here: W5OBIbzWilNI8qely8Y4OHQd-fi-144_2
+    // Woo colors from here: https://color-studio.blog/
     val WooPurple0 = Color(0xFFF2EDFF)
-    val WooPurple5 = Color(0xFFDFD1FB)
-    val WooPurple10 = Color(0xFFCFB9F6)
-    val WooPurple20 = Color(0xFFBEA0F2)
-    val WooPurple30 = Color(0xFFAD86E9)
-    val WooPurple40 = Color(0xFF966CCF)
-    val WooPurple50 = Color(0xFF7F54B3)
-    val WooPurple60 = Color(0xFF674399)
-    val WooPurple70 = Color(0xFF533582)
-    val WooPurple80 = Color(0xFF3C2861)
-    val WooPurple90 = Color(0xFF271B3D)
-    val WooPurple100 = Color(0xFF140E1F)
-
-    val Purple10 = Color(0xFFF7EDF7)
-    val Purple20 = Color(0xFFC792E0)
-    val Purple30 = Color(0xFFB17FD4)
-    val Purple40 = Color(0xFFAF7DD1)
-    val Purple50 = Color(0xFF7F54B3)
-    val Purple60 = Color(0xFF674399)
-    val Purple60Alpha33 = Color(0x33674399)
-    val Purple80 = Color(0xFF3C2861)
-    val Purple90 = Color(0xFF271B3D)
+    val WooPurple5 = Color(0xFFE1D7FF)
+    val WooPurple10 = Color(0xFFD1C1FF)
+    val WooPurple20 = Color(0xFFB999FF)
+    val WooPurple30 = Color(0xFFA77EFF)
+    val WooPurple40 = Color(0xFF873EFF)
+    val WooPurple50 = Color(0xFF720EEC)
+    val WooPurple60 = Color(0xFF6108CE)
+    val WooPurple70 = Color(0xFF5007AA)
+    val WooPurple80 = Color(0xFF3C087E)
+    val WooPurple90 = Color(0xFF2C045D)
+    val WooPurple100 = Color(0xFF1F0342)
 
     val Pink10 = Color(0xFFED9BB8)
     val Pink30 = Color(0xFFEB6594)
@@ -114,8 +103,8 @@ private object WooPosColors {
     val Yellow30 = Color(0xFFDBAE17)
     val Yellow50 = Color(0xFF907300)
     val Yellow70 = Color(0xFF5C4B00)
-    val Celadon0 = Color(0xFFECF7F4)
 
+    val Celadon0 = Color(0xFFECF7F4)
     val Celadon5 = Color(0xFFA7E8D4)
     val Celadon10 = Color(0xFF65D9B9)
     val Celadon20 = Color(0xFF2FC39E)
@@ -131,42 +120,24 @@ private object WooPosColors {
     val emerald60 = Color(0xFF028C59)
 
     val White = Color(0xFFFFFFFF)
-    val WhiteAlpha005 = Color(0x0DFFFFFF)
-    val WhiteAlpha008 = Color(0x14FFFFFF)
-    val WhiteAlpha009 = Color(0x17FFFFFF)
-    val WhiteAlpha012 = Color(0x1FFFFFFF)
-    val WhiteAlpha038 = Color(0x61FFFFFF)
-    val WhiteAlpha060 = Color(0x99FFFFFF)
-    val WhiteAlpha087 = Color(0xDEFFFFFF)
 
     val Gray0 = Color(0xFFF6F7F7)
     val Gray5 = Color(0xFFDCDCDE)
-    val Gray6 = Color(0xFFF2F2F7)
     val Gray20 = Color(0xFFB4B1B8)
     val Gray40 = Color(0xFF787C82)
     val Gray60 = Color(0xFF51565F)
     val Gray70 = Color(0xFF3D444B)
     val Gray80 = Color(0xFF2C3338)
-    val Gray80Alpha012 = Color(0x1F2C3338)
-    val Gray80Alpha030 = Color(0x4D3C3C43)
     val Gray900 = Color(0xFFF7F7F7)
 
     val Black = Color(0xFF000000)
-    val Black90 = Color(0xFF121212)
-    val Black90Alpha004 = Color(0x0A000000)
-    val Black90Alpha012 = Color(0x1F121212)
-    val Black90Alpha020 = Color(0x33121212)
-    val Black90Alpha038 = Color(0x61121212)
-    val Black90Alpha060 = Color(0x99121212)
-    val Black90Alpha087 = Color(0xDE121212)
-    val Black900 = Color(0xFF272727)
     val Black60 = Color(0xFF6A6A6A)
     val Black80 = Color(0xFF363636)
-    val BlackAlpha008 = Color(0x14212121)
+    val Black90 = Color(0xFF121212)
 }
 
 private val DarkColorPalette = darkColors(
-    primary = WooPosColors.primary,
+    primary = WooPosColors.WooPurple30,
     primaryVariant = WooPosColors.primaryVariant,
     onPrimary = Color.Black,
     secondary = WooPosColors.secondary,
@@ -178,7 +149,7 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    primary = WooPosColors.Purple50,
+    primary = WooPosColors.WooPurple40,
     primaryVariant = WooPosColors.primaryVariant,
     onPrimary = Color.White,
     secondary = WooPosColors.lightColorPaletteSecondary,
@@ -195,7 +166,7 @@ private val DarkCustomColors = CustomColors(
     success = WooPosColors.emerald60,
     error = WooPosColors.darkCustomColorsError,
     totalsErrorBackground = WooPosColors.darkQuaternaryBackground,
-    totalsBackground = Color(0xFF1C1C1E),
+    totalsBackground = WooPosColors.darkTotalsBackground,
     paymentSuccessBackground = WooPosColors.darkCustomColorsHomeBackground,
     paymentSuccessText = WooPosColors.oldGrayLight,
     paymentSuccessIcon = WooPosColors.darkCustomColorsHomeBackground,
@@ -212,7 +183,7 @@ private val LightCustomColors = CustomColors(
     totalsErrorBackground = WooPosColors.lightQuaternaryBackground,
     totalsBackground = WooPosColors.Gray0,
     paymentSuccessBackground = WooPosColors.White,
-    paymentSuccessText = WooPosColors.Purple90,
+    paymentSuccessText = WooPosColors.WooPurple90,
     paymentProcessingText = WooPosColors.White,
     paymentSuccessIcon = Color.White,
     homeBackground = WooPosColors.Gray0,

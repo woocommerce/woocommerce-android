@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-14 11:54:04+0000
+Translation-Revision-Date: 2025-01-28 16:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS unterstützt derzeit nur einfache, variable und virtuelle Produkte.\nErstelle ein Produkt, um anzufangen.</string>
+    <string name="woo_shipping_label_phone">Telefon</string>
+    <string name="woo_shipping_label_email">E-Mail</string>
+    <string name="woo_shipping_label_post_code">Postleitzahl</string>
+    <string name="woo_shipping_label_state">Bundesland/Bundesstaat</string>
+    <string name="woo_shipping_label_city">Stadt</string>
+    <string name="woo_shipping_label_address">Adresse</string>
+    <string name="woo_shipping_label_country">Land</string>
+    <string name="woo_shipping_label_company">Unternehmen</string>
+    <string name="woo_shipping_label_name">Name</string>
+    <string name="woo_shipping_edit_origin_address_title">Absender bearbeiten</string>
+    <string name="woopos_variations_any_variation">Beliebige %s</string>
+    <string name="woopos_variations_empty_list_image_description">Keine Varianten</string>
+    <string name="woopos_variations_empty_list_title">Keine unterstützten Varianten gefunden</string>
+    <string name="login_use_wpcom_username_instead">Verwende stattdessen Benutzername und Passwort</string>
+    <string name="product_images_drag_and_drop_to_reorder">Nutze Drag-and-Drop zum Umsortieren der Fotos. Das erste Foto wird als Cover eingerichtet.</string>
+    <string name="product_cover_photo_tag">Cover</string>
+    <string name="orderlist_bulk_update_result_all_failed">Aktualisierung der Bestellungen fehlgeschlagen. Bitte versuche es erneut.</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d Bestellung(en) wurde(n) aktualisiert und %d Bestellung(en) konnte(n) nicht aktualisiert werden. Bitte versuche es erneut.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">Keine Bestellungen aktualisiert. Bitte versuche es erneut.</string>
+    <string name="add">%s hinzufügen</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">Abbrechen</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">Fortfahren</string>
     <string name="woo_shipping_labels_package_creation_error_message">Möchtest du fortfahren, ohne zu speichern?</string>
@@ -44,7 +65,6 @@ Language: de
     <string name="woopos_items_pagination_error_description">„Beim Laden der Produkte ist ein Fehler aufgetreten.“</string>
     <string name="woopos_items_pagination_error_title">„Beim Laden weiterer Artikel ist ein Fehler aufgetreten“</string>
     <string name="woopos_items_pagination_try_again_label">Erneut versuchen</string>
-    <string name="woo_pos_payment_remove_card">Karte entfernen</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Zurück zum Bezahlen</string>
     <string name="woo_pos_payment_failed_try_again">Zahlung erneut versuchen</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Andere Zahlungsmethode verwenden</string>
@@ -243,7 +263,7 @@ Language: de
     <string name="woopos_products_empty_list_message_two">POS unterstützt derzeit nur einfache Produkte</string>
     <string name="woopos_error_icon_content_description">Icon für Fehleranzeige</string>
     <string name="woopos_products_loading_error_retry_button">Erneut versuchen</string>
-    <string name="woopos_products_empty_list_message">POS unterstützt derzeit nur einfache und variable Produkte. \nErstelle ein Produkt, um anzufangen.</string>
+    <string name="woopos_variations_empty_list_message">POS unterstützt derzeit nur einfache, variable und virtuelle Produkte.\nErstelle ein Produkt, um anzufangen.</string>
     <string name="woopos_products_empty_list_image_description">Keine Produkte</string>
     <string name="woopos_products_empty_list_title">Keine unterstützten Produkte gefunden</string>
     <string name="ai_product_creation_photo_removed">Foto entfernt</string>
@@ -1390,7 +1410,6 @@ Language: de
     <string name="domain_contact_information_description">Wir haben bereits deine WordPress.com-\n Kontaktinformationen für dich ausgefüllt. Überprüfe bitte, ob wir die Informationen, die du für diese Domain verwenden möchtest, korrekt eingegeben haben.</string>
     <string name="domain_contact_information_organization_hint">Organisation (optional)</string>
     <string name="domain_registration_privacy_protection_description">Domain-Eigentümer müssen ihre Kontaktinformationen in einer öffentlichen Datenbank aller Domains veröffentlichen.\n Durch den Datenschutz veröffentlichen wir unsere eigenen Informationen anstatt deinen und leiten sämtliche Kommunikation vertraulich an dich weiter.</string>
-    <string name="domain_registration_privacy_protection_tos">Mit der Registrierung dieser Domain stimmst du unseren %1$sBestimmungen und Konditionen%2$s zu</string>
     <string name="domain_registration_contact_form_input_error">Bitte gib eine gültige %s ein</string>
     <string name="domain_privacy_option_on_title">Privat mit Datenschutz registrieren</string>
     <string name="domain_privacy_option_off_title">Öffentlich registrieren</string>
@@ -2624,8 +2643,6 @@ Language: de
     <string name="shipping_label_more_information_title">WooCommerce Versand</string>
     <string name="order_mark_complete">Bestellung als abgeschlossen markieren</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Versandetikett erstellen</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">Erstelle Versandetiketten über dein Gerät!</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">Mit dem kostenlosen WooCommerce Shipping-Plugin kannst du jetzt Versandetiketten für sämtliche Artikelbestellungen direkt über dein Gerät drucken. Tippe auf „Versandetikett erstellen“ und probiere unsere Beta-Version aus!</string>
     <string name="shipping_label_more_information_message">Kein Schlangestehen mehr bei der Post! Drucke Versandetiketten zu reduzierten Preisen zu Hause über dein Mobiltelefon aus.</string>
     <string name="orderdetail_shipping_label_notice">Weitere Informationen zum Erstellen von Etiketten mit deinem Mobilgerät</string>
     <string name="edit">Bearbeiten</string>
@@ -2634,7 +2651,6 @@ Language: de
     <string name="orderdetail_payment_paid_by_customer">Bezahlt</string>
     <string name="login_jetpack_view_instructions_alt">Weitere Informationen zum Verbinden von Jetpack</string>
     <string name="product_images_validate_drag_and_drop">Bestätigen</string>
-    <string name="product_images_drag_and_drop_description">Nutze Drag-and-Drop zum Umsortieren der Fotos</string>
     <string name="delete">Löschen</string>
     <string name="product_downloadable_files_download_settings">Download-Einstellungen</string>
     <string name="product_downloadable_files_name_invalid">Bitte gib einen gültigen Namen ein</string>

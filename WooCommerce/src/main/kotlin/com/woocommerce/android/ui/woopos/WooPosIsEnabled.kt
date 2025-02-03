@@ -27,11 +27,15 @@ class WooPosIsEnabled @Inject constructor(
         if (!isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()) return@coroutineScope false
 
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite) ?: return@coroutineScope false
-        if (siteSettings.countryCode.lowercase() !in SUPPORTED_COUNTRIES) return@coroutineScope false
-        if (siteSettings.currencyCode.lowercase() !in SUPPORTED_CURRENCIES) return@coroutineScope false
 
-        return@coroutineScope true
+        return@coroutineScope isCountryAndCurrencySupported(
+            countryCode = siteSettings.countryCode,
+            currency = siteSettings.currencyCode
+        )
     }
+
+    private fun isCountryAndCurrencySupported(countryCode: String, currency: String) =
+        SUPPORTED_COUNTRY_CURRENCY_PAIRS.any { it.first.equals(countryCode, true) && it.second.equals(currency, true) }
 
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false
@@ -41,7 +45,6 @@ class WooPosIsEnabled @Inject constructor(
     private companion object {
         const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = "9.6.0"
 
-        val SUPPORTED_COUNTRIES = listOf("us")
-        val SUPPORTED_CURRENCIES = listOf("usd")
+        val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
     }
 }

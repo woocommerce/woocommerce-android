@@ -4,14 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
@@ -118,7 +115,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
-    private val feedbackPrefs = mock<FeedbackPrefs>()
     private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
     private val notificationChannelsHandler = mock<NotificationChannelsHandler>()
     private val appPrefs = mock<AppPrefsWrapper>()
@@ -172,7 +168,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         orderListTransactionLauncher = mock(),
         shouldShowCreateTestOrderScreen = shouldShowCreateTestOrderScreen,
         analyticsTracker = analyticsTracker,
-        feedbackPrefs = feedbackPrefs,
         barcodeScanningTracker = barcodeScanningTracker,
         notificationChannelsHandler = notificationChannelsHandler,
         appPrefs = appPrefs,
@@ -560,7 +555,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then the order status is changed optimistically
         val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(optimisticChangeEvent is Event.ShowUndoSnackbar)
+        assertTrue(optimisticChangeEvent is ShowUndoSnackbar)
 
         advanceTimeBy(1_001)
 
@@ -595,7 +590,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then the order status is changed optimistically
         val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(optimisticChangeEvent is Event.ShowUndoSnackbar)
+        assertTrue(optimisticChangeEvent is ShowUndoSnackbar)
 
         advanceTimeBy(1_001)
 
@@ -603,42 +598,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         val resultEvent = viewModel.event.getOrAwaitValue()
         assertTrue(resultEvent is OrderListEvent.ShowRetryErrorSnack)
     }
-
-    @Test
-    fun `when onDismissOrderCreationSimplePaymentsFeedback called, then FEATURE_FEEDBACK_BANNER tracked`() =
-        testBlocking {
-            // when
-            viewModel.onDismissOrderCreationSimplePaymentsFeedback()
-
-            // then
-            verify(analyticsTracker).track(
-                AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-                mapOf(
-                    AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
-                    AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-                )
-            )
-        }
-
-    @Test
-    fun `when onDismissOrderCreationSimplePaymentsFeedback called, then order banner visibility changed`() =
-        testBlocking {
-            // given
-            val featureFeedbackSettings = mock<FeatureFeedbackSettings> {
-                on { feedbackState }.thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-            }
-            whenever(
-                feedbackPrefs.getFeatureFeedbackSettings(
-                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-                )
-            ).thenReturn(featureFeedbackSettings)
-
-            // when
-            viewModel.onDismissOrderCreationSimplePaymentsFeedback()
-
-            // then
-            assertThat(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible).isEqualTo(false)
-        }
 
     @Test
     fun `when fetching orders for the first time fails with timeout, then trigger a retry event`() = testBlocking {
@@ -997,7 +956,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertNotNull(isFetchingFirstPage)
 
         // Check that isFetchingFirstPage is reset to default value (false) on clearLiveDataSources
-        assertFalse(isFetchingFirstPage!!)
+        assertFalse(isFetchingFirstPage)
     }
 
     @Test

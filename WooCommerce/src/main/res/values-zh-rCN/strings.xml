@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-14 09:54:05+0000
+Translation-Revision-Date: 2025-01-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS 目前仅支持简单产品、可变产品和虚拟产品 — \n创建一个以开始。</string>
+    <string name="woo_shipping_label_phone">电话</string>
+    <string name="woo_shipping_label_email">电子邮件</string>
+    <string name="woo_shipping_label_post_code">邮政编码</string>
+    <string name="woo_shipping_label_state">州/省/自治区/直辖市</string>
+    <string name="woo_shipping_label_city">城市</string>
+    <string name="woo_shipping_label_address">地址</string>
+    <string name="woo_shipping_label_country">国家/地区</string>
+    <string name="woo_shipping_label_company">公司</string>
+    <string name="woo_shipping_label_name">姓名</string>
+    <string name="woo_shipping_edit_origin_address_title">编辑来源</string>
+    <string name="woopos_variations_any_variation">任何 %s</string>
+    <string name="woopos_variations_empty_list_image_description">无变体</string>
+    <string name="woopos_variations_empty_list_title">未找到受支持的变体</string>
+    <string name="login_use_wpcom_username_instead">改用用户名和密码</string>
+    <string name="product_images_drag_and_drop_to_reorder">拖放照片以重新排序。 第一张照片将设为封面。</string>
+    <string name="product_cover_photo_tag">封面</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d 个订单已更新，%d 个订单更新失败。 请重试。</string>
+    <string name="orderlist_bulk_update_result_all_failed">订单更新失败。 请重试。</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">无订单更新。 请重试。</string>
+    <string name="add">添加 %s</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">取消</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">继续</string>
     <string name="woo_shipping_labels_package_creation_error_message">是否要在不保存的情况下继续？</string>
@@ -44,7 +65,6 @@ Language: zh_CN
     <string name="woopos_items_pagination_error_description">“加载产品时出现错误。”</string>
     <string name="woopos_items_pagination_error_title">“无法加载更多项目”</string>
     <string name="woopos_items_pagination_try_again_label">重试</string>
-    <string name="woo_pos_payment_remove_card">移除银行卡</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">返回结账页面</string>
     <string name="woo_pos_payment_failed_try_again">再次尝试付款</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">尝试其他付款方式</string>
@@ -243,7 +263,7 @@ Language: zh_CN
     <string name="woopos_products_loading_error_message">再试一次？</string>
     <string name="woopos_products_loading_error_title">加载产品时出错</string>
     <string name="woopos_products_empty_list_message_two">POS 目前仅支持简单产品</string>
-    <string name="woopos_products_empty_list_message">POS 目前仅支持简单产品和可变产品 — \n创建一个以开始。</string>
+    <string name="woopos_variations_empty_list_message">POS 目前仅支持简单产品、可变产品和虚拟产品 — \n创建一个以开始。</string>
     <string name="woopos_products_empty_list_title">未找到受支持的产品</string>
     <string name="woopos_products_empty_list_image_description">无任何产品</string>
     <string name="woopos_get_support_title">获取支持</string>
@@ -1393,7 +1413,6 @@ Language: zh_CN
     <string name="domain_privacy_option_off_title">公开注册</string>
     <string name="domain_privacy_option_on_title">通过隐私保护功能私密注册</string>
     <string name="domain_registration_contact_form_input_error">请输入有效的“%s”</string>
-    <string name="domain_registration_privacy_protection_tos">注册此域即表示，您同意我们的%1$s条款和条件%2$s</string>
     <string name="domain_registration_privacy_protection_description">域所有者必须在所有域的公共数据库中共享联系信息。\n通过隐私保护功能，我们会发布自己的信息（而不是您的信息），并以私密方式将所有邮件转发给您。</string>
     <string name="domain_registration_privacy_protection_title">隐私保护</string>
     <string name="domains_access_error_title">只有商店管理员可以访问域名设置</string>
@@ -2626,15 +2645,12 @@ Language: zh_CN
     <string name="order_mark_complete">将订单标记为完成</string>
     <string name="orderdetail_shipping_label_notice">详细了解如何使用移动设备创建配送标签</string>
     <string name="orderdetail_shipping_label_create_shipping_label">创建配送标签</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">现在，您可以利用免费的 WooCommerce Shipping 插件，直接通过您的设备为所有实体订单创建配送标签。 轻按“创建配送标签”试用我们的 Beta 版功能！</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">通过您的设备创建配送标签！！</string>
     <string name="orderdetail_payment_fees">费用</string>
     <string name="orderdetail_net">净付款</string>
     <string name="orderdetail_payment_paid_by_customer">已付</string>
     <string name="login_jetpack_view_instructions_alt">详细了解如何连接 Jetpack</string>
     <string name="edit">编辑</string>
     <string name="product_images_validate_drag_and_drop">验证</string>
-    <string name="product_images_drag_and_drop_description">通过拖放来排序照片</string>
     <string name="product_downloadable_files_download_settings">下载设置</string>
     <string name="product_downloadable_files_name_invalid">请输入有效的名称</string>
     <string name="product_downloadable_files_add_manually">输入文件 URL</string>

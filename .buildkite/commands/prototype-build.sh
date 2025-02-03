@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-.buildkite/commands/restore-cache.sh
+"$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
 APP_TO_BUILD="${1?You need to specify the app to build, WooCommerce or WooCommerce-Wear}"
 

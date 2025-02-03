@@ -28,6 +28,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -98,7 +99,8 @@ class JetpackActivationWPComPasswordFragment : BaseFragment() {
                 .actionJetpackActivationWPComPasswordFragmentToJetpackActivationMagicLinkRequestFragment(
                     emailOrUsername = event.emailOrUsername,
                     jetpackStatus = event.jetpackStatus,
-                    isAccountPasswordless = false,
+                    fallbackButton = MagicLinkFallbackButton.Password,
+                    requestAtStart = true,
                     isNewWpComAccount = false
                 )
         )

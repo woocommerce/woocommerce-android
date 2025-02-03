@@ -1,6 +1,6 @@
 #!/bin/bash -u
 
-.buildkite/commands/restore-cache.sh
+"$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
 echo "--- 🧹 Linting"
 ./gradlew :WooCommerce:lintJalapenoDebug

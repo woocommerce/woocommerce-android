@@ -155,7 +155,7 @@ class ProductImagesNotificationHandler @Inject constructor(
             .setDestination(R.id.mediaUploadErrorsFragment)
             .setArguments(
                 MediaUploadErrorListFragmentArgs(
-                    remoteId = productId,
+                    remoteProductId = productId,
                     errorList = errors.toTypedArray()
                 ).toBundle()
             )

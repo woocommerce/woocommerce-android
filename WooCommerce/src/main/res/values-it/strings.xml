@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-14 13:54:04+0000
+Translation-Revision-Date: 2025-01-28 16:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS al momento supporta solo prodotti semplici, variabili e virtuali: \ncreane uno per iniziare.</string>
+    <string name="woo_shipping_label_phone">Telefono</string>
+    <string name="woo_shipping_label_email">E-mail</string>
+    <string name="woo_shipping_label_post_code">CAP</string>
+    <string name="woo_shipping_label_state">Stato</string>
+    <string name="woo_shipping_label_city">Città</string>
+    <string name="woo_shipping_label_address">Indirizzo</string>
+    <string name="woo_shipping_label_country">Paese</string>
+    <string name="woo_shipping_label_company">Società</string>
+    <string name="woo_shipping_label_name">Nome</string>
+    <string name="woo_shipping_edit_origin_address_title">Modifica origine</string>
+    <string name="woopos_variations_any_variation">Qualsiasi %s</string>
+    <string name="woopos_variations_empty_list_image_description">Nessuna variante</string>
+    <string name="woopos_variations_empty_list_title">Nessuna variante supportata trovata</string>
+    <string name="login_use_wpcom_username_instead">Usa nome utente e password invece</string>
+    <string name="product_images_drag_and_drop_to_reorder">Trascina e rilascia per riordinare le foto. La prima foto verrà impostata come copertina.</string>
+    <string name="product_cover_photo_tag">Copertina</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d aggiornamento ordine(i) riuscito, e %d aggiornamento ordine(i) non riuscito. Riprova.</string>
+    <string name="orderlist_bulk_update_result_all_failed">Aggiornamento degli ordini non riuscito. Riprova.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">Nessun ordine aggiornato. Riprova.</string>
+    <string name="add">Aggiungi %s</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">Annulla</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">Procedi</string>
     <string name="woo_shipping_labels_package_creation_error_message">Vuoi procedere senza salvare?</string>
@@ -44,7 +65,6 @@ Language: it
     <string name="woopos_items_pagination_error_description">\"Si è verificato un errore durante il caricamento dei prodotti.\"</string>
     <string name="woopos_items_pagination_error_title">\"Impossibile caricare altri articoli\"</string>
     <string name="woopos_items_pagination_try_again_label">Riprova</string>
-    <string name="woo_pos_payment_remove_card">Rimuovi carta</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Torna al pagamento</string>
     <string name="woo_pos_payment_failed_try_again">Ritenta il pagamento</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Prova un altro metodo di pagamento</string>
@@ -243,7 +263,7 @@ Language: it
     <string name="woopos_products_loading_error_message">Vuoi fare un altro tentativo?</string>
     <string name="woopos_products_loading_error_title">Errore durante il caricamento dei prodotti</string>
     <string name="woopos_products_empty_list_message_two">Il punto vendita al momento supporta solo prodotti semplici</string>
-    <string name="woopos_products_empty_list_message">Il punto vendita al momento supporta solo prodotti semplici - \ncreane uno per iniziare.</string>
+    <string name="woopos_variations_empty_list_message">POS al momento supporta solo prodotti semplici, variabili e virtuali: \ncreane uno per iniziare.</string>
     <string name="woopos_products_empty_list_title">Nessun prodotto supportato trovato</string>
     <string name="woopos_products_empty_list_image_description">Nessun prodotto</string>
     <string name="woopos_get_support_title">Richiedi assistenza</string>
@@ -1393,7 +1413,6 @@ Language: it
     <string name="domain_privacy_option_off_title">Registra pubblicamente</string>
     <string name="domain_privacy_option_on_title">Registra privatamente con protezione della privacy</string>
     <string name="domain_registration_contact_form_input_error">Per %s, inserisci un valore valido</string>
-    <string name="domain_registration_privacy_protection_tos">Registrando questo dominio accetti i nostri %1$sterme e le nostre condizioni%2$s</string>
     <string name="domain_registration_privacy_protection_description">I proprietari del dominio devono condividere le informazioni di contatto in un database pubblico di tutti i domini.\n Con la Protezione della privacy, pubblichiamo le nostre informazioni al posto delle tue e ti inoltriamo privatamente qualsiasi comunicazione.</string>
     <string name="domain_registration_privacy_protection_title">Protezione della privacy</string>
     <string name="domains_access_error_title">Solo gli amministratori del negozio possono accedere alle impostazioni del dominio</string>
@@ -2626,15 +2645,12 @@ Language: it
     <string name="order_mark_complete">Contrassegna ordine come completo</string>
     <string name="orderdetail_shipping_label_notice">Scopri di più su come creare etichette dal dispositivo mobile</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Crea etichetta di spedizione</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">Ora puoi creare etichette di spedizione per tutti gli ordini fisici direttamente dal tuo dispositivo con il plugin WooCommerce Shipping gratuito. Tocca \"Crea etichetta di spedizione\" per provare la funzionalità beta.</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">Crea etichette di spedizione dal tuo dispositivo.</string>
     <string name="orderdetail_payment_fees">Tariffe</string>
     <string name="orderdetail_net">Importo di pagamento netto</string>
     <string name="orderdetail_payment_paid_by_customer">Pagato</string>
     <string name="login_jetpack_view_instructions_alt">Scopri di più su come connettere Jetpack</string>
     <string name="edit">Modifica</string>
     <string name="product_images_validate_drag_and_drop">Convalida</string>
-    <string name="product_images_drag_and_drop_description">Trascina e rilascia per riordinare le foto</string>
     <string name="product_downloadable_files_download_settings">Impostazioni download</string>
     <string name="product_downloadable_files_name_invalid">Inserisci un nome valido</string>
     <string name="product_downloadable_files_add_manually">Inserisci URL file</string>

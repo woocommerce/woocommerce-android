@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="woo_purple_0">#F2EDFF</color>
-    <color name="woo_purple_10">#F7EDF7</color>
-    <color name="woo_purple_20">#C792E0</color>
-    <color name="woo_purple_30">#B17FD4</color>
-    <color name="woo_purple_40">#AF7DD1</color>
-    <color name="woo_purple_50">#7F54B3</color>
-    <color name="woo_purple_60">#674399</color>
-    <color name="woo_purple_60_alpha_33">#33674399</color>
-    <color name="woo_purple_80">#3C2861</color>
-    <color name="woo_purple_90">#271B3D</color>
+    <color name="woo_purple_5">#E1D7FF</color>
+    <color name="woo_purple_10">#D1C1FF</color>
+    <color name="woo_purple_20">#B999FF</color>
+    <color name="woo_purple_30">#A77EFF</color>
+    <color name="woo_purple_40">#873EFF</color>
+    <color name="woo_purple_50">#720EEC</color>
+    <color name="woo_purple_60">#6108CE</color>
+    <color name="woo_purple_70">#5007AA</color>
+    <color name="woo_purple_80">#3C087E</color>
+    <color name="woo_purple_90">#2C045D</color>
     <color name="woo_purple_dark_secondary">#99EBEBF5</color>
 
     <color name="woo_pink_10">#ED9BB8</color>
@@ -73,12 +74,10 @@
     <color name="woo_gray_70">#3D444B</color>
     <color name="woo_gray_80">#2C3338</color>
     <color name="woo_gray_80_alpha_012">#1F2C3338</color>
-    <color name="woo_gray_80_alpha_030">#4D3C3C43</color>
     <color name="woo_gray_900">#F7F7F7</color>
 
     <color name="woo_black">#FF000000</color>
     <color name="woo_black_90">#121212</color>
-    <color name="woo_black_90_alpha_004">#0A000000</color>
     <color name="woo_black_90_alpha_012">#1F121212</color>
     <color name="woo_black_90_alpha_020">#33121212</color>
     <color name="woo_black_90_alpha_038">#61121212</color>

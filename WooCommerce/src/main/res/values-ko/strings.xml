@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-14 09:54:08+0000
+Translation-Revision-Date: 2025-01-31 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">현재 POS에서는 단순, 변형 및 가상 상품만 지원 - \n시작하려면 하나를 생성하세요.</string>
+    <string name="woo_shipping_label_phone">전화</string>
+    <string name="woo_shipping_label_email">이메일</string>
+    <string name="woo_shipping_label_post_code">우편번호</string>
+    <string name="woo_shipping_label_state">주</string>
+    <string name="woo_shipping_label_city">도시</string>
+    <string name="woo_shipping_label_address">주소</string>
+    <string name="woo_shipping_label_country">국가</string>
+    <string name="woo_shipping_label_company">회사</string>
+    <string name="woo_shipping_label_name">이름</string>
+    <string name="woo_shipping_edit_origin_address_title">원산지 편집</string>
+    <string name="woopos_variations_any_variation">모든 %s</string>
+    <string name="woopos_variations_empty_list_image_description">변형 없음</string>
+    <string name="woopos_variations_empty_list_title">지원되는 변형을 찾을 수 없음</string>
+    <string name="login_use_wpcom_username_instead">사용자명과 비밀번호를 대신 사용</string>
+    <string name="product_images_drag_and_drop_to_reorder">끌어 놓아서 사진 순서를 변경할 수 있습니다. 첫 번째 사진은 커버로 설정됩니다.</string>
+    <string name="product_cover_photo_tag">커버</string>
+    <string name="orderlist_bulk_update_result_partial_success">주문 %d개가 업데이트되었지만, %d개는 업데이트에 실패했습니다. 다시 시도해 주세요.</string>
+    <string name="orderlist_bulk_update_result_all_failed">주문 업데이트에 실패했습니다. 다시 시도해 주세요.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">업데이트된 주문이 없습니다. 다시 시도해 주세요.</string>
+    <string name="add">%s 추가</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">취소</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">진행</string>
     <string name="woo_shipping_labels_package_creation_error_message">저장하지 않고 진행하시겠어요?</string>
@@ -44,7 +65,6 @@ Language: ko_KR
     <string name="woopos_items_pagination_error_description">\"상품 로드 중 오류가 발생했습니다.\"</string>
     <string name="woopos_items_pagination_error_title">\"항목을 더 로드하지 못했습니다\"</string>
     <string name="woopos_items_pagination_try_again_label">다시 시도</string>
-    <string name="woo_pos_payment_remove_card">카드 제거</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">계산으로 돌아가기</string>
     <string name="woo_pos_payment_failed_try_again">다시 결제 시도</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">다른 결제 수단 시도</string>
@@ -243,7 +263,7 @@ Language: ko_KR
     <string name="woopos_products_loading_error_message">한 번 더 시도할까요?</string>
     <string name="woopos_products_loading_error_title">상품 로드 오류</string>
     <string name="woopos_products_empty_list_message_two">현재 POS에서는 단순 상품만 지원합니다.</string>
-    <string name="woopos_products_empty_list_message">현재 POS에서는 단순 및 변형 상품만 지원 - \n시작하려면 하나를 생성하세요.</string>
+    <string name="woopos_variations_empty_list_message">현재 POS에서는 단순, 변형 및 가상 상품만 지원 - \n시작하려면 하나를 생성하세요.</string>
     <string name="woopos_products_empty_list_title">지원되는 상품을 찾을 수 없음</string>
     <string name="woopos_products_empty_list_image_description">상품 없음</string>
     <string name="woopos_get_support_title">고객 지원</string>
@@ -1393,7 +1413,6 @@ Language: ko_KR
     <string name="domain_privacy_option_off_title">공개적으로 등록</string>
     <string name="domain_privacy_option_on_title">개인정보 보호를 통해 비공개로 등록</string>
     <string name="domain_registration_contact_form_input_error">유효한 %s(을)를 입력하세요.</string>
-    <string name="domain_registration_privacy_protection_tos">이 도메인을 등록하면 %1$s이용 약관%2$s에 동의하는 것입니다.</string>
     <string name="domain_registration_privacy_protection_description">도메인 소유자는 모든 도메인의 공개 데이터베이스에 있는 연락처 정보를 공유해야 합니다.\n 개인정보 보호에 따라 회원님의 정보가 아닌 당사의 정보를 공개하며, 회원님이 받을 커뮤니케이션은 비공개적으로 전달합니다.</string>
     <string name="domain_registration_privacy_protection_title">개인정보 보호</string>
     <string name="domains_access_error_title">스토어 관리자만 도메인 설정에 접근할 수 있음</string>
@@ -2626,15 +2645,12 @@ Language: ko_KR
     <string name="order_mark_complete">주문을 완료로 표시</string>
     <string name="orderdetail_shipping_label_notice">모바일 장치로 레이블 만들기에 대해 자세히 알아보기</string>
     <string name="orderdetail_shipping_label_create_shipping_label">배송 레이블 만들기</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">이제 무료 WooCommerce 배송 플러그인으로 장치에서 직접 모든 실물 주문에 대한 배송 레이블을 만들 수 있습니다. \"배송 레이블 만들기\"를 눌러 베타 기능을 사용해 보세요!</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">장치에서 배송 레이블을 만드세요!</string>
     <string name="orderdetail_payment_fees">수수료</string>
     <string name="orderdetail_net">순 결제</string>
     <string name="orderdetail_payment_paid_by_customer">유료</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack 연결에 대해 자세히 알아보기</string>
     <string name="edit">편집</string>
     <string name="product_images_validate_drag_and_drop">확인</string>
-    <string name="product_images_drag_and_drop_description">끌어 놓아서 사진 순서 변경</string>
     <string name="product_downloadable_files_download_settings">설정 다운로드</string>
     <string name="product_downloadable_files_name_invalid">유효한 이름을 입력하세요</string>
     <string name="product_downloadable_files_add_manually">파일 URL 입력</string>

@@ -366,7 +366,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_STATE_OFF = "off"
 
         const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
-        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_LINK = "payment_link"

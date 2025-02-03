@@ -3,7 +3,15 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 21.6
 -----
-
+- [*] Updated tablet detection logic to consider both width and height dimensions, enhancing compatibility with larger phones and tablets, particularly in landscape mode [https://github.com/woocommerce/woocommerce-android/pull/13228]
+- [**] The UK customers have access to the POS now [https://github.com/woocommerce/woocommerce-android/pull/13386]
+- [Internal] [*] Fixed a bug that could lead to a crash when formatting dates and times [https://github.com/woocommerce/woocommerce-android/pull/13393]
+- [Internal] [*] Removed order creation survey from the order's list [https://github.com/woocommerce/woocommerce-android/pull/13423]
+- [***] Updated the app look and feel to match the new WooCommerce branding [https://github.com/woocommerce/woocommerce-android/pull/13254]
+- [**] Adds new button to retry any failed image upload  [https://github.com/woocommerce/woocommerce-android/issues/13370]
+- [*] Adds new "Cover" tag to clearly indicate which of the product photos will be the cover [https://github.com/woocommerce/woocommerce-android/pull/13344]
+- [*] Optimizes product image fetching for faster loading [https://github.com/woocommerce/woocommerce-android/issues/13357]
+- [*] [Internal] Improved login flow for accounts using emails marked as suspicious during Jetpack Setup [https://github.com/woocommerce/woocommerce-android/pull/13409]
 
 21.5
 -----

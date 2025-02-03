@@ -35,7 +35,10 @@ class CustomerListSelectionViewModel @Inject constructor(
     private var loadingMoreInfoAboutCustomerJob: Job? = null
 
     override fun onCustomerSelected(customerModel: WCCustomerModel) {
-        analyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
+        analyticsTracker.track(
+            AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED,
+            mapOf("is_customer_registered" to (customerModel.remoteCustomerId > 0L).toString())
+        )
         when {
             customerModel.remoteCustomerId > 0L -> {
                 // this customer is registered, so we may have more info on them

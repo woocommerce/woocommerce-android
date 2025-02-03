@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-15 09:54:04+0000
+Translation-Revision-Date: 2025-01-28 14:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS stöder för närvarande bara enkla, variabla och virtuella produkter – \nskapa en för att komma igång.</string>
+    <string name="woo_shipping_label_phone">Telefon</string>
+    <string name="woo_shipping_label_email">E-post</string>
+    <string name="woo_shipping_label_post_code">Postnummer</string>
+    <string name="woo_shipping_label_state">Delstat</string>
+    <string name="woo_shipping_label_city">Ort</string>
+    <string name="woo_shipping_label_address">Adress</string>
+    <string name="woo_shipping_label_country">Land</string>
+    <string name="woo_shipping_label_company">Företag</string>
+    <string name="woo_shipping_label_name">Namn</string>
+    <string name="woopos_variations_empty_list_image_description">Inga varianter</string>
+    <string name="woo_shipping_edit_origin_address_title">Redigera original</string>
+    <string name="woopos_variations_any_variation">Valfri %s</string>
+    <string name="woopos_variations_empty_list_title">Inga varianter som stöds hittades</string>
+    <string name="login_use_wpcom_username_instead">Använd användarnamn och lösenord istället</string>
+    <string name="product_cover_photo_tag">Omslag</string>
+    <string name="orderlist_bulk_update_result_all_failed">Misslyckades att uppdatera beställningar. Försök igen.</string>
+    <string name="product_images_drag_and_drop_to_reorder">Dra och släpp för att ändra ordning på foton. Det första fotot kommer att utgöra omslaget.</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d beställning(ar) uppdaterades och %d beställning(ar) gick inte att uppdatera. Försök igen.</string>
+    <string name="add">Lägg till %s</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">Inga beställningar uppdaterade. Försök igen.</string>
     <string name="woo_shipping_labels_package_creation_error_message">Vill du fortsätta utan att spara det?</string>
     <string name="woo_shipping_labels_package_creation_error_title">Vi kunde inte spara paketet som mall</string>
     <string name="woopos_variations_options_available_text">Alternativ tillgängliga</string>
@@ -43,7 +64,6 @@ Language: sv_SE
     <string name="woopos_items_pagination_error_content_description">\"Det gick inte att ladda in fler objekt. Dubbelklicka för att försöka igen.\"</string>
     <string name="woopos_items_pagination_error_description">\"Ett fel uppstod vid hämtning av produkter.\"</string>
     <string name="woopos_items_pagination_try_again_label">Försök igen</string>
-    <string name="woo_pos_payment_remove_card">Ta bort kort</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Gå tillbaka till kassa</string>
     <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">Anslut till läsare</string>
     <string name="woopos_success_totals_payment_processing_subtitle">Vänta …</string>
@@ -243,7 +263,7 @@ Language: sv_SE
     <string name="woopos_error_icon_content_description">Ikon som indikerar fel</string>
     <string name="woopos_products_loading_error_message">Vill du försöka igen?</string>
     <string name="woopos_products_empty_list_message_two">POS stöder för närvarande bara enkla produkter</string>
-    <string name="woopos_products_empty_list_message">POS stöder för närvarande bara enkla och variabla produkter – \nskapa en för att komma igång.</string>
+    <string name="woopos_variations_empty_list_message">POS stöder för närvarande endast enkla, variabla och virtuella produkter – skapa en för att kom igång.</string>
     <string name="woopos_products_empty_list_image_description">Inga produkter</string>
     <string name="woopos_products_empty_list_title">Inga produkter som stöds hittades</string>
     <string name="woopos_get_support_title">Skaffa support</string>
@@ -1390,7 +1410,6 @@ Language: sv_SE
     <string name="domain_contact_information_description">För din bekvämlighet har vi förfyllt din WordPress.com\n        kontaktinformation. Granska det för att vara säker på att det är rätt information du vill använda för denna domän.</string>
     <string name="domain_contact_information_organization_hint">Organisation (valfritt)</string>
     <string name="domain_registration_privacy_protection_description">Domänägare måste uppge kontaktinformation i en publik databas som omfattar alla domäner. Med integritetsskydd publicerar vi våra uppgifter istället för dina, och vidarebefordrar sedan privat eventuella meddelanden till dig.</string>
-    <string name="domain_registration_privacy_protection_tos">I och med att du registrerar denna domän accepterar du våra %1$savtalsvillkor%2$s</string>
     <string name="domain_registration_contact_form_input_error">Ange en giltig %s</string>
     <string name="domain_privacy_option_on_title">Registrera privat med integritetsskydd</string>
     <string name="domain_privacy_option_off_title">Registrera publikt</string>
@@ -2624,8 +2643,6 @@ Language: sv_SE
     <string name="shipping_label_more_information_title">WooCommerce Shipping</string>
     <string name="order_mark_complete">Markera ordern som slutförd</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Skapa fraktetikett</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">Skapa fraktetiketter från din enhet!</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">Du kan nu skapa fraktetiketter för alla fysiska beställningar direkt från din enhet med hjälp av gratistillägget WooCommerce Shipping. Tryck på \"Skapa fraktetikett\" för att prova vår betafunktion!</string>
     <string name="orderdetail_shipping_label_notice">Lär dig mer om att skapa etiketter med din mobila enhet</string>
     <string name="shipping_label_more_information_message">Skippa kön på postkontoret genom att skriva ut fraktetiketter till rabatterade priser hemma med din mobila enhet!</string>
     <string name="edit">Redigera</string>
@@ -2634,7 +2651,6 @@ Language: sv_SE
     <string name="orderdetail_payment_paid_by_customer">Betald</string>
     <string name="login_jetpack_view_instructions_alt">Läs mer om att ansluta Jetpack</string>
     <string name="product_images_validate_drag_and_drop">Validera</string>
-    <string name="product_images_drag_and_drop_description">Dra och släpp för att ändra ordning på foton</string>
     <string name="delete">Radera</string>
     <string name="product_downloadable_files_url">Fil-URL</string>
     <string name="product_downloadable_files_add">Lägg till fil</string>

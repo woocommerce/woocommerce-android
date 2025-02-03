@@ -680,7 +680,7 @@
         android:name="com.woocommerce.android.ui.media.MediaUploadErrorListFragment"
         android:label="MediaUploadErrorsFragment">
         <argument
-            android:name="remoteId"
+            android:name="remoteProductId"
             android:defaultValue="0L"
             app:argType="long" />
         <argument

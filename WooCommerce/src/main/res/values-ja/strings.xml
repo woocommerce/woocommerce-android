@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-14 09:54:07+0000
+Translation-Revision-Date: 2025-01-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">現在、POS はシンプルな商品、バリエーションのある商品、仮想商品のみに対応しています – \n作成して開始します。</string>
+    <string name="woo_shipping_label_phone">電話</string>
+    <string name="woo_shipping_label_email">メールアドレス</string>
+    <string name="woo_shipping_label_post_code">郵便番号</string>
+    <string name="woo_shipping_label_state">都道府県</string>
+    <string name="woo_shipping_label_city">市区町村</string>
+    <string name="woo_shipping_label_address">住所</string>
+    <string name="woo_shipping_label_country">国</string>
+    <string name="woo_shipping_label_company">会社</string>
+    <string name="woo_shipping_label_name">名前</string>
+    <string name="woo_shipping_edit_origin_address_title">配送元を編集</string>
+    <string name="woopos_variations_any_variation">すべて %s</string>
+    <string name="woopos_variations_empty_list_image_description">バリエーションがありません</string>
+    <string name="woopos_variations_empty_list_title">サポート対象のバリエーションが見つかりません</string>
+    <string name="login_use_wpcom_username_instead">代わりにユーザー名とパスワードを使用</string>
+    <string name="product_images_drag_and_drop_to_reorder">写真の順序を変更するにはドラッグ &amp; ドロップしてください。 最初の写真はカバーとして設定されます。</string>
+    <string name="product_cover_photo_tag">カバー</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d件の注文が更新され、%d件の注文が更新に失敗しました。 もう一度お試しください。</string>
+    <string name="orderlist_bulk_update_result_all_failed">注文の更新に失敗しました。 もう一度お試しください。</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">更新された注文はありません。 もう一度お試しください。</string>
+    <string name="add">%sを追加</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">キャンセル</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">続行</string>
     <string name="woo_shipping_labels_package_creation_error_message">保存せずに続行しますか ?</string>
@@ -44,7 +65,6 @@ Language: ja_JP
     <string name="woopos_items_pagination_error_description">「商品の読み込み中にエラーが発生しました」</string>
     <string name="woopos_items_pagination_error_title">「その他のアイテムの読み込みに失敗しました」</string>
     <string name="woopos_items_pagination_try_again_label">もう一度お試しください</string>
-    <string name="woo_pos_payment_remove_card">カードを取り外す</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">購入手続きに戻る</string>
     <string name="woo_pos_payment_failed_try_again">再度支払いを試す</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">別の支払い方法を試す</string>
@@ -243,7 +263,7 @@ Language: ja_JP
     <string name="woopos_products_loading_error_message">もう一度試しますか ?</string>
     <string name="woopos_products_loading_error_title">商品の読み込み中にエラーが発生しました</string>
     <string name="woopos_products_empty_list_message_two">現在、POS はシンプルな商品のみに対応しています</string>
-    <string name="woopos_products_empty_list_message">現在、POS はシンプルな商品とバリエーションのある商品のみに対応しています – \n作成して開始します。</string>
+    <string name="woopos_variations_empty_list_message">現在、POS はシンプルな商品、バリエーションのある商品、仮想商品のみに対応しています – \n作成して開始します。</string>
     <string name="woopos_products_empty_list_title">サポート対象の商品が見つかりません</string>
     <string name="woopos_products_empty_list_image_description">商品なし</string>
     <string name="woopos_get_support_title">サポートを受ける</string>
@@ -1393,7 +1413,6 @@ Language: ja_JP
     <string name="domain_privacy_option_off_title">公開として登録</string>
     <string name="domain_privacy_option_on_title">プライバシー保護付きで非公開として登録</string>
     <string name="domain_registration_contact_form_input_error">有効な%sを入力してください</string>
-    <string name="domain_registration_privacy_protection_tos">このドメインを登録することで、当社の%1$s利用規約%2$sに合意したことになります</string>
     <string name="domain_registration_privacy_protection_description">ドメイン所有者は、すべてのドメインのパブリックデータベースで連絡先情報を共有する必要があります。\nプライバシー保護として、お客様に関する情報の代わりに弊社に関する情報を公開し、お客様には個別でコミュニケーションを転送します。</string>
     <string name="domain_registration_privacy_protection_title">プライバシー保護</string>
     <string name="domains_access_error_title">ストア管理者のみがドメイン設定にアクセスできます</string>
@@ -2626,15 +2645,12 @@ Language: ja_JP
     <string name="order_mark_complete">注文を完了としてマーク</string>
     <string name="orderdetail_shipping_label_notice">モバイルデバイスでのラベル作成に関する詳細はこちら</string>
     <string name="orderdetail_shipping_label_create_shipping_label">配送ラベルを作成</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">無料の WooCommerce Shipping プラグインを使用して、お使いの端末から直接、すべての物理的な注文の配送ラベルを作成できるようになりました。 「配送ラベルを作成」をタップしてベータ機能をお試しください !</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">スマートフォンを使って配送ラベルを作成 !</string>
     <string name="orderdetail_payment_fees">手数料</string>
     <string name="orderdetail_net">支払額 (正味)</string>
     <string name="orderdetail_payment_paid_by_customer">支払済み</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack の連携について詳しく読む</string>
     <string name="edit">編集</string>
     <string name="product_images_validate_drag_and_drop">認証</string>
-    <string name="product_images_drag_and_drop_description">写真の順序を変更するにはドラッグ &amp; ドロップしてください</string>
     <string name="product_downloadable_files_download_settings">ダウンロード設定</string>
     <string name="product_downloadable_files_name_invalid">有効な名前を入力してください</string>
     <string name="product_downloadable_files_add_manually">ファイル URL を入力</string>

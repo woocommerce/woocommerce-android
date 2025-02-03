@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-15 09:54:04+0000
+Translation-Revision-Date: 2025-01-28 16:54:14+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten; \nmaak er een aan om te beginnen.</string>
+    <string name="woo_shipping_label_phone">Telefoon</string>
+    <string name="woo_shipping_label_email">E-mail</string>
+    <string name="woo_shipping_label_post_code">Postcode</string>
+    <string name="woo_shipping_label_state">Provincie</string>
+    <string name="woo_shipping_label_city">Plaats</string>
+    <string name="woo_shipping_label_address">Adres</string>
+    <string name="woo_shipping_label_country">Land</string>
+    <string name="woo_shipping_label_company">Bedrijf</string>
+    <string name="woo_shipping_label_name">Naam</string>
+    <string name="woo_shipping_edit_origin_address_title">Origineel bewerken</string>
+    <string name="woopos_variations_any_variation">Alle %s</string>
+    <string name="woopos_variations_empty_list_image_description">Geen variaties</string>
+    <string name="woopos_variations_empty_list_title">Geen ondersteunde variaties gevonden</string>
+    <string name="login_use_wpcom_username_instead">Gebruik in plaats daarvan gebruikersnaam en wachtwoord</string>
+    <string name="product_images_drag_and_drop_to_reorder">Slepen om foto\'s opnieuw te ordenen. De eerste afbeelding wordt gebruikt als omslagafbeelding.</string>
+    <string name="product_cover_photo_tag">Omslag</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d bestelling(en) bijgewerkt, en %d bestelling(en) niet bijgewerkt. Probeer het nog eens.</string>
+    <string name="orderlist_bulk_update_result_all_failed">Bestellingen konden niet worden bijgewerkt. Probeer het nog eens.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">Geen bestellingen bijgewerkt. Probeer het nog eens.</string>
+    <string name="add">Toevoegen %s</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">Annuleren</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">Doorgaan</string>
     <string name="woo_shipping_labels_package_creation_error_message">Wil je doorgaan zonder opslaan?</string>
@@ -44,7 +65,6 @@ Language: nl
     <string name="woopos_items_pagination_error_description">\'Er is een fout opgetreden tijdens het laden van producten.\'</string>
     <string name="woopos_items_pagination_error_title">\'Meer items laden mislukt\'</string>
     <string name="woopos_items_pagination_try_again_label">Opnieuw proberen</string>
-    <string name="woo_pos_payment_remove_card">Kaart verwijderen</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Terug naar afrekenen</string>
     <string name="woo_pos_payment_failed_try_again">Probeer opnieuw te betalen</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Probeer een andere betaalmethode</string>
@@ -243,7 +263,7 @@ Language: nl
     <string name="woopos_products_loading_error_message">Nog een keertje proberen?</string>
     <string name="woopos_products_loading_error_title">Fout bij laden van producten</string>
     <string name="woopos_products_empty_list_message_two">POS ondersteunt momenteel alleen simpele producten</string>
-    <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten: \nmaak er een aan om te beginnen.</string>
+    <string name="woopos_variations_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten; \nmaak er een aan om te beginnen.</string>
     <string name="woopos_products_empty_list_title">Geen ondersteunde producten gevonden</string>
     <string name="woopos_products_empty_list_image_description">Geen producten</string>
     <string name="woopos_get_support_title">Vraag om ondersteuning</string>
@@ -1393,7 +1413,6 @@ Language: nl
     <string name="domain_privacy_option_off_title">Openbaar registreren</string>
     <string name="domain_privacy_option_on_title">Privé registreren met privacybescherming</string>
     <string name="domain_registration_contact_form_input_error">Voer een geldige %s in</string>
-    <string name="domain_registration_privacy_protection_tos">Door dit domein te registreren, ga je akkoord met onze %1$salgemene voorwaarden%2$s</string>
     <string name="domain_registration_privacy_protection_description">Domeineigenaren moeten contactgegevens delen in een openbare database met alle domeinen.\n Met Privacybescherming publiceren we onze eigen informatie in plaats van die van jou en sturen we berichten privé naar je door.</string>
     <string name="domain_registration_privacy_protection_title">Privacybescherming</string>
     <string name="domains_access_error_title">Alleen winkelbeheerders hebben toegang tot de domeininstellingen.</string>
@@ -2626,15 +2645,12 @@ Language: nl
     <string name="order_mark_complete">Bestelling markeren als voltooid</string>
     <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je mobiele apparaat aanmaken</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Verzendlabel aanmaken</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">Je kunt nu verzendlabels rechtstreeks vanaf je apparaat aanmaken voor alle fysieke bestellingen met de gratis WooCommerce Shipping-plugin. Tik op \"Verzendlabel aanmaken\" om onze bètafunctie te proberen!</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">Maak verzendlabels vanaf je apparaat!!</string>
     <string name="orderdetail_payment_fees">Toeslagen</string>
     <string name="orderdetail_net">Netto betaling</string>
     <string name="orderdetail_payment_paid_by_customer">Betaald</string>
     <string name="login_jetpack_view_instructions_alt">Meer informatie over Jetpack verbinden</string>
     <string name="edit">Bewerken</string>
     <string name="product_images_validate_drag_and_drop">Valideren</string>
-    <string name="product_images_drag_and_drop_description">Slepen om foto\'s opnieuw te ordenen</string>
     <string name="product_downloadable_files_download_settings">Downloadinstellingen</string>
     <string name="product_downloadable_files_name_invalid">Voer een geldige naam in</string>
     <string name="product_downloadable_files_add_manually">Voer bestand-URL in</string>

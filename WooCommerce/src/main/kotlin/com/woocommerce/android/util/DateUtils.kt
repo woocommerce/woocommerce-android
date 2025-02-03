@@ -27,24 +27,30 @@ class DateUtils @Inject constructor(
     private val crashLogger: CrashLogging,
     private val selectedSite: SelectedSite
 ) {
-    private val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
-    private val friendlyMonthDayYearFormat: SimpleDateFormat = SimpleDateFormat("MMM d, yyyy", locale)
-    private val friendlyTimeFormat: SimpleDateFormat = SimpleDateFormat("h:mm a", locale)
-    private val friendlyLongMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMMM dd", locale)
+    private val friendlyMonthDayFormat: SimpleDateFormat
+        get() = SimpleDateFormat("MMM d", locale)
+    private val friendlyMonthDayYearFormat: SimpleDateFormat
+        get() = SimpleDateFormat("MMM d, yyyy", locale)
+    private val friendlyTimeFormat: SimpleDateFormat
+        get() = SimpleDateFormat("h:mm a", locale)
+    private val friendlyLongMonthDayFormat: SimpleDateFormat
+        get() = SimpleDateFormat("MMMM dd", locale)
 
-    private val weekOfYearStartingMondayFormat: SimpleDateFormat = SimpleDateFormat("yyyy-ww", locale).apply {
-        calendar = Calendar.getInstance().apply {
-            // Ensure the date formatter follows ISO8601 week standards:
-            // the first day of a week is a Monday, and the first week of the year starts on the first Monday
-            // (and not on the Monday of the week containing January 1st, which may be in the previous year)
-            firstDayOfWeek = Calendar.MONDAY
-            minimalDaysInFirstWeek = 7
+    private val weekOfYearStartingMondayFormat: SimpleDateFormat
+        get() = SimpleDateFormat("yyyy-ww", locale).apply {
+            calendar = Calendar.getInstance().apply {
+                // Ensure the date formatter follows ISO8601 week standards:
+                // the first day of a week is a Monday, and the first week of the year starts on the first Monday
+                // (and not on the Monday of the week containing January 1st, which may be in the previous year)
+                firstDayOfWeek = Calendar.MONDAY
+                minimalDaysInFirstWeek = 7
+            }
         }
-    }
 
     private val shortMonths = DateFormatSymbols(locale).shortMonths
 
-    private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private val yyyyMMddFormat
+        get() = SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     /**
      * Given an ISO8601 date of volatile format,

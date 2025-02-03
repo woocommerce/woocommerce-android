@@ -1,0 +1,2 @@
+21.5:
+Prepare-se para uma experiência mais tranquila. Fizemos ajustes na escalabilidade dos recibos, incluímos Porto Rico para pagamentos presenciais e melhoramos a exibição das campanha no Blaze. Experimente um carregamento mais rápido da galeria de produtos, melhorias nas atualizações de pedidos em massa e indicadores de upload de imagens em tempo real. Além disso, a integração com o WooPayments está mais fácil do que nunca!

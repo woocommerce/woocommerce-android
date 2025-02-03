@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-15 09:54:04+0000
+Translation-Revision-Date: 2025-01-28 14:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">האפשרות POS נתמכת כרגע במוצרים פשוטים, במוצרים עם סוגים ובמוצרים וירטואליים בלבד – \nיש ליצור אחד כזה כדי להתחיל.</string>
+    <string name="woo_shipping_label_phone">טלפון</string>
+    <string name="woo_shipping_label_email">אימייל</string>
+    <string name="woo_shipping_label_post_code">מיקוד</string>
+    <string name="woo_shipping_label_state">מדינה</string>
+    <string name="woo_shipping_label_city">עיר</string>
+    <string name="woo_shipping_label_address">כתובת</string>
+    <string name="woo_shipping_label_country">ארץ</string>
+    <string name="woo_shipping_label_company">חברה</string>
+    <string name="woo_shipping_label_name">שם</string>
+    <string name="woo_shipping_edit_origin_address_title">לערוך את המוצא</string>
+    <string name="woopos_variations_any_variation">כל %s</string>
+    <string name="woopos_variations_empty_list_image_description">ללא סוגים</string>
+    <string name="woopos_variations_empty_list_title">לא נמצאו סוגים נתמכים</string>
+    <string name="login_use_wpcom_username_instead">להשתמש בשם משתמש ובסיסמה במקום זאת</string>
+    <string name="product_images_drag_and_drop_to_reorder">לגרור ולשחרר כדי לשנות את הסדר של התמונות. התמונה הראשונה תוגדר בתוך הכיסוי.</string>
+    <string name="product_cover_photo_tag">כיסוי</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d הזמנות עודכנו ועדכון של %d הזמנות נכשל. יש לנסות שוב.</string>
+    <string name="orderlist_bulk_update_result_all_failed">עדכון ההזמנות נכשל. יש לנסות שוב.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">לא עודכנו הזמנות. יש לנסות שוב.</string>
+    <string name="add">להוסיף %s</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">ביטול</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">המשך</string>
     <string name="woo_shipping_labels_package_creation_error_message">האם ברצונך להמשיך בלי לשמור את התוכן?</string>
@@ -44,7 +65,6 @@ Language: he_IL
     <string name="woopos_items_pagination_error_description">\"אירעה שגיאה בעת הטעינה של המוצרים.\"</string>
     <string name="woopos_items_pagination_error_title">\"הטעינה של פריטים נוספים נכשלה\"</string>
     <string name="woopos_items_pagination_try_again_label">לנסות שוב</string>
-    <string name="woo_pos_payment_remove_card">להסיר את הכרטיס</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">לחזור לתשלום בקופה</string>
     <string name="woo_pos_payment_failed_try_again">לנסות את התשלום שוב</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">לנסות אמצעי תשלום אחר</string>
@@ -243,7 +263,7 @@ Language: he_IL
     <string name="woopos_products_loading_error_message">רוצה לנסות שוב?</string>
     <string name="woopos_products_loading_error_title">שגיאה בטעינת המוצרים</string>
     <string name="woopos_products_empty_list_message_two">האפשרות POS נתמכת כרגע במוצרים פשוטים בלבד</string>
-    <string name="woopos_products_empty_list_message">האפשרות POS נתמכת כרגע במוצרים פשוטים ובמוצרים עם סוגים בלבד – \nיש ליצור אחד כזה כדי להתחיל.</string>
+    <string name="woopos_variations_empty_list_message">האפשרות POS נתמכת כרגע במוצרים פשוטים, במוצרים עם סוגים ובמוצרים וירטואליים בלבד – \nיש ליצור אחד כזה כדי להתחיל.</string>
     <string name="woopos_products_empty_list_title">לא נמצאו מוצרים נתמכים</string>
     <string name="woopos_products_empty_list_image_description">אין מוצרים</string>
     <string name="woopos_get_support_title">לקבלת תמיכה</string>
@@ -1393,7 +1413,6 @@ Language: he_IL
     <string name="domain_privacy_option_off_title">רישום ציבורי</string>
     <string name="domain_privacy_option_on_title">הירשמות באופן פרטי עם הגנת פרטיות</string>
     <string name="domain_registration_contact_form_input_error">יש להזין נתונים תקפים עבור %s</string>
-    <string name="domain_registration_privacy_protection_tos">הרשמה לדומיין מהווה הסכמה מצדך %1$sלתנאים ולהתניות שלנו%2$s</string>
     <string name="domain_registration_privacy_protection_description">בעלי דומיינים מחויבים לשתף את פרטי הקשר שלהם בבסיס נתונים ציבורי של כל הדומיינים.\n בזכות הגנת פרטיות, אנחנו מפרסמים את הפרטים שלנו ולא את שלך ומעבירים אליך באופן פרטי כל התקשרות שתהיה.</string>
     <string name="domain_registration_privacy_protection_title">הגנת פרטיות</string>
     <string name="domains_access_error_title">הגישה להגדרות הדומיין מותרת רק למנהלי המערכת של החנות</string>
@@ -2626,15 +2645,12 @@ Language: he_IL
     <string name="order_mark_complete">לסמן את ההזמנה כ\'הושלמה\'</string>
     <string name="orderdetail_shipping_label_notice">למידע נוסף על יצירת תוויות באמצעות המכשיר הנייד</string>
     <string name="orderdetail_shipping_label_create_shipping_label">ליצור תווית משלוח</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">כעת אפשר ליצור תוויות משלוח לכל ההזמנות הפיזיות ישירות מהמכשיר שלך באמצעות התוסף החינמי WooCommerce Shipping. יש להקיש על \'ליצור תווית משלוח\' כדי לנסות את אפשרות הביתא שלנו!</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">אפשר ליצור תווית משלוח מהמכשיר שלך!</string>
     <string name="orderdetail_payment_fees">עמלות</string>
     <string name="orderdetail_net">תשלום נטו</string>
     <string name="orderdetail_payment_paid_by_customer">שולם</string>
     <string name="login_jetpack_view_instructions_alt">למידע נוסף על חיבור אל Jetpack</string>
     <string name="edit">עריכה</string>
     <string name="product_images_validate_drag_and_drop">אימות</string>
-    <string name="product_images_drag_and_drop_description">לגרור ולשחרר כדי לשנות את הסדר של התמונות</string>
     <string name="product_downloadable_files_download_settings">הגדרות הורדה</string>
     <string name="product_downloadable_files_name_invalid">יש להזין שם חוקי</string>
     <string name="product_downloadable_files_add_manually">יש להזין את כתובת ה-URL של הקובץ</string>

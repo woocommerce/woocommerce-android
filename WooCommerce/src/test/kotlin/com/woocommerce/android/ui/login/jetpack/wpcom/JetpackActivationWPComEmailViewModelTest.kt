@@ -19,6 +19,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsError
 import org.wordpress.android.fluxc.store.AccountStore.AuthOptionsErrorType
 import org.wordpress.android.login.AuthOptions
+import org.wordpress.android.login.MagicLinkFallbackButton
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -80,8 +81,10 @@ class JetpackActivationWPComEmailViewModelTest : BaseUnitTest() {
 
             assertThat(event).isEqualTo(
                 ShowMagicLinkScreen(
-                    UNKNOWN_EMAIL,
-                    JETPACK_STATUS,
+                    emailOrUsername = UNKNOWN_EMAIL,
+                    jetpackStatus = JETPACK_STATUS,
+                    magicLinkFallbackButton = MagicLinkFallbackButton.None,
+                    requestAtStart = true,
                     isNewWpComAccount = true
                 )
             )
@@ -108,10 +111,11 @@ class JetpackActivationWPComEmailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given email not allowed, when onContinueClick clicked, then show user name not wpcom error`() =
+    fun `given email not allowed, when onContinueClick clicked, then show magic link screen`() =
         testBlocking {
-            setup(UNKNOWN_USERNAME)
-            whenever(wpComLoginRepository.fetchAuthOptions(UNKNOWN_USERNAME)).thenReturn(
+            val suspiciousEmail = "suspicious@test.com"
+            setup(suspiciousEmail)
+            whenever(wpComLoginRepository.fetchAuthOptions(suspiciousEmail)).thenReturn(
                 Result.failure(
                     OnChangedException(
                         AuthOptionsError(AuthOptionsErrorType.EMAIL_LOGIN_NOT_ALLOWED, "")
@@ -119,11 +123,19 @@ class JetpackActivationWPComEmailViewModelTest : BaseUnitTest() {
                 )
             )
 
-            val state = viewModel.viewState.runAndCaptureValues {
+            val event = viewModel.event.runAndCaptureValues {
                 viewModel.onContinueClick()
             }.last()
 
-            assertThat(state.errorMessage).isEqualTo(R.string.error_user_username_instead_of_email)
+            assertThat(event).isEqualTo(
+                ShowMagicLinkScreen(
+                    emailOrUsername = suspiciousEmail,
+                    jetpackStatus = JETPACK_STATUS,
+                    magicLinkFallbackButton = MagicLinkFallbackButton.UsernameAndPassword,
+                    requestAtStart = false,
+                    isNewWpComAccount = false
+                )
+            )
         }
 
     @Test
@@ -170,8 +182,10 @@ class JetpackActivationWPComEmailViewModelTest : BaseUnitTest() {
 
             assertThat(event).isEqualTo(
                 ShowMagicLinkScreen(
-                    WPCOM_EMAIL,
-                    JETPACK_STATUS,
+                    emailOrUsername = WPCOM_EMAIL,
+                    jetpackStatus = JETPACK_STATUS,
+                    magicLinkFallbackButton = MagicLinkFallbackButton.None,
+                    requestAtStart = true,
                     isNewWpComAccount = false
                 )
             )

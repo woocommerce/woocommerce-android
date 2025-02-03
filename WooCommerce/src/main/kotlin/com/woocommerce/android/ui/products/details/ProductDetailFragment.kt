@@ -25,16 +25,15 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
-import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -171,7 +170,7 @@ class ProductDetailFragment :
      * to show selected product in the right pane.
      */
     private fun handleOnePaneToTwoPaneConversion() {
-        val isScreenLargerThanCompact = requireContext().windowSizeClass != WindowSizeClass.Compact
+        val isScreenLargerThanCompact = requireContext().isTwoPanesShouldBeUsed
         val isProductListFragmentUpInBackStack =
             findNavController().previousBackStackEntry?.destination?.id == R.id.products
         if (isScreenLargerThanCompact && isProductListFragmentUpInBackStack) {

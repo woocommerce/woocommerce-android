@@ -331,7 +331,6 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.mockito.inline)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.androidx.arch.core.testing) {

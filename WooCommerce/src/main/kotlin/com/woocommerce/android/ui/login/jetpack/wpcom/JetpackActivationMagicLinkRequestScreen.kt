@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.jetpack.components.UserInfo
+import org.wordpress.android.login.MagicLinkFallbackButton
 
 @Composable
 fun JetpackActivationMagicLinkRequestScreen(viewModel: JetpackActivationMagicLinkRequestViewModel) {
@@ -40,7 +41,7 @@ fun JetpackActivationMagicLinkRequestScreen(viewModel: JetpackActivationMagicLin
             onCloseClick = viewModel::onCloseClick,
             onRequestMagicLinkClick = viewModel::onRequestMagicLinkClick,
             onOpenEmailClientClick = viewModel::onOpenEmailClientClick,
-            onUsePasswordClick = viewModel::onUsePasswordClick
+            onFallbackButtonClick = viewModel::onFallbackButtonClick
         )
     }
 }
@@ -51,7 +52,7 @@ fun JetpackActivationMagicLinkRequestScreen(
     onCloseClick: () -> Unit = {},
     onRequestMagicLinkClick: () -> Unit = {},
     onOpenEmailClientClick: () -> Unit = {},
-    onUsePasswordClick: () -> Unit = {}
+    onFallbackButtonClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -91,12 +92,18 @@ fun JetpackActivationMagicLinkRequestScreen(
                     MagicLinkSentContent(viewState, onOpenEmailClientClick, Modifier.weight(1f))
                 }
             }
-            if (viewState.allowPasswordLogin) {
+
+            val fallbackButtonText = when (viewState.magicLinkFallbackButton) {
+                MagicLinkFallbackButton.Password -> R.string.enter_your_password_instead
+                MagicLinkFallbackButton.UsernameAndPassword -> R.string.login_use_wpcom_username_instead
+                MagicLinkFallbackButton.None -> null
+            }
+            fallbackButtonText?.let {
                 WCOutlinedButton(
-                    onClick = onUsePasswordClick,
+                    onClick = onFallbackButtonClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = stringResource(id = R.string.enter_your_password_instead))
+                    Text(text = stringResource(id = it))
                 }
             }
         }
@@ -214,9 +221,8 @@ private fun MagicLinkRequestPreview() {
                 emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
                 isJetpackInstalled = false,
-                allowPasswordLogin = true,
-                isLoadingDialogShown = false,
-                isNewWpComAccount = false
+                magicLinkFallbackButton = MagicLinkFallbackButton.Password,
+                isLoadingDialogShown = false
             )
         )
     }
@@ -230,7 +236,7 @@ private fun MagicLinkSentPreview() {
             viewState = JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
                 email = null,
                 isJetpackInstalled = false,
-                allowPasswordLogin = true,
+                magicLinkFallbackButton = MagicLinkFallbackButton.Password,
             )
         )
     }

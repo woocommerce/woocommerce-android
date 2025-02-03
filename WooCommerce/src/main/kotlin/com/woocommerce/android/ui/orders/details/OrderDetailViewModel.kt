@@ -15,7 +15,7 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SHIPPING_LINES_COUNT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
@@ -418,7 +418,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCollectPaymentClicked(isTablet: Boolean = false) {
         paymentsFlowTracker.trackCollectPaymentTapped(
-            IsScreenLargerThanCompactValue(isTablet).deviceTypeToAnalyticsString
+            IsScreenInTwoPaneLayout(isTablet).deviceTypeToAnalyticsString
         )
         triggerEvent(
             StartPaymentFlow(
