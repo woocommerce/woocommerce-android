@@ -25,9 +25,9 @@ class MainActivityEdgeToEdgeHelper @Inject constructor(private val activity: Mai
 
             // Apply bottom padding only if bottom nav is hidden
             // because bottom nav is already handling the padding
-            val bottomPadding = if (!isBottomNavVisible) systemInsets.bottom else 0
+            val bottomPadding = if (isBottomNavVisible) 0 else systemInsets.bottom
 
-            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding)
+            v.setPadding(systemInsets.left, 0, systemInsets.right, bottomPadding)
             insets
         }
     }
