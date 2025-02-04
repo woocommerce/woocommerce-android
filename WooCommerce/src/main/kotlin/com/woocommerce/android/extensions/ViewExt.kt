@@ -187,10 +187,16 @@ fun View.scrollStartEvents(): Flow<Unit> {
 
 fun View.edgeToEdgeHandlingForNavigationBar() {
     ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
-        val systemInsets = insets.getInsets(
-            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-        )
+        val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
         v.setPadding(systemInsets.left, 0, systemInsets.right, systemInsets.bottom)
+        insets
+    }
+}
+
+fun View.edgeToEdgeHandlingForNavigationAndStatusBar() {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        v.setPadding(systemInsets.left, systemInsets.top, systemInsets.right, systemInsets.bottom)
         insets
     }
 }
