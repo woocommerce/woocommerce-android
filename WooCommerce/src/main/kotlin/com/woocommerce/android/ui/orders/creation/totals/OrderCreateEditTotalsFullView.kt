@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -63,17 +62,12 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 @Composable
 fun OrderCreateEditTotalsView(viewModel: OrderCreateEditViewModel) {
     viewModel.totalsData.observeAsState().value?.let { state ->
-        Box(
-            modifier = Modifier
-                .navigationBarsPadding()
-        ) {
-            OrderCreateEditTotalsView(
-                state,
-                modifier = Modifier.onGloballyPositioned {
-                    state.onHeightChanged(it.size.height)
-                }
-            )
-        }
+        OrderCreateEditTotalsView(
+            state,
+            modifier = Modifier.onGloballyPositioned {
+                state.onHeightChanged(it.size.height)
+            }
+        )
     }
 }
 
