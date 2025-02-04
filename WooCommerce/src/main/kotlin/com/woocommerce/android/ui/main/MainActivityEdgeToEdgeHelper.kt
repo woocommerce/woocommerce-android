@@ -3,11 +3,12 @@ package com.woocommerce.android.ui.main
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.woocommerce.android.databinding.ActivityMainBinding
 import javax.inject.Inject
 
 class MainActivityEdgeToEdgeHelper @Inject constructor(private val activity: MainActivity) {
-    fun applyEdgeToEdgeSettings(appBarLayout: View, contentView: View) {
-        ViewCompat.setOnApplyWindowInsetsListener(appBarLayout) { v, insets ->
+    fun applyEdgeToEdgeSettings(binding: ActivityMainBinding) {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.appBarLayout) { v, insets ->
             val systemInsets = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
@@ -16,12 +17,12 @@ class MainActivityEdgeToEdgeHelper @Inject constructor(private val activity: Mai
             insets
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(contentView) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot) { v, insets ->
             val systemInsets = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
 
-            val isBottomNavVisible = activity.isBottomNavVisible()
+            val isBottomNavVisible = binding.bottomNav.visibility == View.VISIBLE
 
             // Apply bottom padding only if bottom nav is hidden
             // because bottom nav is already handling the padding
