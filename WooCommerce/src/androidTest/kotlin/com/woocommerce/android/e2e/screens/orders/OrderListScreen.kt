@@ -15,8 +15,7 @@ import org.hamcrest.Matchers
 
 class OrderListScreen : Screen(R.id.ordersList) {
     fun selectOrder(index: Int): SingleOrderScreen {
-        val correctedIndex = index + 1 // account for the header
-        selectItemAtIndexInRecyclerView(correctedIndex, R.id.ordersList, R.id.linearLayout)
+        selectItemAtIndexInRecyclerView(index, R.id.ordersList, R.id.linearLayout)
         return SingleOrderScreen()
     }
 
@@ -83,6 +82,17 @@ class OrderListScreen : Screen(R.id.ordersList) {
     }
 
     fun assertOrderCard(order: OrderData): OrderListScreen {
+        // Wait for the order card to appear first. This is sometimes
+        // flaky on Firebase because of low emulator performance.
+        waitForElementToBeDisplayed(
+            Espresso.onView(
+                Matchers.allOf(
+                    ViewMatchers.withId(R.id.orderNum),
+                    ViewMatchers.withText("#${order.id}")
+                )
+            )
+        )
+
         // Using quite a complex matcher to make sure that all expected
         // order details belong to the same order card.
         Espresso.onView(

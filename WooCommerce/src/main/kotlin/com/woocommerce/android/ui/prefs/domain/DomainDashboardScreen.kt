@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -49,7 +48,6 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -139,18 +137,17 @@ private fun DomainDashboard(
                     imageVector = ImageVector.vectorResource(id = drawable.ic_info_outline_20dp),
                     contentDescription = stringResource(string.domains_learn_more)
                 )
-                val text = annotatedStringRes(stringResId = string.domains_learn_more)
-                ClickableText(
-                    modifier = Modifier.padding(start = dimensionResource(id = dimen.minor_100)),
+                val text = annotatedStringRes(
+                    stringResId = string.domains_learn_more,
+                    onUrlClick = { onLearnMoreButtonTapped() }
+                )
+
+                Text(
                     text = text,
-                    style = MaterialTheme.typography.caption.copy(
-                        color = colorResource(id = color.color_on_surface_medium)
-                    ),
-                ) {
-                    text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-                        .firstOrNull()
-                        ?.let { onLearnMoreButtonTapped() }
-                }
+                    style = MaterialTheme.typography.caption,
+                    color = colorResource(id = color.color_on_surface_medium),
+                    modifier = Modifier.padding(start = dimensionResource(id = dimen.minor_100)),
+                )
             }
         } else {
             LazyColumn(

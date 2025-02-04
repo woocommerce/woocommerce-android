@@ -31,7 +31,7 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
 
         while (currentAttempt < maxAttempts) {
             try {
-                composeTestRule.onNodeWithContentDescription(getTranslatedString(R.string.settings))
+                composeTestRule.onNodeWithContentDescription(getTranslatedString(R.string.more_menu_button_settings))
                     .assertIsDisplayed()
                     .assertHasClickAction()
                 break // Exit loop if node is displayed and clickable
@@ -47,7 +47,7 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
         }
 
         composeTestRule.onNodeWithContentDescription(
-            getTranslatedString(R.string.settings)
+            getTranslatedString(R.string.more_menu_button_settings)
         ).assertHasClickAction().performClick()
 
         return SettingsScreen()

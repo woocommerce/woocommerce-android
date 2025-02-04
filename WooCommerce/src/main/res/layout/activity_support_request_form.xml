@@ -149,7 +149,18 @@
                         android:hint="@string/support_request_subject"
                         android:imeOptions="flagNoFullscreen"
                         android:inputType="textAutoComplete"
-                        android:nextFocusForward="@id/last_name"
+                        android:nextFocusForward="@id/request_site_address"
+                        android:saveEnabled="false"
+                        app:errorEnabled="true" />
+
+                    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+                        android:id="@+id/request_site_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/major_100"
+                        android:hint="@string/support_request_site_address"
+                        android:imeOptions="flagNoFullscreen"
+                        android:inputType="textAutoComplete"
                         android:saveEnabled="false"
                         app:errorEnabled="true" />
 

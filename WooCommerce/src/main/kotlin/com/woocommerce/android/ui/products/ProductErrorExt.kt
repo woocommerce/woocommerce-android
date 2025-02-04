@@ -5,5 +5,8 @@ import org.wordpress.android.fluxc.store.WCProductStore
  * Returns whether the error message is meaningful and can be displayed to the user.
  */
 val WCProductStore.ProductError.canDisplayMessage: Boolean
-    get() = this.type == WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY &&
+    get() = (
+        this.type == WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY ||
+            this.type == WCProductStore.ProductErrorType.GENERIC_ERROR
+        ) &&
         this.message.isNotEmpty()

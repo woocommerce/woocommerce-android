@@ -64,7 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.mediapicker.MediaPickerDialog
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.annotatedStringResLegacy
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -74,7 +74,6 @@ import com.woocommerce.android.ui.products.ai.components.ImageAction
 import com.woocommerce.android.ui.products.ai.components.SelectImageSection
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.AiProductPromptState
 import com.woocommerce.android.ui.products.ai.productinfo.AiProductPromptViewModel.PromptSuggestionBar
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource
@@ -340,21 +339,16 @@ private fun ProductPromptTextField(
                     modifier = Modifier
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
-                            if (isFocused && FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()) {
-                                coroutineScope.launch {
-                                    @Suppress("MagicNumber")
-                                    delay(200) // Delay to ensure advice box is shown before scrolling.
-                                    scrollState.animateScrollTo(scrollToPosition.roundToInt())
-                                }
+                            coroutineScope.launch {
+                                @Suppress("MagicNumber")
+                                delay(200) // Delay to ensure advice box is shown before scrolling.
+                                scrollState.animateScrollTo(scrollToPosition.roundToInt())
                             }
                         }
                 )
             }
         }
-        AnimatedVisibility(
-            (isFocused || state.productPrompt.isNotEmpty()) &&
-                FeatureFlag.PRODUCT_CREATION_WITH_AI_V2_M3.isEnabled()
-        ) {
+        AnimatedVisibility((isFocused || state.productPrompt.isNotEmpty())) {
             PromptSuggestions(
                 promptSuggestionBarState = state.promptSuggestionBarState,
                 modifier = Modifier.padding(top = 8.dp)
@@ -419,7 +413,7 @@ private fun PromptSuggestions(
             color = colorResource(id = promptSuggestionBarState.progressBarColorRes)
         )
         Text(
-            text = annotatedStringRes(promptSuggestionBarState.messageRes),
+            text = annotatedStringResLegacy(promptSuggestionBarState.messageRes),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 8.dp),

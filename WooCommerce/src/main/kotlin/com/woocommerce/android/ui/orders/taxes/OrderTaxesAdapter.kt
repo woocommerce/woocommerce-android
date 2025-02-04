@@ -44,7 +44,7 @@ class OrderTaxesAdapter(
         fun bind(tax: Order.TaxLine) {
             val context = viewBinding.root.context
             viewBinding.taxLabel.text =
-                String.format(context.getString(R.string.tax_name_with_tax_percent), tax.label, tax.ratePercent)
+                context.getString(R.string.tax_name_with_tax_percent, tax.label, tax.ratePercent.toString())
             viewBinding.taxValue.text = currencyFormatter.formatCurrency(tax.taxTotal, currencyCode)
         }
     }

@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.DefaultProductListItemLookup
 import com.woocommerce.android.ui.products.MutableMultipleSelectionPredicate
@@ -52,16 +54,16 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Upd
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.details.ProductDetailFragmentArgs
 import com.woocommerce.android.ui.products.filter.ProductFilterResult
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.OpenEmptyProduct
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.OpenProduct
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ScrollToTop
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.SelectProducts
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
-import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowUpdateDialog
+import com.woocommerce.android.ui.products.list.ProductListEvent.OpenEmptyProduct
+import com.woocommerce.android.ui.products.list.ProductListEvent.OpenProduct
+import com.woocommerce.android.ui.products.list.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.list.ProductListEvent.SelectProducts
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowProductUpdateStockStatusScreen
+import com.woocommerce.android.ui.products.list.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.TabletLayoutSetupHelper
@@ -102,6 +104,9 @@ class ProductListFragment :
 
     @Inject
     lateinit var productListToolbar: ProductListToolbarHelper
+
+    @Inject
+    lateinit var mediaFileUploadHandler: MediaFileUploadHandler
 
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
@@ -174,6 +179,8 @@ class ProductListFragment :
         _productAdapter = ProductListAdapter(
             loadMoreListener = this,
             currencyFormatter = currencyFormatter,
+            mediaFileUploadHandler = mediaFileUploadHandler,
+            coroutineScope = lifecycleScope,
             clickListener = { id, sharedView -> productListViewModel.onOpenProduct(id, sharedView) },
             isProductHighlighted = { productListViewModel.isProductHighlighted(it) }
         )
@@ -225,7 +232,7 @@ class ProductListFragment :
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
-        binding.productsRefreshLayout.isEnabled = enable
+        _binding?.productsRefreshLayout?.isEnabled = enable
     }
 
     private fun initAddProductFab(fabButton: FloatingActionButton) {
@@ -503,9 +510,9 @@ class ProductListFragment :
             .show()
     }
 
-    private fun handleListState(productListState: ProductListViewModel.ProductListState) {
+    private fun handleListState(productListState: ProductListViewState.ProductListState) {
         when (productListState) {
-            ProductListViewModel.ProductListState.Selecting -> {
+            ProductListViewState.ProductListState.Selecting -> {
                 actionMode = (requireActivity() as AppCompatActivity)
                     .startSupportActionMode(this@ProductListFragment)
                 delayMultiSelection()
@@ -513,7 +520,7 @@ class ProductListFragment :
                 enableProductSortAndFiltersCard(false)
             }
 
-            ProductListViewModel.ProductListState.Browsing -> {
+            ProductListViewState.ProductListState.Browsing -> {
                 actionMode?.finish()
                 enableProductsRefresh(true)
                 enableProductSortAndFiltersCard(true)
@@ -562,6 +569,7 @@ class ProductListFragment :
 
         // reload the product list without this product
         productListViewModel.reloadProductsFromDb(excludeProductId = remoteProductId)
+        enableProductsRefresh(false)
 
         val actionListener = View.OnClickListener {
             trashProductCancelled = true
@@ -569,6 +577,7 @@ class ProductListFragment :
 
         val callback = object : Snackbar.Callback() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                enableProductsRefresh(true)
                 pendingTrashProductId = null
                 if (trashProductCancelled) {
                     productListViewModel.reloadProductsFromDb()
@@ -579,13 +588,12 @@ class ProductListFragment :
         }
 
         trashProductUndoSnack = uiMessageResolver.getUndoSnack(
-            R.string.product_trash_undo_snackbar_message,
+            stringResId = R.string.product_trash_undo_snackbar_message,
             actionListener = actionListener
-        )
-            .also {
-                it.addCallback(callback)
-                it.show()
-            }
+        ).apply {
+            addCallback(callback)
+            show()
+        }
     }
 
     override fun scrollToTop() {

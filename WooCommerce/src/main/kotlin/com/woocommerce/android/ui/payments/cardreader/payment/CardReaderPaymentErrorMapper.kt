@@ -64,6 +64,7 @@ class CardReaderPaymentErrorMapper @Inject constructor(
                 PaymentFlowError.Declined.PinRequired
             }
         }
+        CardDeclined.IncorrectPin -> PaymentFlowError.Declined.IncorrectPin
         CardDeclined.Temporary -> PaymentFlowError.Declined.Temporary
         CardDeclined.TestCard -> PaymentFlowError.Declined.TestCard
         CardDeclined.TestModeLiveCard -> PaymentFlowError.Declined.TestModeLiveCard

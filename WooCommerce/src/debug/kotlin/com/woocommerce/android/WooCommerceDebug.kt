@@ -12,13 +12,18 @@ import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
+import com.woocommerce.android.apifaker.ApiFakerUiHelper
 import com.woocommerce.android.util.SystemVersionUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class WooCommerceDebug : WooCommerce() {
+    @Inject
+    lateinit var apiFakerUiHelper: ApiFakerUiHelper
+
     override fun onCreate() {
         if (FlipperUtils.shouldEnableFlipper(this)) {
             SoLoader.init(this, false)
@@ -33,6 +38,7 @@ class WooCommerceDebug : WooCommerce() {
         enableWebContentDebugging()
         super.onCreate()
         enableStrictMode()
+        apiFakerUiHelper.attachToApplication(this)
     }
 
     /**

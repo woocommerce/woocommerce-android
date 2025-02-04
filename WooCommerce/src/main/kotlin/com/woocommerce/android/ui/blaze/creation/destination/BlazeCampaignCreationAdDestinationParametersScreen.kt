@@ -126,14 +126,14 @@ fun AdDestinationParametersScreen(
                         key = key,
                         value = value,
                         onDeleteParameterTapped = onDeleteParameterTapped,
-                        modifier = Modifier.animateItemPlacement()
+                        modifier = Modifier.animateItem()
                     )
                 }
 
                 item(key = "footer") {
                     Column(
                         modifier = Modifier
-                            .animateItemPlacement()
+                            .animateItem()
                             .fillMaxWidth()
                     ) {
                         Text(

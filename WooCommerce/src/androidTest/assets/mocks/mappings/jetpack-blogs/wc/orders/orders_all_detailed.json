@@ -9,9 +9,6 @@
             "path": {
                 "equalTo": "/wc/v3/orders/&_method=get"
             },
-            "query": {
-                "matches": "(.*)include(.*)"
-            },
             "locale": {
                 "matches": "(.*)"
             }
@@ -367,9 +364,9 @@
                 "refunds": [],
                 "payment_url": "",
                 "is_editable": false,
-                "date_created":"{{#assign 'customformat'}}yyyy-MM-dd'T'HH:mm:ss{{/assign}}{{fnow offset='-10 minutes' format=customformat}}",
-                "date_modified":"{{fnow offset='-10 minutes' format=customformat}}",
-                "date_paid_gmt": "{{fnow offset='-10 minutes' format=customformat}}"
+                "date_created_gmt":"{{currentYear}}-10-26T01:17:42",
+                "date_modified_gmt":"{{currentYear}}-10-26T01:17:42",
+                "date_paid_gmt": null
             }, {
                 "id": 2181,
                 "status": "completed",

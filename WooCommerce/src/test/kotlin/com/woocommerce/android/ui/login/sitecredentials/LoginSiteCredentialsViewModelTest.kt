@@ -15,10 +15,12 @@ import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthentic
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.assertj.core.api.Assertions.assertThat
@@ -26,6 +28,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -34,7 +37,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
-import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -71,7 +73,9 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     private val loginAnalyticsListener: LoginAnalyticsListener = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val appPrefs: AppPrefsWrapper = mock()
-    private val userAgent: UserAgent = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { it.arguments[0].toString() }
+    }
 
     private lateinit var viewModel: LoginSiteCredentialsViewModel
 
@@ -91,9 +95,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             applicationPasswordsNotifier = applicationPasswordsNotifier,
             analyticsTracker = analyticsTracker,
             appPrefs = appPrefs,
-            userAgent = userAgent,
             applicationPasswordsClientId = clientId,
-            resourceProvider = mock()
+            resourceProvider = resourceProvider
         )
     }
 
@@ -106,30 +109,10 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(state).isEqualTo(
-            LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState(
+            LoginSiteCredentialsViewModel.ViewState(
                 siteUrl = siteAddressWithoutSchemeAndSuffix,
                 username = "",
                 password = ""
-            )
-        )
-    }
-
-    @Test
-    fun `given shown login error dialog, when user chooses wp-admin login, then show login webview`() = testBlocking {
-        setup {
-            whenever(wpApiSiteRepository.getSiteByLocalId(testSite.id)).thenReturn(
-                testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }
-            )
-        }
-
-        val state = viewModel.viewState.runAndCaptureValues {
-            viewModel.onStartWebAuthorizationClick()
-        }.last()
-
-        assertThat(state).isEqualTo(
-            LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState(
-                authorizationUrl = urlAuthFull,
-                userAgent = userAgent
             )
         )
     }
@@ -140,7 +123,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testUsername)
-        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
+        }.last()
 
         assertThat(state.username).isEqualTo(testUsername)
     }
@@ -151,7 +134,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testPassword)
-        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
+        }.last()
 
         assertThat(state.username).isEqualTo(testPassword)
     }
@@ -162,7 +145,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged("")
-        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
+        }.last()
 
         assertThat(state.isValid).isFalse()
     }
@@ -173,7 +156,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onPasswordChanged("")
-        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
+        }.last()
 
         assertThat(state.isValid).isFalse()
     }
@@ -238,7 +221,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
-        }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
+        }.last()
 
         assertThat(state.errorDialogMessage).isEqualTo(expectedError.errorMessage)
         verify(analyticsTracker).track(
@@ -309,7 +292,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given application pwd disabled and wp-login-php accessible, when submitting native login, then show error screen`() = testBlocking {
+    fun `given application pwd disabled and wp-login-php accessible, when submitting login, then show error screen`() = testBlocking {
         setup {
             whenever(wpApiSiteRepository.checkIfUserIsEligible(testSite)).thenReturn(Result.failure(Exception()))
         }
@@ -318,19 +301,6 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onUsernameChanged(testUsername)
             viewModel.onPasswordChanged(testPassword)
             viewModel.onContinueClick()
-            applicationPasswordsUnavailableEvents.tryEmit(mock())
-        }
-
-        assertThat(viewModel.event.value)
-            .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
-    }
-
-    @Test
-    fun `given application pwd disabled and wp-login-php inaccessible, when choosing webview login, then show error`() = testBlocking {
-        setup()
-
-        viewModel.viewState.observeForTesting {
-            viewModel.onStartWebAuthorizationClick()
             applicationPasswordsUnavailableEvents.tryEmit(mock())
         }
 
@@ -361,5 +331,45 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             errorDescription = anyOrNull()
         )
         verify(loginAnalyticsListener).trackFailure(anyOrNull())
+    }
+
+    @Test
+    fun `given application pwd disabled and login fails, when attempting to sign in, then show error`() = testBlocking {
+        setup {
+            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.failure(Exception()))
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.success(testSite.apply { applicationPasswordsAuthorizeUrl = null }))
+        }
+
+        viewModel.viewState.observeForTesting {
+            viewModel.onUsernameChanged(testUsername)
+            viewModel.onPasswordChanged(testPassword)
+            viewModel.onContinueClick()
+        }
+
+        assertThat(viewModel.event.value)
+            .isEqualTo(ShowApplicationPasswordsUnavailableScreen(siteAddress, isJetpackConnected))
+    }
+
+    @Test
+    fun `given application passwords enabled and login fails for an unknown reason, when user attempts to sign-in, then show WebView login flow`() = testBlocking {
+        setup {
+            whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.failure(Exception()))
+            whenever(wpApiSiteRepository.fetchSite(siteAddress, testUsername, testPassword))
+                .thenReturn(Result.success(testSite.apply { applicationPasswordsAuthorizeUrl = urlAuthBase }))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onUsernameChanged(testUsername)
+            viewModel.onPasswordChanged(testPassword)
+            viewModel.viewState.getOrAwaitValue()
+            viewModel.onContinueClick()
+        }.last()
+
+        assertThat(event).isInstanceOf(LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen::class.java)
+        assertThat((event as LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen).url)
+            .isEqualTo(urlAuthFull)
     }
 }

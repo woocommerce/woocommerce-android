@@ -114,7 +114,8 @@ data class Order(
         val attributesList: List<Attribute>,
         val parent: Long? = null,
         val configuration: ProductConfiguration? = null,
-        val configurationKey: Long? = null
+        val configurationKey: Long? = null,
+        val containsMetadata: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
@@ -182,7 +183,7 @@ data class Order(
                 .firstOrNull()?.groupValues
                 ?.takeIf { it.size == addonAttributeGroupSize }
                 ?.toMutableList()
-                ?.apply { removeFirst() }
+                ?.apply { removeAt(0) }
 
             @IgnoredOnParcel
             val addonName = keyAsAddonRegexGroup

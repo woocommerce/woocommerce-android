@@ -56,8 +56,6 @@ import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
-import com.woocommerce.android.support.help.HelpActivity
-import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
@@ -83,6 +81,8 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForP
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenOrderCreation
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShortcutOpenPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ShowFeatureAnnouncement
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignDetail
+import com.woocommerce.android.ui.main.MainActivityViewModel.ViewBlazeCampaignList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewMyStoreStats
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
@@ -91,7 +91,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
@@ -116,6 +115,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.lang.ref.WeakReference
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
@@ -210,8 +210,30 @@ class MainActivity :
     private var progressDialog: ProgressDialog? = null
 
     private val fragmentLifecycleObserver: FragmentLifecycleCallbacks = object : FragmentLifecycleCallbacks() {
+        private var lastFragment = WeakReference<Fragment>(null)
+
         override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+            updateAppBarAndBottomNav(f)
+        }
+
+        override fun onFragmentStarted(fm: FragmentManager, f: Fragment) {
+            // This logic is needed to handle this case:
+            // 1. User navigates from Fragment A to Fragment B
+            // 2. Fragment B's view gets created, and onFragmentViewCreated is called, updating the AppBar.
+            // 3. Quickly the user goes back to Fragment A
+            // 4. Fragment A's view wasn't destroyed yet, so it doesn't go through the creation lifecycle,
+            //    which means onFragmentViewCreated won't be called, and the AppBar won't be updated.
+            //
+            // In this case, lastFragment will be pointing to Fragment B, so we can compare it with the fragment being
+            // started (Fragment A), and we can update the AppBar accordingly.
+            if (lastFragment.get() != f) {
+                updateAppBarAndBottomNav(f)
+            }
+        }
+
+        private fun updateAppBarAndBottomNav(f: Fragment) {
             if (f is DialogFragment) return
+            lastFragment = WeakReference(f)
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
@@ -324,7 +346,7 @@ class MainActivity :
 
         if (savedInstanceState == null) {
             viewModel.handleIncomingAppLink(intent?.data)
-            viewModel.handleShortcutAction(intent?.action?.toLowerCase(Locale.ROOT))
+            viewModel.handleShortcutAction(intent?.action?.lowercase(Locale.ROOT))
             handleIncomingImages()
         }
     }
@@ -373,7 +395,7 @@ class MainActivity :
         super.onPause()
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
         // Verify authenticated session
@@ -413,6 +435,7 @@ class MainActivity :
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         AnalyticsTracker.trackBackPressed(this)
 
@@ -420,6 +443,10 @@ class MainActivity :
             if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
                 return
             }
+        }
+
+        supportFragmentManager.primaryNavigationFragment?.let { fragment ->
+            updateAppBarVisibility(fragment)
         }
 
         super.onBackPressed()
@@ -766,7 +793,7 @@ class MainActivity :
             intent.removeExtra(FIELD_REMOTE_NOTIFICATION)
             intent.removeExtra(FIELD_PUSH_ID)
 
-            viewModel.handleIncomingNotification(localPushId, notification)
+            viewModel.onPushNotificationTapped(localPushId, notification)
         } else if (localNotification != null) {
             intent.removeExtra(FIELD_LOCAL_NOTIFICATION)
             viewModel.onLocalNotificationTapped(localNotification)
@@ -780,10 +807,11 @@ class MainActivity :
             when (event) {
                 is ViewMyStoreStats -> binding.bottomNav.currentPosition = MY_STORE
                 is ViewOrderList -> binding.bottomNav.currentPosition = ORDERS
-                is ViewZendeskTickets -> startZendeskActivity()
                 is ViewOrderDetail -> showOrderDetail(event)
                 is ViewReviewDetail -> showReviewDetail(event.uniqueId, launchedFromNotification = true)
                 is ViewReviewList -> showReviewList()
+                is ViewBlazeCampaignDetail -> showBlazeCampaignList(event.campaignId)
+                ViewBlazeCampaignList -> showBlazeCampaignList(campaignId = null)
                 is RestartActivityEvent -> onRestartActivityEvent(event)
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
@@ -811,6 +839,10 @@ class MainActivity :
 
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
                 is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
+                MainActivityViewModel.LaunchBlazeCampaignCreation -> {
+                    // Propagate it to the DashboardBlazeCard
+                    event.isHandled = false
+                }
             }
         }
 
@@ -818,6 +850,17 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
+    }
+
+    private fun showBlazeCampaignList(campaignId: String?) {
+        binding.bottomNav.currentPosition = MORE
+        binding.bottomNav.active(MORE.position)
+
+        navController.navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToBlazeCampaignListFragment(
+                campaignId = campaignId
+            ),
+        )
     }
 
     private fun observeNotificationsPermissionBarVisibility() {
@@ -887,7 +930,7 @@ class MainActivity :
 
     private fun navigateToFeatureAnnouncement(event: ShowFeatureAnnouncement) {
         if (!PackageUtils.isTesting()) {
-            val action = NavGraphMainDirections.actionOpenWhatsnewFromMain(event.announcement)
+            val action = NavGraphMainDirections.actionGlobalFeatureAnnouncementDialogFragmentOnMain(event.announcement)
             navController.navigateSafely(action)
         }
     }
@@ -929,11 +972,6 @@ class MainActivity :
         )
     }
 
-    private fun startZendeskActivity() {
-        binding.bottomNav.currentPosition = MY_STORE
-        startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
-    }
-
     private fun onRestartActivityEvent(event: RestartActivityEvent) {
         intent.apply {
             when (event) {
@@ -949,11 +987,17 @@ class MainActivity :
         restart()
     }
 
-    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
-        val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
-            isTrashEnabled = enableTrash
-        )
+    override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean, popUpToProductList: Boolean) {
+        val action = when (popUpToProductList) {
+            true -> NavGraphMainDirections.actionGlobalProductDetailFragmentPopUpToProductList(
+                mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
+                isTrashEnabled = enableTrash
+            )
+            else -> NavGraphMainDirections.actionGlobalProductDetailFragment(
+                mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
+                isTrashEnabled = enableTrash
+            )
+        }
         navController.navigateSafely(action)
     }
 
@@ -1182,7 +1226,25 @@ class MainActivity :
             remoteNoteId
         )
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(directions = action, extras = extras)
+        navController.navigateSafely(
+            directions = action,
+            extras = extras,
+        )
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onAttachFragment(fragment: Fragment) {
+        super.onAttachFragment(fragment)
+        updateAppBarVisibility(fragment)
+    }
+
+    private fun updateAppBarVisibility(fragment: Fragment) {
+        (fragment as? BaseFragment)?.let {
+            when (it.activityAppBarStatus) {
+                is AppBarStatus.Hidden -> supportActionBar?.hide()
+                is AppBarStatus.Visible -> supportActionBar?.show()
+            }
+        }
     }
 
     override fun showFeedbackSurvey() {

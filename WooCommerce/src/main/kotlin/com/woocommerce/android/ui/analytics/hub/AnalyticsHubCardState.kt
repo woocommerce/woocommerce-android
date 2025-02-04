@@ -85,9 +85,23 @@ sealed class AnalyticsHubCustomSelectionListViewState : AnalyticsCardViewState {
             }
     }
 
-    data class HiddenState(
-        override val card: AnalyticsCards
-    ) : AnalyticsHubCustomSelectionListViewState()
+    data class ShowCTAState(
+        override val card: AnalyticsCards,
+        val title: String,
+        val description: String,
+        val callToActionText: String,
+        val isVisible: Boolean,
+        val onCallToActionClickListener: () -> Unit
+    ) : AnalyticsHubCustomSelectionListViewState() {
+        val asAnalyticsHubUserCallToActionViewState
+            get() = AnalyticsHubUserCallToActionViewState(
+                title = title,
+                description = description,
+                callToActionText = callToActionText,
+                isVisible = isVisible,
+                onCallToActionClickListener = onCallToActionClickListener
+            )
+    }
 }
 
 data class AnalyticsHubUserCallToActionViewState(

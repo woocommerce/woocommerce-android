@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.payments.methodselection
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CARD_READER_TYPE_BUILT_IN
@@ -77,8 +76,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val paymentsFlowTracker: PaymentsFlowTracker,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
-    private val appPrefs: AppPrefs = AppPrefs,
     private val paymentsUtils: PaymentUtils,
+    private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -89,9 +88,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val order = _order.filterNotNull()
     private val cardReaderPaymentFlowParam
         get() = navArgs.cardReaderFlowParam as Payment
-
-    val displayUi: Boolean
-        get() = !isWooPOSPaymentFlow()
 
     init {
         checkStatus()
@@ -113,11 +109,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
                             }.also { order ->
                                 _order.value = order
                                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
+
+                                logOrderCurrencyMismatchWithSiteSettings(
+                                    storeCurrency = getSiteCurrencyCode(),
+                                    orderCurrency = order.currency
+                                )
                             }
 
                             when (param.paymentType) {
                                 SIMPLE, ORDER, ORDER_CREATION, TRY_TAP_TO_PAY -> showPaymentState()
-                                WOO_POS -> onBtReaderClicked()
+                                WOO_POS -> error("Unsupported card reader flow param: $param")
                             }
                         }
                         Unit
@@ -152,7 +153,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun buildSuccessState(
+    private suspend fun buildSuccessState(
         order: Order,
         isPaymentCollectableWithCardReader: Boolean,
         isPaymentCollectableWithTapToPay: Boolean,
@@ -306,7 +307,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
     fun onTapToPayClicked() {
         launch {
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CARD, VALUE_CARD_READER_TYPE_BUILT_IN)
-            appPrefs.setTTPWasUsedAtLeastOnce()
             triggerEvent(NavigateToCardReaderPaymentFlow(cardReaderPaymentFlowParam, BUILT_IN))
         }
     }
@@ -335,16 +335,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
                     flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
                 )
-                handleWooPosPaymentFailure()
             }
-        }
-    }
-
-    private fun handleWooPosPaymentFailure() {
-        // In case payment was initiated from the Woo POS mode, we need to propagate the payment
-        // result back, to close the SelectPaymentMethodFragment and handle failure on the Woo POS end.
-        if (cardReaderPaymentFlowParam.paymentType == WOO_POS) {
-            triggerEvent(ReturnResultToWooPos.Failure)
         }
     }
 
@@ -471,7 +462,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
                 TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order.first())
                 ORDER, ORDER_CREATION -> NavigateBackToOrderList(order.first())
-                WOO_POS -> ReturnResultToWooPos.Success
+                WOO_POS -> error("Woo POS is expected to use CardReaderPaymentController directly")
             }
         )
     }
@@ -496,14 +487,15 @@ class SelectPaymentMethodViewModel @Inject constructor(
         )
     }
 
-    private fun formatOrderTotal(total: BigDecimal): String {
-        val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+    private suspend fun formatOrderTotal(total: BigDecimal): String {
+        val currencyCode = getSiteCurrencyCode()
         return currencyFormatter.formatCurrency(total, currencyCode)
     }
 
-    private fun isWooPOSPaymentFlow() = with(navArgs.cardReaderFlowParam) {
-        this is Payment && paymentType == WOO_POS
-    }
+    private suspend fun getSiteCurrencyCode() =
+        withContext(dispatchers.io) {
+            wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
+        }
 
     companion object {
         private const val DELAY_MS = 1L

@@ -5,6 +5,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.core.view.MenuProvider
@@ -16,8 +18,12 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.IOException
+import java.net.MalformedURLException
+import java.net.URL
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,8 +34,12 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
+    @Inject lateinit var receiptHtmlInterceptor: ReceiptHtmlInterceptor
+
     private var _binding: FragmentReceiptPreviewBinding? = null
     private val binding get() = _binding!!
+
+    private var urlToLoad: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,10 +61,12 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
                 viewModel.onPrintClicked()
                 true
             }
+
             R.id.menu_send -> {
                 viewModel.onShareClicked()
                 true
             }
+
             else -> false
         }
     }
@@ -84,13 +96,49 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
         } else {
             with(binding.receiptPreviewPreviewWebview) {
                 webViewClient = object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView,
+                        webResourceRequest: WebResourceRequest
+                    ): Boolean {
+                        return viewModel.isReceiptDomainTrustable(webResourceRequest.url.toString())
+                    }
+
+                    override fun shouldInterceptRequest(
+                        view: WebView,
+                        request: WebResourceRequest
+                    ): WebResourceResponse? =
+                        if (request.url.toString() == urlToLoad) {
+                            interceptAndModifyReceiptResponse(request)
+                        } else {
+                            null
+                        }
+
                     override fun onPageFinished(view: WebView, url: String) {
                         viewModel.onReceiptLoaded()
                     }
                 }
-                settings.loadWithOverviewMode = true
-                settings.useWideViewPort = true
             }
+        }
+    }
+
+    private fun interceptAndModifyReceiptResponse(request: WebResourceRequest): WebResourceResponse? {
+        return try {
+            val connection = URL(request.url.toString()).openConnection()
+            val inputStream = connection.getInputStream()
+            val originalHtml = inputStream.bufferedReader().use { it.readText() }
+
+            val modifiedHtml = receiptHtmlInterceptor.interceptHtmlContent(originalHtml)
+
+            WebResourceResponse(
+                "text/html",
+                "UTF-8",
+                modifiedHtml.byteInputStream()
+            )
+        } catch (e: MalformedURLException) {
+            throw IllegalArgumentException("Invalid receipt URL: ${request.url}", e)
+        } catch (e: IOException) {
+            WooLog.e(WooLog.T.ORDERS, "Failed to read content from receipt URL: ${request.url}", e)
+            null
         }
     }
 
@@ -101,7 +149,10 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
         }
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is LoadUrl -> binding.receiptPreviewPreviewWebview.loadUrl(it.url)
+                is LoadUrl -> {
+                    urlToLoad = it.url
+                    binding.receiptPreviewPreviewWebview.loadUrl(it.url)
+                }
                 is PrintReceipt -> printHtmlHelper.printReceipt(requireActivity(), it.receiptUrl, it.documentName)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 else -> it.isHandled = false

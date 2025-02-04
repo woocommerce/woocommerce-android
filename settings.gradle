@@ -1,18 +1,4 @@
 pluginManagement {
-    gradle.ext.agpVersion = '8.1.0'
-    gradle.ext.googleServicesVersion = '4.4.0'
-    gradle.ext.daggerVersion = '2.50'
-    gradle.ext.detektVersion = '1.23.5'
-    gradle.ext.kotlinVersion = '1.9.22'
-    gradle.ext.kspVersion = '1.9.22-1.0.17'
-    gradle.ext.measureBuildsVersion = '2.1.2'
-    gradle.ext.navigationVersion = '2.7.7'
-    gradle.ext.sentryVersion = '4.10.0'
-    gradle.ext.violationCommentsVersion = '1.69.0'
-    gradle.ext.protobufVersion = '0.9.4'
-    gradle.ext.dependencyAnalysisVersion = '1.28.0'
-    gradle.ext.fladleVersion = '0.17.5'
-
     repositories {
         google()
         exclusiveContent {
@@ -28,38 +14,69 @@ pluginManagement {
         }
         gradlePluginPortal()
     }
-
-    plugins {
-        id 'androidx.navigation.safeargs.kotlin' version gradle.ext.navigationVersion
-        id 'com.android.application' version gradle.ext.agpVersion
-        id 'com.android.library' version gradle.ext.agpVersion
-        id 'com.automattic.android.measure-builds' version gradle.ext.measureBuildsVersion
-        id 'com.google.gms.google-services' version gradle.ext.googleServicesVersion
-        id 'io.gitlab.arturbosch.detekt' version gradle.ext.detektVersion
-        id 'io.sentry.android.gradle' version gradle.ext.sentryVersion
-        id 'org.jetbrains.kotlin.android' version gradle.ext.kotlinVersion
-        id 'org.jetbrains.kotlin.jvm' version gradle.ext.kotlinVersion
-        id 'org.jetbrains.kotlin.plugin.parcelize' version gradle.ext.kotlinVersion
-        id 'se.bjurr.violations.violation-comments-to-github-gradle-plugin' version gradle.ext.violationCommentsVersion
-        id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
-        id 'com.google.devtools.ksp' version gradle.ext.kspVersion
-        id "com.google.protobuf" version gradle.ext.protobufVersion
-        id "com.autonomousapps.dependency-analysis" version gradle.ext.dependencyAnalysisVersion
-        id "com.osacky.fladle" version gradle.ext.fladleVersion
-    }
 }
 
 plugins {
-    id 'com.gradle.enterprise' version '3.17.2'
+    id 'com.gradle.develocity' version '3.19'
 }
+
+gradle.ext.isCi = System.getenv('CI')?.toBoolean() ?: false
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        google()
+        maven {
+            url 'https://a8c-libs.s3.amazonaws.com/android'
+            content {
+                includeGroup "org.wordpress"
+                includeGroup "org.wordpress.fluxc"
+                includeGroup "org.wordpress.fluxc.plugins"
+                includeGroup "org.wordpress.wellsql"
+                includeGroup "org.wordpress.mediapicker"
+                includeGroup "com.automattic"
+                includeGroup "com.automattic.tracks"
+                includeGroup "com.gravatar"
+                includeGroup "org.wordpress.aztec"
+            }
+        }
+        maven {
+            url 'https://zendesk.jfrog.io/zendesk/repo'
+            content {
+                includeGroup "com.zendesk"
+                includeGroup "com.zendesk.belvedere2"
+            }
+        }
+        maven {
+            url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
+            content {
+                includeVersion "com.android.volley", "volley", "1.1.1"
+                includeVersion "com.google.android", "flexbox", "2.0.1"
+                includeVersion "com.jraska", "falcon", "2.1.1"
+                includeVersion "org.wordpress", "wellsql", "1.6.0"
+                includeVersion "org.wordpress", "wellsql-core", "1.6.0"
+            }
+        }
+        maven {
+            url "https://jitpack.io"
+            content {
+                includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "aztec")
+                includeModule("com.github.wordpress-mobile.WordPress-Aztec-Android", "glide-loader")
+                includeModule("com.github.chrisbanes", "PhotoView")
+                includeModule("com.github.PhilJay", "MPAndroidChart")
+            }
+        }
+    }
+}
+
 
 rootProject.name = 'WCAndroid'
 
-include ':quicklogin'
-include ':libs:commons'
-include ':libs:cardreader'
-include ':libs:iap'
-include ':WooCommerce'
+include ':libs:commons', ':libs:cardreader', ':libs:apifaker'
+include ':libs:fluxc', ':libs:fluxc-annotations', ':libs:fluxc-processor', ':libs:fluxc-plugin', ':libs:fluxc-tests'
+include ':libs:login'
+include ':WooCommerce', ':WooCommerce-Wear'
 
 gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
 gradle.ext.fluxCWooCommercePluginBinaryPath = "org.wordpress.fluxc.plugins:woocommerce"
@@ -72,11 +89,11 @@ gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gi
 gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
 
 gradle.ext {
-    compileSdkVersion = 34
+    compileSdkVersion = 35
     targetSdkVersion = 34
     minSdkVersion = 26
 }
 
 apply from: './config/gradle/include_builds.gradle'
 apply from: './config/gradle/gradle_build_cache.gradle'
-include ':WooCommerce-Wear'
+apply from: './config/gradle/gradle_build_scan.gradle'

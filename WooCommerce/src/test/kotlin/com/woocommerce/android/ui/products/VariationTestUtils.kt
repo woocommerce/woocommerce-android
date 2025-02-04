@@ -9,6 +9,7 @@ fun generateVariation(): ProductVariation {
         remoteProductId = 1,
         remoteVariationId = 2,
         sku = "sku",
+        globalUniqueId = "globalUniqueId",
         image = null,
         price = null,
         regularPrice = null,

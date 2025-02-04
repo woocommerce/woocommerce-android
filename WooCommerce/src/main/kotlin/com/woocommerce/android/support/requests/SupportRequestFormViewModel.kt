@@ -60,6 +60,10 @@ class SupportRequestFormViewModel @Inject constructor(
         viewState.update { it.copy(subject = subject) }
     }
 
+    fun onSiteAddressChanged(siteAddress: String) {
+        viewState.update { it.copy(siteAddress = siteAddress) }
+    }
+
     fun onMessageChanged(message: String) {
         viewState.update { it.copy(message = message) }
     }
@@ -93,7 +97,8 @@ class SupportRequestFormViewModel @Inject constructor(
                 selectedSite.getIfExists(),
                 viewState.value.subject,
                 viewState.value.message,
-                extraTags
+                extraTags,
+                viewState.value.siteAddress
             ).collect { it.handleCreateRequestResult() }
         }
     }
@@ -137,14 +142,15 @@ class SupportRequestFormViewModel @Inject constructor(
     data class ViewState(
         val ticketType: TicketType?,
         val subject: String,
+        val siteAddress: String,
         val message: String,
         val isLoading: Boolean
     ) : Parcelable {
         val dataIsValid
-            get() = ticketType != null && subject.isNotBlank() && message.isNotBlank()
+            get() = ticketType != null && subject.isNotBlank() && siteAddress.isNotBlank() && message.isNotBlank()
 
         companion object {
-            val EMPTY = ViewState(null, "", "", false)
+            val EMPTY = ViewState(null, "", "", "", isLoading = false)
         }
     }
 }

@@ -140,6 +140,8 @@ class RefundProductListAdapter(
         private val descriptionTextView: TextView = itemView.findViewById(R.id.refundItem_description)
         private val quantityTextView: TextView = itemView.findViewById(R.id.refundItem_quantity)
         private val productImageView: ImageView = itemView.findViewById(R.id.refundItem_icon)
+        private val subtotalTextView: TextView = itemView.findViewById(R.id.refundItemSubtotal)
+        private val taxesTextView: TextView = itemView.findViewById(R.id.refundItemTaxes)
 
         @SuppressLint("SetTextI18n")
         override fun bind(item: ProductRefundListItem) {
@@ -166,6 +168,10 @@ class RefundProductListAdapter(
                     .placeholder(R.drawable.ic_product)
                     .into(productImageView)
             } ?: productImageView.setImageResource(R.drawable.ic_product)
+
+            subtotalTextView.text = item.subtotal
+
+            taxesTextView.text = item.taxes
         }
     }
 
@@ -173,7 +179,9 @@ class RefundProductListAdapter(
     data class ProductRefundListItem(
         val orderItem: Order.Item,
         val maxQuantity: Float = 0f,
-        val quantity: Int = 0
+        val quantity: Int = 0,
+        val subtotal: String? = null,
+        val taxes: String? = null
     ) : Parcelable {
         @IgnoredOnParcel
         val availableRefundQuantity

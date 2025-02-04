@@ -477,12 +477,12 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given card_declined with invalid_pin, when terminal exception thrown, then pin req type returned`() {
+    fun `given card_declined with invalid_pin, when terminal exception thrown, then incorrect pin type returned`() {
         setupStripeApiCardDeclined("invalid_pin")
 
         val result = mapper.mapTerminalError(mock(), terminalException)
 
-        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.PinRequired)
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.IncorrectPin)
     }
 
     @Test
@@ -501,6 +501,15 @@ class PaymentErrorMapperTest : CardReaderBaseUnitTest() {
         val result = mapper.mapTerminalError(mock(), terminalException)
 
         assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.PinRequired)
+    }
+
+    @Test
+    fun `given card_declined with incorrect_pin, when terminal exception thrown, then incorrect pin type returned`() {
+        setupStripeApiCardDeclined("incorrect_pin")
+
+        val result = mapper.mapTerminalError(mock(), terminalException)
+
+        assertThat(result.type).isEqualTo(DeclinedByBackendError.CardDeclined.IncorrectPin)
     }
 
     @Test

@@ -2,10 +2,10 @@ package com.woocommerce.android.wear.ui.login
 
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Logged
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Timeout
-import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Waiting
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Logged
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Timeout
+import com.woocommerce.android.wear.ui.login.LoginViewModel.LoginState.Waiting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -25,7 +25,7 @@ class FetchSiteDataTest : BaseUnitTest() {
     @Test
     fun `when user is logged in, return Logged state`() = testBlocking {
         // Given
-        val events = mutableListOf<LoginRequestState>()
+        val events = mutableListOf<LoginState>()
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(true))
 
@@ -42,7 +42,7 @@ class FetchSiteDataTest : BaseUnitTest() {
     @Test
     fun `when user is not logged in and waiting timeout, return Timeout state`() = testBlocking {
         // Given
-        val events = mutableListOf<LoginRequestState>()
+        val events = mutableListOf<LoginState>()
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(false))
 
@@ -60,7 +60,7 @@ class FetchSiteDataTest : BaseUnitTest() {
     @Test
     fun `when user is not logged in and waiting, return Waiting state`() = testBlocking {
         // Given
-        val events = mutableListOf<LoginRequestState>()
+        val events = mutableListOf<LoginState>()
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(false))
 

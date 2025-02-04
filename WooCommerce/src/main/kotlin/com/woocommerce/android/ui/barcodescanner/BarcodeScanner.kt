@@ -24,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +32,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import java.util.concurrent.TimeUnit
@@ -57,49 +57,61 @@ fun BarcodeScanner(
         }
     }
     val selector = remember {
-        CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
+        val cameraProvider = cameraProviderFuture.get()
+        val hasBackCamera = cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)
+        val hasFrontCamera = cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)
+
+        when {
+            hasBackCamera -> CameraSelector.DEFAULT_BACK_CAMERA
+            hasFrontCamera -> CameraSelector.DEFAULT_FRONT_CAMERA
+            else -> error(IllegalStateException("No available camera"))
+        }
     }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                try {
-                    val cameraProvider = cameraProviderFuture.get()
-                    val imageAnalysisUseCase = ImageAnalysis.Builder()
-                        .setTargetResolution(
-                            Size(
-                                previewView.width,
-                                previewView.height
-                            )
-                        ).setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-                        .apply {
-                            setAnalyzer(ContextCompat.getMainExecutor(context), onNewFrame)
-                        }
+                previewView.post {
+                    try {
+                        val cameraProvider = cameraProviderFuture.get()
+                        val imageAnalysisUseCase = ImageAnalysis.Builder()
+                            .setTargetResolution(
+                                Size(
+                                    previewView.width,
+                                    previewView.height
+                                )
+                            ).setBackpressureStrategy(STRATEGY_KEEP_ONLY_LATEST)
+                            .build()
+                            .apply {
+                                setAnalyzer(ContextCompat.getMainExecutor(context), onNewFrame)
+                            }
 
-                    cameraProvider.unbindAll()
-                    val camera = cameraProvider.bindToLifecycle(
-                        lifecycleOwner,
-                        selector,
-                        cameraPreview,
-                        imageAnalysisUseCase
-                    )
+                        cameraProvider.unbindAll()
+                        val camera = cameraProvider.bindToLifecycle(
+                            lifecycleOwner,
+                            selector,
+                            cameraPreview,
+                            imageAnalysisUseCase
+                        )
 
-                    val factory = SurfaceOrientedMeteringPointFactory(
-                        previewView.width.toFloat(),
-                        previewView.height.toFloat()
-                    )
-                    val centerPoint = factory.createPoint(
-                        previewView.width.toFloat() / 2,
-                        previewView.height.toFloat() / 2
-                    )
-                    val action = FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF).apply {
-                        // Confusing naming - that means focus and metering will reset after 2 seconds
-                        setAutoCancelDuration(2, TimeUnit.SECONDS)
-                    }.build()
-                    camera.cameraControl.startFocusAndMetering(action)
-                } catch (e: Exception) {
-                    onBindingException(e)
+                        val factory = SurfaceOrientedMeteringPointFactory(
+                            previewView.width.toFloat(),
+                            previewView.height.toFloat()
+                        )
+                        val centerPoint = factory.createPoint(
+                            previewView.width.toFloat() / 2,
+                            previewView.height.toFloat() / 2
+                        )
+                        val action =
+                            FocusMeteringAction.Builder(centerPoint, FocusMeteringAction.FLAG_AF)
+                                .apply {
+                                    // Confusing naming - that means focus and metering will reset after 5 seconds
+                                    setAutoCancelDuration(5, TimeUnit.SECONDS)
+                                }.build()
+                        camera.cameraControl.startFocusAndMetering(action)
+                    } catch (e: Exception) {
+                        onBindingException(e)
+                    }
                 }
             }
         }

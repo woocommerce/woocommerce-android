@@ -17,7 +17,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.woocommerce.android.NavGraphMainDirections
+import com.woocommerce.android.NavGraphPaymentFlowDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderPaymentDialogBinding
@@ -104,7 +104,10 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             announceForAccessibility(binding, viewState)
             UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
             UiHelpers.setTextOrHide(binding.amountLabel, viewState.amountWithCurrencyLabel)
-            UiHelpers.setImageOrHideInLandscapeOnNonExpandedScreenSizes(binding.illustration, viewState.illustration)
+            UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+                binding.illustration,
+                viewState.illustration
+            )
             UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
             (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
                 .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
@@ -138,7 +141,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
 
     private fun openPurchaseCardReaderScreen(url: String) {
         findNavController().navigate(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = url)
+            NavGraphPaymentFlowDirections.actionGlobalWPComWebViewFragment(urlToLoad = url)
         )
     }
 

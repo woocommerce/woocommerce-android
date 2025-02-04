@@ -19,7 +19,6 @@ import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.util.Locale
 import java.util.UUID
 
 class AnalyticsTracker private constructor(
@@ -91,7 +90,7 @@ class AnalyticsTracker private constructor(
             return
         }
 
-        val eventName = stat.name.lowercase(Locale.getDefault())
+        val eventName = stat.name.lowercase()
 
         val user = username ?: getAnonID() ?: generateNewAnonID()
 
@@ -103,12 +102,13 @@ class AnalyticsTracker private constructor(
 
         val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
         val eventPrefix = if (stat.isPosEvent) POS_EVENTS_PREFIX else EVENTS_PREFIX
-        tracksClient?.track(eventPrefix + eventName, propertiesJson, user, userType)
+        val fullEventName = eventPrefix + eventName
+        tracksClient?.track(fullEventName, propertiesJson, user, userType)
 
         if (propertiesJson.length() > 0) {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $fullEventName, Properties: $propertiesJson")
         } else {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $fullEventName")
         }
     }
 
@@ -231,8 +231,6 @@ class AnalyticsTracker private constructor(
         const val KEY_DATE = "date"
         const val KEY_GRANULARITY = "granularity"
         const val KEY_SOURCE = "source"
-        const val KEY_CUSTOM_FIELDS_COUNT = "custom_fields_count"
-        const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
         const val KEY_WAITING_TIME = "waiting_time"
         const val KEY_IS_NON_ATOMIC = "is_non_atomic"
         const val KEY_CAUSE = "cause"
@@ -250,6 +248,7 @@ class AnalyticsTracker private constructor(
         const val KEY_SUCCESS = "success"
         const val KEY_TIME_TAKEN = "time_taken"
         const val KEY_IS_EDITING = "is_editing"
+        const val KEY_POS_ONBOARDING_STATE = "onboarding_state"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_DEVICE_TYPE_REGULAR = "regular"
@@ -258,6 +257,8 @@ class AnalyticsTracker private constructor(
         const val VALUE_SORT_NAME_DESC = "name,descending"
         const val VALUE_SORT_DATE_ASC = "date,ascending"
         const val VALUE_SORT_DATE_DESC = "date,descending"
+
+        const val KEY_SELECTED_ORDERS_COUNT = "selected_orders_count"
 
         const val VALUE_API_SUCCESS = "success"
         const val VALUE_API_FAILED = "failed"
@@ -358,17 +359,13 @@ class AnalyticsTracker private constructor(
         const val VALUE_FEEDBACK_CANCELED = "canceled"
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
-        const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
-        const val VALUE_COUPONS_FEEDBACK = "coupons"
         const val VALUE_ANALYTICS_HUB_FEEDBACK = "analytics_hub"
         const val VALUE_ORDER_SHIPPING_LINES_FEEDBACK = "order_shipping_lines"
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
         const val VALUE_SIMPLE_PAYMENTS_FLOW = "simple_payment"
-        const val VALUE_SIMPLE_PAYMENTS_FEEDBACK = "simple_payments"
-        const val VALUE_TAP_TO_PAY_FEEDBACK = "tap_to_pay"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CARD = "card"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_CASH = "cash"
         const val VALUE_SIMPLE_PAYMENTS_COLLECT_LINK = "payment_link"
@@ -480,6 +477,9 @@ class AnalyticsTracker private constructor(
         const val VALUE_MORE_MENU_UPGRADES = "upgrades"
         const val VALUE_MORE_MENU_CUSTOMERS = "customers"
 
+        // We have to call in non consistent way to match the iOS naming
+        const val VALUE_MORE_MENU_POS = "pointOfSale"
+
         const val VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE = "badge_visible"
 
         // -- Inbox note actions
@@ -522,6 +522,7 @@ class AnalyticsTracker private constructor(
         // -- Jetpack Setup
         const val KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED = "is_already_connected"
         const val KEY_JETPACK_SETUP_REQUIRES_CONNECTION_ONLY = "requires_connection_only"
+        const val KEY_IS_SIGN_UP = "is_signup"
         const val VALUE_JETPACK_SETUP_STEP_EMAIL_ADDRESS = "email_address"
         const val VALUE_JETPACK_SETUP_STEP_PASSWORD = "password"
         const val VALUE_JETPACK_SETUP_STEP_MAGIC_LINK = "magic_link"
@@ -530,9 +531,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_JETPACK_SETUP_TAP_GO_TO_STORE = "go_to_store"
         const val VALUE_JETPACK_SETUP_TAP_SUPPORT = "support"
         const val VALUE_JETPACK_SETUP_TAP_TRY_AGAIN = "try_again"
-
-        // -- Login with WordPress.com account flow
-        const val VALUE_LOGIN_WITH_WORDPRESS_COM = "wordpress_com"
 
         // -- Upsell banner
         const val KEY_BANNER_SOURCE = "source"
@@ -604,6 +602,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_PRODUCT_SHARING = "product_sharing"
 
         // -- AI product description
+        const val VALUE_PRODUCT_CREATION = "product_creation"
         const val VALUE_AZTEC_EDITOR = "aztec_editor"
         const val VALUE_PRODUCT_FORM = "product_form"
         const val VALUE_PRODUCT_DESCRIPTION = "product_description"
@@ -621,6 +620,8 @@ class AnalyticsTracker private constructor(
         const val KEY_BLAZE_TOTAL_BUDGET = "total_budget"
         const val KEY_BLAZE_IS_AI_CONTENT = "is_ai_suggested_ad_content"
         const val KEY_BLAZE_ERROR = "blaze_creation_error"
+        const val KEY_BLAZE_CAMPAIGN_TYPE = "campaign_type"
+        const val KEY_BLAZE_OBJECTIVE = "objective"
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"
@@ -630,21 +631,13 @@ class AnalyticsTracker private constructor(
         const val VALUE_CHANGED_FIELD_QUANTITY = "quantity"
         const val VALUE_CHANGED_FIELD_VARIATION = "variation"
         const val VALUE_CHANGED_FIELD_OPTIONAL = "optional"
-
-        // -- AI product name
-        const val KEY_HAS_INPUT_NAME = "has_input_name"
-        const val VALUE_PRODUCT_CREATION = "product_creation"
-        const val VALUE_PRODUCT_CREATION_AI = "product_creation_ai"
+        const val VALUE_START_END_CAMPAIGN = "start_end"
+        const val VALUE_EVERGREEN_CAMPAIGN = "evergreen"
 
         // -- AI product creation
         const val KEY_TONE = "tone"
         const val KEY_IS_FIRST_ATTEMPT = "is_first_attempt"
         const val KEY_FEATURE_WORD_COUNT = "feature_word_count"
-
-        // -- AI product from package photo
-        const val KEY_SCANNED_TEXT_COUNT = "scanned_text_count"
-        const val KEY_SELECTED_TEXT_COUNT = "selected_text_count"
-        const val VALUE_PRODUCT_CREATION_FROM_PACKAGE_PHOTO = "product_creation_from_package_photo"
 
         const val KEY_IS_AI_CONTENT = "is_ai_content"
 
@@ -661,9 +654,11 @@ class AnalyticsTracker private constructor(
         const val KEY_THEME_PICKER_LAYOUT_PREVIEW = "layout"
         const val KEY_THEME_PICKER_PAGE_PREVIEW = "page"
 
-        // Analytics Hub Settings
+        // Analytics Hub
         const val KEY_ENABLED_CARDS = "enabled_cards"
         const val KEY_DISABLED_CARDS = "disabled_cards"
+        const val KEY_METRIC_CARD = "card"
+        const val KEY_SELECTED_METRIC = "selected_metric"
 
         // Dynamic Dashboard
         const val KEY_NEW_CARD_AVAILABLE = "new_card_available"

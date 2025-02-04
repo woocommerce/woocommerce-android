@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.action.WCProductAction
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
@@ -42,7 +43,8 @@ class ProductListRepository @Inject constructor(
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
     }
 
-    private var searchContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
+    private var searchBySKUContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
+    private var searchByGlobalUniqueIdContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
     private var trashContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
 
@@ -94,7 +96,8 @@ class ProductListRepository @Inject constructor(
             offset = offset,
             sortType = sortType ?: productSortingChoice,
             filterOptions = productFilterOptions,
-            excludedProductIds = excludedProductIds.orEmpty()
+            excludedProductIds = excludedProductIds.orEmpty(),
+            includeTypes = emptyList()
         ).let { result ->
             if (result.isError) {
                 AnalyticsTracker.track(
@@ -131,7 +134,7 @@ class ProductListRepository @Inject constructor(
         excludedProductIds: List<Long>? = null,
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
     ): List<Product>? {
-        val result = searchContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+        val result = searchBySKUContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
             lastIsSkuSearch = skuSearchOptions
@@ -146,6 +149,32 @@ class ProductListRepository @Inject constructor(
                 filterOptions = productFilterOptions
             )
             dispatcher.dispatch(WCProductActionBuilder.newSearchProductsAction(payload))
+        }
+
+        return when (result) {
+            is ContinuationWrapper.ContinuationResult.Cancellation -> null
+            is ContinuationWrapper.ContinuationResult.Success -> result.value
+        }
+    }
+
+    suspend fun searchProductListByGlobalUniqueId(
+        globalUniqueId: String,
+        loadMore: Boolean = false,
+        excludedProductIds: List<Long>? = null,
+        productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
+    ): List<Product>? {
+        val result = searchByGlobalUniqueIdContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
+            offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
+            val payload = WCProductStore.SearchProductsByGlobalUniqueIdPayload(
+                site = selectedSite.get(),
+                globalUniqueId = globalUniqueId,
+                pageSize = PRODUCT_PAGE_SIZE,
+                offset = offset,
+                sorting = productSortingChoice,
+                excludedProductIds = excludedProductIds,
+                filterOptions = productFilterOptions
+            )
+            dispatcher.dispatch(WCProductActionBuilder.newSearchProductsByGlobalUniqueIdAction(payload))
         }
 
         return when (result) {
@@ -240,12 +269,18 @@ class ProductListRepository @Inject constructor(
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductsSearched(event: WCProductStore.OnProductsSearched) {
+        val continuation = if (event.globalUniqueIdSearchQuery != null) {
+            searchByGlobalUniqueIdContinuation
+        } else {
+            searchBySKUContinuation
+        }
+
         if (event.isError) {
-            searchContinuation.continueWith(emptyList())
+            continuation.continueWith(emptyList())
         } else {
             canLoadMoreProducts = event.canLoadMore
             val products = event.searchResults.map { it.toAppModel() }
-            searchContinuation.continueWith(products)
+            continuation.continueWith(products)
         }
     }
 

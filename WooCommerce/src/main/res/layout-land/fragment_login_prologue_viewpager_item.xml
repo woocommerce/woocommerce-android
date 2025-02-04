@@ -1,51 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="center">
+    android:gravity="center"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/major_150"
-        android:adjustViewBounds="true"
         android:importantForAccessibility="no"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/prologueTitle"
-        tools:src="@drawable/img_prologue_analytics"
-        />
+        tools:src="@drawable/img_prologue_analytics" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueTitle"
-        android:layout_width="match_parent"
+        style="@style/Woo.TextView.Headline5"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="37dp"
+        android:breakStrategy="balanced"
         android:gravity="center"
         android:textStyle="bold"
-        style="@style/Woo.TextView.Headline5"
-        app:layout_constraintVertical_chainStyle="packed"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/prologueSubtitle"
+        app:lineHeight="29sp"
         tools:text="@string/login_prologue_label_analytics" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueSubtitle"
+        style="@style/Woo.TextView.Subtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:gravity="center"
-        style="@style/Woo.TextView.Subtitle1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/prologueTitle"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="@string/login_prologue_label_analytics" />
-
-</androidx.constraintlayout.widget.ConstraintLayout >
+</LinearLayout>

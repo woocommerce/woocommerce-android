@@ -1,28 +1,27 @@
 package com.woocommerce.android
 
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.promobanner.PromoBannerType
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
-    var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
-
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
 
     var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
 
-    var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
-
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
+
+    var blazeFirstTimeWithoutCampaign by AppPrefs::blazeFirstTimeWithoutCampaign
+
+    var isBlazeNoCampaignReminderShown by AppPrefs::isBlazeNoCampaignReminderShown
+
+    var isBlazeAbandonedCampaignReminderShown by AppPrefs::isBlazeAbandonedCampaignReminderShown
 
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 
@@ -31,6 +30,14 @@ class AppPrefsWrapper @Inject constructor() {
     var timesAiProductCreationSurveyDisplayed by AppPrefs::timesAiProductCreationSurveyDisplayed
 
     var isAiProductCreationSurveyDismissed by AppPrefs::isAiProductCreationSurveyDismissed
+
+    var isCustomFieldsTopBannerDismissed by AppPrefs::isCustomFieldsTopBannerDismissed
+
+    var blazeCampaignSelectedObjective by AppPrefs::blazeCampaignSelectedObjective
+
+    var blazeCampaignObjectiveSwitchChecked by AppPrefs::blazeCampaignObjectiveSwitchChecked
+
+    var isSiteWPComSuspended by AppPrefs::isSiteWPComSuspended
 
     fun getAppInstallationDate() = AppPrefs.installationDate
 
@@ -315,18 +322,7 @@ class AppPrefsWrapper @Inject constructor() {
     /**
      * Observes changes to the preferences
      */
-    fun observePrefs(): Flow<Unit> {
-        return callbackFlow {
-            val listener = OnSharedPreferenceChangeListener { _, _ ->
-                trySend(Unit)
-            }
-            AppPrefs.getPreferences().registerOnSharedPreferenceChangeListener(listener)
-
-            awaitClose {
-                AppPrefs.getPreferences().unregisterOnSharedPreferenceChangeListener(listener)
-            }
-        }
-    }
+    fun observePrefs(): Flow<Unit> = AppPrefs.observePrefs()
 
     fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
         AppPrefs.updateOnboardingCompletedStatus(siteId, completed)
@@ -371,4 +367,16 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getNotificationChannelTypeSuffix(channel: NotificationChannelType): Int? =
         AppPrefs.getNotificationChannelTypeSuffix(channel)
+
+    fun removeBlazeFirstTimeWithoutCampaign() {
+        AppPrefs.removeBlazeFirstTimeWithoutCampaign()
+    }
+
+    fun existsBlazeFirstTimeWithoutCampaign() = AppPrefs.existsBlazeFirstTimeWithoutCampaign()
+
+    fun setBlazeCampaignCreated() {
+        AppPrefs.setBlazeCampaignCreated()
+    }
+
+    fun getBlazeCampaignCreated() = AppPrefs.getBlazeCampaignCreated()
 }

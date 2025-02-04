@@ -1,212 +1,210 @@
 package com.woocommerce.android.ui.woopos.home.totals.payment.success
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 @Composable
 fun WooPosPaymentSuccessScreen(
     state: WooPosTotalsViewState.PaymentSuccess,
+    onReceiptClicked: () -> Unit,
     onNewTransactionClicked: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(
-                    top = 24.dp.toAdaptivePadding(),
-                    start = 24.dp.toAdaptivePadding(),
-                    end = 24.dp.toAdaptivePadding(),
-                    bottom = 0.dp
-                )
-                .weight(1f)
-                .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colors.background,
-                    shape = RoundedCornerShape(16.dp),
-                )
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(152, 241, 121, 0),
-                            Color(152, 241, 121, 0x1A)
-                        )
-                    ),
-                    shape = RoundedCornerShape(16.dp),
-                )
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
+    val savedAnimationStage = rememberSaveable { mutableStateOf(AnimationStage.INITIAL) }
+    val animationStateFlow = remember { MutableStateFlow(savedAnimationStage.value) }
 
-            Icon(
-                painter = painterResource(id = R.drawable.woo_pos_ic_payment_success),
-                tint = Color.Unspecified,
-                contentDescription = null,
+    LaunchedEffect(Unit) {
+        if (animationStateFlow.value != AnimationStage.FINISHED) {
+            startAnimations(animationStateFlow)
+        }
+    }
+
+    val animationState = animationStateFlow.collectAsState().value
+    savedAnimationStage.value = animationState
+
+    WooPosPaymentSuccessScreen(
+        state = state,
+        animationStage = animationState,
+        onReceiptClicked = onReceiptClicked,
+        onNewTransactionClicked = onNewTransactionClicked,
+    )
+}
+
+@Composable
+private fun WooPosPaymentSuccessScreen(
+    state: WooPosTotalsViewState.PaymentSuccess,
+    animationStage: AnimationStage,
+    onReceiptClicked: () -> Unit,
+    onNewTransactionClicked: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(WooPosTheme.colors.paymentSuccessBackground),
+        contentAlignment = Alignment.Center
+    ) {
+        val marginBetweenButtonAndText by animateDpAsState(
+            targetValue = if (animationStage >= AnimationStage.BUTTONS) 80.dp else 16.dp,
+            label = "Check mark size"
+        )
+        @Suppress("DestructuringDeclarationWithTooManyEntries")
+        ConstraintLayout {
+            val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
+
+            val checkMarkIconMargin = 56.dp.toAdaptivePadding()
+            CheckMarkIcon(
+                animationStage = animationStage,
+                modifier = Modifier.constrainAs(icon) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(title.top, margin = checkMarkIconMargin)
+                }
             )
-            Spacer(modifier = Modifier.height(32.dp.toAdaptivePadding()))
+
+            val textsMargin = 8.dp.toAdaptivePadding()
             Text(
                 text = stringResource(R.string.woopos_payment_successful_label),
                 style = MaterialTheme.typography.h4,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                color = Color(0xFF004D40)
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.constrainAs(title) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(message.top, margin = textsMargin)
+                }
             )
 
-            Spacer(modifier = Modifier.height(32.dp.toAdaptivePadding()))
+            val marginBetweenButtonAndTextAdaptive = marginBetweenButtonAndText.toAdaptivePadding()
+            Text(
+                text = state.orderTotalText,
+                style = MaterialTheme.typography.h6,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Normal,
+                color = MaterialTheme.colors.onSurface,
+                modifier = Modifier.constrainAs(message) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndTextAdaptive)
+                }
+            )
 
-            TotalsSummary(state)
+            val marginBetweenButtons = 16.dp.toAdaptivePadding()
+            WooPosButton(
+                modifier = Modifier
+                    .constrainAs(buttonNewOrder) {
+                        bottom.linkTo(buttonEmailReceipts.top, margin = marginBetweenButtons)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .height(80.dp)
+                    .width(604.dp),
+                onClick = onNewTransactionClicked,
+                text = stringResource(R.string.woopos_new_order_button)
+            )
 
-            Spacer(modifier = Modifier.weight(1f))
-        }
-
-        Spacer(modifier = Modifier.height(24.dp.toAdaptivePadding()))
-
-        OutlinedButton(
-            modifier = Modifier
-                .padding(
-                    top = 0.dp.toAdaptivePadding(),
-                    start = 24.dp.toAdaptivePadding(),
-                    end = 24.dp.toAdaptivePadding(),
-                    bottom = 24.dp.toAdaptivePadding(),
-                )
-                .fillMaxWidth(),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colors.onSurface,
-            ),
-            onClick = onNewTransactionClicked
-        ) {
-            Row(
-                modifier = Modifier.padding(8.dp.toAdaptivePadding()),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.woo_pos_ic_return_home),
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(12.dp.toAdaptivePadding()))
-                Text(
-                    text = stringResource(R.string.woopos_new_transaction_button),
-                    style = MaterialTheme.typography.h4,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                )
-            }
+            WooPosOutlinedButton(
+                modifier = Modifier
+                    .constrainAs(buttonEmailReceipts) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .height(80.dp)
+                    .width(604.dp),
+                onClick = onReceiptClicked,
+                text = stringResource(R.string.woopos_receipt_button)
+            )
         }
     }
 }
 
 @Composable
-private fun TotalsSummary(state: WooPosTotalsViewState.PaymentSuccess) {
-    Column(
-        modifier = Modifier
-            .border(
-                width = (0.5).dp,
-                color = WooPosTheme.colors.border,
-                shape = RoundedCornerShape(8.dp)
+private fun CheckMarkIcon(
+    animationStage: AnimationStage,
+    modifier: Modifier = Modifier,
+) {
+    val size by animateDpAsState(
+        targetValue = if (animationStage >= AnimationStage.CIRCLE) 164.dp else 0.dp,
+        label = "Circle Size"
+    )
+    val iconSize by animateDpAsState(
+        targetValue = if (animationStage >= AnimationStage.ICON) 72.dp else 0.dp,
+        label = "Icon Size"
+    )
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(size)
+            .shadow(
+                elevation = 4.dp,
+                shape = CircleShape,
+                clip = false
             )
-            .padding(24.dp.toAdaptivePadding())
-            .width(380.dp)
+            .background(WooPosTheme.colors.success, CircleShape)
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.woopos_payment_subtotal_label),
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Normal
-            )
-            Text(
-                text = state.orderSubtotalText,
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Normal
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-
-        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
-
-        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.woopos_payment_tax_label),
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Normal
-            )
-            Text(
-                text = state.orderTaxText,
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Normal
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-
-        Divider(color = WooPosTheme.colors.border, thickness = 0.5.dp)
-
-        Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.woopos_payment_total_label),
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = state.orderTotalText,
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF3C2861)
-            )
-        }
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_check),
+            tint = MaterialTheme.colors.onSurface,
+            contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
+            modifier = Modifier
+                .size(iconSize)
+        )
     }
+}
+
+@Suppress("MagicNumber")
+private suspend fun startAnimations(stateFlow: MutableStateFlow<AnimationStage>) {
+    stateFlow.update { AnimationStage.BUTTONS }
+    delay(300)
+    stateFlow.update { AnimationStage.CIRCLE }
+    delay(300)
+    stateFlow.update { AnimationStage.ICON }
+    stateFlow.update { AnimationStage.FINISHED }
+}
+
+private enum class AnimationStage {
+    INITIAL,
+    BUTTONS,
+    CIRCLE,
+    ICON,
+    FINISHED,
 }
 
 @WooPosPreview
@@ -215,10 +213,10 @@ fun WooPosPaymentSuccessScreenPreview() {
     WooPosTheme {
         WooPosPaymentSuccessScreen(
             state = WooPosTotalsViewState.PaymentSuccess(
-                orderSubtotalText = "$11.98",
-                orderTotalText = "$13.18",
-                orderTaxText = "$1.20"
+                orderTotalText = "A payment of 13.18 was successfully made",
             ),
+            animationStage = AnimationStage.FINISHED,
+            onReceiptClicked = {},
             onNewTransactionClicked = {}
         )
     }

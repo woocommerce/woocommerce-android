@@ -15,6 +15,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_M
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_POS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_REVIEWS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_UPGRADES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_VIEW_STORE
@@ -34,7 +35,6 @@ import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
-import com.woocommerce.android.ui.woopos.WooPosIsFeatureFlagEnabled
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -71,7 +71,6 @@ class MoreMenuViewModel @Inject constructor(
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     private val isWooPosEnabled: WooPosIsEnabled,
-    private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
@@ -145,9 +144,7 @@ class MoreMenuViewModel @Inject constructor(
                     icon = R.drawable.ic_more_menu_pos,
                     extraIcon = R.drawable.ic_more_menu_pos_extra,
                     state = wooPosState,
-                    onClick = {
-                        triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
-                    }
+                    onClick = ::onWooPosButtonClick,
                 )
             )
         )
@@ -246,7 +243,7 @@ class MoreMenuViewModel @Inject constructor(
             )
         )
 
-    private suspend fun trackBlazeDisplayed() {
+    private fun trackBlazeDisplayed() {
         if (isBlazeEnabled()) {
             AnalyticsTracker.track(
                 stat = BLAZE_ENTRY_POINT_DISPLAYED,
@@ -398,6 +395,11 @@ class MoreMenuViewModel @Inject constructor(
         }
     }
 
+    private fun onWooPosButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_POS)
+        triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
+    }
+
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
         triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrlOrDefault))
@@ -437,7 +439,7 @@ class MoreMenuViewModel @Inject constructor(
         selectedOption: String,
         extraOptions: Map<String, String> = emptyMap()
     ) {
-        AnalyticsTracker.track(
+        analyticsTrackerWrapper.track(
             AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
             mapOf(KEY_OPTION to selectedOption) + extraOptions
         )
@@ -458,24 +460,17 @@ class MoreMenuViewModel @Inject constructor(
         .onStart { emit("") }
 
     private fun checkFeaturesAvailability(): Flow<Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>> {
-        val initialState = MoreMenuItemButton.Type.entries.associateWith { MoreMenuItemButton.State.Loading }
-            .toMutableMap()
+        val initialState = MoreMenuItemButton.Type.entries.associateWith {
+            MoreMenuItemButton.State.Loading
+        }.toMutableMap()
 
-        val flows = mutableListOf(
+        return listOf(
             doCheckAvailability(MoreMenuItemButton.Type.Blaze) { isBlazeEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.GoogleForWoo) { isGoogleForWooEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
-        )
-
-        // While this in development better to not show loading state for WooPos at all
-        if (isWooPosFFEnabled()) {
-            flows += doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
-        } else {
-            initialState[MoreMenuItemButton.Type.WooPos] = MoreMenuItemButton.State.Hidden
-        }
-
-        return flows.merge()
+            doCheckAvailability(MoreMenuItemButton.Type.WooPos) { isWooPosEnabled() }
+        ).merge()
             .map { update ->
                 initialState[update.first] = update.second
                 initialState

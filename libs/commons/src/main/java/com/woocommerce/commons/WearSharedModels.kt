@@ -32,3 +32,7 @@ data class WearOrderAddress(
     val country: String,
     val phone: String
 )
+
+data class WearAppSettings(
+    val crashReportEnabled: Boolean
+)

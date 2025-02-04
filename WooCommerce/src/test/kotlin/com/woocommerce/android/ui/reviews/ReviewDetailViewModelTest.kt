@@ -18,7 +18,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -84,8 +83,8 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start(REVIEW_ID, false)
 
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
-        Assertions.assertThat(productReview).isEqualTo(review)
+        assertThat(skeletonShown).containsExactly(true, false)
+        assertThat(productReview).isEqualTo(review)
         verify(markReviewAsSeen, times(1)).invoke(REVIEW_ID, notification)
     }
 
@@ -111,9 +110,9 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start(REVIEW_ID, false)
 
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
-        Assertions.assertThat(productReview).isEqualTo(review)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
+        assertThat(skeletonShown).containsExactly(true, false)
+        assertThat(productReview).isEqualTo(review)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_load_review_error))
         verify(markReviewAsSeen, times(1)).invoke(REVIEW_ID, notification)
     }
 
@@ -171,7 +170,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
             viewModel.moderateReview(SPAM)
             assertFalse(exitCalled)
-            Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+            assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
         }
 
     @Test
@@ -181,7 +180,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onBackPressed()
 
-        Assertions.assertThat(viewModel.event.value).isEqualTo(NavigateBackFromNotification)
+        assertThat(viewModel.event.value).isEqualTo(NavigateBackFromNotification)
     }
 
     @Test
@@ -191,7 +190,7 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onBackPressed()
 
-        Assertions.assertThat(viewModel.event.value).isEqualTo(Exit)
+        assertThat(viewModel.event.value).isEqualTo(Exit)
     }
 
     @Test
@@ -246,4 +245,17 @@ class ReviewDetailViewModelTest : BaseUnitTest() {
         verify(analyticsTracker).track(REVIEW_REPLY_SEND_FAILED)
         assertThat(events).last().isEqualTo(ShowSnackbar(R.string.review_reply_failure))
     }
+
+    @Test
+    fun `given review opened from notification, when review is moderated, trigger NavigateBackFromNotification`() =
+        testBlocking {
+            doReturn(true).whenever(networkStatus).isConnected()
+            doReturn(review).whenever(repository).getCachedProductReview(any())
+            doReturn(RequestResult.SUCCESS).whenever(repository).fetchProductReview(any())
+            viewModel.start(REVIEW_ID, launchedFromNotification = true)
+
+            viewModel.moderateReview(SPAM)
+
+            assertThat(viewModel.event.value).isEqualTo(NavigateBackFromNotification)
+        }
 }

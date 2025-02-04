@@ -383,6 +383,10 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
 
     @Test
     fun `when data store allows new stats fetch, then request data with ForceNew strategy`() = testBlocking {
+        // Given
+        whenever(repository.fetchVisitorsData(testRangeSelection, ForceNew))
+            .doReturn(testVisitorsResult)
+
         // When
         sut(testRangeSelection, this)
 
@@ -409,6 +413,8 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             analyticsUpdateDataStore = analyticsDataStore,
             analyticsRepository = repository
         )
+        whenever(repository.fetchVisitorsData(testRangeSelection, Saved))
+            .doReturn(testVisitorsResult)
 
         // When
         sut(testRangeSelection, this)
@@ -437,6 +443,8 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
                 analyticsUpdateDataStore = analyticsDataStore,
                 analyticsRepository = repository
             )
+            whenever(repository.fetchVisitorsData(testCustomRangeSelection, Saved))
+                .doReturn(testVisitorsResult)
 
             // When
             sut(testCustomRangeSelection, this)
@@ -457,6 +465,8 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
                 analyticsUpdateDataStore = analyticsDataStore,
                 analyticsRepository = repository
             )
+            whenever(repository.fetchVisitorsData(testRangeSelection, ForceNew))
+                .doReturn(testVisitorsResult)
 
             // When
             sut(testRangeSelection, this, true)
@@ -490,6 +500,8 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             analyticsUpdateDataStore = analyticsDataStore,
             analyticsRepository = repository
         )
+        whenever(repository.fetchVisitorsData(testRangeSelection, Saved))
+            .doReturn(testVisitorsResult)
 
         // When
         sut(testRangeSelection, this, false)
@@ -539,6 +551,8 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             analyticsUpdateDataStore = analyticsDataStore,
             analyticsRepository = repository
         )
+        whenever(repository.fetchVisitorsData(eq(testRangeSelection), any()))
+            .doReturn(testVisitorsResult)
 
         // When
         sut(testRangeSelection, this)

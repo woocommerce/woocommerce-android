@@ -54,6 +54,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
+        sut.onSiteAddressChanged("siteAddress")
         sut.onHelpOptionSelected(TicketType.MobileApp)
 
         // Then
@@ -73,6 +74,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("")
         sut.onMessageChanged("")
+        sut.onSiteAddressChanged("")
         sut.onHelpOptionSelected(TicketType.MobileApp)
 
         // Then
@@ -91,6 +93,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // When
         sut.onSubjectChanged("subject")
         sut.onMessageChanged("message")
+        sut.onSiteAddressChanged("site Address")
         sut.onHelpOptionSelected(TicketType.MobileApp)
         sut.submitSupportRequest(mock(), HelpOrigin.LOGIN_HELP_NOTIFICATION, emptyList())
 
@@ -119,7 +122,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         assertThat(isRequestLoading[0]).isFalse
         assertThat(isRequestLoading[1]).isTrue
         assertThat(isRequestLoading[2]).isFalse
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -136,7 +139,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         // Then
         assertThat(isRequestLoading).hasSize(1)
         assertThat(isRequestLoading[0]).isFalse
-        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, never()).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
     }
 
     @Test
@@ -218,7 +221,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
         verify(zendeskSettings).supportEmail = email
         verify(zendeskSettings).supportName = name
         verify(tracks, times(1)).track(AnalyticsEvent.SUPPORT_IDENTITY_SET)
-        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any())
+        verify(zendeskTicketRepository, times(1)).createRequest(any(), any(), any(), any(), any(), any(), any(), any())
     }
 
     private fun configureMocks(requestResult: Result<Request?>) {
@@ -235,6 +238,7 @@ internal class SupportRequestFormViewModelTest : BaseUnitTest() {
                     any(),
                     any(),
                     eq(testSite),
+                    any(),
                     any(),
                     any(),
                     any()

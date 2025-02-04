@@ -63,6 +63,13 @@ fun Date.formatToMMMddYYYY(locale: Locale = Locale.getDefault()): String = Simpl
     locale
 ).format(this)
 
+/**
+ * Formats the date to a string in the format "MMM d, yyyy" considering the current locale.
+ */
+fun Date.formatToLocalizedMedium(locale: Locale = Locale.getDefault()): String = SimpleDateFormat
+    .getDateInstance(SimpleDateFormat.MEDIUM, locale)
+    .format(this)
+
 fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
     "MMM d, yyyy hh:mm a",
     locale
@@ -101,11 +108,12 @@ val Date.pastTimeDeltaFromNowInDays
         ?.let { TimeUnit.DAYS.convert(it, MILLISECONDS) }
         ?.toInt()
 
-fun Date.daysAgo(daysAgo: Int) =
-    Calendar.getInstance()
-        .apply { time = this@daysAgo }
-        .apply { add(Calendar.DATE, -daysAgo) }
-        .time
+fun Date.daysLater(daysLater: Int): Date = Calendar.getInstance()
+    .apply { time = this@daysLater }
+    .apply { add(Calendar.DATE, daysLater) }
+    .time
+
+fun Date.daysAgo(daysAgo: Int) = daysLater(-daysAgo)
 
 fun Date.oneDayAgo(): Date =
     Calendar.getInstance().apply {

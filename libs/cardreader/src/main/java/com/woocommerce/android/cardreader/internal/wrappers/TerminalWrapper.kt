@@ -109,6 +109,10 @@ internal class TerminalWrapper {
         return when (updateFrequency) {
             CardReaderManager.SimulatorUpdateFrequency.NEVER -> SimulateReaderUpdate.NONE
             CardReaderManager.SimulatorUpdateFrequency.ALWAYS -> SimulateReaderUpdate.REQUIRED
+            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_ERROR -> SimulateReaderUpdate.LOW_BATTERY
+            CardReaderManager.SimulatorUpdateFrequency.LOW_BATTERY_SUCCEED_CONNECT -> {
+                SimulateReaderUpdate.LOW_BATTERY_SUCCEED_CONNECT
+            }
             CardReaderManager.SimulatorUpdateFrequency.RANDOM -> SimulateReaderUpdate.RANDOM
         }
     }

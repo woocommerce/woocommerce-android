@@ -6,17 +6,22 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
-import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -24,7 +29,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_URL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_INSTALLATION_SOURCE_WEB
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOGIN_WITH_WORDPRESS_COM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_NO_WP_COM
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.ExperimentTracker
@@ -35,7 +39,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
-import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
+import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
@@ -50,8 +54,6 @@ import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
-import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
-import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
@@ -77,6 +79,7 @@ import org.wordpress.android.fluxc.store.SiteStore.ConnectSiteInfoPayload
 import org.wordpress.android.fluxc.store.SiteStore.OnConnectSiteInfoChecked
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.login.AuthOptions
+import org.wordpress.android.login.ConnectSiteInfoResult
 import org.wordpress.android.login.GoogleFragment.GoogleListener
 import org.wordpress.android.login.Login2FaFragment
 import org.wordpress.android.login.LoginAnalyticsListener
@@ -88,6 +91,7 @@ import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
+import org.wordpress.android.login.MagicLinkFallbackButton
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -97,16 +101,16 @@ import kotlin.text.RegexOption.IGNORE_CASE
 @AndroidEntryPoint
 class LoginActivity :
     AppCompatActivity(),
+    HasAndroidInjector,
+    DynamicEdgeToEdgeActivity,
     LoginListener,
     GoogleListener,
-    PrologueFinishedListener,
+    PrologueListener,
     PrologueCarouselListener,
-    HasAndroidInjector,
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    LoginSiteCredentialsFragment.Listener,
-    QrCodeLoginListener {
+    LoginSiteCredentialsFragment.Listener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
         private const val JETPACK_CONNECT_URL = "https://wordpress.com/jetpack/connect"
@@ -126,21 +130,29 @@ class LoginActivity :
         const val USERNAME_PARAMETER = "username"
     }
 
-    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+    @Inject
+    internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
-    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject
+    internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
 
-    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
-    @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject
+    internal lateinit var urlUtils: UrlUtils
 
-    @Inject internal lateinit var experimentTracker: ExperimentTracker
+    @Inject
+    internal lateinit var experimentTracker: ExperimentTracker
 
-    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject
+    internal lateinit var appPrefsWrapper: AppPrefsWrapper
 
-    @Inject internal lateinit var dispatcher: Dispatcher
+    @Inject
+    internal lateinit var dispatcher: Dispatcher
 
-    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -151,6 +163,7 @@ class LoginActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
         onBackPressedDispatcher.addCallback(
             this,
@@ -319,12 +332,40 @@ class LoginActivity :
 
     override fun onPrimaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
+        disableDynamicEdgeToEdge()
         loginViaSiteAddress()
     }
 
     override fun onSecondaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
+        disableDynamicEdgeToEdge()
         startLoginViaWPCom()
+    }
+
+    override fun enableDynamicEdgeToEdge(forceDarkStatusBar: Boolean) {
+        if (forceDarkStatusBar) {
+            enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
+        } else {
+            enableEdgeToEdge()
+        }
+
+        // Remove system bar insets from the fragment's root
+        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot, null)
+        binding.snackRoot.updatePadding(0, 0, 0, 0)
+    }
+
+    override fun disableDynamicEdgeToEdge() {
+        // Call again to reset the statusBarStyle to its default setting
+        enableEdgeToEdge()
+
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+
+        // Add system bar insets to the fragment's root
+        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onNewToWooButtonClicked() {
@@ -355,29 +396,36 @@ class LoginActivity :
         clearCachedSites()
 
         if (authOptions != null) {
-            if (authOptions.isPasswordless) {
-                showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
+            val forcePasswordLogin = BuildConfig.DEBUG && BuildConfig.FORCE_PASSWORD_LOGIN
+
+            if (authOptions.isPasswordless && !forcePasswordLogin) {
+                showMagicLinkRequestScreen(
+                    email = email,
+                    verifyEmail = verifyEmail,
+                    fallbackButton = MagicLinkFallbackButton.None,
+                    forceRequestAtStart = true
+                )
             } else {
                 showEmailPasswordScreen(email, verifyEmail)
             }
         } else {
             if (isMagicLinkEnabled) {
-                showMagicLinkRequestScreen(email, verifyEmail, allowPassword = true, forceRequestAtStart = false)
+                showMagicLinkRequestScreen(
+                    email = email,
+                    verifyEmail = verifyEmail,
+                    fallbackButton = MagicLinkFallbackButton.Password,
+                    forceRequestAtStart = false
+                )
             } else {
                 showEmailPasswordScreen(email, verifyEmail)
             }
         }
     }
 
-    private fun showEmailPasswordScreen(
-        email: String?,
-        verifyEmail: Boolean,
-        password: String? = null
-    ) {
+    private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean) {
         val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
             .newInstance(
                 emailAddress = email,
-                password = password,
                 verifyMagicLinkEmail = verifyEmail
             )
         changeFragment(wooLoginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
@@ -386,7 +434,7 @@ class LoginActivity :
     private fun showMagicLinkRequestScreen(
         email: String?,
         verifyEmail: Boolean,
-        allowPassword: Boolean,
+        fallbackButton: MagicLinkFallbackButton,
         forceRequestAtStart: Boolean
     ) {
         val scheme = WOOCOMMERCE
@@ -397,7 +445,7 @@ class LoginActivity :
                 false,
                 null,
                 verifyEmail,
-                allowPassword,
+                fallbackButton,
                 forceRequestAtStart
             )
         changeFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG, false)
@@ -455,8 +503,8 @@ class LoginActivity :
         changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
-    override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
-        val loginMagicLinkSentFragment = LoginMagicLinkSentImprovedFragment.newInstance(email, true)
+    override fun showMagicLinkSentScreen(email: String?, fallbackButton: MagicLinkFallbackButton) {
+        val loginMagicLinkSentFragment = LoginMagicLinkSentImprovedFragment.newInstance(email, fallbackButton)
         changeFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentImprovedFragment.TAG, false)
     }
 
@@ -554,10 +602,10 @@ class LoginActivity :
         showEmailLoginScreen(siteAddress)
     }
 
-    override fun gotConnectedSiteInfo(siteAddress: String, redirectUrl: String?, hasJetpack: Boolean) {
+    override fun gotConnectSiteInfo(result: ConnectSiteInfoResult) {
         // If the redirect url is available, use that as the preferred url. Pass this url to the other fragments
         // with the protocol since it is needed for initiating forgot password flow etc in the login process.
-        val inputSiteAddress = urlUtils.sanitiseUrl(redirectUrl ?: siteAddress)
+        val inputSiteAddress = urlUtils.sanitiseUrl(result.urlAfterRedirects ?: result.url)
 
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app. Strip the protocol from this url string prior to saving to AppPrefs since it's
@@ -566,9 +614,16 @@ class LoginActivity :
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
         appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
-        if (hasJetpack || connectSiteInfo?.isWPCom == true) {
+        if (result.hasJetpack || connectSiteInfo?.isWPCom == true) {
             showEmailLoginScreen(null)
         } else {
+            appPrefsWrapper.isSiteWPComSuspended = result.isWPComSuspended
+            if (result.isWPComSuspended) {
+                AnalyticsTracker.track(
+                    stat = AnalyticsEvent.BLACK_FLAGGED_WEBSITE_DETECTED,
+                    properties = mapOf("event" to "login")
+                )
+            }
             loginViaSiteCredentials(inputSiteAddress)
         }
     }
@@ -899,9 +954,17 @@ class LoginActivity :
         TODO("Not yet implemented")
     }
 
-    override fun useMagicLinkInstead(email: String?, verifyEmail: Boolean) {
-        showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
-    }
+    override fun useMagicLinkInstead(
+        email: String?,
+        verifyEmail: Boolean,
+        requestAtStart: Boolean,
+        fallbackButton: MagicLinkFallbackButton
+    ) = showMagicLinkRequestScreen(
+        email = email,
+        verifyEmail = verifyEmail,
+        fallbackButton = fallbackButton,
+        forceRequestAtStart = requestAtStart
+    )
 
     /**
      * Allows for special handling of errors that come up during the login by address: check site address.
@@ -948,17 +1011,6 @@ class LoginActivity :
         }
     }
 
-    override fun onScanQrCodeClicked(source: String) {
-        AnalyticsTracker.track(
-            stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_BUTTON_TAPPED,
-            properties = mapOf(
-                KEY_FLOW to VALUE_LOGIN_WITH_WORDPRESS_COM,
-                KEY_SOURCE to source
-            )
-        )
-        openQrCodeScannerFragment()
-    }
-
     private fun clearCachedSites() {
         // Clear all sites from the DB to avoid any conflicts with the new login
         // Sometimes, the same website could be fetched from different APIs (WPCom or WPApi), and if cached twice
@@ -978,7 +1030,7 @@ class LoginActivity :
                     stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
                     properties = mapOf(KEY_FLOW to VALUE_WP_COM)
                 )
-                showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
+                showEmailPasswordScreen(email = wpComEmail, verifyEmail = false)
             }
 
             siteUrl.isNotEmpty() && username.isNotEmpty() -> {
@@ -1003,25 +1055,6 @@ class LoginActivity :
                 showPrologue()
             }
         }
-    }
-
-    private fun openQrCodeScannerFragment() {
-        GmsBarcodeScanning.getClient(this).startScan()
-            .addOnSuccessListener { rawValue ->
-                if (ValidateScannedValue.validate(rawValue.rawValue)) {
-                    AnalyticsTracker.track(stat = AnalyticsEvent.LOGIN_WITH_QR_CODE_SCANNED)
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(rawValue.rawValue))
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or
-                        Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                } else {
-                    Toast.makeText(
-                        this,
-                        resources.getText(R.string.not_a_valid_qr_code),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
     }
 
     /**

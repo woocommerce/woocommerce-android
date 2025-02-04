@@ -1,6 +1,6 @@
 
 // Only run build cache on CI builds.
-if (System.getenv('CI')) {
+if (gradle.ext.isCi) {
     buildCache {
         remote(HttpBuildCache) {
             url = "http://10.0.2.215:5071/cache/"

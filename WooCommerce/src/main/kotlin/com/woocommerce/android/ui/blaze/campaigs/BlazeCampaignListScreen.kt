@@ -23,7 +23,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
@@ -43,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
@@ -52,6 +50,7 @@ import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.Clic
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 
 @Composable
 fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
@@ -92,7 +91,7 @@ private fun BlazeCampaignListScreen(
         }
     }
 
-    ModalBottomSheetLayout(
+    WCModalBottomSheetLayout(
         sheetState = bottomSheetState,
         sheetContent = {
             CampaignCelebrationSheet(onCampaignCelebrationDismissed)
@@ -232,20 +231,11 @@ fun BlazeCampaignListScreenPreview() {
                             imgUrl = "https://picsum.photos/200/300",
                         ),
                         status = Active,
-                        stats = listOf(
-                            BlazeCampaignStat(
-                                name = R.string.blaze_campaign_status_impressions,
-                                value = 100.toString()
-                            ),
-                            BlazeCampaignStat(
-                                name = R.string.blaze_campaign_status_clicks,
-                                value = 10.toString()
-                            ),
-                            BlazeCampaignStat(
-                                name = R.string.blaze_campaign_status_budget,
-                                value = 1000.toString()
-                            ),
-                        ),
+                        isEndlessCampaign = false,
+                        impressions = "6k",
+                        clicks = "10",
+                        formattedBudget = "$100",
+                        budgetLabel = R.string.blaze_campaign_status_budget_total
                     ),
                     onCampaignClicked = {}
                 )

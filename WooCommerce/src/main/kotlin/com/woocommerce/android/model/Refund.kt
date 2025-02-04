@@ -97,13 +97,13 @@ fun WCRefundItem.toAppModel(): Refund.Item {
         -totalTax, // WCRefundItem.totalTax is NEGATIVE
         sku ?: "",
         price ?: BigDecimal.ZERO,
-        metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1
+        metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1
     )
 }
 
 fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
     return Refund.ShippingLine(
-        itemId = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
+        itemId = metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1,
         methodId = methodId ?: "",
         methodTitle = methodTitle ?: "",
         totalTax = -totalTax, // WCRefundShippineLine.totalTax is NEGATIVE
@@ -113,7 +113,7 @@ fun WCRefundShippingLine.toAppModel(): Refund.ShippingLine {
 
 fun WCRefundFeeLine.toAppModel(): Refund.FeeLine {
     return Refund.FeeLine(
-        id = metaData?.get(0)?.value?.toString()?.toLongOrNull() ?: -1,
+        id = metaData?.get(0)?.value?.stringValue?.toLongOrNull() ?: -1,
         name = name,
         totalTax = -totalTax, // WCRefundFeeLine.totalTax is NEGATIVE
         total = (total), // WCRefundFeeLine.total is NEGATIVE
@@ -154,10 +154,19 @@ fun List<Refund>.getNonRefundedProducts(
 fun List<Refund>.getMaxRefundQuantities(
     products: List<Order.Item>
 ): Map<Long, Float> {
-    val map = mutableMapOf<Long, Float>()
-    val groupedRefunds = this.flatMap { it.items }.groupBy { it.orderItemId }
-    products.map { item ->
-        map[item.itemId] = item.quantity - (groupedRefunds[item.itemId]?.sumOf { it.quantity } ?: 0)
-    }
-    return map
+    val allRefundedItems = this.flatMap { it.items }
+
+    return products.mapNotNull { product ->
+        val refundedQuantity = allRefundedItems
+            .filter { it.productId == product.productId }
+            .sumOf { it.quantity }
+
+        val quantityLeftToRefund = product.quantity - refundedQuantity
+
+        if (quantityLeftToRefund > 0) {
+            product.itemId to quantityLeftToRefund.toFloat()
+        } else {
+            null
+        }
+    }.toMap()
 }

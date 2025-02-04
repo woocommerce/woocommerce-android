@@ -32,6 +32,7 @@ class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
             productListRepository = productListRepository,
             coroutineDispatchers = coroutinesTestRule.testDispatchers,
             analyticsTracker = analyticsTracker,
+            addProductNavigator = mock()
         )
     }
 
@@ -104,6 +105,34 @@ class BlazeCampaignCreationIntroViewModelTests : BaseUnitTest() {
                 source = BlazeFlowSource.INTRO_VIEW
             )
         )
+    }
+
+    @Test
+    fun `given no product id and no published products, when tapping continue, then show no products CTA`() =
+        testBlocking {
+            setup(productId = -1L) {
+                whenever(
+                    productListRepository.getProductList(
+                        productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
+                        sortType = ProductSorting.DATE_DESC,
+                    )
+                ).thenReturn(emptyList())
+            }
+
+            viewModel.onContinueClick()
+
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(BlazeCampaignCreationIntroViewModel.ShowNoProductDialog)
+        }
+
+    @Test
+    fun `when create product clicked, then navigate to add product`() = testBlocking {
+        setup(productId = -1L)
+
+        viewModel.onCreateProductClicked()
+
+        val event = viewModel.event.value
+        assertThat(event).isEqualTo(BlazeCampaignCreationIntroViewModel.NavigateToAddProduct)
     }
 
     @Test

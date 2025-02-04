@@ -39,7 +39,7 @@ open class WCBottomSheetDialogFragment : BottomSheetDialogFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         dialog?.setOnShowListener {
             val dialog = it as BottomSheetDialog
-            dialog.findViewById<View>(org.wordpress.aztec.R.id.design_bottom_sheet)?.let { sheet ->
+            dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
                 // if device height is 32dp bigger than sheet height, show full sheet
                 val heightPixels = view.context.resources.displayMetrics.heightPixels
                 val topPadding = DisplayUtils.dpToPx(context, TOP_OFFSET_BEFORE_SHOWING_FULL_SHEET_DP)

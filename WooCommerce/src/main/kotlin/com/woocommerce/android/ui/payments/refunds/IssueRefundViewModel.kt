@@ -19,6 +19,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.extensions.calculateTotalSubtotal
+import com.woocommerce.android.extensions.calculateTotalTaxes
 import com.woocommerce.android.extensions.calculateTotals
 import com.woocommerce.android.extensions.isCashPayment
 import com.woocommerce.android.extensions.isEqualTo
@@ -287,10 +289,16 @@ class IssueRefundViewModel @Inject constructor(
             )
         }
 
-        val items = order.items.map {
-            val maxQuantity = maxQuantities[it.itemId] ?: 0f
+        val items = order.items.mapNotNull {
+            val maxQuantity = maxQuantities[it.itemId] ?: return@mapNotNull null
             val selectedQuantity = min(selectedQuantities[it.itemId] ?: 0, maxQuantity.toInt())
-            ProductRefundListItem(it, maxQuantity, selectedQuantity)
+            ProductRefundListItem(
+                orderItem = it,
+                maxQuantity = maxQuantity,
+                quantity = selectedQuantity,
+                subtotal = formatCurrency(BigDecimal.ZERO),
+                taxes = formatCurrency(BigDecimal.ZERO)
+            )
         }
         updateRefundItems(items)
 
@@ -673,12 +681,15 @@ class IssueRefundViewModel @Inject constructor(
         val newItems = mutableListOf<ProductRefundListItem>()
         _refundItems.value?.forEach {
             if (it.orderItem.itemId == uniqueId) {
-                newItems.add(
-                    it.copy(
-                        quantity = newQuantity,
-                        maxQuantity = maxQuantities[uniqueId] ?: 0f
-                    )
-                )
+                // Update the quantity
+                var newItem = it.copy(quantity = newQuantity, maxQuantity = maxQuantities[uniqueId] ?: 0f)
+
+                // Update the subtotal and taxes based on the new quantity
+                val subtotal = formatCurrency(newItem.calculateTotalSubtotal())
+                val taxes = formatCurrency(newItem.calculateTotalTaxes())
+                newItem = newItem.copy(subtotal = subtotal, taxes = taxes)
+
+                newItems.add(newItem)
             } else {
                 newItems.add(it)
             }

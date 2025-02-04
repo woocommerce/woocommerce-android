@@ -12,10 +12,10 @@ agents:
   queue: "android"
 
 steps:
-  - label: "Gradle Wrapper Validation"
-    command: |
-      validate_gradle_wrapper
-    plugins: [$CI_TOOLKIT]
+  - label: Gradle Wrapper Validation
+    command: validate_gradle_wrapper
+    agents:
+      queue: linter
 
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
@@ -35,43 +35,35 @@ steps:
           queue: "linter"
 
       - label: "detekt"
-        command: |
-          echo "--- 🧹 Linting"
-          cp gradle.properties-example gradle.properties
-          ./gradlew detektAll
+        command: ./gradlew detektAll
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/detekt/detekt.html"
 
       - label: "lint"
-        command: |
-          echo "--- 🧹 Linting"
-          cp gradle.properties-example gradle.properties
-          ./gradlew lintJalapenoDebug
+        command: .buildkite/commands/lint.sh
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/lint-results*.*"
 
       - label: "Dependency Tree Diff"
-        command: |
-          cp gradle.properties-example gradle.properties
-          .buildkite/commands/dependency-tree-diff.sh
+        command: comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "**/build/reports/diff/*"
 
   ########################################
   - group: "🛠 Prototype Builds"
     steps:
 
       - label: "🛠 Prototype Build: Mobile App"
-        command: |
-          ".buildkite/commands/prototype-build.sh" "WooCommerce"
+        command: ".buildkite/commands/prototype-build.sh WooCommerce"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
       - label: "🛠 Prototype Build: Wear App"
-        command: |
-          ".buildkite/commands/prototype-build.sh" "WooCommerce-Wear"
+        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
@@ -87,7 +79,7 @@ steps:
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
         artifact_paths:
-          - "**/build/test-results/*/*.xml"
+          - "**/build/test-results/merged-test-results.xml"
 
       - label: "Instrumented tests"
         command: .buildkite/commands/run-instrumented-tests.sh

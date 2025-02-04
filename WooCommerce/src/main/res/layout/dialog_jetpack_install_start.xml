@@ -73,7 +73,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/install_jetpack_button"
-        style="@style/Woo.JetpackButton"
+        style="@style/Woo.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/get_started" />

@@ -76,13 +76,18 @@ class WPComLoginRepository @Inject constructor(
             }
     }
 
-    suspend fun requestMagicLink(emailOrUsername: String, flow: MagicLinkFlow, source: MagicLinkSource): Result<Unit> {
+    suspend fun requestMagicLink(
+        emailOrUsername: String,
+        flow: MagicLinkFlow,
+        source: MagicLinkSource,
+        isSignup: Boolean
+    ): Result<Unit> {
         WooLog.i(WooLog.T.LOGIN, "Submitting a Magic Link request")
 
         val action = AuthenticationActionBuilder.newSendAuthEmailAction(
             AuthEmailPayload(
                 emailOrUsername,
-                false,
+                isSignup,
                 flow,
                 source,
                 AuthEmailPayloadScheme.WOOCOMMERCE
@@ -98,6 +103,7 @@ class WPComLoginRepository @Inject constructor(
                 )
                 Result.failure(OnChangedException(event.error))
             }
+
             else -> {
                 WooLog.i(WooLog.T.LOGIN, "Magic Link request sent successfully")
                 Result.success(Unit)

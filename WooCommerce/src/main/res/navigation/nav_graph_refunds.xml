@@ -73,7 +73,7 @@
         android:label="RefundConfirmationDialog" >
         <action
             android:id="@+id/action_refundConfirmationDialog_to_cardReaderFlow"
-            app:destination="@id/paymentFlow"
+            app:destination="@id/nav_graph_payment_flow"
             app:popUpTo="@+id/refundConfirmationDialog"
             app:popUpToInclusive="true">
             <argument

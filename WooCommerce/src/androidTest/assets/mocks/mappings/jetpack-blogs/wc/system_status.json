@@ -69,8 +69,8 @@
                 }, {
                     "plugin": "woocommerce-gateway-stripe/woocommerce-gateway-stripe.php",
                     "name": "WooCommerce Stripe Gateway",
-                    "version": "6.1.0",
-                    "version_latest": "6.1.0",
+                    "version": "8.8.2",
+                    "version_latest": "8.8.2",
                     "url": "https://wordpress.org/plugins/woocommerce-gateway-stripe/",
                     "author_name": "WooCommerce",
                     "author_url": "https://woocommerce.com/",

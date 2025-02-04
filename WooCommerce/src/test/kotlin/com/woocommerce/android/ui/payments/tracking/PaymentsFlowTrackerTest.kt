@@ -102,6 +102,7 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
         selectedSite,
         cardReaderTrackingInfoProvider,
         paymentReceiptHelper,
+        StoreManagementPaymentsFlowTrackerEventProvider()
     )
 
     @Test
@@ -1424,6 +1425,54 @@ class PaymentsFlowTrackerTest : BaseUnitTest() {
                     assertThat(it["card_reader_type"]).isNull()
                     assertThat(it["milliseconds_since_order_add_new"]).isNull()
                 },
+            )
+        }
+
+    @Test
+    fun `when onboarding shown in POS flow called, then PAYMENTS_ONBOARDING_SHOWN tracked`() =
+        testBlocking {
+            paymentsFlowTracker.trackOnboardingShownInPosFlow(CardReaderOnboardingState.GenericError)
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_ONBOARDING_SHOWN),
+                check { assertThat(it[AnalyticsTracker.KEY_POS_ONBOARDING_STATE]).isEqualTo("generic_error") }
+            )
+        }
+
+    @Test
+    fun `when onboarding completed in POS flow called, then PAYMENTS_ONBOARDING_SHOWN tracked with completed state`() =
+        testBlocking {
+            paymentsFlowTracker.trackOnboardingShownInPosFlow(
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, PLUGIN_VERSION, COUNTRY_CODE)
+            )
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_ONBOARDING_SHOWN),
+                check { assertThat(it[AnalyticsTracker.KEY_POS_ONBOARDING_STATE]).isEqualTo("completed") }
+            )
+        }
+
+    @Test
+    fun `when onboarding dismissed in POS flow called, then PAYMENTS_ONBOARDING_DISMISSED tracked`() =
+        testBlocking {
+            paymentsFlowTracker.trackOnboardingDismissedInPosFlow(CardReaderOnboardingState.GenericError)
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_ONBOARDING_DISMISSED),
+                check { assertThat(it[AnalyticsTracker.KEY_POS_ONBOARDING_STATE]).isEqualTo("generic_error") }
+            )
+        }
+
+    @Test
+    fun `when onboarding completed in POS flow dismissed called, then PAYMENTS_ONBOARDING_DISMISSED tracked with completed state`() =
+        testBlocking {
+            paymentsFlowTracker.trackOnboardingDismissedInPosFlow(
+                CardReaderOnboardingState.OnboardingCompleted(WOOCOMMERCE_PAYMENTS, PLUGIN_VERSION, COUNTRY_CODE)
+            )
+
+            verify(trackerWrapper).track(
+                eq(AnalyticsEvent.PAYMENTS_ONBOARDING_DISMISSED),
+                check { assertThat(it[AnalyticsTracker.KEY_POS_ONBOARDING_STATE]).isEqualTo("completed") }
             )
         }
 

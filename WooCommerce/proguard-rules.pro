@@ -91,6 +91,7 @@
 -dontwarn com.squareup.kotlinpoet.OriginatingElementsHolder
 -dontwarn com.squareup.kotlinpoet.OriginatingElementsHolder$Builder
 -dontwarn com.squareup.kotlinpoet.javapoet.J2kInteropKt
+-dontwarn com.squareup.kotlinpoet.javapoet.K2jInteropKt
 -dontwarn java.beans.ConstructorProperties
 -dontwarn java.beans.Transient
 -dontwarn javax.lang.model.SourceVersion

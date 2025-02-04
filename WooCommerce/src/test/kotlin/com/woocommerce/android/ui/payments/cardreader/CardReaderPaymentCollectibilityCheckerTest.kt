@@ -247,13 +247,13 @@ class CardReaderPaymentCollectibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when order has failed status, then is not collectable`() =
+    fun `when order has failed status, then is collectable`() =
         testBlocking {
             val order = getOrder(paymentStatus = Order.Status.Failed)
 
             val isCollectable = checker.isCollectable(order)
 
-            assertThat(isCollectable).isFalse()
+            assertThat(isCollectable).isTrue()
         }
 
     @Test

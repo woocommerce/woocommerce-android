@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -35,7 +36,7 @@ import kotlin.test.assertIs
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
-    private val fetchProductBySKU: FetchProductBySKU = mock()
+    private val fetchProductByIdentifier: FetchProductByIdentifier = mock()
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val resourceProvider: ResourceProvider = mock()
     private val productRepo: ProductDetailRepository = mock()
@@ -47,7 +48,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Before
     fun setUp() {
         sut = ScanToUpdateInventoryViewModel(
-            fetchProductBySKU = fetchProductBySKU,
+            fetchProductByIdentifier = fetchProductByIdentifier,
             savedState = savedStateHandle,
             resourceProvider = resourceProvider,
             productRepository = productRepo,
@@ -79,13 +80,13 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                 GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
             )
         )
-        verify(fetchProductBySKU, times(1)).invoke(any(), any())
+        verify(fetchProductByIdentifier, times(1)).invoke(any(), any())
     }
 
     @Test
     fun `given barcode successfully scanned, when product not found by sku, then should show error snackbar`() =
         testBlocking {
-            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.failure(Throwable()))
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(Result.failure(Throwable()))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_unable_to_find_product,
@@ -112,7 +113,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Test
     fun `given barcode successfully scanned, when product not found by sku, then should hide progress bar and bottomsheet`() =
         testBlocking {
-            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.failure(Throwable()))
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(Result.failure(Throwable()))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_unable_to_find_product,
@@ -133,7 +134,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Test
     fun `given barcode successfully scanned, when product found by sku, then should show bottom sheet`() =
         testBlocking {
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(ProductTestUtils.generateProduct(isStockManaged = true))
             )
             sut.onBarcodeScanningResult(
@@ -152,7 +153,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Test
     fun `given barcode successfully scanned, when corresponding product is not stock managed, then should display correct bottom sheet`() =
         testBlocking {
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(ProductTestUtils.generateProduct(isStockManaged = false).copy(sku = "123"))
             )
             sut.onBarcodeScanningResult(
@@ -171,7 +172,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Test
     fun `given bottom sheet shown, when bottom sheet dismissed, then should should start scanning again`() =
         testBlocking {
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(ProductTestUtils.generateProduct(isStockManaged = true))
             )
             sut.onBarcodeScanningResult(
@@ -197,14 +198,14 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            verify(fetchProductBySKU, times(2)).invoke(any(), any())
+            verify(fetchProductByIdentifier, times(2)).invoke(any(), any())
         }
 
     @Test
     fun `given bottom sheet with product shown, when increment quantity clicked, then should should update product`() =
         testBlocking {
             val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(originalProduct)
             )
             whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
@@ -214,7 +215,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
+            whenever(productRepo.updateProduct(any<Product>())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_success_snackbar,
@@ -238,7 +239,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     fun `given bottom sheet with product shown, when quantity entered manually, then should update product`() =
         testBlocking {
             val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true)
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(originalProduct)
             )
             whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
@@ -248,7 +249,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
+            whenever(productRepo.updateProduct(any<Product>())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_success_snackbar,
@@ -278,9 +279,9 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                 isStockManaged = true,
             )
 
-            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(Result.success(product))
             whenever(productRepo.getProduct(productId)).thenReturn(product)
-            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
+            whenever(productRepo.updateProduct(any<Product>())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     eq(R.string.scan_to_update_inventory_success_snackbar),
@@ -320,7 +321,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
             val originalProduct =
                 ProductTestUtils.generateProduct(isStockManaged = true, productId = variationId, parentID = productId)
                     .copy(stockQuantity = 1.0)
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(originalProduct)
             )
             whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
@@ -365,7 +366,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     fun `given bottom sheet with variation shown, when quantity entered manually, then should update product`() =
         testBlocking {
             val originalProduct = ProductTestUtils.generateProduct(isStockManaged = true, productId = 2, parentID = 1)
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(originalProduct)
             )
             whenever(productRepo.getProduct(any())).thenReturn(originalProduct)
@@ -404,7 +405,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Test
     fun `given barcode scanned, when variation is found which is stock-managed, then should show bottom sheet`() =
         testBlocking {
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(
                     ProductTestUtils.generateProduct(
                         isStockManaged = true,
@@ -438,7 +439,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Test
     fun `when variation is found which is not stock-managed, then should show bottom sheet`() =
         testBlocking {
-            whenever(fetchProductBySKU(any(), any())).thenReturn(
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(
                 Result.success(
                     ProductTestUtils.generateProduct(
                         isStockManaged = true,
@@ -492,7 +493,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Test fun `given item is stock-managed, when bottom sheet is shown, then track proper event`() =
         testBlocking {
             val product = ProductTestUtils.generateProduct(isStockManaged = true)
-            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(Result.success(product))
 
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
@@ -510,7 +511,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
     @Test fun `given item is not stock-managed, when bottom sheet is shown, then track proper event`() =
         testBlocking {
             val product = ProductTestUtils.generateProduct(isStockManaged = false)
-            whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
+            whenever(fetchProductByIdentifier(any(), any())).thenReturn(Result.success(product))
 
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(

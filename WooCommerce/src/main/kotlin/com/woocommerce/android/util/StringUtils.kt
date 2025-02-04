@@ -9,6 +9,7 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.core.text.HtmlCompat
+import com.woocommerce.android.extensions.appendWithIfNotEmpty
 import com.woocommerce.android.extensions.isInteger
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -285,5 +286,33 @@ object StringUtils {
             WooLog.w(UTILS, "No string array resource found for id $id in locale $locale")
             null
         }
+    }
+
+    /**
+     * Combines a variable number of strings into a single string, separated by spaces.
+     *
+     * This function takes a variable number of string arguments and concatenates them
+     * into a single string. If multiple strings are provided, they are separated by
+     * a single space character. Empty strings are handled gracefully and do not contribute
+     * to extra spaces.
+     *
+     * @param strings A variable number of strings to combine.
+     * @return A new string containing all the input strings concatenated together,
+     *         separated by spaces if there are multiple strings. Returns an empty
+     *         string if no strings are provided.
+     *
+     * @sample
+     *  val combined1 = combineStrings("Hello", "World") // Returns "Hello World"
+     *  val combined2 = combineStrings("One") // Returns "One"
+     *  val combined3 = combineStrings() // Returns ""
+     *  val combined4 = combineStrings("Hello", "", "World") // Returns "Hello World"
+     */
+    fun combineStrings(vararg strings: String): String {
+        val builder = StringBuilder()
+        strings.forEach { string ->
+            val separator = if (builder.isEmpty()) "" else " "
+            builder.appendWithIfNotEmpty(string, separator)
+        }
+        return builder.toString()
     }
 }

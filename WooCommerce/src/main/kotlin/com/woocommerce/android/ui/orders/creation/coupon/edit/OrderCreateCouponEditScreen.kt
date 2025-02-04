@@ -12,7 +12,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCRemoveButton
 
 @Composable
 fun OrderCreateCouponEditScreen(
@@ -31,12 +31,11 @@ fun OrderCreateCouponEditScreen(
         )
 
         if (state.value?.isRemoveButtonVisible == true) {
-            WCColoredButton(
+            WCRemoveButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { onCouponRemoved() }
-            ) {
-                Text(stringResource(id = R.string.order_creation_remove_coupon))
-            }
+                onClick = { onCouponRemoved() },
+                text = stringResource(id = R.string.order_creation_remove_coupon)
+            )
         }
     }
 }

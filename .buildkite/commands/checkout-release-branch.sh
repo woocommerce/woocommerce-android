@@ -1,11 +1,8 @@
 #!/bin/bash -eu
 
-# RELEASE_VERSION is passed as an environment variable from fastlane to Buildkite
-#
-if [[ -z "${RELEASE_VERSION}" ]]; then
-    echo "RELEASE_VERSION is not set."
-    exit 1
-fi
+echo "--- :git: Checkout Release Branch"
+
+RELEASE_VERSION="${1?Please provide a release version as an argument.}"
 
 # Buildkite, by default, checks out a specific commit. For many release actions, we need to be
 # on a release branch instead.

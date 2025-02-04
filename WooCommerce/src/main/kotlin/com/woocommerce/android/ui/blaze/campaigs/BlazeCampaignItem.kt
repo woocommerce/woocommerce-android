@@ -2,10 +2,14 @@ package com.woocommerce.android.ui.blaze.campaigs
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -23,6 +27,7 @@ import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCTag
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun BlazeCampaignItem(
     campaign: BlazeCampaignUi,
@@ -65,13 +70,26 @@ fun BlazeCampaignItem(
                     style = MaterialTheme.typography.subtitle1,
                     fontWeight = FontWeight.Bold,
                 )
-                Row(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))) {
-                    campaign.stats.forEach {
-                        CampaignStat(
-                            statName = stringResource(id = it.name),
-                            statValue = it.value
-                        )
-                    }
+                FlowRow(
+                    modifier = Modifier
+                        .padding(top = dimensionResource(id = R.dimen.major_100))
+                        .wrapContentWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    CampaignStat(
+                        statName = stringResource(R.string.blaze_campaign_status_ctr_label),
+                        statValue = stringResource(
+                            id = R.string.blaze_campaign_status_ctr_value_shortened,
+                            campaign.impressions,
+                            campaign.clicks,
+                        ),
+                        modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.minor_100))
+                    )
+
+                    CampaignStat(
+                        statName = stringResource(campaign.budgetLabel),
+                        statValue = campaign.formattedBudget
+                    )
                 }
             }
         }

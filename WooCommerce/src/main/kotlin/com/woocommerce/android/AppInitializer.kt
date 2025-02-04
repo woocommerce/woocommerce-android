@@ -18,8 +18,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
+import com.woocommerce.android.background.BackgroundUpdatesDisabled
 import com.woocommerce.android.background.UpdateDataOnBackgroundWorker
-import com.woocommerce.android.config.WPComRemoteFeatureFlagRepository
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
@@ -38,6 +38,7 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
 import com.woocommerce.android.ui.appwidgets.getWidgetName
+import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
@@ -46,7 +47,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
@@ -127,13 +127,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var siteObserver: SiteObserver
 
+    @Inject lateinit var blazeCampaignsObserver: BlazeCampaignsObserver
+
     @Inject lateinit var wooLog: WooLogWrapper
 
     @Inject lateinit var registerDevice: RegisterDevice
 
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
-
-    @Inject lateinit var featureFlagRepository: WPComRemoteFeatureFlagRepository
 
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
@@ -146,7 +146,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
 
-    @Inject @AppCoroutineScope
+    @Inject
+    @AppCoroutineScope
     lateinit var appCoroutineScope: CoroutineScope
 
     @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
@@ -156,6 +157,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var trackStoreSnapshot: TrackStoreSnapshot
 
     @Inject lateinit var notificationChannelsHandler: NotificationChannelsHandler
+
+    @Inject lateinit var backgroundUpdatesDisabled: BackgroundUpdatesDisabled
 
     private var connectionReceiverRegistered = false
 
@@ -219,13 +222,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         trackStartupAnalytics()
 
-        zendeskSettings.setup(
-            context = application,
-            zendeskUrl = BuildConfig.ZENDESK_DOMAIN,
-            applicationId = BuildConfig.ZENDESK_APP_ID,
-            oauthClientId = BuildConfig.ZENDESK_OAUTH_CLIENT_ID
-        )
-
         observeEncryptedLogsUploadResults()
         uploadEncryptedLogs()
 
@@ -237,9 +233,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         appCoroutineScope.launch {
             siteObserver.observeAndUpdateSelectedSiteData()
         }
-        appCoroutineScope.launch {
-            featureFlagRepository.fetchFeatureFlags(PackageUtils.getVersionName(application.applicationContext))
-        }
+        appCoroutineScope.launch { blazeCampaignsObserver.observeAndScheduleNotifications() }
 
         monitorApplicationPasswordsStatus()
 
@@ -250,9 +244,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Suppress("DEPRECATION")
     override fun onAppComesFromBackground() {
         trackApplicationOpened()
-        if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
-            clearRefreshDataPeriodically()
-        }
+
+        clearRefreshDataPeriodically()
+        backgroundUpdatesDisabled()
 
         if (!connectionReceiverRegistered) {
             connectionReceiverRegistered = true
@@ -325,9 +319,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     override fun onAppGoesToBackground() {
         AnalyticsTracker.track(AnalyticsEvent.APPLICATION_CLOSED)
-        if (FeatureFlag.BACKGROUND_TASKS.isEnabled()) {
-            refreshDataPeriodically()
-        }
+        refreshDataPeriodically()
 
         if (connectionReceiverRegistered) {
             connectionReceiverRegistered = false
@@ -483,6 +475,10 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             UpdateDataOnBackgroundWorker.REFRESH_TIME,
             TimeUnit.HOURS
         )
+            .setInitialDelay(
+                UpdateDataOnBackgroundWorker.REFRESH_TIME,
+                TimeUnit.HOURS
+            )
             .setConstraints(constraints)
             .build()
 

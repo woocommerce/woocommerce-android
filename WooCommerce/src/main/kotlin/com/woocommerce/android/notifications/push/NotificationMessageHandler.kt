@@ -6,13 +6,14 @@ import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISMI
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_RECEIVED
 import com.woocommerce.android.analytics.AnalyticsEvent.PUSH_NOTIFICATION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.background.WorkManagerScheduler
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.WooNotificationType.NEW_ORDER
+import com.woocommerce.android.notifications.WooNotificationType.NewOrder
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -21,15 +22,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
-import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.notification.NotificationModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
-import org.wordpress.android.fluxc.store.SiteStore
-import org.wordpress.android.fluxc.store.WCLeaderboardsStore
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderListPayload
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
@@ -42,10 +37,9 @@ class NotificationMessageHandler @Inject constructor(
     private val accountStore: AccountStore,
     private val wooLogWrapper: WooLogWrapper,
     private val dispatcher: Dispatcher,
-    private val siteStore: SiteStore,
     private val resourceProvider: ResourceProvider,
     private val selectedSite: SelectedSite,
-    private val topPerformersStore: WCLeaderboardsStore
+    private val workManagerScheduler: WorkManagerScheduler
 ) {
     companion object {
         private const val PUSH_NOTIFICATION_ID = 10000
@@ -58,10 +52,12 @@ class NotificationMessageHandler @Inject constructor(
         private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
 
+    @Synchronized
     fun onPushNotificationDismissed(notificationId: Int) {
         removeNotificationByNotificationIdFromSystemsBar(notificationId)
     }
 
+    @Synchronized
     fun onLocalNotificationDismissed(notificationId: Int, notificationType: String) {
         removeNotificationByNotificationIdFromSystemsBar(notificationId)
         AnalyticsTracker.track(
@@ -123,31 +119,18 @@ class NotificationMessageHandler @Inject constructor(
         )
 
         if (notificationModel.isOrderNotification()) {
-            siteStore.getSiteBySiteId(notificationModel.remoteSiteId)?.let { site ->
-                dispatcher.dispatch(
-                    WCOrderActionBuilder.newFetchOrderListAction(
-                        FetchOrderListPayload(offset = 0, listDescriptor = WCOrderListDescriptor(site = site))
-                    )
-                )
-
-                dispatcher.dispatch(
-                    WCOrderActionBuilder.newFetchOrderListAction(
-                        FetchOrderListPayload(
-                            offset = 0,
-                            listDescriptor = WCOrderListDescriptor(
-                                site = site,
-                                statusFilter = CoreOrderStatus.PROCESSING.value
-                            )
-                        )
-                    )
-                )
-                topPerformersStore.invalidateTopPerformers(site)
-            } ?: wooLogWrapper.e(NOTIFS, "Site not found - can't dispatchNewOrderEvents")
+            notificationModel.meta?.ids?.let { ids ->
+                val siteId = ids.site
+                val orderId = ids.order
+                if (siteId != null && orderId != null) {
+                    workManagerScheduler.scheduleOrderUpdate(siteId, orderId)
+                }
+            }
         }
     }
 
     private fun handleWooNotification(notification: Notification) {
-        val randomNumber = if (notification.noteType == NEW_ORDER) Random.nextInt() else 0
+        val randomNumber = if (notification.noteType == NewOrder) Random.nextInt() else 0
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId, randomNumber)
         ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = notification
         if (notificationBuilder.isNotificationsEnabled()) {
@@ -240,6 +223,7 @@ class NotificationMessageHandler @Inject constructor(
         notificationBuilder.cancelAllNotifications()
     }
 
+    @Synchronized
     fun removeNotificationByRemoteIdFromSystemsBar(remoteNoteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence()
@@ -256,6 +240,7 @@ class NotificationMessageHandler @Inject constructor(
         updateNotificationsState()
     }
 
+    @Synchronized
     fun removeNotificationByNotificationIdFromSystemsBar(localPushId: Int) {
         val keptNotifs = HashMap<Int, Notification>()
         ACTIVE_NOTIFICATIONS_MAP.asSequence()
@@ -272,6 +257,7 @@ class NotificationMessageHandler @Inject constructor(
         updateNotificationsState()
     }
 
+    @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
         val keptNotifs = HashMap<Int, Notification>()
         // Using a copy of the map to avoid concurrency problems

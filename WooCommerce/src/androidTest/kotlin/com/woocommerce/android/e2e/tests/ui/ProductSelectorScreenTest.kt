@@ -31,7 +31,8 @@ class ProductSelectorScreenTest {
                     selectedItemsCount = 0,
                     filterState = ProductSelectorViewModel.FilterState(emptyMap(), null),
                     searchState = ProductSelectorViewModel.SearchState.EMPTY,
-                    selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
+                    selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE,
+                    productFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined
                 ),
                 onDoneButtonClick = {},
                 onClearButtonClick = {},
@@ -61,7 +62,8 @@ class ProductSelectorScreenTest {
                     selectedItemsCount = 0,
                     filterState = ProductSelectorViewModel.FilterState(emptyMap(), null),
                     searchState = ProductSelectorViewModel.SearchState.EMPTY,
-                    selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
+                    selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE,
+                    productFlow = ProductSelectorViewModel.ProductSelectorFlow.Undefined
                 ),
                 onDoneButtonClick = {},
                 onClearButtonClick = {},

@@ -22,6 +22,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -92,7 +93,10 @@ private fun AddressInputView(
             maxLines = 1
         )
         WCTextButton(onClick = state.onShowSiteAddressTapped) {
-            Text(text = stringResource(id = R.string.login_find_your_site_adress))
+            Text(
+                text = stringResource(id = R.string.login_find_your_site_adress),
+                color = colorResource(R.color.light_colored_button_text_secondary)
+            )
         }
         Spacer(modifier = Modifier.weight(1f))
         WCColoredButton(
@@ -142,7 +146,10 @@ fun SiteAddressHelpDialog(
                 dismissButton = {},
                 neutralButton = {
                     WCTextButton(onClick = onMoreHelpTapped) {
-                        Text(text = stringResource(id = R.string.login_site_address_more_help))
+                        Text(
+                            text = stringResource(id = R.string.login_site_address_more_help),
+                            color = colorResource(R.color.light_colored_button_text_secondary)
+                        )
                     }
                 }
             )

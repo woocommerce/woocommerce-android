@@ -21,7 +21,7 @@ artifacts/
 .gradle/
 build/
 */build/
-gradle.properties
+developer.properties
 
 # Crash Logging Configuration
 fabric.properties
@@ -110,3 +110,6 @@ local-builds.gradle
 # gitignore for retrocompatibility, so that it won't appear as a new file and
 # be accidentally checked in the repository.
 google-upload-credentials.json
+
+# Kotlin
+.kotlin/

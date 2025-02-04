@@ -42,6 +42,7 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResul
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.PENDING_VERIFICATION
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_FRAUD
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_LISTED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.REJECTED_OTHER
@@ -153,6 +154,7 @@ class CardReaderOnboardingChecker @Inject constructor(
                     )
                     updatePluginExplicitlySelectedFlag(true)
                 }
+
                 !isPluginExplicitlySelected() -> {
                     return ChoosePaymentGatewayProvider
                 }
@@ -383,7 +385,7 @@ class CardReaderOnboardingChecker @Inject constructor(
             paymentAccount.status == REJECTED_OTHER
 
     private fun isInUndefinedState(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status != COMPLETE && paymentAccount.status != ENABLED
+        paymentAccount.status !in listOf(COMPLETE, ENABLED, PENDING_VERIFICATION)
 
     private fun updateSharedPreferences(
         status: CardReaderOnboardingStatus,

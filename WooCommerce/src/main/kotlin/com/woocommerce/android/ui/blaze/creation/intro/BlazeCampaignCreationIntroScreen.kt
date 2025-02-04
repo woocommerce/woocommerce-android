@@ -30,7 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,13 +49,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.annotatedStringResLegacy
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -78,41 +79,40 @@ fun BlazeCampaignCreationIntroScreen(
     onDismissClick: () -> Unit,
     onLearnMoreClick: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            Toolbar(
-                onNavigationButtonClick = onDismissClick,
-                navigationIcon = Icons.Default.Clear
+    val coroutineScope = rememberCoroutineScope()
+    val modalSheetState = rememberModalBottomSheetState(
+        initialValue = Hidden,
+        confirmValueChange = { it != HalfExpanded },
+        skipHalfExpanded = true
+    )
+
+    WCModalBottomSheetLayout(
+        sheetContent = {
+            BlazeCampaignBottomSheetContent(
+                onDismissClick = {
+                    coroutineScope.launch { modalSheetState.hide() }
+                }
             )
         },
+        sheetState = modalSheetState,
         modifier = Modifier.background(MaterialTheme.colors.surface)
-    ) { paddingValues ->
-        val coroutineScope = rememberCoroutineScope()
-        val modalSheetState = rememberModalBottomSheetState(
-            initialValue = Hidden,
-            confirmValueChange = { it != HalfExpanded },
-            skipHalfExpanded = true
-        )
-
-        WCModalBottomSheetLayout(
-            sheetContent = {
-                BlazeCampaignBottomSheetContent(
-                    onDismissClick = {
-                        coroutineScope.launch { modalSheetState.hide() }
-                    }
+    ) {
+        Scaffold(
+            topBar = {
+                Toolbar(
+                    onNavigationButtonClick = onDismissClick,
+                    navigationIcon = Icons.Default.Clear
                 )
             },
-            sheetState = modalSheetState,
-            modifier = Modifier
-                .background(MaterialTheme.colors.surface)
-                .padding(paddingValues)
-        ) {
+            modifier = Modifier.background(MaterialTheme.colors.surface)
+        ) { paddingValues ->
             BlazeCampaignCreationIntroContent(
                 onContinueClick = onContinueClick,
                 onLearnMoreClick = {
                     coroutineScope.launch { modalSheetState.show() }
                     onLearnMoreClick()
-                }
+                },
+                modifier = Modifier.padding(paddingValues)
             )
         }
     }
@@ -242,11 +242,11 @@ private fun BlazeCampaignBottomSheetContent(
     onDismissClick: () -> Unit
 ) {
     val learnMoreItems = listOf(
-        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_1),
-        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_2),
-        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_3),
-        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_4),
-        annotatedStringRes(R.string.blaze_campaign_creation_new_intro_learn_item_5),
+        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_1),
+        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_2),
+        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_3),
+        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_4),
+        annotatedStringResLegacy(R.string.blaze_campaign_creation_new_intro_learn_item_5),
     )
 
     Column(
@@ -300,7 +300,7 @@ private fun CloseButton(onDismissClick: () -> Unit, modifier: Modifier = Modifie
                 onClick = onDismissClick,
                 role = Role.Button,
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = false, radius = dimensionResource(id = R.dimen.major_150))
+                indication = ripple(bounded = false, radius = dimensionResource(id = R.dimen.major_150))
             )
     ) {
         Icon(

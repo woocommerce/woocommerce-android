@@ -6,7 +6,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.subscription.SubscriptionRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
+import org.wordpress.android.fluxc.model.metadata.WCMetaDataValue
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
@@ -32,7 +33,7 @@ class GetOrderSubscriptions @Inject constructor(
         val renewal = metadataList.find { metadata ->
             metadata.key == WCMetaData.SubscriptionMetadataKeys.SUBSCRIPTION_RENEWAL
         }
-        return renewal?.value?.toLongOrNull()
+        return (renewal?.value as? WCMetaDataValue.NumberValue)?.number?.toLong()
     }
 
     private suspend fun getRenewalSubscription(subscriptionId: Long): Result<List<Subscription>> {

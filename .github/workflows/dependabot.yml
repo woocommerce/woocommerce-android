@@ -15,6 +15,5 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - run: cp gradle.properties-example gradle.properties
       - name: Setup Gradle to generate and submit dependency graphs
         uses: gradle/actions/dependency-submission@v3

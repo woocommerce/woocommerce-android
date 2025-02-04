@@ -10,7 +10,6 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginAnalyticsListener.CreatedAccountSource
-import java.util.HashMap
 import javax.inject.Singleton
 
 @Singleton
@@ -270,6 +269,10 @@ class LoginAnalyticsTracker(
 
     override fun trackLoginWithPasswordClick() {
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_PASSWORD)
+    }
+
+    override fun trackLoginWithWpComUsernamePasswordClick() {
+        unifiedLoginTracker.trackClick(Click.LOGIN_WITH_WP_COM_USERNAME_PASSWORD)
     }
 
     override fun trackShowHelpClick() {

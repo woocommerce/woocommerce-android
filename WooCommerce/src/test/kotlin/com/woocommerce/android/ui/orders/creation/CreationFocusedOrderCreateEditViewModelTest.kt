@@ -58,8 +58,12 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.setMain
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Test
@@ -78,7 +82,6 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
-import org.wordpress.android.fluxc.store.WCProductStore
 import java.math.BigDecimal
 import java.util.Date
 import java.util.function.Consumer
@@ -1220,7 +1223,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         initMocksForAnalyticsWithOrder(defaultOrderValue)
         createSut()
 
-        sut.onCouponAdded("abc")
+        sut.addCoupon("abc")
 
         verify(tracker).track(
             AnalyticsEvent.ORDER_COUPON_ADD,
@@ -1263,7 +1266,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             lastReceivedEvent = it
         }
 
-        sut.onCouponAdded("abc")
+        sut.addCoupon("abc")
 
         with(lastReceivedEvent) {
             this == OnCouponRejectedByBackend
@@ -1291,9 +1294,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(productListRepository).searchProductList(
+            verify(fetchProductByIdentifier).invoke(
                 "123",
-                WCProductStore.SkuSearchOptions.ExactSearch
+                BarcodeFormat.FormatUPCA,
             )
         }
     }
@@ -1348,9 +1351,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
             createSut(navArgs)
 
-            verify(productListRepository, never()).searchProductList(
-                "123",
-                WCProductStore.SkuSearchOptions.ExactSearch
+            verify(fetchProductByIdentifier, never()).invoke(
+                eq("123"),
+                any()
             )
         }
     }
@@ -1374,12 +1377,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                productListRepository.searchProductList(
+                fetchProductByIdentifier.invoke(
                     "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
+                    BarcodeFormat.FormatUPCA,
                 )
             ).thenReturn(
-                listOf(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1419,11 +1422,13 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                productListRepository.searchProductList(
+                fetchProductByIdentifier.invoke(
                     "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
+                    BarcodeFormat.FormatUPCA,
                 )
-            ).thenReturn(null)
+            ).thenReturn(
+                Result.failure(Exception())
+            )
 
             createSut(navArgs)
 
@@ -1433,44 +1438,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
                     KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatUPCA.formatName,
                     KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `given scanning initiated from the order list screen, when product search via sku succeeds but contains no product, then track event with proper source`() {
-        testBlocking {
-            val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation(),
-                "12345",
-                BarcodeFormat.FormatQRCode,
-            ).toSavedStateHandle()
-            whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
-                SiteParameters(
-                    currencyCode = "",
-                    currencySymbol = null,
-                    currencyFormattingParameters = null,
-                    weightUnit = null,
-                    dimensionUnit = null,
-                    gmtOffset = 0F
-                )
-            )
-            whenever(
-                productListRepository.searchProductList(
-                    "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
-                )
-            ).thenReturn(emptyList())
-
-            createSut(navArgs)
-
-            verify(tracker).track(
-                AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_FAILURE,
-                mapOf(
-                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
-                    KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
-                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
                 )
             )
         }
@@ -1495,12 +1462,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             )
             whenever(
-                productListRepository.searchProductList(
+                fetchProductByIdentifier.invoke(
                     "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
+                    BarcodeFormat.FormatUPCA,
                 )
             ).thenReturn(
-                listOf(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                         parentID = 1L,
@@ -1543,13 +1510,14 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     gmtOffset = 0F
                 )
             )
+
             whenever(
-                productListRepository.searchProductList(
+                fetchProductByIdentifier.invoke(
                     "12345",
-                    WCProductStore.SkuSearchOptions.ExactSearch
+                    BarcodeFormat.FormatUPCA,
                 )
             ).thenReturn(
-                listOf(
+                Result.success(
                     ProductTestUtils.generateProduct(
                         productId = 10L,
                     )
@@ -1628,6 +1596,76 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         // The first state will be triggered for updating the progress, second state for disabling the custom amount. Hence we need to verify the third state
         assertTrue(viewState[2].isEditable)
+    }
+
+    @Test
+    fun `when coupon added, then coupons viewState gets updated`() = testBlocking {
+        val dummyCouponCode = "Dummy Coupon 1"
+        createSut()
+        sut.orderDraft.observeForever {
+        }
+        sut.couponLinesLiveData.observeForever {
+        }
+        assertThat(sut.couponLinesLiveData.value!!.couponLines).isEmpty()
+
+        sut.addCoupon(dummyCouponCode)
+
+        assertThat(sut.couponLinesLiveData.value!!.couponLines).isNotEmpty
+    }
+
+    @Test
+    fun `when coupon removed, then coupons viewState gets updated`() = testBlocking {
+        val dummyCouponCode = "Dummy Coupon 1"
+        createSut()
+        sut.orderDraft.observeForever {
+        }
+        sut.couponLinesLiveData.observeForever {
+        }
+        sut.addCoupon(dummyCouponCode)
+        assertThat(sut.couponLinesLiveData.value!!.couponLines).isNotEmpty
+
+        sut.removeCoupon(dummyCouponCode)
+
+        assertThat(sut.couponLinesLiveData.value!!.couponLines).isEmpty()
+    }
+
+    @Test
+    fun `given coupons applied, when order is being updated, then coupons list is disabled`() = testBlocking {
+        // Ensure we have full control of coroutine execution
+        Dispatchers.setMain(StandardTestDispatcher())
+        createSut()
+        advanceUntilIdle()
+        sut.orderDraft.observeForever {
+        }
+        sut.couponLinesLiveData.observeForever {
+        }
+        sut.addCoupon("123")
+        advanceUntilIdle()
+        assertThat(sut.couponLinesLiveData.value!!.couponLines).isNotEmpty
+
+        sut.onProductsSelected(listOf(ProductSelectorViewModel.SelectedItem.Product(1L)))
+
+        assertThat(sut.couponLinesLiveData.value!!.isEnabled).isFalse()
+    }
+
+    @Test
+    fun `given order is being updated, when update finished, then coupons list is enabled`() = testBlocking {
+        // Ensure we have full control of coroutine execution
+        Dispatchers.setMain(StandardTestDispatcher())
+        createSut()
+        advanceUntilIdle()
+        sut.orderDraft.observeForever {
+        }
+        sut.couponLinesLiveData.observeForever {
+        }
+        sut.addCoupon("123")
+        advanceUntilIdle()
+        assertThat(sut.couponLinesLiveData.value!!.couponLines).isNotEmpty
+        sut.onProductsSelected(listOf(ProductSelectorViewModel.SelectedItem.Product(1L)))
+
+        advanceUntilIdle()
+
+        assertThat(sut.couponLinesLiveData.value!!.isEnabled).isTrue()
     }
 
     @Test
@@ -1924,7 +1962,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any(),
                 )
             ).thenReturn(totalsSectionsState)
 
@@ -1955,7 +1992,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any(),
                 )
             ).thenReturn(totalsSectionsState)
             var totalsData: TotalsSectionsState? = null
@@ -1977,7 +2013,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             val onExpandCollapseClickedCaptor = argumentCaptor<() -> Unit>()
             whenever(
                 totalsHelper.mapToPaymentTotalsState(
-                    any(),
                     any(),
                     any(),
                     any(),
@@ -2031,7 +2066,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any(),
                     onHeightChangedCaptor.capture(),
                 )
             ).thenReturn(totalsSectionsState)
@@ -2057,7 +2091,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             val onMainButtonClickedCaptor = argumentCaptor<() -> Unit>()
             whenever(
                 totalsHelper.mapToPaymentTotalsState(
-                    any(),
                     any(),
                     any(),
                     any(),

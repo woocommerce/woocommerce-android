@@ -20,20 +20,20 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
@@ -46,7 +46,6 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
@@ -55,15 +54,17 @@ import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.main.MainActivityViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.launch
 
 @Composable
 fun DashboardBlazeCard(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    activityViewModel: MainActivityViewModel,
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
-    viewModel: DashboardBlazeViewModel = viewModelWithFactory { factory: DashboardBlazeViewModel.Factory ->
+    viewModel: DashboardBlazeViewModel = hiltViewModel { factory: DashboardBlazeViewModel.Factory ->
         factory.create(parentViewModel)
     }
 ) {
@@ -77,6 +78,7 @@ fun DashboardBlazeCard(
     }
 
     HandleEvents(
+        activityViewModel.event,
         viewModel.event,
         blazeCampaignCreationDispatcher
     )
@@ -84,15 +86,25 @@ fun DashboardBlazeCard(
 
 @Composable
 private fun HandleEvents(
+    activityEvent: LiveData<MultiLiveEvent.Event>,
     event: LiveData<MultiLiveEvent.Event>,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
     val coroutineScope = rememberCoroutineScope()
-    val campaignDetailsTitle = stringResource(id = R.string.blaze_campaign_details_title)
 
     DisposableEffect(event, navController, lifecycleOwner) {
+        val activityObserver = Observer { event: MultiLiveEvent.Event ->
+            when (event) {
+                is MainActivityViewModel.LaunchBlazeCampaignCreation -> coroutineScope.launch {
+                    blazeCampaignCreationDispatcher.startCampaignCreation(
+                        source = BlazeFlowSource.LOCAL_NOTIFICATION_NO_CAMPAIGN_REMINDER
+                    )
+                }
+            }
+        }
+
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
                 is DashboardBlazeViewModel.LaunchBlazeCampaignCreation -> coroutineScope.launch {
@@ -110,19 +122,19 @@ private fun HandleEvents(
 
                 is DashboardBlazeViewModel.ShowCampaignDetails -> {
                     navController.navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-                            title = campaignDetailsTitle
+                        NavGraphMainDirections.actionGlobalBlazeCampaignDetailWebViewFragment(
+                            campaignId = event.campaignId
                         )
                     )
                 }
             }
         }
 
+        activityEvent.observe(lifecycleOwner, activityObserver)
         event.observe(lifecycleOwner, observer)
 
         onDispose {
+            event.removeObserver(activityObserver)
             event.removeObserver(observer)
         }
     }
@@ -332,20 +344,11 @@ fun MyStoreBlazeViewCampaignPreview() {
             campaign = BlazeCampaignUi(
                 product = product,
                 status = CampaignStatusUi.Active,
-                stats = listOf(
-                    BlazeCampaignStat(
-                        name = string.blaze_campaign_status_impressions,
-                        value = 100.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = string.blaze_campaign_status_clicks,
-                        value = 10.toString()
-                    ),
-                    BlazeCampaignStat(
-                        name = string.blaze_campaign_status_budget,
-                        value = 1000.toString()
-                    ),
-                ),
+                isEndlessCampaign = false,
+                impressions = "32435",
+                clicks = "43",
+                formattedBudget = "$100",
+                budgetLabel = R.string.blaze_campaign_status_budget_total
             ),
             onCampaignClicked = {},
             onCreateCampaignClicked = {},

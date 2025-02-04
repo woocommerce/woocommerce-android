@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
@@ -47,7 +46,6 @@ fun JetpackActivationWPComEmailScreen(viewModel: JetpackActivationWPComEmailView
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun JetpackActivationWPComEmailScreen(
     viewState: JetpackActivationWPComEmailViewModel.ViewState,
@@ -103,7 +101,11 @@ fun JetpackActivationWPComEmailScreen(
                 WCOutlinedTextField(
                     value = viewState.emailOrUsername,
                     onValueChange = onEmailChanged,
-                    label = stringResource(id = R.string.email_or_username),
+                    label = if (viewState.usernameOnly) {
+                        stringResource(R.string.username)
+                    } else {
+                        stringResource(id = R.string.email_or_username)
+                    },
                     isError = viewState.errorMessage != null,
                     helperText = viewState.errorMessage?.let { stringResource(id = it) },
                     singleLine = true,
@@ -115,6 +117,13 @@ fun JetpackActivationWPComEmailScreen(
                         }
                     )
                 )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                if (!viewState.usernameOnly) {
+                    Text(
+                        style = MaterialTheme.typography.body2,
+                        text = stringResource(id = R.string.login_jetpack_connection_create_account)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -159,6 +168,7 @@ private fun JetpackActivationWPComScreenPreview() {
     WooThemeWithBackground {
         JetpackActivationWPComEmailScreen(
             viewState = JetpackActivationWPComEmailViewModel.ViewState(
+                usernameOnly = false,
                 emailOrUsername = "",
                 isJetpackInstalled = false
             )

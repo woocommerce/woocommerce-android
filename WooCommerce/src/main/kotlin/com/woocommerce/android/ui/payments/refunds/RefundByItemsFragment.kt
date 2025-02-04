@@ -154,12 +154,6 @@ class RefundByItemsFragment :
             new.feesTaxes?.takeIfNotEqualTo(old?.feesTaxes) {
                 feeLinesBinding.issueRefundFeesTax.text = it
             }
-            new.taxes?.takeIfNotEqualTo(old?.taxes) {
-                productsBinding.issueRefundTaxesTotal.text = it
-            }
-            new.subtotal?.takeIfNotEqualTo(old?.subtotal) {
-                productsBinding.issueRefundSubtotal.text = it
-            }
             new.selectedItemsHeader?.takeIfNotEqualTo(old?.selectedItemsHeader) {
                 binding.issueRefundSelectedItems.text = it
             }
@@ -205,8 +199,10 @@ class RefundByItemsFragment :
             new.isRefundNoticeVisible.takeIfNotEqualTo(old?.isRefundNoticeVisible) { isVisible ->
                 if (isVisible) {
                     productsBinding.issueRefundRefundNotice.show()
+                    productsBinding.issueRefundDividerBelowList.show()
                 } else {
                     productsBinding.issueRefundRefundNotice.hide()
+                    productsBinding.issueRefundDividerBelowList.hide()
                 }
             }
             new.refundNotice.takeIfNotEqualTo(old?.refundNotice) { notice ->

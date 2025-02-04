@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.products.inventory
 import androidx.camera.core.ImageProxy
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -16,6 +15,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.barcodescanner.BarcodeScannerScreen
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningViewModel
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.flow.filter
 
@@ -38,7 +38,7 @@ fun ScanToUpdateInventoryScreen(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
     )
-    ModalBottomSheetLayout(
+    WCModalBottomSheetLayout(
         sheetState = sheetState,
         content = {
             BarcodeScannerScreen(

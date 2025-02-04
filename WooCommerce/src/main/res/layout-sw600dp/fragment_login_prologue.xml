@@ -1,129 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/color_surface">
+    android:background="@color/prologue_login_background_color">
+
+    <ImageView
+        android:id="@+id/image_prologue_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_prologue_bg_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/prologue_login_shape_color" />
 
     <ImageView
         android:id="@+id/image_prologue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/image_major_64"
-        android:layout_marginBottom="@dimen/image_major_72"
+        android:layout_marginTop="96dp"
         android:importantForAccessibility="no"
+        android:src="@drawable/ic_woo_logo_white_99dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/img_woo_logo" />
-
-    <ImageView
-        android:id="@+id/image_prologue_bg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_350"
-        android:adjustViewBounds="true"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
-        app:srcCompat="@drawable/img_prologue_bg" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/major_400"
-        android:adjustViewBounds="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:importantForAccessibility="no"
         android:src="@drawable/img_prologue"
+        app:layout_constraintBottom_toTopOf="@id/prologueIntro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/image_prologue"
-        app:layout_constraintBottom_toTopOf="@id/prologueIntro"
-        app:layout_constraintWidth_percent="0.6"/>
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueIntro"
-        style="@style/Woo.TextView.Headline6"
-        android:layout_width="wrap_content"
+        style="@style/Woo.TextView.Headline5"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="55dp"
+        android:layout_marginBottom="0dp"
+        android:breakStrategy="balanced"
         android:gravity="center_horizontal"
         android:text="@string/simplified_login_prologue_intro"
+        android:textColor="@color/white"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/prologueTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/imageView"
-        app:layout_constraintBottom_toTopOf="@id/prologueTitle" />
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintWidth_percent="@dimen/prologue_width_percent"
+        app:lineHeight="29sp" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/prologueTitle"
         style="@style/Woo.TextView.Subtitle1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="0dp"
         android:gravity="center_horizontal"
-        android:textAlignment="gravity"
         android:text="@string/simplified_login_prologue_title"
-        android:textStyle="bold"
+        android:textAlignment="gravity"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/loginButtons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/prologueIntro"
-        app:layout_constraintBottom_toTopOf="@id/loginButtons"
-        app:layout_constraintWidth_percent="0.55" />
+        app:layout_constraintWidth_percent="@dimen/prologue_width_percent" />
 
     <LinearLayout
         android:id="@+id/loginButtons"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:paddingBottom="@dimen/prologue_button_skip_bottom_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/major_400"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/prologueTitle"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintWidth_percent="@dimen/prologue_width_percent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login_wpcom"
             style="@style/Woo.Button.Colored"
-            android:layout_width="@dimen/prologue_button_wide"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginEnd="@dimen/major_100"
+            android:layout_gravity="center_horizontal"
             android:text="@string/login_wpcom"
             android:textAllCaps="false"
-            android:layout_gravity="center_horizontal"
             android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_login_store"
-            style="@style/Woo.Button.Colored.Circle"
-            android:layout_width="@dimen/prologue_button_wide"
+            style="@style/Woo.Button.Colored.White"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_25"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
+            android:backgroundTint="@color/prologue_login_button_color"
             android:text="@string/login_store_address"
             android:textAllCaps="false"
-            tools:visibility="visible" />
+            android:textColor="@color/color_on_surface" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_start_new_store"
             style="@style/Woo.Button.TextButton"
-            android:layout_width="@dimen/prologue_button_wide"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_150"
+            android:layout_marginTop="4dp"
             android:text="@string/login_prologue_start_new_store"
-            android:textAllCaps="false" />
-
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,21 +6,16 @@ import android.content.Context
  * "Feature flags" are used to hide in-progress features from release versions
  */
 enum class FeatureFlag {
-    WOO_POS,
     DB_DOWNGRADE,
-    INBOX,
     WC_SHIPPING_BANNER,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
-    CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
-    APP_PASSWORD_TUTORIAL,
-    GOOGLE_ADS_M1,
-    GOOGLE_ADS_ANALYTICS_HUB_M1,
-    PRODUCT_CREATION_WITH_AI_V2,
-    PRODUCT_CREATION_WITH_AI_V2_M3,
-    SHOW_INBOX_CTA,
-    BACKGROUND_TASKS;
+    ENDLESS_CAMPAIGNS_SUPPORT,
+    REVAMP_WOO_SHIPPING,
+    OBJECTIVE_SECTION,
+    BULK_UPDATE_ORDERS_STATUS,
+    HIDE_SITES_FROM_SITE_PICKER;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -28,21 +23,16 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            BACKGROUND_TASKS -> PackageUtils.isDebugBuild()
+            REVAMP_WOO_SHIPPING -> PackageUtils.isDebugBuild()
 
-            PRODUCT_CREATION_WITH_AI_V2,
-            CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
-            APP_PASSWORD_TUTORIAL,
-            INBOX,
-            GOOGLE_ADS_ANALYTICS_HUB_M1,
-            SHOW_INBOX_CTA,
-            PRODUCT_CREATION_WITH_AI_V2_M3,
-            GOOGLE_ADS_M1 -> true
+            ENDLESS_CAMPAIGNS_SUPPORT,
+            OBJECTIVE_SECTION,
+            BULK_UPDATE_ORDERS_STATUS,
+            HIDE_SITES_FROM_SITE_PICKER -> true
         }
     }
 }

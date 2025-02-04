@@ -18,6 +18,7 @@ class LoginWhatIsJetpackDialogFragment : DialogFragment() {
         const val TAG = "LoginWhatIsJetpackDialogFragment"
     }
 
+    @Deprecated("Deprecated in Java")
     @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

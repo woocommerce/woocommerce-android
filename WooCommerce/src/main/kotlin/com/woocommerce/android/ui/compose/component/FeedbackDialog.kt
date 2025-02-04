@@ -38,10 +38,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Suppress("MagicNumber")
-val Colors.feedbackSurface: Color get() = if (isLight) Color(0xFF1C1C1E) else Color(0xFFBEA0F2)
+val Colors.feedbackSurface: Color get() = if (isLight) Color(0xFF1C1C1E) else Color(0xFFB999FF)
 
 @Suppress("MagicNumber")
-val Colors.onFeedbackSurface: Color get() = if (isLight) Color(0xFFBEA0F2) else Color(0xFF1C1C1E)
+val Colors.onFeedbackSurface: Color get() = if (isLight) Color(0xFFB999FF) else Color(0xFF1C1C1E)
 
 @Composable
 fun FeedbackDialog(

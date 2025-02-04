@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.moremenu
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
@@ -13,7 +14,6 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.WooPosIsEnabled
-import com.woocommerce.android.ui.woopos.WooPosIsFeatureFlagEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -90,10 +90,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
-    private val isWooPosFFEnabled: WooPosIsFeatureFlagEnabled = mock {
-        onBlocking { invoke() } doReturn true
-    }
-
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
     private lateinit var viewModel: MoreMenuViewModel
@@ -116,7 +112,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             isGoogleForWooEnabled = isGoogleForWooEnabled,
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             isWooPosEnabled = isWooPosEnabled,
-            isWooPosFFEnabled = isWooPosFFEnabled,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
         )
     }
@@ -525,5 +520,24 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             .isEqualTo(MoreMenuItemButton.State.Loading)
         assertThat(items.first { it.title == R.string.more_menu_button_inbox }.state)
             .isEqualTo(MoreMenuItemButton.State.Loading)
+    }
+
+    @Test
+    fun `when WooPOS button clicked, then VALUE_MORE_MENU_POS tracking is triggered`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isWooPosEnabled()).thenReturn(true)
+        }
+
+        // WHEN
+        val state = viewModel.moreMenuViewState.captureValues().last()
+        val posButton = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_woo_pos }
+        posButton.onClick()
+
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.HUB_MENU_OPTION_TAPPED,
+            mapOf("option" to "pointOfSale")
+        )
     }
 }

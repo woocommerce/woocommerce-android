@@ -1,12 +1,12 @@
 
 
-<h1 align="center"><img src="docs/images/logo-woocommerce.svg" width="300"><br>for Android</h1>
+<h1 align="center"><img src="https://github.com/user-attachments/assets/00bcaf7b-570b-41cd-9faa-187ed15beb40" width="300"><br>for Android</h1>
 
 <p align="center">A Jetpack-powered mobile app for WooCommerce.</p>
 
 <p align="center">
-    <a href="https://circleci.com/gh/woocommerce/woocommerce-android">
-        <img src="https://circleci.com/gh/woocommerce/woocommerce-android.svg?style=shield" alt="CircleCI">
+    <a href="https://buildkite.com/automattic/woocommerce-android">
+        <img src="https://badge.buildkite.com/3ac8789ce5bc81e2d078d32ee8e526efbdb7c1ef3b19c70be3.svg?branch=trunk">
     </a>
     <a href="https://github.com/woocommerce/woocommerce-android/releases">
         <img alt="Release" src="https://img.shields.io/github/v/tag/woocommerce/woocommerce-android?label=release&sort=semver">
@@ -38,14 +38,8 @@
     $ cd woocommerce-android
     ```
 
-1. Generate the developer oauth2 tokens. These values get copied into the main `gradle.properties` file in the next step. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
-1. Generate the `gradle.properties` file for this app:
-
-    ```bash
-    $ cp ./gradle.properties-example ./gradle.properties
-    ```
-
-1. Open and modify the newly created `gradle.properties` files. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
+1. Copy `defaults.properties` to the secrets directory: `cp defaults.properties ~/.configure/woocommerce-android/secrets/secrets.properties`. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
+1. Generate the developer oauth2 tokens. These values get copied into the `~/.configure/woocommerce-android/secrets.properties` file in the next step. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
 1. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
 1. Optional: Go to Tools → Device Manager and create an emulated device.
 1. Run. (Creates a default virtual device if you skipped the previous step)
@@ -84,7 +78,6 @@ $ ./gradlew :WooCommerce:connectedVanillaDebugAndroidTest # assemble, install an
     - [Right to Left Layout Guidelines](docs/right-to-left-layout-guidelines.md)
 - Quality & Testing
     - [Beta Testing](https://woocommercehalo.wordpress.com/setup/join-android-beta/)
-    - [Issue Triage](docs/issue-triage.md)
 - Features
     - [Feature Flags](docs/feature-flags.md)
 

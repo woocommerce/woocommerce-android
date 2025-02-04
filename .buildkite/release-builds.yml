@@ -10,6 +10,8 @@ agents:
 steps:
   - label: "Gradle Wrapper Validation"
     command: |
+      .buildkite/commands/checkout-release-branch.sh "$RELEASE_VERSION"
+
       validate_gradle_wrapper
     priority: 1
     plugins: [$CI_TOOLKIT]
@@ -19,17 +21,29 @@ steps:
 
   - label: "🛠 Release Build (Mobile App)"
     command: |
-      ".buildkite/commands/release-build.sh" "WooCommerce"
+      .buildkite/commands/checkout-release-branch.sh "$RELEASE_VERSION"
+
+      .buildkite/commands/release-build.sh "WooCommerce"
     priority: 1
     plugins: [$CI_TOOLKIT]
     notify:
       - slack: "#build-and-ship"
+    retry:
+      manual:
+        # If those jobs fail, one should always prefer re-triggering a new build from ReleaseV2 rather than retrying the individual job from Buildkite
+        allowed: false
 
   - label: "🛠 Release Build (Wear App)"
     command: |
-      ".buildkite/commands/release-build.sh" "WooCommerce-Wear"
+      .buildkite/commands/checkout-release-branch.sh "$RELEASE_VERSION"
+
+      .buildkite/commands/release-build.sh "WooCommerce-Wear"
     priority: 1
     plugins: [$CI_TOOLKIT]
     if: build.env('INCLUDE_WEAR_APP') == "true"
     notify:
       - slack: "#build-and-ship"
+    retry:
+      manual:
+        # If those jobs fail, one should always prefer re-triggering a new build from ReleaseV2 rather than retrying the individual job from Buildkite
+        allowed: false

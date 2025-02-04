@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import android.os.Parcelable
-import androidx.annotation.DrawableRes
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -29,10 +28,17 @@ data class WooPosCartState(
                 val id: Id,
                 val name: String,
                 val price: String,
+                val description: String?,
                 val imageUrl: String?,
+                val isAppearanceAnimationPlayed: Boolean,
+                val productType: ProductType,
             ) : Parcelable {
                 @Parcelize
-                data class Id(val productId: Long, val itemNumber: Int) : Parcelable
+                data class Id(
+                    val productId: Long,
+                    val variationId: Long,
+                    val itemNumber: Int
+                ) : Parcelable
             }
 
             override val amountOfItems: Int
@@ -42,7 +48,7 @@ data class WooPosCartState(
 
     @Parcelize
     data class Toolbar(
-        @DrawableRes val icon: Int? = null,
+        val backIconVisible: Boolean = false,
         val itemsCount: String? = null,
         val isClearAllButtonVisible: Boolean = false,
     ) : Parcelable
@@ -50,4 +56,8 @@ data class WooPosCartState(
 
 enum class WooPosCartStatus {
     EDITABLE, CHECKOUT, EMPTY,
+}
+
+enum class ProductType {
+    Simple, Variation
 }

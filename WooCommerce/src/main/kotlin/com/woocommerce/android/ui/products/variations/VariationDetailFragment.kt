@@ -211,6 +211,7 @@ class VariationDetailFragment :
         handleResult<InventoryData>(BaseProductEditorFragment.KEY_INVENTORY_DIALOG_RESULT) {
             viewModel.onVariationChanged(
                 sku = it.sku,
+                globalUniqueId = it.globalUniqueId,
                 stockStatus = it.stockStatus,
                 stockQuantity = it.stockQuantity,
                 backorderStatus = it.backorderStatus,
@@ -260,6 +261,7 @@ class VariationDetailFragment :
         }
     }
 
+    @Suppress("LongMethod")
     private fun setupObservers(viewModel: VariationDetailViewModel) {
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.variation.takeIfNotEqualTo(old?.variation) { newVariation ->
@@ -317,8 +319,13 @@ class VariationDetailFragment :
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
                 is ShowDialogFragment -> event.showIn(parentFragmentManager, this)
-                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 is VariationDetailViewModel.ShowUpdateVariationError -> showUpdateVariationError(event.message)
+                is Exit -> {
+                    // Ensure subsequent Exit events are ignored to avoid IllegalStateException
+                    viewModel.event.removeObservers(viewLifecycleOwner)
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
+
                 else -> event.isHandled = false
             }
         }

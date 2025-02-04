@@ -1,11 +1,13 @@
 package com.woocommerce.android.extensions
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.Point
 import android.os.Parcelable
 import android.view.WindowManager
@@ -13,14 +15,35 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.SystemVersionUtils
 import kotlinx.parcelize.Parcelize
+import kotlin.math.max
+import kotlin.math.min
 
-val Context.windowSizeClass: WindowSizeClass
-    get() = determineWindowSizeClassByGivenSize(resources.configuration.screenWidthDp)
+val Context.isTwoPanesShouldBeUsed: Boolean
+    get() = determineIfTwoPanesShouldBeUsed(
+        resources.configuration.screenWidthDp,
+        resources.configuration.screenHeightDp
+    )
 
-private fun determineWindowSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
+val Context.windowHeightSizeClass: WindowSizeClass
+    get() = determineWindowHeightSizeClassByGivenSize(resources.configuration.screenHeightDp)
+
+private const val MIN_SCREEN_SHORT_SIZE_DP = 674
+private const val MIN_SCREEN_LONG_SIZE_DP = 800
+
+private fun determineIfTwoPanesShouldBeUsed(widthDp: Int, heightDp: Int): Boolean {
+    val minScreenShortSizeDP = MIN_SCREEN_SHORT_SIZE_DP
+    val minScreenLongSizeDP = MIN_SCREEN_LONG_SIZE_DP
+
+    val shortSize = min(widthDp, heightDp)
+    val longSize = max(widthDp, heightDp)
+
+    return shortSize >= minScreenShortSizeDP && longSize >= minScreenLongSizeDP
+}
+
+private fun determineWindowHeightSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
     return when {
-        sizeDp < WindowSizeClass.Compact.maxWidthDp -> WindowSizeClass.Compact
-        sizeDp < WindowSizeClass.Medium.maxWidthDp -> WindowSizeClass.Medium
+        sizeDp < WindowSizeClass.Compact.maxHeightDp -> WindowSizeClass.Compact
+        sizeDp < WindowSizeClass.Medium.maxHeightDp -> WindowSizeClass.Medium
         else -> WindowSizeClass.ExpandedAndBigger
     }
 }
@@ -30,26 +53,33 @@ private fun determineWindowSizeClassByGivenSize(sizeDp: Int): WindowSizeClass {
  * [guidelines](https://m3.material.io/foundations/layout/applying-layout/window-size-classes)
  */
 @Parcelize
-sealed class WindowSizeClass(val maxWidthDp: Int) : Parcelable, Comparable<WindowSizeClass> {
+sealed class WindowSizeClass(val maxWidthDp: Int, val maxHeightDp: Int) : Parcelable, Comparable<WindowSizeClass> {
     /**
-     * Phone in portrait
+     * Width: 99.96% of phones in portrait.
+     * Height: 99.78% of phones in landscape.
      */
-    data object Compact : WindowSizeClass(COMPACT_SCREEN_MAX_WIDTH)
+    data object Compact : WindowSizeClass(COMPACT_SCREEN_MAX_WIDTH, COMPACT_SCREEN_MAX_HEIGHT)
 
     /**
-     * Small tablet, tablet in portrait or foldable in portrait (unfolded).
+     * Width: 93.73% of tablets in portrait, most large unfolded inner displays in portrait.
+     * Height: 96.56% of tablets in landscape, 97.59% of phones in portrait.
      */
-    data object Medium : WindowSizeClass(MEDIUM_SCREEN_MAX_WIDTH)
+    data object Medium : WindowSizeClass(MEDIUM_SCREEN_MAX_WIDTH, MEDIUM_SCREEN_MAX_HEIGHT)
 
     /**
-     * Phone in landscape, tablet in landscape, foldable in landscape, desktop and ultra-wide.
+     * Width: 97.22% of tablets in landscape, most large unfolded inner displays in landscape.
+     * Height: 94.25% of tablets in portrait.
      */
-    data object ExpandedAndBigger : WindowSizeClass(EXPANDED_SCREEN_MAX_WIDTH)
+    data object ExpandedAndBigger : WindowSizeClass(EXPANDED_SCREEN_MAX_WIDTH, EXPANDED_SCREEN_MAX_HEIGHT)
 
     companion object {
         private const val COMPACT_SCREEN_MAX_WIDTH = 600
         private const val MEDIUM_SCREEN_MAX_WIDTH = 840
         private const val EXPANDED_SCREEN_MAX_WIDTH = 1200
+
+        private const val COMPACT_SCREEN_MAX_HEIGHT = 480
+        private const val MEDIUM_SCREEN_MAX_HEIGHT = 900
+        private const val EXPANDED_SCREEN_MAX_HEIGHT = 2000
     }
 
     override fun compareTo(other: WindowSizeClass): Int {
@@ -87,3 +117,18 @@ val Context.physicalScreenHeightInPx: Int
             size.y
         }
     }
+
+/**
+ * Find the closest Activity in a given Context.
+ * Inspired by the implementation in Accompanist.
+ * https://github.com/google/accompanist/blob/3b40d2b53e117bc7ca78f0d35454af9bad25f0c5/permissions/src/main/java/com/google/accompanist/permissions/PermissionsUtil.kt#L131
+ */
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+
+    return null
+}

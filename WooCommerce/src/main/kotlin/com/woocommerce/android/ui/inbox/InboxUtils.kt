@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.inbox.domain.InboxNote.NoteType.SURVEY
 import com.woocommerce.android.ui.inbox.domain.InboxNote.Status.ACTIONED
 import com.woocommerce.android.ui.inbox.domain.InboxNoteAction
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
@@ -63,9 +62,7 @@ fun InboxNote.mapInboxActionsToUi(
     }
 
     val noteActionsUi = mutableListOf<InboxNoteActionUi>()
-    if (FeatureFlag.SHOW_INBOX_CTA.isEnabled()) {
-        noteActionsUi.addAll(actions.map { it.toInboxActionUi(id, onAction) })
-    }
+    noteActionsUi.addAll(actions.map { it.toInboxActionUi(id, onAction) })
 
     addDismissActionIfMissing(noteActionsUi, onDismiss)
 

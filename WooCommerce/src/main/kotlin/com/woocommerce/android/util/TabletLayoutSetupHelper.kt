@@ -15,8 +15,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.WindowSizeClass
-import com.woocommerce.android.extensions.windowSizeClass
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -73,7 +72,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         tabletNavigateTo: () -> Pair<Int, Bundle>,
         navigateWithPhoneNavigation: () -> Unit
     ) {
-        if (context.windowSizeClass != WindowSizeClass.Compact) {
+        if (context.isTwoPanesShouldBeUsed) {
             val navOptions =
                 NavOptions.Builder()
                     .setPopUpTo(navHostFragment!!.navController.graph.startDestinationId, true)
@@ -94,10 +93,9 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
     private fun setDetailsMargins(rootView: View) {
         if (rootView !is ViewGroup) return
 
-        val marginPart = when (context.windowSizeClass) {
-            WindowSizeClass.Compact -> return
-            WindowSizeClass.ExpandedAndBigger -> MARGINS_FOR_TABLET
-            WindowSizeClass.Medium -> MARGINS_FOR_SMALL_TABLET_PORTRAIT
+        val marginPart = when (context.isTwoPanesShouldBeUsed) {
+            false -> return
+            true -> MARGINS_FOR_TABLET
         }
 
         val windowWidth = DisplayUtils.getWindowPixelWidth(context)
@@ -139,7 +137,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
     }
 
     private fun adjustUIForScreenSize(screen: Screen) {
-        if (context.windowSizeClass != WindowSizeClass.Compact) {
+        if (context.isTwoPanesShouldBeUsed) {
             adjustLayoutForTablet(screen)
         } else {
             adjustLayoutForNonTablet(screen)
@@ -147,13 +145,9 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
     }
 
     private fun adjustLayoutForTablet(screen: Screen) {
-        when (context.windowSizeClass) {
-            WindowSizeClass.Compact -> return
-            WindowSizeClass.Medium -> {
-                screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
-            }
-
-            WindowSizeClass.ExpandedAndBigger -> {
+        when (context.isTwoPanesShouldBeUsed) {
+            false -> return
+            true -> {
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
             }
         }
@@ -183,10 +177,8 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
 
     private companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
-        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.40f
 
         private const val MARGINS_FOR_TABLET: Float = 0.1F
-        private const val MARGINS_FOR_SMALL_TABLET_PORTRAIT: Float = 0.025F
     }
 
     interface Screen {

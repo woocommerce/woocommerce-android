@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -20,7 +24,7 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
         const val TAG = "login-prologue-fragment"
     }
 
-    interface PrologueFinishedListener {
+    interface PrologueListener {
         fun onPrimaryButtonClicked()
         fun onSecondaryButtonClicked()
         fun onNewToWooButtonClicked()
@@ -32,18 +36,26 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
     @Inject
     lateinit var appPrefsWrapper: AppPrefsWrapper
 
-    private var prologueFinishedListener: PrologueFinishedListener? = null
+    private var prologueListener: PrologueListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (activity as? DynamicEdgeToEdgeActivity)?.enableDynamicEdgeToEdge(forceDarkStatusBar = true)
+
         with(FragmentLoginPrologueBinding.bind(view)) {
+            ViewCompat.setOnApplyWindowInsetsListener(loginButtons) { v, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.updateLayoutParams<MarginLayoutParams> { bottomMargin = insets.bottom }
+                WindowInsetsCompat.CONSUMED
+            }
+
             buttonLoginStore.setOnClickListener {
                 // Login with site address
-                prologueFinishedListener?.onPrimaryButtonClicked()
+                prologueListener?.onPrimaryButtonClicked()
             }
 
             buttonLoginWpcom.setOnClickListener {
                 // Login with WordPress.com account
-                prologueFinishedListener?.onSecondaryButtonClicked()
+                prologueListener?.onSecondaryButtonClicked()
             }
 
             buttonStartNewStore.setOnClickListener {
@@ -51,7 +63,7 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
                     AnalyticsEvent.LOGIN_PROLOGUE_STARTING_A_NEW_STORE_TAPPED
                 )
 
-                prologueFinishedListener?.onNewToWooButtonClicked()
+                prologueListener?.onNewToWooButtonClicked()
             }
         }
 
@@ -63,8 +75,8 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if (activity is PrologueFinishedListener) {
-            prologueFinishedListener = activity as PrologueFinishedListener
+        if (activity is PrologueListener) {
+            prologueListener = activity as PrologueListener
         }
     }
 
@@ -76,6 +88,6 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
 
     override fun onDetach() {
         super.onDetach()
-        prologueFinishedListener = null
+        prologueListener = null
     }
 }

@@ -1,0 +1,92 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
+}
+
+android {
+    namespace "org.wordpress.android.fluxc.plugins.woocommerce"
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+        compileSdk gradle.ext.compileSdkVersion
+
+        room {
+            schemaDirectory "$projectDir/schemas"
+        }
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+
+    compileOptions {
+        sourceCompatibility libs.versions.java.get()
+        targetCompatibility libs.versions.java.get()
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+}
+
+tasks.withType(KotlinCompile).configureEach {
+    compilerOptions {
+        allWarningsAsErrors = false
+    }
+}
+
+dependencies {
+    implementation project(":libs:fluxc")
+
+    // WordPress libs
+    implementation(libs.wordpress.utils) {
+        // Using official volley package
+        exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
+    }
+
+    api libs.wellsql
+    kapt libs.wellsql.processor
+
+    // FluxC annotations
+    api project(":libs:fluxc-annotations")
+    kapt project(":libs:fluxc-processor")
+
+    implementation libs.google.gson
+
+    // Dagger
+    implementation libs.google.dagger
+    ksp libs.google.dagger.compiler
+    compileOnly libs.glassfish.javax.annotation
+
+    // Coroutines
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
+
+    implementation libs.androidx.room.runtime
+    ksp libs.androidx.room.compiler
+    api libs.androidx.room.ktx
+
+    testImplementation libs.junit
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.main.core
+    testImplementation libs.assertj.core
+    testImplementation libs.mockito.kotlin
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.kotlin.test.junit
+
+    androidTestImplementation libs.androidx.room.testing
+    androidTestImplementation libs.androidx.test.main.runner
+    androidTestImplementation libs.androidx.test.ext.junit
+    androidTestImplementation libs.assertj.core
+
+    lintChecks libs.wordpress.lint
+}

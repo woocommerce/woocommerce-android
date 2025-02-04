@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls.FETCH_PAYMENT_METHOD_URL_PATH
 import com.woocommerce.android.AppUrls.WPCOM_ADD_PAYMENT_METHOD
 import com.woocommerce.android.BuildConfig
@@ -9,6 +10,7 @@ import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.joinToUrl
 import kotlinx.coroutines.flow.catch
@@ -35,17 +37,44 @@ class BlazeRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeCampaignsStore: BlazeCampaignsStore,
     private val productDetailRepository: ProductDetailRepository,
-    private val mediaFilesRepository: MediaFilesRepository
+    private val mediaFilesRepository: MediaFilesRepository,
+    private val appPrefsWrapper: AppPrefsWrapper
 ) {
     companion object {
         private const val BLAZE_CAMPAIGN_CREATION_ORIGIN = "wc-android"
+        const val CAMPAIGN_BUDGET_MODE_TOTAL = "total" // "total" for campaigns with defined end date
+        const val CAMPAIGN_BUDGET_MODE_DAILY = "daily" // "daily" for endless/evergreen campaigns
         const val BLAZE_DEFAULT_CURRENCY_CODE = "USD" // For now only USD are supported
         const val DEFAULT_CAMPAIGN_DURATION = 7 // Days
         const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5f // USD
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
-        const val DEFAULT_CAMPAIGN_BUDGET_MODE = "total" // "total" or "daily" for campaigns that run without end date
         const val BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS = 400 // Must be at least 400 x 400 pixels
+        const val WEEKLY_DURATION = 7 // Used to calculate weekly budget in endless campaigns
+    }
+
+    fun observeObjectives() = blazeCampaignsStore.observeBlazeCampaignObjectives().map {
+        it.map { objective ->
+            Objective(
+                objective.id,
+                objective.title,
+                objective.description,
+                objective.suitableForDescription
+            )
+        }
+    }
+
+    suspend fun fetchObjectives(): Result<Unit> {
+        val result = blazeCampaignsStore.fetchBlazeCampaignObjectives(selectedSite.get())
+
+        return when {
+            result.isError -> {
+                WooLog.w(WooLog.T.BLAZE, "Failed to fetch objectives: ${result.error}")
+                Result.failure(OnChangedException(result.error))
+            }
+
+            else -> Result.success(Unit)
+        }
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
@@ -120,7 +149,7 @@ class BlazeRepository @Inject constructor(
 
     suspend fun fetchAdSuggestions(productId: Long): Result<List<AiSuggestionForAd>> {
         fun List<BlazeAdSuggestion>.mapToUiModel(): List<AiSuggestionForAd> {
-            return map { AiSuggestionForAd(it.tagLine, it.description) }
+            return map { AiSuggestionForAd(it.tagLine, it.description, it.ctaText) }
         }
 
         val result = blazeCampaignsStore.fetchBlazeAdSuggestions(selectedSite.get(), productId)
@@ -128,7 +157,7 @@ class BlazeRepository @Inject constructor(
         return when {
             result.isError -> {
                 WooLog.w(WooLog.T.BLAZE, "Failed to fetch ad suggestions: ${result.error}")
-                Result.failure(OnChangedException(result.error))
+                Result.failure(OnChangedException(result.error, result.error.message))
             }
 
             else -> Result.success(result.model?.mapToUiModel() ?: emptyList())
@@ -142,10 +171,11 @@ class BlazeRepository @Inject constructor(
             currencyCode = BLAZE_DEFAULT_CURRENCY_CODE,
             durationInDays = DEFAULT_CAMPAIGN_DURATION,
             startDate = Date().apply { time += 1.days.inWholeMilliseconds }, // By default start tomorrow
+            isEndlessCampaign = FeatureFlag.ENDLESS_CAMPAIGNS_SUPPORT.isEnabled()
         )
 
         val product = productDetailRepository.getProduct(productId)
-            ?: productDetailRepository.fetchProductOrLoadFromCache(productId)!!
+            ?: productDetailRepository.fetchAndGetProduct(productId)!!
 
         return CampaignDetails(
             productId = productId,
@@ -163,7 +193,9 @@ class BlazeRepository @Inject constructor(
             destinationParameters = DestinationParameters(
                 targetUrl = product.permalink,
                 parameters = emptyMap()
-            )
+            ),
+            objectiveId = appPrefsWrapper.blazeCampaignSelectedObjective,
+            ctaText = ""
         )
     }
 
@@ -242,6 +274,7 @@ class BlazeRepository @Inject constructor(
         )
     }
 
+    @Suppress("LongMethod")
     suspend fun createCampaign(
         campaignDetails: CampaignDetails,
         paymentMethodId: String
@@ -266,11 +299,18 @@ class BlazeRepository @Inject constructor(
                 targetResourceId = campaignDetails.productId,
                 tagLine = campaignDetails.tagLine,
                 description = campaignDetails.description,
+                ctaText = campaignDetails.ctaText,
                 startDate = campaignDetails.budget.startDate,
                 endDate = campaignDetails.budget.endDate,
                 budget = BlazeCampaignCreationRequestBudget(
-                    mode = DEFAULT_CAMPAIGN_BUDGET_MODE,
-                    amount = campaignDetails.budget.totalBudget.toDouble(),
+                    mode = when {
+                        campaignDetails.budget.isEndlessCampaign -> CAMPAIGN_BUDGET_MODE_DAILY
+                        else -> CAMPAIGN_BUDGET_MODE_TOTAL
+                    },
+                    amount = when {
+                        campaignDetails.budget.isEndlessCampaign -> campaignDetails.budget.totalBudget / WEEKLY_DURATION
+                        else -> campaignDetails.budget.totalBudget
+                    }.toDouble(),
                     currency = BLAZE_DEFAULT_CURRENCY_CODE // To be replaced when more currencies are supported
                 ),
                 targetUrl = campaignDetails.destinationParameters.targetUrl,
@@ -283,7 +323,9 @@ class BlazeRepository @Inject constructor(
                         devices = it.devices.map { device -> device.id },
                         topics = it.interests.map { interest -> interest.id }
                     )
-                }
+                },
+                isEndlessCampaign = campaignDetails.budget.isEndlessCampaign,
+                objectiveId = if (FeatureFlag.OBJECTIVE_SECTION.isEnabled()) campaignDetails.objectiveId else null
             )
         )
 
@@ -340,15 +382,27 @@ class BlazeRepository @Inject constructor(
         }
     }
 
+    fun isCampaignObjectiveSwitchChecked() = appPrefsWrapper.blazeCampaignObjectiveSwitchChecked
+
+    fun setCampaignObjectiveSwitchChecked(enabled: Boolean) {
+        appPrefsWrapper.blazeCampaignObjectiveSwitchChecked = enabled
+    }
+
+    fun storeSelectedObjective(objectiveId: String) {
+        appPrefsWrapper.blazeCampaignSelectedObjective = objectiveId
+    }
+
     @Parcelize
     data class CampaignDetails(
         val productId: Long,
         val tagLine: String,
         val description: String,
+        val ctaText: String,
         val campaignImage: BlazeCampaignImage,
         val budget: Budget,
         val targetingParameters: TargetingParameters,
         val destinationParameters: DestinationParameters,
+        val objectiveId: String
     ) : Parcelable
 
     sealed interface BlazeCampaignImage : Parcelable {
@@ -366,6 +420,14 @@ class BlazeRepository @Inject constructor(
         @Parcelize
         data class RemoteImage(val mediaId: Long, override val uri: String) : BlazeCampaignImage
     }
+
+    @Parcelize
+    data class Objective(
+        val id: String,
+        val title: String,
+        val description: String,
+        val suitableForDescription: String
+    ) : Parcelable
 
     @Parcelize
     data class TargetingParameters(
@@ -388,6 +450,7 @@ class BlazeRepository @Inject constructor(
     data class AiSuggestionForAd(
         val tagLine: String,
         val description: String,
+        val ctaText: String
     ) : Parcelable
 
     @Parcelize
@@ -397,6 +460,7 @@ class BlazeRepository @Inject constructor(
         val currencyCode: String,
         val durationInDays: Int,
         val startDate: Date,
+        val isEndlessCampaign: Boolean
     ) : Parcelable {
         val endDate: Date
             get() = Date(startDate.time + durationInDays.days.inWholeMilliseconds)

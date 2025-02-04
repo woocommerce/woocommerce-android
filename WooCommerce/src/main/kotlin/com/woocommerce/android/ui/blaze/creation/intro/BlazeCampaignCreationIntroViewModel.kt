@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_LEARN_MORE_T
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -28,6 +29,7 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val analyticsTracker: AnalyticsTrackerWrapper,
+    val addProductNavigator: AddProductNavigator
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationIntroFragmentArgs by savedStateHandle.navArgs()
     fun onContinueClick() {
@@ -58,7 +60,7 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
                     products.isNotEmpty() -> triggerEvent(ShowProductSelector)
                     else -> {
                         WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
-                        triggerEvent(Exit)
+                        triggerEvent(ShowNoProductDialog)
                     }
                 }
             }
@@ -84,6 +86,12 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
         analyticsTracker.track(stat = BLAZE_INTRO_LEARN_MORE_TAPPED)
     }
 
+    fun onCreateProductClicked() {
+        triggerEvent(NavigateToAddProduct)
+    }
+
     object ShowProductSelector : MultiLiveEvent.Event()
     data class ShowCampaignCreationForm(val productId: Long, val source: BlazeFlowSource) : MultiLiveEvent.Event()
+    object ShowNoProductDialog : MultiLiveEvent.Event()
+    object NavigateToAddProduct : MultiLiveEvent.Event()
 }

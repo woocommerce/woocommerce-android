@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,7 +73,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     }
     private val timezoneProvider: TimezoneProvider = mock()
     private val observeLastUpdate: ObserveLastUpdate = mock {
-        onBlocking { invoke(any(), ArgumentMatchers.anyList()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
+        onBlocking { invoke(any(), ArgumentMatchers.anyList(), eq(false)) } doReturn flowOf(DEFAULT_LAST_UPDATE)
     }
     private val dateUtils: DateUtils = mock()
     private val parentViewModel: DashboardViewModel = mock {
@@ -140,7 +141,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 whenever(networkStatus.isConnected()).thenReturn(false)
             }
 
-            viewModel.onTabSelected(ANY_SELECTION_TYPE)
+            viewModel.onRangeChanged(ANY_SELECTION_TYPE)
 
             verify(getStats, never()).invoke(any(), any())
         }
@@ -154,7 +155,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 .thenReturn(ANY_SELECTION_TYPE.name)
         }
 
-        viewModel.onTabSelected(ANY_SELECTION_TYPE)
+        viewModel.onRangeChanged(ANY_SELECTION_TYPE)
 
         verify(getStats, times(2)).invoke(
             refresh = ArgumentMatchers.eq(false),
@@ -195,7 +196,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                     .thenReturn(ANY_SELECTION_TYPE.name)
             }
 
-            viewModel.onTabSelected(ANY_SELECTION_TYPE)
+            viewModel.onRangeChanged(ANY_SELECTION_TYPE)
 
             Assertions.assertThat(viewModel.revenueStatsState.value)
                 .isInstanceOf(DashboardStatsViewModel.RevenueStatsViewState.Content::class.java)
@@ -208,7 +209,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         testBlocking {
             setup()
 
-            viewModel.onTabSelected(ANY_SELECTION_TYPE)
+            viewModel.onRangeChanged(ANY_SELECTION_TYPE)
 
             verify(appPrefsWrapper).setActiveStatsTab(ANY_SELECTION_TYPE.name)
         }
@@ -285,7 +286,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
         val state = viewModel.dateRangeState.runAndCaptureValues {
             viewModel.onChartDateSelected("11")
-            viewModel.onTabSelected(ANY_SELECTION_TYPE)
+            viewModel.onRangeChanged(ANY_SELECTION_TYPE)
         }.last()
 
         verify(dateRangeFormatter, never())
@@ -420,4 +421,18 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             verify(parentViewModel).displayRefreshingIndicator()
             verify(parentViewModel).hideRefreshingIndicator()
         }
+
+    @Test
+    fun `given site is WPCom suspended, when visitor stats placeholder, then hide Jetpack icon`() = testBlocking {
+        setup {
+            whenever(getStats.invoke(any(), any()))
+                .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
+            whenever(appPrefsWrapper.isSiteWPComSuspended).thenReturn(true)
+        }
+
+        val visitorStatsState = viewModel.visitorStatsState.getOrAwaitValue()
+
+        Assertions.assertThat(visitorStatsState)
+            .isEqualTo(DashboardStatsViewModel.VisitorStatsViewState.Unavailable(showJetpackIcon = false))
+    }
 }

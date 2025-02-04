@@ -11,7 +11,6 @@ data class CustomAmountUIModel(
     val id: Long,
     val amount: BigDecimal,
     val name: String,
-    val isLocked: Boolean = false,
     val taxStatus: TaxStatus = TaxStatus(),
     val type: CustomAmountType,
 ) : Parcelable {

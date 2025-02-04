@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -38,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -124,17 +122,17 @@ private fun WooPaymentsSetupInstructionsContent(
             modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
         )
 
-        val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_instructions_content_step_1_content)
+        val text = annotatedStringRes(
+            stringResId = R.string.store_onboarding_wcpay_instructions_content_step_1_content,
+            onUrlClick = { onWPComAccountMoreDetailsClick() }
+        )
+
         WooPaymentsSetupInstructionsStep(stepNumber = 1) {
-            ClickableText(
+            Text(
                 text = text,
-                style = MaterialTheme.typography.subtitle1
-                    .copy(color = colorResource(id = color.color_on_surface)),
-            ) {
-                text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-                    .firstOrNull()
-                    ?.let { onWPComAccountMoreDetailsClick() }
-            }
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = color.color_on_surface)
+            )
         }
 
         WooPaymentsSetupInstructionsStep(
@@ -217,16 +215,15 @@ private fun WooPaymentsSetupInstructionsFooter(
                     .align(Alignment.CenterVertically)
                     .padding(end = 8.dp)
             )
-            val text = annotatedStringRes(stringResId = R.string.store_onboarding_wcpay_instructions_content_learn_more)
-            ClickableText(
+            val text = annotatedStringRes(
+                stringResId = R.string.store_onboarding_wcpay_instructions_content_learn_more,
+                onUrlClick = { onLearnMoreClick() }
+            )
+            Text(
                 text = text,
-                style = MaterialTheme.typography.subtitle2
-                    .copy(color = colorResource(id = R.color.color_on_surface_medium)),
-            ) {
-                text.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-                    .firstOrNull()
-                    ?.let { onLearnMoreClick() }
-            }
+                style = MaterialTheme.typography.subtitle2,
+                color = colorResource(id = R.color.color_on_surface_medium)
+            )
         }
     }
 }

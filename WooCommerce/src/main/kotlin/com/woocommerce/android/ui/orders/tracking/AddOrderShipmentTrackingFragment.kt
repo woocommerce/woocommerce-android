@@ -7,7 +7,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.widget.doOnTextChanged
+import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.AppPrefs
@@ -18,6 +19,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment.Companion.KEY_BARCODE_SCANNING_SCAN_STATUS
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
@@ -25,7 +27,10 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
+import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SaveTrackingPrefsEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.SetScannedTrackingNumberEvent
+import com.woocommerce.android.ui.orders.tracking.AddOrderShipmentTrackingViewModel.ShowTrackingNumberScanFailed
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -155,6 +160,16 @@ class AddOrderShipmentTrackingFragment :
                     AppPrefs.setSelectedShipmentTrackingProviderName(event.carrier.name)
                     AppPrefs.setIsSelectedShipmentTrackingProviderNameCustom(event.carrier.isCustom)
                 }
+
+                is SetScannedTrackingNumberEvent -> {
+                    binding.trackingNumber.setText(event.trackingNumber)
+                    viewModel.onTrackingNumberEntered(event.trackingNumber)
+                }
+
+                is ShowTrackingNumberScanFailed -> {
+                    uiMessageResolver.showSnack(event.errorMessage)
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -162,11 +177,21 @@ class AddOrderShipmentTrackingFragment :
         handleResult<Carrier>(AddOrderTrackingProviderListFragment.SHIPMENT_TRACKING_PROVIDER_RESULT) {
             viewModel.onCarrierSelected(it)
         }
+
+        handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
+            viewModel.handleBarcodeScannedStatus(status)
+        }
     }
 
     private fun initUi(binding: FragmentAddShipmentTrackingBinding) {
         binding.carrier.setOnClickListener {
             viewModel.onCarrierClicked()
+        }
+
+        // Let's not hide the scan button with the error icon
+        binding.trackingNumberLayout.errorIconDrawable = null
+        binding.trackingNumberLayout.setEndIconOnClickListener {
+            viewModel.onScanTrackingNumberClicked()
         }
 
         binding.date.setOnClickListener {
@@ -181,13 +206,15 @@ class AddOrderShipmentTrackingFragment :
             dateShippedPickerDialog?.show()
         }
 
-        binding.customProviderName.doOnTextChanged { text, _, _, _ ->
+        binding.customProviderName.doAfterTextChanged { text ->
+            if (!binding.customProviderNameLayout.isVisible) return@doAfterTextChanged
             viewModel.onCustomCarrierNameEntered(text.toString())
         }
-        binding.trackingNumber.doOnTextChanged { text, _, _, _ ->
+        binding.trackingNumber.doAfterTextChanged { text ->
             viewModel.onTrackingNumberEntered(text.toString())
         }
-        binding.customProviderUrl.doOnTextChanged { text, _, _, _ ->
+        binding.customProviderUrl.doAfterTextChanged { text ->
+            if (!binding.customProviderUrlLayout.isVisible) return@doAfterTextChanged
             viewModel.onTrackingLinkEntered(text.toString())
         }
     }

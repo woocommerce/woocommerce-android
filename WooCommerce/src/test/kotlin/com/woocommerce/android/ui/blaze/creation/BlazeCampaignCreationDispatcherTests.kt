@@ -31,6 +31,7 @@ class BlazeCampaignCreationDispatcherTests : BaseUnitTest() {
         dispatcher = BlazeCampaignCreationDispatcher(
             blazeRepository = blazeRepository,
             productListRepository = productListRepository,
+            abandonedCampaignReminder = mock(),
             coroutineDispatchers = coroutinesTestRule.testDispatchers,
             analyticsTracker = analyticsTracker
         )

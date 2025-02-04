@@ -3,7 +3,7 @@ package com.woocommerce.android.background
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,13 +19,15 @@ import org.mockito.kotlin.whenever
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpdateAnalyticsDataByRangeSelectionTest : BaseUnitTest() {
 
     private val analyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
-    private val analyticsRepository: AnalyticsRepository = mock()
+    private val backgroundUpdateAnalyticsRepository: BackgroundUpdateAnalyticsRepository = mock()
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
     private val defaultVisibleCards = listOf(
         AnalyticCardConfiguration(
@@ -62,7 +64,8 @@ class UpdateAnalyticsDataByRangeSelectionTest : BaseUnitTest() {
 
     private val sut = UpdateAnalyticsDataByRangeSelection(
         analyticsCardsConfiguration = analyticsCardsConfiguration,
-        analyticsRepository = analyticsRepository
+        backgroundUpdateAnalyticsRepository = backgroundUpdateAnalyticsRepository,
+        analyticsUpdateDataStore = analyticsUpdateDataStore
     )
 
     private val defaultRangeSelection = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
@@ -76,142 +79,97 @@ class UpdateAnalyticsDataByRangeSelectionTest : BaseUnitTest() {
     fun `when there are visible cards then refresh visible and forced cards data`() = runTest {
         whenever(analyticsCardsConfiguration.invoke()).doReturn(flowOf(defaultVisibleCards))
         whenever(
-            analyticsRepository.fetchRevenueData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.RevenueResult.RevenueData(mock()))
-        whenever(analyticsRepository.fetchGiftCardsStats(defaultRangeSelection))
-            .doReturn(AnalyticsRepository.GiftCardResult.GiftCardData(mock()))
-        whenever(analyticsRepository.fetchProductBundlesStats(defaultRangeSelection))
-            .doReturn(AnalyticsRepository.BundlesResult.BundlesData(mock()))
+            backgroundUpdateAnalyticsRepository.fetchRevenueStats(defaultRangeSelection)
+        ).doReturn(Result.success(Unit))
         whenever(
-            analyticsRepository.fetchOrdersData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.OrdersResult.OrdersData(mock()))
-        whenever(
-            analyticsRepository.fetchProductsData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.ProductsResult.ProductsData(mock()))
+            backgroundUpdateAnalyticsRepository.fetchTopPerformers(defaultRangeSelection)
+        ).doReturn(Result.success(Unit))
 
         sut.invoke(defaultRangeSelection, listOf(AnalyticsCards.Products))
 
-        verify(analyticsRepository).fetchRevenueData(
-            defaultRangeSelection,
-            AnalyticsRepository.FetchStrategy.ForceNew
-        )
-        verify(analyticsRepository).fetchGiftCardsStats(defaultRangeSelection)
-        verify(analyticsRepository).fetchProductBundlesStats(defaultRangeSelection)
-        verify(analyticsRepository).fetchOrdersData(
-            defaultRangeSelection,
-            AnalyticsRepository.FetchStrategy.ForceNew
-        )
-        verify(analyticsRepository).fetchProductsData(
-            defaultRangeSelection,
-            AnalyticsRepository.FetchStrategy.ForceNew
-        )
-        verify(analyticsRepository, never()).fetchVisitorsData(
-            defaultRangeSelection,
-            AnalyticsRepository.FetchStrategy.ForceNew
-        )
+        verify(backgroundUpdateAnalyticsRepository).fetchRevenueStats(defaultRangeSelection)
+        verify(backgroundUpdateAnalyticsRepository).fetchTopPerformers(defaultRangeSelection)
+
+        verify(backgroundUpdateAnalyticsRepository, never()).fetchVisitorsStats(defaultRangeSelection)
     }
 
     @Test
     fun `when there are NO visible cards then refresh only forced cards data`() = runTest {
         whenever(analyticsCardsConfiguration.invoke()).doReturn(flowOf(emptyList()))
         whenever(
-            analyticsRepository.fetchProductsData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.ProductsResult.ProductsData(mock()))
+            backgroundUpdateAnalyticsRepository.fetchRevenueStats(defaultRangeSelection)
+        ).doReturn(Result.success(Unit))
+        whenever(
+            backgroundUpdateAnalyticsRepository.fetchTopPerformers(defaultRangeSelection)
+        ).doReturn(Result.success(Unit))
 
         sut.invoke(defaultRangeSelection, listOf(AnalyticsCards.Products))
 
-        verify(analyticsRepository, never()).fetchRevenueData(
-            defaultRangeSelection,
-            AnalyticsRepository.FetchStrategy.ForceNew
-        )
-        verify(analyticsRepository, never()).fetchGiftCardsStats(defaultRangeSelection)
-        verify(analyticsRepository, never()).fetchProductBundlesStats(defaultRangeSelection)
-        verify(analyticsRepository, never()).fetchOrdersData(
-            defaultRangeSelection,
-            AnalyticsRepository.FetchStrategy.ForceNew
-        )
-        verify(analyticsRepository, never()).fetchVisitorsData(
-            defaultRangeSelection,
-            AnalyticsRepository.FetchStrategy.ForceNew
-        )
+        verify(backgroundUpdateAnalyticsRepository).fetchRevenueStats(defaultRangeSelection)
+        verify(backgroundUpdateAnalyticsRepository).fetchTopPerformers(defaultRangeSelection)
 
-        verify(analyticsRepository).fetchProductsData(
-            defaultRangeSelection,
-            AnalyticsRepository.FetchStrategy.ForceNew
-        )
+        verify(backgroundUpdateAnalyticsRepository, never()).fetchVisitorsStats(defaultRangeSelection)
     }
 
     @Test
     fun `when one request fails then return false`() = runTest {
+        val exception = Exception("Error fetching data")
         whenever(analyticsCardsConfiguration.invoke()).doReturn(flowOf(defaultVisibleCards))
         whenever(
-            analyticsRepository.fetchRevenueData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.RevenueResult.RevenueData(mock()))
-        whenever(analyticsRepository.fetchGiftCardsStats(defaultRangeSelection))
-            .doReturn(AnalyticsRepository.GiftCardResult.GiftCardData(mock()))
-        whenever(analyticsRepository.fetchProductBundlesStats(defaultRangeSelection))
-            .doReturn(AnalyticsRepository.BundlesResult.BundlesData(mock()))
+            backgroundUpdateAnalyticsRepository.fetchRevenueStats(defaultRangeSelection)
+        ).doReturn(Result.success(Unit))
         whenever(
-            analyticsRepository.fetchOrdersData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.OrdersResult.OrdersError)
-        whenever(
-            analyticsRepository.fetchProductsData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.ProductsResult.ProductsData(mock()))
+            backgroundUpdateAnalyticsRepository.fetchTopPerformers(defaultRangeSelection)
+        ).doReturn(Result.failure(exception))
 
         val result = sut.invoke(defaultRangeSelection, listOf(AnalyticsCards.Products))
 
-        assertFalse(result)
+        assertFalse(result.isSuccess)
+        assertTrue(result.isFailure)
+        assertEquals(result.exceptionOrNull(), exception)
     }
 
     @Test
     fun `when all request succeed then return true`() = runTest {
         whenever(analyticsCardsConfiguration.invoke()).doReturn(flowOf(defaultVisibleCards))
         whenever(
-            analyticsRepository.fetchRevenueData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.RevenueResult.RevenueData(mock()))
-        whenever(analyticsRepository.fetchGiftCardsStats(defaultRangeSelection))
-            .doReturn(AnalyticsRepository.GiftCardResult.GiftCardData(mock()))
-        whenever(analyticsRepository.fetchProductBundlesStats(defaultRangeSelection))
-            .doReturn(AnalyticsRepository.BundlesResult.BundlesData(mock()))
+            backgroundUpdateAnalyticsRepository.fetchRevenueStats(defaultRangeSelection)
+        ).doReturn(Result.success(Unit))
         whenever(
-            analyticsRepository.fetchOrdersData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.OrdersResult.OrdersData(mock()))
-        whenever(
-            analyticsRepository.fetchProductsData(
-                defaultRangeSelection,
-                AnalyticsRepository.FetchStrategy.ForceNew
-            )
-        ).doReturn(AnalyticsRepository.ProductsResult.ProductsData(mock()))
+            backgroundUpdateAnalyticsRepository.fetchTopPerformers(defaultRangeSelection)
+        ).doReturn(Result.success(Unit))
 
         val result = sut.invoke(defaultRangeSelection, listOf(AnalyticsCards.Products))
 
-        assertTrue(result)
+        assertTrue(result.isSuccess)
+    }
+
+    @Test
+    fun `save last update only for success requests`() = runTest {
+        whenever(analyticsCardsConfiguration.invoke()).doReturn(flowOf(defaultVisibleCards))
+        whenever(
+            backgroundUpdateAnalyticsRepository.fetchRevenueStats(defaultRangeSelection)
+        ).doReturn(Result.success(Unit))
+        whenever(
+            backgroundUpdateAnalyticsRepository.fetchTopPerformers(defaultRangeSelection)
+        ).doReturn(Result.failure(Exception("Error fetching data")))
+
+        val result = sut.invoke(defaultRangeSelection, listOf(AnalyticsCards.Products))
+
+        assertFalse(result.isSuccess)
+        assertTrue(result.isFailure)
+
+        verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
+            defaultRangeSelection,
+            AnalyticsUpdateDataStore.AnalyticData.REVENUE
+        )
+        verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
+            defaultRangeSelection,
+            AnalyticsUpdateDataStore.AnalyticData.ORDERS
+        )
+        verify(analyticsUpdateDataStore, never()).storeLastAnalyticsUpdate(
+            defaultRangeSelection,
+            AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+        )
     }
 }

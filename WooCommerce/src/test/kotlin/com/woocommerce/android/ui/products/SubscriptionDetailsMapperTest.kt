@@ -1,16 +1,18 @@
 package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.SubscriptionDetailsMapper
+import com.woocommerce.android.model.SubscriptionPaymentSyncDate
 import com.woocommerce.android.model.SubscriptionPeriod
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SubscriptionDetailsMapperTest : BaseUnitTest() {
-
     @Test
     fun `when metadata is valid then a SubscriptionDetails is returned`() {
         val result = SubscriptionDetailsMapper.toAppModel(successMetadata)
@@ -49,6 +51,57 @@ class SubscriptionDetailsMapperTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `when sync date contains both a day and month, then parse it successfully`() {
+        val metadata = """ [ {
+                "id": 5182,
+                "key": ${WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE},
+                "value": {
+                    "day": 1,
+                    "month": 9
+                }
+            }]
+            """
+        val result = SubscriptionDetailsMapper.toAppModel(metadata)
+        assertThat(result).isNotNull
+        assertThat(result!!.paymentsSyncDate).isEqualTo(
+            SubscriptionPaymentSyncDate.MonthDay(month = 9, day = 1)
+        )
+    }
+
+    @Test
+    fun `when sync data day is 0, then parse it successfully`() {
+        val metadata = """ [ {
+                "id": 5182,
+                "key": ${WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE},
+                "value": {
+                    "day": 0,
+                    "month": 0
+                }
+            }]
+            """
+        val result = SubscriptionDetailsMapper.toAppModel(metadata)
+        assertThat(result).isNotNull
+        assertThat(result!!.paymentsSyncDate).isEqualTo(
+            SubscriptionPaymentSyncDate.None
+        )
+    }
+
+    @Test
+    fun `when sync date contains only a day, then parse it successfully`() {
+        val metadata = """ [ {
+                "id": 5182,
+                "key": ${WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE},
+                "value": 1
+            }]
+            """
+        val result = SubscriptionDetailsMapper.toAppModel(metadata)
+        assertThat(result).isNotNull
+        assertThat(result!!.paymentsSyncDate).isEqualTo(
+            SubscriptionPaymentSyncDate.Day(1)
+        )
+    }
+
     /**
      *  price = 60,
      *  period = month,
@@ -59,77 +112,74 @@ class SubscriptionDetailsMapperTest : BaseUnitTest() {
      *  trialLength = 2,
      *  oneTimeShipping = yes
      */
-    private val successMetadata = """ [ {
-                "id": 5182,
-                "key": "_subscription_payment_sync_date",
-                "value": "0"
-            },
-            {
-                "id": 5183,
-                "key": "_subscription_price",
-                "value": "60"
-            },
-            {
-                "id": 5187,
-                "key": "_subscription_trial_length",
-                "value": "2"
-            },
-            {
-                "id": 5188,
-                "key": "_subscription_sign_up_fee",
-                "value": "5"
-            },
-            {
-                "id": 5189,
-                "key": "_subscription_period",
-                "value": "month"
-            },
-            {
-                "id": 5190,
-                "key": "_subscription_period_interval",
-                "value": "1"
-            },
-            {
-                "id": 5191,
-                "key": "_subscription_length",
-                "value": "0"
-            },
-            {
-                "id": 5192,
-                "key": "_subscription_trial_period",
-                "value": "day"
-            },
-            {
-                "id": 5193,
-                "key": "_subscription_limit",
-                "value": "no"
-            },
-            {
-                "id": 5194,
-                "key": "_subscription_one_time_shipping",
-                "value": "yes"
-            } ]
-            """
+    private val successMetadata = listOf(
+        WCMetaData(
+            id = 5182,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE,
+            value = "0"
+        ),
+        WCMetaData(
+            id = 5183,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PRICE,
+            value = "60"
+        ),
+        WCMetaData(
+            id = 5187,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH,
+            value = "2"
+        ),
+        WCMetaData(
+            id = 5188,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE,
+            value = "5"
+        ),
+        WCMetaData(
+            id = 5189,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD,
+            value = "month"
+        ),
+        WCMetaData(
+            id = 5190,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PERIOD_INTERVAL,
+            value = "1"
+        ),
+        WCMetaData(
+            id = 5191,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_LENGTH,
+            value = "0"
+        ),
+        WCMetaData(
+            id = 5192,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_PERIOD,
+            value = "day"
+        ),
+        WCMetaData(
+            id = 5194,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_ONE_TIME_SHIPPING,
+            value = "yes"
+        )
+    )
 
     /**
      *  Metadata with no subscription key
      */
-    private val noSubscriptionKeysMetadata = """ [ {
-                "id": 5182,
-                "key": "sync_date",
-                "value": "0"
-            },
-            {
-                "id": 5183,
-                "key": "price",
-                "value": "60"
-            },
-            {
-                "id": 5187,
-                "key": "trial_length",
-                "value": "2"
-            }]
-            """
+    private val noSubscriptionKeysMetadata = listOf(
+        WCMetaData(
+            id = 5182,
+            key = "sync_date",
+            value = "0"
+        ),
+        WCMetaData(
+            id = 5183,
+            key = "price",
+            value = "60"
+        ),
+        WCMetaData(
+            id = 5187,
+            key = "trial_length",
+            value = "2"
+        )
+    )
 
     /**
      *  price = 60,
@@ -141,25 +191,26 @@ class SubscriptionDetailsMapperTest : BaseUnitTest() {
      *  trialLength = 2,
      *  oneTimeShipping =
      */
-    private val successMetadataPartial = """ [ {
-                "id": 5182,
-                "key": "_subscription_payment_sync_date",
-                "value": "0"
-            },
-            {
-                "id": 5183,
-                "key": "_subscription_price",
-                "value": "60"
-            },
-            {
-                "id": 5187,
-                "key": "_subscription_trial_length",
-                "value": "2"
-            },
-            {
-                "id": 5188,
-                "key": "_subscription_sign_up_fee",
-                "value": "5"
-            }]
-            """
+    private val successMetadataPartial = listOf(
+        WCMetaData(
+            id = 5182,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PAYMENT_SYNC_DATE,
+            value = "0"
+        ),
+        WCMetaData(
+            id = 5183,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_PRICE,
+            value = "60"
+        ),
+        WCMetaData(
+            id = 5187,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_TRIAL_LENGTH,
+            value = "2"
+        ),
+        WCMetaData(
+            id = 5188,
+            key = WCProductModel.SubscriptionMetadataKeys.SUBSCRIPTION_SIGN_UP_FEE,
+            value = "5"
+        )
+    )
 }

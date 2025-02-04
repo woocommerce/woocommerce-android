@@ -28,19 +28,22 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
             productId = 0L,
             tagLine = "",
             description = "",
+            ctaText = "",
             campaignImage = BlazeRepository.BlazeCampaignImage.LocalImage("test"),
             budget = Budget(
                 totalBudget = 10f,
                 spentBudget = 0f,
                 currencyCode = "$",
                 durationInDays = 7,
-                startDate = Date()
+                startDate = Date(),
+                isEndlessCampaign = false
             ),
             targetingParameters = TargetingParameters(),
             destinationParameters = BlazeRepository.DestinationParameters(
                 targetUrl = "https://test.com",
                 parameters = emptyMap()
-            )
+            ),
+            objectiveId = "sales"
         )
     }
 
@@ -59,9 +62,11 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
                 campaignDetails = campaignDetails
             ).toSavedStateHandle(),
             blazeRepository = blazeRepository,
+            abandonedCampaignReminder = mock(),
             currencyFormatter = currencyFormatter,
             analyticsTrackerWrapper = mock(),
-            dashboardRepository = mock()
+            dashboardRepository = mock(),
+            resourceProvider = mock(),
         )
     }
 
@@ -87,7 +92,7 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
 
         val state = viewModel.viewState.getOrAwaitValue()
 
-        assertThat(state.budgetFormatted).isEqualTo(
+        assertThat(state.displayBudget).isEqualTo(
             currencyFormatter.formatCurrency(
                 amount = campaignDetails.budget.totalBudget.toBigDecimal(),
                 currencyCode = campaignDetails.budget.currencyCode

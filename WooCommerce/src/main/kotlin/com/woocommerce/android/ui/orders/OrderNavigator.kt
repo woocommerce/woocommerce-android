@@ -11,11 +11,13 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.EditOrder
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.IssueOrderRefund
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.OpenTrackingBarcodeScanning
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PrintShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.RefundShippingLabel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartPaymentFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartShippingLabelCreationFlow
+import com.woocommerce.android.ui.orders.OrderNavigationTarget.StartWooShippingLabelCreationFlow
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCreateShippingLabelInfo
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewCustomFields
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderFulfillInfo
@@ -44,7 +46,8 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToOrderStatusSelectorDialog(
                         currentStatus = target.currentStatus,
-                        orderStatusList = target.orderStatusList
+                        orderStatusList = target.orderStatusList,
+                        positiveButtonLabel = R.string.apply
                     )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -96,6 +99,13 @@ class OrderNavigator @Inject constructor() {
                     )
                 fragment.findNavController().navigateSafely(action)
             }
+
+            is OpenTrackingBarcodeScanning -> {
+                val action = AddOrderShipmentTrackingFragmentDirections
+                    .actionAddOrderShipmentTrackingFragmentToBarcodeScanningFragment()
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is PrintShippingLabel -> {
                 val action = OrderDetailFragmentDirections
                     .actionOrderDetailFragmentToPrintShippingLabelFragment(
@@ -157,7 +167,7 @@ class OrderNavigator @Inject constructor() {
                 val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCardReaderFlow(
                     CardReaderFlowParam.PaymentOrRefund.Payment(target.orderId, target.paymentTypeFlow)
                 )
-                fragment.findNavController().navigateSafely(action)
+                fragment.findNavController().navigateSafely(directions = action)
             }
             is ViewPrintingInstructions -> {
                 val action = OrderDetailFragmentDirections
@@ -198,8 +208,8 @@ class OrderNavigator @Inject constructor() {
             }
 
             is ViewCustomFields -> {
-                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomOrderFieldsFragment(
-                    orderId = target.orderId
+                val action = OrderDetailFragmentDirections.actionOrderDetailFragmentToCustomFieldsFragment(
+                    parentItemId = target.orderId
                 )
                 fragment.findNavController().navigateSafely(action)
             }
@@ -210,6 +220,12 @@ class OrderNavigator @Inject constructor() {
                         productName = target.productName,
                         productDescription = target.productDescription
                     )
+                fragment.findNavController().navigateSafely(action)
+            }
+
+            is StartWooShippingLabelCreationFlow -> {
+                val action = OrderDetailFragmentDirections
+                    .actionOrderDetailFragmentToWooShippingLabelCreationFragment(target.orderId)
                 fragment.findNavController().navigateSafely(action)
             }
         }

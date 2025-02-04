@@ -3,10 +3,8 @@ package com.woocommerce.android.wear.ui.orders.list
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import androidx.navigation.NavHostController
 import com.woocommerce.android.wear.analytics.AnalyticsTracker
 import com.woocommerce.android.wear.extensions.getStateFlow
-import com.woocommerce.android.wear.ui.NavRoutes.ORDER_DETAILS
 import com.woocommerce.android.wear.ui.login.LoginRepository
 import com.woocommerce.android.wear.ui.orders.FormatOrderData
 import com.woocommerce.android.wear.ui.orders.FormatOrderData.OrderItem
@@ -17,9 +15,6 @@ import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_FAILED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_REQUESTED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_OPENED
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -28,10 +23,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import javax.inject.Inject
 
-@HiltViewModel(assistedFactory = OrdersListViewModel.Factory::class)
-class OrdersListViewModel @AssistedInject constructor(
-    @Assisted private val navController: NavHostController,
+@HiltViewModel
+class OrdersListViewModel @Inject constructor(
     private val fetchOrders: FetchOrders,
     private val formatOrders: FormatOrderData,
     private val loginRepository: LoginRepository,
@@ -66,10 +61,6 @@ class OrdersListViewModel @AssistedInject constructor(
         }
     }
 
-    fun onOrderItemClick(orderId: Long) {
-        navController.navigate(ORDER_DETAILS.withArgs(orderId))
-    }
-
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
         analyticsTracker.track(WATCH_ORDERS_LIST_DATA_REQUESTED)
         fetchOrders(selectedSite)
@@ -100,9 +91,4 @@ class OrdersListViewModel @AssistedInject constructor(
         val isError: Boolean = false,
         val orders: List<OrderItem> = emptyList()
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory {
-        fun create(navController: NavHostController): OrdersListViewModel
-    }
 }

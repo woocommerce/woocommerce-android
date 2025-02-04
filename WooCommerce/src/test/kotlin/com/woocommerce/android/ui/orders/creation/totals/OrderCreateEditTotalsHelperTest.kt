@@ -118,7 +118,6 @@ class OrderCreateEditTotalsHelperTest {
         whenever(bigDecimalFormatter.invoke(BigDecimal(15))).thenReturn("15.00$")
         whenever(bigDecimalFormatter.invoke(BigDecimal(16))).thenReturn("16.00$")
 
-        val onCouponsClicked = mock<() -> Unit>()
         val onGiftClicked = mock<() -> Unit>()
         val onTaxesLearnMore = mock<() -> Unit>()
         val onMainButtonClicked = mock<() -> Unit>()
@@ -135,7 +134,6 @@ class OrderCreateEditTotalsHelperTest {
             OrderCreateEditViewModel.ViewState(
                 taxBasedOnSettingLabel = taxBasedOnSettingLabel
             ),
-            onCouponsClicked,
             onGiftClicked,
             onTaxesLearnMore,
             onMainButtonClicked,
@@ -163,11 +161,8 @@ class OrderCreateEditTotalsHelperTest {
         assertThat((actual.lines[2] as TotalsSectionsState.Line.Simple).label).isEqualTo("Shipping")
         assertThat((actual.lines[2] as TotalsSectionsState.Line.Simple).value).isEqualTo("13.00$")
 
-        assertThat((actual.lines[3] as TotalsSectionsState.Line.Button).text).isEqualTo("Coupons")
-        assertThat((actual.lines[3] as TotalsSectionsState.Line.Button).value).isEqualTo("-14.00$")
-        assertThat((actual.lines[3] as TotalsSectionsState.Line.Button).enabled).isFalse()
-        assertThat((actual.lines[3] as TotalsSectionsState.Line.Button).extraValue).isEqualTo("20OFF")
-        assertThat((actual.lines[3] as TotalsSectionsState.Line.Button).onClick == onCouponsClicked).isTrue()
+        assertThat((actual.lines[3] as TotalsSectionsState.Line.Simple).label).isEqualTo("Coupons")
+        assertThat((actual.lines[3] as TotalsSectionsState.Line.Simple).value).isEqualTo("-14.00$")
 
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).text).isEqualTo("Gift Cards")
         assertThat((actual.lines[4] as TotalsSectionsState.Line.Button).value).isEqualTo("-15.00$")
@@ -213,7 +208,6 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
-            {},
         )
 
         // THEN
@@ -240,7 +234,6 @@ class OrderCreateEditTotalsHelperTest {
             localOrder,
             OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(),
-            {},
             {},
             {},
             {},
@@ -275,7 +268,6 @@ class OrderCreateEditTotalsHelperTest {
             localOrder,
             OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(),
-            {},
             {},
             {},
             {},

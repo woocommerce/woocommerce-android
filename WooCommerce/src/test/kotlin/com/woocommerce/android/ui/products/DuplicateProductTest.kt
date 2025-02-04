@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.products
 
-import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
@@ -41,24 +41,25 @@ class DuplicateProductTest : BaseUnitTest() {
     @Test
     fun `should duplicate a product and set expected properties`() = testBlocking {
         // given
-        val productToDuplicate = ProductTestUtils.generateProduct().copy(sku = "not an empty value")
+        val productToDuplicate = ProductAggregate(ProductTestUtils.generateProduct().copy(sku = "not an empty value"))
         productDetailRepository.stub {
-            onBlocking { addProduct(any()) } doReturn Pair(true, 123)
+            onBlocking { addProduct(any<ProductAggregate>()) } doReturn Pair(true, 123)
         }
 
         // when
         sut.invoke(productToDuplicate)
 
         // then
-        val duplicationRequestCapture = argumentCaptor<Product>()
+        val duplicationRequestCapture = argumentCaptor<ProductAggregate>()
         verify(productDetailRepository).addProduct(duplicationRequestCapture.capture())
 
         assertThat(duplicationRequestCapture.firstValue)
             .matches {
-                it.remoteId == 0L && it.name == "copied name" && it.sku == "" && it.status == ProductStatus.DRAFT
+                it.remoteId == 0L && it.product.name == "copied name" &&
+                    it.product.sku == "" && it.product.status == ProductStatus.DRAFT
             }
             .usingRecursiveComparison()
-            .ignoringFields("remoteId", "name", "sku", "status")
+            .ignoringFields("product.remoteId", "product.name", "product.sku", "product.status")
             .isEqualTo(productToDuplicate)
     }
 
@@ -66,10 +67,10 @@ class DuplicateProductTest : BaseUnitTest() {
     fun `should duplicate a variable product and keep all properties of variations except sku and remoteProductId`() =
         testBlocking {
             // given
-            val productToDuplicate = ProductTestUtils.generateProduct().copy(numVariations = 15)
+            val productToDuplicate = ProductAggregate(ProductTestUtils.generateProduct().copy(numVariations = 15))
             val duplicatedProductId = 456L
             productDetailRepository.stub {
-                onBlocking { addProduct(any()) } doReturn Pair(true, duplicatedProductId)
+                onBlocking { addProduct(any<ProductAggregate>()) } doReturn Pair(true, duplicatedProductId)
             }
 
             val variationsOfProductToDuplicate =

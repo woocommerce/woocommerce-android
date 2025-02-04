@@ -53,7 +53,11 @@ internal class UnlocalizedDateHelper : HandlebarsHelper<Any?>() {
         val localeCode: String? = options.hash("locale", "en_US_POSIX")
         var date = Date()
         if (offset != null) {
-            date = DateOffset(offset).shift(date)
+            // Uppercase the unit using the invariant locale as a workaround for a bug in DateOffset
+            val fixedOffset = offset.split(" ").let { strings ->
+                "${strings[0]} ${strings[1].uppercase()}"
+            }
+            date = DateOffset(fixedOffset).shift(date)
         }
         var locale: Locale = Locale.getDefault()
         if (localeCode != null) {

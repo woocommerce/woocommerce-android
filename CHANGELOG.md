@@ -1,6 +1,60 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 21.6
+Experience a smoother WooCommerce app with enhanced tablet and landscape support, a fresh new look aligned with our branding, and faster image loading. UK users can now enjoy POS access, retry failed image uploads effortlessly, and tag product cover photos with ease. Update now for these improvements!
+
+## 21.5
+Get ready for a smoother experience! We’ve optimized receipt scaling, added Puerto Rico for in-person payments, and improved Blaze Campaigns display. Enjoy faster product gallery loading, better bulk order updates, and real-time image upload indicators. Plus, WooPayments onboarding is now easier than ever!
+
+## 21.4
+This update brings several improvements to the WooCommerce mobile app. Dashboard menus now adapt better to larger fonts, and we've resolved layout issues in Settings. You'll also experience fewer crashes, with fixes for order details, plugin activation, and refunds. Merchants can now bulk update order statuses, barcode scanning is more reliable, and accessing plugin updates is quicker than ever. Additionally, sites can now be hidden from the site picker.
+
+## 21.3
+In this update, we've improved the WooCommerce app with several fixes and enhancements. The "One-time shipping" label now correctly matches its availability in Product Subscriptions, and issues with product conversion have been resolved. We've also streamlined the card reader payment flow for faster transactions, fixed a barcode scanner crash, and improved login error handling. Plus, if your site has no products, the Blaze Campaign screen now offers an easy way to create one.
+
+## 21.2
+Seamless updates are here! Smoother Jetpack activation with new account creation. Say goodbye to bugs: order refresh, shipping edits, and receipt fetch issues are fixed. We've renamed Deposits to Payouts and improved media uploads for Jetpack sites. Update now for a better WooCommerce experience!
+
+## 21.1
+Our latest update brings key enhancements to streamline your WooCommerce experience! We’ve fixed editing permissions for orders in different currencies, optimized the payments hub view, enabled easy receipt sharing via Google SMS, and fixed date range selection to correctly use your timezone. Enjoy smoother operations!
+
+## 21.0
+Enjoy a smoother experience with improved design throughout the app. Plus, now your product images load faster and look even better with new AVIF format support. Update now for a cleaner, sharper WooCommerce app experience!
+
+## 20.8
+We’ve improved your WooCommerce app experience with some key updates! The "Learn More" link for the Pay in Person option in payment settings is now fixed, and we've streamlined the Blaze campaign creation process by adding an objective selection feature. Update now to enjoy a smoother workflow!
+
+## 20.7
+In this update, we’ve improved the barcode scanner for more accurate readings and resolved issues with coupons unexpectedly disappearing during order creation. Merchants can now view and edit custom fields for products and orders directly in the app. We also fixed login errors and refined the "Tap to Pay" instructions for better clarity. Enjoy these enhancements and more!
+
+## 20.6
+We're excited to bring you new features in our WooCommerce app! Users can now set a password to protect products when signed in with site credentials, enhancing security for WooCommerce 8.1.0 and above. Also, promoting a Blaze product from the campaign detail will now trigger a smoother native flow. Enjoy the updates!
+
+## 20.5
+We’re excited to bring you a smoother experience with our latest update! We've resolved an issue that prevented renaming Product Variation Attributes and fixed a bug related to notification removal. Plus, users can now easily select product images when creating Blaze ads, and the Blaze feature is now fully enabled for sites with the Blaze for WooCommerce plugin active. Enjoy the improvements!
+
+## 20.4
+We've enhanced your WooCommerce app experience! You can now effortlessly scan tracking numbers when adding them to orders. Plus, we've fixed an issue with shipping labels, ensuring accurate weight calculations for packages with multiple items. Enjoy a smoother, more reliable app experience!
+
+## 20.3
+We’ve made several enhancements to boost your experience! This update fixes crashes on the orders list screen, resolves issues with the Jetpack plugin installation, and corrects toolbar glitches in the Package details and Order Tracking screens. We’ve also added a helpful blaze campaign reminder if you leave a campaign creation unfinished. Enjoy smoother navigation and a more reliable app!
+
+## 20.2
+Create Blaze Evergreen campaigns effortlessly with our latest update! We've also improved tablet navigation—now you'll be redirected to the order details screen after payment for a smoother experience. Update today and enjoy the enhancements!
+
+## 20.1
+We've improved your experience with our latest update! We've resolved the issue where the Orders screen would get stuck, addressed incorrect pin errors for UK and Canadian stores, fixed a rare crash in order editing, and enhanced usability on small screens. Enjoy smoother performance and better reliability!
+
+## 20.0
+We’ve improved your WooCommerce experience with several key updates: card reader tutorial images are now visible on tablets, QR code scanning is disabled during login, and the “Write with AI” issue with the keyboard has been fixed. Plus, you can now process card-present payments for orders marked as failed.
+
+## 19.9
+We've enhanced your refund experience! Now, each refund item on the refund screen includes detailed subtotal and taxes fields, giving you clearer insights into your transactions. Update now to enjoy smoother, more transparent refunds!
+
+## 19.8
+In our latest update, we've added a button in Google Campaign analytics for easier paid campaign creation. The Contact Support Form now includes a Site Address field. Enjoy seamless in-person payments illustrations in landscape mode, and benefit from background updates for order lists and dashboard analytics.
+
 ## 19.7
 Get ready for a better WooCommerce experience with our latest update! Now, create and manage Google Ads campaigns seamlessly. Enjoy enhanced stability on the order detail screen and get helpful tips with our new AI-powered advice box during product creation. Update now for a smoother, smarter app!
 

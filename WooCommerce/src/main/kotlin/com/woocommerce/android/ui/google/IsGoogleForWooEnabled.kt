@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.google
 
 import com.woocommerce.android.extensions.isVersionAtLeast
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FeatureFlag
 import org.json.JSONArray
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -24,7 +23,7 @@ class IsGoogleForWooEnabled @Inject constructor(
         if (!result.isError) {
             result.model?.let { ssr ->
                 if (isGoogleForWooPluginEligible(JSONArray(ssr.activePlugins))) {
-                    return FeatureFlag.GOOGLE_ADS_M1.isEnabled() && googleRepository.isGoogleAdsAccountConnected()
+                    return googleRepository.isGoogleAdsAccountConnected()
                 }
             }
         }

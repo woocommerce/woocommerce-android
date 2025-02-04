@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -49,7 +47,6 @@ import coil.request.ImageRequest.Builder
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -58,15 +55,14 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCPasswordField
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.compose.component.WebViewNavigator
-import com.woocommerce.android.ui.compose.component.rememberWebViewNavigator
+import com.woocommerce.android.ui.compose.component.web.WCWebView
+import com.woocommerce.android.ui.compose.component.web.WebViewNavigator
+import com.woocommerce.android.ui.compose.component.web.rememberWebViewNavigator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.ViewState
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import org.wordpress.android.fluxc.network.UserAgent
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
     val webViewNavigator = rememberWebViewNavigator()
@@ -201,24 +197,23 @@ fun AccountMismatchErrorScreen(viewState: ViewState.MainState, modifier: Modifie
         )
 
         if (viewState.showJetpackTermsConsent) {
-            val consent = annotatedStringRes(stringResId = R.string.login_jetpack_connection_consent)
             val context = LocalContext.current
-            ClickableText(
-                text = consent,
-                style = MaterialTheme.typography.caption.copy(
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onSurface
-                )
-            ) {
-                consent.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-                    .firstOrNull()
-                    ?.let { annotation ->
-                        when (annotation.item) {
-                            "terms" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
-                            "sync" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.JETPACK_SYNC_POLICY)
-                        }
+            val consent = annotatedStringRes(
+                stringResId = R.string.login_jetpack_connection_consent,
+                onUrlClick = { url ->
+                    when (url) {
+                        "terms" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.WORPRESS_COM_TERMS)
+                        "sync" -> ChromeCustomTabUtils.launchUrl(context, AppUrls.JETPACK_SYNC_POLICY)
                     }
-            }
+                }
+            )
+
+            Text(
+                text = consent,
+                style = MaterialTheme.typography.caption,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colors.onSurface
+            )
         }
     }
 }

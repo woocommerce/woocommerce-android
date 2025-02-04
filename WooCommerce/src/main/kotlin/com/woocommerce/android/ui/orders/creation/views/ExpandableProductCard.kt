@@ -7,8 +7,8 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -108,7 +108,7 @@ fun ExpandableProductCard(
     val transitionState = remember {
         MutableTransitionState(isExpanded).apply { targetState = !isExpanded }
     }
-    val transition = updateTransition(transitionState, "expandableProductCard")
+    val transition = rememberTransition(transitionState, "expandableProductCard")
     val chevronRotation by transition.animateFloat(
         transitionSpec = { tween(durationMillis = ANIM_DURATION_MILLIS) },
         label = "chevronRotation"
@@ -290,6 +290,7 @@ fun ExpandableProductCard(
     }
 }
 
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 fun ExtendedProductCardContent(
     state: State<OrderCreateEditViewModel.ViewState?>,
@@ -307,7 +308,7 @@ fun ExtendedProductCardContent(
             bottomDivider,
             orderCount,
             price,
-            discountButton,
+            addDiscountButton,
             discountAmount,
             priceAfterDiscountLabel,
             priceAfterDiscountValue,
@@ -322,6 +323,7 @@ fun ExtendedProductCardContent(
         // The logic to update bundled products quantity is complex so we need to prevent any change while we are
         // updating the bundle and inner products quantity
         val isBundledProduct = product.productInfo.productType == ProductType.BUNDLE
+        val discountButtonsEnabled = state.value?.areDiscountButtonsEnabled == true
 
         Divider(
             modifier = Modifier
@@ -399,11 +401,11 @@ fun ExtendedProductCardContent(
         }
         if (product.productInfo.hasDiscount) {
             WCTextButton(
-                modifier = Modifier.constrainAs(discountButton) {
+                modifier = Modifier.constrainAs(addDiscountButton) {
                     top.linkTo(price.bottom)
                 },
                 onClick = onDiscountButtonClicked,
-                enabled = editableControlsEnabled
+                enabled = editableControlsEnabled && discountButtonsEnabled
             ) {
                 Text(
                     text = stringResource(id = R.string.discount),
@@ -421,8 +423,8 @@ fun ExtendedProductCardContent(
                     .padding(horizontal = dimensionResource(id = R.dimen.minor_100))
                     .constrainAs(discountAmount) {
                         end.linkTo(parent.end)
-                        top.linkTo(discountButton.top)
-                        bottom.linkTo(discountButton.bottom)
+                        top.linkTo(addDiscountButton.top)
+                        bottom.linkTo(addDiscountButton.bottom)
                     },
                 text = "-${product.productInfo.discountAmount}",
                 color = colorResource(id = R.color.woo_green_50)
@@ -430,7 +432,7 @@ fun ExtendedProductCardContent(
             Text(
                 modifier = Modifier
                     .constrainAs(priceAfterDiscountLabel) {
-                        top.linkTo(discountButton.bottom)
+                        top.linkTo(addDiscountButton.bottom)
                         start.linkTo(parent.start)
                         bottom.linkTo(bottomDivider.top)
                     }
@@ -451,12 +453,12 @@ fun ExtendedProductCardContent(
             )
         } else {
             WCTextButton(
-                modifier = Modifier.constrainAs(discountButton) {
+                modifier = Modifier.constrainAs(addDiscountButton) {
                     top.linkTo(price.bottom)
                     bottom.linkTo(bottomDivider.top)
                 },
                 onClick = onDiscountButtonClicked,
-                enabled = editableControlsEnabled
+                enabled = editableControlsEnabled && discountButtonsEnabled,
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_add),

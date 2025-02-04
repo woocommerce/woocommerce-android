@@ -1,6 +1,7 @@
 package com.woocommerce.android.wear.di
 
 import android.content.Context
+import android.icu.text.CompactDecimalFormat
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.wear.system.ConnectionStatus
 import com.woocommerce.android.wear.ui.login.LoginRepository
@@ -24,6 +25,7 @@ class AppConfigModule {
     fun provideAppSecrets() = AppSecrets(BuildConfig.OAUTH_APP_ID, BuildConfig.OAUTH_APP_SECRET)
 
     @Provides
+    @Singleton
     fun provideUserAgent(appContext: Context) = UserAgent(appContext, USER_AGENT_APPNAME)
 
     @Provides
@@ -35,4 +37,10 @@ class AppConfigModule {
 
     @Provides
     fun provideDefaultLocale(): Locale = Locale.getDefault()
+
+    @Provides
+    fun provideCompactDecimalFormat(locale: Locale) = CompactDecimalFormat.getInstance(
+        locale,
+        CompactDecimalFormat.CompactStyle.SHORT
+    )
 }

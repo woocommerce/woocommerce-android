@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -184,7 +185,7 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     private fun getTypeFilterWithExploreOptions(): MutableList<FilterListOptionItemUiModel> {
-        return ProductType.values().filterNot { it == ProductType.OTHER }.map {
+        return ProductType.FILTERABLE_VALUES.map {
             when {
                 it == ProductType.BUNDLE && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
@@ -219,7 +220,7 @@ class ProductFilterListViewModel @Inject constructor(
                 }
 
                 else -> {
-                    FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
+                    DefaultFilterListOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
                         filterOptionItemValue = it.value,
                         isSelected = productFilterOptions[TYPE] == it.value
@@ -366,7 +367,7 @@ class ProductFilterListViewModel @Inject constructor(
                 STOCK_STATUS,
                 resourceProvider.getString(R.string.product_stock_status),
                 addDefaultFilterOption(
-                    CoreProductStockStatus.values().map {
+                    CoreProductStockStatus.FILTERABLE_VALUES.map {
                         FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
                             resourceProvider.getString(ProductStockStatus.fromString(it.value).stringResource),
                             filterOptionItemValue = it.value,
@@ -517,7 +518,13 @@ class ProductFilterListViewModel @Inject constructor(
         val filterItemKey: ProductFilterOption,
         val filterItemName: String,
         var filterOptionListItems: List<FilterListOptionItemUiModel>
-    ) : Parcelable
+    ) : Parcelable {
+        val firstSelectedOption: String?
+            get() = filterOptionListItems
+                .filterIsInstance<DefaultFilterListOptionItemUiModel>()
+                .firstOrNull { it.isSelected }
+                ?.filterOptionItemName
+    }
 
     @Parcelize
     sealed class FilterListOptionItemUiModel : Parcelable {

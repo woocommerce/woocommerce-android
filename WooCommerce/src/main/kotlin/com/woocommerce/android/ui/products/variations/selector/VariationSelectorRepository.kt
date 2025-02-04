@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.WCProductStore.VariationFilterOption
 import javax.inject.Inject
 
 class VariationSelectorRepository @Inject constructor(
@@ -28,9 +29,16 @@ class VariationSelectorRepository @Inject constructor(
     suspend fun fetchVariations(
         productId: Long,
         offset: Int,
-        pageSize: Int
+        pageSize: Int,
+        filterOptions: Map<VariationFilterOption, String>? = null
     ): Result<Boolean> {
-        return productStore.fetchProductVariations(selectedSite.get(), productId, offset, pageSize)
+        return productStore.fetchProductVariations(
+            selectedSite.get(),
+            productId,
+            offset,
+            pageSize,
+            filterOptions = filterOptions,
+        )
             .let { result ->
                 if (result.isError) {
                     WooLog.w(

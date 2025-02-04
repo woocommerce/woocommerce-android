@@ -12,6 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
+import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -19,6 +20,7 @@ import com.woocommerce.android.support.requests.SupportRequestFormViewModel.Requ
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.RequestCreationSucceeded
 import com.woocommerce.android.support.requests.SupportRequestFormViewModel.ShowSupportIdentityInputDialog
 import com.woocommerce.android.support.zendesk.TicketType
+import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.widgets.CustomProgressDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +29,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SupportRequestFormActivity : AppCompatActivity() {
     @Inject lateinit var supportHelper: SupportHelper
+
+    @Inject lateinit var zendeskSettings: ZendeskSettings
 
     private val viewModel: SupportRequestFormViewModel by viewModels()
 
@@ -42,6 +46,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        zendeskSettings.setup(context = this)
+
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
             setContentView(root)
             setupActionBar()
@@ -49,6 +56,34 @@ class SupportRequestFormActivity : AppCompatActivity() {
             observeViewModelEvents(this)
         }
         viewModel.onViewCreated()
+
+        if (isPOS()) {
+            adjustActivityTransition(
+                overrideTransitionOpen = true,
+                enterAnim = R.anim.woopos_slide_in_right,
+                exitAnim = R.anim.woopos_slide_out_left,
+            )
+        }
+    }
+
+    override fun finish() {
+        super.finish()
+        adjustExitTransition()
+    }
+
+    private fun adjustExitTransition() {
+        if (isPOS()) {
+            adjustActivityTransition(
+                overrideTransitionOpen = false,
+                R.anim.woopos_slide_in_left,
+                R.anim.woopos_slide_out_right
+            )
+        }
+    }
+
+    private fun isPOS(): Boolean {
+        val origin: HelpOrigin? = intent.extras?.serializable(ORIGIN_KEY)
+        return origin == HelpOrigin.POS
     }
 
     private fun ActivitySupportRequestFormBinding.setupActionBar() {
@@ -59,6 +94,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
 
     private fun observeViewEvents(binding: ActivitySupportRequestFormBinding) {
         binding.requestSubject.setOnTextChangedListener { viewModel.onSubjectChanged(it.toString()) }
+        binding.requestSiteAddress.setOnTextChangedListener { viewModel.onSiteAddressChanged(it.toString()) }
         binding.requestMessage.doOnTextChanged { text, _, _, _ -> viewModel.onMessageChanged(text.toString()) }
         binding.helpOptionsGroup.setOnCheckedChangeListener { _, selectionID ->
             when (selectionID) {
@@ -108,7 +144,9 @@ class SupportRequestFormActivity : AppCompatActivity() {
             titleId = R.string.support_request_success_title,
             messageId = R.string.support_request_success_message,
             positiveButtonId = R.string.support_request_dialog_action,
-            posBtnAction = { _, _ -> finish() }
+            posBtnAction = { _, _ ->
+                finish()
+            }
         )
     }
 

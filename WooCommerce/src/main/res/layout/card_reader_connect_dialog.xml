@@ -8,9 +8,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/payments_dialog_width"
-        android:layout_height="@dimen/payments_dialog_height"
+        android:layout_height="wrap_content"
         android:background="@color/color_surface_elevated"
         android:gravity="center_horizontal"
+        android:minHeight="@dimen/payments_dialog_height"
         android:orientation="vertical"
         android:paddingTop="@dimen/major_200"
         android:paddingBottom="@dimen/payments_dialog_bottom_padding">
@@ -74,10 +75,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/major_200"
-            android:layout_marginTop="0dp"
             app:layout_constraintBottom_toTopOf="@id/secondary_action_btn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/illustration"
+            app:layout_constraintVertical_bias="1"
             tools:text="Connect" />
 
         <com.google.android.material.button.MaterialButton

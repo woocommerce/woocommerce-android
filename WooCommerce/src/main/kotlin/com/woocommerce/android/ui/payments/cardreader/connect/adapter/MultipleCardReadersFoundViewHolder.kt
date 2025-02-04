@@ -41,13 +41,16 @@ sealed class MultipleCardReadersFoundViewHolder(
         var binding: CardReaderConnectScanningItemBinding = CardReaderConnectScanningItemBinding.bind(itemView)
 
         init {
-            WooAnimUtils.rotate(binding.cardReaderConnectProgressIndicator)
+            WooAnimUtils.rotate(
+                binding.cardReaderConnectProgressIndicator,
+                rotationDirection = WooAnimUtils.RotationDirection.ANTICLOCKWISE
+            )
         }
 
         override fun onBind(uiState: ListItemViewState) {
             uiState as ScanningInProgressListItem
             UiHelpers.setTextOrHide(binding.cardReaderConnectProgressLabel, uiState.label)
-            UiHelpers.setImageOrHideInLandscapeOnNonExpandedScreenSizes(
+            UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
                 binding.cardReaderConnectProgressIndicator,
                 uiState.scanningIcon
             )

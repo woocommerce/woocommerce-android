@@ -109,9 +109,7 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
 
     private fun bindPercentageLabel(binding: DialogCustomAmountsBinding) {
         with(binding.percentageLabel) {
-            text = String.format(
-                context.getString(R.string.custom_amounts_percentage_label, arguments.orderTotal)
-            )
+            text = context.getString(R.string.custom_amounts_percentage_label, arguments.orderTotal)
         }
     }
 

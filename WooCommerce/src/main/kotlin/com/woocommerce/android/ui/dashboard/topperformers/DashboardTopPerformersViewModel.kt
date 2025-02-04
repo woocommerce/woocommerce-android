@@ -140,7 +140,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         }
     }
 
-    fun onTabSelected(selectionType: SelectionType) {
+    fun onRangeChanged(selectionType: SelectionType) {
         parentViewModel.trackCardInteracted(DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
         usageTracksEventEmitter.interacted()
         if (selectionType != SelectionType.CUSTOM) {
@@ -150,7 +150,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 onEditCustomRangeTapped()
             } else {
                 appPrefsWrapper.setActiveTopPerformersTab(SelectionType.CUSTOM.name)
-                analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED)
+                analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED)
             }
         }
     }
@@ -287,7 +287,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         viewModelScope.launch {
             customDateRangeDataStore.updateDateRange(statsTimeRange)
             if (selectedDateRange.value?.rangeSelection?.selectionType != SelectionType.CUSTOM) {
-                onTabSelected(SelectionType.CUSTOM)
+                onRangeChanged(SelectionType.CUSTOM)
             }
         }
     }

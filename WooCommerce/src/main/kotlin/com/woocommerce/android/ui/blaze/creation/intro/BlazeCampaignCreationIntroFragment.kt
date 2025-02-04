@@ -12,6 +12,7 @@ import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -37,6 +38,11 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
         handleResults()
     }
 
+    override fun onStop() {
+        super.onStop()
+        WooDialog.onCleared()
+    }
+
     private fun handleEvents() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
@@ -55,6 +61,28 @@ class BlazeCampaignCreationIntroFragment : BaseFragment() {
 
                 is BlazeCampaignCreationIntroViewModel.ShowProductSelector -> {
                     navigateToProductSelectorScreen()
+                }
+
+                is BlazeCampaignCreationIntroViewModel.ShowNoProductDialog -> {
+                    WooDialog.showDialog(
+                        activity = requireActivity(),
+                        titleId = R.string.blaze_campaign_creation_no_product_modal_title,
+                        messageId = R.string.blaze_campaign_creation_no_product_modal_body,
+                        positiveButtonId = R.string.blaze_campaign_creation_no_product_modal_cta,
+                        negativeButtonId = R.string.login_app_password_exit_dialog_cancel,
+                        posBtnAction = { _, _ -> viewModel.onCreateProductClicked() }
+                    )
+                }
+
+                is BlazeCampaignCreationIntroViewModel.NavigateToAddProduct -> {
+                    with(viewModel.addProductNavigator) {
+                        findNavController().navigateToAddProducts(
+                            aiBottomSheetAction = BlazeCampaignCreationIntroFragmentDirections
+                                .actionBlazeCampaignCreationIntroFragmentToAddProductWithAIBottomSheet(),
+                            typesBottomSheetAction = BlazeCampaignCreationIntroFragmentDirections
+                                .actionBlazeCampaignCreationIntroFragmentToProductTypesBottomSheet()
+                        )
+                    }
                 }
 
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()

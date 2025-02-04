@@ -53,4 +53,22 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
+    <TextView
+        android:id="@+id/coverTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="@dimen/minor_50"
+        android:background="@drawable/bg_rounded_box"
+        android:backgroundTint="@color/color_primary"
+        android:contentDescription="@string/product_cover_photo_tag"
+        android:paddingHorizontal="@dimen/minor_75"
+        android:paddingVertical="@dimen/minor_50"
+        android:text="@string/product_cover_photo_tag"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
 </FrameLayout>

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -26,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.URL_ANNOTATION_TAG
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -112,21 +110,19 @@ private fun PaymentsPreSetupContent(
                 R.string.store_onboarding_wcpay_setup_description
             } else {
                 R.string.store_onboarding_payments_setup_description
+            },
+            onUrlClick = { url ->
+                when (url) {
+                    "termsOfService" -> onTermsOfServiceClick()
+                    "privacyPolicy" -> onPrivacyPolicyClick()
+                }
             }
         )
-        ClickableText(
+        Text(
             text = bodyText,
-            style = MaterialTheme.typography.body1.copy(color = colorResource(id = R.color.color_on_surface_medium))
-        ) {
-            bodyText.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = it, end = it)
-                .firstOrNull()
-                ?.let { annotation ->
-                    when (annotation.item) {
-                        "termsOfService" -> onTermsOfServiceClick()
-                        "privacyPolicy" -> onPrivacyPolicyClick()
-                    }
-                }
-        }
+            style = MaterialTheme.typography.body1,
+            color = colorResource(id = R.color.color_on_surface_medium)
+        )
     }
 }
 

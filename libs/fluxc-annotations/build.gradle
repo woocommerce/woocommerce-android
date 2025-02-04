@@ -1,0 +1,8 @@
+plugins {
+    id "java"
+}
+
+java {
+    sourceCompatibility libs.versions.java.get()
+    targetCompatibility libs.versions.java.get()
+}

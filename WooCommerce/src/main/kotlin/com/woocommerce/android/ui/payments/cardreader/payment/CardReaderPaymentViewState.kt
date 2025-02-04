@@ -337,6 +337,7 @@ sealed class PaymentFlowError(val message: UiString) {
             NonRetryableError
 
         object PinRequired : Declined(UiStringRes(R.string.card_reader_payment_failed_pin_required))
+        object IncorrectPin : Declined(UiStringRes(R.string.card_reader_payment_failed_incorrect_pin))
         object TooManyPinTries : Declined(UiStringRes(R.string.card_reader_payment_failed_too_many_pin_tries))
         object TestCard : Declined(UiStringRes(R.string.card_reader_payment_failed_test_card))
         object TestModeLiveCard : Declined(UiStringRes(R.string.card_reader_payment_failed_test_mode_live_card))

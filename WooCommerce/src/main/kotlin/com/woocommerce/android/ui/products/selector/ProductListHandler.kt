@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import java.util.concurrent.atomic.AtomicBoolean
@@ -44,9 +45,11 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
     }.flatMapLatest { it }
 
     suspend fun loadFromCacheAndFetch(
+        forceRefresh: Boolean = false,
         searchQuery: String = "",
         filters: Map<ProductFilterOption, String> = emptyMap(),
         searchType: SearchType,
+        includeType: List<WCProductStore.IncludeType> = emptyList(),
     ): Result<Unit> = mutex.withLock {
         offset.value = 0
         searchResults.value = emptyList()
@@ -67,7 +70,7 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
                 }
             }
         } else {
-            fetchProducts()
+            fetchProducts(forceRefresh, includeType)
         }
     }
 
@@ -83,8 +86,17 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
         }
     }
 
-    private suspend fun fetchProducts(): Result<Unit> {
-        return repository.fetchProducts(offset.value, PAGE_SIZE, productFilters.value).onSuccess {
+    private suspend fun fetchProducts(
+        forceRefresh: Boolean = false,
+        includeTypes: List<WCProductStore.IncludeType> = emptyList(),
+    ): Result<Unit> {
+        return repository.fetchProducts(
+            forceRefresh,
+            offset.value,
+            PAGE_SIZE,
+            productFilters.value,
+            includeTypes
+        ).onSuccess {
             canLoadMore.set(it)
             offset.value += PAGE_SIZE
         }.map { }

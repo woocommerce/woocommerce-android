@@ -7,8 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -77,9 +78,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_C
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
-import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
@@ -98,6 +98,8 @@ import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateS
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.configuration.ConfigurationType
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
+import com.woocommerce.android.ui.orders.creation.coupon.CouponLineDetails
+import com.woocommerce.android.ui.orders.creation.coupon.CouponSection
 import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.AddCustomer
@@ -113,10 +115,10 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
-import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
-import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineSection
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.shipping.getMethodIdOrDefault
+import com.woocommerce.android.ui.orders.creation.shipping.toShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -138,7 +140,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.list.ProductListRepository
+import com.woocommerce.android.ui.products.inventory.FetchProductByIdentifier
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
@@ -168,16 +170,13 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
-import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
@@ -195,8 +194,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreationProductMapper: OrderCreationProductMapper,
     private val createOrderItem: CreateOrderItem,
     private val tracker: AnalyticsTrackerWrapper,
-    private val productRepository: ProductListRepository,
-    private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val resourceProvider: ResourceProvider,
     private val productRestrictions: OrderCreationProductRestrictions,
@@ -211,6 +208,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val currencySymbolFinder: CurrencySymbolFinder,
     private val totalsHelper: OrderCreateEditTotalsHelper,
     private val feedbackRepository: FeedbackRepository,
+    private val fetchProductByIdentifier: FetchProductByIdentifier,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -297,7 +295,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 ),
                 mode = mode,
                 viewState = viewState!!,
-                onCouponsClicked = { onCouponButtonClicked() },
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
@@ -338,17 +335,6 @@ class OrderCreateEditViewModel @Inject constructor(
         .map { order -> order.feesLines }
         .map { feeLines ->
             feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
-        }
-        .map { customAmountUIModels ->
-            customAmountUIModels.map {
-                it.copy(
-                    isLocked = !viewState.isEditable ||
-                        (
-                            _orderDraft.value.status.value != Order.Status.Pending.value &&
-                                _orderDraft.value.status.value != Order.Status.OnHold.value
-                            )
-                )
-            }
         }
         .asLiveData()
 
@@ -391,34 +377,37 @@ class OrderCreateEditViewModel @Inject constructor(
     private val giftCardWasEnabledAtLeastOnce: MutableStateFlow<Boolean> =
         savedState.getStateFlow(viewModelScope, false)
 
-    val shippingLineList =
-        combine(
-            _orderDraft.filter { it.shippingLines.isNotEmpty() }
-                .map { it.shippingLines.filter { line -> line.methodId != null } },
-            getShippingMethodsWithOtherValue().withIndex()
-        ) { shippingLines, shippingMethods ->
-            val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
-
-            shippingLines.map { shippingLine ->
-                val method = shippingLine.methodId?.let {
-                    if (it == " ") {
-                        shippingMethodsMap[ShippingMethodsRepository.NA_ID]
-                    } else {
-                        shippingMethodsMap[it]
-                    }
-                }
-                ShippingLineDetails(
-                    id = shippingLine.itemId,
-                    name = shippingLine.methodTitle,
-                    shippingMethod = method,
-                    amount = shippingLine.total
+    val shippingLineSection = viewStateData.liveData
+        .combineWith(
+            orderDraft.map { it.shippingLines },
+            getShippingMethodsWithOtherValue().asLiveData()
+        ) { viewState, shippingLines, shippingMethods ->
+            if (viewState == null || shippingLines == null || shippingMethods == null) return@combineWith null
+            shippingLines.toShippingLineDetails(shippingMethods)?.let { shippingLineDetails ->
+                ShippingLineSection(
+                    shippingLines = shippingLineDetails,
+                    isEnabled = viewState.isIdle && viewState.isEditable
                 )
             }
-        }.asLiveData()
+        }.distinctUntilChanged()
+
+    private val _couponLinesLiveData = MediatorLiveData(CouponSection(emptyList(), true))
+    val couponLinesLiveData = _couponLinesLiveData.distinctUntilChanged()
 
     init {
         monitorPluginAvailabilityChanges()
         shouldDisplayShippingFeedback()
+
+        _couponLinesLiveData.addSource(orderDraft) { newOrderDraft ->
+            _couponLinesLiveData.value =
+                _couponLinesLiveData.value
+                    ?.copy(couponLines = newOrderDraft.couponLines.map { CouponLineDetails(it.code) })
+        }
+
+        _couponLinesLiveData.addSource(viewStateData.liveData) { newViewState ->
+            _couponLinesLiveData.value = _couponLinesLiveData.value
+                ?.copy(isEnabled = newViewState.isIdle && viewState.isEditable)
+        }
 
         when (mode) {
             is Mode.Creation -> {
@@ -440,7 +429,6 @@ class OrderCreateEditViewModel @Inject constructor(
                         ScanningSource.ORDER_LIST
                     )
                 }
-                handleCouponEditResult()
                 launch {
                     updateAutoTaxRateSettingState()
                     updateTaxRateSelectorButtonState()
@@ -467,10 +455,9 @@ class OrderCreateEditViewModel @Inject constructor(
                             isEditable = order.isEditable
                         )
                         monitorOrderChanges()
-                        updateCouponButtonVisibility(order)
+                        updateCouponAndDiscountButtonsState(order)
                         updateAddShippingButtonVisibility(order)
                         updateAddGiftCardButtonVisibility(order)
-                        handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
                         _pendingSelectedItems.value = _orderDraft.value.selectedItems()
                     }
@@ -479,35 +466,35 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private var _isFirstShippingLineChange = true
+
     private fun shouldDisplayShippingFeedback() {
         launch {
-            shippingLineList
-                .asFlow()
-                .drop(1)
-                .take(1)
-                .takeIf { shouldDisplayShippingLinesFeedback() }
-                ?.collect {
+            if (_isFirstShippingLineChange && shouldDisplayShippingLinesFeedback()) {
+                launch {
                     delay(DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK)
                     viewState = viewState.copy(
                         showShippingFeedback = true,
                         isTotalsExpanded = false
                     )
+                    _isFirstShippingLineChange = false
                 }
+            }
         }
     }
 
-    fun onDeviceConfigurationChanged(deviceType: WindowSizeClass) {
-        if (viewState.isRecalculateNeeded && deviceType == WindowSizeClass.Compact) {
+    fun onDeviceConfigurationChanged(isTwoPane: Boolean) {
+        if (viewState.isRecalculateNeeded && !isTwoPane) {
             // enforce items recalculation after switching to single pane mode from dual pane mode
             onProductsSelected(pendingSelectedItems.value)
             viewState = viewState.copy(isRecalculateNeeded = false)
         }
-        if (deviceType != WindowSizeClass.Compact) {
+        if (isTwoPane) {
             // ensure that any items added in single pane mode are displayed in dual pane mode
             // in the product selector pane after switching to dual pane layout
             _pendingSelectedItems.value = _orderDraft.value.selectedItems()
         }
-        viewState = viewState.copy(windowSizeClass = deviceType)
+        viewState = viewState.copy(isTwoPaneLayout = isTwoPane)
     }
 
     fun selectCustomAmount(customAmount: CustomAmountUIModel) {
@@ -568,16 +555,10 @@ class OrderCreateEditViewModel @Inject constructor(
             ShippingAddress -> resourceProvider.getString(string.order_creation_tax_based_on_shipping_address)
         }
 
-    private fun handleCouponEditResult() {
-        args.couponEditResult?.let {
-            handleCouponEditResult()
-        }
-    }
-
     private fun handleCouponEditResult(couponEditResult: OrderCreateCouponDetailsViewModel.CouponEditResult) {
         when (couponEditResult) {
             is OrderCreateCouponDetailsViewModel.CouponEditResult.RemoveCoupon -> {
-                onCouponRemoved(couponEditResult.couponCode)
+                removeCoupon(couponEditResult.couponCode)
             }
         }
     }
@@ -586,8 +567,8 @@ class OrderCreateEditViewModel @Inject constructor(
         handleCouponEditResult(couponEditResult)
     }
 
-    private fun getScreenSizeClassNameForAnalytics(windowSize: WindowSizeClass) =
-        IsScreenLargerThanCompactValue(windowSize != WindowSizeClass.Compact).deviceTypeToAnalyticsString
+    private fun getAnalyticsPaneTypeName(isTwoPane: Boolean) =
+        IsScreenInTwoPaneLayout(isTwoPane).deviceTypeToAnalyticsString
 
     fun onCustomerNoteEdited(newNote: String) {
         _orderDraft.value.let { order ->
@@ -598,7 +579,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_STATUS to order.status,
                     KEY_TYPE to CUSTOMER,
                     KEY_FLOW to flow,
-                    KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                    KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
                 )
             )
         }
@@ -610,7 +591,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_PRODUCT_QUANTITY_CHANGE,
             mapOf(
                 KEY_FLOW to flow,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
         _orderDraft.update { adjustProductQuantity(it, id, +1) }
@@ -625,8 +606,8 @@ class OrderCreateEditViewModel @Inject constructor(
                         ORDER_PRODUCT_REMOVE,
                         mapOf(
                             KEY_FLOW to flow,
-                            KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(
-                                viewState.windowSizeClass
+                            KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(
+                                viewState.isTwoPaneLayout
                             )
                         )
                     )
@@ -635,7 +616,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         ORDER_PRODUCT_QUANTITY_CHANGE,
                         mapOf(
                             KEY_FLOW to flow,
-                            KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                            KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
                         )
                     )
                 }
@@ -649,7 +630,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_PRODUCT_QUANTITY_CHANGE,
             mapOf(
                 KEY_FLOW to flow,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
         _orderDraft.update { adjustProductQuantity(it, product, +1) }
@@ -663,7 +644,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 ORDER_PRODUCT_QUANTITY_CHANGE,
                 mapOf(
                     KEY_FLOW to flow,
-                    KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                    KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
                 )
             )
             _orderDraft.update { adjustProductQuantity(it, product, -1) }
@@ -687,8 +668,8 @@ class OrderCreateEditViewModel @Inject constructor(
                             ORDER_PRODUCT_QUANTITY_CHANGE,
                             mapOf(
                                 KEY_FLOW to flow,
-                                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(
-                                    viewState.windowSizeClass
+                                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(
+                                    viewState.isTwoPaneLayout
                                 )
                             )
                         )
@@ -713,7 +694,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 KEY_FROM to _orderDraft.value.status.value,
                 KEY_TO to status.value,
                 KEY_FLOW to flow,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
             )
         )
         _orderDraft.update { it.copy(status = status) }
@@ -724,7 +705,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_PRODUCT_REMOVE,
             mapOf(
                 KEY_FLOW to flow,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
             )
         )
         viewState = viewState.copy(isEditable = false)
@@ -740,7 +721,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 mapOf(
                     KEY_FLOW to flow,
                     KEY_SOURCE to VALUE_PRODUCT_CARD,
-                    KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                    KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
                 )
             )
         }
@@ -752,6 +733,8 @@ class OrderCreateEditViewModel @Inject constructor(
         source: ScanningSource? = null,
         addedVia: ProductAddedVia = ProductAddedVia.MANUALLY
     ) {
+        viewState = viewState.copy(isUpdatingOrderDraft = true)
+
         val hasBundleConfiguration = selectedItems.any { item ->
             (item as? SelectedItem.ConfigurableProduct)
                 ?.configuration?.configurationType == ConfigurationType.BUNDLE
@@ -765,7 +748,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_SCANNING_SOURCE to source.source,
                     KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
                     KEY_HAS_BUNDLE_CONFIGURATION to hasBundleConfiguration,
-                    KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                    KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
                 )
             )
         } ?: run {
@@ -776,7 +759,7 @@ class OrderCreateEditViewModel @Inject constructor(
                     KEY_PRODUCT_COUNT to selectedItems.size,
                     KEY_PRODUCT_ADDED_VIA to addedVia.addedVia,
                     KEY_HAS_BUNDLE_CONFIGURATION to hasBundleConfiguration,
-                    KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                    KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
                 )
             )
         }
@@ -839,14 +822,24 @@ class OrderCreateEditViewModel @Inject constructor(
                         }
                     }
                 }
+
+                viewState = viewState.copy(isUpdatingOrderDraft = false)
+
                 _orderDraft.update { order -> order.updateItems(order.items + itemsToAdd) }
             }
         }
     }
 
-    private fun updateCouponButtonVisibility(order: Order) {
-        viewState = viewState.copy(isCouponButtonEnabled = order.hasProducts() && order.isEditable)
+    private fun updateCouponAndDiscountButtonsState(order: Order) {
+        viewState = viewState.copy(
+            isCouponButtonEnabled = order.hasProducts() && order.isEditable && order.doesNotContainManualDiscounts(),
+            areDiscountButtonsEnabled = order.hasProducts() && order.isEditable && !order.containsCoupons()
+        )
     }
+
+    private fun Order.containsDiscounts(): Boolean = items.any { it.discount > BigDecimal.ZERO }
+    private fun Order.containsCoupons(): Boolean = couponLines.isNotEmpty()
+    private fun Order.doesNotContainManualDiscounts() = (!containsDiscounts() || containsCoupons())
 
     private fun updateAddShippingButtonVisibility(order: Order) {
         viewState = viewState.copy(isAddShippingButtonEnabled = order.hasProducts() && order.isEditable)
@@ -877,7 +870,7 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(
             ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED,
             mapOf(
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
     }
@@ -896,7 +889,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
             is CodeScannerStatus.Success -> {
                 barcodeScanningTracker.trackSuccess(ScanningSource.ORDER_CREATION)
-                viewState = viewState.copy(isUpdatingOrderDraft = true)
                 fetchProductBySKU(
                     BarcodeOptions(
                         sku = status.code,
@@ -923,48 +915,50 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.orEmpty()
         viewModelScope.launch {
-            productRepository.searchProductList(
-                searchQuery = barcodeOptions.sku,
-                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
-            )?.let { products ->
-                handleFetchProductBySKUSuccess(products, selectedItems, source, barcodeOptions)
-            } ?: run {
+            viewState = viewState.copy(isUpdatingOrderDraft = true)
+            val result = fetchProductByIdentifier(barcodeOptions.sku, barcodeOptions.barcodeFormat)
+            if (result.isSuccess) {
+                val product = result.getOrNull()
+                if (product != null) {
+                    handleFetchProductBySKUSuccess(
+                        product,
+                        selectedItems,
+                        source,
+                        barcodeOptions
+                    )
+                } else {
+                    handleFetchProductBySKUEmpty(barcodeOptions, source)
+                }
+            } else {
                 handleFetchProductBySKUFailure(
                     source,
                     barcodeOptions,
                     "Product search via SKU API call failed"
                 )
             }
+            viewState = viewState.copy(isUpdatingOrderDraft = false)
         }
     }
 
     private fun handleFetchProductBySKUSuccess(
-        products: List<com.woocommerce.android.model.Product>,
+        product: com.woocommerce.android.model.Product,
         selectedItems: List<SelectedItem>,
         source: ScanningSource,
         barcodeOptions: BarcodeOptions
     ) {
         viewState = viewState.copy(isUpdatingOrderDraft = false)
-        products.firstOrNull()?.let { product ->
-            addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
-        } ?: run {
-            handleFetchProductBySKUEmpty(barcodeOptions, source)
-        }
+        addScannedProduct(product, selectedItems, source, barcodeOptions.barcodeFormat)
     }
 
     private fun handleFetchProductBySKUEmpty(
         barcodeOptions: BarcodeOptions,
         source: ScanningSource
     ) {
-        if (shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions)) {
-            fetchProductBySKURemovingCheckDigit(barcodeOptions)
-        } else {
-            handleFetchProductBySKUFailure(
-                source,
-                barcodeOptions,
-                "Empty data response (no product found for the SKU)"
-            )
-        }
+        handleFetchProductBySKUFailure(
+            source,
+            barcodeOptions,
+            "Empty data response (no product found for the SKU)"
+        )
     }
 
     private fun handleFetchProductBySKUFailure(
@@ -981,30 +975,6 @@ class OrderCreateEditViewModel @Inject constructor(
             resourceProvider.getString(string.order_creation_barcode_scanning_unable_to_add_product, barcodeOptions.sku)
         )
     }
-
-    private fun fetchProductBySKURemovingCheckDigit(barcodeOptions: BarcodeOptions) {
-        viewState = viewState.copy(isUpdatingOrderDraft = true)
-        fetchProductBySKU(
-            barcodeOptions.copy(
-                sku = checkDigitRemoverFactory.getCheckDigitRemoverFor(
-                    barcodeOptions.barcodeFormat
-                ).getSKUWithoutCheckDigit(barcodeOptions.sku),
-                shouldHandleCheckDigitOnFailure = false
-            )
-        )
-    }
-
-    private fun shouldWeRetryProductSearchByRemovingTheCheckDigitFor(barcodeOptions: BarcodeOptions) =
-        (isBarcodeFormatUPC(barcodeOptions) || isBarcodeFormatEAN(barcodeOptions)) &&
-            barcodeOptions.shouldHandleCheckDigitOnFailure
-
-    private fun isBarcodeFormatUPC(barcodeOptions: BarcodeOptions) =
-        barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCA ||
-            barcodeOptions.barcodeFormat == BarcodeFormat.FormatUPCE
-
-    private fun isBarcodeFormatEAN(barcodeOptions: BarcodeOptions) =
-        barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN13 ||
-            barcodeOptions.barcodeFormat == BarcodeFormat.FormatEAN8
 
     @Suppress("LongMethod", "ReturnCount")
     private fun addScannedProduct(
@@ -1105,7 +1075,7 @@ class OrderCreateEditViewModel @Inject constructor(
             PRODUCT_SEARCH_VIA_SKU_SUCCESS,
             mapOf(
                 KEY_SCANNING_SOURCE to source.source,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
     }
@@ -1160,7 +1130,7 @@ class OrderCreateEditViewModel @Inject constructor(
             mapOf(
                 KEY_FLOW to flow,
                 KEY_HAS_DIFFERENT_SHIPPING_DETAILS to hasDifferentShippingDetails,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
 
@@ -1285,7 +1255,7 @@ class OrderCreateEditViewModel @Inject constructor(
         _selectedGiftCard.update { selectedGiftCard }
     }
 
-    fun onAddOrEditShipping(itemId: Long? = null) {
+    fun onAddOrEditShippingClicked(itemId: Long? = null) {
         tracker.track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
         val shippingLine = itemId?.let { id -> currentDraft.shippingLines.firstOrNull { it.itemId == id } }
         triggerEvent(EditShipping(shippingLine))
@@ -1347,7 +1317,7 @@ class OrderCreateEditViewModel @Inject constructor(
             mapOf(
                 KEY_FLOW to flow,
                 KEY_EXPANDED to newTotalsExpandedState,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
             )
         )
     }
@@ -1367,7 +1337,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 put(KEY_FLOW, flow)
                                 put(
                                     KEY_HORIZONTAL_SIZE_CLASS,
-                                    getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                                    getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
                                 )
                             }
                     )
@@ -1487,7 +1457,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 viewState = viewState.copy(
                                     isUpdatingOrderDraft = false,
                                     showOrderUpdateSnackbar = true,
-                                    isRecalculateNeeded = viewState.windowSizeClass != WindowSizeClass.Compact
+                                    isRecalculateNeeded = viewState.isTwoPaneLayout
                                 )
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
@@ -1508,7 +1478,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                     updateStatus.order
                                 }
                             }.also {
-                                updateCouponButtonVisibility(it)
+                                updateCouponAndDiscountButtonsState(it)
                                 updateAddShippingButtonVisibility(it)
                                 updateAddGiftCardButtonVisibility(it)
                             }
@@ -1566,7 +1536,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 KEY_ERROR_TYPE to (it as? WooException)?.error?.type?.name,
                 KEY_ERROR_DESC to it.message,
                 KEY_USE_GIFT_CARD to orderDraft.value?.selectedGiftCard.isNotNullOrEmpty(),
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
             )
         )
     }
@@ -1638,6 +1608,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
             draft.copy(shippingLines = shipping)
         }
+        shouldDisplayShippingFeedback()
     }
 
     fun onRemoveShipping(itemId: Long) {
@@ -1645,7 +1616,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_SHIPPING_METHOD_REMOVE,
             mapOf(
                 KEY_FLOW to flow,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
         _orderDraft.update { draft ->
@@ -1660,6 +1631,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             )
         }
+        shouldDisplayShippingFeedback()
     }
 
     fun onFeeEdited(feeValue: BigDecimal) {
@@ -1703,7 +1675,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             true -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
                             false -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
                         },
-                        KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                        KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
                     )
                 )
                 updateCustomAmount(draft, customAmountUIModel)
@@ -1717,7 +1689,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             true -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
                             false -> VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
                         },
-                        KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass),
+                        KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout),
                     )
                 )
                 addCustomAmount(draft, customAmountUIModel)
@@ -1727,7 +1699,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(isEditable = true)
         tracker.track(
             ADD_CUSTOM_AMOUNT_DONE_TAPPED,
-            mapOf(KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass))
+            mapOf(KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout))
         )
         trackIfNameAdded(customAmountUIModel)
         trackIfPercentageBasedCustomAmount(customAmountUIModel)
@@ -1800,7 +1772,7 @@ class OrderCreateEditViewModel @Inject constructor(
         viewState = viewState.copy(isEditable = true)
         tracker.track(
             ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED,
-            mapOf(KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass))
+            mapOf(KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout))
         )
     }
 
@@ -1809,7 +1781,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ORDER_FEE_REMOVE,
             mapOf(
                 KEY_FLOW to flow,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
         _orderDraft.update { draft ->
@@ -1825,7 +1797,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onCouponAdded(couponCode: String) {
+    fun addCoupon(couponCode: String) {
         if (_orderDraft.value.couponLines.any { it.code == couponCode }) return
         _orderDraft.update { draft ->
             val couponLines = draft.couponLines
@@ -1835,7 +1807,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    private fun onCouponRemoved(couponCode: String) {
+    fun removeCoupon(couponCode: String) {
         trackCouponRemoved()
         _orderDraft.update { draft ->
             val updatedCouponLines = draft.couponLines.filter { it.code != couponCode }
@@ -1871,7 +1843,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         tracker.track(
             AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED,
-            mapOf(KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass))
+            mapOf(KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout))
         )
     }
 
@@ -1915,7 +1887,7 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(
             AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED,
             mapOf(
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
     }
@@ -1928,7 +1900,7 @@ class OrderCreateEditViewModel @Inject constructor(
         tracker.track(
             AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_CLEAR_ADDRESS_TAPPED,
             mapOf(
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
     }
@@ -1942,7 +1914,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         tracker.track(
             analyticsEvent,
-            mapOf(KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass))
+            mapOf(KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout))
         )
     }
 
@@ -1995,7 +1967,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
         val productCount = products.value?.count() ?: 0
         return buildMap {
-            put(KEY_HORIZONTAL_SIZE_CLASS, IsScreenLargerThanCompactValue(isTablet).deviceTypeToAnalyticsString)
+            put(KEY_HORIZONTAL_SIZE_CLASS, IsScreenInTwoPaneLayout(isTablet).deviceTypeToAnalyticsString)
             put(KEY_STATUS, _orderDraft.value.status)
             putIfNotNull(PRODUCT_TYPES to productTypes)
             put(KEY_PRODUCT_COUNT, productCount)
@@ -2028,7 +2000,7 @@ class OrderCreateEditViewModel @Inject constructor(
             mapOf(
                 KEY_FLOW to flow,
                 KEY_IS_GIFT_CARD_REMOVED to giftCardWasRemoved,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+                KEY_HORIZONTAL_SIZE_CLASS to getAnalyticsPaneTypeName(viewState.isTwoPaneLayout)
             )
         )
     }
@@ -2040,6 +2012,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val isUpdatingOrderDraft: Boolean = false,
         val showOrderUpdateSnackbar: Boolean = false,
         val isCouponButtonEnabled: Boolean = false,
+        val areDiscountButtonsEnabled: Boolean = false,
         val isAddShippingButtonEnabled: Boolean = false,
         val isAddGiftCardButtonEnabled: Boolean = false,
         val shouldDisplayAddGiftCardButton: Boolean = false,
@@ -2050,7 +2023,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
         val productsSectionState: ProductsSectionState = ProductsSectionState(),
         val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
-        val windowSizeClass: WindowSizeClass = WindowSizeClass.Compact,
+        val isTwoPaneLayout: Boolean = false,
         val isRecalculateNeeded: Boolean = false,
         val showShippingFeedback: Boolean = false,
     ) : Parcelable {
@@ -2059,8 +2032,8 @@ class OrderCreateEditViewModel @Inject constructor(
             !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
 
         @IgnoredOnParcel
-        val isCreateOrderButtonEnabled = when (windowSizeClass) {
-            WindowSizeClass.Compact -> canCreateOrder
+        val isCreateOrderButtonEnabled = when (isTwoPaneLayout) {
+            false -> canCreateOrder
             else -> canCreateOrder && !isRecalculateNeeded
         }
 

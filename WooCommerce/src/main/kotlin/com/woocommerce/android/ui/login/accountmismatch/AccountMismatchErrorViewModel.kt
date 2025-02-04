@@ -263,6 +263,10 @@ class AccountMismatchErrorViewModel @Inject constructor(
                 val site = site.await() ?: error("The site is not cached")
                 accountMismatchRepository.fetchJetpackConnectedEmail(site).fold(
                     onSuccess = { email ->
+                        // Remove the WPAPI site from DB before continuing
+                        // This ensure we don't have a duplicate site with a wrong origin
+                        accountMismatchRepository.removeSiteFromDB(site)
+
                         val isUserAuthenticated = accountRepository.isUserLoggedIn() &&
                             accountRepository.getUserAccount()?.email == email
                         triggerEvent(OnJetpackConnectedEvent(email, isAuthenticated = isUserAuthenticated))

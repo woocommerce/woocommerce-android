@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -56,6 +58,7 @@ import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun BlazeCampaignCreationPreviewScreen(viewModel: BlazeCampaignCreationPreviewViewModel) {
@@ -192,7 +195,7 @@ fun AdDetailsHeader(
     onEditAdClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    CampaignHeader(
+    AdPreview(
         adDetails = adDetails,
         onEditAdClicked = onEditAdClicked,
         modifier = modifier
@@ -204,7 +207,7 @@ fun AdDetailsHeader(
 }
 
 @Composable
-fun CampaignHeader(
+fun AdPreview(
     adDetails: AdDetails,
     onEditAdClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -262,13 +265,21 @@ fun CampaignHeader(
                         style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.Bold,
                     )
+                    if (adDetails.ctaText.isEmpty()) {
+                        DefaultBlazeButton(
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .align(Alignment.Top)
+                        )
+                    }
+                }
+                if (adDetails.ctaText.isNotEmpty()) {
                     WCColoredButton(
-                        text = stringResource(id = R.string.blaze_campaign_preview_shop_now_button),
-                        modifier = Modifier
-                            .padding(start = 16.dp),
+                        modifier = Modifier.padding(top = 8.dp),
+                        text = adDetails.ctaText,
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = colorResource(id = R.color.color_on_secondary),
-                            backgroundColor = colorResource(id = R.color.blaze_campaign_preview_shop_now_button),
+                            contentColor = colorResource(id = R.color.color_on_primary_surface),
+                            backgroundColor = colorResource(id = R.color.blaze_ad_cta_background),
                         ),
                         onClick = { /*TODO*/ },
                     )
@@ -318,8 +329,12 @@ fun CampaignDetails(
             text = stringResource(id = R.string.blaze_campaign_preview_details_section_title),
             style = MaterialTheme.typography.body2
         )
-        // Budget
-        CampaignPropertyGroupItem(items = listOf(campaignDetails.budget))
+        // Campaign Details
+        if (FeatureFlag.OBJECTIVE_SECTION.isEnabled()) {
+            CampaignPropertyGroupItem(items = listOf(campaignDetails.selectedObjective, campaignDetails.budget))
+        } else {
+            CampaignPropertyGroupItem(items = listOf(campaignDetails.budget))
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience
@@ -361,6 +376,26 @@ private fun CampaignPropertyGroupItem(
 }
 
 @Composable
+private fun DefaultBlazeButton(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(40.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(color = colorResource(id = R.color.blaze_ad_cta_background))
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+            contentDescription = null,
+            tint = colorResource(id = R.color.color_on_primary_surface),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(32.dp)
+                .padding(6.dp)
+        )
+    }
+}
+
+@Composable
 private fun CampaignPropertyItem(
     item: CampaignDetailItemUi,
     modifier: Modifier = Modifier,
@@ -380,7 +415,8 @@ private fun CampaignPropertyItem(
         Column(
             Modifier
                 .padding(end = 16.dp)
-                .weight(1f)
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = item.displayTitle,
@@ -412,6 +448,7 @@ fun CampaignScreenPreview() {
                 productId = 123,
                 description = "Get the latest white t-shirts",
                 tagLine = "From 45.00 USD",
+                ctaText = "Shop Now",
                 campaignImageUrl = "https://rb.gy/gmjuwb",
                 isContentSuggestedByAi = true
             ),
@@ -448,7 +485,12 @@ fun CampaignScreenPreview() {
                     displayValue = "https://www.myer.com.au/p/white-t-shirt-797334760-797334760",
                     onItemSelected = {},
                     maxLinesValue = 1,
-                )
+                ),
+                selectedObjective = CampaignDetailItemUi(
+                    displayTitle = stringResource(R.string.blaze_campaign_preview_details_objective),
+                    displayValue = "Sales",
+                    onItemSelected = {},
+                ),
             )
         ),
         onBackPressed = { },

@@ -31,7 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScanToUpdateInventoryViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val fetchProductBySKU: FetchProductBySKU,
+    private val fetchProductByIdentifier: FetchProductByIdentifier,
     private val resourceProvider: ResourceProvider,
     private val productRepository: ProductDetailRepository,
     private val variationRepository: VariationDetailRepository,
@@ -62,7 +62,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
 
     private fun handleBarcodeScanningSuccess(status: CodeScannerStatus.Success) = launch {
         _viewState.value = ViewState.Loading
-        val productResult: Result<Product> = fetchProductBySKU(status.code, status.format)
+        val productResult: Result<Product> = fetchProductByIdentifier(status.code, status.format)
         if (productResult.isSuccess) {
             val product = productResult.getOrNull()
             if (product != null) {

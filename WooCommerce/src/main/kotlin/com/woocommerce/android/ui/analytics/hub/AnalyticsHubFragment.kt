@@ -162,7 +162,6 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsDateSelectorCard.updateLastUpdateTimestamp(viewState.lastUpdateTimestamp)
-        binding.analyticsCallToActionCard.updateInformation(viewState.ctaState)
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
         displayFeedbackBanner(viewState.showFeedBackBanner)
 

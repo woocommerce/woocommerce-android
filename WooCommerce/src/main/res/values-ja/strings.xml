@@ -1,11 +1,286 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-07-23 09:54:04+0000
+Translation-Revision-Date: 2025-01-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">現在、POS はシンプルな商品、バリエーションのある商品、仮想商品のみに対応しています – \n作成して開始します。</string>
+    <string name="woo_shipping_label_phone">電話</string>
+    <string name="woo_shipping_label_email">メールアドレス</string>
+    <string name="woo_shipping_label_post_code">郵便番号</string>
+    <string name="woo_shipping_label_state">都道府県</string>
+    <string name="woo_shipping_label_city">市区町村</string>
+    <string name="woo_shipping_label_address">住所</string>
+    <string name="woo_shipping_label_country">国</string>
+    <string name="woo_shipping_label_company">会社</string>
+    <string name="woo_shipping_label_name">名前</string>
+    <string name="woo_shipping_edit_origin_address_title">配送元を編集</string>
+    <string name="woopos_variations_any_variation">すべて %s</string>
+    <string name="woopos_variations_empty_list_image_description">バリエーションがありません</string>
+    <string name="woopos_variations_empty_list_title">サポート対象のバリエーションが見つかりません</string>
+    <string name="login_use_wpcom_username_instead">代わりにユーザー名とパスワードを使用</string>
+    <string name="product_images_drag_and_drop_to_reorder">写真の順序を変更するにはドラッグ &amp; ドロップしてください。 最初の写真はカバーとして設定されます。</string>
+    <string name="product_cover_photo_tag">カバー</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d件の注文が更新され、%d件の注文が更新に失敗しました。 もう一度お試しください。</string>
+    <string name="orderlist_bulk_update_result_all_failed">注文の更新に失敗しました。 もう一度お試しください。</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">更新された注文はありません。 もう一度お試しください。</string>
+    <string name="add">%sを追加</string>
+    <string name="woo_shipping_labels_package_creation_error_cancel">キャンセル</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">続行</string>
+    <string name="woo_shipping_labels_package_creation_error_message">保存せずに続行しますか ?</string>
+    <string name="woo_shipping_labels_package_creation_error_title">荷物をテンプレートとして保存できませんでした</string>
+    <string name="woopos_variations_options_available_text">オプションを使用可能</string>
+    <string name="woopos_totals_success_payment_card">%1$sのカード支払いが正常に行われました</string>
+    <string name="woopos_totals_success_payment_cash">%1$sの現金支払いが正常に行われました</string>
+    <string name="shipping_label_select_origin_address">アドレス</string>
+    <string name="shipping_label_select_origin_default_address">%s (デフォルト)</string>
+    <string name="shipping_label_purchased_purchase_failed_error">現在、配送ラベルの購入を確認できません。後でもう一度お試しください</string>
+    <string name="shipping_label_purchased_failure_message">後でもう一度お試しください</string>
+    <string name="shipping_label_purchased_failure_title">配送ラベルを処理できませんでした</string>
+    <string name="shipping_label_purchased_in_progress_message">完了すると、選択した用紙サイズで配送ラベルを印刷できるようになります</string>
+    <string name="shipping_label_purchased_in_progress_title">配送ラベルは処理中です</string>
+    <string name="orderlist_bulk_update_maximum_reached">選択が最大数 (%d件) に達しました。</string>
+    <string name="orderlist_bulk_update_status_updated">ステータスを更新しました !</string>
+    <string name="site_picker_edit_store_list_error_title">通知設定を更新する際にエラーが発生しました。 もう一度お試しください</string>
+    <string name="site_picker_edit_store_list_header">他のストア</string>
+    <string name="site_picker_edit_store_current_site_footer">これを非表示にするには、別のストアに切り替えてください</string>
+    <string name="site_picker_edit_store_current_site_header">現在のストア</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">連携するストアを選択 (非表示: %d)</string>
+    <string name="woo_shipping_labels_package_creation_error">荷物データを読み込めませんでした</string>
+    <string name="woo_shipping_labels_package_creation_package_name">荷物の名称</string>
+    <string name="woo_shipping_labels_package_creation_weight">重量</string>
+    <string name="woopos_email_receipt_send_error">このメールを送信しようとしたところ、エラーが発生しました。 もう一度お試しください</string>
+    <string name="woopos_email_receipt_email_label">メールアドレスを入力</string>
+    <string name="woopos_email_receipt_title">領収書をメールで送信</string>
+    <string name="woopos_toolbar_icon_content_description">戻る</string>
+    <string name="woopos_email_receipt_send_button">送信</string>
+    <string name="woopos_cash_payment_error_message">支払いを処理しようとしたところ、エラーが発生しました。 もう一度お試しください。</string>
+    <string name="woopos_cash_payment_change_due">変更期限 %s</string>
+    <string name="woopos_cash_payment_total">合計: %s</string>
+    <string name="woopos_complete_cash_order_button">支払いを完了としてマーク</string>
+    <string name="woopos_cash_payment_title">現金での支払い</string>
+    <string name="woopos_items_pagination_error_content_description">「その他のアイテムの読み込みに失敗しました。 ダブルタップしてもう一度お試しください」</string>
+    <string name="woopos_items_pagination_error_description">「商品の読み込み中にエラーが発生しました」</string>
+    <string name="woopos_items_pagination_error_title">「その他のアイテムの読み込みに失敗しました」</string>
+    <string name="woopos_items_pagination_try_again_label">もう一度お試しください</string>
+    <string name="woo_pos_payment_failed_go_back_to_checkout">購入手続きに戻る</string>
+    <string name="woo_pos_payment_failed_try_again">再度支払いを試す</string>
+    <string name="woo_pos_payment_failed_try_another_payment_method">別の支払い方法を試す</string>
+    <string name="woopos_success_totals_payment_failed_title">支払いに失敗しました</string>
+    <string name="woopos_success_totals_payment_processing_subtitle">しばらくお待ちください…</string>
+    <string name="woopos_success_totals_payment_processing_title">支払いを処理しています</string>
+    <string name="woopos_totals_reader_ready_for_payment_subtitle">カードをタップ、スワイプ、または挿入</string>
+    <string name="woopos_totals_reader_ready_for_payment_title">支払い準備完了</string>
+    <string name="woopos_totals_reader_preparing_reader_for_payment">お支払いのリーダーを準備しています</string>
+    <string name="woopos_totals_reader_checking_order">注文を確認しています</string>
+    <string name="woopos_totals_reader_getting_ready">準備しています</string>
+    <string name="woopos_success_totals_error_reader_not_connected_cta_button_label">リーダーに接続する</string>
+    <string name="woopos_success_totals_error_reader_not_connected_subtitle">この支払いを処理するには、リーダーを接続してください。</string>
+    <string name="woopos_success_totals_error_reader_not_connected_title">リーダーが接続されていません</string>
+    <string name="woopos_payment_take_cash_payment_label">現金での支払い</string>
+    <string name="woopos_receipt_sending_not_supported">WooCommerce をバージョン%s以降にアップデートしてください</string>
+    <string name="woopos_receipt_button">領収書をメールで送信</string>
+    <string name="blaze_campaign_creation_no_product_modal_cta">商品を作成</string>
+    <string name="blaze_campaign_creation_no_product_modal_body">現在プロモーションに利用できる商品はありません。 今すぐ商品を作成してみませんか ?</string>
+    <string name="blaze_campaign_creation_no_product_modal_title">商品が見つかりません</string>
+    <string name="product_inventory_update_global_unique_id_error">数字とハイフンのみ入力してください</string>
+    <string name="shipping_label_rate_option_adult_signature_required_name">成年の署名が必要</string>
+    <string name="shipping_label_rate_option_signature_required_name">署名が必要</string>
+    <string name="shipping_label_purchased_print_error">この配送ラベルで問題が発生しました。後でもう一度お試しください</string>
+    <string name="shipping_label_purchased_tracking_error">現在この運送業者の追跡はサポートしていません</string>
+    <string name="shipping_label_purchased_pickup_error">現在この運送業者の集荷はサポートしていません</string>
+    <string name="shipping_label_total_shipment_weight">配送の総重量 (梱包を含む)</string>
+    <string name="shipping_label_package_selected_description">荷物の選択を変更</string>
+    <string name="shipping_label_package_selected_title">荷物</string>
+    <string name="shipping_label_package_default_name">カスタム荷物</string>
+    <string name="orderlist_selection_menu_update_status">ステータスを更新</string>
+    <string name="orderlist_selection_count_single">%d件の注文が選択されています</string>
+    <string name="orderlist_selection_count">%d件の注文が選択されています</string>
+    <string name="site_picker_edit_store_list_footer">選択解除されたストアはアプリでサイトの選択画面に表示されず、新しい注文または商品レビューのプッシュ通知は送信されません</string>
+    <string name="site_picker_edit_store_list_title">表示されるストア</string>
+    <string name="site_picker_edit_store_list">ストアを編集</string>
+    <string name="woopos_variations_loading_error_title">バリエーションの読み込み中にエラーが発生しました</string>
+    <string name="woopos_variations_back_content_description">戻る</string>
+    <string name="woopos_variation_item_content_description">バリエーション %s、価格 %s</string>
+    <string name="woopos_variable_product_item_content_description">バリエーションのある商品 %s、価格 %s</string>
+    <string name="blaze_campaign_edit_ad_change_description_empty_error">説明を空にすることはできません</string>
+    <string name="blaze_campaign_edit_ad_change_cta_text_title">行動喚起 (CTA)</string>
+    <string name="blaze_campaign_edit_ad_change_tagline_empty_error">キャッチフレーズを空にすることはできません</string>
+    <string name="login_magic_links_email_sent_double_check_email">メールアドレスが正しいことを確認し、スパムフォルダーを再確認してください。</string>
+    <string name="username_not_registered_wpcom">このユーザー名に接続された WordPress.com アカウントが見つかりません。 メールアドレスを入力して新規アカウントを作成できます。</string>
+    <string name="product_global_unique_id_summary">バーコードまたはこの商品固有のその他の ID を入力してください。 この商品を他のチャネルやマーケットプレイスに出品するのに役立ちます。</string>
+    <string name="product_global_unique_id">GTIN、UPC、EAN、ISBN</string>
+    <string name="card_reader_hub_payout_funds_payout_title">最終の支払い</string>
+    <string name="shipping_label_shipment_details_mark_order_complete">ラベルを購入したら、この注文に完了のマークを付けてお客様に通知してください。</string>
+    <string name="login_jetpack_connection_create_account">アカウントをお持ちでない場合は、このメールアドレスを使用してアカウントを作成いたします。</string>
+    <string name="woo_shipping_labels_package_creation_envelope_type">封筒</string>
+    <string name="woo_shipping_labels_package_creation_box_type">ボックス</string>
+    <string name="woo_shipping_labels_package_creation_add_package">パッケージを追加</string>
+    <string name="woo_shipping_labels_package_creation_save_package_option">これを新しいパッケージテンプレートとして保存</string>
+    <string name="woo_shipping_labels_package_creation_height">高さ</string>
+    <string name="woo_shipping_labels_package_creation_width">幅</string>
+    <string name="woo_shipping_labels_package_creation_length">長さ</string>
+    <string name="woo_shipping_labels_package_creation_package_type">パッケージの種類</string>
+    <string name="woo_shipping_labels_package_creation_tab_saved">保存済み</string>
+    <string name="woo_shipping_labels_package_creation_tab_carrier">運送業者</string>
+    <string name="woo_shipping_labels_package_creation_tab_custom">カスタム</string>
+    <string name="shipping_label_purchased_request_refund">返金をリクエスト</string>
+    <string name="shipping_label_purchased_schedule_pick_up">集荷日を設定</string>
+    <string name="shipping_label_purchased_track_shipment">配送状況を追跡</string>
+    <string name="shipping_label_purchased_learn_how_to_print">モバイルデバイスを使って印刷する方法を確認</string>
+    <string name="shipping_label_purchased_note">注意: 印刷されたラベルを再利用すると、弊社の利用規約違反となり、刑事責任を問われる可能性があります。</string>
+    <string name="shipping_label_purchased_success_message">こちらから再度配送ラベルを印刷するか、ラベルの用紙サイズを変更することができます。</string>
+    <string name="shipping_label_purchased_success_title">配送ラベルを印刷する準備ができました</string>
+    <string name="order_detail_edit_store_currency_mismatch">この注文は %1$s を使用しており、サイトの通貨は %2$s であるため、編集はウェブ上でしか行えません</string>
+    <string name="shipping_label_shipping_service_title">配送サービス</string>
+    <string name="shipping_label_shipping_rates_sort_option_fastest">最速</string>
+    <string name="shipping_label_shipping_rates_sort_option_cheapest">最安値</string>
+    <string name="shipping_label_shipment_details_purchase_label_disabled">ラベルを購入</string>
+    <string name="shipping_label_shipment_details_purchase_label">ラベルを購入 · %1$s </string>
+    <string name="shipping_label_shipment_details_shipment_cost">配送料</string>
+    <string name="shipping_label_shipment_details_order_details">注文詳細</string>
+    <string name="shipping_label_shipment_details_title">配送状況の詳細</string>
+    <string name="shipping_label_select_package_description">荷物の寸法を入力するか、配送業者の荷物オプションを選択して、利用可能な配送料金を確認してください。</string>
+    <string name="shipping_label_select_package_title">荷物を選択して配送料を取得</string>
+    <string name="shipping_label_select_package_button">荷物を選択</string>
+    <string name="shipping_label_hazmat_title">危険物または有害物質を発送しようとしていますか ?</string>
+    <string name="shipping_label_package_details_items_expand_content_description">アイテムカードを折りたたむ / 展開する</string>
+    <string name="shipping_label_package_details_items_weight_price">%1$s  ·  %2$s</string>
+    <string name="sorted_by">1%sで並べ替え</string>
+    <string name="no">いいえ</string>
+    <string name="blaze_campaign_objective_save_selection_switch_label">今後のキャンペーンのために選択を保存</string>
+    <string name="blaze_campaign_objective_good_for">&lt;b&gt;効果:&lt;/b&gt; %s</string>
+    <string name="blaze_campaign_objective_select_objective_label">目的 %s を選択</string>
+    <string name="custom_fields_empty_view_title">カスタムフィールドが見つかりません</string>
+    <string name="custom_fields_empty_view_message">カスタムフィールドはオプションのメタデータで、追加情報を表示したりストアのショッピング体験をカスタマイズしたりできます。</string>
+    <string name="blaze_campaign_created_success_feedback_request">Blaze の操作性はいかがでしたか</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_positive_button">目的を選択</string>
+    <string name="blaze_campaign_preview_missing_objective_dialog_text">Blaze キャンペーンの目的を選択してください</string>
+    <string name="blaze_campaign_preview_details_choose_objective">キャンペーンの目的を選択</string>
+    <string name="blaze_campaign_preview_details_objective">キャンペーンの目的</string>
+    <string name="more_menu_button_woo_pos_description">実店舗で支払いを受け取る</string>
+    <string name="card_reader_tap_to_pay_about_how_works_4">4. お客様があなたのスマートフォンの背面にカードをタップします。</string>
+    <string name="custom_fields_editor_html_toggle">HTML</string>
+    <string name="custom_fields_editor_text_toggle">テキスト</string>
+    <string name="custom_fields_editor_toggle_accessibility_description">テキストエディターとHTMLエディターを切り替え</string>
+    <string name="custom_fields_list_top_banner_message">カスタムフィールドへの変更を保存すると、変更はすぐに有効になります。</string>
+    <string name="custom_fields_list_top_banner_title">カスタムフィールドを表示および編集</string>
+    <string name="product_custom_fields_desc">カスタムフィールドを表示および編集</string>
+    <string name="product_custom_fields">カスタムフィールド</string>
+    <string name="custom_fields_editor_copy_value">値をコピー</string>
+    <string name="custom_fields_editor_copy_key">キーをコピー</string>
+    <string name="blaze_campaign_product_photo_picker_photo_content_description">商品写真</string>
+    <string name="blaze_campaign_product_photo_picker_empty">写真が見つかりませんでした</string>
+    <string name="blaze_campaign_product_photo_picker_title">商品写真</string>
+    <string name="image_source_product_images">既存の商品写真を選択</string>
+    <string name="custom_fields_editor_key_error_underscore">間違ったキー: 先頭の「_」文字を削除してください。</string>
+    <string name="custom_fields_editor_key_error_duplicate">このキーはすでに別のカスタムフィールドで使用されています。\n現在、アプリは複製キーの作成をサポートしていません。 必要に応じて、wp-admin を使用してキーを複製してください。</string>
+    <string name="custom_fields_add_button">カスタムフィールドを追加</string>
+    <string name="custom_fields_list_field_deleted">カスタムフィールドを削除しました</string>
+    <string name="custom_fields_list_saving_failed">変更を保存できませんでした。もう一度お試しください</string>
+    <string name="custom_fields_list_saving_succeeded">変更を保存しました</string>
+    <string name="custom_fields_list_progress_dialog_title">変更を保存中</string>
+    <string name="woopos_no_internet_message">インターネットに接続されていないようです。 Wi-Fi がオンになっていることをご確認ください。 モバイルデータを使用している場合、デバイスの設定で有効になっていることを確認してください。 </string>
+    <string name="order_shipment_tracking_barcode_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください</string>
+    <string name="custom_fields_editor_value_label">値</string>
+    <string name="custom_fields_editor_key_label">キー</string>
+    <string name="woopos_dialog_products_info_secondary_message">他の商品タイプは今後のアップデートで利用可能になります。</string>
+    <string name="woopos_dialog_products_info_primary_message">現在、POS で使用できるのはシンプルな物理的商品、バリエーションのある商品、仮想商品のみです。</string>
+    <string name="blaze_campaign_budget_duration_cancel_button">キャンセル</string>
+    <string name="blaze_campaign_budget_duration_current_duration">期間</string>
+    <string name="blaze_campaign_budget_duration_endless_description">キャンペーンは停止するまで実行されます。</string>
+    <string name="blaze_campaign_budget_duration_endless_switch_label">期間を特定</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_end_date">%1$sまで</string>
+    <string name="blaze_campaign_budget_scheduled_section_title">予約</string>
+    <string name="blaze_campaign_budget_daily_spend_label">1日あたりの支出</string>
+    <string name="blaze_campaign_budget_duration_subtitle">キャンペーンに費やす費用はいくらですか ? また、キャンペーンの期間はどの程度ですか ?</string>
+    <string name="blaze_campaign_status_ctr_value_shortened">%1$s ➔ %2$s</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_description">Blaze で商品を何百万もの人に見てもらい、売上を伸ばしましょう</string>
+    <string name="local_notification_blaze_abandoned_campaign_reminder_title">売上を伸ばしたいとお考えですか ?</string>
+    <string name="custom_fields_list_loading_error">カスタムフィールドの読み込み中にエラーが発生しました</string>
+    <string name="custom_fields_list_title">カスタムフィールド</string>
+    <string name="woopos_dialog_exit_confirmation_background_content_description">背景を暗くしました。 タップしてダイアログを閉じます。</string>
+    <string name="blaze_campaign_budget_weekly_spending">毎週%1$s</string>
+    <string name="blaze_campaign_budget_duration_endless_label">止めるまで実行します</string>
+    <string name="blaze_campaign_budget_duration_endless_campaign_value">%1$sから進行中</string>
+    <string name="blaze_campaign_budget_footer_weekly_spend">週の支出</string>
+    <string name="blaze_campaign_preview_days_duration_endless">毎週%1$s、%2$sに開始 </string>
+    <string name="blaze_campaign_status_budget_weekly">毎週</string>
+    <string name="blaze_campaign_status_budget_remaining">残り</string>
+    <string name="blaze_campaign_status_budget_total">合計</string>
+    <string name="blaze_campaign_status_ctr_label">クリックスルー</string>
+    <string name="stats_widget_battery_saver_error">端末がバッテリーセーバーモードになっているようです。 \nストアがアクティブな間はストア情報を提供できません</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_open_content_description">オプション付きのポップアップメニュー。 スワイプしてアイテム間を移動します。</string>
+    <string name="woopos_floating_toolbar_pop_up_menu_content_description">ツールバーメニューを開く</string>
+    <string name="woopos_floating_toolbar_menu_open_content_description">カードリーダーステータス付きのツールバー。 メニューが開いています。 ダブルタップして操作します。</string>
+    <string name="woopos_floating_toolbar_menu_hidden_content_description">カードリーダーステータス付きのツールバー。 ダブルタップして操作します。</string>
+    <string name="woopos_floating_toolbar_menu_disabled_content_description">メニューが無効です</string>
+    <string name="woopos_floating_toolbar_menu_enabled_content_description">メニューが有効です</string>
+    <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">カードリーダーが接続されていません。 ダブルタップして接続</string>
+    <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">カードリーダーが接続されました</string>
+    <string name="woopos_floating_toolbar_overlay_menu_content_description">背景を暗くしました。 タップしてメニューを閉じます。</string>
+    <string name="woopos_payment_successful_checkmark_icon_content_description">支払い成功チェックマークアイコン</string>
+    <string name="woopos_remove_cart_item_content_description">お買い物カゴからこのアイテムを削除</string>
+    <string name="woopos_exit_dialog_confirmation_message">進行中の注文はすべて失われます。</string>
+    <string name="woopos_exit_dialog_confirmation_title">販売時点管理モードを終了しますか ?</string>
+    <string name="woopos_exit_dialog_confirmation_close_content_description">閉じる</string>
+    <string name="woopos_dialog_products_info_background_content_description">背景を暗くしました。 タップしてダイアログを閉じます。</string>
+    <string name="woopos_banner_simple_products_dialog_primary_button_content_description">ダブルタップしてダイアログを閉じる</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">シンプルな商品、バリエーションのある商品、仮想商品のみのダイアログ</string>
+    <string name="woopos_banner_simple_products_learn_more_content_description">ダブルタップして詳しく確認</string>
+    <string name="woopos_banner_simple_products_content_description">シンプルな商品、バリエーションのある商品、仮想商品のみのバナー</string>
+    <string name="local_notification_blaze_no_campaign_reminder_description">Blaze 広告で商品を宣伝し、今すぐ売上を増やしましょう。</string>
+    <string name="local_notification_blaze_no_campaign_reminder_title">売上を増やす</string>
+    <string name="more_menu_button_payments_description">外出先で支払いを受け取る</string>
+    <string name="card_reader_payment_failed_incorrect_pin">誤った PIN が入力されました。 再度お試しいただくか、別の支払い方法をお使いください</string>
+    <string name="woopos_menu_toolbar_content_description">メニュー</string>
+    <string name="woopos_cart_item_content_description">お買い物カゴ %s の商品、価格%s</string>
+    <string name="woopos_product_item_content_description">商品 %s、価格%s</string>
+    <string name="blaze_campaign_status_suspended">一時停止中</string>
+    <string name="woopos_new_order_button">新しい注文</string>
+    <string name="woopos_dialog_products_info_button_label">OK</string>
+    <string name="woopos_dialog_products_info_secondary_message_action_label">+ ストア管理で注文を作成</string>
+    <string name="woopos_dialog_products_info_tertiary_message">他の商品の支払いを受け取るには、POS を終了して注文タブから新しい注文を作成します。</string>
+    <string name="woopos_dialog_products_info_heading">商品が表示されないのはなぜですか ?</string>
+    <string name="woopos_banner_simple_products_info_content_description">情報</string>
+    <string name="woopos_banner_simple_products_close_content_description">閉じる</string>
+    <string name="woopos_banner_simple_products_only_message_learn_more">さらに詳しく</string>
+    <string name="woopos_banner_simple_products_only_message">現在、POS で対応できるのはシンプルな物理的商品、バリエーションのある商品、仮想商品のみです。 他の商品タイプは今後のアップデートで利用可能になります。 </string>
+    <string name="woopos_banner_simple_products_only_title">シンプルな商品、バリエーションのある商品、仮想商品のみ表示中</string>
+    <string name="support_request_site_address">サイトのアドレス</string>
+    <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
+    <string name="analytics_google_ads_cta_action">有料キャンペーンを追加</string>
+    <string name="analytics_google_ads_cta_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう。</string>
+    <string name="analytics_google_ads_cta_title">Google キャンペーン</string>
+    <string name="google_ads_campaign_created_success_done_button">完了</string>
+    <string name="google_ads_campaign_created_success_description">新しいキャンペーンが作成されました。 販売の楽しい時期がやってきます !</string>
+    <string name="google_ads_campaign_created_success_title">準備完了 !</string>
+    <string name="woopos_totals_order_creation_error">注文を作成できませんでした</string>
+    <string name="woopos_products_loading_error_retry_button">再試行</string>
+    <string name="woopos_error_icon_content_description">エラー表示アイコン</string>
+    <string name="woopos_products_loading_error_message">もう一度試しますか ?</string>
+    <string name="woopos_products_loading_error_title">商品の読み込み中にエラーが発生しました</string>
+    <string name="woopos_products_empty_list_message_two">現在、POS はシンプルな商品のみに対応しています</string>
+    <string name="woopos_variations_empty_list_message">現在、POS はシンプルな商品、バリエーションのある商品、仮想商品のみに対応しています – \n作成して開始します。</string>
+    <string name="woopos_products_empty_list_title">サポート対象の商品が見つかりません</string>
+    <string name="woopos_products_empty_list_image_description">商品なし</string>
+    <string name="woopos_get_support_title">サポートを受ける</string>
+    <string name="woopos_reader_disconnected">リーダーを接続</string>
+    <string name="ai_product_creation_photo_removed">写真が削除されました</string>
+    <string name="ai_product_creation_image_scanned_subtitle">画像をスキャンしています</string>
+    <string name="ai_product_creation_image_selected_subtitle">開始情報に写真テキストを追加しました</string>
+    <string name="ai_product_creation_image_scan_subtitle">写真からスキャンしたテキストを追加</string>
+    <string name="analytics_google_ads_filter_clicks">クリック数</string>
+    <string name="analytics_google_ads_filter_impressions">インプレッション</string>
+    <string name="analytics_google_ads_filter_conversion">コンバージョン</string>
+    <string name="analytics_google_ads_filter_spend">利用額 </string>
+    <string name="analytics_google_ads_filter_total_sales">合計売上高</string>
+    <string name="analytics_google_ads_metric_card_title">メトリック</string>
+    <string name="analytics_total_sales_subtitle_value">合計売上高: %1$s</string>
+    <string name="analytics_spend_subtitle_value">利用額: %1$s</string>
+    <string name="analytics_custom_list_selection_button_description">フィルター選択</string>
     <string name="woopos_cart_empty_content_description">お買い物カゴが空です</string>
     <string name="woopos_cart_empty_subtitle">商品をタップして\nお買い物カゴに追加します</string>
     <string name="woopos_totals_main_error_label">合計を読み込めませんでした</string>
@@ -21,7 +296,6 @@ Language: ja_JP
     <string name="product_creation_ai_preview_generate_again">もう一度生成</string>
     <string name="product_creation_ai_preview_undo_edits">編集を元に戻す</string>
     <string name="product_creation_ai_preview_variant_selector">オプション%1$d/%2$d</string>
-    <string name="analytics_spend_value">利用額: %1$s</string>
     <string name="dashboard_google_ads_card_view_all_campaigns_button">すべてのキャンペーンを表示</string>
     <string name="dashboard_google_ads_card_create_campaign_button">キャンペーンを作成</string>
     <string name="dashboard_google_ads_card_has_campaign_clicks">クリック数</string>
@@ -54,7 +328,6 @@ Language: ja_JP
     <string name="more_menu_button_customers">顧客</string>
     <string name="ai_product_creation_scanning_photo_error">写真からテキストを読み取ろうとしてエラーが発生しました。 もう一度お試しください</string>
     <string name="ai_product_creation_scanning_image">画像をスキャンしています</string>
-    <string name="ai_product_creation_image_selected_subtitle">写真が商品に追加されます</string>
     <string name="ai_product_creation_image_selected">写真が選択されました</string>
     <string name="ai_product_creation_remove_image">写真を削除</string>
     <string name="ai_product_creation_replace_image">写真を置換</string>
@@ -76,12 +349,10 @@ Language: ja_JP
     <string name="woopos_payment_total_label">合計</string>
     <string name="woopos_payment_tax_label">税</string>
     <string name="woopos_payment_subtotal_label">小計</string>
-    <string name="woopos_new_transaction_button">新規トランザクション</string>
     <string name="woopos_payment_successful_label">支払いに成功しました</string>
     <string name="woopos_payment_failed_please_try_again">支払いに失敗しました。 もう一度お試しください。</string>
     <string name="woopos_cart_back_content_description">お買い物カゴアイコン</string>
     <string name="woopos_products_screen_title">商品</string>
-    <string name="woopos_product_image_description">商品画像</string>
     <string name="woopos_items_in_cart">%d個のアイテム</string>
     <string name="woopos_clear_cart_button">消去</string>
     <string name="more_menu_button_google_description">Google 広告で売上を伸ばし、トラフィックを増やしましょう</string>
@@ -89,14 +360,12 @@ Language: ja_JP
     <string name="no_quantity_rules">数量ルールなし</string>
     <string name="blaze_campaign_preview_audience_section_title">読者</string>
     <string name="woopos_exit_confirmation_dismiss_button">キャンセル</string>
-    <string name="woopos_exit_confirmation_confirm_button">終了</string>
-    <string name="woopos_exit_confirmation_message">POS を終了してもよいですか ?</string>
+    <string name="woopos_exit_dialog_confirmation_confirm_button">終了</string>
     <string name="woopos_exit_confirmation_title">POS を終了</string>
-    <string name="woopos_remove_item_from_cart_content_description">お買い物カゴからアイテムを削除</string>
+    <string name="woopos_remove_item_button_from_cart_content_description">%s をお買い物カゴから削除</string>
     <string name="woopos_checkout_button">購入手続き</string>
     <string name="woopos_reader_unknown">Reader ステータス不明</string>
     <string name="woopos_checkout">購入手続き</string>
-    <string name="woopos_reader_disconnected">Reader 切断済み</string>
     <string name="woopos_reader_connected">Reader 接続済み</string>
     <string name="woopos_exit_pos">POS を終了</string>
     <string name="dashboard_new_widgets_card_button">新しいセクションを追加</string>
@@ -104,7 +373,6 @@ Language: ja_JP
     <string name="dashboard_product_stock_wcanalytics_inactive_title">商品在庫レポートを読み込めません</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">過去30日に販売された商品がありません</string>
     <string name="dashboard_product_stock_sales_last_30_days">過去30日に%d個の商品が販売されました</string>
-    <string name="more_menu_button_woo_pos_description">キャッシュレジスターとしてアプリを使用</string>
     <string name="more_menu_button_woo_pos">販売時点管理モード</string>
     <string name="product_stock_status_low_stock">在庫少</string>
     <string name="order_detail_shipping_header">配送</string>
@@ -374,20 +642,16 @@ Language: ja_JP
     <string name="blaze_campaign_edit_ad_change_tagline_title">キャッチフレーズ</string>
     <string name="blaze_campaign_edit_ad_change_image_button">画像を変更</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">適用</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_starts">開始</string>
+    <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">開始日</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s日間</string>
-    <string name="blaze_campaign_budget_duration_bottom_sheet_title">期間を設定する</string>
     <string name="blaze_campaign_budget_impressions_info">インプレッションには、広告が潜在顧客に表示される頻度が反映されます。\n\n\n        オンライントラフィックやユーザーの行動は変動するため正確な数を保証することはできないものの、広告の実際のインプレッションを目標の数に可能な限り近づけることを目指します。\n\n\n        インプレッションは可視性のことであり、閲覧者が取ったアクションではありません。</string>
     <string name="blaze_campaign_budget_impressions_done_button">完了</string>
     <string name="blaze_campaign_budget_impressions_title">インプレッション</string>
     <string name="blaze_campaign_budget_update_button">更新</string>
     <string name="blaze_campaign_budget_edit_duration_button">編集</string>
-    <string name="blaze_campaign_budget_duration_section_title">期間</string>
     <string name="blaze_campaign_budget_reach_forecast">1日あたりの推定リーチ数</string>
     <string name="blaze_campaign_budget_daily_spend">1日 %1$s</string>
     <string name="blaze_campaign_budget_days_duration">%1$s日間</string>
-    <string name="blaze_campaign_budget_total_spend">総支出</string>
-    <string name="blaze_campaign_budget_subtitle">商品プロモーションキャンペーンにいくら使いますか ?</string>
     <string name="blaze_campaign_budget_toolbar_title">予算を設定する</string>
     <string name="blaze_campaign_preview_target_default_value">すべて</string>
     <string name="blaze_campaign_preview_days_duration">%2$sから%1$s日間</string>
@@ -402,7 +666,6 @@ Language: ja_JP
     <string name="blaze_campaign_preview_details_language">言語</string>
     <string name="blaze_campaign_preview_details_budget">予算</string>
     <string name="blaze_campaign_preview_details_section_title">詳細</string>
-    <string name="blaze_campaign_preview_shop_now_button">今すぐ購入</string>
     <string name="blaze_campaign_preview_edit_ad">広告を編集</string>
     <string name="blaze_campaign_screen_fragment_title">プレビュー</string>
     <string name="disabled">無効</string>
@@ -428,7 +691,6 @@ Language: ja_JP
     <string name="blaze_campaign_creation_product_selector_title">宣伝準備完了</string>
     <string name="blaze_campaign_creation_new_intro_title">何百万もの人に商品を紹介</string>
     <string name="theme_preview_activate_theme_button_settings">使用 %1$s</string>
-    <string name="card_reader_hub_deposit_funds_deposits_title">最後のデポジット</string>
     <string name="order_creation_expand_collapse_order_totals">注文合計を展開 / 折りたたむ</string>
     <string name="order_creation_collect_payment_button">支払いを受け取る</string>
     <string name="order_creation_gift_card_text_error">コードのフォーマットは「XXXX-XXXX-XXXX-XXXX」です</string>
@@ -510,9 +772,9 @@ Language: ja_JP
     <string name="product_downloadable_files_add_documents_from_device">端末上のドキュメントとその他のファイル</string>
     <string name="orderdetail_ai_create_thank_you_note_button">✨お礼状を作成できません</string>
     <string name="custom_amounts_tax_label">税金を請求</string>
-    <string name="card_reader_hub_deposit_summary_available_deposit_time_weekly">利用可能な資金は毎%s自動で入金されます。</string>
-    <string name="card_reader_hub_deposit_summary_available_deposit_time_daily">利用可能な資金は毎日自動で入金されます。</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after_plural">資金は%d日間保留された後に利用可能になります。</string>
+    <string name="card_reader_hub_payout_summary_available_payout_time_weekly">利用可能な資金は毎%s自動で支払われます。</string>
+    <string name="card_reader_hub_payout_summary_available_payout_time_daily">利用可能な資金は毎日自動で支払われます。</string>
+    <string name="card_reader_hub_payout_summary_funds_available_after_plural">資金は%d日間保留された後に利用可能になります。</string>
     <string name="product_variation_picker_title">バリエーションを選択する</string>
     <string name="configuration_variable_update">バリエーションを選択</string>
     <string name="configuration_children_issue"> 「%1$s」-&gt; %2$s </string>
@@ -551,19 +813,19 @@ Language: ja_JP
     <string name="product_subscription_period">期間</string>
     <string name="product_subscription_interval">請求の間隔</string>
     <string name="product_sale">セール</string>
-    <string name="card_reader_hub_deposit_summary_status_unknown">不明</string>
-    <string name="card_reader_hub_deposit_summary_status_failed">失敗</string>
-    <string name="card_reader_hub_deposit_summary_status_canceled">キャンセル済み</string>
-    <string name="card_reader_hub_deposit_summary_status_in_transit">輸送中</string>
-    <string name="card_reader_hub_deposit_summary_status_pending">承認待ち</string>
-    <string name="card_reader_hub_deposit_summary_status_paid">有料</string>
-    <string name="card_reader_hub_deposit_summary_status_estimated">予定</string>
-    <string name="card_reader_hub_deposit_summary_collapse_expand_content_description">デポジットの概要を折りたたむ / 展開する</string>
-    <string name="card_reader_hub_deposit_summary_learn_more">資金の受け取りタイミングについて詳しくはこちら</string>
-    <string name="card_reader_hub_deposit_summary_available_deposit_time_monthly">利用可能な資金は毎月 %s 上で自動で入金されます。</string>
-    <string name="card_reader_hub_deposit_summary_funds_available_after_one">資金は%d日間保留された後に利用可能になります。</string>
-    <string name="card_reader_hub_deposit_summary_pending_funds">保留中の資金</string>
-    <string name="card_reader_hub_deposit_summary_available_funds">利用可能な資金</string>
+    <string name="card_reader_hub_payout_summary_status_unknown">不明</string>
+    <string name="card_reader_hub_payout_summary_status_failed">失敗</string>
+    <string name="card_reader_hub_payout_summary_status_canceled">キャンセル済み</string>
+    <string name="card_reader_hub_payout_summary_status_in_transit">輸送中</string>
+    <string name="card_reader_hub_payout_summary_status_pending">承認待ち</string>
+    <string name="card_reader_hub_payout_summary_status_paid">有料</string>
+    <string name="card_reader_hub_payout_summary_status_estimated">予定</string>
+    <string name="card_reader_hub_payout_summary_collapse_expand_content_description">支払いの概要を折りたたむ / 展開する</string>
+    <string name="card_reader_hub_payout_summary_learn_more">資金の受け取りタイミングについて詳しくはこちら</string>
+    <string name="card_reader_hub_payout_summary_available_payout_time_monthly">利用可能な資金は毎月 %s 上で自動で支払われます。</string>
+    <string name="card_reader_hub_payout_summary_funds_available_after_one">資金は%d日間保留された後に利用可能になります。</string>
+    <string name="card_reader_hub_payout_summary_pending_funds">保留中の資金</string>
+    <string name="card_reader_hub_payout_summary_available_funds">利用可能な資金</string>
     <string name="order_creation_payment_tax_label">税</string>
     <string name="order_creation_payment_products">商品</string>
     <string name="order_creation_payment_header">支払総額</string>
@@ -589,7 +851,6 @@ Language: ja_JP
     <string name="blaze_campaign_creation_intro_title">Blaze でストアの売上を増やす</string>
     <string name="blaze_campaign_list_error_fetching_campaigns">キャンペーンのリストを更新中にエラーが発生しました。 後でもう一度お試しください。</string>
     <string name="media_picker_dialog_title">メディアソースを選択する</string>
-    <string name="product_creation_package_photo_error">商品名と説明文の生成中にエラーが発生しました。</string>
     <string name="product_creation_package_photo_no_text_detected">テキストが検出されませんでした。 別のパッケージ写真を選択するか、商品の詳細を手動で入力してください。</string>
     <string name="order_editing_add_content_description">商品を追加する</string>
     <string name="order_editing_barcode_content_description">バーコードをスキャンする</string>
@@ -611,9 +872,6 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_explanation_try_and_refund_with_amount">デビットカードまたはクレジットカードで %s の支払いを試します。\n完了したら返金されます。</string>
     <string name="card_reader_tap_to_pay_explanation_easy">簡単、安全でプライバシーは保護されます。</string>
     <string name="card_reader_tap_to_pay_explanation_ready">あらゆる種類のオフラインでの支払いを\nスマートフォンで受け取れます。 追加のハードウェアは不要です。</string>
-    <string name="blaze_campaign_status_budget">予算</string>
-    <string name="blaze_campaign_status_clicks">クリック数</string>
-    <string name="blaze_campaign_status_impressions">インプレッション</string>
     <string name="blaze_campaign_status_rejected">却下</string>
     <string name="blaze_campaign_status_completed">完了</string>
     <string name="blaze_campaign_status_active">有効</string>
@@ -623,7 +881,6 @@ Language: ja_JP
     <string name="blaze_campaign_title">Blaze キャンペーン</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol は EMVCo, LLC が所有し、EMVCo, LLC の許可を得て使用している商標です。</string>
     <string name="card_reader_tap_to_pay_about_how_works_5">5. 「完了」チェックマークが表示されると、ストアにより支払いが処理され、取引が完了します。</string>
-    <string name="card_reader_tap_to_pay_about_how_works_4">4. お客様がカードをあなたのスマートフォンの上部、コンタクトレス記号に水平にかざします。</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. お客様にスマートフォンを提示します。</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. 「支払いを受け取る」をタップし「Tap to Pay」を選択します。</string>
     <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. 注文を作成する</string>
@@ -646,46 +903,23 @@ Language: ja_JP
     <string name="card_reader_settings_header">設定</string>
     <string name="order_creation_customer_search_empty_add_details_manually_with_email">メールアドレスを使用して手動で詳細を追加</string>
     <string name="login_app_login_malformed_link">アプリログインのリクエストを処理できませんでした</string>
-    <string name="ai_product_name_copy_error">商品名をクリップボードにコピーする際にエラーが発生しました。</string>
-    <string name="ai_product_name_copy_success">商品名がクリップボードにコピーされました。</string>
-    <string name="ai_product_name_copy_label">AI によって生成された商品名</string>
     <string name="ai_product_description_copy_error">商品説明をクリップボードにコピーする際にエラーが発生しました。</string>
     <string name="ai_product_description_copy_success">商品説明がクリップボードにコピーされました。</string>
     <string name="product_creation_ai_generation_failure_message">商品の生成に失敗しました。 もう一度お試しください</string>
     <string name="tax_rate_selector_auto_rate_details_clear_button_label">住所をクリアしてこのレートの使用を停止する</string>
     <string name="tax_rate_selector_auto_rate_details_set_a_new_rate_button_label">この注文に新しい税率を設定する</string>
     <string name="tax_rate_selector_auto_rate_details_title">税率の自動加算</string>
-    <string name="ai_product_name_sheet_error_message">商品名の生成中に問題が発生しました。 もう一度お試しください。</string>
-    <string name="ai_product_name_sheet_regenerate_button">再生成</string>
-    <string name="ai_product_name_sheet_generate_button">ご記入ください</string>
-    <string name="ai_product_name_sheet_input_description">商品の概要とその特徴的な点を教えてください。</string>
-    <string name="ai_product_name_sheet_subtitle">AI が魅力的なタイトルを生成します</string>
-    <string name="ai_product_name_sheet_title">商品名</string>
     <string name="empty_review_filtered_list_message">すべての商品レビューを表示するには、未読フィルターを無効にしてみてください</string>
     <string name="empty_review_filtered_list_title">未読の商品レビューはありません</string>
-    <string name="product_creation_ai_tone_selected_content_desc">トーンが選択されました</string>
     <string name="product_creation_ai_tone_convincing">説得力がある</string>
     <string name="product_creation_ai_tone_flowery">花</string>
     <string name="product_creation_ai_tone_formal">フォーマル</string>
     <string name="product_creation_ai_tone_casual">カジュアル</string>
-    <string name="product_creation_ai_tone_description">トーンと声を設定してブランドに合わせた商品のプレゼンテーションを形成します。</string>
     <string name="product_creation_ai_tone_title">トーンと声</string>
     <string name="product_creation_ai_preview_details_section">詳細</string>
-    <string name="product_creation_ai_preview_description_section">商品説明</string>
     <string name="product_creation_ai_preview_name_section">商品名</string>
-    <string name="product_creation_ai_preview_subtitle_legacy">以下の情報は後からいつでも変更できます。</string>
     <string name="product_creation_ai_preview_title">プレビュー</string>
-    <string name="product_creation_ai_about_product_continue_button">商品情報を作成</string>
-    <string name="product_creation_ai_about_product_set_tone">トーンと声を設定する</string>
-    <string name="product_creation_ai_about_product_edit_text_caption">主要な機能や利点、詳細を追加して商品をオンラインで見つけられるようにします。</string>
     <string name="product_creation_ai_about_product_edit_text_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど</string>
-    <string name="product_creation_ai_about_product_subtitle">商品のユニークな点を強調し、AI に魔法をかけてもらいましょう。</string>
-    <string name="product_creation_ai_about_product_title">商品について</string>
-    <string name="ai_product_creation_add_name_suggest_name_button">名前を提案</string>
-    <string name="ai_product_creation_add_name_keywords_placeholder">例: やわらかな生地、丈夫な縫製、ユニークなデザインなど。</string>
-    <string name="ai_product_creation_add_name_keywords_label">商品名</string>
-    <string name="ai_product_creation_add_name_subtitle">または、タップして選択肢を拡張し、さらに名前の候補を表示します。</string>
-    <string name="ai_product_creation_add_name_title">商品名を追加する</string>
     <string name="product_creation_ai_entry_sheet_learn_more">AI を活用しています。 &lt;a href=\'guidelines\'&gt;&lt;u&gt;さらに詳しく&lt;/u&gt;&lt;/a&gt;。</string>
     <string name="product_creation_ai_entry_sheet_manual_option_subtitle">手動で商品と詳細を追加します</string>
     <string name="product_creation_ai_entry_sheet_manual_option_title">手動で追加する</string>
@@ -878,8 +1112,6 @@ Language: ja_JP
     <string name="error_troubleshooting">トラブルシューティング</string>
     <string name="orderlist_parsing_error_message">このエラーはプラグインとの競合に関連する可能性があります。 しばらくしてから再度お試しいただくか、サポートをご依頼ください。</string>
     <string name="orderlist_parsing_error_title">データを読み込めませんでした。</string>
-    <string name="ai_product_description_dialog_message">AI で簡単に説明を追加します。 今すぐこの機能をお試しください。</string>
-    <string name="ai_product_description_dialog_title">AI で商品説明を追加する</string>
     <string name="ai_product_description_note_dialog_confirmation">OK</string>
     <string name="ai_product_description_note_dialog_message">この商品説明は AI を活用したツールを使用して生成されています。 コンテンツを確認して編集し、ブランドやメッセージと合っていることを確認してください。</string>
     <string name="ai_product_description_note_dialog_heading">良い出だしです !</string>
@@ -1009,7 +1241,6 @@ Language: ja_JP
     <string name="more_menu_button_coupons_description">特別オファーで売上を伸ばす</string>
     <string name="more_menu_button_store_description">ストアを表示</string>
     <string name="more_menu_button_inbox_description">最新の状態に保つ</string>
-    <string name="more_menu_button_payments_description">モバイル決済を利用する</string>
     <string name="more_menu_button_wc_admin_description">管理画面でさらに管理する</string>
     <string name="more_menu_general_section_title">一般</string>
     <string name="more_menu_settings_section_title">設定</string>
@@ -1070,7 +1301,6 @@ Language: ja_JP
     <string name="card_reader_type_selection_bluetooth_reader_description">カードリーダーは、デビットカードとクレジットカードのタップ決済、チップ決済、スワイプ決済に対応しています。</string>
     <string name="card_reader_type_selection_tap_to_pay_description">お使いのスマートフォンから非接触型決済を安全に直接受け付けることができます。</string>
     <string name="card_reader_tap_to_pay_description">スマートフォンを使用してカードによる支払いを\n受け付けることができます。 今すぐお試しください。</string>
-    <string name="card_reader_tap_to_pay_share_feedback">フィードバックを共有</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">アプリケーションパスワードの作成が承認されていないため、ログインできません。</string>
     <string name="login_site_credentials_fetching_site">サイトを取得中…</string>
     <string name="login_site_credentials_fetching_site_failed">ウェブサイトの取得中にエラーが発生しました</string>
@@ -1183,7 +1413,6 @@ Language: ja_JP
     <string name="domain_privacy_option_off_title">公開として登録</string>
     <string name="domain_privacy_option_on_title">プライバシー保護付きで非公開として登録</string>
     <string name="domain_registration_contact_form_input_error">有効な%sを入力してください</string>
-    <string name="domain_registration_privacy_protection_tos">このドメインを登録することで、当社の%1$s利用規約%2$sに合意したことになります</string>
     <string name="domain_registration_privacy_protection_description">ドメイン所有者は、すべてのドメインのパブリックデータベースで連絡先情報を共有する必要があります。\nプライバシー保護として、お客様に関する情報の代わりに弊社に関する情報を公開し、お客様には個別でコミュニケーションを転送します。</string>
     <string name="domain_registration_privacy_protection_title">プライバシー保護</string>
     <string name="domains_access_error_title">ストア管理者のみがドメイン設定にアクセスできます</string>
@@ -1253,7 +1482,6 @@ Language: ja_JP
     <string name="login_application_passwords_help">アプリケーションパスワードとは</string>
     <string name="login_application_passwords_unavailable">サイト %1$s でアプリケーションパスワード機能が無効になっているようです。\n WooCommerce アプリを使用するには、アプリケーションパスワードを有効にしてください。</string>
     <string name="login_open_installation_page">インストールページを開く</string>
-    <string name="not_a_valid_qr_code">スキャンされた QR コードは WooCommerce コードではありません</string>
     <string name="review_reply_failure">返信の送信時にエラーが発生しました</string>
     <string name="review_reply_success">返信を送信しました !</string>
     <string name="wc_reply">返信</string>
@@ -1321,16 +1549,13 @@ Language: ja_JP
     <string name="randomly_update_reader">ランダム</string>
     <string name="never_update_reader">なし</string>
     <string name="always_update_reader">常に</string>
-    <string name="update_simulated_reader_key">シミュレートされたリーダーキーを更新</string>
     <string name="update_simulated_reader">シミュレートされたカードリーダーを更新</string>
     <string name="login_jetpack_connect">Jetpack を連携</string>
     <string name="login_jetpack_installation_screen_title">ストアを連携</string>
     <string name="domain_picker_subtitle">ドメインとは、インターネット上で閲覧者があなたを見つける場所です。 後からでも変更できます。</string>
     <string name="analytics_visitors_subtitle">訪問者</string>
     <string name="or_use_password_below_qr_code_scan_option">またはパスワードでログイン</string>
-    <string name="or_scan_qr_code_to_log_in">QR コードをスキャンしてログイン</string>
     <string name="simulated_reader_toast">シミュレートされたカードリーダーは無効になりました</string>
-    <string name="simulated_reader_key">シミュレートされたリーダーキー</string>
     <string name="variations_bulk_update_stock_quantity_success">更新された在庫数</string>
     <string name="variations_bulk_update_current_stock_quantity_mixed">現在、さまざまな在庫数が混在しています</string>
     <string name="variations_bulk_update_current_stock_quantity">現在の在庫数は%dです</string>
@@ -1381,7 +1606,6 @@ Language: ja_JP
     <string name="qr_code_login_scanner_title">カメラバーコードスキャナー</string>
     <string name="dev_options">開発者オプション</string>
     <string name="login_2fa_not_supported_self_hosted_site">インストール型のサイトでは2FA はサポートされていません。 アプリパスワードを使用してください。</string>
-    <string name="login_with_qr_code">QR コードをスキャンしてログイン</string>
     <string name="show_password_content_description">パスワードを表示</string>
     <string name="hide_password_content_description">パスワードを隠す</string>
     <string name="stats_widget_last_updated_message">%1$s時点</string>
@@ -1460,7 +1684,6 @@ Language: ja_JP
     <string name="card_reader_upsell_card_reader_banner_title">簡単に支払いを受け取る</string>
     <string name="card_reader_upsell_card_reader_banner_new">新規</string>
     <string name="card_reader_upsell_card_reader_banner_dismiss">非表示</string>
-    <string name="orderdetail_view_custom_fields">カスタムフィールドを表示</string>
     <string name="orderdetail_custom_fields">カスタムフィールド</string>
     <string name="order_sync_failed">変更内容を保存できません</string>
     <string name="existing_order_cash_dlg_message">WooCommerce 以外で支払いを受け取った場合、この注文は支払い済みとしてマークされます</string>
@@ -1656,7 +1879,7 @@ Language: ja_JP
     <string name="card_reader_interac_refund_refund_payment">支払いを返金</string>
     <string name="card_reader_interac_refund_refund_failed_header">返金に失敗しました</string>
     <string name="card_reader_interac_refund_refund_loading_header">支払いを返金する準備をしています</string>
-    <string name="copy">コピー</string>
+    <string name="copy" tools:override="true">コピー</string>
     <string name="coupons_list_search_hint">クーポンを検索</string>
     <string name="coupon_details_share_formatting_failure">クーポンコードの共有メッセージを生成できません</string>
     <string name="coupon_details_share_coupon_error">クーポンコードを共有する際にエラーが発生しました。</string>
@@ -1688,8 +1911,6 @@ Language: ja_JP
     <string name="coupon_details_minimum_spend">%sの利用最小額</string>
     <string name="coupon_details_heading">クーポンの概要</string>
     <string name="coupon_list_view_coupon">クーポンの概要を表示</string>
-    <string name="coupon_list_wip_message_enabled">デバイスからクーポンを表示、編集できる機能を開発中です !</string>
-    <string name="coupon_list_wip_title">クーポンを表示して編集する</string>
     <string name="coupon_list_empty_heading">クーポンが見つかりません</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s (%2$s を除く)</string>
     <string name="coupon_list_item_label_products_and_categories">%1$s、%2$s</string>
@@ -2424,15 +2645,12 @@ Language: ja_JP
     <string name="order_mark_complete">注文を完了としてマーク</string>
     <string name="orderdetail_shipping_label_notice">モバイルデバイスでのラベル作成に関する詳細はこちら</string>
     <string name="orderdetail_shipping_label_create_shipping_label">配送ラベルを作成</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">無料の WooCommerce Shipping プラグインを使用して、お使いの端末から直接、すべての物理的な注文の配送ラベルを作成できるようになりました。 「配送ラベルを作成」をタップしてベータ機能をお試しください !</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">スマートフォンを使って配送ラベルを作成 !</string>
     <string name="orderdetail_payment_fees">手数料</string>
     <string name="orderdetail_net">支払額 (正味)</string>
     <string name="orderdetail_payment_paid_by_customer">支払済み</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack の連携について詳しく読む</string>
     <string name="edit">編集</string>
     <string name="product_images_validate_drag_and_drop">認証</string>
-    <string name="product_images_drag_and_drop_description">写真の順序を変更するにはドラッグ &amp; ドロップしてください</string>
     <string name="product_downloadable_files_download_settings">ダウンロード設定</string>
     <string name="product_downloadable_files_name_invalid">有効な名前を入力してください</string>
     <string name="product_downloadable_files_add_manually">ファイル URL を入力</string>
@@ -2917,7 +3135,7 @@ Language: ja_JP
     <string name="orderdetail_empty_address">住所が指定されていません</string>
     <string name="login_need_help_finding_connected_email">関連付けられているメールアドレスをお忘れですか ?</string>
     <string name="enter_wordpress_site">このアドレスのサイトは WordPress のサイトではありません。接続するには、接続先のサイトに WordPress がインストールされている必要があります。</string>
-    <string name="enter_email_for_site">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>
+    <string name="enter_email_for_site" content_override="true">&lt;b&gt;%1$s&lt;/b&gt; に接続するには WordPress.com にログインします</string>
     <string name="country_mapping_ZW">ジンバブエ</string>
     <string name="country_mapping_ZM">ザンビア</string>
     <string name="country_mapping_YE">イエメン</string>
@@ -3513,8 +3731,8 @@ Language: ja_JP
     <string name="login_configure_link">%1$s設定に関する指示%2$sを参照してください。</string>
     <string name="login_jetpack_required">このアプリを使用するには、Jetpack をストアに連携させる必要があります。</string>
     <string name="at_username">\@%s</string>
-    <string name="enter_site_address">連携させる WooCommerce ストアのアドレスを入力してください。</string>
-    <string name="enter_email_wordpress_com">WooCommerce ストアを管理するには、WordPress.com アカウントのメールアドレスを使用してログインします。</string>
+    <string name="enter_site_address" content_override="true">連携させる WooCommerce ストアのアドレスを入力してください。</string>
+    <string name="enter_email_wordpress_com" content_override="true">WooCommerce ストアを管理するには、WordPress.com アカウントのメールアドレスを使用してログインします。</string>
     <string name="already_logged_in_wpcom">すでに WordPress.com アカウントにログインしています。別のアカウントに結び付いている WordPress.com サイトを追加することはできません。</string>
     <string name="cant_open_url">リンクを開けません</string>
     <string name="error_no_sms_app">SMS アプリが見つかりませんでした</string>
@@ -3550,6 +3768,7 @@ Language: ja_JP
     <string name="taxes">税</string>
     <string name="payment">決済</string>
     <string name="shipping">配送</string>
+    <string name="total">合計</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
     <string name="orders">注文</string>
@@ -3560,17 +3779,17 @@ Language: ja_JP
     <string name="notification_channel_general_title">一般</string>
     <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
-        <item>\@string/date_timeframe_custom</item>
-        <item>\@string/date_timeframe_today</item>
-        <item>\@string/date_timeframe_yesterday</item>
-        <item>\@string/date_timeframe_last_week</item>
-        <item>\@string/date_timeframe_last_month</item>
-        <item>\@string/date_timeframe_last_quarter</item>
-        <item>\@string/date_timeframe_last_year</item>
-        <item>\@string/date_timeframe_week_to_date</item>
-        <item>\@string/date_timeframe_month_to_date</item>
-        <item>\@string/date_timeframe_quarter_to_date</item>
-        <item>\@string/date_timeframe_year_to_date</item>
+        <item>@string/date_timeframe_custom</item>
+        <item>@string/date_timeframe_today</item>
+        <item>@string/date_timeframe_yesterday</item>
+        <item>@string/date_timeframe_last_week</item>
+        <item>@string/date_timeframe_last_month</item>
+        <item>@string/date_timeframe_last_quarter</item>
+        <item>@string/date_timeframe_last_year</item>
+        <item>@string/date_timeframe_week_to_date</item>
+        <item>@string/date_timeframe_month_to_date</item>
+        <item>@string/date_timeframe_quarter_to_date</item>
+        <item>@string/date_timeframe_year_to_date</item>
     </string-array>
     <string-array name="order_list_tabs">
         <item>処理中</item>

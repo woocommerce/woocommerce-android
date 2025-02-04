@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.creation.configuration
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CHANGED_FIELD
@@ -11,7 +12,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CHANGED_FIELD_VARIATION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_OTHER
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.ui.orders.creation.GetProductRules
+import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule.Companion.VARIATION_ATTRIBUTES
+import com.woocommerce.android.ui.orders.creation.configuration.VariableProductRule.Companion.VARIATION_ID
+import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.OptionalVariantAttribute
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -23,6 +28,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -48,6 +54,8 @@ class ProductConfigurationViewModel @Inject constructor(
     private val configuration = MutableStateFlow<ProductConfiguration?>(null)
 
     private val productsInformation = getChildrenProductInfo(productId).toStateFlow(null)
+
+    private val gson by lazy { Gson() }
 
     val viewState = combine(
         flow = rules.drop(1),
@@ -90,6 +98,36 @@ class ProductConfigurationViewModel @Inject constructor(
                 mapOf(KEY_CHANGED_FIELD to ruleChanged)
             )
         }
+    }
+
+    /**
+     * The Bundles API demand that all variation attributes have a defined option,
+     * not effectively supporting Any as an option, since the Any selection is represented as null.
+     *
+     * However, the order creation will follow the attributes configuration set in the [VariantOption.id],
+     * which will eventually map the attributes to the defined options of the Variation, not the provided ones
+     * during the Bundle setup.
+     *
+     * The [OptionalVariantAttribute.defaultOption] serves exactly this purpose, it will select any option when
+     * Any is selected, or keep the already selected otherwise. Once the Order is created, Woo Core will ignore this
+     * information and just use the attributes defined for that Variation.
+     */
+    fun onUpdateVariationConfiguration(itemId: Long, variationId: Long, attributes: List<OptionalVariantAttribute>) {
+        configuration.update { currentConfig ->
+            val newConfig = currentConfig?.updateVariationAttributesConfiguration(itemId, variationId, attributes)
+
+            attributes.takeIf { it.isNotEmpty() }
+                ?.map { VariantOption(it.id, it.name, it.defaultOption) }
+                ?.filter { it.option != null }
+                .let { mapOf(VARIATION_ID to variationId, VARIATION_ATTRIBUTES to it) }
+                .let { gson.toJson(it) }
+                .let { newConfig?.updateChildrenConfiguration(itemId, VariableProductRule.KEY, it) }
+        }
+
+        tracker.track(
+            AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURATION_CHANGED,
+            mapOf(KEY_CHANGED_FIELD to VALUE_CHANGED_FIELD_VARIATION)
+        )
     }
 
     fun onCancel() {

@@ -43,24 +43,15 @@ class FetchStatsTest : BaseUnitTest() {
             .invoke(selectedSite)
             .first()
 
-        assertThat(event).isEqualTo(Finished(expectedData))
+        assertThat(event).isInstanceOf(Finished::class.java)
+        val eventData = (event as Finished).data
+        assertThat(eventData.revenue).isEqualTo(expectedData.revenue)
+        assertThat(eventData.ordersCount).isEqualTo(expectedData.ordersCount)
+        assertThat(eventData.visitorsCount).isEqualTo(expectedData.visitorsCount)
     }
 
     @Test
-    fun `returns Waiting when no stats and not timeout`() = testBlocking {
-        whenever(statsRepository.fetchRevenueStats(selectedSite)).thenReturn(Result.failure(Throwable()))
-        whenever(statsRepository.fetchVisitorStats(selectedSite)).thenReturn(Result.failure(Throwable()))
-        whenever(connectionStatus.isStoreConnected()).thenReturn(true)
-
-        val event = createSut()
-            .invoke(selectedSite)
-            .first()
-
-        assertThat(event).isEqualTo(Waiting)
-    }
-
-    @Test
-    fun `returns Error when no stats and timeout`() = testBlocking {
+    fun `Recovers when no stats and timeout`() = testBlocking {
         whenever(statsRepository.fetchRevenueStats(selectedSite)).thenReturn(Result.failure(Throwable()))
         whenever(statsRepository.fetchVisitorStats(selectedSite)).thenReturn(Result.failure(Throwable()))
         whenever(connectionStatus.isStoreConnected()).thenReturn(true)

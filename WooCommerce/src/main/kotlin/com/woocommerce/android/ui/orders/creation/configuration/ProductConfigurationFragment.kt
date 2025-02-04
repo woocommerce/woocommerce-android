@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.gson.Gson
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -30,8 +29,6 @@ class ProductConfigurationFragment : BaseFragment() {
     private val viewModel: ProductConfigurationViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
-
-    private val gson = Gson()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -80,12 +77,7 @@ class ProductConfigurationFragment : BaseFragment() {
 
     private fun handleResults() {
         handleResult<VariationPickerViewModel.VariationPickerResult>(VariationPickerFragment.VARIATION_PICKER_RESULT) {
-            val value = mapOf<String, Any?>(
-                VariableProductRule.VARIATION_ID to it.variationId,
-                VariableProductRule.VARIATION_ATTRIBUTES to it.attributes
-            )
-            val valueString = gson.toJson(value)
-            viewModel.onUpdateChildrenConfiguration(it.itemId, VariableProductRule.KEY, valueString)
+            viewModel.onUpdateVariationConfiguration(it.itemId, it.variationId, it.attributes)
         }
     }
 }

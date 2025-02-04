@@ -16,6 +16,9 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlin.math.abs
 
 /**
@@ -198,19 +201,38 @@ fun Fragment.showDateRangePicker(
     toMillis: Long = System.currentTimeMillis(),
     onCustomRangeSelected: (Long, Long) -> Unit
 ) {
-    val datePicker =
-        MaterialDatePicker.Builder.dateRangePicker()
-            .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
-            .setSelection(androidx.core.util.Pair(fromMillis, toMillis))
-            .setCalendarConstraints(
-                CalendarConstraints.Builder()
-                    .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
-                    .setValidator(DateValidatorPointBackward.now())
-                    .build()
+    fun shiftTime(time: Long, originalZoneId: ZoneId, targetZoneId: ZoneId): Long {
+        // The timestamps returned by the MaterialDatePicker are in UTC timezone, if we use them directly
+        // we will get a shift in the selected range.
+        // To avoid this, we get the local date using UTC timestamps and then convert it to the selected timezone
+        // See: https://github.com/material-components/material-components-android/issues/882
+        val originalDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(time), originalZoneId).toLocalDateTime()
+        val targetDateTime = ZonedDateTime.of(originalDateTime, targetZoneId)
+        return targetDateTime.toInstant().toEpochMilli()
+    }
+
+    val deviceZoneId = ZoneId.systemDefault()
+    val datePicker = MaterialDatePicker.Builder.dateRangePicker()
+        .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
+        .setSelection(
+            androidx.core.util.Pair(
+                shiftTime(fromMillis, deviceZoneId, ZoneId.of("UTC")),
+                shiftTime(toMillis, deviceZoneId, ZoneId.of("UTC"))
             )
-            .build()
+        )
+        .setCalendarConstraints(
+            CalendarConstraints.Builder()
+                .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
+                .setValidator(DateValidatorPointBackward.now())
+                .build()
+        )
+        .build()
+
     datePicker.show(parentFragmentManager, AnalyticsHubFragment.DATE_PICKER_FRAGMENT_TAG)
     datePicker.addOnPositiveButtonClickListener {
-        onCustomRangeSelected(it?.first ?: 0L, it.second ?: 0L)
+        val start = shiftTime(it.first ?: 0, ZoneId.of("UTC"), deviceZoneId)
+        val end = shiftTime(it.second ?: 0, ZoneId.of("UTC"), deviceZoneId)
+
+        onCustomRangeSelected(start, end)
     }
 }

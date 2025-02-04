@@ -20,7 +20,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.json.JSONObject
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -55,7 +54,6 @@ class OrdersUITest : TestBase() {
 
     @Retry(numberOfTimes = 1)
     @Test
-    @Ignore
     fun e2eCreateOrderTest() {
         val note = "Just a placeholder text"
         val ordersJSONArray = MocksReader().readOrderToArray()

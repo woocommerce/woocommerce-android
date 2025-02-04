@@ -25,6 +25,7 @@ class AppConfigModule {
     fun provideAppSecrets() = AppSecrets(BuildConfig.OAUTH_APP_ID, BuildConfig.OAUTH_APP_SECRET)
 
     @Provides
+    @Singleton
     fun provideUserAgent(appContext: Context) = UserAgent(appContext, USER_AGENT_APPNAME)
 
     @Provides

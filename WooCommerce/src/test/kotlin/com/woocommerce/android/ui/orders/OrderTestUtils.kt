@@ -13,6 +13,7 @@ import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
+import org.wordpress.android.fluxc.model.metadata.WCMetaData
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.util.DateTimeUtils
 import java.math.BigDecimal
@@ -24,7 +25,7 @@ object OrderTestUtils {
     private const val TEST_ORDER_STATUS_COUNT = 20
 
     fun generateOrder(
-        metadata: String = "",
+        metadata: List<WCMetaData> = emptyList(),
         paymentMethod: String = "",
         datePaid: String = "2018-02-02T16:11:13Z",
         lineItems: String = ""
@@ -98,6 +99,40 @@ object OrderTestUtils {
             )
         }
         return result
+    }
+
+    fun generateItemsRefunds(
+        productQuantityPairs: List<Pair<Long, Int>>
+    ): List<Refund> {
+        val items = productQuantityPairs.map { pair ->
+            val (productId, quantity) = pair
+
+            Refund.Item(
+                productId = productId,
+                quantity = quantity,
+                id = 1L,
+                name = "A test",
+                variationId = 0,
+                subtotal = BigDecimal.valueOf(10.00),
+                total = BigDecimal.valueOf(10.00),
+                totalTax = BigDecimal.ZERO,
+                price = BigDecimal.valueOf(10.00),
+                orderItemId = 1L
+            )
+        }
+
+        return listOf(
+            Refund(
+                id = 1L,
+                amount = BigDecimal.TEN,
+                dateCreated = Date(),
+                reason = "Test",
+                automaticGatewayRefund = true,
+                items = items,
+                shippingLines = emptyList(),
+                feeLines = emptyList()
+            )
+        )
     }
 
     fun generateRefunds(totalCount: Int = 5): List<Refund> {

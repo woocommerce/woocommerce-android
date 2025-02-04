@@ -13,9 +13,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsCustomSelectionCardViewBinding
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.CustomListViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.HiddenState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.LoadingAdsViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.NoAdsState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubCustomSelectionListViewState.ShowCTAState
 import com.woocommerce.android.ui.analytics.hub.informationcard.SeeReportClickListener
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListAdapter
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardView
@@ -37,13 +37,15 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
             is LoadingAdsViewState -> setSkeleton()
             is NoAdsState -> setNoAdsViewState(viewState)
             is CustomListViewState -> setDataViewState(viewState)
-            is HiddenState -> setHiddenState()
+            is ShowCTAState -> setCtaState(viewState)
         }
     }
 
-    private fun setHiddenState() {
+    private fun setCtaState(state: ShowCTAState) {
         skeletonView.hide()
         binding.analyticsCustomCardListContainer.visibility = GONE
+        binding.analyticsCallToActionCard.visibility = VISIBLE
+        binding.analyticsCallToActionCard.updateInformation(state.asAnalyticsHubUserCallToActionViewState)
     }
 
     private fun setDataViewState(viewState: CustomListViewState) {
@@ -78,6 +80,7 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
         binding.analyticsListLeftHeader.visibility = VISIBLE
         binding.analyticsListRightHeader.visibility = VISIBLE
         binding.noDataText.visibility = GONE
+        binding.analyticsCallToActionCard.visibility = GONE
 
         viewState.reportUrl?.let {
             binding.reportGroup.visibility = VISIBLE
@@ -121,6 +124,7 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
         binding.analyticsListRightHeader.visibility = GONE
         binding.analyticsItemsTag.visibility = GONE
         binding.analyticsFilterButton.visibility = GONE
+        binding.analyticsCallToActionCard.visibility = GONE
         binding.noDataText.visibility = VISIBLE
         binding.noDataText.text = viewState.message
     }
@@ -140,6 +144,7 @@ class AnalyticsHubCustomSelectionCardView @JvmOverloads constructor(
         binding.analyticsItemsTag.visibility = GONE
         binding.noDataText.visibility = GONE
         binding.analyticsFilterButton.visibility = GONE
+        binding.analyticsCallToActionCard.visibility = GONE
     }
 
     private fun getDeltaTagText(viewState: CustomListViewState) =

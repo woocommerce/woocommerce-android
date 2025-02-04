@@ -19,9 +19,10 @@
     "jsonBody": {
       "data": {
         "country": "US",
-        "storeCurrencies": {
+        "store_currencies": {
           "default": "USD"
-        }
+        },
+        "status": "enabled"
       }
     },
     "headers": {

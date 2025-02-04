@@ -58,11 +58,12 @@ class ParameterRepository @Inject constructor(
     }
 
     private fun loadParameters(): SiteParameters {
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite.get())
+        val site = selectedSite.get()
+        val siteSettings = wooCommerceStore.getSiteSettings(site)
         val currencyCode = siteSettings?.currencyCode
-        val currencySymbol = wooCommerceStore.getSiteCurrency(selectedSite.get(), currencyCode)
-        val gmtOffset = selectedSite.get().timezone?.toFloat() ?: 0f
-        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(selectedSite.get()).let {
+        val currencySymbol = wooCommerceStore.getSiteCurrency(site, currencyCode)
+        val gmtOffset = site.timezone?.toFloat() ?: 0f
+        val (weightUnit, dimensionUnit) = wooCommerceStore.getProductSettings(site).let {
             Pair(it?.weightUnit, it?.dimensionUnit)
         }
         val currencyFormattingParameters = siteSettings?.let {

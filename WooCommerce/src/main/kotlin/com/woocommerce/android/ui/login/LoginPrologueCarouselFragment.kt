@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -15,7 +19,9 @@ import com.woocommerce.android.databinding.FragmentLoginPrologueCarouselBinding
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_carousel) {
@@ -31,16 +37,46 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
         fun onCarouselFinished()
     }
 
-    @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
-    @Inject lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    @Inject
+    lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
 
-    @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject
+    lateinit var appPrefsWrapper: AppPrefsWrapper
 
     private var prologueCarouselListener: PrologueCarouselListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (activity as? DynamicEdgeToEdgeActivity)?.enableDynamicEdgeToEdge()
+
         val binding = FragmentLoginPrologueCarouselBinding.bind(view)
+
+        val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.buttonSkip.updateLayoutParams<MarginLayoutParams> {
+                val currentBottomMargin = resources.getDimension(R.dimen.prologue_button_skip_bottom_margin)
+                bottomMargin = currentBottomMargin.roundToInt() + insets.bottom
+                if (!isTablet) {
+                    val buttonHorizontalMargin = resources.getDimension(R.dimen.prologue_button_horizontal_margin)
+                    rightMargin = buttonHorizontalMargin.roundToInt() + insets.right
+                }
+            }
+            WindowInsetsCompat.CONSUMED
+        }
+        if (!isTablet) {
+            ViewCompat.setOnApplyWindowInsetsListener(binding.buttonNext) { v, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                val buttonHorizontalMargin = resources.getDimension(R.dimen.prologue_button_horizontal_margin)
+                v.updateLayoutParams<MarginLayoutParams> {
+                    leftMargin = buttonHorizontalMargin.roundToInt() + insets.left
+                }
+                WindowInsetsCompat.CONSUMED
+            }
+        }
+
         val adapter = LoginPrologueAdapter(this)
 
         binding.buttonSkip.setOnClickListener {
