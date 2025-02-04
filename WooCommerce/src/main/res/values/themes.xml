@@ -146,13 +146,6 @@
         <item name="android:textAppearance">@style/TextAppearance.Woo.Headline6</item>
     </style>
 
-    <style name="Theme.Woo.DayNight.Zendesk">
-        <item name="colorPrimary">@color/color_primary_surface</item>
-        <item name="colorPrimaryDark">@color/color_primary</item>
-        <item name="colorAccent">@color/color_primary</item>
-        <item name="android:colorForeground">@color/woo_black_90</item>
-    </style>
-
     <style name="MediaPicker.Button.Colored" parent="Woo.Button.Colored" />
 
     <style name="Theme.WooPos" parent="Theme.Woo">
