@@ -5,14 +5,29 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import javax.inject.Inject
 
-class MainActivityEdgeToEdgeHelper @Inject constructor() {
-    fun applyEdgeToEdgeSettings(viewToApplyPadding: View) {
-        ViewCompat.setOnApplyWindowInsetsListener(viewToApplyPadding) { v, insets ->
-            val innerPadding = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                    or WindowInsetsCompat.Type.displayCutout()
+class MainActivityEdgeToEdgeHelper @Inject constructor(private val activity: MainActivity) {
+    fun applyEdgeToEdgeSettings(appBarLayout: View, contentView: View) {
+        ViewCompat.setOnApplyWindowInsetsListener(appBarLayout) { v, insets ->
+            val systemInsets = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
-            v.setPadding(0, innerPadding.top, 0, 0)
+
+            v.setPadding(0, systemInsets.top, 0, 0)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(contentView) { v, insets ->
+            val systemInsets = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+
+            val isBottomNavVisible = activity.isBottomNavVisible()
+
+            // Apply bottom padding only if bottom nav is hidden
+            // because bottom nav is already handling the padding
+            val bottomPadding = if (!isBottomNavVisible) systemInsets.bottom else 0
+
+            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding)
             insets
         }
     }

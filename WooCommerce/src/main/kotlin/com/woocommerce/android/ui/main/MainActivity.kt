@@ -304,7 +304,7 @@ class MainActivity :
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding.appBarLayout)
+        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding.appBarLayout, binding.snackRoot)
 
         toolbar = binding.toolbar.toolbar
 
@@ -1272,6 +1272,10 @@ class MainActivity :
 
     override fun showBottomNav() {
         viewModel.showBottomNav()
+    }
+
+    fun isBottomNavVisible(): Boolean {
+        return binding.bottomNav.visibility == View.VISIBLE
     }
 
     /**
