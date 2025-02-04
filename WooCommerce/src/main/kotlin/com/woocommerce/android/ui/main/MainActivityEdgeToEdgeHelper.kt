@@ -6,7 +6,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.woocommerce.android.databinding.ActivityMainBinding
 import javax.inject.Inject
 
-class MainActivityEdgeToEdgeHelper @Inject constructor(private val activity: MainActivity) {
+class MainActivityEdgeToEdgeHelper @Inject constructor() {
     fun applyEdgeToEdgeSettings(binding: ActivityMainBinding) {
         ViewCompat.setOnApplyWindowInsetsListener(binding.appBarLayout) { v, insets ->
             val systemInsets = insets.getInsets(
