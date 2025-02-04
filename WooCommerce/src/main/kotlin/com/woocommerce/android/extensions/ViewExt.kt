@@ -13,6 +13,8 @@ import android.view.animation.Transformation
 import android.widget.LinearLayout.LayoutParams
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -181,4 +183,14 @@ fun View.scrollStartEvents(): Flow<Unit> {
         .distinctUntilChanged()
         .filter { it == MotionEvent.ACTION_MOVE }
         .map { }
+}
+
+fun View.edgeToEdgeHandlingForNavigationBar() {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        val systemInsets = insets.getInsets(
+            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+        )
+        v.setPadding(systemInsets.left, 0, systemInsets.right, systemInsets.bottom)
+        insets
+    }
 }
