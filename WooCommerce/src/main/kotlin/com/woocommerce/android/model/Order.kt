@@ -13,6 +13,7 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import java.math.BigDecimal
+import java.time.Instant
 import java.util.Date
 import java.util.Locale
 
@@ -367,8 +368,8 @@ data class Order(
             Order(
                 id = 0,
                 number = "",
-                dateCreated = Date(),
-                dateModified = Date(),
+                dateCreated = Date.from(Instant.EPOCH),
+                dateModified = Date.from(Instant.EPOCH),
                 datePaid = null,
                 status = Status.Pending,
                 total = BigDecimal(0),
@@ -389,14 +390,14 @@ data class Order(
                 shippingMethods = emptyList(),
                 items = emptyList(),
                 shippingLines = emptyList(),
-                chargeId = "",
+                chargeId = null,
                 feesLines = emptyList(),
                 taxLines = emptyList(),
                 couponLines = emptyList(),
                 shippingPhone = "",
                 paymentUrl = "",
                 isEditable = true,
-                selectedGiftCard = "",
+                selectedGiftCard = null,
                 giftCardDiscountedAmount = null,
                 shippingTax = BigDecimal(0)
             )
