@@ -3,8 +3,15 @@ package com.woocommerce.android.support
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -58,20 +65,32 @@ fun SSRScreen(
                     IconButton(onClick = onCopyButtonClick, enabled = !isLoading) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_copy_white_24dp),
-                            contentDescription = stringResource(id = R.string.support_system_status_report_copy_label),
+                            contentDescription = stringResource(
+                                id = R.string.support_system_status_report_copy_label
+                            ),
                             tint = colorResource(id = R.color.color_icon_menu),
                         )
                     }
                     IconButton(onClick = onShareButtonClick, enabled = !isLoading) {
                         Icon(
                             imageVector = Icons.Filled.Share,
-                            contentDescription = stringResource(id = R.string.support_system_status_report_share_label),
+                            contentDescription = stringResource(
+                                id = R.string.support_system_status_report_share_label
+                            ),
                             tint = colorResource(id = R.color.color_icon_menu)
                         )
                     }
-                }
+                },
             )
-        }
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.color_toolbar))
+            .windowInsetsPadding(
+                WindowInsets.systemBars.only(
+                    WindowInsetsSides.Start + WindowInsetsSides.Top + WindowInsetsSides.End
+                )
+            )
     ) { padding ->
         val scrollState = rememberScrollState()
 
@@ -107,7 +126,13 @@ fun SSRContent(isLoading: Boolean, formattedSSR: String, modifier: Modifier) {
             SelectionContainer {
                 Text(
                     text = formattedSSR,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.major_100))
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.major_100))
+                        .padding(
+                            WindowInsets.navigationBars
+                                .only(WindowInsetsSides.Bottom)
+                                .asPaddingValues()
+                        )
                 )
             }
         }
