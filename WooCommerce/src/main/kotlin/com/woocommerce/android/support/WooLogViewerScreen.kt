@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
@@ -90,7 +91,10 @@ fun LogViewerEntries(
     entries: RollingLogEntries,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Bottom).asPaddingValues()
+    ) {
         itemsIndexed(entries) { index, entry ->
             LogViewerEntry(index, entry)
             if (index < entries.lastIndex) {
