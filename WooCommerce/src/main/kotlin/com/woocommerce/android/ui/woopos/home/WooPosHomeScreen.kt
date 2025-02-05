@@ -26,13 +26,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ProductsInfoDialog
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreenProductsPreview
@@ -42,18 +40,13 @@ import com.woocommerce.android.ui.woopos.home.toolbar.PreviewWooPosFloatingToolb
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosFloatingToolbar
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreenPreview
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.ExitPosClicked
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenCashPayment
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent.OpenEmailReceipt
 import org.wordpress.android.util.ToastUtils
 
 @Composable
 fun WooPosHomeScreen(
     isPaymentCompletedViaCash: Boolean,
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+    viewModel: WooPosHomeViewModel,
 ) {
-    val viewModel: WooPosHomeViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
     val context = LocalContext.current
 
@@ -70,16 +63,6 @@ fun WooPosHomeScreen(
                 message,
                 ToastUtils.Duration.LONG
             )
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect {
-            when (it) {
-                is NavigationEvent.ToCashPayment -> onNavigationEvent(OpenCashPayment(it.orderId))
-                is NavigationEvent.ToEmailReceipt -> onNavigationEvent(OpenEmailReceipt(it.orderId))
-                NavigationEvent.ExitPos -> onNavigationEvent(ExitPosClicked)
-            }
         }
     }
 

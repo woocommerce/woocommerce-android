@@ -115,42 +115,42 @@ private fun CampaignBudgetScreen(
         skipHalfExpanded = true,
     )
 
-    Scaffold(
-        topBar = {
-            Toolbar(
-                onNavigationButtonClick = onBackPressed,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
-            )
-        },
-        modifier = Modifier.background(MaterialTheme.colors.surface)
-    ) { paddingValues ->
-        WCModalBottomSheetLayout(
-            sheetState = modalSheetState,
-            sheetContent = {
-                Column {
-                    Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
-                    BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
-                    when {
-                        state.showImpressionsBottomSheet -> ImpressionsInfoBottomSheet(
-                            onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
-                        )
+    WCModalBottomSheetLayout(
+        sheetState = modalSheetState,
+        sheetContent = {
+            Column {
+                Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+                BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
+                when {
+                    state.showImpressionsBottomSheet -> ImpressionsInfoBottomSheet(
+                        onDoneTapped = { coroutineScope.launch { modalSheetState.hide() } }
+                    )
 
-                        state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
-                            budgetUiState = state,
-                            onStartDateChanged = { onStartDateChanged(it) },
-                            onApplyTapped = { duration, isEndlessCampaign, startDate ->
-                                onApplyDurationTapped(duration, isEndlessCampaign, startDate)
-                                coroutineScope.launch { modalSheetState.hide() }
-                            },
-                            onCancelTapped = { coroutineScope.launch { modalSheetState.hide() } },
-                            onDurationSliderUpdated = { duration, startDate ->
-                                onDurationSliderUpdated(duration, startDate)
-                            }
-                        )
-                    }
+                    state.showCampaignDurationBottomSheet -> EditDurationBottomSheet(
+                        budgetUiState = state,
+                        onStartDateChanged = { onStartDateChanged(it) },
+                        onApplyTapped = { duration, isEndlessCampaign, startDate ->
+                            onApplyDurationTapped(duration, isEndlessCampaign, startDate)
+                            coroutineScope.launch { modalSheetState.hide() }
+                        },
+                        onCancelTapped = { coroutineScope.launch { modalSheetState.hide() } },
+                        onDurationSliderUpdated = { duration, startDate ->
+                            onDurationSliderUpdated(duration, startDate)
+                        }
+                    )
                 }
             }
-        ) {
+        }
+    ) {
+        Scaffold(
+            topBar = {
+                Toolbar(
+                    onNavigationButtonClick = onBackPressed,
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
+                )
+            },
+            modifier = Modifier.background(MaterialTheme.colors.surface)
+        ) { paddingValues ->
             Column(
                 modifier = Modifier
                     .padding(paddingValues)

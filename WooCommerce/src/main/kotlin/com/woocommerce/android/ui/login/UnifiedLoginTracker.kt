@@ -191,6 +191,7 @@ class UnifiedLoginTracker
         SUBMIT_2FA_CODE("submit_2fa_code"),
         REQUEST_MAGIC_LINK("request_magic_link"),
         LOGIN_WITH_PASSWORD("login_with_password"),
+        LOGIN_WITH_WP_COM_USERNAME_PASSWORD("login_with_wp_com_username_password"),
         HELP_FINDING_SITE_ADDRESS("help_finding_site_address"),
         SELECT_EMAIL_FIELD("select_email_field"),
         PICK_EMAIL_FROM_HINT("pick_email_from_hint"),

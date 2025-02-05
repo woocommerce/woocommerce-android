@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.blaze.creation.destination
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,13 +29,13 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationParametersViewModel.ViewState.ParameterBottomSheetState.Editing
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
-import com.woocommerce.android.ui.compose.component.ModalStatusBarBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun AdDestinationParametersBottomSheet(
     viewState: ViewState,
@@ -56,7 +58,7 @@ fun AdDestinationParametersBottomSheet(
         }
     }
 
-    ModalStatusBarBottomSheetLayout(
+    WCModalBottomSheetLayout(
         sheetState = modalSheetState,
         sheetShape = RoundedCornerShape(topStart = roundedCornerRadius, topEnd = roundedCornerRadius),
         sheetContent = {
@@ -65,10 +67,12 @@ fun AdDestinationParametersBottomSheet(
                     paramsState = viewState.bottomSheetState,
                     onParameterChanged = onParameterChanged,
                     onParameterSaved = onParameterSaved,
-                    modifier = modifier.fillMaxWidth()
+                    modifier = modifier
+                        .fillMaxWidth()
                 )
             }
-        }
+        },
+        modifier = Modifier.imeNestedScroll(),
     ) {
         screenContent()
     }

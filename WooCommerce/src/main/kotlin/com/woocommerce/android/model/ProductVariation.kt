@@ -289,10 +289,11 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         globalUniqueId = this.globalUniqueId,
         image = this.getImageModel()?.let {
             Product.Image(
-                it.id,
-                it.name,
-                it.src,
-                DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
+                id = it.id,
+                name = it.name,
+                source = it.src,
+                dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
+                isCoverImage = false
             )
         },
         price = this.price.toBigDecimalOrNull(),

@@ -11,7 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
@@ -213,7 +213,7 @@ class ProductListViewModel @Inject constructor(
             analyticsTracker.track(
                 AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenInTwoPaneLayout(
                         isWindowClassLargeThanCompact()
                     ).deviceTypeToAnalyticsString
                 )
@@ -468,7 +468,7 @@ class ProductListViewModel @Inject constructor(
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenInTwoPaneLayout(
                     isWindowClassLargeThanCompact()
                 ).deviceTypeToAnalyticsString
             )

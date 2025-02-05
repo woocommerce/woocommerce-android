@@ -53,6 +53,7 @@ abstract class VariationsBulkUpdateBaseFragment(@LayoutRes layoutId: Int) : Base
                             viewModel.onDoneClicked()
                             true
                         }
+
                         else -> false
                     }
                 }
@@ -68,7 +69,12 @@ abstract class VariationsBulkUpdateBaseFragment(@LayoutRes layoutId: Int) : Base
                     ActivityUtils.hideKeyboard(requireActivity())
                     uiMessageResolver.showSnack(event.message)
                 }
-                is MultiLiveEvent.Event.Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
+
+                is MultiLiveEvent.Event.Exit -> {
+                    // Ensure subsequent Exit events are ignored to avoid IllegalStateException
+                    viewModel.event.removeObservers(viewLifecycleOwner)
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
             }
         }
     }

@@ -10,9 +10,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateBackWithResult
-import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusUiState
@@ -40,7 +39,7 @@ class UpdateProductStockStatusFragment : DialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (context?.windowSizeClass != WindowSizeClass.Compact) {
+        if (context?.isTwoPanesShouldBeUsed == true) {
             setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog)
         } else {
             setStyle(STYLE_NO_TITLE, R.style.Theme_Woo)
@@ -74,14 +73,14 @@ class UpdateProductStockStatusFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        val windowSizeClass = context?.windowSizeClass
+        val isTwoPaneLayout = context?.isTwoPanesShouldBeUsed
         val width = DisplayUtils.getWindowPixelWidth(requireContext())
         val height = DisplayUtils.getWindowPixelHeight(requireContext())
 
         val isLandscape = DisplayUtils.isLandscape(context)
 
         val (widthRatio, heightRatio) = when {
-            windowSizeClass == WindowSizeClass.Compact -> 1f to 1f
+            isTwoPaneLayout == false -> 1f to 1f
             isLandscape -> LANDSCAPE_WIDTH_RATIO to LANDSCAPE_HEIGHT_RATIO
             else -> PORTRAIT_WIDTH_RATIO to PORTRAIT_HEIGHT_RATIO
         }

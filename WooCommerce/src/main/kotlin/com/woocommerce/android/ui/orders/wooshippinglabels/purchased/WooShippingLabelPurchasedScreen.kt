@@ -36,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +59,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetails
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippableItemsUI
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShippingProductsCard
 import com.woocommerce.android.ui.orders.wooshippinglabels.generateItems
+import kotlinx.coroutines.launch
 
 @Suppress("MagicNumber")
 private val darkGreen = Color(0xFF005C12)
@@ -101,17 +103,29 @@ internal fun WooShippingLabelPurchasedWithBottomSheetScreen(
     modifier: Modifier = Modifier,
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
+    val scope = rememberCoroutineScope()
     BottomSheetScaffold(
         sheetContent = {
             shippingData?.let {
                 ShipmentDetails(
-                    scaffoldState = scaffoldState,
                     shippableItems = shippingData.items,
                     shippingLines = shippingData.shippingLines,
                     shippingAddresses = shippingData.addresses,
                     shippingRateSummary = shippingData.rateSummary,
                     isReadOnly = true,
-                    shipFromSelectionBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+                    shipFromSelectionBottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden),
+                    scaffoldState = scaffoldState,
+                    isShipmentDetailsExpanded = scaffoldState.bottomSheetState.isExpanded,
+                    onShipmentDetailsExpandedChange = {
+                        scope.launch {
+                            if (scaffoldState.bottomSheetState.isExpanded) {
+                                scaffoldState.bottomSheetState.collapse()
+                            } else {
+                                scaffoldState.bottomSheetState.expand()
+                            }
+                        }
+                        true
+                    }
                 )
             }
         },

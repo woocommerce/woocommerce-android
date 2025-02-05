@@ -35,7 +35,7 @@ fun JetpackToWooHeader(
         Crossfade(targetState = isError) { isError ->
             if (!isError) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_woo_bubble),
+                    painter = painterResource(id = R.drawable.ic_woo),
                     contentDescription = null,
                     modifier = logoModifier.padding(dimensionResource(id = R.dimen.minor_50))
                 )

@@ -104,7 +104,8 @@ data class Product(
         val id: Long,
         val name: String?,
         val source: String,
-        val dateCreated: Date?
+        val dateCreated: Date?,
+        val isCoverImage: Boolean
     ) : Parcelable
 
     fun isSameProduct(product: Product): Boolean {
@@ -539,10 +540,11 @@ fun WCProductModel.toAppModel(): Product {
         numVariations = this.getNumVariations(),
         images = this.getImageListOrEmpty().map {
             Product.Image(
-                it.id,
-                it.name,
-                it.src,
-                DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date()
+                id = it.id,
+                name = it.name,
+                source = it.src,
+                dateCreated = DateTimeUtils.dateFromIso8601(this.dateCreated) ?: Date(),
+                isCoverImage = it.src == this.getFirstImageUrl()
             )
         },
         attributes = this.getAttributeList().map { it.toAppModel() },
@@ -597,7 +599,8 @@ fun MediaModel.toAppModel(): Product.Image {
         id = this.mediaId,
         name = this.fileName.orEmpty(),
         source = this.url,
-        dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate)
+        dateCreated = DateTimeUtils.dateFromIso8601(this.uploadDate),
+        isCoverImage = false
     )
 }
 

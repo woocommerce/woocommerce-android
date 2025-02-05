@@ -23,7 +23,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
@@ -51,6 +50,7 @@ import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.Clic
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 
 @Composable
 fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
@@ -91,7 +91,7 @@ private fun BlazeCampaignListScreen(
         }
     }
 
-    ModalBottomSheetLayout(
+    WCModalBottomSheetLayout(
         sheetState = bottomSheetState,
         sheetContent = {
             CampaignCelebrationSheet(onCampaignCelebrationDismissed)

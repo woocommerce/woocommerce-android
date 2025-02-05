@@ -3,7 +3,7 @@
     <!--
         General colors
     -->
-    <color name="color_primary">@color/woo_purple_60</color>
+    <color name="color_primary">@color/woo_purple_40</color>
     <color name="color_primary_surface">@color/woo_purple_60</color>
     <color name="color_primary_variant">@color/woo_purple_80</color>
     <color name="color_secondary">@color/woo_pink_50</color>
@@ -86,9 +86,10 @@
     <color name="divider_color">@color/woo_black_90_alpha_012</color>
     <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
-    <color name="splash_background">@color/woo_purple_60</color>
+    <color name="splash_background">@color/woo_purple_40</color>
     <color name="color_toolbar">@color/woo_white</color>
     <color name="bottom_sheet_background">@color/color_surface</color>
+    <color name="color_woo_logo">@color/color_primary</color>
 
     <!--
         Elevation colors
@@ -103,6 +104,12 @@
     <color name="graph_highlight_color">@color/woo_pink_90</color>
     <color name="graph_no_data_text_color">@color/color_on_surface</color>
     <color name="graph_label_color">@color/color_on_surface_medium</color>
+
+    <!-- Prologue colors-->
+    <color name="prologue_carousel_shape_color">@color/woo_gray_0</color>
+    <color name="prologue_login_background_color">@color/woo_purple_70</color>
+    <color name="prologue_login_shape_color">@color/woo_purple_40</color>
+    <color name="prologue_login_button_color">@color/white</color>
 
     <!--
         Rating widget colors
@@ -228,6 +235,7 @@
     -->
     <color name="light_colored_button_text">@color/color_primary</color>
     <color name="light_colored_button_background">@color/woo_gray_6</color>
+    <color name="light_colored_button_text_secondary">@color/color_primary</color>
 
     <!--
     Analytics

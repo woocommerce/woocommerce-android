@@ -12,10 +12,12 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose).apply(false)
     alias(libs.plugins.kotlin.parcelize) apply false
+    alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.google.dagger.hilt) apply false
     alias(libs.plugins.androidx.navigation.safeargs) apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.room) apply false
 }
 
 ext {
@@ -24,8 +26,6 @@ ext {
             file("${rootDir}/defaults.properties"),
             file("${System.getProperty("user.home")}/.configure/woocommerce-android/secrets/secrets.properties")
     )
-    userEnabledTracking = secretProperties.get('measureBuildsEnabled')?.toBoolean() ?: false
-
     developerProperties = loadPropertiesWithFallback(
             logger,
             file("${rootDir}/developer.properties-example"),
@@ -34,19 +34,23 @@ ext {
 }
 
 measureBuilds {
-    enable = userEnabledTracking
+    enable = secretProperties.get('measureBuildsEnabled')?.toBoolean() ?: false
     automatticProject = MeasureBuildsExtension.AutomatticProject.WooCommerce
-    attachGradleScanId = true
+    attachGradleScanId = false
     authToken = secretProperties.get('appsMetricsToken')
 }
 
 static def loadPropertiesWithFallback(Logger logger, File fallbackFile, File primaryFile) {
+    def defaultProperties = readPropertiesFromFile(fallbackFile)
+    def primaryProperties
     if (primaryFile.exists()) {
-        return readPropertiesFromFile(primaryFile)
+        primaryProperties = readPropertiesFromFile(primaryFile)
     } else {
         logger.warn("Primary properties file not found: ${primaryFile}. Using fallback: ${fallbackFile}.")
-        return readPropertiesFromFile(fallbackFile)
+        primaryProperties = new Properties()
     }
+
+    return defaultProperties + primaryProperties
 }
 
 static def readPropertiesFromFile(File file) {
@@ -60,11 +64,6 @@ static def readPropertiesFromFile(File file) {
 allprojects {
     apply plugin: libs.plugins.detekt.get().pluginId
 
-    repositories {
-        google()
-        mavenCentral()
-    }
-
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = libs.versions.java.get()
@@ -74,12 +73,6 @@ allprojects {
                     "-Xjvm-default=all-compatibility",
             ]
         }
-    }
-}
-
-subprojects {
-    configurations {
-        compile.exclude group: 'org.jetbrains', module: 'annotations-java5'
     }
 }
 
@@ -121,4 +114,3 @@ tasks.register("installGitHooks", Copy) {
 }
 
 apply from: './config/gradle/jacoco.gradle'
-apply from: './config/gradle/gradle_build_scan.gradle'

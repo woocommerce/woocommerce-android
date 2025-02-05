@@ -261,6 +261,7 @@ class VariationDetailFragment :
         }
     }
 
+    @Suppress("LongMethod")
     private fun setupObservers(viewModel: VariationDetailViewModel) {
         viewModel.variationViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.variation.takeIfNotEqualTo(old?.variation) { newVariation ->
@@ -318,8 +319,13 @@ class VariationDetailFragment :
                 is ExitWithResult<*> -> navigateBackWithResult(KEY_VARIATION_DETAILS_RESULT, event.data)
                 is ShowDialog -> event.showDialog()
                 is ShowDialogFragment -> event.showIn(parentFragmentManager, this)
-                is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 is VariationDetailViewModel.ShowUpdateVariationError -> showUpdateVariationError(event.message)
+                is Exit -> {
+                    // Ensure subsequent Exit events are ignored to avoid IllegalStateException
+                    viewModel.event.removeObservers(viewLifecycleOwner)
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
+
                 else -> event.isHandled = false
             }
         }

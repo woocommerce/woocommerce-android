@@ -17,7 +17,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -42,6 +42,7 @@ import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.model.SubscriptionPeriod
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.model.addTags
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.model.toAppModel
@@ -93,9 +94,9 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -930,6 +931,7 @@ class ProductDetailViewModel @Inject constructor(
             val positiveAction = DialogInterface.OnClickListener { _, _ ->
                 // Make sure to cancel any remaining image uploads
                 mediaFileUploadHandler.cancelUpload(getRemoteProductId())
+                mediaFileUploadHandler.clearImageErrors(getRemoteProductId())
                 triggerEvent(ProductNavigationTarget.ExitProduct)
             }
 
@@ -1500,7 +1502,7 @@ class ProductDetailViewModel @Inject constructor(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
                         AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to product.hasQuantityRules(),
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString,
+                            IsScreenInTwoPaneLayout(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString,
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
@@ -1509,7 +1511,7 @@ class ProductDetailViewModel @Inject constructor(
                     AnalyticsEvent.PRODUCT_DETAIL_LOADED,
                     mapOf(
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString
+                            IsScreenInTwoPaneLayout(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString
                     )
                 )
             }
@@ -2134,15 +2136,16 @@ class ProductDetailViewModel @Inject constructor(
                     mediaFileUploadHandler.observeCurrentUploadErrors(productId)
                         .onEach { errorList ->
                             if (errorList.isEmpty()) {
+                                viewState = viewState.copy(hasUploadErrors = false)
                                 triggerEvent(HideImageUploadErrorSnackbar)
                             } else {
+                                viewState = viewState.copy(hasUploadErrors = true)
                                 triggerEvent(
-                                    ShowActionSnackbar(
-                                        message = resources.getMediaUploadErrorMessage(errorList.size),
-                                        actionText = resources.getString(R.string.details)
-                                    ) {
-                                        triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(productId))
-                                    }
+                                    ShowUiStringSnackbar(
+                                        message = UiStringText(
+                                            resources.getMediaUploadErrorMessage(errorList.size)
+                                        ),
+                                    )
                                 )
                             }
                         }
@@ -2651,6 +2654,10 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun openUploadScreen() {
+        triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(getRemoteProductId()))
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2720,6 +2727,7 @@ class ProductDetailViewModel @Inject constructor(
         val productAggregateDraft: ProductAggregate? = null,
         val auxiliaryState: AuxiliaryState = AuxiliaryState.None,
         val uploadingImageUris: List<Uri>? = null,
+        val hasUploadErrors: Boolean? = null,
         val isProgressDialogShown: Boolean? = null,
         val showBottomSheetButton: Boolean? = null,
         val isConfirmingTrash: Boolean = false,

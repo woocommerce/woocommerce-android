@@ -62,6 +62,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.woopos.common.composeui.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -434,7 +435,7 @@ private fun ProductItem(
     ) {
         WooPosCard(
             modifier = modifier
-                .height(72.dp)
+                .height(96.dp)
                 .semantics { contentDescription = itemContentDescription },
             elevation = elevation,
             shadowType = ShadowType.Soft,
@@ -454,7 +455,7 @@ private fun ProductItem(
                     placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(72.dp)
+                    modifier = Modifier.size(96.dp)
                 )
 
                 Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
@@ -465,15 +466,27 @@ private fun ProductItem(
                     Text(
                         text = item.name,
                         style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.clearAndSetSemantics { }
                     )
                     Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                    if (item.description.isNotNullOrEmpty()) {
+                        Text(
+                            text = item.description!!,
+                            style = MaterialTheme.typography.body1,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            color = MaterialTheme.colors.secondaryVariant,
+                            modifier = Modifier.clearAndSetSemantics { }
+                        )
+                        Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                    }
                     Text(
                         text = item.price,
                         style = MaterialTheme.typography.body1,
+                        color = MaterialTheme.colors.secondaryVariant,
                         modifier = Modifier.clearAndSetSemantics { }
                     )
                 }
@@ -527,6 +540,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             imageUrl = "",
                             name = "VW California, VW California VW California, VW California VW California, " +
                                 "VW California VW California, VW California,VW California",
+                            description = "test description",
                             price = "€50,000",
                             isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
@@ -539,6 +553,8 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             ),
                             imageUrl = "",
                             name = "VW California",
+                            description = "test description test description test description test description" +
+                                " test description test description test description test description test description",
                             price = "$150,000",
                             isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
@@ -551,6 +567,7 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             ),
                             imageUrl = "",
                             name = "VW California",
+                            description = "",
                             price = "€250,000",
                             isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
@@ -586,6 +603,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             ),
                             imageUrl = "",
                             name = "VW California",
+                            description = null,
                             price = "€50,000",
                             isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
@@ -598,6 +616,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             ),
                             imageUrl = "",
                             name = "VW California",
+                            description = null,
                             price = "$150,000",
                             isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
@@ -610,6 +629,7 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             ),
                             imageUrl = "",
                             name = "VW California",
+                            description = null,
                             price = "€250,000",
                             isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,

@@ -56,6 +56,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -78,41 +79,40 @@ fun BlazeCampaignCreationIntroScreen(
     onDismissClick: () -> Unit,
     onLearnMoreClick: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            Toolbar(
-                onNavigationButtonClick = onDismissClick,
-                navigationIcon = Icons.Default.Clear
+    val coroutineScope = rememberCoroutineScope()
+    val modalSheetState = rememberModalBottomSheetState(
+        initialValue = Hidden,
+        confirmValueChange = { it != HalfExpanded },
+        skipHalfExpanded = true
+    )
+
+    WCModalBottomSheetLayout(
+        sheetContent = {
+            BlazeCampaignBottomSheetContent(
+                onDismissClick = {
+                    coroutineScope.launch { modalSheetState.hide() }
+                }
             )
         },
+        sheetState = modalSheetState,
         modifier = Modifier.background(MaterialTheme.colors.surface)
-    ) { paddingValues ->
-        val coroutineScope = rememberCoroutineScope()
-        val modalSheetState = rememberModalBottomSheetState(
-            initialValue = Hidden,
-            confirmValueChange = { it != HalfExpanded },
-            skipHalfExpanded = true
-        )
-
-        WCModalBottomSheetLayout(
-            sheetContent = {
-                BlazeCampaignBottomSheetContent(
-                    onDismissClick = {
-                        coroutineScope.launch { modalSheetState.hide() }
-                    }
+    ) {
+        Scaffold(
+            topBar = {
+                Toolbar(
+                    onNavigationButtonClick = onDismissClick,
+                    navigationIcon = Icons.Default.Clear
                 )
             },
-            sheetState = modalSheetState,
-            modifier = Modifier
-                .background(MaterialTheme.colors.surface)
-                .padding(paddingValues)
-        ) {
+            modifier = Modifier.background(MaterialTheme.colors.surface)
+        ) { paddingValues ->
             BlazeCampaignCreationIntroContent(
                 onContinueClick = onContinueClick,
                 onLearnMoreClick = {
                     coroutineScope.launch { modalSheetState.show() }
                     onLearnMoreClick()
-                }
+                },
+                modifier = Modifier.padding(paddingValues)
             )
         }
     }

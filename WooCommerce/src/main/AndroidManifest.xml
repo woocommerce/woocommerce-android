@@ -161,15 +161,12 @@
             android:theme="@style/Theme.Woo.DayNight" />
         <!--        Make sure portrait screen orientation is not required for the installation of the app -->
         <activity
-            android:name="com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity"
-            android:screenOrientation="unspecified"
-            tools:replace="android:screenOrientation" />
-        <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
+            android:theme="@style/Theme.WooPos"
             android:exported="false" />
         <activity
             android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity"
-            android:theme="@style/Theme.Woo.Transparent" />
+            android:theme="@style/Theme.WooPos.Transparent" />
 
         <!-- Stats today app widget -->
         <meta-data

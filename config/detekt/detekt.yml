@@ -15,6 +15,7 @@ complexity:
 formatting:
   active: true
   autoCorrect: true
+  excludes: ['**/fluxc/**', '**/login/**']
   Indentation:
     active: true
     autoCorrect: true
@@ -27,6 +28,8 @@ style:
     active: true
     ignoreAnnotated: [ 'Module' ]
   MagicNumber:
+    ignoreEnums: true
+    ignorePropertyDeclaration: true
     ignoreAnnotated: [ 'Composable' ]
   UnusedPrivateMember:
     ignoreAnnotated: [ 'Preview', 'LightDarkThemePreviews', 'OrientationPreviews', 'FontScalePreviews', 'LayoutDirectionPreviews' ]

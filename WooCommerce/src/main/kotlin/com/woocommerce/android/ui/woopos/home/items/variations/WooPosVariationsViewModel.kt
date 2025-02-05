@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.home.items.variations
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -12,6 +14,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItem
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +30,7 @@ class WooPosVariationsViewModel @Inject constructor(
     private val getProductById: WooPosGetProductById,
     private val variationsDataSource: WooPosVariationsDataSource,
     private val priceFormat: WooPosFormatPrice,
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
     private val _viewState =
@@ -86,9 +90,13 @@ class WooPosVariationsViewModel @Inject constructor(
                                         items = variations.map {
                                             WooPosItem.Variation(
                                                 id = it.remoteVariationId,
-                                                name = it.getName(getProductById(productId)),
+                                                name = it.getNameForPOS(getProductById(productId), resourceProvider),
                                                 productId = it.remoteProductId,
-                                                price = priceFormat(it.price),
+                                                price = if (it.price != null) {
+                                                    priceFormat(it.price)
+                                                } else {
+                                                    "-"
+                                                },
                                                 imageUrl = it.image?.source
                                             )
                                         },
@@ -119,9 +127,13 @@ class WooPosVariationsViewModel @Inject constructor(
                 items = variations.map {
                     WooPosItem.Variation(
                         id = it.remoteVariationId,
-                        name = it.getName(getProductById(productId)),
+                        name = it.getNameForPOS(getProductById(productId), resourceProvider),
                         productId = it.remoteProductId,
-                        price = priceFormat(it.price),
+                        price = if (it.price != null) {
+                            priceFormat(it.price)
+                        } else {
+                            "-"
+                        },
                         imageUrl = it.image?.source
                     )
                 }
@@ -157,9 +169,13 @@ class WooPosVariationsViewModel @Inject constructor(
                     items = result.getOrThrow().map {
                         WooPosItem.Variation(
                             id = it.remoteVariationId,
-                            name = it.getName(getProductById(productId)),
+                            name = it.getNameForPOS(getProductById(productId), resourceProvider),
                             productId = it.remoteProductId,
-                            price = priceFormat(it.price),
+                            price = if (it.price != null) {
+                                priceFormat(it.price)
+                            } else {
+                                "-"
+                            },
                             imageUrl = it.image?.source
                         )
                     }
@@ -204,5 +220,31 @@ class WooPosVariationsViewModel @Inject constructor(
 
     private fun onEndOfVariationsListReached(productId: Long, numOfVariations: Int) {
         loadMore(productId, numOfVariations)
+    }
+}
+
+fun ProductVariation.getNameForPOS(
+    parentProduct: Product? = null,
+    resourceProvider: ResourceProvider,
+): String {
+    return parentProduct?.variationEnabledAttributes?.joinToString(", ") { attribute ->
+        val option = attributes.firstOrNull { it.name == attribute.name }
+        if (option?.option != null) {
+            "${attribute.name}: ${option.option}"
+        } else {
+            resourceProvider.getString(
+                R.string.woopos_variations_any_variation,
+                attribute.name
+            )
+        }
+    } ?: attributes.joinToString(", ") { attribute ->
+        if (attribute.option != null) {
+            "${attribute.name}: ${attribute.option}"
+        } else {
+            resourceProvider.getString(
+                R.string.woopos_variations_any_variation,
+                attribute.name!!
+            )
+        }
     }
 }

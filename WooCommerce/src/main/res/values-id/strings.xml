@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-27 09:54:05+0000
+Translation-Revision-Date: 2025-01-28 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS saat ini hanya mendukung produk sederhana, bervariasi, dan virtual – \nbuat POS untuk memulai.</string>
+    <string name="woo_shipping_label_phone">Telepon</string>
+    <string name="woo_shipping_label_email">Email</string>
+    <string name="woo_shipping_label_post_code">Kode Pos</string>
+    <string name="woo_shipping_label_state">Negara bagian</string>
+    <string name="woo_shipping_label_city">Kota</string>
+    <string name="woo_shipping_label_address">Alamat</string>
+    <string name="woo_shipping_label_country">Negara</string>
+    <string name="woo_shipping_label_company">Perusahaan</string>
+    <string name="woo_shipping_label_name">Nama</string>
+    <string name="woo_shipping_edit_origin_address_title">Edit Alamat Asal</string>
+    <string name="woopos_variations_any_variation">Semua %s</string>
+    <string name="woopos_variations_empty_list_image_description">Tidak ada variasi</string>
+    <string name="woopos_variations_empty_list_title">Tidak ada variasi yang didukung</string>
+    <string name="login_use_wpcom_username_instead">Gunakan nama pengguna dan kata sandi</string>
+    <string name="product_images_drag_and_drop_to_reorder">Tarik dan lepas untuk mengurutkan ulang foto. Foto pertama akan menjadi sampul.</string>
+    <string name="product_cover_photo_tag">Sampul</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d pesanan diperbarui, dan %d pesanan gagal diperbarui. Silakan coba lagi.</string>
+    <string name="orderlist_bulk_update_result_all_failed">Gagal memperbarui pesanan. Silakan coba lagi.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">Tidak ada pesanan yang diperbarui. Silakan coba lagi.</string>
+    <string name="add">Tambahkan %s</string>
+    <string name="woo_shipping_labels_package_creation_error_cancel">Batal</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">Lanjutkan</string>
+    <string name="woo_shipping_labels_package_creation_error_message">Ingin melanjutkan tanpa menyimpannya?</string>
+    <string name="woo_shipping_labels_package_creation_error_title">Kami tidak dapat menyimpan paket sebagai template</string>
+    <string name="woopos_variations_options_available_text">Pilihan tersedia</string>
+    <string name="woopos_totals_success_payment_card">Pembayaran dengan kartu senilai %1$s berhasil dilakukan</string>
+    <string name="woopos_totals_success_payment_cash">Pembayaran tunai senilai %1$s berhasil dilakukan</string>
+    <string name="shipping_label_select_origin_address">Alamat</string>
+    <string name="shipping_label_select_origin_default_address">%s (default)</string>
+    <string name="shipping_label_purchased_purchase_failed_error">Saat ini kami tidak dapat mengonfirmasi pembelian Label Pengiriman, coba lagi nanti</string>
+    <string name="shipping_label_purchased_failure_message">Coba lagi nanti</string>
+    <string name="shipping_label_purchased_failure_title">Kami tidak dapat memproses label pengiriman Anda</string>
+    <string name="shipping_label_purchased_in_progress_message">Setelah selesai, Anda akan dapat mencetak label pengiriman dengan ukuran kertas yang dipilih</string>
+    <string name="shipping_label_purchased_in_progress_title">Label pengiriman Anda sedang diproses</string>
+    <string name="orderlist_bulk_update_maximum_reached">Jumlah pilihan maksimum (%d) tercapai.</string>
+    <string name="orderlist_bulk_update_status_updated">Status diperbarui!</string>
+    <string name="site_picker_edit_store_list_error_title">Terjadi error saat memperbarui pengaturan pemberitahuan. Coba lagi</string>
+    <string name="site_picker_edit_store_list_header">Toko Lainnya</string>
+    <string name="site_picker_edit_store_current_site_footer">Harap beralih ke toko lain jika Anda ingin menyembunyikan toko saat ini</string>
+    <string name="site_picker_edit_store_current_site_header">Toko Saat Ini</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">Pilih toko yang akan dihubungkan (%d disembunyikan)</string>
     <string name="woo_shipping_labels_package_creation_error">Gagal memuat data paket</string>
     <string name="woo_shipping_labels_package_creation_package_name">Nama Paket</string>
     <string name="woo_shipping_labels_package_creation_weight">Berat</string>
@@ -23,7 +65,6 @@ Language: id
     <string name="woopos_items_pagination_error_description">\"Terjadi error saat memuat produk.\"</string>
     <string name="woopos_items_pagination_error_title">\"Gagal memuat item lain\"</string>
     <string name="woopos_items_pagination_try_again_label">Coba lagi</string>
-    <string name="woo_pos_payment_remove_card">Ambil kartu</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Kembali ke checkout</string>
     <string name="woo_pos_payment_failed_try_again">Coba lagi pembayaran</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Coba metode pembayaran lainnya</string>
@@ -57,7 +98,7 @@ Language: id
     <string name="orderlist_selection_menu_update_status">Perbarui status</string>
     <string name="orderlist_selection_count_single">%d pesanan terpilih</string>
     <string name="orderlist_selection_count">%d semua pesanan terpilih</string>
-    <string name="site_picker_edit_store_list_footer">Toko yang tidak dipilih tidak akan muncul di pemilih situs dan tidak akan mendapat pemberitahuan pesanan baru</string>
+    <string name="site_picker_edit_store_list_footer">Toko yang tidak dipilih tidak akan muncul di pemilih situs dan tidak akan mendapat pemberitahuan pesanan baru atau ulasan produk</string>
     <string name="site_picker_edit_store_list_title">Toko yang Dapat Dilihat</string>
     <string name="site_picker_edit_store_list">Sunting Toko</string>
     <string name="woopos_variations_loading_error_title">Error saat memuat variasi</string>
@@ -90,8 +131,8 @@ Language: id
     <string name="shipping_label_purchased_track_shipment">Lacak pengiriman</string>
     <string name="shipping_label_purchased_learn_how_to_print">Pelajari cara mencetak dari perangkat seluler Anda</string>
     <string name="shipping_label_purchased_note">Catatan: Penggunaan kembali label yang dicetak adalah tindakan yang melanggar ketentuan layanan kami dan dapat mengakibatkan tuntutan pidana.</string>
-    <string name="shipping_label_purchased_message">Dari sini, Anda dapat mencetak label pengiriman lagi atau mengubah ukuran kertas label.</string>
-    <string name="shipping_label_purchased_title">Label pengiriman siap dicetak</string>
+    <string name="shipping_label_purchased_success_message">Dari sini, Anda dapat mencetak label pengiriman lagi atau mengubah ukuran kertas label.</string>
+    <string name="shipping_label_purchased_success_title">Label pengiriman siap dicetak</string>
     <string name="order_detail_edit_store_currency_mismatch">Maaf, Anda hanya bisa mengedit pesanan ini di web, karena pesanan menggunakan %1$s, dan mata uang situs Anda adalah %2$s</string>
     <string name="shipping_label_shipping_service_title">Layanan pengiriman</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Tercepat</string>
@@ -145,8 +186,8 @@ Language: id
     <string name="order_shipment_tracking_barcode_scanning_failed">Pemindaian gagal. Coba lagi nanti</string>
     <string name="custom_fields_editor_value_label">Nilai</string>
     <string name="custom_fields_editor_key_label">Kunci</string>
-    <string name="woopos_dialog_products_info_secondary_message">Jenis produk lain, seperti virtual, akan tersedia dalam pembaruan mendatang.</string>
-    <string name="woopos_dialog_products_info_primary_message">Saat ini, hanya produk fisik dan variabel sederhana yang dapat menggunakan POS.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Jenis produk lain akan tersedia dalam pembaruan mendatang.</string>
+    <string name="woopos_dialog_products_info_primary_message">Saat ini, hanya produk fisik sederhana, variabel, dan virtual yang dapat menggunakan POS.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">Batal</string>
     <string name="blaze_campaign_budget_duration_current_duration">Durasi</string>
     <string name="blaze_campaign_budget_duration_endless_description">Kampanye akan terus berjalan sampai Anda menghentikannya.</string>
@@ -187,9 +228,9 @@ Language: id
     <string name="woopos_exit_dialog_confirmation_close_content_description">Tutup</string>
     <string name="woopos_dialog_products_info_background_content_description">Latar belakang diredupkan. Ketuk untuk menutup dialog.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Ketuk dua kali untuk menutup dialog</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Dialog khusus produk sederhana dan variabel</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Dialog khusus produk sederhana, variabel, dan virtual</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Ketuk dua kali untuk melihat selengkapnya</string>
-    <string name="woopos_banner_simple_products_content_description">Banner khusus produk sederhana dan variabel</string>
+    <string name="woopos_banner_simple_products_content_description">Banner khusus produk sederhana, variabel, dan virtual</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Promosikan produk Anda dengan Iklan Blaze dan dongkrak penjualan sekarang.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Tingkatkan penjualan Anda</string>
     <string name="more_menu_button_payments_description">Terima pembayaran di mana saja</string>
@@ -198,17 +239,16 @@ Language: id
     <string name="woopos_cart_item_content_description">Produk di keranjang %s, Harga %s</string>
     <string name="woopos_product_item_content_description">Produk %s, Harga %s</string>
     <string name="blaze_campaign_status_suspended">Ditangguhkan</string>
-    <string name="woopos_totals_success_payment_cash">Dana senilai %1$s berhasil dibayarkan</string>
     <string name="woopos_new_order_button">Pesanan baru</string>
     <string name="woopos_dialog_products_info_button_label">Oke</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Buat pesanan di manajemen toko</string>
-    <string name="woopos_dialog_products_info_tertiary_message">Untuk memproses pembayaran atas produk non-sederhana, keluar dari POS, kemudian buat pesanan baru dari tab pesanan.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Untuk memproses pembayaran atas produk lain, keluar dari POS, kemudian buat pesanan baru dari tab pesanan.</string>
     <string name="woopos_dialog_products_info_heading">Mengapa produk saya tidak muncul?</string>
     <string name="woopos_banner_simple_products_info_content_description">Info</string>
     <string name="woopos_banner_simple_products_close_content_description">Tutup</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Pelajari\u00A0selengkapnya</string>
-    <string name="woopos_banner_simple_products_only_message">Saat ini, hanya produk fisik dan variabel sederhana yang kompatibel dengan POS. Jenis produk lain, seperti virtual, akan tersedia dalam pembaruan mendatang. </string>
-    <string name="woopos_banner_simple_products_only_title">Menunjukkan produk sederhana dan variabel saja</string>
+    <string name="woopos_banner_simple_products_only_message">Saat ini, hanya produk fisik sederhana, variabel, dan virtual yang kompatibel dengan POS. Jenis produk lain akan tersedia dalam pembaruan mendatang. </string>
+    <string name="woopos_banner_simple_products_only_title">Menunjukkan produk sederhana, variabel, dan virtual saja</string>
     <string name="support_request_site_address">Alamat Situs</string>
     <string name="analytics_google_ads_cta_web_view_title">Google for WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Tambahkan kampanye berbayar</string>
@@ -223,7 +263,7 @@ Language: id
     <string name="woopos_products_loading_error_message">Ingin mencoba sekali lagi?</string>
     <string name="woopos_products_loading_error_title">Terjadi error saat memuat produk</string>
     <string name="woopos_products_empty_list_message_two">POS saat ini hanya mendukung produk sederhana</string>
-    <string name="woopos_products_empty_list_message">POS saat ini hanya mendukung produk sederhana dan variabel – \nbuat untuk memulai.</string>
+    <string name="woopos_variations_empty_list_message">POS saat ini hanya mendukung produk sederhana, bervariasi, dan virtual – \nbuat POS untuk memulai.</string>
     <string name="woopos_products_empty_list_title">Produk yang didukung tidak ditemukan</string>
     <string name="woopos_products_empty_list_image_description">Tidak ada produk</string>
     <string name="woopos_get_support_title">Dapatkan Dukungan</string>
@@ -1373,7 +1413,6 @@ Language: id
     <string name="domain_privacy_option_off_title">Daftarkan secara publik</string>
     <string name="domain_privacy_option_on_title">Daftarkan secara pribadi dengan Perlindungan Privasi</string>
     <string name="domain_registration_contact_form_input_error">Masukkan %s yang valid</string>
-    <string name="domain_registration_privacy_protection_tos">Dengan mendaftarkan domain ini, Anda menyetujui %1$ssyarat dan ketentuan%2$s kami</string>
     <string name="domain_registration_privacy_protection_description">Pemilik domain harus berbagi informasi kontak di database publik semua domain.\n Dengan Perlindungan Privasi, kami memublikasikan informasi kami sendiri, bukan informasi Anda, dan meneruskan segala komunikasi kepada Anda secara pribadi.</string>
     <string name="domain_registration_privacy_protection_title">Perlindungan Privasi</string>
     <string name="domains_access_error_title">Pengaturan domain hanya bisa diakses oleh administrator toko</string>
@@ -2606,15 +2645,12 @@ Language: id
     <string name="order_mark_complete">Tandai pesanan selesai</string>
     <string name="orderdetail_shipping_label_notice">Pelajari selengkapnya tentang membuat label menggunakan perangkat seluler</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Buat label pengiriman</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">Sekarang Anda dapat membuat label pengiriman untuk semua pesanan fisik langsung dari perangkat Anda dengan plugin WooCommerce Shipping gratis. Ketuk \"Buat label pengiriman\" untuk mencoba fitur beta kami!</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">Buat label pengiriman dari perangkat Anda!</string>
     <string name="orderdetail_payment_fees">Biaya</string>
     <string name="orderdetail_net">Pembayaran Bersih</string>
     <string name="orderdetail_payment_paid_by_customer">Berbayar</string>
     <string name="login_jetpack_view_instructions_alt">Pelajari selengkapnya tentang cara menghubungkan Jetpack</string>
     <string name="edit">Sunting</string>
     <string name="product_images_validate_drag_and_drop">Validasi</string>
-    <string name="product_images_drag_and_drop_description">Tarik dan lepas untuk mengurutkan foto</string>
     <string name="product_downloadable_files_download_settings">Pengaturan Unduh</string>
     <string name="product_downloadable_files_name_invalid">Harap masukkan nama yang valid</string>
     <string name="product_downloadable_files_add_manually">Masukkan URL file</string>

@@ -1,0 +1,83 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dependency.analysis)
+}
+
+android {
+    compileOptions {
+        sourceCompatibility libs.versions.java.get()
+        targetCompatibility libs.versions.java.get()
+    }
+
+    namespace "org.wordpress.android.login"
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+        compileSdk gradle.ext.compileSdkVersion
+
+        // Optional: used to autofill username and password fields at login on debug build only
+        // Copy `developer.properties-example` to `developer.properties` and fill in the values
+        loadDeveloperProperties(
+                project.file("developer.properties-example"),
+                project.file("developer.properties")
+        ).each { fieldName, propertyKey ->
+            buildConfigField "String", fieldName, "\"$propertyKey\""
+        }
+    }
+    buildFeatures {
+        buildConfig true
+    }
+}
+
+dependencies {
+    implementation libs.wordpress.utils
+    implementation libs.gravatar
+
+    implementation libs.androidx.appcompat
+
+    implementation libs.androidx.constraintlayout.main
+    implementation libs.google.material
+
+    implementation libs.androidx.core.ktx
+
+    api libs.google.play.services.auth
+
+    implementation project(":libs:fluxc")
+
+    implementation libs.bumptech.glide.main
+    ksp libs.bumptech.glide.ksp
+
+    implementation libs.androidx.credentials.main
+    implementation libs.androidx.credentials.play.service.auth
+
+    // Dagger
+    implementation libs.google.dagger
+    ksp libs.google.dagger.compiler
+    implementation libs.google.dagger.android.support
+    ksp libs.google.dagger.android.processor
+
+    lintChecks libs.wordpress.lint
+
+    testImplementation libs.junit
+    testImplementation libs.androidx.arch.core.testing
+    testImplementation libs.robolectric
+    testImplementation libs.assertj.core
+}
+
+static def loadDeveloperProperties(File defaultsFile, File developerFile) {
+    File fileToLoad = developerFile.exists() ? developerFile : defaultsFile
+    return loadPropertiesFromFile(fileToLoad)
+}
+
+static def loadPropertiesFromFile(File inputFile) {
+    def properties = new Properties()
+    inputFile.withInputStream { stream ->
+        properties.load(stream)
+    }
+    return properties
+}

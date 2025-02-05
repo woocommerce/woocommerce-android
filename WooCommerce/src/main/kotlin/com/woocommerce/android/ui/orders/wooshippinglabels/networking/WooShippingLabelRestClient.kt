@@ -111,7 +111,7 @@ class WooShippingLabelRestClient @Inject constructor(
     suspend fun fetchOriginAddresses(
         site: SiteModel,
     ): WooPayload<Array<OriginAddressDTO>> {
-        val url = "/wcshipping/v1/origin-addresses/"
+        val url = "/wcshipping/v1/address/origins"
         return wooNetwork.executeGetGsonRequest(
             site = site,
             path = url,

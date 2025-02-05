@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-24 11:54:04+0000
+Translation-Revision-Date: 2025-01-28 16:54:14+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten; \nmaak er een aan om te beginnen.</string>
+    <string name="woo_shipping_label_phone">Telefoon</string>
+    <string name="woo_shipping_label_email">E-mail</string>
+    <string name="woo_shipping_label_post_code">Postcode</string>
+    <string name="woo_shipping_label_state">Provincie</string>
+    <string name="woo_shipping_label_city">Plaats</string>
+    <string name="woo_shipping_label_address">Adres</string>
+    <string name="woo_shipping_label_country">Land</string>
+    <string name="woo_shipping_label_company">Bedrijf</string>
+    <string name="woo_shipping_label_name">Naam</string>
+    <string name="woo_shipping_edit_origin_address_title">Origineel bewerken</string>
+    <string name="woopos_variations_any_variation">Alle %s</string>
+    <string name="woopos_variations_empty_list_image_description">Geen variaties</string>
+    <string name="woopos_variations_empty_list_title">Geen ondersteunde variaties gevonden</string>
+    <string name="login_use_wpcom_username_instead">Gebruik in plaats daarvan gebruikersnaam en wachtwoord</string>
+    <string name="product_images_drag_and_drop_to_reorder">Slepen om foto\'s opnieuw te ordenen. De eerste afbeelding wordt gebruikt als omslagafbeelding.</string>
+    <string name="product_cover_photo_tag">Omslag</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d bestelling(en) bijgewerkt, en %d bestelling(en) niet bijgewerkt. Probeer het nog eens.</string>
+    <string name="orderlist_bulk_update_result_all_failed">Bestellingen konden niet worden bijgewerkt. Probeer het nog eens.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">Geen bestellingen bijgewerkt. Probeer het nog eens.</string>
+    <string name="add">Toevoegen %s</string>
+    <string name="woo_shipping_labels_package_creation_error_cancel">Annuleren</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">Doorgaan</string>
+    <string name="woo_shipping_labels_package_creation_error_message">Wil je doorgaan zonder opslaan?</string>
+    <string name="woo_shipping_labels_package_creation_error_title">We konden het pakket niet als sjabloon opslaan</string>
+    <string name="woopos_variations_options_available_text">Beschikbare opties</string>
+    <string name="woopos_totals_success_payment_card">Een kaartbetaling van %1$s is voldaan</string>
+    <string name="woopos_totals_success_payment_cash">Een contante betaling van %1$s is voldaan</string>
+    <string name="shipping_label_select_origin_address">Adres</string>
+    <string name="shipping_label_select_origin_default_address">%s (standaard)</string>
+    <string name="shipping_label_purchased_purchase_failed_error">We konden de aankoop van het verzendlabel niet bevestigen, probeer het later nog eens</string>
+    <string name="shipping_label_purchased_failure_message">Probeer het later opnieuw</string>
+    <string name="shipping_label_purchased_failure_title">We konden je verzendlabel niet verwerken</string>
+    <string name="shipping_label_purchased_in_progress_message">Zodra dit klaar is, kan je het verzendlabel printen met het geselecteerde papierformaat</string>
+    <string name="shipping_label_purchased_in_progress_title">Je verzendlabel wordt verwerkt</string>
+    <string name="orderlist_bulk_update_maximum_reached">Het maximumaantal selecties (%d) is bereikt.</string>
+    <string name="orderlist_bulk_update_status_updated">Status bijgewerkt!</string>
+    <string name="site_picker_edit_store_list_error_title">Er is een fout opgetreden bij het bijwerken van de notificatie-instellingen. Probeer het nog eens</string>
+    <string name="site_picker_edit_store_list_header">Andere winkels</string>
+    <string name="site_picker_edit_store_current_site_footer">Schakel over naar een andere winkel als je deze wilt verbergen</string>
+    <string name="site_picker_edit_store_current_site_header">Huidige winkel</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">Selecteer een winkel om te verbinden (%d verborgen)</string>
     <string name="woo_shipping_labels_package_creation_error">Kan de pakketgegevens niet laden.</string>
     <string name="woo_shipping_labels_package_creation_package_name">Naam pakket</string>
     <string name="woo_shipping_labels_package_creation_weight">Gewicht</string>
@@ -23,7 +65,6 @@ Language: nl
     <string name="woopos_items_pagination_error_description">\'Er is een fout opgetreden tijdens het laden van producten.\'</string>
     <string name="woopos_items_pagination_error_title">\'Meer items laden mislukt\'</string>
     <string name="woopos_items_pagination_try_again_label">Opnieuw proberen</string>
-    <string name="woo_pos_payment_remove_card">Kaart verwijderen</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Terug naar afrekenen</string>
     <string name="woo_pos_payment_failed_try_again">Probeer opnieuw te betalen</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Probeer een andere betaalmethode</string>
@@ -57,7 +98,7 @@ Language: nl
     <string name="orderlist_selection_menu_update_status">Status bijwerken</string>
     <string name="orderlist_selection_count_single">%d bestelling geselecteerd</string>
     <string name="orderlist_selection_count">%d bestellingen geselecteerd</string>
-    <string name="site_picker_edit_store_list_footer">Niet-geselecteerde winkels worden niet in de sitekiezer van de app weergegeven en krijgen geen pushberichten voor nieuwe bestellingen</string>
+    <string name="site_picker_edit_store_list_footer">Niet-geselecteerde winkels worden niet in de sitekiezer van de app weergegeven en krijgen geen pushberichten voor nieuwe bestellingen of productbeoordelingen</string>
     <string name="site_picker_edit_store_list_title">Zichtbare winkels</string>
     <string name="site_picker_edit_store_list">Winkels bewerken</string>
     <string name="woopos_variations_loading_error_title">Fout bij laden van variaties</string>
@@ -90,8 +131,8 @@ Language: nl
     <string name="shipping_label_purchased_track_shipment">Verzending volgen</string>
     <string name="shipping_label_purchased_learn_how_to_print">Leer hoe je kan printen vanaf je mobiele apparaat</string>
     <string name="shipping_label_purchased_note">Let op: een afgedrukt label hergebruiken is een overtreding van onze servicevoorwaarden en kan leiden tot strafrechtelijke vervolging.</string>
-    <string name="shipping_label_purchased_message">Vanuit hier kan je het verzendlabel opnieuw afdrukken of het papierformaat van het label wijzigen.</string>
-    <string name="shipping_label_purchased_title">Je verzendlabel kan worden afgedrukt</string>
+    <string name="shipping_label_purchased_success_message">Vanuit hier kan je het verzendlabel opnieuw afdrukken of het papierformaat van het label wijzigen.</string>
+    <string name="shipping_label_purchased_success_title">Je verzendlabel kan worden afgedrukt</string>
     <string name="order_detail_edit_store_currency_mismatch">U kunt deze bestelling alleen op het web bewerken, omdat het web gebruikmaakt van %1$s en uw site gebruikmaakt van %2$s</string>
     <string name="shipping_label_shipping_service_title">Bezorgservice</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">Snelste</string>
@@ -145,8 +186,8 @@ Language: nl
     <string name="order_shipment_tracking_barcode_scanning_failed">Scan mislukt. Probeer het later opnieuw</string>
     <string name="custom_fields_editor_value_label">Waarde</string>
     <string name="custom_fields_editor_key_label">Sleutel</string>
-    <string name="woopos_dialog_products_info_secondary_message">Andere producttypen, zoals virtueel, worden in toekomstige updates beschikbaar.</string>
-    <string name="woopos_dialog_products_info_primary_message">Alleen simpele fysieke en variabele producten zijn momenteel beschikbaar met POS.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Andere producttypen worden in toekomstige updates beschikbaar.</string>
+    <string name="woopos_dialog_products_info_primary_message">Alleen simpele fysieke, variabele en virtuele producten zijn momenteel beschikbaar met POS.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">Annuleren</string>
     <string name="blaze_campaign_budget_duration_current_duration">Duur</string>
     <string name="blaze_campaign_budget_duration_endless_description">De campagne loopt totdat je deze stopzet.</string>
@@ -187,9 +228,9 @@ Language: nl
     <string name="woopos_exit_dialog_confirmation_close_content_description">Sluiten</string>
     <string name="woopos_dialog_products_info_background_content_description">Achtergrond gedimd. Tik om het dialoogvenster te sluiten.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Tik dubbel om het dialoogvenster te sluiten</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Dialoogvenster voor alleen simpele en variabele producten</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Dialoogvenster voor alleen simpele, variabele en virtuele producten</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Tik dubbel voor meer informatie</string>
-    <string name="woopos_banner_simple_products_content_description">Banner voor alleen simpele en variabele producten</string>
+    <string name="woopos_banner_simple_products_content_description">Banner voor alleen simpele, variabele en virtuele producten</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Promoot je producten met Blaze Ads en verhoog nu je omzet.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Verhoog je omzet</string>
     <string name="more_menu_button_payments_description">Neem onderweg betalingen aan</string>
@@ -198,17 +239,16 @@ Language: nl
     <string name="woopos_cart_item_content_description">Product in winkelwagen %s, prijs %s</string>
     <string name="woopos_product_item_content_description">Product %s, prijs %s</string>
     <string name="blaze_campaign_status_suspended">Opgeschort</string>
-    <string name="woopos_totals_success_payment_cash">Een betaling van %1$s is voldaan</string>
     <string name="woopos_new_order_button">Nieuwe bestelling</string>
     <string name="woopos_dialog_products_info_button_label">OK</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Maak een bestelling aan in het winkelbeheer</string>
-    <string name="woopos_dialog_products_info_tertiary_message">Verlaat POS en maak een nieuwe bestelling aan vanuit het tabblad Bestellingen om betalingen te ontvangen voor een niet-simpel product.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Verlaat POS en maak een nieuwe bestelling aan vanuit het tabblad Bestellingen om betalingen te ontvangen voor andere producten.</string>
     <string name="woopos_dialog_products_info_heading">Waarom kan ik mijn producten niet zien?</string>
     <string name="woopos_banner_simple_products_info_content_description">Informatie</string>
     <string name="woopos_banner_simple_products_close_content_description">Sluiten</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Meer\u00A0informatie</string>
-    <string name="woopos_banner_simple_products_only_message">Alleen simpele fysieke en variabele producten zijn momenteel compatibel met POS. Andere producttypen, zoals virtueel, worden in toekomstige updates beschikbaar. </string>
-    <string name="woopos_banner_simple_products_only_title">Alleen simpele en variabele producten worden weergeven</string>
+    <string name="woopos_banner_simple_products_only_message">Alleen simpele fysieke, variabele en virtuele producten zijn momenteel compatibel met POS. Andere producttypen zullen in toekomstige updates beschikbaar worden. </string>
+    <string name="woopos_banner_simple_products_only_title">Alleen simpele, variabele en virtuele producten worden weergeven</string>
     <string name="support_request_site_address">Websiteadres</string>
     <string name="analytics_google_ads_cta_web_view_title">Google voor WooCommerce</string>
     <string name="analytics_google_ads_cta_action">Betaalde campagne toevoegen</string>
@@ -223,7 +263,7 @@ Language: nl
     <string name="woopos_products_loading_error_message">Nog een keertje proberen?</string>
     <string name="woopos_products_loading_error_title">Fout bij laden van producten</string>
     <string name="woopos_products_empty_list_message_two">POS ondersteunt momenteel alleen simpele producten</string>
-    <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten: \nmaak er een aan om te beginnen.</string>
+    <string name="woopos_variations_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten; \nmaak er een aan om te beginnen.</string>
     <string name="woopos_products_empty_list_title">Geen ondersteunde producten gevonden</string>
     <string name="woopos_products_empty_list_image_description">Geen producten</string>
     <string name="woopos_get_support_title">Vraag om ondersteuning</string>
@@ -1373,7 +1413,6 @@ Language: nl
     <string name="domain_privacy_option_off_title">Openbaar registreren</string>
     <string name="domain_privacy_option_on_title">Privé registreren met privacybescherming</string>
     <string name="domain_registration_contact_form_input_error">Voer een geldige %s in</string>
-    <string name="domain_registration_privacy_protection_tos">Door dit domein te registreren, ga je akkoord met onze %1$salgemene voorwaarden%2$s</string>
     <string name="domain_registration_privacy_protection_description">Domeineigenaren moeten contactgegevens delen in een openbare database met alle domeinen.\n Met Privacybescherming publiceren we onze eigen informatie in plaats van die van jou en sturen we berichten privé naar je door.</string>
     <string name="domain_registration_privacy_protection_title">Privacybescherming</string>
     <string name="domains_access_error_title">Alleen winkelbeheerders hebben toegang tot de domeininstellingen.</string>
@@ -2606,15 +2645,12 @@ Language: nl
     <string name="order_mark_complete">Bestelling markeren als voltooid</string>
     <string name="orderdetail_shipping_label_notice">Meer informatie over labels met je mobiele apparaat aanmaken</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Verzendlabel aanmaken</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">Je kunt nu verzendlabels rechtstreeks vanaf je apparaat aanmaken voor alle fysieke bestellingen met de gratis WooCommerce Shipping-plugin. Tik op \"Verzendlabel aanmaken\" om onze bètafunctie te proberen!</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">Maak verzendlabels vanaf je apparaat!!</string>
     <string name="orderdetail_payment_fees">Toeslagen</string>
     <string name="orderdetail_net">Netto betaling</string>
     <string name="orderdetail_payment_paid_by_customer">Betaald</string>
     <string name="login_jetpack_view_instructions_alt">Meer informatie over Jetpack verbinden</string>
     <string name="edit">Bewerken</string>
     <string name="product_images_validate_drag_and_drop">Valideren</string>
-    <string name="product_images_drag_and_drop_description">Slepen om foto\'s opnieuw te ordenen</string>
     <string name="product_downloadable_files_download_settings">Downloadinstellingen</string>
     <string name="product_downloadable_files_name_invalid">Voer een geldige naam in</string>
     <string name="product_downloadable_files_add_manually">Voer bestand-URL in</string>

@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-27 15:54:03+0000
+Translation-Revision-Date: 2025-01-28 09:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS şu anda yalnızca basit ve varyasyonlu ürünleri destekliyor, \nbaşlamak için bir tane oluşturun.</string>
+    <string name="woo_shipping_label_phone">Telefon</string>
+    <string name="woo_shipping_label_email">E-posta</string>
+    <string name="woo_shipping_label_post_code">Posta Kodu</string>
+    <string name="woo_shipping_label_state">Eyalet</string>
+    <string name="woo_shipping_label_city">Şehir</string>
+    <string name="woo_shipping_label_address">Adres</string>
+    <string name="woo_shipping_label_country">Ülke</string>
+    <string name="woo_shipping_label_company">Şirket</string>
+    <string name="woo_shipping_label_name">Ad</string>
+    <string name="woo_shipping_edit_origin_address_title">Menşeyi Düzenleyin</string>
+    <string name="woopos_variations_any_variation">Herhangi biri %s</string>
+    <string name="woopos_variations_empty_list_image_description">Varyasyon yok</string>
+    <string name="woopos_variations_empty_list_title">Desteklenen varyasyon bulunamadı</string>
+    <string name="login_use_wpcom_username_instead">Bunun yerine kullanıcı adı ve şifre kullanın</string>
+    <string name="product_images_drag_and_drop_to_reorder">Fotoğrafların sıralamasını değiştirmek için sürükleyip bırakın. İlk fotoğraf kapak olarak ayarlanır.</string>
+    <string name="product_cover_photo_tag">Kapak</string>
+    <string name="orderlist_bulk_update_result_partial_success">%d sipariş güncellendi ve %d sipariş güncellenemedi. Lütfen tekrar deneyin.</string>
+    <string name="orderlist_bulk_update_result_all_failed">Siparişler güncellenemedi. Lütfen tekrar deneyin.</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">Hiçbir sipariş güncellenemedi. Lütfen tekrar deneyin.</string>
+    <string name="add">%s ekle</string>
+    <string name="woo_shipping_labels_package_creation_error_cancel">İptal Et</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">İlerle</string>
+    <string name="woo_shipping_labels_package_creation_error_message">Kaydetmeden ilerlemek istiyor musunuz?</string>
+    <string name="woo_shipping_labels_package_creation_error_title">Paketi şablon olarak kaydedemedik</string>
+    <string name="woopos_variations_options_available_text">Kullanılabilir seçenekler var</string>
+    <string name="woopos_totals_success_payment_card">%1$s tutarındaki bir kart ödemesi başarıyla alındı</string>
+    <string name="woopos_totals_success_payment_cash">%1$s tutarındaki bir nakit ödemesi başarıyla alındı</string>
+    <string name="shipping_label_select_origin_address">Adres</string>
+    <string name="shipping_label_select_origin_default_address">%s (varsayılan)</string>
+    <string name="shipping_label_purchased_purchase_failed_error">Şu anda Gönderim Etiketi satın alma işlemini onaylayamıyoruz, daha sonra tekrar deneyin</string>
+    <string name="shipping_label_purchased_failure_message">Lütfen daha sonra tekrar deneyin</string>
+    <string name="shipping_label_purchased_failure_title">Gönderim etiketinizi işleyemedik</string>
+    <string name="shipping_label_purchased_in_progress_message">Bu tamamlandıktan sonra seçili kağıt boyutunda gönderim etiketini yazdırabileceksiniz</string>
+    <string name="shipping_label_purchased_in_progress_title">Gönderim etiketiniz işleniyor</string>
+    <string name="orderlist_bulk_update_maximum_reached">Maksimum seçim sayısına (%d) ulaşıldı.</string>
+    <string name="orderlist_bulk_update_status_updated">Durum güncellendi!</string>
+    <string name="site_picker_edit_store_list_error_title">Bildirim ayarları güncellenirken bir hata oluştu. Lütfen tekrar deneyin</string>
+    <string name="site_picker_edit_store_list_header">Diğer Mağazalar</string>
+    <string name="site_picker_edit_store_current_site_footer">Bunu gizlemek istiyorsanız lütfen başka bir mağazaya geçin</string>
+    <string name="site_picker_edit_store_current_site_header">Mevcut Mağaza</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">Bağlanmak için mağaza seçin (%d gizli)</string>
     <string name="woo_shipping_labels_package_creation_error">Paket verileri yüklenemedi</string>
     <string name="woo_shipping_labels_package_creation_package_name">Paket Adı</string>
     <string name="woo_shipping_labels_package_creation_weight">Ağırlık</string>
@@ -23,7 +65,6 @@ Language: tr
     <string name="woopos_items_pagination_error_description">\"Ürünler yüklerken hata oluştu.\"</string>
     <string name="woopos_items_pagination_error_title">\"Daha fazla öğe yüklenemedi.\"</string>
     <string name="woopos_items_pagination_try_again_label">Tekrar dene</string>
-    <string name="woo_pos_payment_remove_card">Kartı kaldır</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Ödemeye geri dön</string>
     <string name="woo_pos_payment_failed_try_again">Ödemeyi tekrar dene</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">Başka bir ödeme yöntemi dene</string>
@@ -57,7 +98,7 @@ Language: tr
     <string name="orderlist_selection_menu_update_status">Durumu güncelle</string>
     <string name="orderlist_selection_count_single">%d sipariş seçildi</string>
     <string name="orderlist_selection_count">%d sipariş seçildi</string>
-    <string name="site_picker_edit_store_list_footer">Seçilmeyen mağazalar uygulama sitesinin seçicisinde gösterilmez ve yeni siparişler için anlık bildirim almaz</string>
+    <string name="site_picker_edit_store_list_footer">Seçilmeyen mağazalar uygulama sitesinin seçicisinde gösterilmez ve yeni siparişler veya ürün incelemeler için anlık bildirim almaz</string>
     <string name="site_picker_edit_store_list_title">Görünen Mağazalar</string>
     <string name="site_picker_edit_store_list">Mağazaları Düzenle</string>
     <string name="woopos_variations_loading_error_title">Varyasyonlar yüklenirken hata oluştu</string>
@@ -90,8 +131,8 @@ Language: tr
     <string name="shipping_label_purchased_track_shipment">Gönderimi takip et</string>
     <string name="shipping_label_purchased_learn_how_to_print">Mobil cihazınızdan nasıl yazdıracağınız hakkında bilgi edinin</string>
     <string name="shipping_label_purchased_note">Not: Yazdırılmış bir etiketi yeniden kullanmak hizmet koşullarımızın ihlalidir ve cezai suçlamalarla sonuçlanabilir.</string>
-    <string name="shipping_label_purchased_message">Buradan gönderim etiketini yeniden yazdırabilir veya etiketin kağıt boyutunu değiştirebilirsiniz.</string>
-    <string name="shipping_label_purchased_title">Gönderim etiketiniz yazdırmaya hazır</string>
+    <string name="shipping_label_purchased_success_message">Buradan gönderim etiketini yeniden yazdırabilir veya etiketin kağıt boyutunu değiştirebilirsiniz.</string>
+    <string name="shipping_label_purchased_success_title">Gönderim etiketiniz yazdırmaya hazır</string>
     <string name="order_detail_edit_store_currency_mismatch">Üzgünüz, bu siparişi yalnızca web üzerinden düzenleyebilirsiniz, çünkü bu sipariş %1$s kullanıyor ve sitenizin para birimi şu:%2$s</string>
     <string name="shipping_label_shipping_service_title">Gönderim hizmeti</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">En hızlı</string>
@@ -145,8 +186,8 @@ Language: tr
     <string name="order_shipment_tracking_barcode_scanning_failed">Tarama başarısız. Lütfen daha sonra tekrar deneyin</string>
     <string name="custom_fields_editor_value_label">Değer</string>
     <string name="custom_fields_editor_key_label">Anahtar</string>
-    <string name="woopos_dialog_products_info_secondary_message">Sanal gibi diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak.</string>
-    <string name="woopos_dialog_products_info_primary_message">Şu anda POS ile yalnızca basit fiziksel ürünler ve varyasyonlu ürünler kullanılabiliyor.</string>
+    <string name="woopos_dialog_products_info_secondary_message">Diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak.</string>
+    <string name="woopos_dialog_products_info_primary_message">Şu anda POS ile yalnızca basit fiziksel, varyasyonlu ve sanal ürünler kullanılabiliyor.</string>
     <string name="blaze_campaign_budget_duration_cancel_button">İptal Et</string>
     <string name="blaze_campaign_budget_duration_current_duration">Süre</string>
     <string name="blaze_campaign_budget_duration_endless_description">Kampanya siz durdurana kadar çalışır.</string>
@@ -187,9 +228,9 @@ Language: tr
     <string name="woopos_exit_dialog_confirmation_close_content_description">Kapat</string>
     <string name="woopos_dialog_products_info_background_content_description">Soluk arkaplan. Pencereyi kapatmak için dokunun.</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">Pencereyi kapatmak için iki kez dokunun</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">Yalnızca basit ve varyasyonlu ürünler penceresi</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">Yalnızca basit, varyasyonlu ve sanal ürünler penceresi</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">Daha fazla bilgi edinmek için iki kez dokunun</string>
-    <string name="woopos_banner_simple_products_content_description">Yalnızca basit ve varyasyonlu ürünler başlığı</string>
+    <string name="woopos_banner_simple_products_content_description">Yalnızca basit, varyasyonlu ve sanal ürünler başlığı</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">Blaze Reklamları ile hemen ürünlerinizi tanıtın ve satışlarınızı artırın.</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">Satışlarınızı güçlendirin</string>
     <string name="more_menu_button_payments_description">Hareket halindeyken ödeme alın</string>
@@ -198,17 +239,16 @@ Language: tr
     <string name="woopos_cart_item_content_description">Sepetteki ürün %s, Fiyatı %s</string>
     <string name="woopos_product_item_content_description">Ürün %s, Fiyatı %s</string>
     <string name="blaze_campaign_status_suspended">Askıya alındı</string>
-    <string name="woopos_totals_success_payment_cash">%1$s tutarındaki bir ödeme başarıyla alındı</string>
     <string name="woopos_new_order_button">Yeni sipariş</string>
     <string name="woopos_dialog_products_info_button_label">Tamam</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ Mağaza yönetiminde sipariş oluşturun</string>
-    <string name="woopos_dialog_products_info_tertiary_message">Temel olmayan bir ürünün ödemesini almak için POS\'tan çıkın ve siparişler sekmesinden yeni sipariş oluşturun.</string>
+    <string name="woopos_dialog_products_info_tertiary_message">Diğer ürünlerin ödemesini almak için POS\'tan çıkın ve siparişler sekmesinden yeni sipariş oluşturun.</string>
     <string name="woopos_dialog_products_info_heading">Ürünlerimi neden göremiyorum?</string>
     <string name="woopos_banner_simple_products_info_content_description">Bilgi</string>
     <string name="woopos_banner_simple_products_close_content_description">Kapat</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">Daha fazla\u00A0bilgi edinin</string>
-    <string name="woopos_banner_simple_products_only_message">Şu anda POS ile yalnızca basit fiziksel ve varyasyonlu ürünler uyumlu. Sanal gibi diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak. </string>
-    <string name="woopos_banner_simple_products_only_title">Yalnızca basit ve varyasyonlu ürünler gösteriliyor</string>
+    <string name="woopos_banner_simple_products_only_message">Şu anda POS ile yalnızca basit fiziksel, varyasyonlu ve sanal ürünler uyumlu. Diğer ürün türleri gelecekteki güncellemelerde kullanılabilir olacak. </string>
+    <string name="woopos_banner_simple_products_only_title">Yalnızca basit, varyasyonlu ve sanal ürünler gösteriliyor</string>
     <string name="support_request_site_address">Site Adresi</string>
     <string name="analytics_google_ads_cta_web_view_title">WooCommerce İçin Google</string>
     <string name="analytics_google_ads_cta_action">Ücretli kampanya ekle</string>
@@ -223,7 +263,7 @@ Language: tr
     <string name="woopos_products_loading_error_message">Bir kez daha denemek ister misiniz?</string>
     <string name="woopos_products_loading_error_title">Ürünler yüklenirken hata oluştu</string>
     <string name="woopos_products_empty_list_message_two">POS şu anda yalnızca basit ürünleri destekliyor</string>
-    <string name="woopos_products_empty_list_message">POS şu anda yalnızca basit ve varyasyonlu ürünleri destekliyor, \nbaşlamak için bir tane oluşturun.</string>
+    <string name="woopos_variations_empty_list_message">POS şu anda yalnızca basit ve varyasyonlu ürünleri destekliyor, \nbaşlamak için bir tane oluşturun.</string>
     <string name="woopos_products_empty_list_title">Desteklenen ürün bulunamadı</string>
     <string name="woopos_products_empty_list_image_description">Ürün yok</string>
     <string name="woopos_get_support_title">Destek Alın</string>
@@ -1373,7 +1413,6 @@ Language: tr
     <string name="domain_privacy_option_off_title">Herkese açık olarak kaydet</string>
     <string name="domain_privacy_option_on_title">Gizlilik koruması ile özel olarak kaydet</string>
     <string name="domain_registration_contact_form_input_error">Lütfen geçerli bir %s girin</string>
-    <string name="domain_registration_privacy_protection_tos">Bu etki alanını kaydettirerek %1$sşartlar ve koşulları%2$s kabul etmiş sayılırsınız.</string>
     <string name="domain_registration_privacy_protection_description">Alan adı sahiplerinin, tüm alan adlarının herkese açık bir veritabanında iletişim bilgilerini paylaşmaları gerekir. Privacy Protection özelliğiyle sizin bilgileriniz yerine kendi bilgilerimizi yayımlıyoruz ve her türlü iletişimi size gizlice iletiyoruz.</string>
     <string name="domain_registration_privacy_protection_title">Gizlilik koruması</string>
     <string name="domains_access_error_title">Alan adı ayarlarına yalnızca mağaza yöneticileri erişebilir</string>
@@ -2606,15 +2645,12 @@ Language: tr
     <string name="order_mark_complete">Siparişi tamamlandı olarak işaretle</string>
     <string name="orderdetail_shipping_label_notice">Mobil cihazınızla etiket oluşturma hakkında daha fazla bilgi edinin</string>
     <string name="orderdetail_shipping_label_create_shipping_label">Gönderim etiketi oluşturun</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">Artık ücretsiz WooCommerce Shipping eklentisi ile tüm fiziksel siparişler için gönderi etiketlerini doğrudan cihazınızdan oluşturabilirsiniz. Beta özelliğimizi denemek için \"Gönderim etiketi oluştur\"a dokunun.</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">Gönderim etiketlerini cihazınızdan oluşturun.</string>
     <string name="orderdetail_payment_fees">Masraflar</string>
     <string name="orderdetail_net">Net ödeme</string>
     <string name="orderdetail_payment_paid_by_customer">Ödendi</string>
     <string name="login_jetpack_view_instructions_alt">Jetpack\'i bağlama hakkında daha fazla bilgi edinin</string>
     <string name="edit">Düzenle</string>
     <string name="product_images_validate_drag_and_drop">Doğrula</string>
-    <string name="product_images_drag_and_drop_description">Fotoğrafların sıralamasını değiştirmek için sürükle bırak</string>
     <string name="product_downloadable_files_download_settings">İndirme Ayarları</string>
     <string name="product_downloadable_files_name_invalid">Lütfen geçerli bir ad girin</string>
     <string name="product_downloadable_files_add_manually">Dosya URL\'si girin</string>

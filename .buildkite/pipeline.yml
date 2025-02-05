@@ -35,9 +35,7 @@ steps:
           queue: "linter"
 
       - label: "detekt"
-        command: |
-          echo "--- 🧹 Linting"
-          ./gradlew detektAll
+        command: ./gradlew detektAll
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "**/build/reports/detekt/detekt.html"
@@ -60,14 +58,12 @@ steps:
     steps:
 
       - label: "🛠 Prototype Build: Mobile App"
-        command: |
-          ".buildkite/commands/prototype-build.sh" "WooCommerce"
+        command: ".buildkite/commands/prototype-build.sh WooCommerce"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 
       - label: "🛠 Prototype Build: Wear App"
-        command: |
-          ".buildkite/commands/prototype-build.sh" "WooCommerce-Wear"
+        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
         if: build.pull_request.id != null
         plugins: [$CI_TOOLKIT]
 

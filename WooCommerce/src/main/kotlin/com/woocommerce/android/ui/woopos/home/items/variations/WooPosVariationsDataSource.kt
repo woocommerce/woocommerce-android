@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,7 +48,14 @@ class WooPosVariationsDataSource @Inject constructor(
             emit(FetchResult.Cached(cachedVariations))
         }
 
-        val result = handler.fetchVariations(productId, forceRefresh = true)
+        val result = handler.fetchVariations(
+            productId,
+            forceRefresh = true,
+            filterOptions = mapOf(
+                WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH,
+                WCProductStore.VariationFilterOption.DOWNLOADABLE to VARIATION_DOWNLOADABLE_FALSE
+            )
+        )
         if (result.isSuccess) {
             val remoteVariations = handler.getVariationsFlow(productId).firstOrNull()?.applyFilter() ?: emptyList()
             updateCache(productId, remoteVariations)
@@ -64,7 +72,13 @@ class WooPosVariationsDataSource @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     suspend fun loadMore(productId: Long): Result<List<ProductVariation>> = withContext(Dispatchers.IO) {
-        val result = handler.loadMore(productId)
+        val result = handler.loadMore(
+            productId,
+            filterOptions = mapOf(
+                WCProductStore.VariationFilterOption.STATUS to VARIATION_STATUS_PUBLISH,
+                WCProductStore.VariationFilterOption.DOWNLOADABLE to VARIATION_DOWNLOADABLE_FALSE
+            )
+        )
         if (result.isSuccess) {
             val fetchedVariations = handler.getVariationsFlow(productId).first().applyFilter()
             Result.success(fetchedVariations)
@@ -74,6 +88,11 @@ class WooPosVariationsDataSource @Inject constructor(
                 result.exceptionOrNull() ?: Exception("Unknown error while loading more variations")
             )
         }
+    }
+
+    companion object {
+        private const val VARIATION_STATUS_PUBLISH = "publish"
+        private const val VARIATION_DOWNLOADABLE_FALSE = "false"
     }
 }
 
@@ -89,5 +108,6 @@ sealed class FetchResult {
 }
 
 private fun List<ProductVariation>.applyFilter(): List<ProductVariation> {
-    return filter { it.price != null && !it.isDownloadable }
+    return filter { !it.isDownloadable } // Keeping this filter for now, but it should be removed in the future after
+    // WC 9.7.0 is released. https://a8c.slack.com/archives/C070SJRA8DP/p1736795937571479
 }

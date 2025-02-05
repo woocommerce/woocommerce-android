@@ -174,7 +174,10 @@ class SitePickerViewModelTest : BaseUnitTest() {
         var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
         viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
 
-        assertThat(sitePickerData).isEqualTo(SitePickerTestUtils.getDefaultLoginViewState(defaultSitePickerViewState))
+        assertThat(sitePickerData).isEqualTo(
+            SitePickerTestUtils.getDefaultLoginViewState(defaultSitePickerViewState)
+                .copy(editStoreListEnabled = false)
+        )
     }
 
     @Test
@@ -226,6 +229,19 @@ class SitePickerViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `given that user signing in, when site picker is shown, then show edit sites button`() =
+        testBlocking {
+            givenTheScreenIsFromLogin(true)
+            whenSitesAreFetched(sitesFromDb = defaultExpectedSiteList)
+            whenViewModelIsCreated()
+
+            var sitePickerData: SitePickerViewModel.SitePickerViewState? = null
+            viewModel.sitePickerViewStateData.observeForever { _, new -> sitePickerData = new }
+
+            assertThat(sitePickerData?.editStoreListEnabled).isFalse()
+        }
+
+    @Test
     fun `given that the view model is created, when stores fetch succeeds, then stores are displayed correctly`() =
         testBlocking {
             whenSitesAreFetched()
@@ -257,7 +273,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
                 assertion: Assert<*, *>.() -> Unit
             ): MutableList<SitesListItem> {
                 assertThat(first()).assertion()
-                removeFirst()
+                removeAt(0)
                 return this
             }
 

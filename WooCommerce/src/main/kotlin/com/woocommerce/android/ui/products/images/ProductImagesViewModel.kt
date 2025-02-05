@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.areSameImagesAs
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -25,7 +26,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -78,7 +78,6 @@ class ProductImagesViewModel @Inject constructor(
     init {
         if (viewState.showSourceChooser == true) {
             viewState = viewState.copy(showSourceChooser = false)
-            clearImageUploadErrors()
             triggerEvent(ShowImageSourceDialog)
         } else if (navArgs.selectedImage != null) {
             triggerEvent(ShowImageDetail(navArgs.selectedImage!!))
@@ -148,7 +147,10 @@ class ProductImagesViewModel @Inject constructor(
     }
 
     fun onValidateButtonClicked() {
-        viewState = viewState.copy(productImagesState = Browsing)
+        viewState = viewState.copy(
+            images = images.updateProductCoverImageToFirstItem(),
+            productImagesState = Browsing
+        )
     }
 
     fun onNavigateBackButtonClicked() {
@@ -159,6 +161,7 @@ class ProductImagesViewModel @Inject constructor(
                     images = productImagesState.initialState
                 )
             }
+
             Browsing -> {
                 val hasChange = !images.areSameImagesAs(originalImages)
                 analyticsTracker.track(
@@ -214,14 +217,19 @@ class ProductImagesViewModel @Inject constructor(
             .launchIn(this)
 
         mediaFileUploadHandler.observeCurrentUploadErrors(remoteProductId)
-            .filter { it.isNotEmpty() }
-            .onEach {
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowActionSnackbar(
-                        message = resourceProvider.getMediaUploadErrorMessage(it.size),
-                        actionText = resourceProvider.getString(R.string.details)
-                    ) { triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(remoteProductId)) }
-                )
+            .onEach { errorList ->
+                if (errorList.isEmpty()) {
+                    viewState = viewState.copy(hasUploadErrors = false)
+                } else {
+                    viewState = viewState.copy(hasUploadErrors = true)
+                    triggerEvent(
+                        MultiLiveEvent.Event.ShowUiStringSnackbar(
+                            message = UiStringText(
+                                resourceProvider.getMediaUploadErrorMessage(errorList.size)
+                            ),
+                        )
+                    )
+                }
             }
             .launchIn(this)
     }
@@ -229,7 +237,11 @@ class ProductImagesViewModel @Inject constructor(
     fun onGalleryImageDragStarted() {
         when (viewState.productImagesState) {
             is Dragging -> { /* no-op*/ }
-            Browsing -> viewState = viewState.copy(productImagesState = Dragging(images))
+
+            Browsing -> viewState = viewState.copy(
+                images = images.uncheckProductCoverImage(),
+                productImagesState = Dragging(images)
+            )
         }
     }
 
@@ -249,6 +261,15 @@ class ProductImagesViewModel @Inject constructor(
         }
     }
 
+    fun openUploadScreen() {
+        triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(navArgs.remoteId))
+    }
+
+    private fun List<Product.Image>.updateProductCoverImageToFirstItem() =
+        this.mapIndexed { index, image -> image.copy(isCoverImage = index == 0) }
+
+    private fun List<Product.Image>.uncheckProductCoverImage() = this.map { it.copy(isCoverImage = false) }
+
     @Parcelize
     data class ViewState(
         val showSourceChooser: Boolean? = null,
@@ -257,6 +278,7 @@ class ProductImagesViewModel @Inject constructor(
         val images: List<Product.Image>? = null,
         val chooserButtonButtonTitleRes: Int? = null,
         val isWarningVisible: Boolean? = null,
+        val hasUploadErrors: Boolean? = null,
         val isDragDropDescriptionVisible: Boolean? = null,
         val productImagesState: ProductImagesState = Browsing
     ) : Parcelable

@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,6 @@ import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY
@@ -27,14 +27,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCO
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.IsScreenInTwoPaneLayout
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.NotificationReceivedEvent
-import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.drop
 import com.woocommerce.android.extensions.filter
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.extensions.runWithContext
-import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
@@ -87,7 +86,6 @@ import org.wordpress.android.fluxc.store.ListStore.ListErrorType.PARSE_ERROR
 import org.wordpress.android.fluxc.store.ListStore.ListErrorType.TIMEOUT_ERROR
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
-import org.wordpress.android.mediapicker.util.distinct
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -116,7 +114,6 @@ class OrderListViewModel @Inject constructor(
     private val orderListTransactionLauncher: OrderListTransactionLauncher,
     private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val feedbackPrefs: FeedbackPrefs,
     private val barcodeScanningTracker: BarcodeScanningTracker,
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val appPrefs: AppPrefsWrapper,
@@ -137,11 +134,6 @@ class OrderListViewModel @Inject constructor(
 
     override val lifecycle: Lifecycle
         get() = lifecycleRegistry
-
-    private val simplePaymentsAndOrderCreationFeedbackState
-        get() = feedbackPrefs.getFeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-        )?.feedbackState ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     val performanceObserver: LifecycleObserver = orderListTransactionLauncher
 
@@ -208,14 +200,6 @@ class OrderListViewModel @Inject constructor(
     private var dismissListErrors = false
     var searchQuery = ""
 
-    private val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean
-        get() {
-            val simplePaymentsAndOrderFeedbackDismissed =
-                simplePaymentsAndOrderCreationFeedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED
-            val isTroubleshootingBannerVisible = viewState.shouldDisplayTroubleshootingBanner
-            return !simplePaymentsAndOrderFeedbackDismissed && !isTroubleshootingBannerVisible
-        }
-
     private var _lastUpdateOrdersList = MutableStateFlow<Long?>(null)
     val lastUpdateOrdersList: LiveData<String?> = _lastUpdateOrdersList
         .map { lastUpdateMillis ->
@@ -228,8 +212,6 @@ class OrderListViewModel @Inject constructor(
         }.asLiveData()
 
     fun isSelecting() = viewState.orderListState == ViewState.OrderListState.Selecting
-
-    private var isQueueingBulkUpdateSuccessMessage = false
 
     init {
         lifecycleRegistry.currentState = Lifecycle.State.CREATED
@@ -315,7 +297,6 @@ class OrderListViewModel @Inject constructor(
     fun changeTroubleshootingBannerVisibility(show: Boolean) {
         viewState = viewState.copy(
             shouldDisplayTroubleshootingBanner = show,
-            isSimplePaymentsAndOrderCreationFeedbackVisible = !show
         )
     }
 
@@ -429,19 +410,19 @@ class OrderListViewModel @Inject constructor(
      * Track user clicked to open an order and the status of that order, along with some
      * data about the order custom fields
      */
-    fun trackOrderClickEvent(orderId: Long, orderStatus: String, windowSize: WindowSizeClass) {
+    fun trackOrderClickEvent(orderId: Long, orderStatus: String, isTwoPaneLayout: Boolean) {
         AnalyticsTracker.track(
             AnalyticsEvent.ORDER_OPEN,
             mapOf(
                 AnalyticsTracker.KEY_ID to orderId,
                 AnalyticsTracker.KEY_STATUS to orderStatus,
-                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(windowSize)
+                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(isTwoPaneLayout)
             )
         )
     }
 
-    private fun getScreenSizeClassNameForAnalytics(windowSize: WindowSizeClass) =
-        IsScreenLargerThanCompactValue(windowSize != WindowSizeClass.Compact).deviceTypeToAnalyticsString
+    private fun getScreenSizeClassNameForAnalytics(isTwoPaneLayout: Boolean) =
+        IsScreenInTwoPaneLayout(isTwoPaneLayout).deviceTypeToAnalyticsString
 
     /**
      * Activates the provided list by first removing the LiveData sources for the active list,
@@ -480,14 +461,6 @@ class OrderListViewModel @Inject constructor(
             _isLoadingMore.value = it
         }
 
-        // Observe status changes in the data
-        pagedListWrapper.data.distinct().observe(this) {
-            if (isQueueingBulkUpdateSuccessMessage) {
-                isQueueingBulkUpdateSuccessMessage = false
-                triggerEvent(Event.ShowSnackbar(R.string.orderlist_bulk_update_status_updated))
-            }
-        }
-
         pagedListWrapper.listError
             .filter { !dismissListErrors }
             .filterNotNull()
@@ -496,7 +469,6 @@ class OrderListViewModel @Inject constructor(
                     PARSE_ERROR -> {
                         viewState = viewState.copy(
                             isErrorFetchingDataBannerVisible = true,
-                            isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
 
@@ -527,13 +499,12 @@ class OrderListViewModel @Inject constructor(
     private fun displayOrdersBannerOrJitm() {
         viewModelScope.launch {
             when {
-                !isSimplePaymentsAndOrderCreationFeedbackVisible -> {
+                !viewState.shouldDisplayTroubleshootingBanner -> {
                     viewState = viewState.copy(
                         jitmEnabled = true
                     )
                 }
             }
-            refreshOrdersBannerVisibility()
         }
     }
 
@@ -806,23 +777,6 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private fun refreshOrdersBannerVisibility() {
-        viewState = viewState.copy(
-            isSimplePaymentsAndOrderCreationFeedbackVisible = isSimplePaymentsAndOrderCreationFeedbackVisible
-        )
-    }
-
-    fun onDismissOrderCreationSimplePaymentsFeedback() {
-        analyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-            )
-        )
-        refreshOrdersBannerVisibility()
-    }
-
     private fun checkChaChingSoundSettings() {
         fun recreateNotificationChannel() {
             notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
@@ -923,6 +877,7 @@ class OrderListViewModel @Inject constructor(
                 viewState = viewState.copy(selectionCount = count)
                 showMaximumBulkSelectionNotice()
             }
+
             count > 0 && !isSelecting() -> enterSelectionMode(count)
             count > 0 -> viewState = viewState.copy(selectionCount = count)
         }
@@ -1002,21 +957,7 @@ class OrderListViewModel @Inject constructor(
                         newStatus = newStatus
                     )
 
-                    if (result.isFailure) {
-                        viewState = viewState.copy(isBulkUpdating = false)
-                        trackBulkOrderUpdateFailure()
-                        triggerEvent(Event.ShowSnackbar(R.string.error_generic))
-                    } else {
-                        isQueueingBulkUpdateSuccessMessage = true
-                        ordersPagedListWrapper?.fetchFirstPage()
-
-                        analyticsTracker.track(
-                            AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_SUCCESS,
-                            mapOf(
-                                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
-                            )
-                        )
-                    }
+                    handleBulkUpdateResult(result)
                 }
             }
         } else {
@@ -1024,6 +965,66 @@ class OrderListViewModel @Inject constructor(
             triggerEvent(Event.ShowSnackbar(R.string.offline_error))
         }
         exitSelectionMode()
+    }
+
+    private fun handleBulkUpdateResult(result: BulkUpdateOrderResult) {
+        when (result) {
+            is BulkUpdateOrderResult.AllSuccess,
+            is BulkUpdateOrderResult.PartialSuccess -> {
+                // Prepare to show a success message after the list has been updated
+                val observable = ordersPagedListWrapper?.data?.drop(1)
+                observable?.observe(
+                    this,
+                    object : Observer<PagedOrdersList> {
+                        override fun onChanged(value: PagedOrdersList) {
+                            val message = when (result) {
+                                is BulkUpdateOrderResult.AllSuccess -> resourceProvider.getString(
+                                    R.string.orderlist_bulk_update_status_updated
+                                )
+
+                                is BulkUpdateOrderResult.PartialSuccess -> resourceProvider.getString(
+                                    R.string.orderlist_bulk_update_result_partial_success,
+                                    result.successCount,
+                                    result.failureCount
+                                )
+
+                                else -> resourceProvider.getString(R.string.orderlist_bulk_update_status_updated)
+                            }
+                            triggerEvent(OrderListEvent.ShowSnackbarString(message))
+                            observable.removeObserver(this)
+                        }
+                    }
+                )
+
+                ordersPagedListWrapper?.fetchFirstPage()
+                trackBulkOrderUpdateSuccess()
+            }
+
+            is BulkUpdateOrderResult.NoOrdersUpdated,
+            is BulkUpdateOrderResult.AllFailed,
+            is BulkUpdateOrderResult.Error -> {
+                viewState = viewState.copy(isBulkUpdating = false)
+                trackBulkOrderUpdateFailure()
+                val messageRes = when (result) {
+                    is BulkUpdateOrderResult.NoOrdersUpdated ->
+                        R.string.orderlist_bulk_update_result_no_orders_updated
+
+                    is BulkUpdateOrderResult.AllFailed -> R.string.orderlist_bulk_update_result_all_failed
+                    is BulkUpdateOrderResult.Error -> R.string.error_generic
+                    else -> R.string.error_generic
+                }
+                triggerEvent(Event.ShowSnackbar(messageRes))
+            }
+        }
+    }
+
+    private fun trackBulkOrderUpdateSuccess() {
+        analyticsTracker.track(
+            AnalyticsEvent.ORDERS_LIST_BULK_UPDATE_SUCCESS,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+            )
+        )
     }
 
     private fun trackBulkOrderUpdateFailure() {
@@ -1100,7 +1101,6 @@ class OrderListViewModel @Inject constructor(
         val isRefreshPending: Boolean = false,
         val arePaymentGatewaysFetched: Boolean = false,
         val filterCount: Int = 0,
-        val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
         val isErrorFetchingDataBannerVisible: Boolean = false,
         val shouldDisplayTroubleshootingBanner: Boolean = false,

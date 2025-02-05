@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetVariationById
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -30,6 +31,7 @@ class WooPosTotalsRepositoryTest {
     private val orderStore: WCOrderStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val orderMapper: OrderMapper = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     private lateinit var repository: WooPosTotalsRepository
 
@@ -191,5 +193,6 @@ class WooPosTotalsRepositoryTest {
         orderStore,
         selectedSite,
         orderMapper,
+        resourceProvider,
     )
 }

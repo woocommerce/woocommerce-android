@@ -35,7 +35,7 @@ class AiProductPreviewViewModelTest : BaseUnitTest() {
     companion object {
         private const val PRODUCT_FEATURES = "product_features"
         private val SAMPLE_PRODUCT = AIProductModel.buildDefault("default name", "default description")
-        private val SAMPLE_UPLOADED_IMAGE = Product.Image(0, "image", "url", Date())
+        private val SAMPLE_UPLOADED_IMAGE = Product.Image(0, "image", "url", Date(), false)
     }
 
     private val buildProductPreviewProperties: BuildProductPreviewProperties = mock()

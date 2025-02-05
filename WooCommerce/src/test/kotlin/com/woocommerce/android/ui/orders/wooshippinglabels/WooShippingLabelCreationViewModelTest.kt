@@ -6,12 +6,14 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.CustomsState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.LabelPurchased
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PackageSelectionState.DataAvailable
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.PurchaseState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState
 import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreationViewModel.WooShippingViewState.DataState
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.ObserveOriginAddresses
+import com.woocommerce.android.ui.orders.wooshippinglabels.customs.ShouldRequireCustomsForm
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.PurchasedLabelData
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.ShippableItemModel
@@ -203,6 +205,10 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle =
         WooShippingLabelCreationFragmentArgs(orderId = orderId).toSavedStateHandle()
 
+    private val shouldRequireCustomsForm: ShouldRequireCustomsForm = mock {
+        on { invoke(any()) } doReturn true
+    }
+
     private val observeOriginAddresses: ObserveOriginAddresses = mock()
     private val getShippingRates: GetShippingRates = mock()
     private val purchaseShippingLabel: PurchaseShippingLabel = mock()
@@ -219,6 +225,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             getShippingRates = getShippingRates,
             purchaseShippingLabel = purchaseShippingLabel,
             observeStoreOptions = observeStoreOptions,
+            shouldRequireCustoms = shouldRequireCustomsForm,
             savedState = savedState
         )
     }
@@ -561,6 +568,58 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `CustomState is NotRequired when shouldRequireCustomsForm returns false`() = testBlocking {
+        var currentViewState: WooShippingViewState? = null
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        sut.viewState.asLiveData().observeForever {
+            currentViewState = it
+        }
+
+        assertThat(currentViewState).isInstanceOf(DataState::class.java)
+        val dataState = currentViewState as DataState
+
+        assertThat(dataState.customsState).isEqualTo(CustomsState.NotRequired)
+    }
+
+    @Test
+    fun `CustomState is Unavailable when shouldRequireCustomsForm returns true`() = testBlocking {
+        var currentViewState: WooShippingViewState? = null
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
+            shippingLines = defaultShippingLines
+        )
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(getShippableItems(any())) doReturn defaultShippableItems
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(defaultStoreOptions)
+        whenever(shouldRequireCustomsForm.invoke(any())) doReturn false
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        sut.viewState.asLiveData().observeForever {
+            currentViewState = it
+        }
+
+        assertThat(currentViewState).isInstanceOf(DataState::class.java)
+        val dataState = currentViewState as DataState
+
+        assertThat(dataState.customsState).isEqualTo(CustomsState.NotRequired)
+    }
+
+    @Test
     fun `when onPurchaseShippingLabel succeed then return the label data`() = testBlocking {
         val order = OrderTestUtils.generateTestOrder(orderId = orderId).copy(
             shippingLines = defaultShippingLines
@@ -671,5 +730,121 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         val currentViewState = sut.viewState.value
         assertThat(currentViewState).isInstanceOf(WooShippingViewState.Error::class.java)
+    }
+
+    @Test
+    fun `when address selection is collapsed then changes shipment details are allowed`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(null)
+
+        createViewModel()
+
+        advanceUntilIdle()
+        // Collapse shipment details and select address
+        var changeAccepted = sut.onShipmentDetailsExpandedChange(false)
+        assertThat(changeAccepted).isTrue()
+        changeAccepted = sut.onSelectAddressExpandedChange(false)
+        assertThat(changeAccepted).isTrue()
+
+        // Check all changes are accepted
+        changeAccepted = sut.onShipmentDetailsExpandedChange(false)
+        assertThat(changeAccepted).isTrue()
+        changeAccepted = sut.onShipmentDetailsExpandedChange(true)
+        assertThat(changeAccepted).isTrue()
+    }
+
+    @Test
+    fun `when address selection is expanded then prevent any change on the shipment details`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(null)
+
+        createViewModel()
+
+        advanceUntilIdle()
+        // Expand shipment details and select address
+        var changeAccepted = sut.onShipmentDetailsExpandedChange(true)
+        assertThat(changeAccepted).isTrue()
+
+        changeAccepted = sut.onSelectAddressExpandedChange(true)
+        assertThat(changeAccepted).isTrue()
+
+        // Check no changes are accepted when select address is expanded
+        changeAccepted = sut.onShipmentDetailsExpandedChange(false)
+        assertThat(changeAccepted).isFalse()
+        changeAccepted = sut.onShipmentDetailsExpandedChange(true)
+        assertThat(changeAccepted).isFalse()
+    }
+
+    @Test
+    fun `when a bottom sheet is expanded then the back gesture closes the sheet`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(null)
+
+        createViewModel()
+
+        advanceUntilIdle()
+        // Expand shipment details and select address
+        sut.onShipmentDetailsExpandedChange(true)
+        sut.onSelectAddressExpandedChange(true)
+
+        // Close address selection
+        var shouldNavigateBack = sut.allowBackNavigation()
+        assertThat(shouldNavigateBack).isFalse()
+
+        // Close shipment details
+        shouldNavigateBack = sut.allowBackNavigation()
+        assertThat(shouldNavigateBack).isFalse()
+
+        // Navigate back
+        shouldNavigateBack = sut.allowBackNavigation()
+        assertThat(shouldNavigateBack).isTrue()
+    }
+
+    @Test
+    fun `when shipment details is expanded then the back gesture closes the sheet`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(null)
+
+        createViewModel()
+
+        advanceUntilIdle()
+        sut.onShipmentDetailsExpandedChange(true)
+
+        // Close shipment details
+        var shouldNavigateBack = sut.allowBackNavigation()
+        assertThat(shouldNavigateBack).isFalse()
+
+        // Navigate back
+        shouldNavigateBack = sut.allowBackNavigation()
+        assertThat(shouldNavigateBack).isTrue()
+    }
+
+    @Test
+    fun `when there is no bottom sheet expanded, then on back navigates to the previous screen`() = testBlocking {
+        val order = OrderTestUtils.generateTestOrder(orderId = orderId)
+
+        whenever(orderDetailRepository.getOrderById(any())) doReturn order
+        whenever(observeOriginAddresses()) doReturn flowOf(defaultOriginAddresses)
+        whenever(observeStoreOptions()) doReturn flowOf(null)
+
+        createViewModel()
+
+        advanceUntilIdle()
+
+        // Navigate back
+        val shouldNavigateBack = sut.allowBackNavigation()
+        assertThat(shouldNavigateBack).isTrue()
     }
 }

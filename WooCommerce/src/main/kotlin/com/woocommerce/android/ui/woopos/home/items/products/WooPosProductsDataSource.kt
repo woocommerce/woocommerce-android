@@ -45,7 +45,7 @@ class WooPosProductsDataSource @Inject constructor(
         )
 
         if (result.isSuccess) {
-            val remoteProducts = handler.productsFlow.first().applyPosProductFilter()
+            val remoteProducts = handler.productsFlow.first()
             updateProductCache(remoteProducts)
             emit(ProductsResult.Remote(Result.success(productCache)))
         } else {
@@ -63,7 +63,7 @@ class WooPosProductsDataSource @Inject constructor(
     suspend fun loadMore(): Result<List<Product>> = withContext(Dispatchers.IO) {
         val result = handler.loadMore()
         if (result.isSuccess) {
-            val moreProducts = handler.productsFlow.first().applyPosProductFilter()
+            val moreProducts = handler.productsFlow.first()
             updateProductCache(moreProducts)
             Result.success(productCache)
         } else {
@@ -81,13 +81,6 @@ class WooPosProductsDataSource @Inject constructor(
         val errorMessage = error?.message ?: "Unknown error"
         WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage", error)
     }
-
-    private fun List<Product>.applyPosProductFilter() = this.filter { product ->
-        isProductHasAPrice(product)
-    }
-
-    private fun isProductHasAPrice(product: Product) =
-        (product.price != null)
 
     sealed class ProductsResult {
         data class Cached(val products: List<Product>) : ProductsResult()

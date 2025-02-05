@@ -183,6 +183,41 @@ fun WCOutlinedButton(
 }
 
 @Composable
+fun WCRemoveButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    text: String,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    enabled: Boolean = true,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
+        contentColor = colorResource(id = R.color.woo_red_50),
+    ),
+) {
+    WCOutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        enabled = enabled,
+        contentPadding = contentPadding,
+        interactionSource = interactionSource,
+        border = BorderStroke(1.dp, colorResource(id = R.color.woo_red_50)),
+        colors = colors
+    ) {
+        if (leadingIcon != null) {
+            leadingIcon()
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+        }
+        Text(text = text)
+        if (trailingIcon != null) {
+            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.minor_100)))
+            trailingIcon()
+        }
+    }
+}
+
+@Composable
 fun WCSelectableChip(
     onClick: () -> Unit,
     text: String,

@@ -138,8 +138,6 @@ so that's the baseline as defined in `major_100`.
     <dimen name="progress_bar_large">91dp</dimen>
     <dimen name="whats_new_dialog_heading_top_margin">64dp</dimen>
     <dimen name="card_reader_manuals_divider">105dp</dimen>
-    <dimen name="prologue_logo_height">36dp</dimen>
-    <dimen name="prologue_button_wide">300dp</dimen>
     <dimen name="support_request_message_height">400dp</dimen>
     <dimen name="multiline_textfield_height">155dp</dimen>
     <dimen name="edit_percentage_max_width">180dp</dimen>

@@ -32,7 +32,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -55,7 +54,6 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipFrom
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.getShipTo
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.util.StringUtils
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
 @Composable
@@ -67,54 +65,48 @@ fun ShipmentDetails(
     shippingAddresses: WooShippingAddresses,
     shippingRateSummary: ShippingRateSummaryUI?,
     modifier: Modifier = Modifier,
+    isShipmentDetailsExpanded: Boolean = false,
+    onShipmentDetailsExpandedChange: (Boolean) -> Boolean,
     markOrderComplete: Boolean = false,
     onMarkOrderCompleteChange: (Boolean) -> Unit = {},
     handlerModifier: Modifier = Modifier,
     isReadOnly: Boolean = false
 ) {
-    val scope = rememberCoroutineScope()
-    Column(
-        handlerModifier
-            .clickable(
-                onClick = {
-                    scope.launch {
-                        if (scaffoldState.bottomSheetState.isCollapsed) {
-                            scaffoldState.bottomSheetState.expand()
-                        } else {
-                            scaffoldState.bottomSheetState.collapse()
-                        }
-                    }
-                },
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-            )
-            .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.minor_100)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            modifier = Modifier.padding(top = dimensionResource(R.dimen.minor_100)),
-            painter = if (scaffoldState.bottomSheetState.isExpanded) {
-                painterResource(R.drawable.ic_arrow_down_26)
-            } else {
-                painterResource(R.drawable.ic_arrow_up_26)
-            },
-            contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
-            tint = colorResource(id = R.color.color_primary),
-        )
-        AnimatedVisibility(visible = scaffoldState.bottomSheetState.isCollapsed) {
-            Column {
-                Text(
-                    text = stringResource(R.string.shipping_label_shipment_details_title),
-                    color = MaterialTheme.colors.primary,
-                    modifier = Modifier
-                        .padding(top = dimensionResource(R.dimen.minor_100))
+    Column {
+        Column(
+            handlerModifier
+                .clickable(
+                    onClick = { onShipmentDetailsExpandedChange(isShipmentDetailsExpanded.not()) },
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
                 )
-                Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_200)))
+                .fillMaxWidth()
+                .padding(dimensionResource(R.dimen.minor_100)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                modifier = Modifier.padding(top = dimensionResource(R.dimen.minor_100)),
+                painter = if (scaffoldState.bottomSheetState.isExpanded) {
+                    painterResource(R.drawable.ic_arrow_down_26)
+                } else {
+                    painterResource(R.drawable.ic_arrow_up_26)
+                },
+                contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
+                tint = colorResource(id = R.color.color_primary),
+            )
+            AnimatedVisibility(isShipmentDetailsExpanded.not()) {
+                Column {
+                    Text(
+                        text = stringResource(R.string.shipping_label_shipment_details_title),
+                        color = MaterialTheme.colors.primary,
+                        modifier = Modifier
+                            .padding(top = dimensionResource(R.dimen.minor_100))
+                    )
+                    Spacer(modifier = Modifier.size(dimensionResource(id = R.dimen.major_200)))
+                }
             }
         }
-
         if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             ShipmentDetailsLandscape(
                 shippableItems = shippableItems,

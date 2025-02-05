@@ -8,27 +8,7 @@ plugins {
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.sentry)
-}
-
-repositories {
-    maven {
-        url 'https://a8c-libs.s3.amazonaws.com/android'
-        content {
-            includeGroup "org.wordpress"
-            includeGroup "org.wordpress.fluxc"
-            includeGroup "org.wordpress.fluxc.plugins"
-            includeGroup "org.wordpress.wellsql"
-            includeGroup "com.automattic"
-            includeGroup "com.automattic.tracks"
-        }
-    }
-    mavenCentral()
-    maven {
-        url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
-        content {
-            includeVersion "com.android.volley", "volley", "1.1.1"
-        }
-    }
+    alias(libs.plugins.dependency.analysis)
 }
 
 sentry {
@@ -145,14 +125,8 @@ android {
 dependencies {
     // Project
     implementation project(":libs:commons")
-    implementation("${gradle.ext.fluxCBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
-    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
+    implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
     implementation(libs.wordpress.utils) {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
@@ -215,7 +189,6 @@ dependencies {
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
-    testImplementation(libs.mockito.inline)
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.androidx.arch.core.testing) {

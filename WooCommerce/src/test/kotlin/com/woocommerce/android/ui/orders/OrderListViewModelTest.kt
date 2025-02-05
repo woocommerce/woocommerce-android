@@ -1,16 +1,14 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagedList
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.NotificationReceivedEvent
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
@@ -29,6 +27,7 @@ import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersC
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
+import com.woocommerce.android.ui.orders.list.BulkUpdateOrderResult
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
 import com.woocommerce.android.ui.orders.list.ObserveOrdersListLastUpdate
 import com.woocommerce.android.ui.orders.list.OrderListFragmentArgs
@@ -116,7 +115,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val getSelectedOrderFiltersCount: GetSelectedOrderFiltersCount = mock()
     private val shouldShowCreateTestOrderScreen: ShouldShowCreateTestOrderScreen = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
-    private val feedbackPrefs = mock<FeedbackPrefs>()
     private val barcodeScanningTracker = mock<BarcodeScanningTracker>()
     private val notificationChannelsHandler = mock<NotificationChannelsHandler>()
     private val appPrefs = mock<AppPrefsWrapper>()
@@ -170,7 +168,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         orderListTransactionLauncher = mock(),
         shouldShowCreateTestOrderScreen = shouldShowCreateTestOrderScreen,
         analyticsTracker = analyticsTracker,
-        feedbackPrefs = feedbackPrefs,
         barcodeScanningTracker = barcodeScanningTracker,
         notificationChannelsHandler = notificationChannelsHandler,
         appPrefs = appPrefs,
@@ -558,7 +555,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then the order status is changed optimistically
         val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(optimisticChangeEvent is Event.ShowUndoSnackbar)
+        assertTrue(optimisticChangeEvent is ShowUndoSnackbar)
 
         advanceTimeBy(1_001)
 
@@ -593,7 +590,7 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         // Then the order status is changed optimistically
         val optimisticChangeEvent = viewModel.event.getOrAwaitValue()
-        assertTrue(optimisticChangeEvent is Event.ShowUndoSnackbar)
+        assertTrue(optimisticChangeEvent is ShowUndoSnackbar)
 
         advanceTimeBy(1_001)
 
@@ -601,42 +598,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         val resultEvent = viewModel.event.getOrAwaitValue()
         assertTrue(resultEvent is OrderListEvent.ShowRetryErrorSnack)
     }
-
-    @Test
-    fun `when onDismissOrderCreationSimplePaymentsFeedback called, then FEATURE_FEEDBACK_BANNER tracked`() =
-        testBlocking {
-            // when
-            viewModel.onDismissOrderCreationSimplePaymentsFeedback()
-
-            // then
-            verify(analyticsTracker).track(
-                AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-                mapOf(
-                    AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FEEDBACK,
-                    AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-                )
-            )
-        }
-
-    @Test
-    fun `when onDismissOrderCreationSimplePaymentsFeedback called, then order banner visibility changed`() =
-        testBlocking {
-            // given
-            val featureFeedbackSettings = mock<FeatureFeedbackSettings> {
-                on { feedbackState }.thenReturn(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-            }
-            whenever(
-                feedbackPrefs.getFeatureFeedbackSettings(
-                    FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
-                )
-            ).thenReturn(featureFeedbackSettings)
-
-            // when
-            viewModel.onDismissOrderCreationSimplePaymentsFeedback()
-
-            // then
-            assertThat(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible).isEqualTo(false)
-        }
 
     @Test
     fun `when fetching orders for the first time fails with timeout, then trigger a retry event`() = testBlocking {
@@ -995,7 +956,7 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertNotNull(isFetchingFirstPage)
 
         // Check that isFetchingFirstPage is reset to default value (false) on clearLiveDataSources
-        assertFalse(isFetchingFirstPage!!)
+        assertFalse(isFetchingFirstPage)
     }
 
     @Test
@@ -1012,7 +973,6 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `when selection count changes to 0, then exit selection mode`() = testBlocking {
         // First enter selection mode
         viewModel.onSelectionChanged(2)
-        assertThat(viewModel.isSelecting()).isTrue()
 
         // Then exit
         viewModel.onSelectionChanged(0)
@@ -1057,6 +1017,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     fun `given offline, when bulk update status requested, then show offline error and exit selection mode`() = testBlocking {
         whenever(networkStatus.isConnected()).thenReturn(false)
 
+        // First enter selection mode
+        viewModel.onSelectionChanged(2)
         viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
 
         assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
@@ -1067,7 +1029,11 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `when bulk update fails, then show error message and exit selection`() = testBlocking {
         whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any())).thenReturn(Result.failure(Exception()))
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.Error(Exception()))
+
+        // First enter selection mode
+        viewModel.onSelectionChanged(1)
 
         viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
 
@@ -1077,17 +1043,88 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when bulk update completes successfully, then exit selection mode`() = testBlocking {
+    fun `when bulk update results in no orders updated, then show message and exit selection mode`() = testBlocking {
         whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any())).thenReturn(Result.success(Unit))
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.NoOrdersUpdated)
 
-        // First enter selection mode
         viewModel.onSelectionChanged(1)
-        assertThat(viewModel.isSelecting()).isTrue()
 
         viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
 
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message)
+            .isEqualTo(R.string.orderlist_bulk_update_result_no_orders_updated)
         assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update fails for all orders, then show message and exit selection mode`() = testBlocking {
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.AllFailed)
+
+        // First enter selection mode
+        viewModel.onSelectionChanged(1)
+
+        viewModel.onBulkOrderStatusChanged(listOf(1L), Order.Status.Completed)
+
+        assertThat(viewModel.event.value).isInstanceOf(Event.ShowSnackbar::class.java)
+        assertThat((viewModel.event.value as Event.ShowSnackbar).message)
+            .isEqualTo(R.string.orderlist_bulk_update_result_all_failed)
+        assertThat(viewModel.isSelecting()).isFalse()
+    }
+
+    @Test
+    fun `when bulk update fully succeeds, then refresh and exit selection mode`() = testBlocking {
+        // Given
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.AllSuccess)
+        val pagedListData = MutableLiveData<PagedList<OrderListItemUIType>>(mock())
+        whenever(pagedListWrapper.data).thenReturn(pagedListData)
+
+        // First load order to initialize orderPagedListWrapper, then enter selection mode
+        viewModel.loadOrders()
+        viewModel.onSelectionChanged(2)
+
+        // When
+        viewModel.onBulkOrderStatusChanged(listOf(1L, 2L), Order.Status.Completed)
+        // Sending a different instance of PagedList to trigger the Snackbar
+        pagedListData.value = mock()
+
+        // Then
+        assertThat(viewModel.isSelecting()).isFalse()
+        val expectedEvent = OrderListEvent.ShowSnackbarString(
+            resourceProvider.getString(R.string.orderlist_bulk_update_status_updated)
+        )
+        assertThat(viewModel.event.value).isEqualTo(expectedEvent)
+
+        // Invoked once during loadOrders() and once during onBulkOrderStatusChanged()
+        verify(viewModel.ordersPagedListWrapper, times(2))?.fetchFirstPage()
+    }
+
+    @Test
+    fun `when bulk update partially succeeds, then refresh and exit selection mode`() = testBlocking {
+        // Given
+        val successCount = 3
+        val failureCount = 2
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(orderListRepository.bulkUpdateOrderStatus(any(), any()))
+            .thenReturn(BulkUpdateOrderResult.PartialSuccess(successCount, failureCount))
+
+        // First load order to initialize orderPagedListWrapper, then enter selection mode
+        viewModel.loadOrders()
+        viewModel.onSelectionChanged(5)
+
+        // When
+        viewModel.onBulkOrderStatusChanged(listOf(1L, 2L, 3L, 4L, 5L), Order.Status.Completed)
+
+        // Then
+        assertThat(viewModel.isSelecting()).isFalse()
+
+        // Invoked once during loadOrders() and once during onBulkOrderStatusChanged()
+        verify(viewModel.ordersPagedListWrapper, times(2))?.fetchFirstPage()
     }
 
     @Test

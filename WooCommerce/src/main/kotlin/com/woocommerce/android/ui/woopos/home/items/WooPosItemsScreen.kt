@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.items
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -35,12 +32,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -182,7 +176,11 @@ private fun MainItemsList(
 
                 is WooPosItemsViewState.Loading -> ItemsLoadingIndicator()
 
-                is WooPosItemsViewState.Empty -> ProductsEmptyList()
+                is WooPosItemsViewState.Empty -> ItemsEmptyList(
+                    title = stringResource(id = R.string.woopos_products_empty_list_title),
+                    message = stringResource(id = R.string.woopos_products_empty_list_message),
+                    contentDescription = stringResource(id = R.string.woopos_products_empty_list_image_description),
+                )
 
                 is WooPosItemsViewState.Error -> ProductsError { onRetryClicked() }
             }
@@ -262,47 +260,6 @@ private fun SimpleProductsBanner(
                 onSimpleProductsBannerLearnMoreClicked()
             }
         )
-    }
-}
-
-@Composable
-fun ProductsEmptyList() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(
-                modifier = Modifier.size(104.dp),
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_woo_pos_empty_products),
-                contentDescription = stringResource(id = R.string.woopos_products_empty_list_image_description),
-            )
-
-            Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
-
-            Text(
-                text = stringResource(id = R.string.woopos_products_empty_list_title),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-            )
-
-            Spacer(modifier = Modifier.height(16.dp.toAdaptivePadding()))
-
-            Text(
-                text = stringResource(id = R.string.woopos_products_empty_list_message),
-                style = MaterialTheme.typography.h5,
-                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(8.dp.toAdaptivePadding()))
-        }
     }
 }
 

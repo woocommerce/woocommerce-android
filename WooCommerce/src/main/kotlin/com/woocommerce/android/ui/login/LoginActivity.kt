@@ -7,7 +7,13 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +21,7 @@ import androidx.lifecycle.withStarted
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -32,7 +39,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
-import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueFinishedListener
+import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueListener
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Flow.LOGIN_SITE_ADDRESS
@@ -84,6 +91,7 @@ import org.wordpress.android.login.LoginMagicLinkRequestFragment
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.login.LoginSiteAddressFragment
 import org.wordpress.android.login.LoginUsernamePasswordFragment
+import org.wordpress.android.login.MagicLinkFallbackButton
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.text.RegexOption.IGNORE_CASE
@@ -93,11 +101,12 @@ import kotlin.text.RegexOption.IGNORE_CASE
 @AndroidEntryPoint
 class LoginActivity :
     AppCompatActivity(),
+    HasAndroidInjector,
+    DynamicEdgeToEdgeActivity,
     LoginListener,
     GoogleListener,
-    PrologueFinishedListener,
+    PrologueListener,
     PrologueCarouselListener,
-    HasAndroidInjector,
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
@@ -121,21 +130,29 @@ class LoginActivity :
         const val USERNAME_PARAMETER = "username"
     }
 
-    @Inject internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
+    @Inject
+    internal lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
-    @Inject internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
+    @Inject
+    internal lateinit var loginAnalyticsListener: LoginAnalyticsListener
 
-    @Inject internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
+    @Inject
+    internal lateinit var unifiedLoginTracker: UnifiedLoginTracker
 
-    @Inject internal lateinit var urlUtils: UrlUtils
+    @Inject
+    internal lateinit var urlUtils: UrlUtils
 
-    @Inject internal lateinit var experimentTracker: ExperimentTracker
+    @Inject
+    internal lateinit var experimentTracker: ExperimentTracker
 
-    @Inject internal lateinit var appPrefsWrapper: AppPrefsWrapper
+    @Inject
+    internal lateinit var appPrefsWrapper: AppPrefsWrapper
 
-    @Inject internal lateinit var dispatcher: Dispatcher
+    @Inject
+    internal lateinit var dispatcher: Dispatcher
 
-    @Inject internal lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    internal lateinit var uiMessageResolver: UIMessageResolver
 
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
@@ -146,6 +163,7 @@ class LoginActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
         onBackPressedDispatcher.addCallback(
             this,
@@ -314,12 +332,40 @@ class LoginActivity :
 
     override fun onPrimaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.LOGIN_WITH_SITE_ADDRESS)
+        disableDynamicEdgeToEdge()
         loginViaSiteAddress()
     }
 
     override fun onSecondaryButtonClicked() {
         unifiedLoginTracker.trackClick(Click.CONTINUE_WITH_WORDPRESS_COM)
+        disableDynamicEdgeToEdge()
         startLoginViaWPCom()
+    }
+
+    override fun enableDynamicEdgeToEdge(forceDarkStatusBar: Boolean) {
+        if (forceDarkStatusBar) {
+            enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
+        } else {
+            enableEdgeToEdge()
+        }
+
+        // Remove system bar insets from the fragment's root
+        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot, null)
+        binding.snackRoot.updatePadding(0, 0, 0, 0)
+    }
+
+    override fun disableDynamicEdgeToEdge() {
+        // Call again to reset the statusBarStyle to its default setting
+        enableEdgeToEdge()
+
+        WindowCompat.setDecorFitsSystemWindows(window, true)
+
+        // Add system bar insets to the fragment's root
+        ViewCompat.setOnApplyWindowInsetsListener(binding.snackRoot) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onNewToWooButtonClicked() {
@@ -350,29 +396,36 @@ class LoginActivity :
         clearCachedSites()
 
         if (authOptions != null) {
-            if (authOptions.isPasswordless) {
-                showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
+            val forcePasswordLogin = BuildConfig.DEBUG && BuildConfig.FORCE_PASSWORD_LOGIN
+
+            if (authOptions.isPasswordless && !forcePasswordLogin) {
+                showMagicLinkRequestScreen(
+                    email = email,
+                    verifyEmail = verifyEmail,
+                    fallbackButton = MagicLinkFallbackButton.None,
+                    forceRequestAtStart = true
+                )
             } else {
                 showEmailPasswordScreen(email, verifyEmail)
             }
         } else {
             if (isMagicLinkEnabled) {
-                showMagicLinkRequestScreen(email, verifyEmail, allowPassword = true, forceRequestAtStart = false)
+                showMagicLinkRequestScreen(
+                    email = email,
+                    verifyEmail = verifyEmail,
+                    fallbackButton = MagicLinkFallbackButton.Password,
+                    forceRequestAtStart = false
+                )
             } else {
                 showEmailPasswordScreen(email, verifyEmail)
             }
         }
     }
 
-    private fun showEmailPasswordScreen(
-        email: String?,
-        verifyEmail: Boolean,
-        password: String? = null
-    ) {
+    private fun showEmailPasswordScreen(email: String?, verifyEmail: Boolean) {
         val wooLoginEmailPasswordFragment = WooLoginEmailPasswordFragment
             .newInstance(
                 emailAddress = email,
-                password = password,
                 verifyMagicLinkEmail = verifyEmail
             )
         changeFragment(wooLoginEmailPasswordFragment, true, LoginEmailPasswordFragment.TAG)
@@ -381,7 +434,7 @@ class LoginActivity :
     private fun showMagicLinkRequestScreen(
         email: String?,
         verifyEmail: Boolean,
-        allowPassword: Boolean,
+        fallbackButton: MagicLinkFallbackButton,
         forceRequestAtStart: Boolean
     ) {
         val scheme = WOOCOMMERCE
@@ -392,7 +445,7 @@ class LoginActivity :
                 false,
                 null,
                 verifyEmail,
-                allowPassword,
+                fallbackButton,
                 forceRequestAtStart
             )
         changeFragment(loginMagicLinkRequestFragment, true, LoginMagicLinkRequestFragment.TAG, false)
@@ -450,8 +503,8 @@ class LoginActivity :
         changeFragment(loginUsernamePasswordFragment, true, LoginUsernamePasswordFragment.TAG)
     }
 
-    override fun showMagicLinkSentScreen(email: String?, allowPassword: Boolean) {
-        val loginMagicLinkSentFragment = LoginMagicLinkSentImprovedFragment.newInstance(email, allowPassword)
+    override fun showMagicLinkSentScreen(email: String?, fallbackButton: MagicLinkFallbackButton) {
+        val loginMagicLinkSentFragment = LoginMagicLinkSentImprovedFragment.newInstance(email, fallbackButton)
         changeFragment(loginMagicLinkSentFragment, true, LoginMagicLinkSentImprovedFragment.TAG, false)
     }
 
@@ -901,9 +954,17 @@ class LoginActivity :
         TODO("Not yet implemented")
     }
 
-    override fun useMagicLinkInstead(email: String?, verifyEmail: Boolean) {
-        showMagicLinkRequestScreen(email, verifyEmail, allowPassword = false, forceRequestAtStart = true)
-    }
+    override fun useMagicLinkInstead(
+        email: String?,
+        verifyEmail: Boolean,
+        requestAtStart: Boolean,
+        fallbackButton: MagicLinkFallbackButton
+    ) = showMagicLinkRequestScreen(
+        email = email,
+        verifyEmail = verifyEmail,
+        fallbackButton = fallbackButton,
+        forceRequestAtStart = requestAtStart
+    )
 
     /**
      * Allows for special handling of errors that come up during the login by address: check site address.
@@ -969,7 +1030,7 @@ class LoginActivity :
                     stat = AnalyticsEvent.LOGIN_APP_LOGIN_LINK_SUCCESS,
                     properties = mapOf(KEY_FLOW to VALUE_WP_COM)
                 )
-                showEmailPasswordScreen(email = wpComEmail, verifyEmail = false, password = null)
+                showEmailPasswordScreen(email = wpComEmail, verifyEmail = false)
             }
 
             siteUrl.isNotEmpty() && username.isNotEmpty() -> {

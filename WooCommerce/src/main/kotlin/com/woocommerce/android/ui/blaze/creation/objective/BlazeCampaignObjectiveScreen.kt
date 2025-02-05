@@ -153,9 +153,9 @@ fun ObjectiveListItem(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         val selectionDrawable = if (isSelected) {
-            R.drawable.ic_rounded_chcekbox_checked
+            R.drawable.ic_rounded_checkbox_checked
         } else {
-            R.drawable.ic_rounded_chcekbox_unchecked
+            R.drawable.ic_rounded_checkbox_unchecked
         }
         Crossfade(
             targetState = selectionDrawable,

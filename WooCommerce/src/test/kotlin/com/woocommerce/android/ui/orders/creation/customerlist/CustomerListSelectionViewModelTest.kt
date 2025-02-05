@@ -863,7 +863,10 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED,
+                mapOf("is_customer_registered" to "true")
+            )
         }
 
     @Test
@@ -913,7 +916,10 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
             // THEN
             assertThat(states[0].partialLoading).isFalse
             assertThat(states[1].partialLoading).isTrue
-            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED,
+                mapOf("is_customer_registered" to "true")
+            )
         }
 
     @Test
@@ -966,7 +972,10 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED,
+                mapOf("is_customer_registered" to "true")
+            )
         }
 
     @Test
@@ -1026,7 +1035,10 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED,
+                mapOf("is_customer_registered" to "true")
+            )
         }
 
     @Test
@@ -1076,7 +1088,10 @@ class CustomerListSelectionViewModelTest : BaseUnitTest() {
                     )
                 )
             )
-            verify(analyticsTrackerWrapper).track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
+            verify(analyticsTrackerWrapper).track(
+                AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED,
+                mapOf("is_customer_registered" to "false")
+            )
         }
 
     @Test

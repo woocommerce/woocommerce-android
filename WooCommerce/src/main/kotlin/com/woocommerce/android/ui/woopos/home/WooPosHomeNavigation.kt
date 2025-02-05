@@ -9,7 +9,6 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
 const val HOME_ROUTE = "home"
@@ -30,8 +29,17 @@ fun NavController.navigateToHomeScreenAfterSuccessfulCashPayment() {
     }
 }
 
+fun NavController.navigateToHomeScreenIfHomeScreenNotOpen() {
+    if (currentDestination?.route != HOME_ROUTE) {
+        popBackStack(
+            HOME_ROUTE,
+            false
+        )
+    }
+}
+
 fun NavGraphBuilder.homeScreen(
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+    homeViewModel: WooPosHomeViewModel,
 ) {
     composable(
         route = HOME_ROUTE,
@@ -70,7 +78,7 @@ fun NavGraphBuilder.homeScreen(
 
         WooPosHomeScreen(
             isPaymentCompletedViaCash = isPaymentCompletedViaCash,
-            onNavigationEvent = onNavigationEvent,
+            viewModel = homeViewModel,
         )
     }
 }

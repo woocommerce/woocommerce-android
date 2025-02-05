@@ -7,31 +7,26 @@
     android:background="@color/color_surface">
 
     <ImageView
+        android:id="@+id/image_prologue_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:src="@drawable/img_prologue_bg_white"
+        app:tint="@color/prologue_carousel_shape_color" />
+
+    <ImageView
         android:id="@+id/image_prologue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/major_100"
+        android:layout_marginTop="96dp"
         android:layout_marginBottom="@dimen/image_major_72"
         android:importantForAccessibility="no"
+        android:src="@drawable/ic_woo_logo_white_99dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/img_woo_logo" />
-
-    <ImageView
-        android:id="@+id/image_prologue_bg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/major_350"
-        android:adjustViewBounds="true"
-        android:importantForAccessibility="no"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_prologue"
-        app:srcCompat="@drawable/img_prologue_bg" />
+        app:tint="@color/color_woo_logo" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
@@ -42,7 +37,6 @@
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_prologue"
-        app:layout_constraintWidth_percent="0.5"
         tools:background="@color/blue_dark" />
 
     <com.woocommerce.android.widgets.WCViewPagerIndicator
@@ -59,12 +53,11 @@
         style="@style/Woo.Button.Colored"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/major_100"
+        android:layout_marginStart="@dimen/prologue_button_horizontal_margin"
         android:layout_marginEnd="@dimen/minor_100"
-        android:layout_marginBottom="@dimen/major_100"
         android:text="@string/next"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/button_skip"
         app:layout_constraintEnd_toStartOf="@id/button_skip"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -74,12 +67,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/minor_100"
-        android:layout_marginEnd="@dimen/major_100"
-        android:layout_marginBottom="@dimen/major_100"
+        android:layout_marginEnd="@dimen/prologue_button_horizontal_margin"
+        android:layout_marginBottom="@dimen/prologue_button_skip_bottom_margin"
         android:text="@string/skip"
         android:textAllCaps="false"
+        android:textColor="@color/color_on_surface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/button_next" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

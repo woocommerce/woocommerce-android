@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentLoginPrologueViewpagerItemBinding
@@ -18,9 +19,6 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
         private const val ARG_DRAWABLE_ID = "drawable_id"
         private const val ARG_TITLE_ID = "title_id"
         private const val ARG_SUBTITLE_ID = "subtitle_id"
-
-        private const val RATIO_PORTRAIT = 0.6f
-        private const val RATIO_LANDSCAPE = 0.2f
 
         fun newInstance(
             @DrawableRes drawableId: Int,
@@ -54,14 +52,13 @@ class LoginPrologueViewPagerItemFragment : Fragment(R.layout.fragment_login_prol
                 binding.imageView.setImageResource(args.getInt(ARG_DRAWABLE_ID))
             }
 
-            // adjust the view sizes based on orientation
-            val ratio = if (isLandscape) {
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * RATIO_LANDSCAPE).toInt()
-            } else {
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * RATIO_PORTRAIT).toInt()
+            // Adjust the view sizes based on orientation
+            if (isLandscape || isTablet) {
+                val ratio = ResourcesCompat.getFloat(resources, R.dimen.prologue_width_percent)
+                val width = (DisplayUtils.getWindowPixelWidth(requireContext()) * ratio).toInt()
+                binding.prologueTitle.maxWidth = width
+                binding.prologueSubtitle.maxWidth = width
             }
-            binding.prologueTitle.layoutParams.width = ratio
-            binding.imageView.layoutParams.width = ratio
         }
     }
 }

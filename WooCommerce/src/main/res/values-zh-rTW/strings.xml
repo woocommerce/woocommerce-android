@@ -1,11 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-12-27 09:54:06+0000
+Translation-Revision-Date: 2025-01-31 14:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="woopos_products_empty_list_message">POS 目前僅支援簡單、多款式與虛擬商品 – \n建立商品後便可開始作業。</string>
+    <string name="woo_shipping_label_phone">電話</string>
+    <string name="woo_shipping_label_email">電子郵件地址</string>
+    <string name="woo_shipping_label_post_code">郵遞區號</string>
+    <string name="woo_shipping_label_state">州</string>
+    <string name="woo_shipping_label_city">城市</string>
+    <string name="woo_shipping_label_address">地址</string>
+    <string name="woo_shipping_label_country">國家/地區</string>
+    <string name="woo_shipping_label_company">公司</string>
+    <string name="woo_shipping_label_name">姓名</string>
+    <string name="woo_shipping_edit_origin_address_title">編輯寄件人地址</string>
+    <string name="woopos_variations_any_variation">任何 %s</string>
+    <string name="woopos_variations_empty_list_image_description">無其他款式</string>
+    <string name="woopos_variations_empty_list_title">找不到支援的款式</string>
+    <string name="login_use_wpcom_username_instead">改用使用者名稱與密碼</string>
+    <string name="product_images_drag_and_drop_to_reorder">拖放以重新排序圖片。 第一張照片將設為封面。</string>
+    <string name="product_cover_photo_tag">封面</string>
+    <string name="orderlist_bulk_update_result_partial_success">已更新 %d 筆訂單；%d 筆訂單更新失敗。 請再試一次。</string>
+    <string name="orderlist_bulk_update_result_all_failed">訂單更新失敗。 請再試一次。</string>
+    <string name="orderlist_bulk_update_result_no_orders_updated">未更新訂單。 請再試一次。</string>
+    <string name="add">新增 %s</string>
+    <string name="woo_shipping_labels_package_creation_error_cancel">取消</string>
+    <string name="woo_shipping_labels_package_creation_error_proceed">繼續</string>
+    <string name="woo_shipping_labels_package_creation_error_message">確定不儲存內容，繼續進行？</string>
+    <string name="woo_shipping_labels_package_creation_error_title">無法將包裹儲存為範本</string>
+    <string name="woopos_variations_options_available_text">可用選項</string>
+    <string name="woopos_totals_success_payment_card">已成功支付「%1$s」的卡片付款金額</string>
+    <string name="woopos_totals_success_payment_cash">已成功支付「%1$s」的現金付款金額</string>
+    <string name="shipping_label_select_origin_address">地址</string>
+    <string name="shipping_label_select_origin_default_address">%s (預設)</string>
+    <string name="shipping_label_purchased_purchase_failed_error">目前無法確認貨運標籤購買項目，請稍後再試一次</string>
+    <string name="shipping_label_purchased_failure_message">請稍後再試一次</string>
+    <string name="shipping_label_purchased_failure_title">無法處理貨運標籤</string>
+    <string name="shipping_label_purchased_in_progress_message">結束後，你將可使用所選紙張大小印製貨運標籤</string>
+    <string name="shipping_label_purchased_in_progress_title">正在處理貨運標籤</string>
+    <string name="orderlist_bulk_update_maximum_reached">已達選取數量上限 (%d)。</string>
+    <string name="orderlist_bulk_update_status_updated">狀態已更新！</string>
+    <string name="site_picker_edit_store_list_error_title">更新通知設定時發生錯誤。 請再試一次</string>
+    <string name="site_picker_edit_store_list_header">其他商店</string>
+    <string name="site_picker_edit_store_current_site_footer">若要隱藏此商店，請切換至其他商店</string>
+    <string name="site_picker_edit_store_current_site_header">目前的商店</string>
+    <string name="site_picker_select_store_list_header_with_hidden_sites">選取要連結的商店 (%d 間已隱藏)</string>
     <string name="woo_shipping_labels_package_creation_error">無法載入包裹資料</string>
     <string name="woo_shipping_labels_package_creation_package_name">包裹名稱</string>
     <string name="woo_shipping_labels_package_creation_weight">重量</string>
@@ -23,7 +65,6 @@ Language: zh_TW
     <string name="woopos_items_pagination_error_description">「載入商品時發生錯誤。」</string>
     <string name="woopos_items_pagination_error_title">「無法載入更多項目」</string>
     <string name="woopos_items_pagination_try_again_label">再試一次</string>
-    <string name="woo_pos_payment_remove_card">移除卡片</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">返回結帳</string>
     <string name="woo_pos_payment_failed_try_again">再次嘗試付款</string>
     <string name="woo_pos_payment_failed_try_another_payment_method">嘗試其他付款方式</string>
@@ -57,7 +98,7 @@ Language: zh_TW
     <string name="orderlist_selection_menu_update_status">更新狀態</string>
     <string name="orderlist_selection_count_single">已選取 %d 個訂單</string>
     <string name="orderlist_selection_count">已選取 %d 個訂單</string>
-    <string name="site_picker_edit_store_list_footer">未選取的商店不會顯示於應用程式的網站選擇器，也不會收到新訂單的推播通知</string>
+    <string name="site_picker_edit_store_list_footer">未選取的商店不會顯示於應用程式網站的選擇器，也不會收到新訂單或商品評論的推播通知</string>
     <string name="site_picker_edit_store_list_title">可檢視的商店</string>
     <string name="site_picker_edit_store_list">編輯商店</string>
     <string name="woopos_variations_loading_error_title">載入款式時發生錯誤</string>
@@ -90,8 +131,8 @@ Language: zh_TW
     <string name="shipping_label_purchased_track_shipment">追蹤貨件</string>
     <string name="shipping_label_purchased_learn_how_to_print">了解如何從行動裝置印製</string>
     <string name="shipping_label_purchased_note">請注意：若你重複使用已印製標籤，此行為將違反我們的服務條款，並可能會導致刑事責任。</string>
-    <string name="shipping_label_purchased_message">你可以在這裡再次印製貨運標籤，或變更標籤的紙張大小。</string>
-    <string name="shipping_label_purchased_title">你的貨運標籤已可供印製</string>
+    <string name="shipping_label_purchased_success_message">你可以在這裡再次印製貨運標籤，或變更標籤的紙張大小。</string>
+    <string name="shipping_label_purchased_success_title">你的貨運標籤已可供印製</string>
     <string name="order_detail_edit_store_currency_mismatch">很抱歉，你只能在網頁上編輯此訂單，這是因為此訂單使用「%1$s」，而貴網站採用的幣值為：%2$s</string>
     <string name="shipping_label_shipping_service_title">貨運服務</string>
     <string name="shipping_label_shipping_rates_sort_option_fastest">最快速</string>
@@ -145,8 +186,8 @@ Language: zh_TW
     <string name="order_shipment_tracking_barcode_scanning_failed">掃描失敗。 請稍後再試一次</string>
     <string name="custom_fields_editor_value_label">值</string>
     <string name="custom_fields_editor_key_label">金鑰</string>
-    <string name="woopos_dialog_products_info_secondary_message">待未來更新後，將可提供虛擬商品等其他商品種類的資訊。</string>
-    <string name="woopos_dialog_products_info_primary_message">目前只有簡單實體商品與多款式商品能使用 POS。</string>
+    <string name="woopos_dialog_products_info_secondary_message">其他商品類型將於日後更新提供。</string>
+    <string name="woopos_dialog_products_info_primary_message">目前只有簡單實體商品、多款式和虛擬商品能使用 POS。</string>
     <string name="blaze_campaign_budget_duration_cancel_button">取消</string>
     <string name="blaze_campaign_budget_duration_current_duration">時間長度</string>
     <string name="blaze_campaign_budget_duration_endless_description">行銷活動會持續執行，直到你停止為止。</string>
@@ -187,9 +228,9 @@ Language: zh_TW
     <string name="woopos_exit_dialog_confirmation_close_content_description">關閉</string>
     <string name="woopos_dialog_products_info_background_content_description">背景已調暗。 點選以關閉對話方塊。</string>
     <string name="woopos_banner_simple_products_dialog_primary_button_content_description">點選兩下以關閉對話框</string>
-    <string name="woopos_banner_simple_products_dialog_content_description">僅限簡單與多款式商品的對話框</string>
+    <string name="woopos_banner_simple_products_dialog_content_description">僅限簡單、多款式和虛擬商品的對話框</string>
     <string name="woopos_banner_simple_products_learn_more_content_description">點選兩下以深入了解</string>
-    <string name="woopos_banner_simple_products_content_description">僅限簡單與多款式商品的橫幅</string>
+    <string name="woopos_banner_simple_products_content_description">僅限簡單、多款式和虛擬商品的橫幅</string>
     <string name="local_notification_blaze_no_campaign_reminder_description">運用 Blaze 廣告宣傳商品，立即提升銷售表現。</string>
     <string name="local_notification_blaze_no_campaign_reminder_title">強化銷售表現</string>
     <string name="more_menu_button_payments_description">隨時隨地輕鬆收款</string>
@@ -198,17 +239,16 @@ Language: zh_TW
     <string name="woopos_cart_item_content_description">購物車「%s」中的商品，價格為 %s</string>
     <string name="woopos_product_item_content_description">商品「%s」的價格為 %s</string>
     <string name="blaze_campaign_status_suspended">已暫停</string>
-    <string name="woopos_totals_success_payment_cash">已成功支付「%1$s」的款項</string>
     <string name="woopos_new_order_button">新訂單</string>
     <string name="woopos_dialog_products_info_button_label">確定</string>
     <string name="woopos_dialog_products_info_secondary_message_action_label">+ 在商店管理建立訂單</string>
-    <string name="woopos_dialog_products_info_tertiary_message">若要針對簡單商品以外的品項收款，請將 POS 結束，然後從訂單分頁建立新訂單。</string>
+    <string name="woopos_dialog_products_info_tertiary_message">若要收取其他商品的款項，請結束 POS 再從訂單分頁建立新訂單。</string>
     <string name="woopos_dialog_products_info_heading">為什麼我無法查看自己的商品？</string>
     <string name="woopos_banner_simple_products_info_content_description">資訊</string>
     <string name="woopos_banner_simple_products_close_content_description">關閉</string>
     <string name="woopos_banner_simple_products_only_message_learn_more">深入了解</string>
-    <string name="woopos_banner_simple_products_only_message">目前 POS 僅與簡單實體商品與多款式商品相容。 待未來更新後，將可提供虛擬商品等其他商品種類的資訊。 </string>
-    <string name="woopos_banner_simple_products_only_title">僅顯示簡單與多款式商品</string>
+    <string name="woopos_banner_simple_products_only_message">POS 目前僅適用簡單實體、多款式和虛擬商品。 其他商品類型將於日後更新提供。 </string>
+    <string name="woopos_banner_simple_products_only_title">僅顯示簡單、多款式和虛擬商品</string>
     <string name="support_request_site_address">網站位址</string>
     <string name="analytics_google_ads_cta_web_view_title">WooCommerce 的 Google 整合服務</string>
     <string name="analytics_google_ads_cta_action">新增付費廣告活動</string>
@@ -223,7 +263,7 @@ Language: zh_TW
     <string name="woopos_products_loading_error_message">要再試一次嗎？</string>
     <string name="woopos_products_loading_error_title">載入商品時發生錯誤</string>
     <string name="woopos_products_empty_list_message_two">POS 目前僅支援簡單商品</string>
-    <string name="woopos_products_empty_list_message">POS 目前僅支援簡單與多款式商品 – \n建立商品後便可開始作業。</string>
+    <string name="woopos_variations_empty_list_message">POS 目前僅支援簡單、多款式與虛擬商品 – \n建立商品後便可開始作業。</string>
     <string name="woopos_products_empty_list_title">找不到支援的商品</string>
     <string name="woopos_products_empty_list_image_description">沒有商品</string>
     <string name="woopos_get_support_title">取得支援</string>
@@ -1373,7 +1413,6 @@ Language: zh_TW
     <string name="domain_privacy_option_off_title">公開註冊</string>
     <string name="domain_privacy_option_on_title">透過隱私權保護私密註冊</string>
     <string name="domain_registration_contact_form_input_error">請輸入有效的 %s</string>
-    <string name="domain_registration_privacy_protection_tos">註冊此網域，即表示你同意我們的%1$s條款與條件%2$s</string>
     <string name="domain_registration_privacy_protection_description">網域擁有者必須在所有網域的公共資料庫中分享自己的聯絡資訊。\n基於隱私權保護，我們只會發佈自己的資訊而非你的資訊，並會將所有通訊內容私密轉寄給你。</string>
     <string name="domain_registration_privacy_protection_title">隱私權保護</string>
     <string name="domains_access_error_title">只有商店管理員可以存取網域設定</string>
@@ -2606,15 +2645,12 @@ Language: zh_TW
     <string name="order_mark_complete">將訂單標示為完成</string>
     <string name="orderdetail_shipping_label_notice">深入瞭解如何使用行動裝置建立標籤</string>
     <string name="orderdetail_shipping_label_create_shipping_label">建立郵寄標籤</string>
-    <string name="orderdetail_shipping_label_m3_wip_message">你現在可以使用免費的 WooCommerce Shipping 外掛程式，直接從你的裝置為所有實體訂單建立郵寄標籤。 點選「建立郵寄標籤」，開始試用 Beta 功能！</string>
-    <string name="orderdetail_shipping_label_m2_wip_title">從你的裝置建立郵寄標籤！！</string>
     <string name="orderdetail_payment_fees">費用</string>
     <string name="orderdetail_net">付款淨額</string>
     <string name="orderdetail_payment_paid_by_customer">已付款</string>
     <string name="login_jetpack_view_instructions_alt">深入瞭解如何連結 Jetpack</string>
     <string name="edit">編輯</string>
     <string name="product_images_validate_drag_and_drop">驗證</string>
-    <string name="product_images_drag_and_drop_description">拖曳相片來重新排序</string>
     <string name="product_downloadable_files_download_settings">下載設定</string>
     <string name="product_downloadable_files_name_invalid">請輸入正確的名稱</string>
     <string name="product_downloadable_files_add_manually">輸入檔案 URL</string>

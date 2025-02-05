@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -38,20 +37,10 @@ class WooPosActivity : AppCompatActivity() {
 
         setContent {
             WooPosTheme {
-                SystemBars()
-
                 WooPosRootScreen(
                     modifier = Modifier.gesturesOrButtonsNavigationPadding()
                 )
             }
-        }
-    }
-
-    @Composable
-    private fun SystemBars() {
-        SideEffect {
-            window.statusBarColor = getColor(android.R.color.transparent)
-            window.navigationBarColor = getColor(android.R.color.transparent)
         }
     }
 }

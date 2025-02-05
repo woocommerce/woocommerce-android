@@ -51,6 +51,7 @@
     <color name="color_toolbar">@color/woo_black_900</color>
     <color name="bottom_sheet_background">@color/woo_black_900</color>
     <color name="color_item_selected">@color/woo_black</color>
+    <color name="color_woo_logo">@color/white</color>
 
     <!--
         Elevation colors
@@ -63,6 +64,12 @@
     <color name="graph_data_color">@color/woo_pink_30</color>
     <color name="graph_grid_color">@color/woo_white_alpha_012</color>
     <color name="graph_highlight_color">@color/woo_white</color>
+
+    <!-- Prologue colors-->
+    <color name="prologue_carousel_shape_color">@color/woo_gray_80</color>
+    <color name="prologue_login_background_color">@color/color_surface</color>
+    <color name="prologue_login_shape_color">@color/woo_gray_80</color>
+    <color name="prologue_login_button_color">@color/color_primary</color>
 
     <!--
         Rating widget colors
@@ -157,6 +164,7 @@
     -->
     <color name="light_colored_button_text">@color/color_primary</color>
     <color name="light_colored_button_background">@color/woo_black_80</color>
+    <color name="light_colored_button_text_secondary">@color/white</color>
 
     <!--
     Analytics
@@ -228,7 +236,8 @@
     <!--
     Blaze
     -->
-    <color name="blaze_campaign_bottom_sheet_highlight_background">@color/woo_black_90_alpha_038</color>
+    <color name="blaze_campaign_bottom_sheet_highlight_background">@color/woo_black_90_alpha_038
+    </color>
     <color name="blaze_campaign_preview_header_background">@color/woo_white_alpha_012</color>
     <color name="blaze_campaign_objective_item_background">@color/woo_purple_90</color>
 

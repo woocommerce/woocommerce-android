@@ -11,6 +11,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.ProductAggregate
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
@@ -871,9 +872,34 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         errorEvents.emit(errors)
 
         Assertions.assertThat(viewModel.event.value).matches {
-            it is MultiLiveEvent.Event.ShowActionSnackbar &&
-                it.message == errorMessage
+            it is MultiLiveEvent.Event.ShowUiStringSnackbar &&
+                it.message == UiStringText(errorMessage)
         }
+    }
+
+    @Test
+    fun `when there image upload errors, then show a cta to open upload error screen`() = testBlocking {
+        val errorEvents = MutableSharedFlow<List<MediaFileUploadHandler.ProductImageUploadData>>()
+        doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
+        doReturn(productAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+        doReturn(productAggregate).whenever(productRepository).getProductAggregate(any())
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+        val errors = listOf(
+            MediaFileUploadHandler.ProductImageUploadData(
+                PRODUCT_REMOTE_ID,
+                "uri",
+                MediaFileUploadHandler.UploadStatus.Failed(
+                    mediaErrorType = MediaStore.MediaErrorType.GENERIC_ERROR,
+                    mediaErrorMessage = "error"
+                )
+            )
+        )
+        errorEvents.emit(errors)
+
+        Assertions.assertThat(productData?.hasUploadErrors).isTrue()
     }
 
     @Test
@@ -1291,25 +1317,26 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `When converting from simple subscription to variable subscription product, subscription data is preserved`() = testBlocking {
-        // GIVEN
-        val subscriptionProduct = productAggregate.copy(
-            product = productAggregate.product.copy(
-                type = ProductType.SUBSCRIPTION.value
-            ),
-            subscription = ProductHelper.getDefaultSubscriptionDetails()
-        )
-        doReturn(subscriptionProduct).whenever(productRepository).getProductAggregate(any())
-        viewModel.start()
+    fun `When converting from simple subscription to variable subscription product, subscription data is preserved`() =
+        testBlocking {
+            // GIVEN
+            val subscriptionProduct = productAggregate.copy(
+                product = productAggregate.product.copy(
+                    type = ProductType.SUBSCRIPTION.value
+                ),
+                subscription = ProductHelper.getDefaultSubscriptionDetails()
+            )
+            doReturn(subscriptionProduct).whenever(productRepository).getProductAggregate(any())
+            viewModel.start()
 
-        val originalSubscription = viewModel.getProduct().subscriptionDraft
+            val originalSubscription = viewModel.getProduct().subscriptionDraft
 
-        // WHEN
-        viewModel.onProductTypeChanged(ProductType.VARIABLE_SUBSCRIPTION, false)
+            // WHEN
+            viewModel.onProductTypeChanged(ProductType.VARIABLE_SUBSCRIPTION, false)
 
-        // THEN
-        Assertions.assertThat(viewModel.getProduct().subscriptionDraft).isEqualTo(originalSubscription)
-    }
+            // THEN
+            Assertions.assertThat(viewModel.getProduct().subscriptionDraft).isEqualTo(originalSubscription)
+        }
 
     private val productsDraft
         get() = viewModel.productDetailViewStateData.liveData.value?.productDraft

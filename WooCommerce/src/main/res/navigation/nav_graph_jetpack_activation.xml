@@ -95,6 +95,10 @@
         <action
             android:id="@+id/action_jetpackActivationWPComEmailFragment_to_jetpackActivationMagicLinkRequestFragment"
             app:destination="@id/jetpackActivationMagicLinkRequestFragment" />
+        <argument
+            android:name="usernameOnly"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationWPComPasswordFragment"
@@ -144,11 +148,26 @@
             android:name="emailOrUsername"
             app:argType="string" />
         <argument
-            android:name="isAccountPasswordless"
+            android:name="fallbackButton"
+            app:argType="org.wordpress.android.login.MagicLinkFallbackButton" />
+        <argument
+            android:name="requestAtStart"
             app:argType="boolean" />
         <argument
             android:name="isNewWpComAccount"
             app:argType="boolean" />
+        <action
+            android:id="@+id/action_jetpackActivationMagicLinkRequestFragment_to_jetpackActivationWPComPasswordFragment"
+            app:destination="@id/jetpackActivationWPComPasswordFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/jetpackActivationMagicLinkRequestFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_jetpackActivationMagicLinkRequestFragment_to_jetpackActivationWPComEmailFragment"
+            app:destination="@id/jetpackActivationWPComEmailFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/jetpackActivationMagicLinkRequestFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/jetpackActivationMagicLinkHandlerFragment"

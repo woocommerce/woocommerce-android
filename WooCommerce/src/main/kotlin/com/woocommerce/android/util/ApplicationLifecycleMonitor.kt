@@ -46,9 +46,10 @@ class ApplicationLifecycleMonitor(
 
     override fun onActivityCreated(activity: Activity, p1: Bundle?) {}
 
-    override fun onLowMemory() {}
-
     override fun onConfigurationChanged(configuration: Configuration) {}
+
+    @Deprecated("Parent method is deprecated, so this method has to be also deprecated")
+    override fun onLowMemory() {}
 
     override fun onTrimMemory(level: Int) {
         if (level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
