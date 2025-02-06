@@ -5,7 +5,7 @@ agents:
   queue: "android"
 
 steps:
-  - label: "🛠 Assemble with CC [With Restore]"
+  - label: "1 - 🛠 Assemble with CC [With Restore]"
     command: |
       echo "--- :rubygems: Setting up Gems"
       install_gems
@@ -19,7 +19,261 @@ steps:
       ./gradlew assembleJalapenoDebug
     plugins: [ $CI_TOOLKIT ]
 
-  - label: "🛠 Assemble without CC [With Restore]"
+  - label: "2 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "3 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "4 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "5 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "6 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "7 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "8 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "9 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "10 - 🛠 Assemble with CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build with CC [With Restore]"
+      ./gradlew assembleJalapenoDebug
+    plugins: [ $CI_TOOLKIT ]
+
+    # ------------------------------------------------------------------------------------------------------------------
+
+  - label: "1 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "2 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "3 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "4 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "5 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "6 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "7 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "8 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "9 - 🛠 Assemble without CC [With Restore]"
+    command: |
+      echo "--- :rubygems: Setting up Gems"
+      install_gems
+
+      echo "--- :closed_lock_with_key: Installing Secrets"
+      bundle exec fastlane run configure_apply
+
+      .buildkite/commands/restore-cache.sh
+
+      echo "--- 🛠 Build without CC [With Restore]"
+      ./gradlew assembleJalapenoDebug --no-configuration-cache
+    plugins: [ $CI_TOOLKIT ]
+
+  - label: "10 - 🛠 Assemble without CC [With Restore]"
     command: |
       echo "--- :rubygems: Setting up Gems"
       install_gems
