@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class ApplicationEdgeToEdgeEnabler @Inject constructor() : Application.ActivityLifecycleCallbacks {
     override fun onActivityCreated(activity: Activity, bindle: Bundle?) {
-        (activity as ComponentActivity).enableEdgeToEdge()
+        (activity as? ComponentActivity)?.enableEdgeToEdge()
     }
 
     override fun onActivityStarted(activity: Activity) {
