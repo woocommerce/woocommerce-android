@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HELP_CON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE_STEP
 import com.woocommerce.android.databinding.ActivityHelpBinding
+import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationBar
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.extensions.show
@@ -68,6 +69,7 @@ class HelpActivity : AppCompatActivity() {
 
         binding = ActivityHelpBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.edgeToEdgeHandlingForNavigationBar()
 
         setSupportActionBar(binding.toolbar.toolbar as Toolbar)
         supportActionBar?.setHomeButtonEnabled(true)
