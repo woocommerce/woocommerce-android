@@ -52,6 +52,7 @@ import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
+import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationAndStatusBar
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
@@ -181,8 +182,6 @@ class MainActivity :
 
     @Inject lateinit var animatorHelper: MainAnimatorHelper
 
-    @Inject lateinit var edgeToEdgeHelper: MainActivityEdgeToEdgeHelper
-
     private val viewModel: MainActivityViewModel by viewModels()
 
     private var unfilledOrderCount: Int = 0
@@ -303,8 +302,7 @@ class MainActivity :
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding.appBarLayout)
+        binding.root.edgeToEdgeHandlingForNavigationAndStatusBar()
 
         toolbar = binding.toolbar.toolbar
 
