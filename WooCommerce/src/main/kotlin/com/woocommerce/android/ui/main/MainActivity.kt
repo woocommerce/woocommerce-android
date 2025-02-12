@@ -304,7 +304,7 @@ class MainActivity :
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding.appBarLayout)
+        edgeToEdgeHelper.applyEdgeToEdgeSettings(binding)
 
         toolbar = binding.toolbar.toolbar
 

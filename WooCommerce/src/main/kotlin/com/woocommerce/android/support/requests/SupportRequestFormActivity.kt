@@ -13,6 +13,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivitySupportRequestFormBinding
+import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationBar
 import com.woocommerce.android.extensions.serializable
 import com.woocommerce.android.support.SupportHelper
 import com.woocommerce.android.support.help.HelpOrigin
@@ -51,6 +52,7 @@ class SupportRequestFormActivity : AppCompatActivity() {
         zendeskSettings.setup(context = this)
 
         ActivitySupportRequestFormBinding.inflate(layoutInflater).apply {
+            this.root.edgeToEdgeHandlingForNavigationBar()
             setContentView(root)
             setupActionBar()
             observeViewEvents(this)
