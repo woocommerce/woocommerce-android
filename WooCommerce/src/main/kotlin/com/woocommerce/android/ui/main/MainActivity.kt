@@ -1164,12 +1164,14 @@ class MainActivity :
     fun showOrderCreation(
         mode: OrderCreateEditViewModel.Mode,
         giftCardCode: String?,
-        giftCardAmount: BigDecimal?
+        giftCardAmount: BigDecimal?,
+        orderCurrency: String? = null,
     ) {
         NavGraphMainDirections.actionGlobalToOrderCreationFragment(
             mode = mode,
             giftCardCode = giftCardCode,
             giftCardAmount = giftCardAmount,
+            orderCurrency = orderCurrency
         ).apply {
             navController.navigateSafely(this)
         }

@@ -313,13 +313,21 @@ class ProductRestClient @Inject constructor(
      *
      * @param [remoteProductId] Unique server id of the product to fetch
      */
-    suspend fun fetchSingleProduct(site: SiteModel, remoteProductId: Long): RemoteProductPayload {
+    suspend fun fetchSingleProduct(
+        site: SiteModel,
+        remoteProductId: Long,
+        orderCurrency: String? = null,
+    ): RemoteProductPayload {
         val url = WOOCOMMERCE.products.id(remoteProductId).pathV3
+
+        val params = mutableMapOf<String, String>().apply {
+            orderCurrency?.let { put("currency", it) }
+        }
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
             path = url,
-            params = emptyMap(),
+            params = params,
             clazz = ProductApiResponse::class.java
         )
 
@@ -423,7 +431,8 @@ class ProductRestClient @Inject constructor(
         globalUniqueIdSearchQuery: String? = null,
         includedProductIds: List<Long>? = null,
         filterOptions: Map<ProductFilterOption, String>? = null,
-        excludedProductIds: List<Long>? = null
+        excludedProductIds: List<Long>? = null,
+        orderCurrency: String? = null,
     ) {
         coroutineEngine.launch(AppLog.T.API, this, "fetchProducts") {
             val url = WOOCOMMERCE.products.pathV3
@@ -436,7 +445,8 @@ class ProductRestClient @Inject constructor(
                 globalUniqueIdSearchQuery = globalUniqueIdSearchQuery,
                 includedProductIds = includedProductIds,
                 excludedProductIds = excludedProductIds,
-                filterOptions = filterOptions
+                filterOptions = filterOptions,
+                orderCurrency = orderCurrency,
             )
 
             val response = wooNetwork.executeGetGsonRequest(
@@ -559,7 +569,8 @@ class ProductRestClient @Inject constructor(
         searchQuery: String? = null,
         skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
         filterOptions: Map<ProductFilterOption, String>? = null,
-        includeTypes: List<WCProductStore.IncludeType> = emptyList()
+        includeTypes: List<WCProductStore.IncludeType> = emptyList(),
+        orderCurrency: String? = null,
     ): WooPayload<List<ProductWithMetaData>> {
         val params = buildProductParametersMap(
             pageSize = pageSize,
@@ -571,6 +582,7 @@ class ProductRestClient @Inject constructor(
             excludedProductIds = excludedProductIds,
             filterOptions = filterOptions,
             includeTypes = includeTypes,
+            orderCurrency = orderCurrency
         )
 
         val url = WOOCOMMERCE.products.pathV3
@@ -602,7 +614,7 @@ class ProductRestClient @Inject constructor(
 
         return response.toWooPayload { it.toList() }
     }
-
+    
     private fun buildProductParametersMap(
         pageSize: Int,
         sortType: ProductSorting,
@@ -613,57 +625,77 @@ class ProductRestClient @Inject constructor(
         includedProductIds: List<Long>? = null,
         excludedProductIds: List<Long>? = null,
         filterOptions: Map<ProductFilterOption, String>? = null,
-        includeTypes: List<WCProductStore.IncludeType> = emptyList()
+        includeTypes: List<WCProductStore.IncludeType> = emptyList(),
+        orderCurrency: String? = null,
     ): MutableMap<String, String> {
-        fun ProductSorting.asOrderByParameter() = when (this) {
-            TITLE_ASC, TITLE_DESC -> "title"
-            DATE_ASC, DATE_DESC -> "date"
-        }
+        val params = buildBaseParams(pageSize, sortType, offset, includeTypes, orderCurrency)
 
-        fun ProductSorting.asSortOrderParameter() = when (this) {
-            TITLE_ASC, DATE_ASC -> "asc"
-            TITLE_DESC, DATE_DESC -> "desc"
-        }
+        addProductIds(params, "include", includedProductIds)
+        addProductIds(params, "exclude", excludedProductIds)
+        addFilterOptions(params, filterOptions)
+        addSearchParams(params, searchQuery, skuSearchOptions)
+        addGlobalUniqueIdSearchQuery(params, globalUniqueIdSearchQuery)
 
-        val params = mutableMapOf(
+        return params
+    }
+
+    private fun buildBaseParams(
+        pageSize: Int,
+        sortType: ProductSorting,
+        offset: Int,
+        includeTypes: List<WCProductStore.IncludeType>,
+        orderCurrency: String?
+    ): MutableMap<String, String> {
+        return mutableMapOf(
             "per_page" to pageSize.toString(),
             "orderby" to sortType.asOrderByParameter(),
             "order" to sortType.asSortOrderParameter(),
             "offset" to offset.toString(),
             "include_types" to includeTypes.joinToString(",") { it.value }
-        )
+        ).apply {
+            orderCurrency?.let { put("currency", it) }
+        }
+    }
 
-        includedProductIds?.let { includedIds ->
-            params.putIfNotEmpty("include" to includedIds.map { it }.joinToString())
+    private fun addProductIds(params: MutableMap<String, String>, key: String, productIds: List<Long>?) {
+        productIds?.let { ids ->
+            params.putIfNotEmpty(key to ids.joinToString())
         }
-        excludedProductIds?.let { excludedIds ->
-            params.putIfNotEmpty("exclude" to excludedIds.map { it }.joinToString())
-        }
+    }
+
+    private fun addFilterOptions(params: MutableMap<String, String>, filterOptions: Map<ProductFilterOption, String>?) {
         filterOptions?.let { options ->
             params.putAll(options.map { it.key.toString() to it.value })
         }
+    }
 
-        if (searchQuery.isNullOrEmpty().not()) {
-            when (skuSearchOptions) {
-                SkuSearchOptions.Disabled -> {
-                    params["search"] = searchQuery!!
-                }
+    private fun addSearchParams(
+        params: MutableMap<String, String>,
+        searchQuery: String?,
+        skuSearchOptions: SkuSearchOptions
+    ) {
+        if (searchQuery.isNullOrEmpty()) return
 
-                SkuSearchOptions.ExactSearch -> {
-                    params["sku"] = searchQuery!! // full SKU match
-                }
-
-                SkuSearchOptions.PartialMatch -> {
-                    params["sku"] = searchQuery!! // full SKU match
-                    params["search_sku"] = searchQuery // partial SKU match, added in core v6.6
-                }
+        when (skuSearchOptions) {
+            SkuSearchOptions.Disabled -> params["search"] = searchQuery
+            SkuSearchOptions.ExactSearch -> params["sku"] = searchQuery // full SKU match
+            SkuSearchOptions.PartialMatch -> {
+                params["sku"] = searchQuery // full SKU match
+                params["search_sku"] = searchQuery // partial SKU match, added in core v6.6
             }
         }
-
-        addGlobalUniqueIdSearchQuery(params, globalUniqueIdSearchQuery)
-
-        return params
     }
+
+    private fun ProductSorting.asOrderByParameter(): String = when (this) {
+        TITLE_ASC, TITLE_DESC -> "title"
+        DATE_ASC, DATE_DESC -> "date"
+    }
+
+    private fun ProductSorting.asSortOrderParameter(): String = when (this) {
+        TITLE_ASC, DATE_ASC -> "asc"
+        TITLE_DESC, DATE_DESC -> "desc"
+    }
+
 
     private fun addGlobalUniqueIdSearchQuery(
         params: MutableMap<String, String>,
@@ -934,6 +966,7 @@ class ProductRestClient @Inject constructor(
         searchQuery: String? = null,
         excludedVariationIds: List<Long> = emptyList(),
         filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
+        orderCurrency: String? = null,
     ): WooPayload<List<WCProductVariationModel>> {
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
@@ -943,6 +976,7 @@ class ProductRestClient @Inject constructor(
         ).putIfNotEmpty("search" to searchQuery)
             .putIfNotEmpty("include" to includedVariationIds.map { it }.joinToString())
             .putIfNotEmpty("exclude" to excludedVariationIds.map { it }.joinToString())
+            .putIfNotEmpty("currency" to orderCurrency)
 
         filterOptions?.let { options ->
             params.putAll(options.map { it.key.toString() to it.value })

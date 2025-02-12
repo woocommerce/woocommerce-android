@@ -3,7 +3,9 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 21.8
 -----
+- [**] Dashboard tab now supports tablet/bug screen layout [https://github.com/woocommerce/woocommerce-android/pull/13488]
 - [**] Improved accessibility support (handling of increased text size) in in-person payment flows [https://github.com/woocommerce/woocommerce-android/pull/13414]
+- [***] Fixed currency mismatch in order editing by ensuring products, custom amounts, and shipping lines respect the order’s currency. [https://github.com/woocommerce/woocommerce-android/pull/13483]
 - [*] Updated the notification icon for better readability [https://github.com/woocommerce/woocommerce-android/pull/13516]
 - [*] Automatically select the first available order when filtering is active in the two-pane layout.[https://github.com/woocommerce/woocommerce-android/pull/13491]
 - [*] [Internal] Removal animation of the items from the cart [https://github.com/woocommerce/woocommerce-android/pull/13442]

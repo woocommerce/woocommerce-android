@@ -195,7 +195,8 @@ class OrderNavigator @Inject constructor() {
                 (fragment.activity as? MainActivity)?.showOrderCreation(
                     OrderCreateEditViewModel.Mode.Edit(target.orderId),
                     target.giftCard,
-                    target.appliedDiscount
+                    target.appliedDiscount,
+                    target.orderCurrency
                 )
             }
             is OrderNavigationTarget.ShowOrder -> {

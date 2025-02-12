@@ -1082,7 +1082,6 @@
     <string name="order_detail_attribution_session_page_views">Session page views</string>
     <string name="order_detail_move_to_trash">Move to trash</string>
     <string name="order_detail_trash_order_dialog_message">Do you want to move this order to the trash?</string>
-    <string name="order_detail_edit_store_currency_mismatch">Sorry, you can only edit this order on the web, as it uses %1$s, and your site\'s currency is %2$s</string>
 
     <!--
         Shipping label Refunds

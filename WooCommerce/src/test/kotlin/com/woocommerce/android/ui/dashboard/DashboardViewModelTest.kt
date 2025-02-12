@@ -165,7 +165,8 @@ class DashboardViewModelTest : BaseUnitTest() {
                     }
                 )
             )
-            whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(System.currentTimeMillis() - 1000)
+            whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate())
+                .thenReturn(System.currentTimeMillis() - 1000)
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -189,9 +190,10 @@ class DashboardViewModelTest : BaseUnitTest() {
             )
         }
 
-        val widgets = viewModel.dashboardWidgets.captureValues().last()
+        val viewState = viewModel.dashboardCardsState.captureValues().last()
 
-        val shareStoreCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget }
+        val shareStoreCard =
+            viewState.widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget }
         assertThat(shareStoreCard.isVisible).isTrue()
     }
 
@@ -211,9 +213,10 @@ class DashboardViewModelTest : BaseUnitTest() {
             )
         }
 
-        val widgets = viewModel.dashboardWidgets.captureValues().last()
+        val viewState = viewModel.dashboardCardsState.captureValues().last()
 
-        val shareStoreCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget }
+        val shareStoreCard =
+            viewState.widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget }
         assertThat(shareStoreCard.isVisible).isFalse()
     }
 
@@ -223,9 +226,9 @@ class DashboardViewModelTest : BaseUnitTest() {
             whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
         }
 
-        val widgets = viewModel.dashboardWidgets.captureValues().last()
+        val viewState = viewModel.dashboardCardsState.captureValues().last()
 
-        val feedbackCard = widgets.filter { it.isVisible }[1]
+        val feedbackCard = viewState.widgets.filter { it.isVisible }[1]
         assertThat(feedbackCard).isInstanceOf(DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java)
         assertThat(feedbackCard.isVisible).isTrue()
     }
@@ -236,9 +239,9 @@ class DashboardViewModelTest : BaseUnitTest() {
             whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(false))
         }
 
-        val widgets = viewModel.dashboardWidgets.captureValues().last()
+        val viewState = viewModel.dashboardCardsState.captureValues().last()
 
-        val feedbackCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget }
+        val feedbackCard = viewState.widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget }
         assertThat(feedbackCard.isVisible).isFalse()
     }
 
@@ -249,9 +252,10 @@ class DashboardViewModelTest : BaseUnitTest() {
         }
 
         val event = viewModel.event.runAndCaptureValues {
-            val widgets = viewModel.dashboardWidgets.captureValues().last()
-            val feedbackCard = widgets.filterIsInstance<DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget>()
-                .first()
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+            val feedbackCard =
+                viewState.widgets.filterIsInstance<DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget>()
+                    .first()
             feedbackCard.onPositiveClick.invoke()
         }.last()
 
@@ -270,9 +274,10 @@ class DashboardViewModelTest : BaseUnitTest() {
         }
 
         val event = viewModel.event.runAndCaptureValues {
-            val widgets = viewModel.dashboardWidgets.captureValues().last()
-            val feedbackCard = widgets.filterIsInstance<DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget>()
-                .first()
+            val viewState = viewModel.dashboardCardsState.captureValues().last()
+            val feedbackCard =
+                viewState.widgets.filterIsInstance<DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget>()
+                    .first()
             feedbackCard.onNegativeClick.invoke()
         }.last()
 
@@ -290,9 +295,9 @@ class DashboardViewModelTest : BaseUnitTest() {
             whenever(dashboardRepository.hasNewWidgets).thenReturn(flowOf(true))
         }
 
-        val widgets = viewModel.dashboardWidgets.getOrAwaitValue()
+        val viewState = viewModel.dashboardCardsState.getOrAwaitValue()
 
-        val newWidgetsCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard }
+        val newWidgetsCard = viewState.widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard }
         assertThat(newWidgetsCard.isVisible).isTrue()
     }
 
@@ -302,22 +307,23 @@ class DashboardViewModelTest : BaseUnitTest() {
             whenever(dashboardRepository.hasNewWidgets).thenReturn(flowOf(false))
         }
 
-        val widgets = viewModel.dashboardWidgets.getOrAwaitValue()
+        val viewState = viewModel.dashboardCardsState.getOrAwaitValue()
 
-        val newWidgetsCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard }
+        val newWidgetsCard = viewState.widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard }
         assertThat(newWidgetsCard.isVisible).isFalse()
     }
 
     @Test
-    fun `given site is WPCom suspended, when visitor stats placeholder, then hide Jetpack benefits banner`() = testBlocking {
-        setup {
-            whenever(selectedSite.observe())
-                .thenReturn(flowOf(SiteModel().apply { origin = SiteModel.ORIGIN_WPAPI }))
-            whenever(appPrefsWrapper.isSiteWPComSuspended).thenReturn(true)
+    fun `given site is WPCom suspended, when visitor stats placeholder, then hide Jetpack benefits banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe())
+                    .thenReturn(flowOf(SiteModel().apply { origin = SiteModel.ORIGIN_WPAPI }))
+                whenever(appPrefsWrapper.isSiteWPComSuspended).thenReturn(true)
+            }
+
+            val jetpackBenefitsBannerState = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBannerState).isNull()
         }
-
-        val jetpackBenefitsBannerState = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
-
-        assertThat(jetpackBenefitsBannerState).isNull()
-    }
 }

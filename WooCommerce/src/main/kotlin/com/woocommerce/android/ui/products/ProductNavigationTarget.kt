@@ -140,6 +140,7 @@ sealed class ProductNavigationTarget : Event() {
         val productSourceForTracking: ProductSourceForTracking,
         val selectionMode: ProductSelectorViewModel.SelectionMode,
         val screenMode: VariationSelectorViewModel.ScreenMode,
+        val orderCurrency: String? = null,
     ) : ProductNavigationTarget()
 
     data class NavigateToProductConfiguration(val productId: Long) : ProductNavigationTarget()

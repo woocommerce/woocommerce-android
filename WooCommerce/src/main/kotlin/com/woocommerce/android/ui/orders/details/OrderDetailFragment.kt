@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -723,6 +724,9 @@ class OrderDetailFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val feeLineState = feeLine.observeAsState(emptyList())
+                val currency = produceState<String?>(initialValue = null) {
+                    value = viewModel.awaitOrder().currency
+                }.value
                 if (feeLineState.value.isEmpty().not()) {
                     WooThemeWithBackground {
                         Column(
@@ -733,9 +737,18 @@ class OrderDetailFragment :
                                 CustomAmountCard(
                                     CustomAmountUI(
                                         name = feeLine.name ?: "",
-                                        amount = CurrencyFormattedAmount(
-                                            currencyFormatter.formatCurrency(feeLine.total)
-                                        ),
+                                        amount = currency?.let {
+                                            CurrencyFormattedAmount(
+                                                currencyFormatter.formatCurrency(
+                                                    feeLine.total,
+                                                    currencyCode = currency
+                                                )
+                                            )
+                                        } ?: run {
+                                            CurrencyFormattedAmount(
+                                                currencyFormatter.formatCurrency(feeLine.total)
+                                            )
+                                        },
                                         shouldShowDivider = index < feeLineState.value.size - 1,
                                     )
                                 )

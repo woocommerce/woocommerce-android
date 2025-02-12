@@ -22,7 +22,7 @@ fladle {
             "notPackage com.woocommerce.android.e2e.tests.screenshot"
     ]
     devices = [
-            [ "model": "Pixel2.arm", "version": "30" ]
+            ["model": "Pixel2.arm", "version": "30"]
     ]
     localResultsDir = "$rootDir/build/instrumented-tests"
 
@@ -411,6 +411,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.material3)
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintlayout.compose)

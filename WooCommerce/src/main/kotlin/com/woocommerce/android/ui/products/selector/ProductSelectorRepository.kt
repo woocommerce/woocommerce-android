@@ -40,6 +40,7 @@ class ProductSelectorRepository @Inject constructor(
         offset: Int,
         pageSize: Int,
         skuSearchOption: WCProductStore.SkuSearchOptions,
+        orderCurrency: String? = null,
     ): Result<SearchResult> {
         return productStore.searchProducts(
             selectedSite.get(),
@@ -47,6 +48,7 @@ class ProductSelectorRepository @Inject constructor(
             offset = offset,
             pageSize = pageSize,
             skuSearchOptions = skuSearchOption,
+            orderCurrency = orderCurrency,
         ).let { result ->
             if (result.isError) {
                 WooLog.w(
@@ -77,6 +79,7 @@ class ProductSelectorRepository @Inject constructor(
         pageSize: Int,
         filterOptions: Map<ProductFilterOption, String>,
         includeType: List<WCProductStore.IncludeType>,
+        orderCurrency: String? = null,
     ): Result<Boolean> {
         return productStore.fetchProducts(
             site = selectedSite.get(),
@@ -85,6 +88,7 @@ class ProductSelectorRepository @Inject constructor(
             filterOptions = filterOptions,
             includeTypes = includeType,
             forceRefresh = forceRefresh,
+            orderCurrency = orderCurrency
         )
             .let { result ->
                 if (result.isError) {

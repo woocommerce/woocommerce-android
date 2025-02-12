@@ -30,7 +30,8 @@ class VariationSelectorRepository @Inject constructor(
         productId: Long,
         offset: Int,
         pageSize: Int,
-        filterOptions: Map<VariationFilterOption, String>? = null
+        filterOptions: Map<VariationFilterOption, String>? = null,
+        orderCurrency: String? = null,
     ): Result<Boolean> {
         return productStore.fetchProductVariations(
             selectedSite.get(),
@@ -38,6 +39,7 @@ class VariationSelectorRepository @Inject constructor(
             offset,
             pageSize,
             filterOptions = filterOptions,
+            orderCurrency = orderCurrency
         )
             .let { result ->
                 if (result.isError) {

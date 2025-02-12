@@ -17,14 +17,10 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetState
-import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
-import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -33,6 +29,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -52,18 +50,16 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
-import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
+import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ThemeDemoPage
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType.DESKTOP
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType.MOBILE
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType.TABLET
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
@@ -85,7 +81,7 @@ fun ThemePreviewScreen(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ThemePreviewScreen(
     state: ViewState,
@@ -96,65 +92,66 @@ fun ThemePreviewScreen(
     onActivateThemeClicked: () -> Unit,
     onPreviewTypeChanged: (PreviewType) -> Unit,
 ) {
+    val modalSheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
-    val modalSheetState = rememberModalBottomSheetState(
-        initialValue = Hidden,
-        confirmValueChange = { it != HalfExpanded }
-    )
+    var showBottomSheet by remember { mutableStateOf(false) }
 
-    WCModalBottomSheetLayout(
-        sheetState = modalSheetState,
-        sheetContent = {
-            ThemeDemoPagesBottomSheet(
-                pages = state.themePages,
-                onPageSelected = {
-                    coroutineScope.launch { modalSheetState.hide() }
-                    onPageSelected(it)
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = {
+                    DemoSectionsToolbar(
+                        state = state,
+                        onDropdownTapped = { showBottomSheet = !modalSheetState.isVisible }
+                    )
                 },
-                modifier = Modifier.fillMaxWidth()
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationButtonClick = onBackNavigationClicked,
+                actions = {
+                    ThemePreviewMenu(state.previewType, onPreviewTypeChanged)
+                }
+            )
+        },
+
+        backgroundColor = MaterialTheme.colors.surface
+    ) { paddingValues ->
+        Column(
+            Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            ThemePreviewWebView(
+                url = state.currentPageUri,
+                userAgent = userAgent,
+                authenticator = webViewAuthenticator,
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterHorizontally),
+                previewType = state.previewType
+            )
+
+            ThemePreviewBottomSection(
+                themeName = state.themeName,
+                isActivatingTheme = state.isActivatingTheme,
+                onActivateThemeClicked = onActivateThemeClicked,
+                modifier = Modifier
+                    .fillMaxWidth()
             )
         }
-    ) {
-        Scaffold(
-            topBar = {
-                Toolbar(
-                    title = {
-                        DemoSectionsToolbar(
-                            state,
-                            coroutineScope,
-                            modalSheetState
-                        )
-                    },
-                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                    onNavigationButtonClick = onBackNavigationClicked,
-                    actions = {
-                        ThemePreviewMenu(state.previewType, onPreviewTypeChanged)
-                    }
-                )
-            },
-            backgroundColor = MaterialTheme.colors.surface
-        ) { paddingValues ->
-            Column(
-                Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
+        if (showBottomSheet) {
+            WCModalBottomSheet(
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = modalSheetState,
             ) {
-                ThemePreviewWebView(
-                    url = state.currentPageUri,
-                    userAgent = userAgent,
-                    authenticator = webViewAuthenticator,
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterHorizontally),
-                    previewType = state.previewType
-                )
-
-                ThemePreviewBottomSection(
-                    themeName = state.themeName,
-                    isActivatingTheme = state.isActivatingTheme,
-                    onActivateThemeClicked = onActivateThemeClicked,
-                    modifier = Modifier
-                        .fillMaxWidth()
+                ThemeDemoPagesBottomSheet(
+                    pages = state.themePages,
+                    onPageSelected = {
+                        onPageSelected(it)
+                        dismissWCModalBottomSheet(coroutineScope, modalSheetState) {
+                            showBottomSheet = false
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -196,12 +193,10 @@ private fun ThemePreviewBottomSection(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun DemoSectionsToolbar(
     state: ViewState,
-    coroutineScope: CoroutineScope,
-    modalSheetState: ModalBottomSheetState,
+    onDropdownTapped: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -209,15 +204,8 @@ private fun DemoSectionsToolbar(
             .padding(start = dimensionResource(id = dimen.major_150))
             .clickable(
                 enabled = state.shouldShowPagesDropdown,
-            ) {
-                coroutineScope.launch {
-                    if (modalSheetState.isVisible) {
-                        modalSheetState.hide()
-                    } else {
-                        modalSheetState.show()
-                    }
-                }
-            }
+                onClick = onDropdownTapped
+            )
     ) {
         Text(
             text = stringResource(id = string.theme_preview_title),
@@ -309,23 +297,17 @@ private fun ThemeDemoPagesBottomSheet(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
-        BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
         Text(
             modifier = Modifier
-                .padding(
-                    start = dimensionResource(id = dimen.major_100),
-                    top = dimensionResource(id = dimen.minor_100)
-                ),
+                .padding(start = dimensionResource(id = dimen.major_100)),
             text = stringResource(id = string.theme_preview_bottom_sheet_pages_title),
             style = MaterialTheme.typography.h6,
         )
         Text(
             modifier = Modifier
                 .padding(
-                    start = dimensionResource(id = dimen.major_100),
-                    bottom = dimensionResource(id = dimen.minor_100)
+                    horizontal = dimensionResource(id = dimen.major_100),
+                    vertical = dimensionResource(id = dimen.minor_100)
                 ),
             text = stringResource(id = string.theme_preview_bottom_sheet_pages_subtitle),
             style = MaterialTheme.typography.subtitle2,

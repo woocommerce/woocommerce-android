@@ -22,7 +22,7 @@ internal class ProductListHandlerTest : BaseUnitTest() {
         on(it.observeProducts(any())) doReturn flow { emit(generateSampleProducts()) }
 
         onBlocking {
-            (it.fetchProducts(any(), any(), any(), any(), any()))
+            (it.fetchProducts(any(), any(), any(), any(), any(), any()))
         } doReturn Result.success(true)
     }
 
@@ -34,9 +34,9 @@ internal class ProductListHandlerTest : BaseUnitTest() {
 
     @Test
     fun `when load invoked, then emits first 25 products from db`() = testBlocking {
-        whenever(repo.fetchProducts(any(), any(), any(), any(), any())).doReturn(Result.success(true))
+        whenever(repo.fetchProducts(any(), any(), any(), any(), any(), any())).doReturn(Result.success(true))
         val handler = ProductListHandler(repo)
-        handler.loadFromCacheAndFetch(searchType = SearchType.DEFAULT)
+        handler.loadFromCacheAndFetch(searchType = SearchType.DEFAULT, orderCurrency = "USD")
 
         handler.productsFlow.test {
             val products = awaitItem()
@@ -50,8 +50,8 @@ internal class ProductListHandlerTest : BaseUnitTest() {
     @Test
     fun `when load invoked, then side fetches first 25 products from backend`() = testBlocking {
         val handler = ProductListHandler(repo)
-        handler.loadFromCacheAndFetch(searchType = SearchType.DEFAULT)
-        verify(repo).fetchProducts(false, 0, 25, emptyMap(), emptyList())
+        handler.loadFromCacheAndFetch(searchType = SearchType.DEFAULT, orderCurrency = "USD")
+        verify(repo).fetchProducts(false, 0, 25, emptyMap(), emptyList(), "USD")
     }
 
     @Test
@@ -62,12 +62,20 @@ internal class ProductListHandlerTest : BaseUnitTest() {
             "",
             emptyMap(),
             searchType = SearchType.DEFAULT,
-            emptyList()
+            emptyList(),
+            "USD"
         )
 
-        handler.loadMore()
+        handler.loadMore(orderCurrency = "USD")
 
-        verify(repo).fetchProducts(false, 25, 25, emptyMap(), emptyList())
+        verify(repo).fetchProducts(
+            false,
+            25,
+            25,
+            emptyMap(),
+            emptyList(),
+            "USD"
+        )
 
         handler.productsFlow.test {
             val products = awaitItem()

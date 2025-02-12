@@ -1647,7 +1647,8 @@ class WCProductStore @Inject constructor(
         excludedProductIds: List<Long> = emptyList(),
         filterOptions: Map<ProductFilterOption, String> = emptyMap(),
         includeTypes: List<IncludeType> = emptyList(),
-        forceRefresh: Boolean = true
+        forceRefresh: Boolean = true,
+        orderCurrency: String? = null,
     ): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(API, this, "fetchProducts") {
             val response = wcProductRestClient.fetchProductsWithSyncRequest(
@@ -1659,6 +1660,7 @@ class WCProductStore @Inject constructor(
                 excludedProductIds = excludedProductIds,
                 filterOptions = filterOptions,
                 includeTypes = includeTypes,
+                orderCurrency = orderCurrency,
             )
             when {
                 response.isError -> WooResult(response.error)
@@ -1686,7 +1688,8 @@ class WCProductStore @Inject constructor(
         searchString: String,
         skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
         offset: Int = 0,
-        pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE
+        pageSize: Int = DEFAULT_PRODUCT_PAGE_SIZE,
+        orderCurrency: String? = null,
     ): WooResult<ProductSearchResult> {
         return coroutineEngine.withDefaultContext(API, this, "searchProducts") {
             val response = wcProductRestClient.fetchProductsWithSyncRequest(
@@ -1694,7 +1697,8 @@ class WCProductStore @Inject constructor(
                 offset = offset,
                 pageSize = pageSize,
                 searchQuery = searchString,
-                skuSearchOptions = skuSearchOptions
+                skuSearchOptions = skuSearchOptions,
+                orderCurrency = orderCurrency
             )
             when {
                 response.isError -> WooResult(response.error)
@@ -1762,6 +1766,7 @@ class WCProductStore @Inject constructor(
         includedVariationIds: List<Long> = emptyList(),
         excludedVariationIds: List<Long> = emptyList(),
         filterOptions: Map<VariationFilterOption, String>? = null,
+        orderCurrency: String? = null,
     ): WooResult<Boolean> {
         return coroutineEngine.withDefaultContext(API, this, "fetchProductVariations") {
             val response = wcProductRestClient.fetchProductVariationsWithSyncRequest(
@@ -1771,7 +1776,8 @@ class WCProductStore @Inject constructor(
                 pageSize = pageSize,
                 includedVariationIds = includedVariationIds,
                 excludedVariationIds = excludedVariationIds,
-                filterOptions = filterOptions
+                filterOptions = filterOptions,
+                orderCurrency = orderCurrency
             )
             when {
                 response.isError -> WooResult(response.error)
