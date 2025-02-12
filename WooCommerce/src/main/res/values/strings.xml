@@ -4506,6 +4506,9 @@
     <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
     <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
 
+    <string name="woo_shipping_address_validate_title">Validating</string>
+    <string name="woo_shipping_address_validate_message">Validating entered address</string>
+
     <string name="woo_shipping_confirm_address_title">Confirm address</string>
     <string name="woo_shipping_confirm_address_description">We have slightly modified the entered address.\nIf correct, please use the suggested address to ensure accurate delivery.</string>
     <string name="woo_shipping_confirm_address_entered">What you entered</string>

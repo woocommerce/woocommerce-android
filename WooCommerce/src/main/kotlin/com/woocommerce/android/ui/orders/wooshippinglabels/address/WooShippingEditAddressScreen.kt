@@ -91,7 +91,7 @@ fun WooShippingEditAddressScreen(
     WooShippingEditAddressScreen(
         editableAddress = viewState.editableAddress,
         isCompanyExpanded = viewState.isCompanyExpanded,
-        shouldDisplayLoadingCountries = viewState.shouldDisplayLoading,
+        loading = viewState.loading,
         shouldDisplayLoadingCountriesError = viewState.shouldDisplayLoadingCountriesError,
         shouldUseStatesInput = viewState.shouldUseStatesInput,
         addressStatus = viewState.addressStatus,
@@ -119,7 +119,7 @@ fun WooShippingEditAddressScreen(
 @Composable
 fun WooShippingEditAddressScreen(
     editableAddress: EditableAddress,
-    shouldDisplayLoadingCountries: Boolean,
+    loading: WooShippingEditOriginViewModel.LoadingState,
     shouldDisplayLoadingCountriesError: Boolean,
     shouldUseStatesInput: Boolean,
     isCompanyExpanded: Boolean,
@@ -404,12 +404,12 @@ fun WooShippingEditAddressScreen(
                 )
             }
         }
-        if (shouldDisplayLoadingCountries) {
-            LoadingModal(
-                title = stringResource(id = R.string.loading),
-                description = stringResource(id = R.string.woo_shipping_fetching_countries_and_states)
-            )
-        }
+    }
+    if (loading is WooShippingEditOriginViewModel.LoadingState.DisplayLoading) {
+        LoadingModal(
+            title = loading.title,
+            description = loading.message
+        )
     }
 }
 

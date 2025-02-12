@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.combine
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Address
@@ -16,6 +17,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetStatesByCo
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.util.StringUtils.combineStrings
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +39,7 @@ class WooShippingEditOriginViewModel @Inject constructor(
     private val getAcceptedOriginCountries: GetAcceptedOriginCountries,
     private val getStatesByCountryCode: GetStatesByCountryCode,
     private val normalizeAddress: NormalizeAddress,
+    private val resourceProvider: ResourceProvider,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private var name by mutableStateOf(InputValue(""))
@@ -147,7 +150,7 @@ class WooShippingEditOriginViewModel @Inject constructor(
         ViewState(
             isCompanyExpanded = false,
             editableAddress = EditableAddress(),
-            shouldDisplayLoading = false,
+            loading = LoadingState.Hidden,
             shouldDisplayLoadingCountriesError = false,
             shouldUseStatesInput = false,
             addressStatus = AddressStatus.UNVERIFIED,
@@ -237,8 +240,23 @@ class WooShippingEditOriginViewModel @Inject constructor(
             normalizedAddressStatus
         ) { address, isExpanded, countriesState, statesState, addressSelection ->
 
-            val isLoading =
-                countriesState is LocationState.DisplayLoading || statesState is LocationState.DisplayLoading
+            val loading =
+                when {
+                    countriesState is LocationState.DisplayLoading || statesState is LocationState.DisplayLoading -> {
+                        LoadingState.DisplayLoading(
+                            resourceProvider.getString(R.string.loading),
+                            resourceProvider.getString(R.string.woo_shipping_fetching_countries_and_states)
+                        )
+                    }
+                    addressSelection is NormalizedAddressStatus.VerifyingAddress -> {
+                        LoadingState.DisplayLoading(
+                            resourceProvider.getString(R.string.woo_shipping_address_validate_title),
+                            resourceProvider.getString(R.string.woo_shipping_address_validate_message)
+                        )
+                    }
+                    else -> LoadingState.Hidden
+                }
+
 
             val addressStatus = when {
                 hasIncorrectOrMissingData(address) -> AddressStatus.MISSING_INFO
@@ -249,7 +267,7 @@ class WooShippingEditOriginViewModel @Inject constructor(
             ViewState(
                 isCompanyExpanded = isExpanded,
                 editableAddress = address,
-                shouldDisplayLoading = isLoading,
+                loading = loading,
                 shouldDisplayLoadingCountriesError = countriesState is LocationState.Error,
                 shouldUseStatesInput = statesState is LocationState.Loaded && statesState.locations.isEmpty(),
                 addressStatus = addressStatus,
@@ -387,12 +405,20 @@ class WooShippingEditOriginViewModel @Inject constructor(
     data class ViewState(
         val isCompanyExpanded: Boolean,
         val editableAddress: EditableAddress,
-        val shouldDisplayLoading: Boolean,
+        val loading: LoadingState,
         val shouldDisplayLoadingCountriesError: Boolean,
         val shouldUseStatesInput: Boolean,
         val addressStatus: AddressStatus,
         val addressSelection: NormalizedAddressStatus
     )
+
+    sealed class LoadingState {
+        data object Hidden : LoadingState()
+        data class DisplayLoading(
+            val title: String,
+            val message: String
+        ) : LoadingState()
+    }
 
     sealed class LocationState {
         data object Loading : LocationState()
@@ -454,7 +480,7 @@ data class EditableAddress(
 
 sealed class NormalizedAddressStatus {
     data object Closed : NormalizedAddressStatus()
-    data object VerifyingAddress: NormalizedAddressStatus()
+    data object VerifyingAddress : NormalizedAddressStatus()
     data object Failure : NormalizedAddressStatus()
     data class AddressSelection(
         val addressNormalization: AddressNormalizationModel,
