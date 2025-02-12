@@ -11,11 +11,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +29,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
@@ -38,21 +41,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -65,68 +70,63 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
+import com.woocommerce.android.ui.compose.component.dismissWCModalBottomSheet
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
 import com.woocommerce.android.ui.orders.wooshippinglabels.ShipmentDetailsSectionTitle
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.EditableAddress
-import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.NormalizedAddressSelection
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.NormalizedAddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.WooShippingEditOriginViewModel
-import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.successColor
 import com.woocommerce.android.ui.orders.wooshippinglabels.rates.ui.shippingSelectedBackgroundColor
-import com.woocommerce.android.ui.orders.wooshippinglabels.toShippingFromString
 
 @Composable
 fun WooShippingEditAddressScreen(
     viewModel: WooShippingEditOriginViewModel,
     modifier: Modifier = Modifier
 ) {
-    when (val viewState = viewModel.viewState.collectAsState().value) {
-        is WooShippingEditOriginViewModel.EditAddressViewState.DataState -> {
-            EditAddress(
-                editableAddress = viewState.editableAddress,
-                isCompanyExpanded = viewState.isCompanyExpanded,
-                shouldDisplayLoadingCountries = viewState.shouldDisplayLoading,
-                shouldDisplayLoadingCountriesError = viewState.shouldDisplayLoadingCountriesError,
-                shouldUseStatesInput = viewState.shouldUseStatesInput,
-                addressStatus = viewState.addressStatus,
-                onExpandCompany = viewModel::onExpandCompany,
-                onNameChange = viewModel::onNameChange,
-                onCompanyChange = viewModel::onCompanyChange,
-                onAddressChange = viewModel::onAddressChange,
-                onCityChange = viewModel::onCityChange,
-                onPostalCodeChange = viewModel::onPostalCodeChange,
-                onEmailChange = viewModel::onEmailChange,
-                onPhoneChange = viewModel::onPhoneChange,
-                onCountryChange = viewModel::onCountryChange,
-                onRefreshCountries = viewModel::onRefreshCountries,
-                onRawStateChange = viewModel::onRawStateChange,
-                onStateChange = viewModel::onStateChange,
-                onNormalizeAddress = viewModel::onNormalizeAddress,
-                modifier = modifier
-            )
-        }
-
-        is WooShippingEditOriginViewModel.EditAddressViewState.AddressSelectionState -> {
-            SelectAddress(
-                addressSelection = viewState.addressSelection,
-                onAddressSelectionChange = viewModel::onAddressSelectionChange,
-                onCloseAddressSelection = viewModel::onCloseAddressSelection,
-                modifier = modifier
-            )
-        }
-    }
+    val viewState = viewModel.viewState.collectAsState().value
+    WooShippingEditAddressScreen(
+        editableAddress = viewState.editableAddress,
+        isCompanyExpanded = viewState.isCompanyExpanded,
+        shouldDisplayLoadingCountries = viewState.shouldDisplayLoading,
+        shouldDisplayLoadingCountriesError = viewState.shouldDisplayLoadingCountriesError,
+        shouldUseStatesInput = viewState.shouldUseStatesInput,
+        addressStatus = viewState.addressStatus,
+        addressSelection = viewState.addressSelection,
+        onAddressSelectionChange = viewModel::onAddressSelectionChange,
+        onCloseAddressSelection = viewModel::onCloseAddressSelection,
+        onExpandCompany = viewModel::onExpandCompany,
+        onNameChange = viewModel::onNameChange,
+        onCompanyChange = viewModel::onCompanyChange,
+        onAddressChange = viewModel::onAddressChange,
+        onCityChange = viewModel::onCityChange,
+        onPostalCodeChange = viewModel::onPostalCodeChange,
+        onEmailChange = viewModel::onEmailChange,
+        onPhoneChange = viewModel::onPhoneChange,
+        onCountryChange = viewModel::onCountryChange,
+        onRefreshCountries = viewModel::onRefreshCountries,
+        onRawStateChange = viewModel::onRawStateChange,
+        onStateChange = viewModel::onStateChange,
+        onNormalizeAddress = viewModel::onNormalizeAddress,
+        modifier = modifier
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditAddress(
+fun WooShippingEditAddressScreen(
     editableAddress: EditableAddress,
     shouldDisplayLoadingCountries: Boolean,
     shouldDisplayLoadingCountriesError: Boolean,
     shouldUseStatesInput: Boolean,
     isCompanyExpanded: Boolean,
     addressStatus: AddressStatus,
+    addressSelection: NormalizedAddressStatus,
+    onAddressSelectionChange: (NormalizedAddressStatus.AddressSelection) -> Unit,
+    onCloseAddressSelection: () -> Unit,
     onExpandCompany: () -> Unit,
     onNameChange: (String) -> Unit,
     onCompanyChange: (String) -> Unit,
@@ -364,6 +364,43 @@ fun EditAddress(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
+                )
+            }
+        }
+
+        val modalSheetState = androidx.compose.material3.rememberModalBottomSheetState(
+            skipPartiallyExpanded = true
+        )
+        val coroutineScope = rememberCoroutineScope()
+
+        LaunchedEffect(addressSelection) {
+            when (addressSelection) {
+                is NormalizedAddressStatus.AddressSelection -> {
+                    modalSheetState.show()
+                }
+
+                else -> {
+                    modalSheetState.hide()
+                }
+            }
+        }
+
+        if (addressSelection is NormalizedAddressStatus.AddressSelection) {
+            WCModalBottomSheet(
+                sheetState = modalSheetState,
+                onDismissRequest = { onCloseAddressSelection() },
+                contentWindowInsets = { WindowInsets.statusBars }
+            ) {
+                SelectAddress(
+                    addressSelection = addressSelection,
+                    onAddressSelectionChange = onAddressSelectionChange,
+                    onCloseAddressSelection = {
+                        dismissWCModalBottomSheet(
+                            coroutineScope = coroutineScope,
+                            modalSheetState = modalSheetState,
+                            invokeOnCompletion = onCloseAddressSelection
+                        )
+                    }
                 )
             }
         }
@@ -636,24 +673,36 @@ private fun CollapsedField(
 
 @Composable
 private fun SelectAddress(
-    addressSelection: NormalizedAddressSelection.AddressSelection,
-    onAddressSelectionChange: (NormalizedAddressSelection.AddressSelection) -> Unit,
+    addressSelection: NormalizedAddressStatus.AddressSelection,
+    onAddressSelectionChange: (NormalizedAddressStatus.AddressSelection) -> Unit,
     onCloseAddressSelection: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .weight(1f)
-            .verticalScroll(rememberScrollState())) {
+        IconButton(onClick = onCloseAddressSelection) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = null,
+                tint = MaterialTheme.colors.onSurface
+            )
+        }
+        Column(
+            modifier = Modifier
+                .padding(vertical = 24.dp, horizontal = 16.dp)
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+        ) {
             Text(
                 text = stringResource(id = R.string.woo_shipping_confirm_address_title),
-                style = MaterialTheme.typography.h4,
-                modifier = Modifier.padding(bottom = 16.dp)
+                style = MaterialTheme.typography.h5,
+                modifier = Modifier.padding(bottom = 16.dp),
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = stringResource(id = R.string.woo_shipping_confirm_address_description),
-                modifier = Modifier.padding(bottom = 16.dp).clickable { onCloseAddressSelection() }
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .clickable { onCloseAddressSelection() }
             )
             ShipmentDetailsSectionTitle(
                 title = stringResource(id = R.string.woo_shipping_confirm_address_entered),
@@ -668,7 +717,9 @@ private fun SelectAddress(
                         addressSelection.copy(selectedAddress = addressSelection.addressNormalization.address)
                     )
                 },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
             )
 
             ShipmentDetailsSectionTitle(
@@ -687,6 +738,27 @@ private fun SelectAddress(
                 },
                 modifier = Modifier.fillMaxWidth()
             )
+        }
+
+        val buttonText = if (addressSelection.selectedAddress == addressSelection.addressNormalization.address) {
+            stringResource(id = R.string.woo_shipping_confirm_submit_address_entered)
+        } else {
+            stringResource(id = R.string.woo_shipping_confirm_submit_address_suggested)
+        }
+
+        Surface(elevation = 8.dp) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+            ) {
+                WCColoredButton(
+                    onClick = {},
+                    text = buttonText,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
@@ -723,7 +795,6 @@ private fun AddressSelectionItem(
     ) {
         Text(
             text = address.toString(),
-            fontWeight = FontWeight.Bold,
             modifier = Modifier
         )
     }

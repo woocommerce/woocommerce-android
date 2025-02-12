@@ -4511,6 +4511,9 @@
     <string name="woo_shipping_confirm_address_entered">What you entered</string>
     <string name="woo_shipping_confirm_address_suggested">Suggested</string>
 
+    <string name="woo_shipping_confirm_submit_address_suggested">Confirm Suggested Address</string>
+    <string name="woo_shipping_confirm_submit_address_entered">Confirm Entered Address</string>
+
 
     <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="about_automattic_x_item_title">X</string>

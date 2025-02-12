@@ -62,8 +62,8 @@ class WooShippingEditOriginViewModel @Inject constructor(
     private val countriesState = MutableStateFlow<LocationState>(LocationState.Loading)
     private val statesState = MutableStateFlow<LocationState>(LocationState.Loading)
 
-    private val normalizedAddressSelection =
-        MutableStateFlow<NormalizedAddressSelection>(NormalizedAddressSelection.Closed)
+    private val normalizedAddressStatus =
+        MutableStateFlow<NormalizedAddressStatus>(NormalizedAddressStatus.Closed)
 
     private val navArgs: WooShippingEditOriginAddressFragmentArgs by savedState.navArgs()
 
@@ -143,14 +143,15 @@ class WooShippingEditOriginViewModel @Inject constructor(
         )
     }
 
-    val viewState: MutableStateFlow<EditAddressViewState> = MutableStateFlow(
-        EditAddressViewState.DataState(
+    val viewState: MutableStateFlow<ViewState> = MutableStateFlow(
+        ViewState(
             isCompanyExpanded = false,
             editableAddress = EditableAddress(),
             shouldDisplayLoading = false,
             shouldDisplayLoadingCountriesError = false,
             shouldUseStatesInput = false,
-            addressStatus = AddressStatus.UNVERIFIED
+            addressStatus = AddressStatus.UNVERIFIED,
+            addressSelection = NormalizedAddressStatus.Closed
         )
     )
 
@@ -233,34 +234,27 @@ class WooShippingEditOriginViewModel @Inject constructor(
             isCompanyExpanded,
             countriesState,
             statesState,
-            normalizedAddressSelection
+            normalizedAddressStatus
         ) { address, isExpanded, countriesState, statesState, addressSelection ->
-            when (addressSelection) {
-                is NormalizedAddressSelection.AddressSelection -> {
-                    EditAddressViewState.AddressSelectionState(addressSelection)
-                }
 
-                else -> {
-                    val isLoading =
-                        countriesState is LocationState.DisplayLoading || statesState is LocationState.DisplayLoading
+            val isLoading =
+                countriesState is LocationState.DisplayLoading || statesState is LocationState.DisplayLoading
 
-                    val addressStatus = when {
-                        hasIncorrectOrMissingData(address) -> AddressStatus.MISSING_INFO
-                        isSameAddress(address) && navArgs.originAddress.isVerified -> AddressStatus.VERIFIED
-                        else -> AddressStatus.UNVERIFIED
-                    }
-
-                    EditAddressViewState.DataState(
-                        isCompanyExpanded = isExpanded,
-                        editableAddress = address,
-                        shouldDisplayLoading = isLoading,
-                        shouldDisplayLoadingCountriesError = countriesState is LocationState.Error,
-                        shouldUseStatesInput = statesState is LocationState.Loaded && statesState.locations.isEmpty(),
-                        addressStatus = addressStatus
-                    )
-                }
+            val addressStatus = when {
+                hasIncorrectOrMissingData(address) -> AddressStatus.MISSING_INFO
+                isSameAddress(address) && navArgs.originAddress.isVerified -> AddressStatus.VERIFIED
+                else -> AddressStatus.UNVERIFIED
             }
 
+            ViewState(
+                isCompanyExpanded = isExpanded,
+                editableAddress = address,
+                shouldDisplayLoading = isLoading,
+                shouldDisplayLoadingCountriesError = countriesState is LocationState.Error,
+                shouldUseStatesInput = statesState is LocationState.Loaded && statesState.locations.isEmpty(),
+                addressStatus = addressStatus,
+                addressSelection = addressSelection
+            )
         }
             .collectLatest {
                 viewState.value = it
@@ -369,40 +363,36 @@ class WooShippingEditOriginViewModel @Inject constructor(
     fun onNormalizeAddress(editableAddress: EditableAddress) {
         launch {
             val address = editableAddress.toAddress()
+            normalizedAddressStatus.value = NormalizedAddressStatus.VerifyingAddress
             normalizeAddress(address).fold(
                 onSuccess = {
-                    normalizedAddressSelection.value =
-                        NormalizedAddressSelection.AddressSelection(it, it.normalizedAddress)
+                    normalizedAddressStatus.value =
+                        NormalizedAddressStatus.AddressSelection(it, it.normalizedAddress)
                 },
                 onFailure = {
-
+                    normalizedAddressStatus.value = NormalizedAddressStatus.Failure
                 }
             )
         }
     }
 
-    fun onAddressSelectionChange(addressSelection : NormalizedAddressSelection.AddressSelection) {
-        normalizedAddressSelection.value = addressSelection
+    fun onAddressSelectionChange(addressSelection: NormalizedAddressStatus.AddressSelection) {
+        normalizedAddressStatus.value = addressSelection
     }
 
     fun onCloseAddressSelection() {
-        normalizedAddressSelection.value = NormalizedAddressSelection.Closed
+        normalizedAddressStatus.value = NormalizedAddressStatus.Closed
     }
 
-    sealed class EditAddressViewState {
-        data class DataState(
-            val isCompanyExpanded: Boolean,
-            val editableAddress: EditableAddress,
-            val shouldDisplayLoading: Boolean,
-            val shouldDisplayLoadingCountriesError: Boolean,
-            val shouldUseStatesInput: Boolean,
-            val addressStatus: AddressStatus
-        ) : EditAddressViewState()
-
-        data class AddressSelectionState(
-            val addressSelection: NormalizedAddressSelection.AddressSelection
-        ) : EditAddressViewState()
-    }
+    data class ViewState(
+        val isCompanyExpanded: Boolean,
+        val editableAddress: EditableAddress,
+        val shouldDisplayLoading: Boolean,
+        val shouldDisplayLoadingCountriesError: Boolean,
+        val shouldUseStatesInput: Boolean,
+        val addressStatus: AddressStatus,
+        val addressSelection: NormalizedAddressStatus
+    )
 
     sealed class LocationState {
         data object Loading : LocationState()
@@ -462,12 +452,14 @@ data class EditableAddress(
     }
 }
 
-sealed class NormalizedAddressSelection {
-    data object Closed : NormalizedAddressSelection()
+sealed class NormalizedAddressStatus {
+    data object Closed : NormalizedAddressStatus()
+    data object VerifyingAddress: NormalizedAddressStatus()
+    data object Failure : NormalizedAddressStatus()
     data class AddressSelection(
         val addressNormalization: AddressNormalizationModel,
         val selectedAddress: Address
-    ) : NormalizedAddressSelection()
+    ) : NormalizedAddressStatus()
 }
 
 enum class AddressStatus {
