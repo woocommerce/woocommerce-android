@@ -95,7 +95,7 @@ fun WooShippingEditAddressScreen(
         shouldDisplayLoadingCountriesError = viewState.shouldDisplayLoadingCountriesError,
         shouldUseStatesInput = viewState.shouldUseStatesInput,
         addressStatus = viewState.addressStatus,
-        addressSelection = viewState.addressSelection,
+        addressSelection = viewState.normalizedAddressStatus,
         onAddressSelectionChange = viewModel::onAddressSelectionChange,
         onCloseAddressSelection = viewModel::onCloseAddressSelection,
         onExpandCompany = viewModel::onExpandCompany,

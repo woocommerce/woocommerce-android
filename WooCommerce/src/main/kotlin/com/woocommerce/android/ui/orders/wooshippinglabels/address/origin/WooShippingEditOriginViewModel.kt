@@ -154,7 +154,7 @@ class WooShippingEditOriginViewModel @Inject constructor(
             shouldDisplayLoadingCountriesError = false,
             shouldUseStatesInput = false,
             addressStatus = AddressStatus.UNVERIFIED,
-            addressSelection = NormalizedAddressStatus.Closed
+            normalizedAddressStatus = NormalizedAddressStatus.Closed
         )
     )
 
@@ -272,7 +272,7 @@ class WooShippingEditOriginViewModel @Inject constructor(
                 shouldDisplayLoadingCountriesError = countriesState is LocationState.Error,
                 shouldUseStatesInput = statesState is LocationState.Loaded && statesState.locations.isEmpty(),
                 addressStatus = addressStatus,
-                addressSelection = addressSelection
+                normalizedAddressStatus = addressSelection
             )
         }
             .collectLatest {
@@ -410,7 +410,7 @@ class WooShippingEditOriginViewModel @Inject constructor(
         val shouldDisplayLoadingCountriesError: Boolean,
         val shouldUseStatesInput: Boolean,
         val addressStatus: AddressStatus,
-        val addressSelection: NormalizedAddressStatus
+        val normalizedAddressStatus: NormalizedAddressStatus
     )
 
     sealed class LoadingState {
