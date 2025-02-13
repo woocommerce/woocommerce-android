@@ -1,7 +1,10 @@
 package org.wordpress.android.fluxc.model;
 
+import static java.lang.annotation.RetentionPolicy.SOURCE;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.yarolegovich.wellsql.core.Identifiable;
 import com.yarolegovich.wellsql.core.annotation.Column;
@@ -21,8 +24,6 @@ import java.lang.annotation.Retention;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-
-import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 @Table
 @RawConstraints({"UNIQUE (SITE_ID, URL)"})
@@ -217,6 +218,8 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
     private boolean mIsPublicizePermanentlyDisabled;
     @Column
     private String mActiveJetpackConnectionPlugins;
+    @Column
+    private String mJetpackModules;
 
     // Zendesk meta
     @Column
@@ -895,6 +898,15 @@ public class SiteModel extends Payload<BaseNetworkError> implements Identifiable
 
     public void setActiveJetpackConnectionPlugins(String activeJetpackConnectionPlugins) {
         mActiveJetpackConnectionPlugins = activeJetpackConnectionPlugins;
+    }
+
+    @Nullable
+    public String getJetpackModules() {
+        return mJetpackModules;
+    }
+
+    public void setJetpackModules(@Nullable String jetpackModules) {
+        mJetpackModules = jetpackModules;
     }
 
     public boolean isActiveModuleEnabled(String moduleName) {

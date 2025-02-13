@@ -1,6 +1,7 @@
 package com.woocommerce.android.di
 
 import android.content.Context
+import android.webkit.CookieManager
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.FeedbackPrefs
@@ -45,4 +46,7 @@ class AppConfigModule {
     @Provides
     @Singleton
     fun provideStringUtils() = StringUtils
+
+    @Provides
+    fun provideWebViewCookieManager() = CookieManager.getInstance()
 }

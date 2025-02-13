@@ -5,6 +5,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.CallSuper
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -42,6 +44,16 @@ open class WCWebViewClient : WebViewClient() {
     ) {
         request?.url?.let { url ->
             _eventsObservable.tryEmit(WCWebViewEvent.UrlFailed(url.toString(), errorResponse?.statusCode))
+        }
+    }
+
+    @CallSuper
+    override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        return if (request?.url?.toString() == WebViewAuthenticator.JETPACK_SSO_TEMP_REDIRECT_URL) {
+            // Cancel loading for the temporary redirect URL
+            true
+        } else {
+            false
         }
     }
 }

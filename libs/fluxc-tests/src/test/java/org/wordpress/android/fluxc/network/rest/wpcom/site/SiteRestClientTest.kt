@@ -94,13 +94,7 @@ class SiteRestClientTest {
         assertThat(responseModel.siteId).isEqualTo(siteId)
         assertThat(urlCaptor.lastValue)
                 .isEqualTo("https://public-api.wordpress.com/rest/v1.1/sites/12")
-        assertThat(paramsCaptor.lastValue).isEqualTo(
-                mapOf(
-                        "fields" to "ID,URL,name,description,jetpack,jetpack_connection," +
-                                "visible,is_private,options,plan,capabilities,quota,icon,meta,zendesk_site_meta," +
-                                "organization_id,was_ecommerce_trial,single_user_site"
-                )
-        )
+        assertThat(paramsCaptor.lastValue).isEqualTo(mapOf("fields" to SiteRestClient.SITE_FIELDS))
     }
 
     @Test
@@ -146,12 +140,10 @@ class SiteRestClientTest {
         assertThat(urlCaptor.lastValue)
                 .isEqualTo("https://public-api.wordpress.com/rest/v1.1/me/sites/features/")
         assertThat(paramsCaptor.firstValue).isEqualTo(
-                mapOf(
-                        "filters" to "wpcom",
-                        "fields" to "ID,URL,name,description,jetpack,jetpack_connection," +
-                                "visible,is_private,options,plan,capabilities,quota,icon,meta,zendesk_site_meta," +
-                                "organization_id,was_ecommerce_trial,single_user_site"
-                )
+            mapOf(
+                "filters" to "wpcom",
+                "fields" to SiteRestClient.SITE_FIELDS
+            )
         )
     }
 
@@ -175,13 +167,7 @@ class SiteRestClientTest {
 
         assertThat(urlCaptor.firstValue)
             .isEqualTo("https://public-api.wordpress.com/rest/v1.1/me/sites/")
-        assertThat(paramsCaptor.firstValue).isEqualTo(
-            mapOf(
-                "fields" to "ID,URL,name,description,jetpack,jetpack_connection," +
-                    "visible,is_private,options,plan,capabilities,quota,icon,meta,zendesk_site_meta," +
-                    "organization_id,was_ecommerce_trial,single_user_site"
-            )
-        )
+        assertThat(paramsCaptor.firstValue).isEqualTo(mapOf("fields" to SiteRestClient.SITE_FIELDS))
     }
 
     @Test

@@ -81,7 +81,15 @@ fun WCWebView(
 
     webView?.let { webView ->
         LaunchedEffect(url) {
-            authenticator?.authenticateAndLoadUrl(webView, url) ?: webView.loadUrl(url)
+            if (authenticator != null) {
+                authenticator.authenticateAndLoadUrl(
+                    webView = webView,
+                    url = url,
+                    webViewEvents = webViewClient.eventsObservable
+                )
+            } else {
+                webView.loadUrl(url)
+            }
             canGoBack = webView.canGoBack()
         }
 

@@ -126,4 +126,5 @@ public class SiteWPComRestResponse implements Response {
     public ZendeskSiteMeta zendesk_site_meta;
     public boolean was_ecommerce_trial;
     public boolean single_user_site;
+    public List<String> jetpack_modules;
 }

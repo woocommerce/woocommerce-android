@@ -41,7 +41,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 206
+        return 207
     }
 
     override fun getDbName(): String {
@@ -2096,7 +2096,7 @@ open class WellSqlConfig : DefaultWellConfig {
                             WEIGHT, LENGTH, WIDTH, HEIGHT, BUNDLED_ITEMS, COMPOSITE_COMPONENTS, SPECIAL_STOCK_STATUS, BUNDLE_MIN_SIZE, BUNDLE_MAX_SIZE,
                             MIN_ALLOWED_QUANTITY, MAX_ALLOWED_QUANTITY, GROUP_OF_QUANTITY, COMBINE_VARIATION_QUANTITIES, PASSWORD, IS_SAMPLE_PRODUCT
                         )
-                        SELECT 
+                        SELECT
                             _id, LOCAL_SITE_ID, REMOTE_PRODUCT_ID, NAME, SLUG, PERMALINK, DATE_CREATED, DATE_MODIFIED, TYPE, STATUS, FEATURED,
                             CATALOG_VISIBILITY, DESCRIPTION, SHORT_DESCRIPTION, SKU, PRICE, REGULAR_PRICE, SALE_PRICE, ON_SALE, TOTAL_SALES,
                             PURCHASABLE, DATE_ON_SALE_FROM, DATE_ON_SALE_TO, DATE_ON_SALE_FROM_GMT, DATE_ON_SALE_TO_GMT, VIRTUAL, DOWNLOADABLE,
@@ -2117,6 +2117,10 @@ open class WellSqlConfig : DefaultWellConfig {
                 205 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("ALTER TABLE WCProductModel ADD GLOBAL_UNIQUE_ID TEXT")
                     db.execSQL("ALTER TABLE WCProductVariationModel ADD GLOBAL_UNIQUE_ID TEXT")
+                }
+
+                206 -> migrate(version) {
+                    db.execSQL("ALTER TABLE SiteModel ADD JETPACK_MODULES TEXT")
                 }
             }
         }

@@ -9,6 +9,7 @@
 - [*] Updated the notification icon for better readability [https://github.com/woocommerce/woocommerce-android/pull/13516]
 - [*] Automatically select the first available order when filtering is active in the two-pane layout.[https://github.com/woocommerce/woocommerce-android/pull/13491]
 - [*] [Internal] Removal animation of the items from the cart [https://github.com/woocommerce/woocommerce-android/pull/13442]
+- [*] Improved the Authenticated WebView implementation, and it will now handle opening the Analytics reports directly from the app without requiring additional authentication [https://github.com/woocommerce/woocommerce-android/pull/13487]
 
 21.7
 -----
