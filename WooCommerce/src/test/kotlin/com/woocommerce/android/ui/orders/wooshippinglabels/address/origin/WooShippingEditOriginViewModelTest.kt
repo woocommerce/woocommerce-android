@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.address.origin
 
 import androidx.compose.runtime.snapshots.Snapshot
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Location
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.AddressValidationHelper
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.GetStatesByCountryCode
+import com.woocommerce.android.ui.orders.wooshippinglabels.models.AddressNormalizationModel
 import com.woocommerce.android.ui.orders.wooshippinglabels.models.OriginShippingAddress
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -610,5 +612,184 @@ class WooShippingEditOriginViewModelTest : BaseUnitTest() {
         assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
 
         assertThat(result.addressStatus).isEqualTo(AddressStatus.MISSING_INFO)
+    }
+
+    @Test
+    fun `when screen is initialized then normalize address is closed`() = testBlocking {
+        val address = OriginShippingAddress.EMPTY
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            createViewModel(address)
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
+
+        assertThat(result.normalizedAddressStatus).isEqualTo(NormalizedAddressStatus.Closed)
+    }
+
+    @Test
+    fun `when normalize address fails, display error`() = testBlocking {
+        val address = OriginShippingAddress.EMPTY
+        val updatedAddress = EditableAddress(postalCode = InputValue("12345"))
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        whenever(normalizeAddress.invoke(any())).doReturn(Result.failure(Exception("error")))
+        Snapshot.withMutableSnapshot {
+            createViewModel(address)
+        }
+
+        advanceUntilIdle()
+
+        sut.onNormalizeAddress(updatedAddress)
+
+        val result = sut.viewState.value
+
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
+
+        assertThat(result.normalizedAddressStatus).isEqualTo(NormalizedAddressStatus.Failure)
+    }
+
+    @Test
+    fun `when normalize address succeed, display address selection`() = testBlocking {
+        val address = OriginShippingAddress.EMPTY
+        val updatedAddress = EditableAddress(postalCode = InputValue("12345"))
+        val normalizeAddressResponse = AddressNormalizationModel(
+            address = Address.EMPTY,
+            normalizedAddress = Address.EMPTY,
+            isTrivial = true
+        )
+
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
+        Snapshot.withMutableSnapshot {
+            createViewModel(address)
+        }
+
+        advanceUntilIdle()
+
+        sut.onNormalizeAddress(updatedAddress)
+
+        val result = sut.viewState.value
+
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
+
+        assertThat(result.normalizedAddressStatus).isInstanceOf(NormalizedAddressStatus.AddressSelection::class.java)
+    }
+
+    @Test
+    fun `when normalize address succeed then suggested address is selected`() = testBlocking {
+        val initialAddress = OriginShippingAddress.EMPTY
+        val updatedAddress = EditableAddress(postalCode = InputValue("12345"))
+        val enteredAddress = EditableAddress(postalCode = InputValue("12345")).toAddress()
+        val suggestedAddress = enteredAddress.copy(postcode = "12345-1000")
+
+        val normalizeAddressResponse = AddressNormalizationModel(
+            address = enteredAddress,
+            normalizedAddress = suggestedAddress,
+            isTrivial = false
+        )
+
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
+        Snapshot.withMutableSnapshot {
+            createViewModel(initialAddress)
+        }
+
+        advanceUntilIdle()
+
+        sut.onNormalizeAddress(updatedAddress)
+
+        val result = sut.viewState.value
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
+        val addressSelection = result.normalizedAddressStatus as NormalizedAddressStatus.AddressSelection
+        assertThat(addressSelection.selectedAddress).isEqualTo(suggestedAddress)
+    }
+
+    @Test
+    fun `when normalize address selection changes then address selection is updated`() = testBlocking {
+        val initialAddress = OriginShippingAddress.EMPTY
+        val updatedAddress = EditableAddress(postalCode = InputValue("12345"))
+        val enteredAddress = EditableAddress(postalCode = InputValue("12345")).toAddress()
+        val suggestedAddress = enteredAddress.copy(postcode = "12345-1000")
+
+        val normalizeAddressResponse = AddressNormalizationModel(
+            address = enteredAddress,
+            normalizedAddress = suggestedAddress,
+            isTrivial = false
+        )
+
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
+        Snapshot.withMutableSnapshot {
+            createViewModel(initialAddress)
+        }
+
+        advanceUntilIdle()
+
+        sut.onNormalizeAddress(updatedAddress)
+
+        var result = sut.viewState.value
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
+        var addressSelection = result.normalizedAddressStatus as NormalizedAddressStatus.AddressSelection
+        assertThat(addressSelection.selectedAddress).isEqualTo(suggestedAddress)
+
+
+        sut.onAddressSelectionChange(addressSelection.copy(selectedAddress = enteredAddress))
+
+
+        result = sut.viewState.value
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
+        addressSelection = result.normalizedAddressStatus as NormalizedAddressStatus.AddressSelection
+        assertThat(addressSelection.selectedAddress).isEqualTo(enteredAddress)
+    }
+
+    @Test
+    fun `when normalize address is closed then close address selection`() = testBlocking {
+        val initialAddress = OriginShippingAddress.EMPTY
+        val updatedAddress = EditableAddress(postalCode = InputValue("12345"))
+        val enteredAddress = EditableAddress(postalCode = InputValue("12345")).toAddress()
+        val suggestedAddress = enteredAddress.copy(postcode = "12345-1000")
+
+        val normalizeAddressResponse = AddressNormalizationModel(
+            address = enteredAddress,
+            normalizedAddress = suggestedAddress,
+            isTrivial = false
+        )
+
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        whenever(normalizeAddress.invoke(any())).doReturn(Result.success(normalizeAddressResponse))
+        Snapshot.withMutableSnapshot {
+            createViewModel(initialAddress)
+        }
+
+        advanceUntilIdle()
+
+        sut.onNormalizeAddress(updatedAddress)
+
+        var result = sut.viewState.value
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
+        val addressSelection = result.normalizedAddressStatus as NormalizedAddressStatus.AddressSelection
+        assertThat(addressSelection.selectedAddress).isEqualTo(suggestedAddress)
+
+        sut.onCloseAddressSelection()
+
+        result = sut.viewState.value
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
+        assertThat(result.normalizedAddressStatus).isEqualTo(NormalizedAddressStatus.Closed)
     }
 }
