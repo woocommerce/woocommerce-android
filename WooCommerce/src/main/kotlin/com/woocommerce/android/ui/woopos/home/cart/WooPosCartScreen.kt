@@ -5,11 +5,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,9 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
@@ -258,7 +254,7 @@ private fun CartBodyWithItems(
             key = { item -> item.id.itemNumber }
         ) { item ->
             ProductItem(
-                modifier = Modifier,
+                modifier = Modifier.animateItem(),
                 item = item,
                 canRemoveItems = areItemsRemovable,
                 onUIEvent = onUIEvent,
@@ -402,117 +398,91 @@ private fun ProductItem(
     canRemoveItems: Boolean,
     onUIEvent: (WooPosCartUIEvent) -> Unit,
 ) {
-    var hasAnimationStarted by remember { mutableStateOf(item.isAppearanceAnimationPlayed) }
-    LaunchedEffect(Unit) {
-        hasAnimationStarted = true
-    }
-
-    val cardElevation = 6.dp
-    val elevation by animateDpAsState(
-        targetValue = if (hasAnimationStarted) cardElevation else 0.dp,
-        animationSpec = tween(durationMillis = 150, delayMillis = 250),
-        label = "elevation"
-    )
-
     val itemContentDescription = stringResource(
         id = R.string.woopos_cart_item_content_description,
         item.name,
         item.price
     )
 
-    LaunchedEffect(elevation) {
-        if (elevation == cardElevation) {
-            onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(item))
-        }
-    }
-
-    AnimatedVisibility(
-        visible = hasAnimationStarted,
-        enter = expandVertically(
-            animationSpec = tween(durationMillis = 200)
-        ),
-        exit = shrinkVertically()
+    WooPosCard(
+        modifier = modifier
+            .height(96.dp)
+            .semantics { contentDescription = itemContentDescription },
+        elevation = 6.dp,
+        shadowType = ShadowType.Soft,
+        shape = RoundedCornerShape(8.dp),
     ) {
-        WooPosCard(
-            modifier = modifier
-                .height(96.dp)
-                .semantics { contentDescription = itemContentDescription },
-            elevation = elevation,
-            shadowType = ShadowType.Soft,
-            shape = RoundedCornerShape(8.dp),
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(item.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(96.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(item.imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                    error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                    placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(96.dp)
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.body1,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
-
-                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
+                Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
+                if (item.description.isNotNullOrEmpty()) {
                     Text(
-                        text = item.name,
+                        text = item.description!!,
                         style = MaterialTheme.typography.body1,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.clearAndSetSemantics { }
-                    )
-                    Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                    if (item.description.isNotNullOrEmpty()) {
-                        Text(
-                            text = item.description!!,
-                            style = MaterialTheme.typography.body1,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            color = MaterialTheme.colors.secondaryVariant,
-                            modifier = Modifier.clearAndSetSemantics { }
-                        )
-                        Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
-                    }
-                    Text(
-                        text = item.price,
-                        style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.secondaryVariant,
                         modifier = Modifier.clearAndSetSemantics { }
                     )
+                    Spacer(modifier = Modifier.height(4.dp.toAdaptivePadding()))
                 }
-
-                if (canRemoveItems) {
-                    Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
-
-                    val removeButtonContentDescription = stringResource(
-                        id = R.string.woopos_remove_item_button_from_cart_content_description,
-                        item.name
-                    )
-                    IconButton(
-                        onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
-                        modifier = Modifier
-                            .size(32.dp)
-                            .semantics { contentDescription = removeButtonContentDescription }
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                            tint = MaterialTheme.colors.onBackground,
-                            contentDescription = null,
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
+                Text(
+                    text = item.price,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.secondaryVariant,
+                    modifier = Modifier.clearAndSetSemantics { }
+                )
             }
+
+            if (canRemoveItems) {
+                Spacer(modifier = Modifier.width(8.dp.toAdaptivePadding()))
+
+                val removeButtonContentDescription = stringResource(
+                    id = R.string.woopos_remove_item_button_from_cart_content_description,
+                    item.name
+                )
+                IconButton(
+                    onClick = { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) },
+                    modifier = Modifier
+                        .size(32.dp)
+                        .semantics { contentDescription = removeButtonContentDescription }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
+                        tint = MaterialTheme.colors.onBackground,
+                        contentDescription = null,
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(16.dp.toAdaptivePadding()))
         }
     }
 }
@@ -542,7 +512,6 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                                 "VW California VW California, VW California,VW California",
                             description = "test description",
                             price = "€50,000",
-                            isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
                         ),
                         WooPosCartState.Body.WithItems.Item(
@@ -556,7 +525,6 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             description = "test description test description test description test description" +
                                 " test description test description test description test description test description",
                             price = "$150,000",
-                            isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
                         ),
                         WooPosCartState.Body.WithItems.Item(
@@ -569,7 +537,6 @@ fun WooPosCartScreenProductsPreview(modifier: Modifier = Modifier) {
                             name = "VW California",
                             description = "",
                             price = "€250,000",
-                            isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
                         )
                     )
@@ -605,7 +572,6 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             name = "VW California",
                             description = null,
                             price = "€50,000",
-                            isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
                         ),
                         WooPosCartState.Body.WithItems.Item(
@@ -618,7 +584,6 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             name = "VW California",
                             description = null,
                             price = "$150,000",
-                            isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
                         ),
                         WooPosCartState.Body.WithItems.Item(
@@ -631,7 +596,6 @@ fun WooPosCartScreenCheckoutPreview(modifier: Modifier = Modifier) {
                             name = "VW California",
                             description = null,
                             price = "€250,000",
-                            isAppearanceAnimationPlayed = true,
                             productType = ProductType.Simple,
                         )
                     )

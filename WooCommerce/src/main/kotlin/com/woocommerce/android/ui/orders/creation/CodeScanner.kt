@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.orders.creation
 
 import android.os.Parcelable
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import kotlinx.parcelize.Parcelize
 
 interface CodeScanner {
+    @ExperimentalGetImage
     suspend fun recogniseCode(imageProxy: ImageProxy): CodeScannerStatus
 }
 

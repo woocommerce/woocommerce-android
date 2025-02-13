@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-31 11:54:04+0000
+Translation-Revision-Date: 2025-02-06 15:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">국가 및 주를 가져오는 중입니다.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">국가 및 주 정보를 조회할 수 없습니다. 다시 시도해 주세요.</string>
+    <string name="woo_shipping_field_required_error">필수 필드입니다.</string>
+    <string name="product_upload_error_retry_button_content_description">제품 이미지 업로드 다시 시도</string>
+    <string name="product_upload_error_title">이미지 업로드 오류</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">현재 POS에서는 단순, 변형 및 가상 상품만 지원 - \n시작하려면 하나를 생성하세요.</string>
     <string name="woo_shipping_label_phone">전화</string>
     <string name="woo_shipping_label_email">이메일</string>
@@ -1413,6 +1420,7 @@ Language: ko_KR
     <string name="domain_privacy_option_off_title">공개적으로 등록</string>
     <string name="domain_privacy_option_on_title">개인정보 보호를 통해 비공개로 등록</string>
     <string name="domain_registration_contact_form_input_error">유효한 %s(을)를 입력하세요.</string>
+    <string name="domain_registration_privacy_protection_tos">이 도메인을 등록하면 &lt;a href=\'\'&gt;이용 약관&lt;/a&gt;에 동의하는 것입니다.</string>
     <string name="domain_registration_privacy_protection_description">도메인 소유자는 모든 도메인의 공개 데이터베이스에 있는 연락처 정보를 공유해야 합니다.\n 개인정보 보호에 따라 회원님의 정보가 아닌 당사의 정보를 공개하며, 회원님이 받을 커뮤니케이션은 비공개적으로 전달합니다.</string>
     <string name="domain_registration_privacy_protection_title">개인정보 보호</string>
     <string name="domains_access_error_title">스토어 관리자만 도메인 설정에 접근할 수 있음</string>
@@ -1931,7 +1939,6 @@ Language: ko_KR
     <string name="product_ratings_count_one">\u2022  승인한 리뷰 1개</string>
     <string name="product_ratings_count">\u2022  %d개 승인한 리뷰</string>
     <string name="tax_name_with_tax_percent">%1$s(%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">기기에서 주문을 생성할 수 있도록 작업하고 있습니다! \"+\" 버튼을 눌러 이 기능을 체험하실 수 있습니다.</string>
     <string name="empty_inbox_description">곧 다시 오셔서 더 많은 스토어 성장 팁과 인사이트를 확인하세요.</string>
     <string name="empty_inbox_title">수고하셨습니다. 다 읽으셨습니다!</string>
     <string name="orderstatus_contentDesc_withStatus">주문 상태: %s</string>
@@ -2014,7 +2021,6 @@ Language: ko_KR
     <string name="about_automattic_work_with_us_item_title">워드프레스닷컴 사용</string>
     <string name="about_automattic_family_item_title">Automattic 회원</string>
     <string name="about_automattic_legal_and_more_item_title">법적 고지 사항 및 기타</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">인스타그램</string>
     <string name="about_automattic_rate_us_item_title">평가하기</string>
     <string name="about_automattic_share_with_friends_item_title">친구와 공유</string>
@@ -2124,7 +2130,6 @@ Language: ko_KR
     <string name="simple_payments_enter_amount">금액 입력</string>
     <string name="simple_payments_dialog_title">결제하기</string>
     <string name="orderlist_simple_payments_menu">간편한 결제</string>
-    <string name="orderlist_simple_payments_wip_title">기기에서 주문을 생성하세요!</string>
     <string name="analytics">분석</string>
     <string name="jetpack_install_progress_step_four_message">모두 완료</string>
     <string name="jetpack_install_progress_step_three_message">스토어 연결 중</string>
@@ -3777,7 +3782,6 @@ Language: ko_KR
     <string name="logging_in">로그인 중</string>
     <string name="all">모두</string>
     <string name="notification_channel_general_title">일반</string>
-    <string name="app_name">우커머스</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

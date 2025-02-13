@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-28 14:54:04+0000
+Translation-Revision-Date: 2025-02-05 16:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">Buscando países e estados.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">Não conseguimos recuperar informações do país ou estado. Tente novamente.</string>
+    <string name="woo_shipping_field_required_error">Este campo é obrigatório.</string>
+    <string name="product_upload_error_retry_button_content_description">Tente novamente fazer upload da imagem do produto</string>
+    <string name="product_upload_error_title">Erros no upload da imagem</string>
+    <string name="app_name">Eba!</string>
     <string name="woopos_products_empty_list_message">No momento, o ponto de venda só aceita produtos simples, variáveis e virtuais: \ncrie um para começar.</string>
     <string name="woo_shipping_label_phone">Telefone</string>
     <string name="woo_shipping_label_email">E-mail</string>
@@ -642,6 +649,7 @@ Language: pt_BR
     <string name="blaze_campaign_edit_ad_change_image_button">Mudar imagem</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_apply_button">Aplicar</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dias</string>
+    <string name="blaze_campaign_budget_impressions_info">As impressões demonstram a frequência com que seu anúncio aparece para possíveis clientes.\n\n\n        Apesar de o número exato não poder ser garantido por conta das variações no tráfego online e no comportamento do usuário, nós nos esforçamos para corresponder ao máximo as impressões reais do seu anúncio à contagem desejada.\n\n\n        E lembre-se: as impressões têm a ver com a visibilidade, e não com as ações dos visitantes.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Concluído</string>
     <string name="blaze_campaign_budget_impressions_title">Impressões</string>
     <string name="blaze_campaign_budget_update_button">Atualizar</string>
@@ -652,7 +660,6 @@ Language: pt_BR
     <string name="blaze_campaign_budget_toolbar_title">Defina seu orçamento</string>
     <string name="blaze_campaign_preview_target_default_value">Tudo</string>
     <string name="blaze_campaign_preview_days_duration">%1$s dias a partir de %2$s</string>
-    <string name="blaze_campaign_budget_impressions_info">As impressões demonstram a frequência com que seu anúncio aparece para possíveis clientes.\n\n\n        Apesar de o número exato não poder ser garantido por conta das variações no tráfego online e no comportamento do usuário, nós nos esforçamos para corresponder ao máximo as impressões reais do seu anúncio à contagem desejada.\n\n\n        E lembre-se: as impressões têm a ver com a visibilidade, e não com as ações dos visitantes.</string>
     <string name="blaze_campaign_edit_ad_change_description_title">Detalhamento</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Data inicial</string>
     <string name="product_creation_survey_button_dont_show_again">Não mostrar novamente</string>
@@ -1414,6 +1421,7 @@ Language: pt_BR
     <string name="domain_privacy_option_on_title">Registrar com proteção de privacidade</string>
     <string name="domain_privacy_option_off_title">Registrar publicamente</string>
     <string name="domain_contact_information_title">Informações de contato do domínio</string>
+    <string name="domain_registration_privacy_protection_tos">Ao registrar esse domínio, você concorda com nossos &lt;a href=\'\'&gt;termos e condições&lt;/a&gt;</string>
     <string name="domain_registration_privacy_protection_title">Proteção de privacidade</string>
     <string name="domains_access_error_title">Somente os administradores da loja podem acessar as configurações de domínio</string>
     <string name="login_jetpack_installation_continue_magic_link">Ou continue usando o link mágico</string>
@@ -1931,7 +1939,6 @@ Language: pt_BR
     <string name="coupon_details_heading">Resumo do cupom</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s sem %2$s</string>
     <string name="coupon_list_item_label_products_and_categories">%1$s e %2$s</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Estamos trabalhando para permitir a criação de pedidos no seu dispositivo. Clique no botão \"+\" para experimentar essa funcionalidade</string>
     <string name="empty_inbox_description">Volte mais tarde para ver outras dicas e informações sobre como ampliar sua loja</string>
     <string name="empty_inbox_title">Parabéns, você leu tudo!</string>
     <string name="orderstatus_contentDesc_withStatus">Status do pedido: %s</string>
@@ -2014,7 +2021,6 @@ Language: pt_BR
     <string name="about_automattic_dayone">Day One</string>
     <string name="about_automattic_family_item_title">Família Automattic</string>
     <string name="about_automattic_legal_and_more_item_title">Jurídico e mais</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_share_with_friends_item_title">Compartilhe com seus amigos</string>
     <string name="about_automattic_acknowledgements_page_title">Agradecimentos</string>
@@ -2125,7 +2131,6 @@ Language: pt_BR
     <string name="orderlist_simple_payments_menu">Pagamento simples</string>
     <string name="analytics">Análises</string>
     <string name="orderlist_bottom_sheet_simple_payment_description">Crie um pedido com o mínimo de informações</string>
-    <string name="orderlist_simple_payments_wip_title">Crie pedidos no seu dispositivo!</string>
     <string name="jetpack_install_progress_step_four_message">Tudo pronto</string>
     <string name="jetpack_install_progress_step_three_message">Conectando sua loja</string>
     <string name="jetpack_install_progress_step_two_message">Ativando</string>
@@ -3768,7 +3773,6 @@ Language: pt_BR
     <string name="orders">Pedidos</string>
     <string name="my_store">Minha loja</string>
     <string name="all">Todos</string>
-    <string name="app_name">WooCommerce</string>
     <string name="settings_footer">Feito com amor pela Automattic. %1$s</string>
     <string name="enter_site_address" content_override="true">Insira o endereço da loja WooCommerce que deseja vincular.</string>
     <string name="orderdetail_note_private">Privado</string>

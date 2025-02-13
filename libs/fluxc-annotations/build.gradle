@@ -1,0 +1,9 @@
+plugins {
+    id "java"
+    alias(libs.plugins.dependency.analysis)
+}
+
+java {
+    sourceCompatibility libs.versions.java.get()
+    targetCompatibility libs.versions.java.get()
+}

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewMo
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ViewState
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ViewState.ProgressViewState
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +27,8 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -34,15 +37,6 @@ import org.wordpress.android.fluxc.model.SiteModel
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class JetpackActivationMainViewModelTest : BaseUnitTest() {
-    private lateinit var viewModel: JetpackActivationMainViewModel
-
-    private val jetpackActivationRepository: JetpackActivationRepository = mock()
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
-    private val pluginRepository: PluginRepository = mock()
-    private val accountRepository: AccountRepository = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val selectedSite: SelectedSite = mock()
-
     private val siteUrl = "example.com"
     private val site = SiteModel().apply {
         url = siteUrl
@@ -50,13 +44,22 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
         password = "password"
     }
 
+    private lateinit var viewModel: JetpackActivationMainViewModel
+
+    private val jetpackActivationRepository: JetpackActivationRepository = mock {
+        onBlocking { getSiteByUrl(siteUrl) } doReturn site
+    }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
+    private val pluginRepository: PluginRepository = mock()
+    private val accountRepository: AccountRepository = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val selectedSite: SelectedSite = mock()
+
     suspend fun setup(
         isJetpackInstalled: Boolean = false,
         prepareMocks: suspend () -> Unit = { }
     ) {
         prepareMocks()
-
-        whenever(jetpackActivationRepository.getSiteByUrl(siteUrl)).thenReturn(site)
 
         viewModel = JetpackActivationMainViewModel(
             savedStateHandle = JetpackActivationMainFragmentArgs(
@@ -195,7 +198,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
                 ).thenReturn(Result.success("https://example.com/connect"))
                 whenever(
                     jetpackActivationRepository.fetchJetpackConnectedEmail(site = site)
-                ).thenThrow(JetpackActivationRepository.JetpackMissingConnectionEmailException)
+                ).thenReturn(Result.failure(JetpackActivationRepository.JetpackMissingConnectionEmailException))
             }
 
             val state = viewModel.viewState.runAndCaptureValues {
@@ -203,6 +206,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
                 viewModel.onRetryClick()
             }.last()
 
+            verify(jetpackActivationRepository, times(2)).fetchJetpackConnectionUrl(site = site)
             assertThat((state as ProgressViewState).steps.single { it.state == StepState.Ongoing }.type)
                 .isEqualTo(StepType.Connection)
         }
@@ -239,4 +243,48 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
 
         assertThat(state).isEqualTo(ViewState.ErrorViewState(StepType.Connection, 404))
     }
+
+    @Test
+    fun `given site using application passwords, when starting, then allow empty username and password`() =
+        testBlocking {
+            setup(isJetpackInstalled = false) {
+                whenever(jetpackActivationRepository.getSiteByUrl(siteUrl)).thenReturn(
+                    site.apply {
+                        username = ""
+                        password = ""
+                    }
+                )
+                whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
+            }
+
+            val viewState = viewModel.viewState.getOrAwaitValue()
+
+            assertThat(viewState).isInstanceOf(ProgressViewState::class.java)
+        }
+
+    @Test
+    fun `given site not using application passwords, when starting, then require username and password`() =
+        testBlocking {
+            val originalHandler = Thread.getDefaultUncaughtExceptionHandler()
+
+            // Given that we disable the catching of non-test related exceptions in BaseUnitTest, we need to use
+            // a custom handler to capture the exception thrown by the view model
+            var exception: Throwable? = null
+            Thread.setDefaultUncaughtExceptionHandler { _, e -> exception = e }
+
+            setup(isJetpackInstalled = false) {
+                whenever(jetpackActivationRepository.getSiteByUrl(siteUrl)).thenReturn(
+                    site.apply {
+                        username = ""
+                        password = ""
+                    }
+                )
+                whenever(selectedSite.connectionType).thenReturn(null)
+            }
+
+            assertThat(exception).isInstanceOf(IllegalArgumentException::class.java)
+
+            // Restore the original handler
+            Thread.setDefaultUncaughtExceptionHandler(originalHandler)
+        }
 }

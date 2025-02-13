@@ -4,13 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Surface
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -44,12 +40,7 @@ class WooShippingEditOriginAddressFragment : BaseFragment() {
             setContent {
                 WooThemeWithBackground {
                     Surface {
-                        WooShippingEditAddressScreen(
-                            viewModel = viewModel,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                        )
+                        WooShippingEditAddressScreen(viewModel = viewModel)
                     }
                 }
             }

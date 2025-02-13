@@ -89,7 +89,7 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 }
                 is PaymentsHubViewModel.PaymentsHubEvents.NavigateToPurchaseCardReaderFlow -> {
                     findNavController().navigate(
-                        NavGraphPaymentFlowDirections.actionGlobalWPComWebViewFragment(
+                        NavGraphPaymentFlowDirections.actionGlobalAuthenticatedWebViewFragment(
                             urlToLoad = event.url,
                             title = resources.getString(event.titleRes)
                         )

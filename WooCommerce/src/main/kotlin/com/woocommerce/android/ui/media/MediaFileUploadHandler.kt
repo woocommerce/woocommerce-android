@@ -81,10 +81,12 @@ class MediaFileUploadHandler @Inject constructor(
             is Event.MediaUploadEvent.FetchSucceeded -> {
                 enqueueMediaUpload(event)
             }
+
             is Event.MediaUploadEvent.FetchFailed -> {
                 statusList[index] = newStatus
                 showUploadFailureNotifIfNoObserver(event.productId, statusList)
             }
+
             is Event.MediaUploadEvent.UploadSucceeded -> {
                 if (externalObservers.contains(event.productId)) {
                     WooLog.d(WooLog.T.MEDIA, "MediaFileUploadHandler -> Upload successful, while handler is observed")
@@ -94,6 +96,7 @@ class MediaFileUploadHandler @Inject constructor(
                     statusList[index] = newStatus
                 }
             }
+
             is Event.MediaUploadEvent.UploadFailed -> {
                 WooLog.e(WooLog.T.MEDIA, "MediaFileUploadHandler -> Upload failed", event.error)
                 statusList[index] = newStatus
@@ -125,6 +128,7 @@ class MediaFileUploadHandler @Inject constructor(
         when (event) {
             is Event.ProductUpdateEvent.ProductUpdateFailed ->
                 notificationHandler.postUpdateFailureNotification(event.productId, event.product)
+
             is Event.ProductUpdateEvent.ProductUpdateSucceeded ->
                 notificationHandler.postUpdateSuccessNotification(event.productId, event.product, event.imagesCount)
         }
@@ -194,6 +198,16 @@ class MediaFileUploadHandler @Inject constructor(
             }
         }
         notificationHandler.removeUploadFailureNotification(remoteProductId)
+    }
+
+    fun clearImageErrors(remoteProductId: Long, uris: List<String>) {
+        uploadsStatus.update { list ->
+            list.filterNot {
+                it.remoteProductId == remoteProductId &&
+                    it.uploadStatus is UploadStatus.Failed &&
+                    uris.contains(it.localUri)
+            }
+        }
     }
 
     fun observeCurrentUploadErrors(remoteProductId: Long): Flow<List<ProductImageUploadData>> =
@@ -267,12 +281,14 @@ class MediaFileUploadHandler @Inject constructor(
                 mediaErrorMessage = resourceProvider.getString(R.string.product_image_service_error_media_null),
                 mediaErrorType = MediaStore.MediaErrorType.NULL_MEDIA_ARG
             )
+
             is Event.MediaUploadEvent.FetchSucceeded -> UploadStatus.InProgress
             is Event.MediaUploadEvent.UploadFailed -> UploadStatus.Failed(
                 media = error.media,
                 mediaErrorMessage = error.errorMessage,
                 mediaErrorType = error.errorType
             )
+
             is Event.MediaUploadEvent.UploadSucceeded -> UploadStatus.UploadSuccess(media = media)
         }
         return ProductImageUploadData(

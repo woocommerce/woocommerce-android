@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">WooCommerce</string>
+    <string name="app_name">Woo</string>
 
     <!-- Android O notification channels, these show in the Android app settings -->
     <string name="notification_channel_general_title">General</string>
@@ -224,9 +224,9 @@
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
     <string name="login_prologue_new_to_woo">New to WooCommerce</string>
-    <string name="login_prologue_label_analytics_subtitle">We know it\'s essential to your business</string>
-    <string name="login_prologue_label_orders_subtitle">You can manage them quickly and easily</string>
-    <string name="login_prologue_label_products_subtitle">We enable you to process them effortlessly</string>
+    <string name="login_prologue_label_analytics_subtitle">We know it\'s essential to your business.</string>
+    <string name="login_prologue_label_orders_subtitle">You can manage them quickly and easily.</string>
+    <string name="login_prologue_label_products_subtitle">We enable you to process them effortlessly.</string>
 
     <string name="login_prologue_survey_title">What brings you to WooCommerce?</string>
     <string name="login_prologue_survey_button_exploring">Just exploring</string>
@@ -373,9 +373,9 @@
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="site_picker_edit_store_list">Edit Stores</string>
     <string name="site_picker_edit_store_list_title">Visible Stores</string>
-    <string name="site_picker_edit_store_list_footer">Unselected stores won\'t be shown in the app site\'s picker and won\'t receive push notifications for new orders or product reviews</string>
+    <string name="site_picker_edit_store_list_footer">Unselected stores won\'t be shown in the app site\'s picker and won\'t receive push notifications for new orders or product reviews.</string>
     <string name="site_picker_edit_store_current_site_header">Current Store</string>
-    <string name="site_picker_edit_store_current_site_footer">Please switch to another store if you want to hide this one</string>
+    <string name="site_picker_edit_store_current_site_footer">Please switch to another store if you want to hide this one.</string>
     <string name="site_picker_edit_store_list_header">Other Stores</string>
     <string name="site_picker_edit_store_list_error_title">There was an error when updating notification settings. Please try again</string>
 
@@ -580,8 +580,6 @@
     <string name="orderlist_loading">Looking up your orders…</string>
     <string name="orderlist_no_filters_title">All Orders</string>
     <string name="orderlist_filters_title">Filtered Orders</string>
-    <string name="orderlist_simple_payments_wip_title">Create orders from your device!</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">We\'ve been working on making it possible to create orders from your device! You can try this feature out by tapping on the "+" button</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
     <string name="order_card_transition_name">order_card_%1$s</string>
     <string name="order_card_detail_transition_name">order_card_detail</string>
@@ -857,6 +855,7 @@
     <string name="domain_registration_privacy_protection_title">Privacy Protection</string>
     <string name="domain_registration_privacy_protection_description">Domain owners have to share contact information in a public database of all domains.
         With Privacy Protection, we publish our own information instead of yours and privately forward any communication to you.</string>
+    <string name="domain_registration_privacy_protection_tos">By registering this domain you agree to our &lt;a href=\'\'&gt;terms and conditions&lt;/a&gt;</string>
     <string name="domain_registration_contact_form_input_error">Please enter a valid %s</string>
     <string name="domain_privacy_option_on_title">Register privately with Privacy Protection</string>
     <string name="domain_privacy_option_off_title">Register publicly</string>
@@ -1311,6 +1310,9 @@
     <string name="shipping_label_purchased_purchase_failed_error">We can\'t confirm the Shipping Label purchase right now, try again later</string>
     <string name="shipping_label_select_origin_default_address">%s (default)</string>
     <string name="shipping_label_select_origin_address">Address</string>
+    <string name="shipping_labels_customs_title">Customs</string>
+    <string name="shipping_labels_customs_missing_info_badge">Missing info</string>
+    <string name="shipping_labels_customs_completed_badge">Completed</string>
 
 
     <!--
@@ -2175,7 +2177,7 @@
     <string name="product_catalog_visibility_search">Search results only</string>
     <string name="product_catalog_visibility_hidden">Hidden</string>
     <string name="product_featured">Featured product</string>
-    <string name="product_visibility_headline">This setting determines which shop pages products will be listed on</string>
+    <string name="product_visibility_headline">This setting determines which shop pages products will be listed on.</string>
     <string name="product_slug">Slug</string>
     <string name="product_slug_label">This is the URL-friendly version of the product title</string>
     <string name="product_enable_reviews">Enable reviews</string>
@@ -2399,6 +2401,7 @@
     <string name="product_add_photo">Add photo</string>
     <string name="product_replace_photo">Replace photo</string>
     <string name="product_remove_photo">Remove photo</string>
+    <string name="product_open_upload_screen">View recent upload failures</string>
     <string name="product_cover_photo_tag">Cover</string>
     <string name="product_image_add">Add a product image</string>
     <string name="product_image_error_removing">Error removing product image</string>
@@ -2429,17 +2432,19 @@
     <string name="product_update_success_notification_title">Product Updated</string>
     <string name="product_update_success_notification_content">%1$d images have been added to the product %2$s</string>
     <string name="product_update_failure_notification">Updating product %1$s failed</string>
+    <string name="product_upload_error_title">Image upload errors</string>
+    <string name="product_upload_error_retry_button_content_description">Retry uploading product image</string>
 
     <!--
         Empty list messages
     -->
     <string name="get_the_word_out">Let\'s get the word out</string>
-    <string name="share_your_store_message">Share your store on social media and by email with your contacts</string>
+    <string name="share_your_store_message">Share your store on social media and by email with your contacts.</string>
     <string name="empty_order_list_title">Waiting for your first order</string>
     <string name="empty_order_list_message">Explore how you can increase your store sales.</string>
     <string name="empty_order_list_all_processed">All orders have been fulfilled</string>
     <string name="empty_review_list_title">Get your first reviews</string>
-    <string name="empty_review_list_message">Capture high-quality product reviews for your store</string>
+    <string name="empty_review_list_message">Capture high-quality product reviews for your store.</string>
     <string name="empty_review_filtered_list_title">No unread product reviews</string>
     <string name="empty_review_filtered_list_message">Try disabling the unread filter to see all your product reviews</string>
     <string name="empty_wpmedia_list_message">No images yet</string>
@@ -3122,7 +3127,6 @@
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
     <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
-    <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 
     <!-- Country Mapping -->
@@ -3509,7 +3513,6 @@
     <string name="about_automattic_share_with_friends_item_title">Share with Friends</string>
     <string name="about_automattic_rate_us_item_title">Rate Us</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_legal_and_more_item_title">Legal and More</string>
     <string name="about_automattic_family_item_title">Automattic Family</string>
     <string name="about_automattic_work_with_us_item_title">Work With Us</string>
@@ -4460,6 +4463,27 @@
     <string name="woo_shipping_labels_package_creation_error_message">Do you want to proceed without saving it?</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">Proceed</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">Cancel</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">Add Missing Information</string>
+    <string name="woo_shipping_labels_customs_content_type_label">Content Type</string>
+    <string name="woo_shipping_labels_customs_restriction_type_label">Restriction Type</string>
+    <string name="woo_shipping_labels_customs_itn_label">International Transaction Number</string>
+    <string name="woo_shipping_labels_customs_return_to_sender_label">Return to sender if package is not able to be delivered</string>
+    <string name="woo_shipping_labels_customs_content_details_label">Content Details</string>
+    <string name="woo_shipping_labels_customs_content_details_description">Please describe what kind of goods this package contains</string>
+    <string name="woo_shipping_labels_customs_content_merchandise">Merchandise</string>
+    <string name="woo_shipping_labels_customs_content_gift">Gift</string>
+    <string name="woo_shipping_labels_customs_content_returned_goods">Returned Goods</string>
+    <string name="woo_shipping_labels_customs_content_sample">Sample</string>
+    <string name="woo_shipping_labels_customs_content_documents">Documents</string>
+    <string name="woo_shipping_labels_customs_content_other">Other</string>
+    <string name="woo_shipping_labels_customs_restriction_details_label">Restriction Details</string>
+    <string name="woo_shipping_labels_customs_restriction_details_description">Please describe what kind of restrictions this package must have</string>
+    <string name="woo_shipping_labels_customs_restriction_none">None</string>
+    <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantine</string>
+    <string name="woo_shipping_labels_customs_restriction_sanitary">Sanitary / Phytosanitary inspection</string>
+    <string name="woo_shipping_labels_customs_restriction_other">Other</string>
+
+
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
 
     <string name="woo_shipping_edit_origin_address_title">Edit Origin</string>
@@ -4472,4 +4496,9 @@
     <string name="woo_shipping_label_post_code">Postal Code</string>
     <string name="woo_shipping_label_email">Email</string>
     <string name="woo_shipping_label_phone">Phone</string>
+    <string name="woo_shipping_field_required_error">This field is required.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">We were unable to retrieve country and state information. Please try again.</string>
+    <string name="woo_shipping_fetching_countries_and_states">Fetching countries and states.</string>
+    <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
+    <string name="about_automattic_x_item_title">X</string>
 </resources>

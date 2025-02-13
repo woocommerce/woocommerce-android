@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -31,7 +31,7 @@ class BlazeCampaignDetailWebViewFragment : BaseFragment() {
     private val viewModel: BlazeCampaignDetailWebViewViewModel by viewModels()
 
     @Inject
-    lateinit var wpComAuthenticator: WPComWebViewAuthenticator
+    lateinit var authenticator: WebViewAuthenticator
 
     @Inject
     lateinit var userAgent: UserAgent
@@ -44,7 +44,7 @@ class BlazeCampaignDetailWebViewFragment : BaseFragment() {
                 WooThemeWithBackground {
                     BlazeCampaignDetailWebViewScreen(
                         viewModel = viewModel,
-                        wpComAuthenticator = wpComAuthenticator,
+                        authenticator = authenticator,
                         userAgent = userAgent,
                         onUrlLoaded = viewModel::onUrlLoaded,
                         onDismiss = viewModel::onDismiss

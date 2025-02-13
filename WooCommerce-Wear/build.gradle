@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.sentry)
+    alias(libs.plugins.dependency.analysis)
 }
 
 sentry {
@@ -124,14 +125,8 @@ android {
 dependencies {
     // Project
     implementation project(":libs:commons")
-    implementation("${gradle.ext.fluxCBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
-    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
+    implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
     implementation(libs.wordpress.utils) {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"

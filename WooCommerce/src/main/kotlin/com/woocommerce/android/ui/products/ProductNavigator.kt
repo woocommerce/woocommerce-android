@@ -364,7 +364,8 @@ class ProductNavigator @Inject constructor() {
                             variationIds = target.selectedVariationIds.toLongArray(),
                             productSelectorFlow = target.productSelectorFlow,
                             productSource = target.productSourceForTracking,
-                            screenMode = target.screenMode
+                            screenMode = target.screenMode,
+                            orderCurrency = target.orderCurrency
                         )
                     }
 
@@ -379,7 +380,8 @@ class ProductNavigator @Inject constructor() {
                             variationIds = target.selectedVariationIds.toLongArray(),
                             productSelectorFlow = target.productSelectorFlow,
                             productSource = target.productSourceForTracking,
-                            screenMode = target.screenMode
+                            screenMode = target.screenMode,
+                            orderCurrency = target.orderCurrency
                         )
                     }
                 }

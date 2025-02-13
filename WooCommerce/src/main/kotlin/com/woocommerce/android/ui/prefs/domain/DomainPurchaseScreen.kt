@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.ProgressIndicator
 import com.woocommerce.android.ui.compose.component.web.WCWebView
 import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.ViewState.CheckoutState
@@ -21,7 +21,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 @Composable
 fun DomainRegistrationCheckoutScreen(
     viewModel: DomainPurchaseViewModel,
-    authenticator: WPComWebViewAuthenticator,
+    authenticator: WebViewAuthenticator,
     userAgent: UserAgent
 ) {
     viewModel.viewState.observeAsState(LoadingState).value.let { state ->
@@ -43,7 +43,7 @@ fun DomainRegistrationCheckoutScreen(
 @Composable
 private fun WebViewPayment(
     viewState: CheckoutState,
-    authenticator: WPComWebViewAuthenticator,
+    authenticator: WebViewAuthenticator,
     userAgent: UserAgent,
     onDomainPurchased: () -> Unit,
     onExitTriggered: () -> Unit
@@ -52,7 +52,7 @@ private fun WebViewPayment(
 
     WCWebView(
         url = viewState.startUrl,
-        wpComAuthenticator = authenticator,
+        authenticator = authenticator,
         userAgent = userAgent,
         onUrlLoaded = { url: String ->
             WooLog.d(T.ONBOARDING, "Webview: $url")

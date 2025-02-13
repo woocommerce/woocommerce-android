@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
+import app.cash.turbine.test
+import com.woocommerce.android.AppUrls.WOO_POS_DOCUMENTATION_URL
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
@@ -13,6 +15,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -79,6 +82,10 @@ class WooPosToolbarViewModelTest {
             .isEqualTo(
                 WooPosToolbarState.Menu.Visible(
                     listOf(
+                        WooPosToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_documentation_title,
+                            icon = R.drawable.woo_pos_info_ic,
+                        ),
                         WooPosToolbarState.Menu.MenuItem(
                             title = R.string.woopos_get_support_title,
                             icon = R.drawable.woopos_ic_get_support,
@@ -206,6 +213,7 @@ class WooPosToolbarViewModelTest {
         // GIVEN
         whenever(networkStatus.isConnected()).thenReturn(false)
         whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
+        whenever(resourceProvider.getString(R.string.woopos_no_internet_message)).thenReturn("No internet")
 
         // WHEN
         val viewModel = createViewModel()
@@ -213,6 +221,27 @@ class WooPosToolbarViewModelTest {
 
         // THEN
         verify(cardReaderFacade, never()).connectToReader()
+    }
+
+    @Test
+    fun `when Documentation MenuItemClicked, then openUrlEvent should be emitted with proper url`() = runTest {
+        // GIVEN
+        val viewModel = createViewModel()
+        val menuItem = WooPosToolbarState.Menu.MenuItem(
+            title = R.string.woopos_documentation_title,
+            icon = R.drawable.ic_help_24dp
+        )
+
+        viewModel.openUrlEvent.test {
+            // WHEN
+            viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+
+            // THEN
+            assertEquals(WOO_POS_DOCUMENTATION_URL, awaitItem())
+            assertEquals(WooPosToolbarState.Menu.Hidden, viewModel.state.value.menu)
+
+            cancelAndConsumeRemainingEvents()
+        }
     }
 
     private fun createViewModel() = WooPosToolbarViewModel(

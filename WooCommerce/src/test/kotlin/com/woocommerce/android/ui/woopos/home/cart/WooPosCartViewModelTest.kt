@@ -169,7 +169,6 @@ class WooPosCartViewModelTest {
                     name = product.name,
                     price = "10.0$",
                     imageUrl = product.firstImageUrl,
-                    isAppearanceAnimationPlayed = false,
                     productType = ProductType.Simple,
                     description = null,
                 )
@@ -321,7 +320,6 @@ class WooPosCartViewModelTest {
                         name = product1.name,
                         price = "10.0$",
                         imageUrl = product1.firstImageUrl,
-                        isAppearanceAnimationPlayed = false,
                         productType = ProductType.Simple,
                         description = null,
                     )
@@ -423,7 +421,6 @@ class WooPosCartViewModelTest {
                     name = product.name,
                     price = "10.0$",
                     imageUrl = product.firstImageUrl,
-                    isAppearanceAnimationPlayed = false,
                     productType = ProductType.Simple,
                     description = null,
                 )
@@ -497,40 +494,6 @@ class WooPosCartViewModelTest {
 
         // THEN
         verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.ItemAddedToCart)
-    }
-
-    @Test
-    fun `given non-empty cart, when OnCartItemAppearanceAnimationPlayed is received, then should update UI`() = runTest {
-        // GIVEN
-        val product = ProductTestUtils.generateProduct(
-            productId = 23L,
-            productName = "title",
-            amount = "10.0"
-        ).copy(firstImageUrl = "url")
-
-        val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
-        whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(getProductById(eq(product.remoteId))).thenReturn(product)
-        val sut = createSut()
-        val states = sut.state.captureValues()
-
-        parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(
-                WooPosItemsViewModel.ItemClickedData.SimpleProduct(
-                    id = product.remoteId
-                )
-            )
-        )
-
-        // WHEN
-        val firstItem = (states.last().body as WooPosCartState.Body.WithItems).itemsInCart.first()
-        val updatedItem = firstItem.copy(isAppearanceAnimationPlayed = true)
-        sut.onUIEvent(WooPosCartUIEvent.OnCartItemAppearanceAnimationPlayed(updatedItem))
-
-        // THEN
-        val finalState = states.last()
-        val finalItem = (finalState.body as WooPosCartState.Body.WithItems).itemsInCart.first()
-        assertThat(finalItem.isAppearanceAnimationPlayed).isTrue
     }
 
     @Test

@@ -130,9 +130,9 @@
             app:nullable="false" />
     </dialog>
     <fragment
-        android:id="@+id/WPComWebViewFragment"
-        android:name="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment"
-        android:label="WPComWebViewFragment"
+        android:id="@+id/AuthenticatedWebViewFragment"
+        android:name="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment"
+        android:label="AuthenticatedWebViewFragment"
         tools:layout="@layout/fragment_wpcom_webview">
         <argument
             android:name="urlToLoad"
@@ -154,19 +154,19 @@
         <argument
             android:name="displayMode"
             android:defaultValue="REGULAR"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+            app:argType="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel$DisplayMode" />
         <argument
             android:name="urlComparisonMode"
             android:defaultValue="PARTIAL"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+            app:argType="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel$UrlComparisonMode" />
         <argument
             android:name="clearCache"
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
     <action
-        android:id="@+id/action_global_WPComWebViewFragment"
-        app:destination="@id/WPComWebViewFragment" />
+        android:id="@+id/action_global_AuthenticatedWebViewFragment"
+        app:destination="@id/AuthenticatedWebViewFragment" />
     <fragment
         android:id="@+id/developerOptionsFragment"
         android:name="com.woocommerce.android.ui.prefs.developer.DeveloperOptionsFragment"

@@ -210,11 +210,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 when (authenticationError?.errorType) {
                     INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
                     else -> {
-                        fetchSiteForTutorial(
-                            username = state.username,
-                            password = state.password,
-                            detectedErrorMessage = authenticationError?.errorMessage
-                        )
+                        fetchSiteForTutorial(detectedErrorMessage = authenticationError?.errorMessage)
                         analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
                     }
                 }
@@ -231,17 +227,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         loadingMessage.value = 0
     }
 
-    private suspend fun fetchSiteForTutorial(
-        username: String,
-        password: String,
-        detectedErrorMessage: UiString? = null
-    ) {
+    private suspend fun fetchSiteForTutorial(detectedErrorMessage: UiString? = null) {
         loadingMessage.value = R.string.login_site_credentials_fetching_site
-        wpApiSiteRepository.fetchSite(
-            url = siteAddress,
-            username = username,
-            password = password
-        ).fold(
+        wpApiSiteRepository.fetchSite(url = siteAddress).fold(
             onSuccess = { site ->
                 if (site.hasWooCommerce) {
                     fetchedSiteId.value = site.id

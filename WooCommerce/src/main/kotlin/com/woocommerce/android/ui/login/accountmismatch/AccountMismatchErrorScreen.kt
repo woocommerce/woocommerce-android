@@ -46,7 +46,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
@@ -94,7 +94,7 @@ fun AccountMismatchErrorScreen(viewModel: AccountMismatchErrorViewModel) {
                     )
                     is ViewState.JetpackWebViewState -> JetpackConnectionWebView(
                         viewState = targetState,
-                        wpComWebViewAuthenticator = viewModel.wpComWebViewAuthenticator,
+                        webViewAuthenticator = viewModel.webViewAuthenticator,
                         webViewNavigator = webViewNavigator,
                         userAgent = viewModel.userAgent,
                         modifier = Modifier.padding(paddingValues)
@@ -324,14 +324,14 @@ private fun ButtonBar(
 @Composable
 private fun JetpackConnectionWebView(
     viewState: ViewState.JetpackWebViewState,
-    wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    webViewAuthenticator: WebViewAuthenticator,
     webViewNavigator: WebViewNavigator,
     userAgent: UserAgent,
     modifier: Modifier = Modifier
 ) {
     WCWebView(
         url = viewState.connectionUrl,
-        wpComAuthenticator = wpComWebViewAuthenticator,
+        authenticator = webViewAuthenticator,
         userAgent = userAgent,
         webViewNavigator = webViewNavigator,
         onUrlLoaded = { url: String ->

@@ -49,7 +49,7 @@ class PluginsFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
                 is PluginsEvent.NavigateToPluginsWeb -> {
                     findNavController()
-                        .navigate(NavGraphSettingsDirections.actionGlobalWPComWebViewFragment(event.url))
+                        .navigate(NavGraphSettingsDirections.actionGlobalAuthenticatedWebViewFragment(event.url))
                 }
             }
         }

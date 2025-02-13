@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
@@ -99,24 +100,36 @@ class DashboardViewModel @Inject constructor(
             jetpackBenefitsBannerState(site.connectionType)
         }.asLiveData()
 
-    val dashboardWidgets = combine(
+    private val dashboardWidgets = combine(
         dashboardRepository.widgets,
         dashboardRepository.hasNewWidgets,
         feedbackPrefs.userFeedbackIsDueObservable
     ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue ->
         mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue)
-    }.asLiveData()
+    }
 
     val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
 
     private val refreshingOnBackground = MutableStateFlow(-1)
 
-    val isRefreshingOnBackground = refreshingOnBackground.map { it > -1 }.asLiveData()
-    fun displayRefreshingIndicator() { refreshingOnBackground.value += 1 }
+    fun displayRefreshingIndicator() {
+        refreshingOnBackground.value += 1
+    }
+
     fun hideRefreshingIndicator() {
         val value = (refreshingOnBackground.value - 1).coerceAtLeast(-1)
         refreshingOnBackground.value = value
     }
+
+    val dashboardCardsState = combine(
+        dashboardWidgets,
+        refreshingOnBackground.map { it > -1 }
+    ) { widgets, isRefreshing ->
+        DashboardCardsState(
+            widgets = widgets,
+            isRefreshing = isRefreshing
+        )
+    }.asLiveData()
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
@@ -157,6 +170,7 @@ class DashboardViewModel @Inject constructor(
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+        triggerEvent(RefreshJitm)
     }
 
     fun onResume() {
@@ -342,6 +356,8 @@ class DashboardViewModel @Inject constructor(
         data object FeedbackPositiveAction : DashboardEvent()
 
         data object FeedbackNegativeAction : DashboardEvent()
+
+        data object RefreshJitm : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)
@@ -364,4 +380,9 @@ class DashboardViewModel @Inject constructor(
             action = action
         )
     }
+
+    data class DashboardCardsState(
+        val widgets: List<DashboardWidgetUiModel>,
+        val isRefreshing: Boolean
+    )
 }

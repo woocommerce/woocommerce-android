@@ -708,7 +708,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
         viewModel.onInstallWooClicked()
 
         val event = viewModel.event.captureValues().last()
-        assertThat(event).isInstanceOf(SitePickerEvent.NavigateToWPComWebView::class.java)
+        assertThat(event).isInstanceOf(SitePickerEvent.NavigateToAuthenticatedWebView::class.java)
     }
 
     @Test

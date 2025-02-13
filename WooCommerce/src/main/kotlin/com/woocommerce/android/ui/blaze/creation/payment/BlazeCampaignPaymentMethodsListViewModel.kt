@@ -9,7 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_ADD_PAYME
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethod
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -26,7 +26,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
     private val userAgent: UserAgent,
-    private val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    private val webViewAuthenticator: WebViewAuthenticator,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val blazeRepository: BlazeRepository
 ) : ScopedViewModel(savedStateHandle) {
@@ -64,7 +64,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
     private fun addPaymentMethodWebView(): ViewState = ViewState.AddPaymentMethodWebView(
         formUrl = navArgs.paymentMethodsData.addPaymentMethodUrls.formUrl,
         userAgent = userAgent,
-        wpComWebViewAuthenticator = wpComWebViewAuthenticator,
+        webViewAuthenticator = webViewAuthenticator,
         onUrlLoaded = { url ->
             viewModelScope.launch {
                 val urls = navArgs.paymentMethodsData.addPaymentMethodUrls
@@ -114,7 +114,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         data class AddPaymentMethodWebView(
             val formUrl: String,
             val userAgent: UserAgent,
-            val wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+            val webViewAuthenticator: WebViewAuthenticator,
             val onUrlLoaded: (String) -> Unit,
             override val onDismiss: () -> Unit
         ) : ViewState

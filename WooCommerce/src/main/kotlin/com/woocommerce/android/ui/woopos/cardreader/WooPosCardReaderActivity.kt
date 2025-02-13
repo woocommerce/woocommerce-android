@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.adjustActivityTransition
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
@@ -61,8 +62,11 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
     override fun finish() {
         super.finish()
-        @Suppress("DEPRECATION")
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        adjustActivityTransition(
+            overrideTransitionOpen = true,
+            enterAnim = android.R.anim.fade_in,
+            exitAnim = android.R.anim.fade_out,
+        )
     }
 
     private fun observeResult(navHostFragment: NavHostFragment) {

@@ -26,10 +26,11 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             amount = BigDecimal.TEN,
             name = "Test Amount",
             taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = false),
-            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT,
+            currency = "USD"
         )
 
-        val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
+        val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine, "USD")
 
         assertThat(mapperResult).isEqualTo(expectedResult)
     }
@@ -48,10 +49,11 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             amount = BigDecimal.TEN,
             name = "Test Amount",
             taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = false),
-            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT,
+            currency = "USD"
         )
 
-        val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
+        val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine, "USD")
 
         assertThat(mapperResult).isEqualTo(expectedResult)
     }
@@ -70,10 +72,11 @@ class MapFeeLineToCustomAmountUIModelTest : BaseUnitTest() {
             amount = BigDecimal.TEN,
             name = "Test Amount",
             taxStatus = CustomAmountsViewModel.TaxStatus(isTaxable = true),
-            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT
+            type = CustomAmountsViewModel.CustomAmountType.FIXED_CUSTOM_AMOUNT,
+            currency = "USD"
         )
 
-        val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine)
+        val mapperResult = MapFeeLineToCustomAmountUiModel().invoke(feeLine, "USD")
 
         assertThat(mapperResult).isEqualTo(expectedResult)
     }

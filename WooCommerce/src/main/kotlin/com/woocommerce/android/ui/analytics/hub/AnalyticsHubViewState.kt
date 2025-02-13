@@ -13,7 +13,7 @@ data class AnalyticsViewState(
 
 sealed class AnalyticsViewEvent : MultiLiveEvent.Event() {
     data class OpenUrl(val url: String) : AnalyticsViewEvent()
-    data class OpenWPComWebView(val url: String) : AnalyticsViewEvent()
+    data class OpenAuthenticatedWebView(val url: String) : AnalyticsViewEvent()
     data class OpenDatePicker(val fromMillis: Long, val toMillis: Long) : MultiLiveEvent.Event()
     object OpenDateRangeSelector : AnalyticsViewEvent()
     object SendFeedback : AnalyticsViewEvent()

@@ -1,0 +1,136 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.room)
+    alias(libs.plugins.dependency.analysis)
+}
+
+android {
+    useLibrary 'org.apache.http.legacy'
+
+    namespace "org.wordpress.android.fluxc"
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+        compileSdk gradle.ext.compileSdkVersion
+
+        room {
+            schemaDirectory "$projectDir/schemas"
+        }
+
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    compileOptions {
+        sourceCompatibility libs.versions.java.get()
+        targetCompatibility libs.versions.java.get()
+    }
+}
+
+android.buildTypes.all { buildType ->
+    // Load gradle properties and add them to BuildConfig
+    Properties gradleProperties = new Properties()
+    File propertiesFile = file("gradle.properties")
+    if (propertiesFile.exists()) {
+        gradleProperties.load(new FileInputStream(propertiesFile))
+    } else {
+        // Load defaults
+        gradleProperties.load(new FileInputStream(file("gradle.properties-example")))
+    }
+    gradleProperties.any { property ->
+        if (property.value.equals("true") || property.value.equals("false")) {
+            buildType.buildConfigField "boolean", property.key.replace("fluxc.", "").replace(".", "_").toUpperCase(),
+                    "Boolean.parseBoolean(\"${property.value}\")"
+        } else {
+            buildType.buildConfigField "String", property.key.replace("fluxc.", "").replace(".", "_").toUpperCase(),
+                    "\"${property.value}\""
+        }
+    }
+}
+
+dependencies {
+    implementation libs.androidx.exifinterface
+    implementation libs.androidx.security.crypto
+
+    implementation(libs.wordpress.utils) {
+        // Using official volley package
+        exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
+    }
+
+    // Custom WellSql version
+    api libs.wellsql
+    kapt libs.wellsql.processor
+
+    // FluxC annotations
+    api project(":libs:fluxc-annotations")
+    kapt project(":libs:fluxc-processor")
+
+    // External libs
+    api libs.eventbus.android
+    api libs.eventbus.java
+    api libs.squareup.okhttp3
+    implementation libs.squareup.okhttp3.urlconnection
+    api libs.volley
+    implementation libs.google.gson
+
+    implementation libs.apache.commons.text
+    api libs.androidx.paging.runtime
+    implementation libs.androidx.room.runtime
+    ksp libs.androidx.room.compiler
+    implementation libs.androidx.room.ktx
+
+    // Dagger
+    implementation libs.google.dagger
+    ksp libs.google.dagger.compiler
+    compileOnly libs.glassfish.javax.annotation
+
+    // Coroutines
+    implementation libs.kotlinx.coroutines.core
+    implementation libs.kotlinx.coroutines.android
+
+    // Encrypted Logging
+    api(libs.terl.lazysodium.android.get().toString()) // TODO: https://github.com/gradle/gradle/issues/21267
+    api(libs.jna.get().toString()) // TODO: https://github.com/gradle/gradle/issues/21267
+
+    // Unit tests
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test.junit
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.androidx.test.main.core
+    testImplementation libs.robolectric
+    testImplementation libs.mockito.kotlin
+    testImplementation libs.assertj.core
+    testImplementation libs.androidx.arch.core.testing
+
+    lintChecks libs.wordpress.lint
+}
+
+tasks.withType(KotlinCompile).configureEach {
+    compilerOptions {
+        allWarningsAsErrors = false
+    }
+}
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed otherwise the app will crash with a runtime exception.
+            exclude(libs.eventbus.android.get().module.toString())
+        }
+    }
+}

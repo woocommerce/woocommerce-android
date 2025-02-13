@@ -12,20 +12,21 @@ msgstr ""
 
 #. translators: Release notes for the latest Wear App version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
 msgctxt "wear_release_note"
-msgid "In this update, we’ve made a few small bug fixes and enhancements to ensure a smoother experience. Thanks for using our app, and stay tuned for more exciting features coming soon!"
+msgid "We've improved WooCommerce app! This time we've fixed several bugs and focused on improving user interface. Keep your feedback falling in; it helps us figure how to improve Woo for you. Happy selling!"
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_215"
+msgctxt "release_note_217"
 msgid ""
-"21.5:\n"
-"Get ready for a smoother experience! We’ve optimized receipt scaling, added Puerto Rico for in-person payments, and improved Blaze Campaigns display. Enjoy faster product gallery loading, better bulk order updates, and real-time image upload indicators. Plus, WooPayments onboarding is now easier than ever!\n"
+"21.7:\n"
+"We've improved WooCommerce app! This time we've fixed several bugs and focused on improving user interface. Keep your feedback falling in; it helps us figure how to improve Woo for you. Happy selling!\n"
+"\n"
 msgstr ""
 
-msgctxt "release_note_214"
+msgctxt "release_note_216"
 msgid ""
-"21.4:\n"
-"This update brings several improvements to the WooCommerce mobile app. Dashboard menus now adapt better to larger fonts, and we've resolved layout issues in Settings. You'll also experience fewer crashes, with fixes for order details, plugin activation, and refunds. Merchants can now bulk update order statuses, barcode scanning is more reliable, and accessing plugin updates is quicker than ever. Additionally, sites can now be hidden from the site picker.\n"
+"21.6:\n"
+"Experience a smoother WooCommerce app with enhanced tablet and landscape support, a fresh new look aligned with our branding, and faster image loading. UK users can now enjoy POS access, retry failed image uploads effortlessly, and tag product cover photos with ease. Update now for these improvements!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

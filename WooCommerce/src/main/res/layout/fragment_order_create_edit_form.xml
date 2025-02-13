@@ -33,8 +33,9 @@
         android:orientation="vertical"
         tools:layout_constraintGuide_percent="0.5"/>
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/main_toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:elevation="@dimen/appbar_elevation"

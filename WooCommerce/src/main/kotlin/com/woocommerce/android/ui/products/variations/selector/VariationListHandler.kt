@@ -30,13 +30,14 @@ class VariationListHandler @Inject constructor(private val repository: Variation
     suspend fun fetchVariations(
         productId: Long,
         forceRefresh: Boolean = false,
-        filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null
+        filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
+        orderCurrency: String? = null,
     ): Result<Unit> = mutex.withLock {
         // Reset the offset
         offset = 0
 
         if (forceRefresh) {
-            loadVariations(productId, filterOptions)
+            loadVariations(productId, filterOptions, orderCurrency)
         } else {
             Result.success(Unit)
         }
@@ -44,21 +45,24 @@ class VariationListHandler @Inject constructor(private val repository: Variation
 
     suspend fun loadMore(
         productId: Long,
-        filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null
+        filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
+        orderCurrency: String? = null,
     ): Result<Unit> = mutex.withLock {
         if (!canLoadMore) return@withLock Result.success(Unit)
-        loadVariations(productId, filterOptions)
+        loadVariations(productId, filterOptions, orderCurrency)
     }
 
     private suspend fun loadVariations(
         productId: Long,
-        filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null
+        filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
+        orderCurrency: String? = null,
     ): Result<Unit> {
         return repository.fetchVariations(
             productId,
             offset,
             PAGE_SIZE,
-            filterOptions
+            filterOptions,
+            orderCurrency = orderCurrency
         ).onSuccess {
             canLoadMore = it
             offset += PAGE_SIZE

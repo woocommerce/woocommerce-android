@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.ComponentDialog
 import androidx.activity.addCallback
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -33,6 +34,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.External
 import com.woocommerce.android.ui.payments.refunds.RefundSummaryFragment.Companion.KEY_INTERAC_SUCCESS
 import com.woocommerce.android.util.PrintHtmlHelper
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.UiHelpers.getIllustrationVisibilityForFontScale
 import com.woocommerce.android.util.UiHelpers.getTextOfUiString
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -107,10 +109,13 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
             UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
                 binding.illustration,
                 viewState.illustration
-            )
+            ).also {
+                if (binding.illustration.isVisible) {
+                    binding.illustration.visibility =
+                        getIllustrationVisibilityForFontScale(resources.configuration.fontScale)
+                }
+            }
             UiHelpers.setTextOrHide(binding.paymentStateLabel, viewState.paymentStateLabel)
-            (binding.paymentStateLabel.layoutParams as ViewGroup.MarginLayoutParams)
-                .topMargin = resources.getDimensionPixelSize(viewState.paymentStateLabelTopMargin)
             UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
             UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
             UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
@@ -141,7 +146,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
 
     private fun openPurchaseCardReaderScreen(url: String) {
         findNavController().navigate(
-            NavGraphPaymentFlowDirections.actionGlobalWPComWebViewFragment(urlToLoad = url)
+            NavGraphPaymentFlowDirections.actionGlobalAuthenticatedWebViewFragment(urlToLoad = url)
         )
     }
 

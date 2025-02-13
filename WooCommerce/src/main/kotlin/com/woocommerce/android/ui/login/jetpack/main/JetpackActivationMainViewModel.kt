@@ -84,14 +84,16 @@ class JetpackActivationMainViewModel @Inject constructor(
     }
 
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
+    // Whether to use the application passwords for fetching the connection URL or the Cookie-nonce authentication
+    private val useApplicationPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
     private val site: Deferred<SiteModel>
         get() = async {
             val site = jetpackActivationRepository.getSiteByUrl(navArgs.siteUrl)?.takeIf {
                 val hasCredentials = it.username.isNotNullOrEmpty() && it.password.isNotNullOrEmpty()
-                if (!hasCredentials) {
+                if (!hasCredentials && !useApplicationPasswords) {
                     WooLog.w(WooLog.T.LOGIN, "The found site for jetpack activation doesn't have credentials")
                 }
-                hasCredentials
+                hasCredentials || useApplicationPasswords
             }
             requireNotNull(site) {
                 "Site not cached"
@@ -423,7 +425,6 @@ class JetpackActivationMainViewModel @Inject constructor(
     private suspend fun startJetpackConnection() {
         WooLog.d(WooLog.T.LOGIN, "Jetpack Activation: start Jetpack Connection")
         val currentSite = site.await()
-        val useApplicationPasswords = selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
         jetpackActivationRepository.fetchJetpackConnectionUrl(currentSite, useApplicationPasswords).fold(
             onSuccess = { connectionUrl ->
                 if (!isFromBanner) {

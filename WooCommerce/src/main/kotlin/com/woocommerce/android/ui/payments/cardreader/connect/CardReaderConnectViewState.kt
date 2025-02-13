@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.connect
 
-import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
@@ -17,7 +16,6 @@ sealed class CardReaderConnectViewState(
     val primaryActionLabel: Int? = null,
     val secondaryActionLabel: Int? = null,
     val tertiaryActionLabel: Int? = null,
-    @DimenRes val illustrationTopMargin: Int = R.dimen.major_200,
     open val listItems: List<CardReaderConnectViewModel.ListItemViewState>? = null,
     val learnMoreLabel: UiString? = null,
 ) {
@@ -67,7 +65,6 @@ sealed class CardReaderConnectViewState(
         primaryActionLabel = R.string.card_reader_connect_to_reader,
         secondaryActionLabel = R.string.card_reader_connect_keep_searching_button,
         tertiaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class MultipleExternalReadersFoundState(
@@ -85,7 +82,6 @@ sealed class CardReaderConnectViewState(
             illustration = R.drawable.img_card_reader_connecting,
             hintLabel = R.string.card_reader_connect_connecting_hint,
             secondaryActionLabel = R.string.cancel,
-            illustrationTopMargin = R.dimen.major_275
         )
 
     data class BuiltInReaderConnectingState(override val onSecondaryActionClicked: (() -> Unit)) :
@@ -95,7 +91,6 @@ sealed class CardReaderConnectViewState(
             illustration = R.drawable.img_card_reader_tpp_connecting,
             hintLabel = R.string.card_reader_connect_connecting_hint,
             secondaryActionLabel = R.string.cancel,
-            illustrationTopMargin = R.dimen.major_275
         )
 
     data class ScanningFailedState(
@@ -106,7 +101,6 @@ sealed class CardReaderConnectViewState(
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.try_again,
         secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class ConnectingFailedState(
@@ -117,7 +111,6 @@ sealed class CardReaderConnectViewState(
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.try_again,
         secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class LocationPermissionRationale(
@@ -127,7 +120,6 @@ sealed class CardReaderConnectViewState(
         hintLabel = R.string.card_reader_connect_permission_rationale_hint,
         illustration = R.drawable.img_location,
         primaryActionLabel = R.string.card_reader_connect_permission_rationale_action,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class MissingLocationPermissionsError(
@@ -138,7 +130,6 @@ sealed class CardReaderConnectViewState(
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.card_reader_connect_open_permission_settings,
         secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class LocationDisabledError(
@@ -149,7 +140,6 @@ sealed class CardReaderConnectViewState(
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.card_reader_connect_open_location_settings,
         secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class BluetoothDisabledError(
@@ -160,7 +150,6 @@ sealed class CardReaderConnectViewState(
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.card_reader_connect_open_bluetooth_settings,
         secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class MissingBluetoothPermissionsError(
@@ -171,7 +160,6 @@ sealed class CardReaderConnectViewState(
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.card_reader_connect_missing_bluetooth_permission_button,
         secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class MissingMerchantAddressError(
@@ -182,7 +170,6 @@ sealed class CardReaderConnectViewState(
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.card_reader_connect_missing_address_button,
         secondaryActionLabel = R.string.cancel,
-        illustrationTopMargin = R.dimen.major_150
     )
 
     data class InvalidMerchantAddressPostCodeError(
@@ -192,6 +179,5 @@ sealed class CardReaderConnectViewState(
         hintLabel = R.string.card_reader_connect_invalid_postal_code_hint,
         illustration = R.drawable.img_products_error,
         primaryActionLabel = R.string.try_again,
-        illustrationTopMargin = R.dimen.major_150,
     )
 }

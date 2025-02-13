@@ -7,7 +7,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.web.WCWebView
 import org.wordpress.android.fluxc.network.UserAgent
@@ -16,7 +16,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 fun GetPaidScreen(
     viewModel: GetPaidViewModel,
     userAgent: UserAgent,
-    authenticator: WPComWebViewAuthenticator
+    authenticator: WebViewAuthenticator
 ) {
     viewModel.viewState.observeAsState(null).value?.let { state ->
         Scaffold(topBar = {
@@ -28,7 +28,7 @@ fun GetPaidScreen(
             WCWebView(
                 url = state.url,
                 userAgent = userAgent,
-                wpComAuthenticator = if (state.shouldAuthenticate) authenticator else null,
+                authenticator = if (state.shouldAuthenticate) authenticator else null,
                 onUrlLoaded = viewModel::onUrlLoaded,
                 modifier = Modifier.padding(padding)
             )

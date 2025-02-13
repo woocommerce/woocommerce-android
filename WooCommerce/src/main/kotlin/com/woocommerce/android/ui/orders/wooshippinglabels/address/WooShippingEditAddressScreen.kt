@@ -36,6 +36,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.CheckCircleOutline
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,10 +58,13 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.wooshippinglabels.RoundedCornerBoxWithBorder
+import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.AddressStatus
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.EditableAddress
 import com.woocommerce.android.ui.orders.wooshippinglabels.address.origin.WooShippingEditOriginViewModel
+import com.woocommerce.android.ui.orders.wooshippinglabels.purchased.successColor
 
 @Composable
 fun WooShippingEditAddressScreen(
@@ -74,6 +79,7 @@ fun WooShippingEditAddressScreen(
                 shouldDisplayLoadingCountries = viewState.shouldDisplayLoading,
                 shouldDisplayLoadingCountriesError = viewState.shouldDisplayLoadingCountriesError,
                 shouldUseStatesInput = viewState.shouldUseStatesInput,
+                addressStatus = viewState.addressStatus,
                 onExpandCompany = viewModel::onExpandCompany,
                 onNameChange = viewModel::onNameChange,
                 onCompanyChange = viewModel::onCompanyChange,
@@ -99,6 +105,7 @@ fun WooShippingEditAddressScreen(
     shouldDisplayLoadingCountriesError: Boolean,
     shouldUseStatesInput: Boolean,
     isCompanyExpanded: Boolean,
+    addressStatus: AddressStatus,
     onExpandCompany: () -> Unit,
     onNameChange: (String) -> Unit,
     onCompanyChange: (String) -> Unit,
@@ -127,202 +134,214 @@ fun WooShippingEditAddressScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { padding ->
-        Column(
-            modifier
-                .verticalScroll(rememberScrollState())
-                .padding(padding)
-        ) {
-            val companyFocusRequester = remember { FocusRequester() }
-            val addressFocusRequester = remember { FocusRequester() }
-            val cityFocusRequester = remember { FocusRequester() }
-            val postalCodeFocusRequester = remember { FocusRequester() }
-            val emailFocusRequester = remember { FocusRequester() }
-            val phoneFocusRequester = remember { FocusRequester() }
-            val stateFocusRequester = remember { FocusRequester() }
-            val keyboardController = LocalSoftwareKeyboardController.current
+        Column(modifier = modifier.fillMaxSize()) {
+            Column(
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(padding)
+                    .padding(16.dp)
+                    .weight(1f)
+            ) {
+                val companyFocusRequester = remember { FocusRequester() }
+                val addressFocusRequester = remember { FocusRequester() }
+                val cityFocusRequester = remember { FocusRequester() }
+                val postalCodeFocusRequester = remember { FocusRequester() }
+                val emailFocusRequester = remember { FocusRequester() }
+                val phoneFocusRequester = remember { FocusRequester() }
+                val stateFocusRequester = remember { FocusRequester() }
+                val keyboardController = LocalSoftwareKeyboardController.current
 
-            val errorMessage = stringResource(id = R.string.woo_shipping_fetching_countries_and_states_failed)
-            val retry = stringResource(id = R.string.retry)
-            LaunchedEffect(shouldDisplayLoadingCountriesError) {
-                if (shouldDisplayLoadingCountriesError) {
-                    val result = snackbarHostState.showSnackbar(
-                        message = errorMessage,
-                        duration = SnackbarDuration.Indefinite,
-                        actionLabel = retry
-                    )
-                    when (result) {
-                        SnackbarResult.Dismissed -> {}
-                        SnackbarResult.ActionPerformed -> {
-                            onRefreshCountries()
+                val errorMessage = stringResource(id = R.string.woo_shipping_fetching_countries_and_states_failed)
+                val retry = stringResource(id = R.string.retry)
+                LaunchedEffect(shouldDisplayLoadingCountriesError) {
+                    if (shouldDisplayLoadingCountriesError) {
+                        val result = snackbarHostState.showSnackbar(
+                            message = errorMessage,
+                            duration = SnackbarDuration.Indefinite,
+                            actionLabel = retry
+                        )
+                        when (result) {
+                            SnackbarResult.Dismissed -> {}
+                            SnackbarResult.ActionPerformed -> {
+                                onRefreshCountries()
+                            }
                         }
                     }
                 }
-            }
 
-            RoundedBorderTextFieldWithLabel(
-                label = "${stringResource(id = R.string.woo_shipping_label_name)} *",
-                text = editableAddress.name.value,
-                error = editableAddress.name.error,
-                onTextChange = onNameChange,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        if (isCompanyExpanded) {
-                            companyFocusRequester.requestFocus()
-                        } else {
-                            addressFocusRequester.requestFocus()
-                        }
-                    }
-                ),
-            )
-
-            CollapsedField(
-                isExpanded = isCompanyExpanded,
-                label = stringResource(id = R.string.woo_shipping_label_company),
-                onExpand = onExpandCompany,
-                modifier = Modifier.fillMaxWidth()
-            ) {
                 RoundedBorderTextFieldWithLabel(
-                    label = stringResource(id = R.string.woo_shipping_label_company),
-                    text = editableAddress.company.value,
-                    onTextChange = onCompanyChange,
+                    label = "${stringResource(id = R.string.woo_shipping_label_name)} *",
+                    text = editableAddress.name.value,
+                    error = editableAddress.name.error,
+                    onTextChange = onNameChange,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                     keyboardActions = KeyboardActions(
                         onNext = {
-                            addressFocusRequester.requestFocus()
+                            if (isCompanyExpanded) {
+                                companyFocusRequester.requestFocus()
+                            } else {
+                                addressFocusRequester.requestFocus()
+                            }
                         }
                     ),
-                    modifier = Modifier.padding(top = 8.dp),
-                    focusRequester = companyFocusRequester
                 )
-            }
 
-            RoundedBorderDropDownWithLabel(
-                label = "${stringResource(id = R.string.woo_shipping_label_country)} *",
-                text = editableAddress.country,
-                modifier = Modifier.padding(top = 24.dp),
-                onClick = onCountryChange
-            )
-            RoundedBorderTextFieldWithLabel(
-                label = "${stringResource(id = R.string.woo_shipping_label_address)} *",
-                text = editableAddress.address.value,
-                error = editableAddress.address.error,
-                onTextChange = onAddressChange,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        cityFocusRequester.requestFocus()
-                    }
-                ),
-                focusRequester = addressFocusRequester,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            RoundedBorderTextFieldWithLabel(
-                label = "${stringResource(id = R.string.woo_shipping_label_city)} *",
-                text = editableAddress.city.value,
-                error = editableAddress.city.error,
-                onTextChange = onCityChange,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        if (shouldUseStatesInput) {
-                            stateFocusRequester.requestFocus()
-                        } else {
-                            postalCodeFocusRequester.requestFocus()
-                        }
-                    }
-                ),
-                focusRequester = cityFocusRequester,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-
-            Row {
-                if (shouldUseStatesInput) {
+                CollapsedField(
+                    isExpanded = isCompanyExpanded,
+                    label = stringResource(id = R.string.woo_shipping_label_company),
+                    onExpand = onExpandCompany,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     RoundedBorderTextFieldWithLabel(
-                        label = stringResource(id = R.string.woo_shipping_label_state),
-                        text = editableAddress.state,
+                        label = stringResource(id = R.string.woo_shipping_label_company),
+                        text = editableAddress.company.value,
+                        onTextChange = onCompanyChange,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                addressFocusRequester.requestFocus()
+                            }
+                        ),
+                        modifier = Modifier.padding(top = 8.dp),
+                        focusRequester = companyFocusRequester
+                    )
+                }
+
+                RoundedBorderDropDownWithLabel(
+                    label = "${stringResource(id = R.string.woo_shipping_label_country)} *",
+                    text = editableAddress.country.name,
+                    modifier = Modifier.padding(top = 24.dp),
+                    onClick = onCountryChange
+                )
+                RoundedBorderTextFieldWithLabel(
+                    label = "${stringResource(id = R.string.woo_shipping_label_address)} *",
+                    text = editableAddress.address.value,
+                    error = editableAddress.address.error,
+                    onTextChange = onAddressChange,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            cityFocusRequester.requestFocus()
+                        }
+                    ),
+                    focusRequester = addressFocusRequester,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                RoundedBorderTextFieldWithLabel(
+                    label = "${stringResource(id = R.string.woo_shipping_label_city)} *",
+                    text = editableAddress.city.value,
+                    error = editableAddress.city.error,
+                    onTextChange = onCityChange,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            if (shouldUseStatesInput) {
+                                stateFocusRequester.requestFocus()
+                            } else {
+                                postalCodeFocusRequester.requestFocus()
+                            }
+                        }
+                    ),
+                    focusRequester = cityFocusRequester,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+
+                Row {
+                    if (shouldUseStatesInput) {
+                        RoundedBorderTextFieldWithLabel(
+                            label = stringResource(id = R.string.woo_shipping_label_state),
+                            text = editableAddress.state.name,
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = {
+                                    postalCodeFocusRequester.requestFocus()
+                                }
+                            ),
+                            focusRequester = stateFocusRequester,
+                            onTextChange = onRawStateChange,
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .weight(1f)
+                        )
+                    } else {
+                        RoundedBorderDropDownWithLabel(
+                            label = stringResource(id = R.string.woo_shipping_label_state),
+                            text = editableAddress.state.name,
+                            modifier = Modifier
+                                .padding(top = 8.dp)
+                                .weight(1f),
+                            onClick = onStateChange
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(8.dp))
+                    RoundedBorderTextFieldWithLabel(
+                        label = "${stringResource(id = R.string.woo_shipping_label_post_code)} *",
+                        text = editableAddress.postalCode.value,
+                        error = editableAddress.postalCode.error,
                         keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text,
+                            keyboardType = KeyboardType.Number,
                             imeAction = ImeAction.Next
                         ),
                         keyboardActions = KeyboardActions(
                             onNext = {
-                                postalCodeFocusRequester.requestFocus()
+                                emailFocusRequester.requestFocus()
                             }
                         ),
-                        focusRequester = stateFocusRequester,
-                        onTextChange = onRawStateChange,
+                        focusRequester = postalCodeFocusRequester,
+                        onTextChange = onPostalCodeChange,
                         modifier = Modifier
                             .padding(top = 8.dp)
                             .weight(1f)
                     )
-                } else {
-                    RoundedBorderDropDownWithLabel(
-                        label = stringResource(id = R.string.woo_shipping_label_state),
-                        text = editableAddress.state,
-                        modifier = Modifier
-                            .padding(top = 8.dp)
-                            .weight(1f),
-                        onClick = onStateChange
-                    )
                 }
-                Spacer(modifier = Modifier.size(8.dp))
+
                 RoundedBorderTextFieldWithLabel(
-                    label = "${stringResource(id = R.string.woo_shipping_label_post_code)} *",
-                    text = editableAddress.postalCode.value,
-                    error = editableAddress.postalCode.error,
+                    label = "${stringResource(id = R.string.woo_shipping_label_email)} *",
+                    text = editableAddress.email.value,
+                    error = editableAddress.email.error,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
+                        keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
                     ),
+                    onTextChange = onEmailChange,
                     keyboardActions = KeyboardActions(
                         onNext = {
-                            emailFocusRequester.requestFocus()
+                            phoneFocusRequester.requestFocus()
                         }
                     ),
-                    focusRequester = postalCodeFocusRequester,
-                    onTextChange = onPostalCodeChange,
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .weight(1f)
+                    focusRequester = emailFocusRequester,
+                    modifier = Modifier.padding(top = 32.dp)
+                )
+                RoundedBorderTextFieldWithLabel(
+                    label = "${stringResource(id = R.string.woo_shipping_label_phone)} *",
+                    text = editableAddress.phone.value,
+                    error = editableAddress.phone.error,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            phoneFocusRequester.freeFocus()
+                            keyboardController?.hide()
+                        }
+                    ),
+                    focusRequester = phoneFocusRequester,
+                    onTextChange = onPhoneChange,
+                    modifier = Modifier.padding(top = 8.dp)
                 )
             }
-
-            RoundedBorderTextFieldWithLabel(
-                label = "${stringResource(id = R.string.woo_shipping_label_email)} *",
-                text = editableAddress.email.value,
-                error = editableAddress.email.error,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ),
-                onTextChange = onEmailChange,
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        phoneFocusRequester.requestFocus()
-                    }
-                ),
-                focusRequester = emailFocusRequester,
-                modifier = Modifier.padding(top = 32.dp)
-            )
-            RoundedBorderTextFieldWithLabel(
-                label = "${stringResource(id = R.string.woo_shipping_label_phone)} *",
-                text = editableAddress.phone.value,
-                error = editableAddress.phone.error,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        phoneFocusRequester.freeFocus()
-                        keyboardController?.hide()
-                    }
-                ),
-                focusRequester = phoneFocusRequester,
-                onTextChange = onPhoneChange,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            Surface(elevation = 8.dp) {
+                AddressStatus(
+                    addressStatus = addressStatus,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+            }
         }
         if (shouldDisplayLoadingCountries) {
             LoadingModal(
@@ -330,6 +349,59 @@ fun WooShippingEditAddressScreen(
                 description = stringResource(id = R.string.woo_shipping_fetching_countries_and_states)
             )
         }
+    }
+}
+
+@Composable
+internal fun AddressStatus(
+    addressStatus: AddressStatus,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val text = when (addressStatus) {
+            AddressStatus.VERIFIED -> stringResource(id = R.string.woo_shipping_address_verified)
+            AddressStatus.UNVERIFIED -> stringResource(id = R.string.woo_shipping_address_unverified)
+            AddressStatus.MISSING_INFO -> stringResource(id = R.string.woo_shipping_address_missing_info)
+        }
+
+        val color = when (addressStatus) {
+            AddressStatus.VERIFIED -> MaterialTheme.colors.successColor
+            else -> MaterialTheme.colors.error
+        }
+
+        val icon = when (addressStatus) {
+            AddressStatus.VERIFIED -> Icons.Outlined.CheckCircleOutline
+            else -> Icons.Outlined.Info
+        }
+
+        val buttonText = when (addressStatus) {
+            AddressStatus.VERIFIED -> stringResource(id = R.string.close)
+            AddressStatus.UNVERIFIED -> stringResource(id = R.string.woo_shipping_address_validate_and_save)
+            AddressStatus.MISSING_INFO -> stringResource(id = R.string.woo_shipping_address_missing_info_hint)
+        }
+
+        Row(modifier = Modifier.padding(bottom = 16.dp)) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(
+                text = text,
+                color = color
+            )
+        }
+
+        WCColoredButton(
+            onClick = {},
+            enabled = addressStatus != AddressStatus.MISSING_INFO,
+            text = buttonText,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -456,7 +528,7 @@ private fun RoundedBorderDropDownWithLabel(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = text,

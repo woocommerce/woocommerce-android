@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-28 16:54:05+0000
+Translation-Revision-Date: 2025-02-06 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">Ricerca di paesi e stati.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">Non siamo riusciti a recuperare le informazioni sul paese e sullo stato. Riprova.</string>
+    <string name="woo_shipping_field_required_error">Questo campo è obbligatorio.</string>
+    <string name="product_upload_error_retry_button_content_description">Riprova a caricare l\'immagine del prodotto</string>
+    <string name="product_upload_error_title">Errori durante il caricamento dell\'immagine</string>
+    <string name="app_name">Woo!</string>
     <string name="woopos_products_empty_list_message">POS al momento supporta solo prodotti semplici, variabili e virtuali: \ncreane uno per iniziare.</string>
     <string name="woo_shipping_label_phone">Telefono</string>
     <string name="woo_shipping_label_email">E-mail</string>
@@ -1413,6 +1420,7 @@ Language: it
     <string name="domain_privacy_option_off_title">Registra pubblicamente</string>
     <string name="domain_privacy_option_on_title">Registra privatamente con protezione della privacy</string>
     <string name="domain_registration_contact_form_input_error">Per %s, inserisci un valore valido</string>
+    <string name="domain_registration_privacy_protection_tos">Registrando questo dominio, accetti ai nostri &lt;a href=\'\'&gt;termini e condizioni.&lt;/a&gt;</string>
     <string name="domain_registration_privacy_protection_description">I proprietari del dominio devono condividere le informazioni di contatto in un database pubblico di tutti i domini.\n Con la Protezione della privacy, pubblichiamo le nostre informazioni al posto delle tue e ti inoltriamo privatamente qualsiasi comunicazione.</string>
     <string name="domain_registration_privacy_protection_title">Protezione della privacy</string>
     <string name="domains_access_error_title">Solo gli amministratori del negozio possono accedere alle impostazioni del dominio</string>
@@ -1931,7 +1939,6 @@ Language: it
     <string name="product_ratings_count_one">\u2022  una recensione approvata</string>
     <string name="product_ratings_count">\u2022  %drecensioni approvate</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Abbiamo lavorato per permetterti di creare ordini dal tuo dispositivo. Puoi provare questa funzionalità toccando il pulsante \"+\"</string>
     <string name="empty_inbox_description">Torna presto per ulteriori suggerimenti e per la panoramica sulla crescita del tuo negozio</string>
     <string name="empty_inbox_title">Congratulazioni, hai letto tutto.</string>
     <string name="orderstatus_contentDesc_withStatus">Stato ordine: %s</string>
@@ -2014,7 +2021,6 @@ Language: it
     <string name="about_automattic_work_with_us_item_title">Lavora con noi</string>
     <string name="about_automattic_family_item_title">Famiglia Automattic</string>
     <string name="about_automattic_legal_and_more_item_title">Sezione legale e altro</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_rate_us_item_title">Valutaci</string>
     <string name="about_automattic_share_with_friends_item_title">Condividi con gli amici</string>
@@ -2124,7 +2130,6 @@ Language: it
     <string name="simple_payments_enter_amount">Inserisci quantità</string>
     <string name="simple_payments_dialog_title">Ricevi il pagamento</string>
     <string name="orderlist_simple_payments_menu">Pagamento facile</string>
-    <string name="orderlist_simple_payments_wip_title">Crea ordini dal tuo dispositivo!</string>
     <string name="analytics">Dati analizzati</string>
     <string name="jetpack_install_progress_step_four_message">Fatto</string>
     <string name="jetpack_install_progress_step_three_message">Connessione del tuo negozio</string>
@@ -3777,7 +3782,6 @@ Language: it
     <string name="logging_in">Sto entrando</string>
     <string name="all">Tutto</string>
     <string name="notification_channel_general_title">Generale</string>
-    <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

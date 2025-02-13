@@ -20,7 +20,8 @@ sealed class OrderCreateEditNavigationTarget : Event() {
     data class SelectItems(
         val selectedItems: List<ProductSelectorViewModel.SelectedItem>,
         val restrictions: List<ProductRestriction>,
-        val mode: OrderCreateEditViewModel.Mode
+        val mode: OrderCreateEditViewModel.Mode,
+        val orderCurrency: String? = null,
     ) : OrderCreateEditNavigationTarget()
 
     data class ShowCreatedOrder(
@@ -28,7 +29,7 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val startPaymentFlow: Boolean,
         val isTablet: Boolean = false,
     ) : OrderCreateEditNavigationTarget()
-    data class EditShipping(val currentShippingLine: ShippingLine?) :
+    data class EditShipping(val currentShippingLine: ShippingLine?, val orderCurrency: String? = null) :
         OrderCreateEditNavigationTarget()
 
     data class EditFee(

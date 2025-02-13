@@ -78,6 +78,19 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             currencyEditText.imeOptions = value
         }
 
+    val siteParameters = parameterRepository.getParameters()
+
+    var orderCurrency: String? = null
+        set(value) {
+            field = value
+            siteParameters.currencyFormattingParameters?.let {
+                when (it.currencyPosition) {
+                    LEFT, LEFT_SPACE -> prefixText = orderCurrency
+                    RIGHT, RIGHT_SPACE -> suffixText = orderCurrency
+                }
+            }
+        }
+
     init {
         context.obtainStyledAttributes(
             attrs,
@@ -130,12 +143,10 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             )
         }
 
-        val siteParameters = parameterRepository.getParameters()
-
         siteParameters.currencyFormattingParameters?.let {
             when (it.currencyPosition) {
-                LEFT, LEFT_SPACE -> prefixText = siteParameters.currencySymbol.orEmpty()
-                RIGHT, RIGHT_SPACE -> suffixText = siteParameters.currencySymbol.orEmpty()
+                LEFT, LEFT_SPACE -> prefixText = orderCurrency ?: siteParameters.currencySymbol.orEmpty()
+                RIGHT, RIGHT_SPACE -> suffixText = orderCurrency ?: siteParameters.currencySymbol.orEmpty()
             }
         }
         currencyEditText.initView(siteParameters.currencyFormattingParameters)

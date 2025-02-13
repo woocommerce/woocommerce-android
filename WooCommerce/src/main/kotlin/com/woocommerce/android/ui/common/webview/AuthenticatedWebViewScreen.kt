@@ -1,0 +1,63 @@
+package com.woocommerce.android.ui.common.webview
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel.DisplayMode.MODAL
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel.DisplayMode.REGULAR
+import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.web.WCWebView
+import org.wordpress.android.fluxc.network.UserAgent
+
+@Composable
+fun AuthenticatedWebViewScreen(viewViewModel: AuthenticatedWebViewViewModel) {
+    AuthenticatedWebViewScreen(
+        viewState = viewViewModel.viewState,
+        wpcomWebViewAuthenticator = viewViewModel.webViewAuthenticator,
+        userAgent = viewViewModel.userAgent,
+        onUrlLoaded = viewViewModel::onUrlLoaded,
+        onClose = viewViewModel::onClose
+    )
+}
+
+@Composable
+private fun AuthenticatedWebViewScreen(
+    viewState: AuthenticatedWebViewViewModel.ViewState,
+    wpcomWebViewAuthenticator: WebViewAuthenticator,
+    userAgent: UserAgent,
+    onUrlLoaded: (String) -> Unit,
+    onClose: () -> Unit
+) {
+    BackHandler(onBack = onClose)
+    Scaffold(
+        topBar = {
+            Toolbar(
+                title = viewState.title ?: stringResource(id = R.string.app_name),
+                onNavigationButtonClick = onClose,
+                navigationIcon = when (viewState.displayMode) {
+                    REGULAR -> Icons.AutoMirrored.Filled.ArrowBack
+                    MODAL -> Icons.Filled.Clear
+                }
+            )
+        }
+    ) { paddingValues ->
+        WCWebView(
+            url = viewState.urlToLoad,
+            userAgent = userAgent,
+            authenticator = wpcomWebViewAuthenticator,
+            onUrlLoaded = onUrlLoaded,
+            captureBackPresses = viewState.captureBackButton,
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        )
+    }
+}

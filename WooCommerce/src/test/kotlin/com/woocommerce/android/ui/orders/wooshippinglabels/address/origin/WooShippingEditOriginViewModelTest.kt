@@ -469,7 +469,7 @@ class WooShippingEditOriginViewModelTest : BaseUnitTest() {
         val dataState = (result as WooShippingEditOriginViewModel.EditAddressViewState.DataState)
 
         assertThat(dataState.shouldUseStatesInput).isFalse()
-        assertThat(dataState.editableAddress.state).isEqualTo(states.first().name)
+        assertThat(dataState.editableAddress.state).isEqualTo(states.first())
     }
 
     @Test
@@ -490,6 +490,147 @@ class WooShippingEditOriginViewModelTest : BaseUnitTest() {
         val dataState = (result as WooShippingEditOriginViewModel.EditAddressViewState.DataState)
 
         assertThat(dataState.shouldUseStatesInput).isTrue()
-        assertThat(dataState.editableAddress.state).isEqualTo("")
+        assertThat(dataState.editableAddress.state.name).isEqualTo("")
+    }
+
+    @Test
+    fun `when received address is verified and displayed address has no changes, display verified`() = testBlocking {
+        val address = OriginShippingAddress(
+            id = "1",
+            address1 = "Address",
+            address2 = "",
+            city = "Miami",
+            postcode = "",
+            email = "",
+            phone = "",
+            state = "FL",
+            country = "US",
+            firstName = "Name",
+            lastName = "",
+            company = "",
+            isVerified = true,
+            isDefault = true
+        )
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            createViewModel(address)
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.EditAddressViewState::class.java)
+        val dataState = (result as WooShippingEditOriginViewModel.EditAddressViewState.DataState)
+
+        assertThat(dataState.addressStatus).isEqualTo(AddressStatus.VERIFIED)
+    }
+
+    @Test
+    fun `when received address is verified and displayed address has changes, display unverified`() = testBlocking {
+        val address = OriginShippingAddress(
+            id = "1",
+            address1 = "Address",
+            address2 = "",
+            city = "Miami",
+            postcode = "",
+            email = "",
+            phone = "",
+            state = "FL",
+            country = "US",
+            firstName = "Name",
+            lastName = "",
+            company = "",
+            isVerified = true,
+            isDefault = true
+        )
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            createViewModel(address)
+            sut.onAddressChange("Updated address")
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.EditAddressViewState::class.java)
+        val dataState = (result as WooShippingEditOriginViewModel.EditAddressViewState.DataState)
+
+        assertThat(dataState.addressStatus).isEqualTo(AddressStatus.UNVERIFIED)
+    }
+
+    @Test
+    fun `when received address is not verified and displayed address has no changes, display unverified`() = testBlocking {
+        val address = OriginShippingAddress(
+            id = "1",
+            address1 = "Address",
+            address2 = "",
+            city = "Miami",
+            postcode = "",
+            email = "",
+            phone = "",
+            state = "FL",
+            country = "US",
+            firstName = "Name",
+            lastName = "",
+            company = "",
+            isVerified = false,
+            isDefault = true
+        )
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            createViewModel(address)
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.EditAddressViewState::class.java)
+        val dataState = (result as WooShippingEditOriginViewModel.EditAddressViewState.DataState)
+
+        assertThat(dataState.addressStatus).isEqualTo(AddressStatus.UNVERIFIED)
+    }
+
+    @Test
+    fun `when there are errors, display missing info`() = testBlocking {
+        val address = OriginShippingAddress(
+            id = "1",
+            address1 = "Address",
+            address2 = "",
+            city = "Miami",
+            postcode = "",
+            email = "",
+            phone = "",
+            state = "FL",
+            country = "US",
+            firstName = "Name",
+            lastName = "",
+            company = "",
+            isVerified = true,
+            isDefault = true
+        )
+        whenever(addressValidator.validateFieldRequired(any())).doReturn("Field required")
+        whenever(getAcceptedOriginCountries.invoke()).doReturn(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            createViewModel(address)
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.EditAddressViewState::class.java)
+        val dataState = (result as WooShippingEditOriginViewModel.EditAddressViewState.DataState)
+
+        assertThat(dataState.addressStatus).isEqualTo(AddressStatus.MISSING_INFO)
     }
 }

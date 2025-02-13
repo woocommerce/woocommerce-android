@@ -1,2 +1,0 @@
-21.5:
-Preparati a un'esperienza più fluida! Abbiamo ottimizzato il ridimensionamento delle ricevute, aggiunto Portorico per i pagamenti di persona e migliorato le campagne Blaze. Beneficia di un caricamento più rapido della galleria di prodotti, di aggiornamenti in blocco degli ordini migliorati e di indicatori di caricamento delle immagini in tempo reale. Inoltre l'avviamento di WooPayments è più facile che mai!

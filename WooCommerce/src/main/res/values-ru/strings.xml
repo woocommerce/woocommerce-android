@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-28 09:54:04+0000
+Translation-Revision-Date: 2025-02-06 13:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">Не удалось получить сведения о стране и регионе. Повторите попытку.</string>
+    <string name="woo_shipping_field_required_error">Обязательное поле.</string>
+    <string name="woo_shipping_fetching_countries_and_states">Получение стран и регионов.</string>
+    <string name="product_upload_error_retry_button_content_description">Повторить попытку загрузки изображения товара</string>
+    <string name="product_upload_error_title">Ошибки при загрузке изображения</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">В данный момент POS поддерживает только простые товары, товары с вариантами и виртуальные товары — \nсначала создайте такой товар.</string>
     <string name="woo_shipping_label_phone">Телефон</string>
     <string name="woo_shipping_label_email">Электронная почта</string>
@@ -1414,6 +1421,7 @@ Language: ru
     <string name="domain_privacy_option_on_title">Зарегистрировать как личный с защитой персональных данных</string>
     <string name="domain_privacy_option_off_title">Зарегистрировать открыто</string>
     <string name="domain_contact_information_title">Контактная информация домена</string>
+    <string name="domain_registration_privacy_protection_tos">Регистрируя этот домен, вы соглашаетесь с нашими &lt;a href=\'\'&gt;правилами и условиями&lt;/a&gt;</string>
     <string name="domain_registration_privacy_protection_title">Защита персональных данных</string>
     <string name="domains_access_error_title">Только администраторы магазина могут получить доступ к настройкам домена</string>
     <string name="login_jetpack_installation_continue_magic_link">Или продолжите с помощью волшебной ссылки</string>
@@ -1931,7 +1939,6 @@ Language: ru
     <string name="coupon_details_heading">Сводка по купонам</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s без учёта %2$s</string>
     <string name="coupon_list_item_label_products_and_categories">%1$s и %2$s</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Мы работаем над функцией, которая поможет создавать заказы на вашем устройстве! Вы можете попробовать эту функцию, нажав кнопку «+»</string>
     <string name="empty_inbox_description">Зайдите позже, чтобы узнать больше советов и идей по развитию вашего магазина</string>
     <string name="empty_inbox_title">Поздравляем, вы прочитали все примечания!</string>
     <string name="orderstatus_contentDesc_withStatus">Статус заказа: %s</string>
@@ -2014,7 +2021,6 @@ Language: ru
     <string name="about_automattic_work_with_us_item_title">Работа у нас</string>
     <string name="about_automattic_family_item_title">Семейство Automattic</string>
     <string name="about_automattic_legal_and_more_item_title">Юридическая информация и прочее</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_rate_us_item_title">Оцените нас</string>
     <string name="about_automattic_share_with_friends_item_title">Поделитесь с друзьями</string>
@@ -2125,7 +2131,6 @@ Language: ru
     <string name="orderlist_bottom_sheet_simple_payment_action">Платёж без хлопот</string>
     <string name="orderlist_create_order_button_description">Создать заказ</string>
     <string name="orderlist_simple_payments_menu">Платёж без хлопот</string>
-    <string name="orderlist_simple_payments_wip_title">Создавайте заказы на своём устройстве!</string>
     <string name="jetpack_install_progress_step_four_message">Все готово</string>
     <string name="jetpack_install_progress_step_three_message">Подключение вашего магазина</string>
     <string name="jetpack_install_progress_step_two_message">Активация</string>
@@ -3767,7 +3772,6 @@ Language: ru
     <string name="orders">Заказы</string>
     <string name="my_store">Мой магазин</string>
     <string name="all">Все</string>
-    <string name="app_name">WooCommerce</string>
     <string name="date_at_time">%1$s в %2$s</string>
     <string name="orderdetail_orderstatus_ordernum">Заказ №%s</string>
     <string name="settings_footer">Сделано с любовью компанией Automattic. %1$s</string>

@@ -30,7 +30,7 @@ import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.LoginEmailHelpDialogFragment
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
@@ -39,11 +39,11 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAuthenticatedWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToEmailHelpDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.SimpleWPComState
@@ -229,7 +229,7 @@ class SitePickerFragment :
                 is NavigateToNewToWooEvent -> navigateToNewToWooScreen()
                 is NavigateToAddStoreEvent -> navigateToAddStoreScreen()
                 is NavigateToEmailHelpDialogEvent -> navigateToNeedHelpFindingEmailScreen()
-                is NavigateToWPComWebView -> navigateToWPComWebView(event)
+                is NavigateToAuthenticatedWebView -> navigateToAuthenticatedWebView(event)
                 is NavigateToAccountMismatchScreen -> navigateToAccountMismatchScreen(event)
                 is ShowSnackbar -> uiMessageResolver.getSnack(stringResId = event.message, stringArgs = event.args)
                     .show()
@@ -243,11 +243,11 @@ class SitePickerFragment :
     }
 
     private fun handleResults() {
-        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_RESULT) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_COMPLETED)
             viewModel.onWooInstalled()
         }
-        handleNotice(WPComWebViewFragment.WEBVIEW_DISMISSED) {
+        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_DISMISSED) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_WOOCOMMERCE_SETUP_DISMISSED)
         }
         handleResult<String>(SitePickerSiteDiscoveryFragment.SITE_PICKER_SITE_ADDRESS_RESULT) {
@@ -354,9 +354,9 @@ class SitePickerFragment :
         }
     }
 
-    private fun navigateToWPComWebView(event: NavigateToWPComWebView) {
+    private fun navigateToAuthenticatedWebView(event: NavigateToAuthenticatedWebView) {
         findNavController().navigate(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+            NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
                 urlToLoad = event.url,
                 urlsToTriggerExit = arrayOf(event.validationUrl),
                 title = event.title

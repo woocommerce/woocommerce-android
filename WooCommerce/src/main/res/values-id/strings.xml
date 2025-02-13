@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-28 12:54:04+0000
+Translation-Revision-Date: 2025-02-06 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">Mengambil informasi negara dan negara bagian.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">Kami tidak dapat mengambil informasi negara dan negara bagian. Silakan coba lagi.</string>
+    <string name="woo_shipping_field_required_error">Kolom ini wajib diisi.</string>
+    <string name="product_upload_error_retry_button_content_description">Coba unggah ulang gambar produk</string>
+    <string name="product_upload_error_title">Error pengunggahan gambar</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS saat ini hanya mendukung produk sederhana, bervariasi, dan virtual – \nbuat POS untuk memulai.</string>
     <string name="woo_shipping_label_phone">Telepon</string>
     <string name="woo_shipping_label_email">Email</string>
@@ -1413,6 +1420,7 @@ Language: id
     <string name="domain_privacy_option_off_title">Daftarkan secara publik</string>
     <string name="domain_privacy_option_on_title">Daftarkan secara pribadi dengan Perlindungan Privasi</string>
     <string name="domain_registration_contact_form_input_error">Masukkan %s yang valid</string>
+    <string name="domain_registration_privacy_protection_tos">Dengan mendaftarkan domain ini, Anda menyetujui &lt;a href=\'\'&gt;syarat dan ketentuan&lt;/a&gt; kami</string>
     <string name="domain_registration_privacy_protection_description">Pemilik domain harus berbagi informasi kontak di database publik semua domain.\n Dengan Perlindungan Privasi, kami memublikasikan informasi kami sendiri, bukan informasi Anda, dan meneruskan segala komunikasi kepada Anda secara pribadi.</string>
     <string name="domain_registration_privacy_protection_title">Perlindungan Privasi</string>
     <string name="domains_access_error_title">Pengaturan domain hanya bisa diakses oleh administrator toko</string>
@@ -1931,7 +1939,6 @@ Language: id
     <string name="product_ratings_count_one">\u2022  satu ulasan disetujui</string>
     <string name="product_ratings_count">\u2022  %d ulasan disetujui</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Kini Anda dapat membuat pesanan dengan perangkat Anda! Anda dapat mencoba fitur ini dengan mengetuk tombol \"+\"</string>
     <string name="empty_inbox_description">Kembali lagi nanti untuk mendapatkan lebih banyak tips dan wawasan tentang cara mengembangkan toko Anda</string>
     <string name="empty_inbox_title">Selamat, Anda telah membaca semuanya!</string>
     <string name="orderstatus_contentDesc_withStatus">Status pesanan: %s</string>
@@ -2014,7 +2021,6 @@ Language: id
     <string name="about_automattic_work_with_us_item_title">Berkarya Bersama Kami</string>
     <string name="about_automattic_family_item_title">Keluarga Automattic</string>
     <string name="about_automattic_legal_and_more_item_title">Informasi Hukum dan Lainnya</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_rate_us_item_title">Beri Rating</string>
     <string name="about_automattic_share_with_friends_item_title">Bagikan dengan Teman</string>
@@ -2124,7 +2130,6 @@ Language: id
     <string name="simple_payments_enter_amount">Masukkan jumlah</string>
     <string name="simple_payments_dialog_title">Terima pembayaran</string>
     <string name="orderlist_simple_payments_menu">Simple payment</string>
-    <string name="orderlist_simple_payments_wip_title">Buat pesanan dari perangkat Anda!</string>
     <string name="analytics">Analytics</string>
     <string name="jetpack_install_progress_step_four_message">Semua selesai</string>
     <string name="jetpack_install_progress_step_three_message">Menyambungkan ke toko Anda</string>
@@ -3777,7 +3782,6 @@ Language: id
     <string name="logging_in">Proses masuk</string>
     <string name="all">Semua</string>
     <string name="notification_channel_general_title">Umum</string>
-    <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>
