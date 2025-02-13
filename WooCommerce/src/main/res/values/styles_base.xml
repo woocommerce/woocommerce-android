@@ -34,6 +34,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <style name="Woo.CollapsedToolbarLayout" parent="Widget.MaterialComponents.Toolbar.Surface">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
         <item name="android:background">@color/color_toolbar</item>
+        <item name="statusBarScrim">@android:color/transparent</item>
         <item name="collapsedTitleTextAppearance">
             @style/TextAppearance.Woo.CollapsingToolbar.Collapsed
         </item>

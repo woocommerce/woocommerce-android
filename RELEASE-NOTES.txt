@@ -15,6 +15,10 @@
 -----
 - [*] Fixed color scheme for the create botton on the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/13428]
 
+21.6.1
+-----
+- [***] Fixed a crash on the splash screen that occurred on Android 12 devices [https://github.com/woocommerce/woocommerce-android/pull/13538]
+
 21.6
 -----
 - [*] Updated tablet detection logic to consider both width and height dimensions, enhancing compatibility with larger phones and tablets, particularly in landscape mode [https://github.com/woocommerce/woocommerce-android/pull/13228]
