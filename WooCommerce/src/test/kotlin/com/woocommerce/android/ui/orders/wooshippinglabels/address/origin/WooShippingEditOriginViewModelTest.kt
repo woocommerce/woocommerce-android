@@ -27,7 +27,6 @@ class WooShippingEditOriginViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val normalizeAddress: NormalizeAddress = mock()
 
-
     private val countries = listOf(
         Location("US", "United States"),
         Location("UK", "United Kingdom"),
@@ -746,9 +745,7 @@ class WooShippingEditOriginViewModelTest : BaseUnitTest() {
         var addressSelection = result.normalizedAddressStatus as NormalizedAddressStatus.AddressSelection
         assertThat(addressSelection.selectedAddress).isEqualTo(suggestedAddress)
 
-
         sut.onAddressSelectionChange(addressSelection.copy(selectedAddress = enteredAddress))
-
 
         result = sut.viewState.value
         assertThat(result).isInstanceOf(WooShippingEditOriginViewModel.ViewState::class.java)
