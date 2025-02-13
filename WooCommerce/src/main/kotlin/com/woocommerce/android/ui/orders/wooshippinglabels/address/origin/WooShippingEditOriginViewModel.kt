@@ -248,12 +248,14 @@ class WooShippingEditOriginViewModel @Inject constructor(
                             resourceProvider.getString(R.string.woo_shipping_fetching_countries_and_states)
                         )
                     }
+
                     addressSelection is NormalizedAddressStatus.VerifyingAddress -> {
                         LoadingState.DisplayLoading(
                             resourceProvider.getString(R.string.woo_shipping_address_validate_title),
                             resourceProvider.getString(R.string.woo_shipping_address_validate_message)
                         )
                     }
+
                     else -> LoadingState.Hidden
                 }
 
@@ -459,22 +461,22 @@ data class EditableAddress(
     val postalCode: InputValue = InputValue.EMPTY,
     val email: InputValue = InputValue.EMPTY,
     val phone: InputValue = InputValue.EMPTY
-) {
-    fun toAddress(): Address {
-        return Address(
-            firstName = name.value,
-            lastName = "",
-            company = company.value,
-            address1 = address.value,
-            address2 = "",
-            city = city.value,
-            state = AmbiguousLocation.Defined(state),
-            postcode = postalCode.value,
-            country = country,
-            email = email.value,
-            phone = phone.value
-        )
-    }
+)
+
+fun EditableAddress.toAddress(): Address {
+    return Address(
+        firstName = name.value,
+        lastName = "",
+        company = company.value,
+        address1 = address.value,
+        address2 = "",
+        city = city.value,
+        state = AmbiguousLocation.Defined(state),
+        postcode = postalCode.value,
+        country = country,
+        email = email.value,
+        phone = phone.value
+    )
 }
 
 sealed class NormalizedAddressStatus {
