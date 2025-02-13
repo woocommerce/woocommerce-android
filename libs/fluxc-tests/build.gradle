@@ -1,0 +1,49 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.dependency.analysis)
+}
+
+android {
+    namespace "org.wordpress.android.fluxc.example"
+
+    compileOptions {
+        sourceCompatibility libs.versions.java.get()
+        targetCompatibility libs.versions.java.get()
+    }
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+        compileSdk gradle.ext.compileSdkVersion
+    }
+
+    testOptions.unitTests.includeAndroidResources = true
+}
+
+tasks.withType(KotlinCompile).configureEach {
+    compilerOptions {
+        allWarningsAsErrors = false
+    }
+}
+
+dependencies {
+    implementation project(':libs:fluxc')
+    implementation project(':libs:fluxc-plugin')
+    testImplementation(libs.wordpress.utils) {
+        // Using official volley package
+        exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
+    }
+    testImplementation libs.google.gson
+    testImplementation libs.androidx.room.runtime
+    testImplementation libs.junit
+    testImplementation libs.kotlin.test.junit
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.main.core
+    testImplementation libs.mockito.kotlin
+    testImplementation libs.assertj.core
+    testImplementation libs.androidx.arch.core.testing
+}

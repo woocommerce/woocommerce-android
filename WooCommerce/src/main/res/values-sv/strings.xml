@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-28 14:54:03+0000
+Translation-Revision-Date: 2025-02-06 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">Hämtar länder och delstater.</string>
+    <string name="woo_shipping_field_required_error">Detta fält är obligatoriskt.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">Vi kunde inte hämta information om land och delstat. Försök igen.</string>
+    <string name="product_upload_error_retry_button_content_description">Försök ladda upp produktbild igen</string>
+    <string name="product_upload_error_title">Fel vid bilduppladdning</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS stöder för närvarande bara enkla, variabla och virtuella produkter – \nskapa en för att komma igång.</string>
     <string name="woo_shipping_label_phone">Telefon</string>
     <string name="woo_shipping_label_email">E-post</string>
@@ -651,9 +658,9 @@ Language: sv_SE
     <string name="blaze_campaign_edit_ad_characters_remaining">%d tecken återstår</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s dagligen</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Föreslaget av AI</string>
-    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="blaze_campaign_budget_impressions_title">Visningar</string>
     <string name="blaze_campaign_budget_reach_forecast">Uppskattat antal personer som nås per dag</string>
+    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_start_date">Startdatum</string>
     <string name="product_creation_survey_button_dont_show_again">Visa det inte igen</string>
     <string name="product_creation_survey_button_remind_me_later">Påminn mig senare</string>
@@ -996,8 +1003,8 @@ Language: sv_SE
     <string name="store_onboarding_task_name_store_title">Namnge din butik</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktivera NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Leveranspaket för små kvantiteter (märkningar krävs)</string>
-    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY-markpaket – Aerosoler, spraydesinfektionsmedel, sprayfärg, hårspray, propan, butan, rengöringsprodukter, osv. - Parfymer, nagellack, nagellackborttagningsmedel, lösningsmedel, handsprit, tvättsprit, etanolbaserade produkter, osv. - Andra ytmaterial i begränsad mängd (kosmetika, rengöringsprodukter, färger, osv.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000-konsumentvarupaket – Luftkvalificerade ID8000-konsumentvaror (icke brandfarliga aerosoler, brandfarliga brännbara vätskor, giftiga ämnen, diverse farliga material)</string>
     <string name="shipping_label_hazmat_option_ground_only">Farliga material endast för markleverans (för föremål som inte är listade, men som är begränsade till endast yta)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Undantagna kvantitetsförsörjningspaket (t.ex. små volymer av brandfarliga vätskor och frätande, giftiga eller miljöfarliga material – märkning krävs) </string>
@@ -1414,6 +1421,7 @@ Language: sv_SE
     <string name="domain_privacy_option_on_title">Registrera privat med integritetsskydd</string>
     <string name="domain_privacy_option_off_title">Registrera publikt</string>
     <string name="domain_contact_information_title">Kontaktinformation för domän</string>
+    <string name="domain_registration_privacy_protection_tos">I och med att du registrerar denna domän godkänner du våra &lt;a href=\'\'&gt;användarvillkor&lt;/a&gt;</string>
     <string name="domain_registration_privacy_protection_title">Integritetsskydd</string>
     <string name="domains_access_error_title">Endast butiksadministratörer kan komma åt domäninställningar</string>
     <string name="login_jetpack_installation_enter_wpcom_email">Logga in på ditt WordPress.com-konto för att installera Jetpack</string>
@@ -1931,7 +1939,6 @@ Language: sv_SE
     <string name="coupon_details_heading">Rabattkodssammanfattning</string>
     <string name="coupon_list_item_label_products_and_categories">%1$s och %2$s</string>
     <string name="coupon_list_item_label_included_and_excluded">%1$s exkl. %2$s</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Vi har jobbat på att göra det möjligt att skapa beställningar från din enhet. Du kan prova den här funktionen genom att trycka på \"+\"-knappen</string>
     <string name="empty_inbox_description">Kom tillbaka snart för fler tips och insikter om hur du får din butik att växa</string>
     <string name="empty_inbox_title">Grattis, du har läst allt!</string>
     <string name="orderstatus_contentDesc_withStatus">Beställningsstatus: %s</string>
@@ -2014,7 +2021,6 @@ Language: sv_SE
     <string name="about_automattic_work_with_us_item_title">Jobba med oss</string>
     <string name="about_automattic_family_item_title">Automattic-familjen</string>
     <string name="about_automattic_legal_and_more_item_title">Juridisk information med mera</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_rate_us_item_title">Betygsätt oss</string>
     <string name="about_automattic_share_with_friends_item_title">Dela med vänner</string>
@@ -2125,7 +2131,6 @@ Language: sv_SE
     <string name="simple_payments_dialog_title">Ta emot betalning</string>
     <string name="orderlist_simple_payments_menu">Enkel betalning</string>
     <string name="analytics">Analys</string>
-    <string name="orderlist_simple_payments_wip_title">Skapa beställningar från din enhet!</string>
     <string name="jetpack_install_progress_step_three_message">Ansluter din butik</string>
     <string name="jetpack_install_progress_step_two_message">Aktiverar</string>
     <string name="jetpack_install_progress_step_one_message">Installerar Jetpack</string>
@@ -3681,7 +3686,6 @@ Language: sv_SE
     <string name="payment">Betalning</string>
     <string name="currency_total_negative">-%1$s%2$s</string>
     <string name="currency_total">%1$s%2$s</string>
-    <string name="app_name">WooCommerce</string>
     <string name="error_no_sms_app">Ingen SMS-app hittades</string>
     <string name="dashboard_stats_visitors">Besökare</string>
     <string name="dashboard_stats_granularity_years">År</string>

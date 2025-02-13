@@ -6,7 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 
-class TopPerformersComponent : Screen(R.id.dashboardStats_root) {
+class TopPerformersComponent : Screen(R.id.my_store_stats_container) {
     override fun recover() {
         super.recover()
         clickOn(R.id.dashboard)

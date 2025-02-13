@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-28 09:54:04+0000
+Translation-Revision-Date: 2025-02-06 15:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">国と州を取得しています。</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">国と州の情報を取得できませんでした。 もう一度お試しください。</string>
+    <string name="woo_shipping_field_required_error">この欄は入力必須です。</string>
+    <string name="product_upload_error_retry_button_content_description">商品画像のアップロードを再試行</string>
+    <string name="product_upload_error_title">画像アップロードのエラー</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">現在、POS はシンプルな商品、バリエーションのある商品、仮想商品のみに対応しています – \n作成して開始します。</string>
     <string name="woo_shipping_label_phone">電話</string>
     <string name="woo_shipping_label_email">メールアドレス</string>
@@ -1413,6 +1420,7 @@ Language: ja_JP
     <string name="domain_privacy_option_off_title">公開として登録</string>
     <string name="domain_privacy_option_on_title">プライバシー保護付きで非公開として登録</string>
     <string name="domain_registration_contact_form_input_error">有効な%sを入力してください</string>
+    <string name="domain_registration_privacy_protection_tos">このドメインを登録することで、当社の&lt;a href=\'\'&gt;利用規約&lt;/a&gt;に合意したことになります</string>
     <string name="domain_registration_privacy_protection_description">ドメイン所有者は、すべてのドメインのパブリックデータベースで連絡先情報を共有する必要があります。\nプライバシー保護として、お客様に関する情報の代わりに弊社に関する情報を公開し、お客様には個別でコミュニケーションを転送します。</string>
     <string name="domain_registration_privacy_protection_title">プライバシー保護</string>
     <string name="domains_access_error_title">ストア管理者のみがドメイン設定にアクセスできます</string>
@@ -1931,7 +1939,6 @@ Language: ja_JP
     <string name="product_ratings_count_one">\u2022  1件の承認済みのレビュー</string>
     <string name="product_ratings_count">\u2022  %d件の承認済みのレビュー</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">デバイスから注文を作成できるようにする機能を開発中です。 「+」ボタンをタップしてこの機能を試すことができます</string>
     <string name="empty_inbox_description">ストアの成長に役立つその他のヒントやインサイトは今後も増えていきますので、ぜひまた訪問してください</string>
     <string name="empty_inbox_title">すべて読み終えました !</string>
     <string name="orderstatus_contentDesc_withStatus">注文ステータス: %s</string>
@@ -2014,7 +2021,6 @@ Language: ja_JP
     <string name="about_automattic_work_with_us_item_title">求人情報</string>
     <string name="about_automattic_family_item_title">Automattic ファミリー</string>
     <string name="about_automattic_legal_and_more_item_title">法的情報およびその他</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_rate_us_item_title">評価してください</string>
     <string name="about_automattic_share_with_friends_item_title">友達と共有</string>
@@ -2124,7 +2130,6 @@ Language: ja_JP
     <string name="simple_payments_enter_amount">金額を入力</string>
     <string name="simple_payments_dialog_title">支払いを受け取る</string>
     <string name="orderlist_simple_payments_menu">シンプルペイメント</string>
-    <string name="orderlist_simple_payments_wip_title">デバイスから注文を作成しましょう。</string>
     <string name="analytics">アナリティクス</string>
     <string name="jetpack_install_progress_step_four_message">すべて完了</string>
     <string name="jetpack_install_progress_step_three_message">ストアを接続しています</string>
@@ -3777,7 +3782,6 @@ Language: ja_JP
     <string name="logging_in">ログインしています</string>
     <string name="all">すべて</string>
     <string name="notification_channel_general_title">一般</string>
-    <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

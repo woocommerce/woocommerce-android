@@ -168,7 +168,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         }
         @Suppress("UNCHECKED_CAST")
         orderCreationProductMapper = mock {
-            onBlocking { toOrderProducts(any(), eq(null)) } doAnswer { invocationOnMock ->
+            onBlocking { toOrderProducts(any(), any()) } doAnswer { invocationOnMock ->
                 val args = invocationOnMock.arguments
                 (args.first() as? List<Order.Item>)?.let { list ->
                     if (list.isEmpty()) {

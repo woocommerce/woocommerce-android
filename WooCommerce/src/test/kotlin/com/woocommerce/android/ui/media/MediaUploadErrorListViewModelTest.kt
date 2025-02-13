@@ -100,6 +100,16 @@ class MediaUploadErrorListViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `given some upload errors, when onRetryUploadClicked is called, then clear that upload error`() =
+        testBlocking {
+            createViewModel(SOME_UPLOAD_ERRORS)
+
+            viewModel.onRetryUploadClicked(SOME_UI_MODEL_ERRORS.last())
+
+            verify(mediaFileUploadHandler).clearImageErrors(REMOTE_PRODUCT_ID, listOf("file://test2.jpg"))
+        }
+
     private fun createViewModel(errors: Array<ProductImageUploadData>? = SOME_UPLOAD_ERRORS) {
         viewModel = MediaUploadErrorListViewModel(
             resourceProvider,

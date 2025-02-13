@@ -10,6 +10,7 @@ import java.math.BigDecimal
 data class CustomAmountUIModel(
     val id: Long,
     val amount: BigDecimal,
+    val currency: String? = null,
     val name: String,
     val taxStatus: TaxStatus = TaxStatus(),
     val type: CustomAmountType,

@@ -18,8 +18,4 @@
         <ignore regexp="java-common-1.13.jar" />
         <ignore path="**/sentry*.jar"/>
     </issue>
-
-    <issue id="IconDuplicates" severity="error">
-        <ignore path="**/login_notification_icon.webp" />
-    </issue>
 </lint>

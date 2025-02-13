@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-28 16:54:14+0000
+Translation-Revision-Date: 2025-02-06 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">Landen en provincies ophalen</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">We konden de land- en provinciespecifieke informatie niet ophalen. Probeer het nog eens.</string>
+    <string name="woo_shipping_field_required_error">Dit veld is vereist.</string>
+    <string name="product_upload_error_retry_button_content_description">Probeer de productafbeelding opnieuw te uploaden</string>
+    <string name="product_upload_error_title">Foutmeldingen bij upload afbeelding</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS ondersteunt momenteel alleen simpele en variabele producten; \nmaak er een aan om te beginnen.</string>
     <string name="woo_shipping_label_phone">Telefoon</string>
     <string name="woo_shipping_label_email">E-mail</string>
@@ -1413,6 +1420,7 @@ Language: nl
     <string name="domain_privacy_option_off_title">Openbaar registreren</string>
     <string name="domain_privacy_option_on_title">Privé registreren met privacybescherming</string>
     <string name="domain_registration_contact_form_input_error">Voer een geldige %s in</string>
+    <string name="domain_registration_privacy_protection_tos">Door dit domein te registreren, ga je akkoord met onze &lt;a href=\'\'&gt;algemene voorwaarden&lt;/a&gt;</string>
     <string name="domain_registration_privacy_protection_description">Domeineigenaren moeten contactgegevens delen in een openbare database met alle domeinen.\n Met Privacybescherming publiceren we onze eigen informatie in plaats van die van jou en sturen we berichten privé naar je door.</string>
     <string name="domain_registration_privacy_protection_title">Privacybescherming</string>
     <string name="domains_access_error_title">Alleen winkelbeheerders hebben toegang tot de domeininstellingen.</string>
@@ -1931,7 +1939,6 @@ Language: nl
     <string name="product_ratings_count_one">\u2022  één goedgekeurde beoordeling</string>
     <string name="product_ratings_count">\u2022  %d goedgekeurde beoordelingen</string>
     <string name="tax_name_with_tax_percent">%1$s %2$s%%()</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">We hebben hard gewerkt zodat jij vanaf je apparaat bestellingen aan kunt maken! Je kunt deze functie uitproberen door op de + knop te klikken</string>
     <string name="empty_inbox_description">We zien je snel weer terug voor meer tips en kennis over hoe je je winkel kunt laten groeien</string>
     <string name="empty_inbox_title">Gefeliciteerd, je hebt alles gelezen!</string>
     <string name="orderstatus_contentDesc_withStatus">Bestelstatus: %s</string>
@@ -2014,7 +2021,6 @@ Language: nl
     <string name="about_automattic_work_with_us_item_title">Werk met ons samen</string>
     <string name="about_automattic_family_item_title">Automattic-familie</string>
     <string name="about_automattic_legal_and_more_item_title">Juridisch en meer</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_rate_us_item_title">Beoordeel ons</string>
     <string name="about_automattic_share_with_friends_item_title">Deel met vrienden</string>
@@ -2124,7 +2130,6 @@ Language: nl
     <string name="simple_payments_enter_amount">Voer bedrag in</string>
     <string name="simple_payments_dialog_title">Betaling ontvangen</string>
     <string name="orderlist_simple_payments_menu">Eenvoudige betaling</string>
-    <string name="orderlist_simple_payments_wip_title">Maak bestellingen aan vanaf je apparaat!</string>
     <string name="analytics">Analytische gegevens</string>
     <string name="jetpack_install_progress_step_four_message">Klaar</string>
     <string name="jetpack_install_progress_step_three_message">Je winkel koppelen</string>
@@ -3777,7 +3782,6 @@ Language: nl
     <string name="logging_in">Inloggen</string>
     <string name="all">Alles</string>
     <string name="notification_channel_general_title">Algemeen</string>
-    <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

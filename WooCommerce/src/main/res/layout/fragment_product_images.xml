@@ -37,6 +37,19 @@
                 android:layout_marginEnd="@dimen/margin_extra_large"
                 android:text="@string/product_add_photos" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/openUploadScreenButton"
+                style="@style/Woo.Button.Outlined"
+                android:textColor="@color/color_error"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_extra_large"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_extra_large"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:text="@string/product_open_upload_screen" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/learnMoreButton"
                 style="@style/Woo.ListItem.Body"

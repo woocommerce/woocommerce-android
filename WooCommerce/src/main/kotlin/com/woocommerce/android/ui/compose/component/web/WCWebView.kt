@@ -2,13 +2,7 @@ package com.woocommerce.android.ui.compose.component.web
 
 import android.annotation.SuppressLint
 import android.view.ViewGroup
-import android.webkit.CookieManager
-import android.webkit.WebResourceError
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
-import android.webkit.WebStorage
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,7 +26,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R.dimen
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.web.WebViewProgressIndicator.Circular
 import com.woocommerce.android.ui.compose.component.web.WebViewProgressIndicator.Linear
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,21 +44,15 @@ fun WCWebView(
     onPageFinished: (String) -> Unit = {},
     onUrlFailed: (String, Int?) -> Unit = { _, _ -> },
     captureBackPresses: Boolean = true,
-    wpComAuthenticator: WPComWebViewAuthenticator? = null,
+    authenticator: WebViewAuthenticator? = null,
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
-    webChromeClient: ComposeWebChromeClient = remember { ComposeWebChromeClient() },
-    loadWithOverviewMode: Boolean = false,
-    useWideViewPort: Boolean = false,
-    isJavaScriptEnabled: Boolean = true,
-    isDomStorageEnabled: Boolean = true,
-    isReadOnly: Boolean = false,
-    initialScale: Int = 0,
-    clearCache: Boolean = false,
+    webViewClient: WCWebViewClient = remember { WCWebViewClient() },
+    webChromeClient: WCWebChromeClient = remember { WCWebChromeClient() },
+    settings: WCWebViewSettings = WCWebViewSettings(),
     progressIndicator: WebViewProgressIndicator = Linear()
 ) {
     var webView by remember { mutableStateOf<WebView?>(null) }
     var progress by remember { mutableIntStateOf(0) }
-    var lastLoadedUrl by remember { mutableStateOf("") }
     var canGoBack by remember { mutableStateOf(false) }
 
     BackHandler(captureBackPresses && canGoBack) {
@@ -76,19 +65,63 @@ fun WCWebView(
         }
     }
 
-    Box(modifier = modifier) {
-        fun getWebViewAlpha(): Float {
-            return if (progressIndicator is Circular ||
-                progressIndicator is Linear && progressIndicator.message != null
-            ) {
-                if (progress == 100) 1f else 0f
-            } else {
-                1f
+    LaunchedEffect(webViewClient) {
+        webViewClient.eventsObservable
+            .collect {
+                when (it) {
+                    is WCWebViewEvent.UrlLoaded -> onUrlLoaded(it.url)
+                    is WCWebViewEvent.PageFinished -> {
+                        onPageFinished(it.url)
+                        canGoBack = webView?.canGoBack() == true
+                    }
+                    is WCWebViewEvent.UrlFailed -> onUrlFailed(it.url, it.errorCode)
+                }
             }
+    }
+
+    webView?.let { webView ->
+        LaunchedEffect(url) {
+            if (authenticator != null) {
+                authenticator.authenticateAndLoadUrl(
+                    webView = webView,
+                    url = url,
+                    webViewEvents = webViewClient.eventsObservable
+                )
+            } else {
+                webView.loadUrl(url)
+            }
+            canGoBack = webView.canGoBack()
         }
 
-        fun getProgressAlpha(): Float {
-            return if (progress == 100) 0f else 1f
+        LaunchedEffect(settings) {
+            if (settings.isReadOnly) {
+                webView.setOnTouchListener { _, _ -> true }
+            }
+            webView.setInitialScale(settings.initialScale)
+
+            webView.settings.useWideViewPort = settings.useWideViewPort
+            webView.settings.loadWithOverviewMode = settings.loadWithOverviewMode
+            webView.settings.javaScriptEnabled = settings.isJavaScriptEnabled
+            webView.settings.domStorageEnabled = settings.isDomStorageEnabled
+        }
+    }
+
+    Box(modifier = modifier) {
+        val webViewAlpha by remember {
+            derivedStateOf {
+                if (progressIndicator is Circular ||
+                    progressIndicator is Linear && progressIndicator.message != null
+                ) {
+                    if (progress == 100) 1f else 0f
+                } else {
+                    1f
+                }
+            }
+        }
+        val progressAlpha by remember {
+            derivedStateOf {
+                if (progress == 100) 0f else 1f
+            }
         }
 
         AndroidView(
@@ -99,84 +132,24 @@ fun WCWebView(
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
 
-                    this.webViewClient = object : WebViewClient() {
-                        override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
-                            url?.let { onUrlLoaded(it) }
-                        }
-
-                        override fun onLoadResource(view: WebView?, url: String?) {
-                            url?.let { onUrlLoaded(it) }
-                        }
-
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            url?.let { onPageFinished(it) }
-                            canGoBack = view?.canGoBack() ?: false
-                        }
-
-                        override fun onReceivedError(
-                            view: WebView?,
-                            request: WebResourceRequest?,
-                            error: WebResourceError?
-                        ) {
-                            request?.url?.let { url ->
-                                onUrlFailed(url.toString(), error?.errorCode)
-                            }
-                        }
-
-                        override fun onReceivedHttpError(
-                            view: WebView?,
-                            request: WebResourceRequest?,
-                            errorResponse: WebResourceResponse?
-                        ) {
-                            request?.url?.let { url ->
-                                onUrlFailed(url.toString(), errorResponse?.statusCode)
-                            }
-                        }
-                    }
-
+                    this.webViewClient = webViewClient
                     this.webChromeClient = webChromeClient.apply {
                         onProgressChanged = { newProgress -> progress = newProgress }
                     }
 
-                    if (isReadOnly) {
-                        this.setOnTouchListener { _, _ -> true }
-                    }
-
-                    this.setInitialScale(initialScale)
-                    this.settings.useWideViewPort = useWideViewPort
-                    this.settings.loadWithOverviewMode = loadWithOverviewMode
-                    this.settings.javaScriptEnabled = isJavaScriptEnabled
-                    this.settings.domStorageEnabled = isDomStorageEnabled
                     this.settings.userAgentString = userAgent.userAgent
-                    if (clearCache) {
-                        WebStorage.getInstance().deleteAllData()
-
-                        // Clear all the cookies
-                        CookieManager.getInstance().removeAllCookies(null)
-                        CookieManager.getInstance().flush()
-
-                        this.clearCache(true)
-                        this.clearFormData()
-                        this.clearHistory()
-                        this.clearSslPreferences()
-                    }
                 }.also { webView = it }
             },
             modifier = Modifier
-                .alpha(getWebViewAlpha())
-        ) { webView ->
-            if (lastLoadedUrl == url) return@AndroidView
-            lastLoadedUrl = url
-            wpComAuthenticator?.authenticateAndLoadUrl(webView, url) ?: webView.loadUrl(url)
-            canGoBack = webView.canGoBack()
-        }
+                .alpha(webViewAlpha)
+        )
 
         if (progressIndicator is Linear) {
             LinearProgressIndicator(
                 progress = (progress / 100f),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .alpha(getProgressAlpha())
+                    .alpha(progressAlpha)
             )
 
             if (progressIndicator.message != null) {
@@ -184,14 +157,14 @@ fun WCWebView(
                     text = progressIndicator.message,
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .alpha(getProgressAlpha())
+                        .alpha(progressAlpha)
                 )
             }
         } else if (progressIndicator is Circular) {
             Column(
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .alpha(getProgressAlpha())
+                    .alpha(progressAlpha)
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier

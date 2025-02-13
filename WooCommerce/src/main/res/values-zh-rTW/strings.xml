@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-31 14:54:04+0000
+Translation-Revision-Date: 2025-02-06 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">正在擷取國家/地區和州/省資訊。</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">我們無法擷取國家/地區和州/省資訊， 請再試一次。</string>
+    <string name="woo_shipping_field_required_error">此欄位為必填。</string>
+    <string name="product_upload_error_retry_button_content_description">重試上傳商品圖片</string>
+    <string name="product_upload_error_title">圖片上傳錯誤</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">POS 目前僅支援簡單、多款式與虛擬商品 – \n建立商品後便可開始作業。</string>
     <string name="woo_shipping_label_phone">電話</string>
     <string name="woo_shipping_label_email">電子郵件地址</string>
@@ -1413,6 +1420,7 @@ Language: zh_TW
     <string name="domain_privacy_option_off_title">公開註冊</string>
     <string name="domain_privacy_option_on_title">透過隱私權保護私密註冊</string>
     <string name="domain_registration_contact_form_input_error">請輸入有效的 %s</string>
+    <string name="domain_registration_privacy_protection_tos">註冊此網域，即表示你同意我們的&lt;a href=\'\'&gt;條款與條件&lt;/a&gt;</string>
     <string name="domain_registration_privacy_protection_description">網域擁有者必須在所有網域的公共資料庫中分享自己的聯絡資訊。\n基於隱私權保護，我們只會發佈自己的資訊而非你的資訊，並會將所有通訊內容私密轉寄給你。</string>
     <string name="domain_registration_privacy_protection_title">隱私權保護</string>
     <string name="domains_access_error_title">只有商店管理員可以存取網域設定</string>
@@ -1931,7 +1939,6 @@ Language: zh_TW
     <string name="product_ratings_count_one">\u2022  1 則已核准的評論</string>
     <string name="product_ratings_count">\u2022  %d 則已核准的評論</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">我們致力於開發各種功能，讓你能夠透過裝置建立訂單！ 點選「+」按鈕即可體驗此功能</string>
     <string name="empty_inbox_description">稍後再返回查看更多商店成長秘訣和洞察報告</string>
     <string name="empty_inbox_title">恭喜，你已閱讀所有所有資訊！</string>
     <string name="orderstatus_contentDesc_withStatus">訂單狀態： %s</string>
@@ -2014,7 +2021,6 @@ Language: zh_TW
     <string name="about_automattic_work_with_us_item_title">與我們合作</string>
     <string name="about_automattic_family_item_title">Automattic 系列</string>
     <string name="about_automattic_legal_and_more_item_title">法律與其他</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_rate_us_item_title">為我們評分</string>
     <string name="about_automattic_share_with_friends_item_title">與朋友分享</string>
@@ -2124,7 +2130,6 @@ Language: zh_TW
     <string name="simple_payments_enter_amount">輸入金額</string>
     <string name="simple_payments_dialog_title">收取款項</string>
     <string name="orderlist_simple_payments_menu">輕鬆付款</string>
-    <string name="orderlist_simple_payments_wip_title">從你的裝置建立訂單！</string>
     <string name="analytics">分析</string>
     <string name="jetpack_install_progress_step_four_message">全部完成</string>
     <string name="jetpack_install_progress_step_three_message">連結至你的商店</string>
@@ -3777,7 +3782,6 @@ Language: zh_TW
     <string name="logging_in">正在登入</string>
     <string name="all">全部</string>
     <string name="notification_channel_general_title">一般</string>
-    <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

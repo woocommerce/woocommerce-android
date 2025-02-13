@@ -1,6 +1,24 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+21.8
+-----
+- [**] Dashboard tab now supports tablet/bug screen layout [https://github.com/woocommerce/woocommerce-android/pull/13488]
+- [**] Improved accessibility support (handling of increased text size) in in-person payment flows [https://github.com/woocommerce/woocommerce-android/pull/13414]
+- [***] Fixed currency mismatch in order editing by ensuring products, custom amounts, and shipping lines respect the order’s currency. [https://github.com/woocommerce/woocommerce-android/pull/13483]
+- [*] Updated the notification icon for better readability [https://github.com/woocommerce/woocommerce-android/pull/13516]
+- [*] Automatically select the first available order when filtering is active in the two-pane layout.[https://github.com/woocommerce/woocommerce-android/pull/13491]
+- [*] [Internal] Removal animation of the items from the cart [https://github.com/woocommerce/woocommerce-android/pull/13442]
+- [*] Improved the Authenticated WebView implementation, and it will now handle opening the Analytics reports directly from the app without requiring additional authentication [https://github.com/woocommerce/woocommerce-android/pull/13487]
+
+21.7
+-----
+- [*] Fixed color scheme for the create botton on the order creation screen [https://github.com/woocommerce/woocommerce-android/pull/13428]
+
+21.6.1
+-----
+- [***] Fixed a crash on the splash screen that occurred on Android 12 devices [https://github.com/woocommerce/woocommerce-android/pull/13538]
+
 21.6
 -----
 - [*] Updated tablet detection logic to consider both width and height dimensions, enhancing compatibility with larger phones and tablets, particularly in landscape mode [https://github.com/woocommerce/woocommerce-android/pull/13228]
@@ -12,6 +30,7 @@
 - [*] Adds new "Cover" tag to clearly indicate which of the product photos will be the cover [https://github.com/woocommerce/woocommerce-android/pull/13344]
 - [*] Optimizes product image fetching for faster loading [https://github.com/woocommerce/woocommerce-android/issues/13357]
 - [*] [Internal] Improved login flow for accounts using emails marked as suspicious during Jetpack Setup [https://github.com/woocommerce/woocommerce-android/pull/13409]
+- [**] [WEAR] Updated the app look and feel to match the new WooCommerce branding [https://github.com/woocommerce/woocommerce-android/pull/13254]
 
 21.5
 -----

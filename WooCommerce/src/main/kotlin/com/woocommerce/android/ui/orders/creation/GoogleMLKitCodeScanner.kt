@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -14,8 +15,8 @@ class GoogleMLKitCodeScanner @Inject constructor(
     private val barcodeFormatMapper: GoogleBarcodeFormatMapper,
     private val inputImageProvider: MediaImageProvider,
 ) : CodeScanner {
+    @ExperimentalGetImage
     override suspend fun recogniseCode(imageProxy: ImageProxy): CodeScannerStatus = suspendCoroutine { cont ->
-        @androidx.camera.core.ExperimentalGetImage
         val image = inputImageProvider.provideImage(imageProxy)
 
         val barcodeTask = barcodeScanner.process(image)

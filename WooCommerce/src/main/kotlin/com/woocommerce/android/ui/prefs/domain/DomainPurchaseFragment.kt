@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.prefs.domain.DomainPurchaseViewModel.NavigateToSuccessScreen
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class DomainPurchaseFragment : BaseFragment() {
     private val viewModel: DomainPurchaseViewModel by viewModels()
 
-    @Inject internal lateinit var authenticator: WPComWebViewAuthenticator
+    @Inject internal lateinit var authenticator: WebViewAuthenticator
 
     @Inject internal lateinit var userAgent: UserAgent
 

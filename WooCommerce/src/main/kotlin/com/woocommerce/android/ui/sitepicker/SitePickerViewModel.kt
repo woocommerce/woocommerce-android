@@ -23,7 +23,7 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
+import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAuthenticatedWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
@@ -576,7 +576,7 @@ class SitePickerViewModel @Inject constructor(
     fun onInstallWooClicked() {
         loginSiteAddress?.let {
             triggerEvent(
-                NavigateToWPComWebView(
+                NavigateToAuthenticatedWebView(
                     url = "$WOOCOMMERCE_INSTALLATION_URL${UrlUtils.removeScheme(it)}",
                     validationUrl = WOOCOMMERCE_INSTALLATION_DONE_URL,
                     title = resourceProvider.getString(string.login_install_woo)
@@ -741,7 +741,7 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToAddStoreEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpOrigin) : SitePickerEvent()
-        data class NavigateToWPComWebView(
+        data class NavigateToAuthenticatedWebView(
             val url: String,
             val validationUrl: String,
             val title: String? = null

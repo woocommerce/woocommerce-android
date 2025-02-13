@@ -1,2 +1,0 @@
-21.5:
-Gör dig redo för en smidigare upplevelse. Vi har optimerat kvittoskalningen, lagt till Puerto Rico för personliga betalningar och förbättrat visningen för Blaze-kampanjer. Ta del av snabbare inläsning av produktgallerier, bättre uppdateringar av massbeställningar och bilduppladdningsindikatorer i realtid. Dessutom är WooPayments-onboardingen nu enklare än någonsin.

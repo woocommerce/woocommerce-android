@@ -127,8 +127,8 @@ class WooShippingEditOriginViewModel @Inject constructor(
         EditableAddress(
             name = name.first,
             company = name.second,
-            country = country.name,
-            state = state.name,
+            country = country,
+            state = state,
             address = address,
             city = city,
             postalCode = postalCode,
@@ -143,7 +143,8 @@ class WooShippingEditOriginViewModel @Inject constructor(
             editableAddress = EditableAddress(),
             shouldDisplayLoading = false,
             shouldDisplayLoadingCountriesError = false,
-            shouldUseStatesInput = false
+            shouldUseStatesInput = false,
+            addressStatus = AddressStatus.UNVERIFIED
         )
     )
 
@@ -229,17 +230,51 @@ class WooShippingEditOriginViewModel @Inject constructor(
         ) { address, isExpanded, countriesState, statesState ->
             val isLoading =
                 countriesState is LocationState.DisplayLoading || statesState is LocationState.DisplayLoading
+
+            val addressStatus = when {
+                hasIncorrectOrMissingData(address) -> AddressStatus.MISSING_INFO
+                isSameAddress(address) && navArgs.originAddress.isVerified -> AddressStatus.VERIFIED
+                else -> AddressStatus.UNVERIFIED
+            }
+
             EditAddressViewState.DataState(
                 isCompanyExpanded = isExpanded,
                 editableAddress = address,
                 shouldDisplayLoading = isLoading,
                 shouldDisplayLoadingCountriesError = countriesState is LocationState.Error,
-                shouldUseStatesInput = statesState is LocationState.Loaded && statesState.locations.isEmpty()
+                shouldUseStatesInput = statesState is LocationState.Loaded && statesState.locations.isEmpty(),
+                addressStatus = addressStatus
             )
         }
             .collectLatest {
                 viewState.value = it
             }
+    }
+
+    private fun isSameAddress(newAddress: EditableAddress): Boolean {
+        val originalAddress = navArgs.originAddress
+        val originalFullAddress = combineStrings(
+            originalAddress.address1.orEmpty(),
+            originalAddress.address2.orEmpty()
+        )
+
+        val isSameAddress = originalFullAddress == newAddress.address.value
+        val isSameCity = originalAddress.city == newAddress.city.value
+        val isSameState = originalAddress.state == newAddress.state.code
+        val isSameCountry = originalAddress.country == newAddress.country.code
+        val isSamePostalCode = originalAddress.postcode == newAddress.postalCode.value
+
+        return isSameAddress && isSameCity && isSameState && isSameCountry && isSamePostalCode
+    }
+
+    private fun hasIncorrectOrMissingData(editableAddress: EditableAddress): Boolean {
+        return editableAddress.address.error.isNotNullOrEmpty() ||
+            editableAddress.city.error.isNotNullOrEmpty() ||
+            editableAddress.postalCode.error.isNotNullOrEmpty() ||
+            editableAddress.email.error.isNotNullOrEmpty() ||
+            editableAddress.phone.error.isNotNullOrEmpty() ||
+            editableAddress.name.error.isNotNullOrEmpty() ||
+            editableAddress.company.error.isNotNullOrEmpty()
     }
 
     fun onNameChange(value: String) {
@@ -321,7 +356,8 @@ class WooShippingEditOriginViewModel @Inject constructor(
             val editableAddress: EditableAddress,
             val shouldDisplayLoading: Boolean,
             val shouldDisplayLoadingCountriesError: Boolean,
-            val shouldUseStatesInput: Boolean
+            val shouldUseStatesInput: Boolean,
+            val addressStatus: AddressStatus
         ) : EditAddressViewState()
     }
 
@@ -358,14 +394,20 @@ fun <T> Flow<T>.transformLatestWithDelay(
 data class EditableAddress(
     val name: InputValue = InputValue.EMPTY,
     val company: InputValue = InputValue.EMPTY,
-    val country: String = "",
+    val country: Location = Location.EMPTY,
     val address: InputValue = InputValue.EMPTY,
     val city: InputValue = InputValue.EMPTY,
-    val state: String = "",
+    val state: Location = Location.EMPTY,
     val postalCode: InputValue = InputValue.EMPTY,
     val email: InputValue = InputValue.EMPTY,
     val phone: InputValue = InputValue.EMPTY
 )
+
+enum class AddressStatus {
+    VERIFIED,
+    UNVERIFIED,
+    MISSING_INFO
+}
 
 data class InputValue(
     val value: String,

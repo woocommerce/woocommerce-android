@@ -30,7 +30,6 @@ data class WooPosCartState(
                 val price: String,
                 val description: String?,
                 val imageUrl: String?,
-                val isAppearanceAnimationPlayed: Boolean,
                 val productType: ProductType,
             ) : Parcelable {
                 @Parcelize

@@ -105,6 +105,13 @@ object UiHelpers {
         updateVisibility(imageView, image != null)
         image?.let { imageView.setImageDrawable(image) }
     }
+
+    @Suppress("MagicNumber")
+    fun getIllustrationVisibilityForFontScale(fontScale: Float): Int = if (fontScale > 1.5f) {
+        View.GONE
+    } else {
+        View.VISIBLE
+    }
 }
 
 class IsWindowClassLargeThanCompact @Inject constructor(val context: Context) {

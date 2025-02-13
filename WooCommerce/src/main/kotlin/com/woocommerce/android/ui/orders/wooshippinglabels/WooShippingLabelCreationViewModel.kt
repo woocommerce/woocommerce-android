@@ -470,6 +470,10 @@ class WooShippingLabelCreationViewModel @Inject constructor(
         customWeight = input
     }
 
+    fun onEditCustomsClick() {
+        triggerEvent(StartCustomsFormEdit)
+    }
+
     fun allowBackNavigation(): Boolean {
         val state = uiState.value
         return when {
@@ -494,6 +498,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     data object StartPackageSelection : Event()
     data class LabelPurchased(val purchaseData: PurchasedShippingLabelData) : Event()
     data class StartOriginAddressEdit(val originAddress: OriginShippingAddress) : Event()
+    data object StartCustomsFormEdit : Event()
 
     sealed class WooShippingViewState {
         data object Error : WooShippingViewState()

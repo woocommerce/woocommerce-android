@@ -12,6 +12,10 @@ rootProject.afterEvaluate {
                 ':WooCommerce:testJalapenoDebugUnitTest',
                 ':libs:cardreader:testDebugUnitTest',
                 ':WooCommerce-Wear:testJalapenoDebugUnitTest',
+                ':libs:fluxc:testDebugUnitTest',
+                ':libs:fluxc-plugin:testDebugUnitTest',
+                ':libs:fluxc-tests:testDebugUnitTest',
+                ':libs:login:testDebugUnitTest',
         )
 
         group = "Reporting"
@@ -90,10 +94,6 @@ rootProject.afterEvaluate {
         sourceDirectories.setFrom(files([sources]))
         classDirectories.from = files([kotlinClasses])
 
-        executionData.from = files([
-                "WooCommerce/build/outputs/unit_test_code_coverage/jalapenoDebugUnitTest/testJalapenoDebugUnitTest.exec",
-                "libs/cardreader/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
-                "WooCommerce-Wear/build/outputs/unit_test_code_coverage/jalapenoDebugUnitTest/testJalapenoDebugUnitTest.exec",
-        ])
+        executionData fileTree(project.rootDir.absolutePath).include("**/build/**/*.exec")
     }
 }

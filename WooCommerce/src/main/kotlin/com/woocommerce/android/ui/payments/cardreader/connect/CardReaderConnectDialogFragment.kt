@@ -18,6 +18,7 @@ import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
@@ -48,6 +49,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.util.UiHelpers.getIllustrationVisibilityForFontScale
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
@@ -164,6 +166,12 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
     private fun moveToState(binding: CardReaderConnectDialogBinding, viewState: CardReaderConnectViewState) {
         UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
         UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, viewState.illustration)
+            .also {
+                if (binding.illustration.isVisible) {
+                    binding.illustration.visibility =
+                        getIllustrationVisibilityForFontScale(resources.configuration.fontScale)
+                }
+            }
         UiHelpers.setTextOrHide(binding.hintLabel, viewState.hintLabel)
         UiHelpers.setTextOrHide(binding.primaryActionBtn, viewState.primaryActionLabel)
         UiHelpers.setTextOrHide(binding.secondaryActionBtn, viewState.secondaryActionLabel)
@@ -177,10 +185,6 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
         }
         binding.tertiaryActionBtn.setOnClickListener {
             viewState.onTertiaryActionClicked?.invoke()
-        }
-
-        with(binding.illustration.layoutParams as ViewGroup.MarginLayoutParams) {
-            topMargin = resources.getDimensionPixelSize(viewState.illustrationTopMargin)
         }
 
         updateMultipleReadersFoundRecyclerView(binding, viewState)
@@ -266,9 +270,9 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     ToastUtils.showToast(requireContext(), getString(event.message))
                 is CardReaderConnectEvent.ShowToastString ->
                     ToastUtils.showToast(requireContext(), event.message)
-                is CardReaderConnectEvent.OpenWPComWebView ->
+                is CardReaderConnectEvent.OpenAuthenticatedWebView ->
                     findNavController().navigateSafely(
-                        NavGraphPaymentFlowDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+                        NavGraphPaymentFlowDirections.actionGlobalAuthenticatedWebViewFragment(urlToLoad = event.url)
                     )
                 is CardReaderConnectEvent.OpenGenericWebView ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)

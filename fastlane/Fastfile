@@ -42,13 +42,6 @@ PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'promo_screenshots')
 FROZEN_STRINGS_PATH = File.join(Dir.pwd, 'resources', 'values', 'strings.xml')
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
-    name: 'Login Library',
-    import_key: 'wordpress-login',
-    repository: 'wordpress-mobile/WordPress-Login-Flow-Android',
-    strings_file_path: 'WordPressLoginFlow/src/main/res/values/strings.xml',
-    exclusions: ['default_web_client_id']
-  },
-  {
     name: 'About Library',
     import_key: 'automattic-about', # key used in libs.versions.toml file to reference the version
     repository: 'Automattic/about-automattic-android',

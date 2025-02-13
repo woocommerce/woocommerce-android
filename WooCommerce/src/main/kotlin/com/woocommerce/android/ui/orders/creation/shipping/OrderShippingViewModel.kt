@@ -32,13 +32,16 @@ class OrderShippingViewModel @Inject constructor(
 
     val isEditFlow = navArgs.currentShippingLine != null
 
+    val orderCurrency: String? = navArgs.orderCurrency
+
     init {
         val state = if (navArgs.currentShippingLine == null) {
             ViewState.ShippingState(
                 method = null,
                 name = null,
                 amount = BigDecimal.ZERO,
-                isSaveChangesEnabled = false
+                isSaveChangesEnabled = false,
+                orderCurrency = navArgs.orderCurrency
             )
         } else {
             ViewState.Loading
@@ -50,7 +53,8 @@ class OrderShippingViewModel @Inject constructor(
                     method = getShippingMethodById(shippingLine.methodId),
                     name = shippingLine.methodTitle,
                     amount = shippingLine.total,
-                    isSaveChangesEnabled = false
+                    isSaveChangesEnabled = false,
+                    orderCurrency = navArgs.orderCurrency
                 )
             }
         }
@@ -139,6 +143,7 @@ class OrderShippingViewModel @Inject constructor(
             val method: ShippingMethod?,
             val name: String?,
             val amount: BigDecimal,
+            val orderCurrency: String? = null,
             val isSaveChangesEnabled: Boolean
         ) : ViewState()
     }

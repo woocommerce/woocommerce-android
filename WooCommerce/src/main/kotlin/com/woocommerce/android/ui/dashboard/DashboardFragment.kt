@@ -30,7 +30,6 @@ import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
@@ -51,6 +50,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Fe
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackPositiveAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
@@ -143,17 +143,7 @@ class DashboardFragment :
             }
         }
 
-        binding.myStoreRefreshLayout.setOnRefreshListener {
-            binding.myStoreRefreshLayout.isRefreshing = false
-            dashboardViewModel.onPullToRefresh()
-            refreshJitm()
-        }
-
         prepareJetpackBenefitsBanner()
-
-        binding.statsScrollView.scrollStartEvents()
-            .onEach { usageTracksEventEmitter.interacted() }
-            .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
         setupResultHandlers()
@@ -188,6 +178,8 @@ class DashboardFragment :
 
                 is ShowSnackbar -> ToastUtils.showToast(requireContext(), event.message)
 
+                is RefreshJitm -> refreshJitm()
+
                 else -> event.isHandled = false
             }
         }
@@ -197,10 +189,10 @@ class DashboardFragment :
         dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
             onVisitorStatsUnavailable(jetpackBenefitsBanner)
         }
-        dashboardViewModel.dashboardWidgets.observe(viewLifecycleOwner) { widgets ->
+        dashboardViewModel.dashboardCardsState.observe(viewLifecycleOwner) { state ->
             // Show banners only if onboarding list is NOT displayed
             if (
-                widgets.none {
+                state.widgets.none {
                     (it as? DashboardWidgetUiModel.ConfigurableWidget)?.widget?.type == DashboardWidget.Type.ONBOARDING
                 }
             ) {
@@ -209,9 +201,6 @@ class DashboardFragment :
         }
         dashboardViewModel.hasNewWidgets.observe(viewLifecycleOwner) { hasNewWidgets ->
             editButtonBadge.isVisible = hasNewWidgets
-        }
-        dashboardViewModel.isRefreshingOnBackground.observe(viewLifecycleOwner) { isRefreshing ->
-            binding.myStoreRefreshLayout.isRefreshing = isRefreshing
         }
     }
 
@@ -325,10 +314,6 @@ class DashboardFragment :
 
     override fun getFragmentSubtitle(): String = dashboardViewModel.storeName.value ?: ""
 
-    override fun scrollToTop() {
-        binding.statsScrollView.smoothScrollTo(0, 0)
-    }
-
     private fun handleFeedbackRequestPositiveClick() {
         // Request a ReviewInfo object from the Google Reviews API. If this fails
         // we just move on as there isn't anything we can do.
@@ -362,7 +347,11 @@ class DashboardFragment :
         )
     }
 
-    override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
+    override fun shouldExpandToolbar() = true
+
+    override fun scrollToTop() {
+        return
+    }
 
     @OptIn(ExperimentalBadgeUtils::class)
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

@@ -1,8 +1,12 @@
 package com.woocommerce.android.extensions
 
 import org.apache.commons.text.StringEscapeUtils
+import java.net.URLEncoder
+import java.nio.charset.Charset
 import java.text.DecimalFormat
 import java.util.Locale
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -94,7 +98,14 @@ fun String.isVersionAtLeast(minVersion: String): Boolean {
  */
 fun String.orNullIfEmpty(): String? = this.ifEmpty { null }
 
-fun String?.isNotNullOrEmpty() = this.isNullOrEmpty().not()
+@OptIn(ExperimentalContracts::class)
+fun String?.isNotNullOrEmpty(): Boolean {
+    contract {
+        returns(true) implies (this@isNotNullOrEmpty != null)
+    }
+
+    return this.isNullOrEmpty().not()
+}
 
 fun String.toCamelCase(delimiter: String = " "): String {
     return split(delimiter).joinToString(delimiter) { word ->
@@ -128,4 +139,8 @@ fun String.readableFileSize(): String {
 
     return DecimalFormat("#,##0.#")
         .format(size / BYTES_IN_KILOBYTE.pow(digitGroups.toDouble())) + " " + units[digitGroups]
+}
+
+fun String.urlEncode(charset: Charset = Charsets.UTF_8): String {
+    return URLEncoder.encode(this, charset.name())
 }

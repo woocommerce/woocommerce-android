@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.CookieManager
+import android.webkit.WebStorage
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.network.UserAgent
@@ -26,7 +28,7 @@ class JetpackActivationWebViewFragment : BaseFragment() {
     private val viewModel: JetpackActivationWebViewViewModel by viewModels()
 
     @Inject
-    lateinit var wpComAuthenticator: WPComWebViewAuthenticator
+    lateinit var authenticator: WebViewAuthenticator
 
     @Inject
     lateinit var userAgent: UserAgent
@@ -38,7 +40,7 @@ class JetpackActivationWebViewFragment : BaseFragment() {
             setContent {
                 JetpackActivationWebViewScreen(
                     viewModel = viewModel,
-                    wpComAuthenticator = wpComAuthenticator,
+                    authenticator = authenticator,
                     userAgent = userAgent,
                     onUrlLoaded = viewModel::onUrlLoaded,
                     onUrlFailed = viewModel::onUrlFailed,
@@ -48,6 +50,8 @@ class JetpackActivationWebViewFragment : BaseFragment() {
         }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        clearWebViewData()
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is JetpackActivationWebViewViewModel.ConnectionResult -> navigateBackWithResult(
@@ -56,5 +60,13 @@ class JetpackActivationWebViewFragment : BaseFragment() {
                 )
             }
         }
+    }
+
+    private fun clearWebViewData() {
+        WebStorage.getInstance().deleteAllData()
+
+        // Clear all the WebView cookies
+        CookieManager.getInstance().removeAllCookies(null)
+        CookieManager.getInstance().flush()
     }
 }

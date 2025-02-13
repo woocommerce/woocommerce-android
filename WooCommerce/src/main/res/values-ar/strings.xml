@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-27 16:54:04+0000
+Translation-Revision-Date: 2025-02-06 10:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">إحضار البلدان والولايات.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">تعذر علينا استرداد معلومات البلد والولاية. يرجى المحاولة مجددًا.</string>
+    <string name="woo_shipping_field_required_error">هذا الحقل مطلوب.</string>
+    <string name="product_upload_error_retry_button_content_description">إعادة محاولة رفع صورة المنتج</string>
+    <string name="product_upload_error_title">أخطاء رفع الصور</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">لا تدعم نقطة البيع حاليًا سوى المنتجات البسيطة والمتغيرة والافتراضية - \nأنشئ واحدة للبدء.</string>
     <string name="woo_shipping_label_phone">الهاتف</string>
     <string name="woo_shipping_label_email">البريد الإلكتروني</string>
@@ -1413,6 +1420,7 @@ Language: ar
     <string name="domain_privacy_option_off_title">التسجيل بشكل علني</string>
     <string name="domain_privacy_option_on_title">التسجيل بشكل خاص مع ميزة الحماية من الخصوصية</string>
     <string name="domain_registration_contact_form_input_error">الرجاء إدخال عنوان %s صالح</string>
+    <string name="domain_registration_privacy_protection_tos">يعني تسجيل هذا النطاق أنك توافق على &lt;a href=\'\'&gt;شروط الخدمة التي نُقرها&lt;/a&gt;</string>
     <string name="domain_registration_privacy_protection_description">يتعين على مالكي النطاق مشاركة معلومات الاتصال في قاعدة بيانات عامة لجميع النطاقات.\n        مع ميزة حماية الخصوصية، ننشر معلوماتنا الخاصة بدلاً من معلوماتك، وإعادة توجيه أي اتصال إليك بشكل سري.</string>
     <string name="domain_registration_privacy_protection_title">حماية الخصوصية</string>
     <string name="domains_access_error_title">لا يمكن لمسؤولي المتجر سوى الوصول إلى إعدادات النطاق</string>
@@ -1931,7 +1939,6 @@ Language: ar
     <string name="product_ratings_count_one">\u2022  مراجعة واحدة تمت الموافقة عليها</string>
     <string name="product_ratings_count">\u2022  %d من المراجعات التي تمت الموافقة عليها</string>
     <string name="tax_name_with_tax_percent">%1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">نعمل على إتاحة إمكانية إنشاء الطلبات من جهازك! يمكنك تجربة هذه الميزة عن طريق الضغط على زر \"+\"</string>
     <string name="empty_inbox_description">عد قريبًا للحصول على مزيد من النصائح والرؤى بشأن تكبير متجرك</string>
     <string name="empty_inbox_title">تهانينا، لقد قرأت كل شيء!</string>
     <string name="orderstatus_contentDesc_withStatus">حالة الطلب: %s</string>
@@ -2014,7 +2021,6 @@ Language: ar
     <string name="about_automattic_work_with_us_item_title">العمل معنا</string>
     <string name="about_automattic_family_item_title">عائلة Automattic</string>
     <string name="about_automattic_legal_and_more_item_title">الشؤون القانونية والمزيد</string>
-    <string name="about_automattic_twitter_item_title">تويتر</string>
     <string name="about_automattic_instagram_item_title">إنستغرام</string>
     <string name="about_automattic_rate_us_item_title">قيّمنا</string>
     <string name="about_automattic_share_with_friends_item_title">مشاركة مع الأصدقاء</string>
@@ -2124,7 +2130,6 @@ Language: ar
     <string name="simple_payments_enter_amount">إدخال المبلغ</string>
     <string name="simple_payments_dialog_title">تحصيل الدفع</string>
     <string name="orderlist_simple_payments_menu">عملية دفع بسيطة</string>
-    <string name="orderlist_simple_payments_wip_title">إنشاء الطلبات من جهازك!</string>
     <string name="analytics">التحليلات</string>
     <string name="jetpack_install_progress_step_four_message">كل شيء جاهز</string>
     <string name="jetpack_install_progress_step_three_message">الاتصال بمتجرك</string>
@@ -3777,7 +3782,6 @@ Language: ar
     <string name="logging_in">تسجيل الدخول</string>
     <string name="all">الكل</string>
     <string name="notification_channel_general_title">عام</string>
-    <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

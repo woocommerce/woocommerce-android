@@ -543,12 +543,36 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
+            updateOrderSelectedStatus()
+            updatePagedListData(it)
             if (requireContext().isTwoPanesShouldBeUsed) {
                 when {
                     // A specific order is set to be opened
                     viewModel.orderId.value != -1L -> {
                         openSpecificOrder(viewModel.orderId.value)
                         clearSelectedOrderIdInViewModel()
+                    }
+                    // Open the first order when filtering is active, but only if no order is explicitly selected by
+                    // the user. If a user enables filtering, selects an order, and then pulls to refresh, we should
+                    // retain the selected order instead of automatically selecting the first order.
+                    viewModel.viewState.isFilteringActive &&
+                        selectedOrder.selectedOrderId.value == null ||
+                        selectedOrder.selectedOrderId.value == -1L -> {
+                        handler.postDelayed({
+                            val firstOrder = it
+                                .filterIsInstance<OrderListItemUIType.OrderListItemUI>()
+                                .firstOrNull()
+
+                            firstOrder?.let { firstOrder ->
+                                openFirstOrder()
+                                selectedOrder.selectOrder(firstOrder.orderId)
+                            }
+                        }, HANDLER_DELAY)
+                    }
+
+                    selectedOrder.selectedOrderId.value != null &&
+                        selectedOrder.selectedOrderId.value != -1L -> {
+                        openSpecificOrder(selectedOrder.selectedOrderId.value)
                     }
                     // No order selected and no specific order to open, or no specific condition met
                     selectedOrder.selectedOrderId.value == null || selectedOrder.selectedOrderId.value == -1L -> {
@@ -560,8 +584,6 @@ class OrderListFragment :
                     }
                 }
             }
-            updateOrderSelectedStatus()
-            updatePagedListData(it)
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -574,7 +596,7 @@ class OrderListFragment :
                 is ShowOrderFilters -> showOrderFilters()
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
                     findNavController().navigate(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                        NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
                             urlToLoad = event.url,
                             title = resources.getString(event.titleRes)
                         )
@@ -851,6 +873,7 @@ class OrderListFragment :
 
     private fun initializeResultHandlers() {
         handleResult<String>(FILTER_CHANGE_NOTICE_KEY) {
+            selectedOrder.selectOrder(-1L)
             viewModel.loadOrders()
         }
         handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->

@@ -487,12 +487,12 @@
         tools:layout="@layout/fragment_edit_shipping_label_payment">
     </fragment>
     <action
-        android:id="@+id/action_global_WPComWebViewFragment"
-        app:destination="@id/WPComWebViewFragment" />
+        android:id="@+id/action_global_AuthenticatedWebViewFragment"
+        app:destination="@id/AuthenticatedWebViewFragment" />
     <fragment
-        android:id="@+id/WPComWebViewFragment"
-        android:name="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment"
-        android:label="WPComWebViewFragment"
+        android:id="@+id/AuthenticatedWebViewFragment"
+        android:name="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment"
+        android:label="AuthenticatedWebViewFragment"
         tools:layout="@layout/fragment_wpcom_webview">
         <argument
             android:name="urlToLoad"
@@ -514,11 +514,11 @@
         <argument
             android:name="displayMode"
             android:defaultValue="REGULAR"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$DisplayMode" />
+            app:argType="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel$DisplayMode" />
         <argument
             android:name="urlComparisonMode"
             android:defaultValue="PARTIAL"
-            app:argType="com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel$UrlComparisonMode" />
+            app:argType="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel$UrlComparisonMode" />
         <argument
             android:name="clearCache"
             android:defaultValue="false"
@@ -748,6 +748,9 @@
         <action
             android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingEditOriginAddressFragment"
             app:destination="@id/wooShippingEditOriginAddressFragment" />
+        <action
+            android:id="@+id/action_wooShippingLabelCreationFragment_to_wooShippingLabelCustomsFormFragment"
+            app:destination="@id/wooShippingLabelCustomsFormFragment" />
     </fragment>
     <fragment
         android:id="@+id/wooShippingLabelPackageCreationFragment"
@@ -781,5 +784,13 @@
         <action
             android:id="@+id/action_search_filter_fragment"
             app:destination="@id/searchFilterFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/wooShippingLabelCustomsFormFragment"
+        android:name="com.woocommerce.android.ui.orders.wooshippinglabels.customs.WooShippingCustomsFormFragment"
+        android:label="WooShippingLabelCustomsFormFragment" >
+        <action
+            android:id="@+id/action_wooShippingLabelCustomsFormFragment_to_itemSelectorDialog"
+            app:destination="@id/itemSelectorDialog" />
     </fragment>
 </navigation>

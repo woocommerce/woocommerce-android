@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.onboarding.payments.GetPaidViewModel.ShowWooPaymentsSetupSuccess
@@ -27,7 +27,7 @@ class GetPaidFragment : BaseFragment() {
     lateinit var userAgent: UserAgent
 
     @Inject
-    lateinit var authenticator: WPComWebViewAuthenticator
+    lateinit var authenticator: WebViewAuthenticator
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden

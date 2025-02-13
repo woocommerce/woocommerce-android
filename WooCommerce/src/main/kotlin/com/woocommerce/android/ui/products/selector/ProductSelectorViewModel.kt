@@ -163,9 +163,15 @@ class ProductSelectorViewModel @Inject constructor(
         monitorSearchQuery()
         monitorProductFilters()
         viewModelScope.launch {
-            loadPopularProducts()
-            loadRecentProducts()
             fetchProducts(searchType = searchState.value.searchType)
+        }
+        viewModelScope.launch {
+            listHandler.productsFlow.collectLatest { products ->
+                if (products.isNotEmpty()) {
+                    loadPopularProducts()
+                    loadRecentProducts()
+                }
+            }
         }
     }
 
@@ -246,76 +252,85 @@ class ProductSelectorViewModel @Inject constructor(
 
     private fun Product.toUiModel(selectedItems: Collection<SelectedItem>): ListItem {
         val isVariation = productType == VARIATION
+        val stockStatus = getStockText(resourceProvider)
+        val price = formatPrice()
+        val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
+        val isConfigurable = isConfigurable
 
-        fun getProductSelection(): SelectionState {
-            return if (isVariable() && numVariations > 0) {
+        return when {
+            isVariation -> createVariationListItem(stockAndPrice, selectedItems)
+            isConfigurable -> createConfigurableListItem(stockAndPrice, selectedItems)
+            else -> createProductListItem(stockAndPrice, selectedItems)
+        }
+    }
+
+    private fun Product.getProductSelection(selectedItems: Collection<SelectedItem>): SelectionState {
+        return when {
+            isVariable() && numVariations > 0 -> {
                 val intersection = variationIds.intersect(selectedItems.variationIds.toSet())
                 when {
                     intersection.isEmpty() -> UNSELECTED
                     intersection.size < variationIds.size -> PARTIALLY_SELECTED
                     else -> SELECTED
                 }
-            } else if (isVariation) { // variation can be displayed in search results
-                if (selectedItems.variationIds.contains(this.remoteId)) {
-                    SELECTED
-                } else {
-                    UNSELECTED
-                }
-            } else {
-                val selectedProductsIds = selectedItems.map { it.id }.toSet()
-                if (selectedProductsIds.contains(remoteId)) SELECTED else UNSELECTED
-            }
-        }
-
-        val stockStatus = getStockText(resourceProvider)
-
-        val price = price?.let { PriceUtils.formatCurrency(price, currencyCode, currencyFormatter) }
-
-        val stockAndPrice = listOfNotNull(stockStatus, price).joinToString(" \u2022 ")
-
-        val isConfigurable = isConfigurable
-
-        return when {
-            isVariation -> {
-                ListItem.VariationListItem(
-                    parentId = parentId,
-                    variationId = remoteId,
-                    title = name,
-                    type = productType,
-                    imageUrl = firstImageUrl,
-                    sku = sku.takeIf { it.isNotBlank() },
-                    stockAndPrice = stockAndPrice,
-                    selectionState = getProductSelection()
-                )
             }
 
-            isConfigurable -> {
-                ListItem.ConfigurableListItem(
-                    productId = remoteId,
-                    title = name,
-                    type = productType,
-                    imageUrl = firstImageUrl,
-                    sku = sku.takeIf { it.isNotBlank() },
-                    stockAndPrice = stockAndPrice,
-                    selectionState = getProductSelection()
-                )
+            productType == VARIATION -> {
+                if (selectedItems.variationIds.contains(remoteId)) SELECTED else UNSELECTED
             }
 
             else -> {
-                ListItem.ProductListItem(
-                    productId = remoteId,
-                    title = name,
-                    type = productType,
-                    imageUrl = firstImageUrl,
-                    sku = sku.takeIf { it.isNotBlank() },
-                    stockAndPrice = stockAndPrice,
-                    numVariations = numVariations,
-                    selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
-                    selectionState = getProductSelection()
-                )
+                val selectedProductIds = selectedItems.map { it.id }.toSet()
+                if (selectedProductIds.contains(remoteId)) SELECTED else UNSELECTED
             }
         }
     }
+
+    private fun Product.formatPrice(): String? {
+        return price?.let {
+            PriceUtils.formatCurrency(
+                price,
+                navArgs.orderCurrency ?: currencyCode,
+                currencyFormatter
+            )
+        }
+    }
+
+    private fun Product.createVariationListItem(stockAndPrice: String, selectedItems: Collection<SelectedItem>) =
+        ListItem.VariationListItem(
+            parentId = parentId,
+            variationId = remoteId,
+            title = name,
+            type = productType,
+            imageUrl = firstImageUrl,
+            sku = sku.takeIf { it.isNotBlank() },
+            stockAndPrice = stockAndPrice,
+            selectionState = getProductSelection(selectedItems)
+        )
+
+    private fun Product.createConfigurableListItem(stockAndPrice: String, selectedItems: Collection<SelectedItem>) =
+        ListItem.ConfigurableListItem(
+            productId = remoteId,
+            title = name,
+            type = productType,
+            imageUrl = firstImageUrl,
+            sku = sku.takeIf { it.isNotBlank() },
+            stockAndPrice = stockAndPrice,
+            selectionState = getProductSelection(selectedItems)
+        )
+
+    private fun Product.createProductListItem(stockAndPrice: String, selectedItems: Collection<SelectedItem>) =
+        ListItem.ProductListItem(
+            productId = remoteId,
+            title = name,
+            type = productType,
+            imageUrl = firstImageUrl,
+            sku = sku.takeIf { it.isNotBlank() },
+            stockAndPrice = stockAndPrice,
+            numVariations = numVariations,
+            selectedVariationIds = variationIds.intersect(selectedItems.variationIds.toSet()),
+            selectionState = getProductSelection(selectedItems)
+        )
 
     private fun Product.toSimpleUiModel(selectedItems: Collection<SelectedItem>): ListItem {
         val stockStatus = getStockText(resourceProvider)
@@ -407,7 +422,8 @@ class ProductSelectorViewModel @Inject constructor(
                     productSelectorFlow = productSelectorFlow,
                     productSourceForTracking = productSource,
                     selectionMode = selectionMode,
-                    screenMode = variationSelectorScreenMode
+                    screenMode = variationSelectorScreenMode,
+                    orderCurrency = navArgs.orderCurrency
                 )
             )
         } else {
@@ -524,7 +540,7 @@ class ProductSelectorViewModel @Inject constructor(
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
             loadingState.value = APPENDING
-            listHandler.loadMore()
+            listHandler.loadMore(navArgs.orderCurrency)
             loadingState.value = IDLE
         }
     }
@@ -609,6 +625,7 @@ class ProductSelectorViewModel @Inject constructor(
                 filters = filters.filterOptions,
                 searchQuery = query,
                 searchType = searchType,
+                orderCurrency = navArgs.orderCurrency
             ).onFailure {
                 val message = if (query.isEmpty()) {
                     string.product_selector_loading_failed

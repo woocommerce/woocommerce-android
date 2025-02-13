@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.dependency.analysis)
 }
 
 android {
@@ -40,10 +41,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     debugImplementation(libs.androidx.compose.ui.tooling.main)
 
-    implementation("${gradle.ext.fluxCBinaryPath}:${libs.versions.wordpress.fluxc.get()}") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
+    implementation(project(":libs:fluxc"))
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

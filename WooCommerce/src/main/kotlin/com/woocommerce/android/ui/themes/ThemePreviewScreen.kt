@@ -51,7 +51,7 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -70,13 +70,13 @@ import org.wordpress.android.fluxc.network.UserAgent
 fun ThemePreviewScreen(
     viewModel: ThemePreviewViewModel,
     userAgent: UserAgent,
-    wpComWebViewAuthenticator: WPComWebViewAuthenticator
+    webViewAuthenticator: WebViewAuthenticator
 ) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         ThemePreviewScreen(
             state = viewState,
             userAgent = userAgent,
-            wpComWebViewAuthenticator = wpComWebViewAuthenticator,
+            webViewAuthenticator = webViewAuthenticator,
             viewModel::onPageSelected,
             viewModel::onBackNavigationClicked,
             viewModel::onActivateThemeClicked,
@@ -90,7 +90,7 @@ fun ThemePreviewScreen(
 fun ThemePreviewScreen(
     state: ViewState,
     userAgent: UserAgent,
-    wpComWebViewAuthenticator: WPComWebViewAuthenticator,
+    webViewAuthenticator: WebViewAuthenticator,
     onPageSelected: (ThemeDemoPage) -> Unit,
     onBackNavigationClicked: () -> Unit,
     onActivateThemeClicked: () -> Unit,
@@ -142,7 +142,7 @@ fun ThemePreviewScreen(
                 ThemePreviewWebView(
                     url = state.currentPageUri,
                     userAgent = userAgent,
-                    wpComAuthenticator = wpComWebViewAuthenticator,
+                    authenticator = webViewAuthenticator,
                     modifier = Modifier
                         .weight(1f)
                         .align(Alignment.CenterHorizontally),

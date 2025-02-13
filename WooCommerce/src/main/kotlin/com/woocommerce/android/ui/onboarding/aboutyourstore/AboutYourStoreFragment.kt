@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
+import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -23,7 +23,7 @@ class AboutYourStoreFragment : BaseFragment() {
 
     @Inject lateinit var userAgent: UserAgent
 
-    @Inject lateinit var authenticator: WPComWebViewAuthenticator
+    @Inject lateinit var authenticator: WebViewAuthenticator
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden

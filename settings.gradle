@@ -73,10 +73,10 @@ dependencyResolutionManagement {
 
 rootProject.name = 'WCAndroid'
 
-include ':libs:commons'
-include ':libs:cardreader'
-include ':libs:apifaker'
-include ':WooCommerce'
+include ':libs:commons', ':libs:cardreader', ':libs:apifaker'
+include ':libs:fluxc', ':libs:fluxc-annotations', ':libs:fluxc-processor', ':libs:fluxc-plugin', ':libs:fluxc-tests'
+include ':libs:login'
+include ':WooCommerce', ':WooCommerce-Wear'
 
 gradle.ext.fluxCBinaryPath = "org.wordpress:fluxc"
 gradle.ext.fluxCWooCommercePluginBinaryPath = "org.wordpress.fluxc.plugins:woocommerce"
@@ -97,4 +97,3 @@ gradle.ext {
 apply from: './config/gradle/include_builds.gradle'
 apply from: './config/gradle/gradle_build_cache.gradle'
 apply from: './config/gradle/gradle_build_scan.gradle'
-include ':WooCommerce-Wear'

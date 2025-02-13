@@ -19,8 +19,8 @@ import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.LoginActivity
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragment
@@ -81,7 +81,7 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
     }
 
     private fun setupResultHandlers() {
-        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_RESULT) {
             viewModel.onJetpackInstalled()
         }
         handleNotice(AccountMismatchErrorFragment.JETPACK_CONNECTED_NOTICE) {
@@ -96,10 +96,10 @@ class SitePickerSiteDiscoveryFragment : BaseFragment() {
             "&from=mobile"
 
         findNavController().navigate(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+            NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
                 urlToLoad = url,
                 urlsToTriggerExit = arrayOf(JETPACK_CONNECTED_REDIRECT_URL),
-                urlComparisonMode = WPComWebViewViewModel.UrlComparisonMode.EQUALITY,
+                urlComparisonMode = AuthenticatedWebViewViewModel.UrlComparisonMode.EQUALITY,
                 title = getString(R.string.login_jetpack_install)
             )
         )

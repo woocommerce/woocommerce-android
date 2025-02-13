@@ -20,10 +20,10 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
+import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenAuthenticatedWebView
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenWPComWebView
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestEnableBluetooth
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestLocationPermissions
@@ -735,10 +735,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
-                OpenWPComWebView::class.java
+                OpenAuthenticatedWebView::class.java
             )
             assertThat(
-                (viewModel.event.value as OpenWPComWebView).url
+                (viewModel.event.value as OpenAuthenticatedWebView).url
             ).isEqualTo(url)
         }
 
@@ -757,10 +757,10 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
-                OpenWPComWebView::class.java
+                OpenAuthenticatedWebView::class.java
             )
             assertThat(
-                (viewModel.event.value as OpenWPComWebView).url
+                (viewModel.event.value as OpenAuthenticatedWebView).url
             ).isEqualTo(url)
         }
 
@@ -1171,9 +1171,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_scanning)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_200)
         }
 
     @Test
@@ -1197,9 +1194,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         assertThat(viewModel.viewStateData.value!!.illustration)
             .describedAs("Check illustration")
             .isEqualTo(R.drawable.img_card_reader_tpp_connecting)
-        assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-            .describedAs("Check illustration vertical margin")
-            .isEqualTo(R.dimen.major_200)
     }
 
     @Test
@@ -1232,9 +1226,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1261,9 +1252,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_connecting)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_275)
         }
 
     @Test
@@ -1291,9 +1279,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_card_reader_tpp_connecting)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_275)
         }
 
     @Test
@@ -1314,9 +1299,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1341,9 +1323,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1369,8 +1348,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1396,8 +1373,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.secondaryActionLabel).isNull()
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1422,9 +1397,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1449,9 +1421,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1479,9 +1448,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .describedAs("Check illustration")
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .describedAs("Check illustration vertical margin")
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test
@@ -1503,8 +1469,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .isEqualTo(R.string.cancel)
             assertThat(viewModel.viewStateData.value!!.illustration)
                 .isEqualTo(R.drawable.img_products_error)
-            assertThat(viewModel.viewStateData.value!!.illustrationTopMargin)
-                .isEqualTo(R.dimen.major_150)
         }
 
     @Test

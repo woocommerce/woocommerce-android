@@ -135,4 +135,8 @@ object AppUrls {
 
     const val BLAZE_CAMPAIGN_CREATION_SURVEY_URL_I1 =
         "https://wordpressdotcom.survey.fm/blaze-on-woo-mobile-survey-sept-2024-i1"
+
+    // POS
+    const val WOO_POS_DOCUMENTATION_URL =
+        "https://woocommerce.com/document/woo-mobile-app-point-of-sale-mode/"
 }

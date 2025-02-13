@@ -256,7 +256,7 @@ fun AddPaymentMethodWebView(
     WCWebView(
         url = state.formUrl,
         userAgent = state.userAgent,
-        wpComAuthenticator = state.wpComWebViewAuthenticator,
+        authenticator = state.webViewAuthenticator,
         onUrlLoaded = state.onUrlLoaded,
         modifier = modifier
     )

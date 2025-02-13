@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppUrls.WOO_POS_DOCUMENTATION_URL
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
@@ -18,8 +19,11 @@ import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,6 +42,9 @@ class WooPosToolbarViewModel @Inject constructor(
         )
     )
     val state: StateFlow<WooPosToolbarState> = _state
+
+    private val _openUrlEvent = MutableSharedFlow<String>()
+    val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -82,6 +89,11 @@ class WooPosToolbarViewModel @Inject constructor(
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
                 }
+            R.string.woopos_documentation_title -> {
+                viewModelScope.launch {
+                    _openUrlEvent.emit(WOO_POS_DOCUMENTATION_URL)
+                }
+            }
         }
     }
 
@@ -121,6 +133,10 @@ class WooPosToolbarViewModel @Inject constructor(
 
     private companion object {
         val toolbarMenuItems = listOf(
+            WooPosToolbarState.Menu.MenuItem(
+                title = R.string.woopos_documentation_title,
+                icon = R.drawable.woo_pos_info_ic,
+            ),
             WooPosToolbarState.Menu.MenuItem(
                 title = R.string.woopos_get_support_title,
                 icon = R.drawable.woopos_ic_get_support,

@@ -1082,7 +1082,6 @@
     <string name="order_detail_attribution_session_page_views">Session page views</string>
     <string name="order_detail_move_to_trash">Move to trash</string>
     <string name="order_detail_trash_order_dialog_message">Do you want to move this order to the trash?</string>
-    <string name="order_detail_edit_store_currency_mismatch">Sorry, you can only edit this order on the web, as it uses %1$s, and your site\'s currency is %2$s</string>
 
     <!--
         Shipping label Refunds
@@ -2401,6 +2400,7 @@
     <string name="product_add_photo">Add photo</string>
     <string name="product_replace_photo">Replace photo</string>
     <string name="product_remove_photo">Remove photo</string>
+    <string name="product_open_upload_screen">View recent upload failures</string>
     <string name="product_cover_photo_tag">Cover</string>
     <string name="product_image_add">Add a product image</string>
     <string name="product_image_error_removing">Error removing product image</string>
@@ -4294,6 +4294,7 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
+    <string name="woopos_documentation_title">View Documentation</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
@@ -4462,6 +4463,27 @@
     <string name="woo_shipping_labels_package_creation_error_message">Do you want to proceed without saving it?</string>
     <string name="woo_shipping_labels_package_creation_error_proceed">Proceed</string>
     <string name="woo_shipping_labels_package_creation_error_cancel">Cancel</string>
+    <string name="woo_shipping_labels_customs_add_missing_information">Add Missing Information</string>
+    <string name="woo_shipping_labels_customs_content_type_label">Content Type</string>
+    <string name="woo_shipping_labels_customs_restriction_type_label">Restriction Type</string>
+    <string name="woo_shipping_labels_customs_itn_label">International Transaction Number</string>
+    <string name="woo_shipping_labels_customs_return_to_sender_label">Return to sender if package is not able to be delivered</string>
+    <string name="woo_shipping_labels_customs_content_details_label">Content Details</string>
+    <string name="woo_shipping_labels_customs_content_details_description">Please describe what kind of goods this package contains</string>
+    <string name="woo_shipping_labels_customs_content_merchandise">Merchandise</string>
+    <string name="woo_shipping_labels_customs_content_gift">Gift</string>
+    <string name="woo_shipping_labels_customs_content_returned_goods">Returned Goods</string>
+    <string name="woo_shipping_labels_customs_content_sample">Sample</string>
+    <string name="woo_shipping_labels_customs_content_documents">Documents</string>
+    <string name="woo_shipping_labels_customs_content_other">Other</string>
+    <string name="woo_shipping_labels_customs_restriction_details_label">Restriction Details</string>
+    <string name="woo_shipping_labels_customs_restriction_details_description">Please describe what kind of restrictions this package must have</string>
+    <string name="woo_shipping_labels_customs_restriction_none">None</string>
+    <string name="woo_shipping_labels_customs_restriction_quarantine">Quarantine</string>
+    <string name="woo_shipping_labels_customs_restriction_sanitary">Sanitary / Phytosanitary inspection</string>
+    <string name="woo_shipping_labels_customs_restriction_other">Other</string>
+
+
     <string name="email_not_registered_wpcom">Hmm, we can\'t find a WordPress.com account connected to this email address.</string>
 
     <string name="woo_shipping_edit_origin_address_title">Edit Origin</string>
@@ -4477,4 +4499,14 @@
     <string name="woo_shipping_field_required_error">This field is required.</string>
     <string name="woo_shipping_fetching_countries_and_states_failed">We were unable to retrieve country and state information. Please try again.</string>
     <string name="woo_shipping_fetching_countries_and_states">Fetching countries and states.</string>
+    <string name="woo_shipping_address_verified">Address verified</string>
+    <string name="woo_shipping_address_unverified">Unverified address</string>
+    <string name="woo_shipping_address_missing_info">Missing information</string>
+
+    <string name="woo_shipping_address_validate_and_save">Validate &amp; Save</string>
+    <string name="woo_shipping_address_missing_info_hint">Add missing information</string>
+
+
+    <string name="error_user_username_instead_of_email">Please log in using your WordPress.com username instead of your email address.</string>
+    <string name="about_automattic_x_item_title">X</string>
 </resources>

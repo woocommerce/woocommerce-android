@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-01-28 09:54:04+0000
+Translation-Revision-Date: 2025-02-06 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="about_automattic_x_item_title">X</string>
+    <string name="woo_shipping_fetching_countries_and_states">Extraction des pays et États.</string>
+    <string name="woo_shipping_fetching_countries_and_states_failed">Nous n’avons pas pu récupérer les informations de pays et d’État. Veuillez réessayer.</string>
+    <string name="woo_shipping_field_required_error">Champ obligatoire.</string>
+    <string name="product_upload_error_retry_button_content_description">Réessayer de charger l’image du produit</string>
+    <string name="product_upload_error_title">Erreurs de chargement d’image</string>
+    <string name="app_name">Woo</string>
     <string name="woopos_products_empty_list_message">Le PDV ne prend actuellement en charge que des produits simples, variables et virtuels – \ncréez-en un pour commencer.</string>
     <string name="woo_shipping_label_phone">Téléphone</string>
     <string name="woo_shipping_label_email">E-mail</string>
@@ -1413,6 +1420,7 @@ Language: fr
     <string name="domain_privacy_option_off_title">S\'inscrire publiquement</string>
     <string name="domain_privacy_option_on_title">S\'inscrire en privé avec protection de la vie privée</string>
     <string name="domain_registration_contact_form_input_error">Veuillez saisir un(e) %s valide</string>
+    <string name="domain_registration_privacy_protection_tos">En enregistrant ce domaine, vous acceptez nos &lt;a href=\'\'&gt;conditions générales&lt;/a&gt;</string>
     <string name="domain_registration_privacy_protection_description">Les propriétaires de domaines sont tenus de partager leurs informations de contact dans une base de données publique de domaines.\n Grâce à la fonction de protection de la vie privée, nous publions nos propres informations à la place des vôtres et vous transmettons les communications en privé.</string>
     <string name="domain_registration_privacy_protection_title">Protection de la vie privée</string>
     <string name="domains_access_error_title">Seuls les administrateurs de la boutique peuvent accéder aux paramètres du domaine</string>
@@ -1931,7 +1939,6 @@ Language: fr
     <string name="product_ratings_count_one">\u2022  un avis approuvé</string>
     <string name="product_ratings_count">\u2022  %d avis approuvés</string>
     <string name="tax_name_with_tax_percent"> %1$s (%2$s%%)</string>
-    <string name="orderlist_simple_payments_wip_message_enabled">Nous avons fait en sorte qu’il soit possible de créer des commandes depuis votre appareil ! Vous pouvez essayer cette fonctionnalité en appuyant sur le bouton « + »</string>
     <string name="empty_inbox_description">Revenez bientôt pour découvrir d’autres conseils et idées sur le développement de votre boutique.</string>
     <string name="empty_inbox_title">Féliciations, vous avez tout lu !</string>
     <string name="orderstatus_contentDesc_withStatus">État de la commande : %s</string>
@@ -2014,7 +2021,6 @@ Language: fr
     <string name="about_automattic_work_with_us_item_title">Rejoignez-nous</string>
     <string name="about_automattic_family_item_title">Famille Automattic</string>
     <string name="about_automattic_legal_and_more_item_title">Droit et divers</string>
-    <string name="about_automattic_twitter_item_title">Twitter</string>
     <string name="about_automattic_instagram_item_title">Instagram</string>
     <string name="about_automattic_rate_us_item_title">Évaluez-nous</string>
     <string name="about_automattic_share_with_friends_item_title">Partager avec des amis</string>
@@ -2124,7 +2130,6 @@ Language: fr
     <string name="simple_payments_enter_amount">Saisir le montant</string>
     <string name="simple_payments_dialog_title">Accepter le paiement</string>
     <string name="orderlist_simple_payments_menu">Paiement simplifié</string>
-    <string name="orderlist_simple_payments_wip_title">Créez des commandes depuis votre appareil !</string>
     <string name="analytics">Statistiques</string>
     <string name="jetpack_install_progress_step_four_message">Terminé</string>
     <string name="jetpack_install_progress_step_three_message">Connexion à votre boutique</string>
@@ -3777,7 +3782,6 @@ Language: fr
     <string name="logging_in">Connexion</string>
     <string name="all">Toutes</string>
     <string name="notification_channel_general_title">Général</string>
-    <string name="app_name">WooCommerce</string>
     <string-array name="analytics_date_range_selectors">
         <item>@string/date_timeframe_custom</item>
         <item>@string/date_timeframe_today</item>

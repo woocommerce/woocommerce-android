@@ -20,7 +20,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.AddPaymentMethod
@@ -199,7 +199,7 @@ class EditShippingLabelPaymentFragment :
             when (event) {
                 is AddPaymentMethod -> {
                     findNavController().navigateSafely(
-                        NavGraphOrdersDirections.actionGlobalWPComWebViewFragment(
+                        NavGraphOrdersDirections.actionGlobalAuthenticatedWebViewFragment(
                             urlToLoad = AppUrls.WPCOM_ADD_PAYMENT_METHOD,
                             urlsToTriggerExit = arrayOf(FETCH_PAYMENT_METHOD_URL_PATH),
                             title = getFragmentTitle()
@@ -215,7 +215,7 @@ class EditShippingLabelPaymentFragment :
     }
 
     private fun setupResultHandlers() {
-        handleNotice(WPComWebViewFragment.WEBVIEW_RESULT) {
+        handleNotice(AuthenticatedWebViewFragment.WEBVIEW_RESULT) {
             viewModel.onPaymentMethodAdded()
         }
     }

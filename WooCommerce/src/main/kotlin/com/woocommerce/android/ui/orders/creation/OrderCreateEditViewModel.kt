@@ -308,7 +308,7 @@ class OrderCreateEditViewModel @Inject constructor(
         .map { order -> order.items.filter { it.quantity > 0 } }
         .distinctUntilChanged()
         .map { items ->
-            orderCreationProductMapper.toOrderProducts(items)
+            orderCreationProductMapper.toOrderProducts(items, _orderDraft.value.currency)
                 .sortedBy { creationProduct -> creationProduct.item.productId }
         }
         .asLiveData()
@@ -334,7 +334,7 @@ class OrderCreateEditViewModel @Inject constructor(
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }
         .map { feeLines ->
-            feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine) }
+            feeLines.map { feeLine -> mapFeeLineToCustomAmountUiModel(feeLine, getCurrencySymbol()) }
         }
         .asLiveData()
 
@@ -1258,7 +1258,7 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onAddOrEditShippingClicked(itemId: Long? = null) {
         tracker.track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
         val shippingLine = itemId?.let { id -> currentDraft.shippingLines.firstOrNull { it.itemId == id } }
-        triggerEvent(EditShipping(shippingLine))
+        triggerEvent(EditShipping(shippingLine, getCurrencySymbol()))
     }
 
     fun onCreateOrderClicked(order: Order, isTablet: Boolean = false) {
