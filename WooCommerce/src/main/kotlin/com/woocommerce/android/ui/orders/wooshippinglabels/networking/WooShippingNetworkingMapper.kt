@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.wooshippinglabels.networking
 
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.AmbiguousLocation
 import com.woocommerce.android.model.Location
@@ -134,7 +133,7 @@ class WooShippingNetworkingMapper @Inject constructor(
             state = AmbiguousLocation.Raw(addressDTO.state.orEmpty()),
             postcode = addressDTO.postcode.orEmpty(),
             country = AmbiguousLocation.Raw(addressDTO.country.orEmpty()).asLocation(),
-            firstName = if(addressDTO.name.isNullOrEmpty()) addressDTO.firstName.orEmpty() else addressDTO.name,
+            firstName = if (addressDTO.name.isNullOrEmpty()) addressDTO.firstName.orEmpty() else addressDTO.name,
             lastName = addressDTO.lastName.orEmpty(),
             company = addressDTO.company.orEmpty(),
             phone = addressDTO.phone.orEmpty(),

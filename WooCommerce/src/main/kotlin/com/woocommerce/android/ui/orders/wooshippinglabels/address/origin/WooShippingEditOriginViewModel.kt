@@ -257,7 +257,6 @@ class WooShippingEditOriginViewModel @Inject constructor(
                     else -> LoadingState.Hidden
                 }
 
-
             val addressStatus = when {
                 hasIncorrectOrMissingData(address) -> AddressStatus.MISSING_INFO
                 isSameAddress(address) && navArgs.originAddress.isVerified -> AddressStatus.VERIFIED

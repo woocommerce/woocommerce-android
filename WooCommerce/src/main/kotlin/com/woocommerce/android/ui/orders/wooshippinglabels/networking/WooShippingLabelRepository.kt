@@ -115,6 +115,6 @@ class WooShippingLabelRepository @Inject constructor(
         return restClient.normalizeAddress(
             site = site,
             address = mapper.toAddressDTO(address)
-        ).asWooResult{ mapper(it) }
+        ).asWooResult { mapper(it) }
     }
 }
