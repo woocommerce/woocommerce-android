@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOut
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ViewDocsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -97,6 +98,7 @@ class WooPosToolbarViewModel @Inject constructor(
             R.string.woopos_exit_confirmation_title ->
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
+                    analyticsTracker.track(ExitTapped)
                 }
             R.string.woopos_documentation_title -> {
                 viewModelScope.launch {

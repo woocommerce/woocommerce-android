@@ -41,6 +41,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object ViewDocsTapped : Event() {
             override val name: String = "view_docs_tapped"
         }
+        data object ExitTapped : Event() {
+            override val name: String = "exit_menu_item_tapped"
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {

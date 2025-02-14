@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ViewDocsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -270,6 +271,18 @@ class WooPosToolbarViewModelTest {
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 
         verify(analyticsTracker).track(ViewDocsTapped)
+    }
+
+    @Test
+    fun `when Exit menu item is clicked, then should track analytics event`() = runTest {
+        val viewModel = createViewModel()
+        val menuItem = WooPosToolbarState.Menu.MenuItem(
+            title = R.string.woopos_exit_confirmation_title,
+            icon = R.drawable.ic_woo_pos_exit
+        )
+        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+
+        verify(analyticsTracker).track(ExitTapped)
     }
 
     private fun createViewModel() = WooPosToolbarViewModel(
