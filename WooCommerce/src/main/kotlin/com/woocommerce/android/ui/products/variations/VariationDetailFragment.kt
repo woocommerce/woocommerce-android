@@ -114,6 +114,8 @@ class VariationDetailFragment :
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
                     if (onRequestAllowBackPress()) {
+                        // Ensure Exit events are ignored to avoid IllegalStateException
+                        viewModel.event.removeObservers(viewLifecycleOwner)
                         findNavController().navigateUp()
                     }
                 }
