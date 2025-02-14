@@ -35,6 +35,9 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object OrderCreationSuccess : Event() {
             override val name: String = "order_creation_success"
         }
+        data object GetSupportTapped : Event() {
+            override val name: String = "get_support_tapped"
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {

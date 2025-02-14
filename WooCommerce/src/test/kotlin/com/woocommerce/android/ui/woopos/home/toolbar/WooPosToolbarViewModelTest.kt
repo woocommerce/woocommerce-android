@@ -10,6 +10,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +37,7 @@ class WooPosToolbarViewModelTest {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Test
     fun `given card reader status is NotConnected, when initialized, then state should be NotConnected`() = runTest {
@@ -244,11 +247,24 @@ class WooPosToolbarViewModelTest {
         }
     }
 
+    @Test
+    fun `when Support is clicked, then should track analytics event`() = runTest {
+        val viewModel = createViewModel()
+        val menuItem = WooPosToolbarState.Menu.MenuItem(
+            title = R.string.woopos_get_support_title,
+            icon = R.drawable.ic_help_24dp
+        )
+        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+
+        verify(analyticsTracker).track(GetSupportTapped)
+    }
+
     private fun createViewModel() = WooPosToolbarViewModel(
         cardReaderFacade,
         childrenToParentEventSender,
         getSupportFacade,
         networkStatus,
         resourceProvider,
+        analyticsTracker,
     )
 }

@@ -17,6 +17,8 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnOut
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToolbarMenuClicked
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,6 +36,7 @@ class WooPosToolbarViewModel @Inject constructor(
     private val getSupportFacade: WooPosGetSupportFacade,
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosToolbarState(
@@ -84,7 +87,12 @@ class WooPosToolbarViewModel @Inject constructor(
         hideMenu()
 
         when (event.menuItem.title) {
-            R.string.woopos_get_support_title -> getSupportFacade.openSupportForm()
+            R.string.woopos_get_support_title -> {
+                getSupportFacade.openSupportForm()
+                viewModelScope.launch {
+                    analyticsTracker.track(GetSupportTapped)
+                }
+            }
             R.string.woopos_exit_confirmation_title ->
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.ExitPosClicked)
