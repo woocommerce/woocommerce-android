@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.woopos.home.toolbar.WooPosToolbarUIEvent.OnToo
 import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ViewDocsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -100,6 +101,7 @@ class WooPosToolbarViewModel @Inject constructor(
             R.string.woopos_documentation_title -> {
                 viewModelScope.launch {
                     _openUrlEvent.emit(WOO_POS_DOCUMENTATION_URL)
+                    analyticsTracker.track(ViewDocsTapped)
                 }
             }
         }

@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.support.WooPosGetSupportFacade
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GetSupportTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ViewDocsTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -248,7 +249,7 @@ class WooPosToolbarViewModelTest {
     }
 
     @Test
-    fun `when Support is clicked, then should track analytics event`() = runTest {
+    fun `when get Support is clicked, then should track analytics event`() = runTest {
         val viewModel = createViewModel()
         val menuItem = WooPosToolbarState.Menu.MenuItem(
             title = R.string.woopos_get_support_title,
@@ -257,6 +258,18 @@ class WooPosToolbarViewModelTest {
         viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
 
         verify(analyticsTracker).track(GetSupportTapped)
+    }
+
+    @Test
+    fun `when View Documentation is clicked, then should track analytics event`() = runTest {
+        val viewModel = createViewModel()
+        val menuItem = WooPosToolbarState.Menu.MenuItem(
+            title = R.string.woopos_documentation_title,
+            icon = R.drawable.ic_info_outline_20dp
+        )
+        viewModel.onUiEvent(WooPosToolbarUIEvent.MenuItemClicked(menuItem))
+
+        verify(analyticsTracker).track(ViewDocsTapped)
     }
 
     private fun createViewModel() = WooPosToolbarViewModel(
