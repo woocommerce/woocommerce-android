@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -49,6 +50,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 internal class ProductSelectorViewModelTest : BaseUnitTest() {
@@ -186,6 +189,77 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 listOf(VALID_PRODUCT.remoteId, DRAFT_PRODUCT.remoteId, VARIABLE_PRODUCT_WITH_NO_VARIATIONS.remoteId)
             )
         }
+    }
+
+    @Test
+    fun `given order creation flow from order list filter, when item is de-selected, then remove selected item`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderListFilter,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+        sut.viewState.observeForever { state ->
+            assertThat(state.selectedItemsCount).isEqualTo(1)
+        }
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+
+        sut.viewState.observeForever { state ->
+            assertThat(state.selectedItemsCount).isEqualTo(0)
+        }
+    }
+
+    @Test
+    fun `given order creation flow from order list filter, when item is de-selected, then done button should still be enabled`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderListFilter,
+            selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+
+        val state = sut.viewState.getOrAwaitValue()
+        assertTrue(state.isDoneButtonEnabled)
+    }
+
+    @Test
+    fun `given order creation flow from any other flow other than order list filter, when item is de-selected, then done button should be disabled`() {
+        val navArgs = ProductSelectorFragmentArgs(
+            selectedItems = emptyArray(),
+            productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
+            selectionMode = ProductSelectorViewModel.SelectionMode.SINGLE,
+        ).toSavedStateHandle()
+
+        val sut = createViewModel(navArgs)
+
+        val state = sut.viewState.getOrAwaitValue()
+        assertFalse(state.isDoneButtonEnabled)
+
+        sut.onProductClick(
+            item = ProductListItem(productId = 1, numVariations = 0, title = "", type = ProductType.SIMPLE),
+            productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
+        )
+
+        val updatedState = sut.viewState.getOrAwaitValue()
+        assertTrue(updatedState.isDoneButtonEnabled)
     }
 
     @Test

@@ -113,6 +113,23 @@ class OrderFilterCategoriesViewModel @Inject constructor(
         )
     }
 
+    fun onClearProductFilter() {
+        _categories = _categories.copy(
+            _categories.list.map {
+                if (it.categoryKey == PRODUCT) {
+                    it.copy(
+                        orderFilterOptions = it.orderFilterOptions
+                            .clearAllFilterSelections()
+                            .markOptionAllIfNothingSelected(),
+                        displayValue = resourceProvider.getString(R.string.orderfilters_default_filter_value)
+                    )
+                } else {
+                    it
+                }
+            }
+        )
+    }
+
     fun onFilterOptionsUpdated(updatedCategory: OrderFilterCategoryUiModel) {
         _categories.list.let { filterOptions ->
             _categories = OrderFilterCategories(
@@ -259,6 +276,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
             when (selectedFilterCategoryKey) {
                 ORDER_STATUS -> getNumberOfSelectedFilterOptions()
                     .toString()
+
                 DATE_RANGE,
                 PRODUCT,
                 CUSTOMER -> first { it.isSelected }.displayName

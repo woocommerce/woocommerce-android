@@ -4294,7 +4294,7 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_get_support_title">Get Support</string>
-    <string name="woopos_documentation_title">View Documentation</string>
+    <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>

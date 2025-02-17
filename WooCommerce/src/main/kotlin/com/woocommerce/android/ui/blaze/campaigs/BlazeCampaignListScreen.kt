@@ -17,20 +17,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -47,10 +48,10 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.BlazeCampaignListState
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.ClickableCampaign
-import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCModalBottomSheetLayout
+import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
+import kotlinx.coroutines.launch
 
 @Composable
 fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
@@ -64,7 +65,7 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BlazeCampaignListScreen(
     state: BlazeCampaignListState,
@@ -72,42 +73,33 @@ private fun BlazeCampaignListScreen(
     onEndOfTheListReached: () -> Unit,
     onCampaignCelebrationDismissed: () -> Unit,
 ) {
-    val bottomSheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        confirmValueChange = {
-            if (it == ModalBottomSheetValue.Hidden) {
-                onCampaignCelebrationDismissed()
-            }
+    val modalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val coroutineScope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(state.isCampaignCelebrationShown) }
 
-            it != ModalBottomSheetValue.HalfExpanded
-        }
+    CampaignList(
+        state = state,
+        onEndOfTheListReached = onEndOfTheListReached,
+        modifier = modifier
     )
 
-    LaunchedEffect(state.isCampaignCelebrationShown) {
-        if (state.isCampaignCelebrationShown) {
-            bottomSheetState.show()
-        } else {
-            bottomSheetState.hide()
-        }
-    }
-
-    WCModalBottomSheetLayout(
-        sheetState = bottomSheetState,
-        sheetContent = {
-            CampaignCelebrationSheet(onCampaignCelebrationDismissed)
-        },
-        sheetShape = RoundedCornerShape(
-            topStart = dimensionResource(id = R.dimen.corner_radius_large),
-            topEnd = dimensionResource(id = R.dimen.corner_radius_large)
-        ),
-        content = {
-            CampaignList(
-                state = state,
-                onEndOfTheListReached = onEndOfTheListReached,
-                modifier = modifier
+    if (showBottomSheet) { // TODO this bottom sheet si likely legacy and can probably be removed GH issue #13507
+        WCModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = modalSheetState,
+        ) {
+            CampaignCelebrationSheet(
+                onDismiss = {
+                    onCampaignCelebrationDismissed()
+                    coroutineScope.launch { modalSheetState.hide() }.invokeOnCompletion {
+                        if (!modalSheetState.isVisible) {
+                            showBottomSheet = false
+                        }
+                    }
+                }
             )
         }
-    )
+    }
 }
 
 @Composable
@@ -172,8 +164,6 @@ private fun CampaignCelebrationSheet(onDismiss: () -> Unit, modifier: Modifier =
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(id = R.dimen.major_100))
     ) {
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_50)))
-        BottomSheetHandle()
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
         Box(
             modifier = Modifier

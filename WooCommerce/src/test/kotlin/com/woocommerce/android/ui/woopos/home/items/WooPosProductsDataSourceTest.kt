@@ -15,6 +15,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -214,7 +215,12 @@ class WooPosProductsDataSourceTest {
             whenever(handler.canLoadMore).thenReturn(AtomicBoolean(true))
             whenever(handler.productsFlow).thenReturn(flowOf(sampleProducts))
             val exception = Exception("Load more failed")
-            whenever(handler.loadMore()).thenReturn(Result.failure(exception))
+            whenever(
+                handler.loadMore(
+                    includeTypes = listOf(WCProductStore.IncludeType.Simple, WCProductStore.IncludeType.Variable),
+                    orderCurrency = null
+                )
+            ).thenReturn(Result.failure(exception))
             val sut = WooPosProductsDataSource(handler)
 
             sut.loadSimpleProducts(forceRefreshProducts = false).first()

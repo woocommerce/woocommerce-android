@@ -92,11 +92,7 @@ class WooPosVariationsViewModel @Inject constructor(
                                                 id = it.remoteVariationId,
                                                 name = it.getNameForPOS(getProductById(productId), resourceProvider),
                                                 productId = it.remoteProductId,
-                                                price = if (it.price != null) {
-                                                    priceFormat(it.price)
-                                                } else {
-                                                    "-"
-                                                },
+                                                price = priceFormat(it.price),
                                                 imageUrl = it.image?.source
                                             )
                                         },
@@ -129,11 +125,7 @@ class WooPosVariationsViewModel @Inject constructor(
                         id = it.remoteVariationId,
                         name = it.getNameForPOS(getProductById(productId), resourceProvider),
                         productId = it.remoteProductId,
-                        price = if (it.price != null) {
-                            priceFormat(it.price)
-                        } else {
-                            "-"
-                        },
+                        price = priceFormat(it.price),
                         imageUrl = it.image?.source
                     )
                 }
@@ -171,11 +163,7 @@ class WooPosVariationsViewModel @Inject constructor(
                             id = it.remoteVariationId,
                             name = it.getNameForPOS(getProductById(productId), resourceProvider),
                             productId = it.remoteProductId,
-                            price = if (it.price != null) {
-                                priceFormat(it.price)
-                            } else {
-                                "-"
-                            },
+                            price = priceFormat(it.price),
                             imageUrl = it.image?.source
                         )
                     }

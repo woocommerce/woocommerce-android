@@ -1,8 +1,8 @@
 package com.woocommerce.android.di
 
 import android.content.Context
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.Firebase
+import com.google.firebase.remoteconfig.remoteConfig
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.analytics.FirebaseTracker
 import com.woocommerce.android.config.FirebaseRemoteConfigRepository

@@ -77,10 +77,16 @@ class ProductListHandler @Inject constructor(private val repository: ProductSele
 
     // The implementation of loadMore has limited functionality. Essentially, more items from local cache are loaded
     // only after the remote request to fetch the previous page finishes successfully.
-    suspend fun loadMore(orderCurrency: String? = null) = mutex.withLock {
+    suspend fun loadMore(
+        includeTypes: List<WCProductStore.IncludeType> = emptyList(),
+        orderCurrency: String? = null
+    ) = mutex.withLock {
         if (!canLoadMore.get()) return@withLock Result.success(Unit)
         if (searchQuery.value.isEmpty()) {
-            fetchProducts(orderCurrency = orderCurrency)
+            fetchProducts(
+                includeTypes = includeTypes,
+                orderCurrency = orderCurrency
+            )
         } else {
             searchInCache()
             remoteSearch()

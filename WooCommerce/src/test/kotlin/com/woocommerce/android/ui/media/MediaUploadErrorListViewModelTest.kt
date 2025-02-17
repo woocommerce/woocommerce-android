@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.media
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
 import com.woocommerce.android.ui.media.MediaUploadErrorListViewModel.ErrorUiModel
@@ -44,6 +46,7 @@ class MediaUploadErrorListViewModelTest : BaseUnitTest() {
 
     private val resourceProvider: ResourceProvider = mock()
     private val mediaFileUploadHandler: MediaFileUploadHandler = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: MediaUploadErrorListViewModel
 
@@ -110,10 +113,21 @@ class MediaUploadErrorListViewModelTest : BaseUnitTest() {
             verify(mediaFileUploadHandler).clearImageErrors(REMOTE_PRODUCT_ID, listOf("file://test2.jpg"))
         }
 
+    @Test
+    fun `given some upload errors, when onRetryUploadClicked is called, then track retry button tapped`() =
+        testBlocking {
+            createViewModel(SOME_UPLOAD_ERRORS)
+
+            viewModel.onRetryUploadClicked(SOME_UI_MODEL_ERRORS.last())
+
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.PRODUCT_IMAGE_UPLOAD_RETRY_BUTTON_TAPPED)
+        }
+
     private fun createViewModel(errors: Array<ProductImageUploadData>? = SOME_UPLOAD_ERRORS) {
         viewModel = MediaUploadErrorListViewModel(
             resourceProvider,
             mediaFileUploadHandler,
+            analyticsTrackerWrapper,
             savedStateHandle = MediaUploadErrorListFragmentArgs(
                 errorList = errors,
                 remoteProductId = REMOTE_PRODUCT_ID
