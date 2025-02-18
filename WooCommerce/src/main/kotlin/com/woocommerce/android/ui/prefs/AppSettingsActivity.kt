@@ -18,6 +18,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ActivityAppSettingsBinding
+import com.woocommerce.android.extensions.edgeToEdgeHandlingForNavigationBar
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -67,6 +68,7 @@ class AppSettingsActivity :
 
         binding = ActivityAppSettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.edgeToEdgeHandlingForNavigationBar()
 
         presenter.takeView(this)
 

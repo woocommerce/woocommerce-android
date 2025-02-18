@@ -8,12 +8,12 @@ import javax.inject.Inject
 
 class MainActivityEdgeToEdgeHelper @Inject constructor() {
     fun applyEdgeToEdgeSettings(binding: ActivityMainBinding) {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.appBarLayout) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemInsets = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
 
-            v.setPadding(0, systemInsets.top, 0, 0)
+            v.setPadding(systemInsets.left, systemInsets.top, systemInsets.right, 0)
             insets
         }
 
@@ -28,7 +28,7 @@ class MainActivityEdgeToEdgeHelper @Inject constructor() {
             // because bottom nav is already handling the padding
             val bottomPadding = if (isBottomNavVisible) 0 else systemInsets.bottom
 
-            v.setPadding(systemInsets.left, 0, systemInsets.right, bottomPadding)
+            v.setPadding(0, 0, 0, bottomPadding)
             insets
         }
     }

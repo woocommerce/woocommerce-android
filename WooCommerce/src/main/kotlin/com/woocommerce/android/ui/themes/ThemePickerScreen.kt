@@ -9,12 +9,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -63,13 +68,21 @@ import okhttp3.OkHttpClient
 @Composable
 fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
-        Scaffold(topBar = {
-            Toolbar(
-                title = stringResource(id = R.string.settings_themes),
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationButtonClick = viewModel::onArrowBackPressed
-            )
-        }) { padding ->
+        Scaffold(
+            topBar = {
+                Toolbar(
+                    title = stringResource(id = R.string.settings_themes),
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                    onNavigationButtonClick = viewModel::onArrowBackPressed
+                )
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = colorResource(id = color.color_toolbar))
+                .windowInsetsPadding(
+                    WindowInsets.systemBars.only(WindowInsetsSides.Top)
+                )
+        ) { padding ->
             ThemePicker(
                 modifier = Modifier
                     .padding(padding)
