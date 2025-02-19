@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
@@ -111,12 +112,27 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
         apiFakerHint.doOnLayout { view ->
             activityLayout.updateLayoutParams<MarginLayoutParams> { bottomMargin = view.measuredHeight }
         }
+        apiFakerHint.handleBottomNavigationInset(activity)
     }
 
     private fun View.hideApiFakerHint() {
         val contentLayout = findViewById<ViewGroup>(android.R.id.content)
+        val activityLayout = contentLayout.getChildAt(0)
+
         contentLayout.findViewById<View>(apiFakerHintId)?.let { apiFakerHint ->
             contentLayout.removeView(apiFakerHint)
+        }
+        activityLayout.updateLayoutParams<MarginLayoutParams> { bottomMargin = 0 }
+    }
+
+    private fun View.handleBottomNavigationInset(activity: Activity) {
+        // setOnApplyWindowInsetsListener doesn't work for this case because the view is added after the window
+        // insets are applied. So we need to handle it manually.
+        activity.window.decorView.rootWindowInsets.let {
+            val bottomNavigationInset = WindowInsetsCompat.toWindowInsetsCompat(it)
+                .getInsets(WindowInsetsCompat.Type.navigationBars())
+                .bottom
+            updateLayoutParams<MarginLayoutParams> { bottomMargin = bottomNavigationInset }
         }
     }
 }
