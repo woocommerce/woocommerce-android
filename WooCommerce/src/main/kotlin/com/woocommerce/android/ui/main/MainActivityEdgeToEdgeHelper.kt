@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.main
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import com.woocommerce.android.databinding.ActivityMainBinding
-import com.woocommerce.android.util.SystemVersionUtils
 import javax.inject.Inject
 
 class MainActivityEdgeToEdgeHelper @Inject constructor() {
@@ -14,18 +14,21 @@ class MainActivityEdgeToEdgeHelper @Inject constructor() {
                 WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
             )
 
-            val isBottomNavVisible = binding.bottomNav.isVisible
-            // Apply bottom padding only if bottom nav is hidden
-            // because bottom nav is already handling the padding
-            // Note: this doesn't work well on Android Q and below, so we apply it only on Android R and above
-            // TODO: Remove this when Androidx Core v1.16 is released by using
-            //  ViewGroupCompat#installCompatInsetsDispatch
-            //  see: https://developer.android.com/develop/ui/views/layout/edge-to-edge#backward-compatible-dispatching
-            val bottomPadding = if (SystemVersionUtils.isAtLeastR() && isBottomNavVisible) 0 else systemInsets.bottom
+            binding.appBarLayout.setPadding(0, systemInsets.top, 0, 0)
 
-            v.setPadding(systemInsets.left, systemInsets.top, systemInsets.right, bottomPadding)
+            binding.root.updatePadding(left = systemInsets.left, right = systemInsets.right)
 
-            insets
+            if (binding.bottomNav.isVisible) {
+                // When the bottom navigation is visible, apply the bottom padding to it to make sure its
+                // background is drawn behind the system navigation bar
+                binding.bottomNav.updatePadding(bottom = systemInsets.bottom)
+                binding.root.updatePadding(bottom = 0)
+            } else {
+                binding.root.updatePadding(bottom = systemInsets.bottom)
+            }
+
+            // Prevent other views from consuming the insets, including the bottom navigation
+            WindowInsetsCompat.CONSUMED
         }
     }
 }
