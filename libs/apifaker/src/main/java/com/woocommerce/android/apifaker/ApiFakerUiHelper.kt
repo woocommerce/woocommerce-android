@@ -6,6 +6,7 @@ import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
 import android.graphics.Color
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -17,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import javax.inject.Inject
@@ -54,15 +56,15 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
     private suspend fun updateApiFakerHint(
         activityReference: WeakReference<ComponentActivity>
     ) {
-        apiFakerConfig.enabled.collect { enabled ->
+        apiFakerConfig.enabled.withIndex().collect { (index, enabled) ->
             activityReference.get()?.let { activity ->
                 if (enabled) {
                     activity.window.decorView.post {
-                        activity.window.decorView.showApiFakerHint(activity)
+                        activity.window.decorView.showApiFakerHint(activity, animate = index != 0)
                     }
                 } else {
                     activity.window.decorView.post {
-                        activity.window.decorView.hideApiFakerHint()
+                        activity.window.decorView.hideApiFakerHint(index != 0)
                     }
                 }
             }
@@ -70,7 +72,7 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun View.showApiFakerHint(activity: ComponentActivity) {
+    private fun View.showApiFakerHint(activity: ComponentActivity, animate: Boolean) {
         // This works only for activities that has the content view as a direct child of the FrameLayout, which is true
         // for all AppCompat activities, so it should work for all the cases we need.
         val contentLayout = findViewById<View>(android.R.id.content) as? FrameLayout ?: return
@@ -99,6 +101,11 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
                     .show()
             }
         }
+
+        if (animate) {
+            TransitionManager.beginDelayedTransition(contentLayout)
+        }
+
         contentLayout.addView(
             apiFakerHint,
             FrameLayout.LayoutParams(
@@ -115,9 +122,13 @@ class ApiFakerUiHelper @Inject constructor() : ActivityLifecycleCallbacks {
         apiFakerHint.handleBottomNavigationInset(activity)
     }
 
-    private fun View.hideApiFakerHint() {
+    private fun View.hideApiFakerHint(animate: Boolean) {
         val contentLayout = findViewById<ViewGroup>(android.R.id.content)
         val activityLayout = contentLayout.getChildAt(0)
+
+        if (animate) {
+            TransitionManager.beginDelayedTransition(contentLayout)
+        }
 
         contentLayout.findViewById<View>(apiFakerHintId)?.let { apiFakerHint ->
             contentLayout.removeView(apiFakerHint)
