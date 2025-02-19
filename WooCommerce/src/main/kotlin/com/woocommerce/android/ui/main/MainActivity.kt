@@ -266,7 +266,10 @@ class MainActivity :
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
-                AppBarStatus.Hidden -> hideToolbar(animate = f is TopLevelFragment)
+                AppBarStatus.Hidden -> {
+                    hideToolbar(animate = f is TopLevelFragment)
+                    binding.appBarLayout.targetElevation = 0f
+                }
             }
 
             if (f is TopLevelFragment) {
