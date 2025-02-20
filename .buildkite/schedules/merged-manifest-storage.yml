@@ -8,15 +8,3 @@ steps:
   - label: "💾 Create and Store Merged Manifest"
     command: .buildkite/commands/save-merged-manifest.sh
     plugins: [$CI_TOOLKIT]
-
-#notify:
-#  - slack:
-#      channels:
-#        - "#android-core-notifs"
-#      message: "The manifest cache has been updated."
-#    if: build.state == "passed"
-#  - slack:
-#      channels:
-#        - "#android-core-notifs"
-#      message: "Failure to update the manifest cache."
-#    if: build.state == "failed"

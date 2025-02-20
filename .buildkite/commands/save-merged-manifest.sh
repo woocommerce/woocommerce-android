@@ -10,9 +10,12 @@ install_gems
 echo "--- :closed_lock_with_key: Installing Secrets"
 bundle exec fastlane run configure_apply
 
-echo "--- 📦 Create Debug Manifest (Jalapeno)"
+echo "--- 📦 Create Merged Manifest"
 ./gradlew assembleJalapenoDebug
 echo ""
 
-echo "--- 💾 Save Debug Manifest (Jalapeno)"
-save_android_merged_manifest "WooCommerce"
+echo "--- 💾 Save Merged Manifest for WooCommerce"
+save_android_merged_manifest "WooCommerce" "jalapenoDebug"
+
+echo "--- 💾 Save Merged Manifest for WooCommerce-Wear"
+save_android_merged_manifest "WooCommerce-Wear" "jalapenoDebug"
