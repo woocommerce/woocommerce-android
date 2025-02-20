@@ -51,9 +51,6 @@ interface CardReaderManager {
         refundConfig: RefundConfig
     ): Flow<CardInteracRefundStatus>
 
-    suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus>
-    fun cancelPayment(paymentData: PaymentData)
-
     suspend fun startAsyncSoftwareUpdate()
     suspend fun clearCachedCredentials()
     fun cancelOngoingFirmwareUpdate()

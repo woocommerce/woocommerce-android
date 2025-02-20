@@ -47,20 +47,6 @@ internal class PaymentManager(
         processPaymentIntent(paymentInfo.orderId, paymentIntent).collect { emit(it) }
     }
 
-    fun retryPayment(orderId: Long, paymentData: PaymentData) =
-        processPaymentIntent(orderId, (paymentData as PaymentDataImpl).paymentIntent)
-
-    fun cancelPayment(paymentData: PaymentData) {
-        val paymentIntent = (paymentData as PaymentDataImpl).paymentIntent
-        /* If the paymentIntent is in REQUIRES_CAPTURE state the app should not cancel the payment intent as it
-        doesn't know if it was already captured or not during one of the previous attempts to capture it. */
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD ||
-            paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION
-        ) {
-            cancelPaymentAction.cancelPayment(paymentIntent)
-        }
-    }
-
     private fun processPaymentIntent(orderId: Long, data: PaymentIntent) = flow {
         var paymentIntent = data
         if (paymentIntent.status == null || paymentIntent.status == CANCELED) {

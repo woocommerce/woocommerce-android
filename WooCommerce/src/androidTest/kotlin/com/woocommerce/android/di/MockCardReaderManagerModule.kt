@@ -91,12 +91,6 @@ class MockCardReaderManagerModule {
             return emptyFlow()
         }
 
-        override suspend fun retryCollectPayment(orderId: Long, paymentData: PaymentData): Flow<CardPaymentStatus> {
-            return emptyFlow()
-        }
-
-        override fun cancelPayment(paymentData: PaymentData) {}
-
         override suspend fun startAsyncSoftwareUpdate() {}
 
         override suspend fun clearCachedCredentials() {}
