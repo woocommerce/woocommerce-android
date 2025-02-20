@@ -38,7 +38,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMeth
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.WaitingForInput
-import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
@@ -123,7 +122,6 @@ class CardReaderPaymentController(
 
     private var paymentFlowJob: Job? = null
     private var refundFlowJob: Job? = null
-    private var paymentDataForRetry: PaymentData? = null
 
     private var refetchOrderJob: Job? = null
 
@@ -257,16 +255,6 @@ class CardReaderPaymentController(
         }
     }
 
-    fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) {
-        paymentFlowJob = scope.launch {
-            _paymentState.value = CardReaderPaymentState.LoadingData(::onCancelPaymentFlow)
-            delay(ARTIFICIAL_RETRY_DELAY)
-            cardReaderManager.retryCollectPayment(orderId, paymentData).collect { paymentStatus ->
-                onPaymentStatusChanged(orderId, billingEmail, paymentStatus, amountLabel)
-            }
-        }
-    }
-
     private fun retryInteracRefund() {
         initRefundFlow(isRetry = true)
     }
@@ -314,7 +302,6 @@ class CardReaderPaymentController(
         paymentStatus: CardPaymentStatus,
         amountLabel: String
     ) {
-        paymentDataForRetry = null
         when (paymentStatus) {
             InitializingPayment -> {
                 _paymentState.value =
@@ -363,7 +350,6 @@ class CardReaderPaymentController(
             }
 
             is PaymentFailed -> {
-                paymentDataForRetry = paymentStatus.paymentDataForRetry
                 tracker.trackPaymentFailed(paymentStatus.errorMessage, paymentStatus.type)
                 emitFailedPaymentState(orderId, billingEmail, paymentStatus, amountLabel)
             }
@@ -538,11 +524,7 @@ class CardReaderPaymentController(
     ) {
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         cardReaderOnboardingChecker.invalidateCache()
-        val onRetryClicked = error.paymentDataForRetry?.let {
-            {
-                retry(orderId, billingEmail, it, amountLabel)
-            }
-        } ?: { initPaymentFlow(isRetry = true) }
+        val onRetryClicked = { initPaymentFlow(isRetry = true) }
         val config = cardReaderConfigProvider.provideCountryConfigFor(getStoreCountryCode())
 
         require(config is CardReaderConfigForSupportedCountry) {
@@ -793,9 +775,6 @@ class CardReaderPaymentController(
     }
 
     fun stop() {
-        paymentDataForRetry?.let {
-            cardReaderManager.cancelPayment(it)
-        }
         scope.cancel()
     }
 

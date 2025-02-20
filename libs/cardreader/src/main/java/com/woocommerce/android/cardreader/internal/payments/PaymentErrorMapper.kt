@@ -33,14 +33,7 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
 
 internal class PaymentErrorMapper {
-    fun mapTerminalError(
-        originalPaymentIntent: PaymentIntent?,
-        exception: TerminalException
-    ): PaymentFailed {
-        val paymentData =
-            originalPaymentIntent?.let {
-                PaymentDataImpl(exception.paymentIntent ?: originalPaymentIntent)
-            }
+    fun mapTerminalError(exception: TerminalException): PaymentFailed {
         val type = when (exception.errorCode) {
             TerminalErrorCode.CARD_READ_TIMED_OUT -> CardReadTimeOut
             TerminalErrorCode.DECLINED_BY_STRIPE_API -> mapDeclinedByStripeApiError(exception)
@@ -53,7 +46,7 @@ internal class PaymentErrorMapper {
             TerminalErrorCode.CANCELED -> Canceled
             else -> Generic
         }
-        return PaymentFailed(type, paymentData, exception.errorMessage)
+        return PaymentFailed(type, exception.errorMessage)
     }
 
     @Suppress("ComplexMethod")
@@ -122,24 +115,20 @@ internal class PaymentErrorMapper {
         }
 
     fun mapCapturePaymentError(
-        originalPaymentIntent: PaymentIntent,
         capturePaymentResponse: CapturePaymentResponse.Error
     ): PaymentFailed {
-        val paymentData = PaymentDataImpl(originalPaymentIntent)
         val message = "Capturing payment failed: $capturePaymentResponse"
         val type = when (capturePaymentResponse) {
             is NetworkError -> NoNetwork
             is ServerError -> CardPaymentStatusErrorType.Server(capturePaymentResponse.message)
             else -> Generic
         }
-        return PaymentFailed(type, paymentData, message)
+        return PaymentFailed(type, message)
     }
 
     fun mapError(
-        originalPaymentIntent: PaymentIntent? = null,
         errorMessage: String
     ): PaymentFailed {
-        val paymentData = originalPaymentIntent?.let { PaymentDataImpl(originalPaymentIntent) }
-        return PaymentFailed(Generic, paymentData, errorMessage)
+        return PaymentFailed(Generic, errorMessage)
     }
 }

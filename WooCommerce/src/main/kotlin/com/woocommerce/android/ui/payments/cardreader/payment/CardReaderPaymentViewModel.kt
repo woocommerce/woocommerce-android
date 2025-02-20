@@ -7,7 +7,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
-import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.di.StoreManagementMode
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -115,9 +114,6 @@ class CardReaderPaymentViewModel @Inject constructor(
         }
 
     fun start() = paymentController.start()
-
-    fun retry(orderId: Long, billingEmail: String, paymentData: PaymentData, amountLabel: String) =
-        paymentController.retry(orderId, billingEmail, paymentData, amountLabel)
 
     fun onViewCreated() = paymentController.onViewCreated()
 

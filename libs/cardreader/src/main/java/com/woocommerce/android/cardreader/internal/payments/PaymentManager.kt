@@ -19,7 +19,6 @@ import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
-import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -94,7 +93,7 @@ internal class PaymentManager(
         paymentIntent: PaymentIntent
     ): String? {
         return paymentIntent.getCharges().takeIf { it.isNotEmpty() }?.get(0)?.receiptUrl ?: run {
-            emit(PaymentFailed(Generic, null, "ReceiptUrl not available"))
+            emit(PaymentFailed(Generic, "ReceiptUrl not available"))
             null
         }
     }
@@ -104,7 +103,7 @@ internal class PaymentManager(
         emit(InitializingPayment)
         createPaymentAction.createPaymentIntent(paymentInfo).collect {
             when (it) {
-                is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
+                is Failure -> emit(errorMapper.mapTerminalError(it.exception))
                 is Success -> paymentIntent = it.paymentIntent
             }
         }
@@ -118,7 +117,7 @@ internal class PaymentManager(
         emit(CollectingPayment)
         collectPaymentAction.collectPayment(paymentIntent).collect {
             when (it) {
-                is CollectPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
+                is CollectPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(it.exception))
                 is CollectPaymentStatus.Success -> result = it.paymentIntent
             }
         }
@@ -132,7 +131,7 @@ internal class PaymentManager(
         emit(ProcessingPayment)
         processPaymentAction.processPayment(paymentIntent).collect {
             when (it) {
-                is ProcessPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
+                is ProcessPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(it.exception))
                 is ProcessPaymentStatus.Success -> {
                     val paymentMethodType = determinePaymentMethodType(it)
                     emit(ProcessingPaymentCompleted(paymentMethodType))
@@ -154,7 +153,7 @@ internal class PaymentManager(
         emit(CapturingPayment)
         when (val captureResponse = cardReaderStore.capturePaymentIntent(orderId, paymentIntent.id!!)) {
             is CapturePaymentResponse.Successful -> emit(PaymentCompleted(receiptUrl))
-            is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(paymentIntent, captureResponse))
+            is CapturePaymentResponse.Error -> emit(errorMapper.mapCapturePaymentError(captureResponse))
         }
     }
 
@@ -183,5 +182,3 @@ internal class PaymentManager(
         }
     }
 }
-
-internal data class PaymentDataImpl(val paymentIntent: PaymentIntent) : PaymentData

@@ -11,7 +11,6 @@ sealed class CardPaymentStatus {
 
     data class PaymentFailed(
         val type: CardPaymentStatusErrorType,
-        val paymentDataForRetry: PaymentData?,
         val errorMessage: String
     ) : CardPaymentStatus()
 
@@ -169,5 +168,3 @@ sealed class CardPaymentStatus {
         UNKNOWN("unknown"),
     }
 }
-
-interface PaymentData
