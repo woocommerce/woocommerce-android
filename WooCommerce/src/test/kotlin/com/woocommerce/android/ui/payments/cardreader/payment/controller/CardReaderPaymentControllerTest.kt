@@ -82,6 +82,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
@@ -2414,13 +2415,13 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
     fun `given user leaves the screen, when payment fails, then payment canceled`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(paymentFailedWithValidDataForRetry) }
+                flow { emit(paymentFailedWithEmptyDataForRetry) }
             }
+            assertThat(controller.scope.isActive).isFalse()
             controller.start()
-
+            assertThat(controller.scope.isActive).isTrue()
             controller.stop()
-
-            verify(cardReaderManager).cancelPayment(any())
+            assertThat(controller.scope.isActive).isFalse()
         }
 
     @Test

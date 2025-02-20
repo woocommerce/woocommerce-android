@@ -114,7 +114,8 @@ class CardReaderPaymentController(
     private val cardReaderType: CardReaderType,
     private val isTTPPaymentInProgress: KMutableProperty0<Boolean>,
 ) {
-    private var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private val _paymentState: MutableStateFlow<CardReaderPaymentOrRefundState> =
         MutableStateFlow(CardReaderPaymentState.LoadingData(::onCancelPaymentFlow))
