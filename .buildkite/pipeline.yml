@@ -10,4 +10,7 @@ steps:
       .buildkite/commands/restore-cache.sh
       ./gradlew assembleJalapenoDebug
       ".buildkite/commands/restore-merged-manifest.sh" "WooCommerce"
+      "comment_with_manifest_diff" "WooCommerce"
     plugins: [$CI_TOOLKIT]
+    artifact_paths:
+      - "**/build/reports/diff_manifest/*"
