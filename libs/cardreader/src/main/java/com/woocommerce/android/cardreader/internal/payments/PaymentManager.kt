@@ -43,7 +43,13 @@ internal class PaymentManager(
         if (paymentIntent?.status != PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
             return@flow
         }
-        processPaymentIntent(paymentInfo.orderId, paymentIntent).collect { emit(it) }
+        try {
+            processPaymentIntent(paymentInfo.orderId, paymentIntent).collect { emit(it) }
+        } finally {
+            if (paymentIntent.status != PaymentIntentStatus.SUCCEEDED || paymentIntent.status != PaymentIntentStatus.REQUIRES_CAPTURE) {
+                cancelPaymentAction.cancelPayment(paymentIntent)
+            }
+        }
     }
 
     private fun processPaymentIntent(orderId: Long, data: PaymentIntent) = flow {
