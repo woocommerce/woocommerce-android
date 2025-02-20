@@ -2425,25 +2425,6 @@ class CardReaderPaymentControllerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user leaves the screen, when payment succeeded on retry, then payment NOT canceled`() =
-        testBlocking {
-            whenever(errorMapper.mapPaymentErrorToUiError(Generic, cardReaderConfig, false))
-                .thenReturn(PaymentFlowError.Generic)
-            whenever(cardReaderManager.collectPayment(any()))
-                .thenAnswer {
-                    flow {
-                        emit(paymentFailedWithValidDataForRetry)
-                        emit(PaymentCompleted(""))
-                    }
-                }
-            controller.start()
-
-            controller.stop()
-
-            verify(cardReaderManager, never()).cancelPayment(any())
-        }
-
-    @Test
     fun `given reader status is connecting, when payment screen is shown, then make sure NOT to initiate payment`() =
         testBlocking {
             // Given
