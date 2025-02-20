@@ -120,12 +120,12 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.Success)
-        whenever(paymentErrorMapper.mapTerminalError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
-        whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
-        whenever(paymentErrorMapper.mapError(anyOrNull(), anyOrNull()))
-            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, null, ""))
+        whenever(paymentErrorMapper.mapTerminalError(anyOrNull()))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, ""))
+        whenever(paymentErrorMapper.mapCapturePaymentError(anyOrNull()))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, ""))
+        whenever(paymentErrorMapper.mapError(anyOrNull()))
+            .thenReturn(PaymentFailed(CardPaymentStatusErrorType.Generic, ""))
         whenever(cardReaderConfigFactory.getCardReaderConfigFor(any())).thenReturn(
             CardReaderConfigForUSA
         )
@@ -188,7 +188,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         manager
             .acceptPayment(createPaymentInfo()).toList()
 
-        verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
+        verify(paymentErrorMapper).mapTerminalError(anyOrNull())
     }
 
     @Test
@@ -236,7 +236,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         manager
             .acceptPayment(createPaymentInfo()).toList()
 
-        verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
+        verify(paymentErrorMapper).mapTerminalError(anyOrNull())
     }
 
     @Test
@@ -284,7 +284,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         manager
             .acceptPayment(createPaymentInfo()).toList()
 
-        verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
+        verify(paymentErrorMapper).mapTerminalError(anyOrNull())
     }
 
     @Test
@@ -422,25 +422,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `when receiptUrl is empty, then PaymentData for retry are empty`() = testBlocking {
-        whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(
-                flow {
-                    emit(
-                        ProcessPaymentStatus.Success(
-                            createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
-                        )
-                    )
-                }
-            )
-
-        val result = manager
-            .acceptPayment(createPaymentInfo()).toList()
-
-        assertThat((result.last() as PaymentFailed).paymentDataForRetry).isNull()
-    }
-
-    @Test
     fun `when capturing payment starts, then CapturingPayment is emitted`() = testBlocking {
         val result = manager.acceptPayment(createPaymentInfo())
             .takeUntil(CapturingPayment::class).toList()
@@ -506,109 +487,9 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         manager
             .acceptPayment(createPaymentInfo()).toList()
 
-        verify(paymentErrorMapper).mapCapturePaymentError(anyOrNull(), anyOrNull())
+        verify(paymentErrorMapper).mapCapturePaymentError(anyOrNull())
     }
     // END - Capturing Payment
-
-    // BEGIN - Retry
-    @Test
-    fun `given PaymentStatus REQUIRES_PAYMENT_METHOD, when retrying payment, then flow resumes on collectPayment`() =
-        testBlocking {
-            val paymentIntent = mock<PaymentIntent>().also {
-                whenever(it.status).thenReturn(REQUIRES_PAYMENT_METHOD)
-            }
-            val paymentData = PaymentDataImpl(paymentIntent)
-
-            val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).first()
-
-            assertThat(result).isInstanceOf(CollectingPayment::class.java)
-        }
-
-    @Test
-    fun `given PaymentStatus REQUIRES_CONFIRMATION, when retrying payment, then flow resumes on processPayment`() =
-        testBlocking {
-            val paymentIntent = mock<PaymentIntent>().also {
-                whenever(it.status).thenReturn(REQUIRES_CONFIRMATION)
-            }
-            val paymentData = PaymentDataImpl(paymentIntent)
-
-            val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).first()
-
-            assertThat(result).isInstanceOf(ProcessingPayment::class.java)
-        }
-
-    @Test
-    fun `given PaymentStatus REQUIRES_CAPTURE, when retrying payment, then flow resumes on capturePayment`() =
-        testBlocking {
-            val paymentIntent = createPaymentIntent(REQUIRES_CAPTURE)
-            val paymentData = PaymentDataImpl(paymentIntent)
-
-            val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).first()
-
-            assertThat(result).isInstanceOf(CapturingPayment::class.java)
-        }
-
-    @Test
-    fun `given PaymentStatus CANCELED, when retrying payment, then PaymentFailed is emitted`() =
-        testBlocking {
-            val paymentIntent = createPaymentIntent(CANCELED)
-            val paymentData = PaymentDataImpl(paymentIntent)
-
-            val result = manager
-                .retryPayment(1, paymentData).toList()
-
-            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
-        }
-
-    @Test
-    fun `given PaymentStatus null, when retrying payment, then PaymentFailed is emitted`() =
-        testBlocking {
-            val paymentIntent = mock<PaymentIntent>().also {
-                whenever(it.status).thenReturn(null)
-            }
-            val paymentData = PaymentDataImpl(paymentIntent)
-
-            val result = manager
-                .retryPayment(1, paymentData).toList()
-
-            assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
-        }
-    // END - Retry
-
-    // BEGIN - Cancel
-    @Test
-    fun `given PaymentStatus REQUIRES_PAYMENT_METHOD, when canceling payment, then payment intent canceled`() =
-        testBlocking {
-            val paymentIntent = createPaymentIntent(REQUIRES_PAYMENT_METHOD)
-            val paymentData = PaymentDataImpl(paymentIntent)
-
-            manager.cancelPayment(paymentData)
-
-            verify(cancelPaymentAction).cancelPayment(paymentIntent)
-        }
-
-    @Test
-    fun `given PaymentStatus REQUIRES_CONFIRMATION, when canceling payment, then payment intent canceled`() =
-        testBlocking {
-            val paymentIntent = createPaymentIntent(REQUIRES_CONFIRMATION)
-            val paymentData = PaymentDataImpl(paymentIntent)
-
-            manager.cancelPayment(paymentData)
-
-            verify(cancelPaymentAction).cancelPayment(paymentIntent)
-        }
-
-    @Test
-    fun `given PaymentStatus REQUIRES_CAPTURE, when canceling payment, then payment intent NOT canceled`() =
-        testBlocking {
-            val paymentIntent = createPaymentIntent(REQUIRES_CAPTURE)
-            val paymentData = PaymentDataImpl(paymentIntent)
-
-            manager.cancelPayment(paymentData)
-
-            verify(cancelPaymentAction, never()).cancelPayment(paymentIntent)
-        }
-    // END - Cancel
 
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
